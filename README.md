@@ -9,10 +9,12 @@ from drivers.eos import EOSDriver
 
 arista = EOSDriver('10.48.71.3', 'admin', 'sp0tify')
 arista.open()
+```
 
 Getting facts
 -------------
 
+```
 facts = arista.get_facts()
 
 >>> facts.vendor
