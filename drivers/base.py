@@ -1,3 +1,7 @@
+# TODO check common API
+# TODO install pyEOS
+
+
 class NetworkDriver:
     def __init__(self, hostname, user, password):
         """
@@ -27,22 +31,34 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
-    def compare_configuration(self, candidate):
+    def load_candidate_config(self, filename=None, config=None):
         """
-        Compares the running configuration with a candidate configuration.
-        :param candidate: (str) Configuration you want to compare with.
-        :return: A string showing the difference between the running configuration and the candidate configuration.
+        Populates the attribute candidate_config with the desired configuration. You can populate it from a file or
+        from a string. If you send both a filename and a string containing the configuration, the file takes precedence.
+
+        :param filename: Path to the file containing the desired configuration. By default is None.
+        :param config: String containing the desired configuration.
         """
         raise NotImplementedError
 
-    def replace_configuration(self, candidate):
+    def compare_config(self):
         """
-        Replaces the running configuration with the candidate configuration.
-        :param candidate: (str) Configuration you want to have on the device.
-        :return: None
-        :raises SyntacticError: If configuration syntax was incorrect.
-        :raises SemanticError: If the device reported semantic errors on the configuration.
-        :raises UnknownConfigurationError: If none of the above.
+
+        :return: A string showing the difference between the running_config and the candidate_config. The running_config is
+            loaded automatically just before doing the comparison so there is no neeed for you to do it.
+        """
+        raise NotImplementedError
+
+    def replace_config(self):
+        """
+        Applies the configuration loaded with the method load_candidate_config on the device. Note that the current
+        configuration of the device is replaced with the new configuration.
+        """
+        raise NotImplementedError
+
+    def rollback(self):
+        """
+        If changes have been made, revert changes to the original state.
         """
         raise NotImplementedError
 
@@ -57,6 +73,14 @@ class NetworkDriver:
         """
         Retrieves BGP neighbors information from the device.
         :return: (list of BGPNeighbor) List of BGPNeighbor from the device.
+        """
+        raise NotImplementedError
+
+    def get_interface(self, name):
+        """
+        Retrieves information from the available interfaces on the device.
+        :param name: (string) Interface name of the interface you want to get.
+        :return: (list of Interface) List of Interface from the device.
         """
         raise NotImplementedError
 
