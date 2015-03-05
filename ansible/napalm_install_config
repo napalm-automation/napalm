@@ -1,0 +1,163 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Copyright 2014 Spotify AB. All rights reserved.
+#
+# The contents of this file are licensed under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with the
+# License. You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+
+"""
+"""
+
+import ast
+import logging
+
+logger = logging.getLogger('eos_install_config')
+
+DOCUMENTATION = '''
+---
+module: eos_install_config
+author: David Barroso <dbarroso@spotify.net>
+version_added: "1.0.0"
+short_description: Replaces the configuration taken from a file on a device running EOS.
+description:
+    This library will take the configuration from a file and load it into a device running EOS. The old configuration
+    will be replaced using the feature 'config replace terminal: force'. The use this module you need to enable access
+    to the device via the eAPI.
+
+requirements:
+    - pyEOS
+
+options:
+    hostname:
+        description: IP or FQDN of the device you want to connect to
+        required: true
+    username:
+        description: Username
+        required: true
+    dev_os:
+        description: OS running the device
+        required: true
+    password:
+        description: Password
+        required: true
+    use_ssl:
+        description: If set to True we will connect via https, if False we will use http instead. Default is True.
+        required: false
+    config_file:
+        description: Where to load the configuration from.
+        required: true
+    commit_changes:
+        description: If set to True the configuration will be actually replaced. If the set to False, we will not
+                     apply the changes, just check the differences.
+        required: true
+    diff_file:
+        description: A file where to store the "diff" between the running configuration and the new configuration. If
+                     it's not set the diff between configurations is not saved.
+        required: False
+'''
+
+EXAMPLES = '''
+    In our playbook would have something like:
+
+  tasks:
+    - name: Assembling configuration
+      assemble: src=compiled/{{ inventory_hostname }} dest=compiled/{{ inventory_hostname }}/running.conf
+
+    - name: Pushing configuration to EOS
+      eos_install_config:
+        hostname={{ inventory_hostname }}
+        username=admin
+        dev_os={{dev_os}}
+        password=p4ssw0rd
+        use_ssl=False
+        config_file=~/spotify/network-ansible/compiled/{{ inventory_hostname }}/running.conf
+        commit_changes={{commit_changes}}
+        diff_file=logs/{{ inventory_hostname }}.log
+
+    From the CLI we would trigger the playbook like:
+
+        # We don't commit changes, we only want to check the diff
+        $ ansible-playbook -v -e commit_changes=0 napalm_test.yml
+
+        or
+
+        # We actually commit the changes
+        $ ansible-playbook -v -e commit_changes=1 napalm_test.yml
+'''
+
+
+def save_to_file(content, filename):
+    with open(filename, 'w') as f:
+        f.write(content)
+
+
+def main():
+    module = AnsibleModule(
+        argument_spec=dict(
+            hostname=dict(required=True),
+            username=dict(required=True),
+            password=dict(required=True),
+            use_ssl=dict(required=False, default=True),
+            config_file=dict(required=True),
+            commit_changes=dict(required=True),
+            diff_file=dict(required=False, default=None),
+        ),
+        supports_check_mode=True
+    )
+
+    hostname = module.params['hostname']
+    username = module.params['username']
+    dev_os = module.params['dev_os']
+    password = module.params['password']
+    use_ssl = module.params['use_ssl']
+
+    config_file = module.params['config_file']
+    commit_changes = module.params['commit_changes']
+    diff_file = module.params['diff_file']
+
+    if commit_changes.__class__ is str:
+        commit_changes = ast.literal_eval(commit_changes)
+    if use_ssl.__class__ is str:
+        use_ssl = ast.literal_eval(use_ssl)
+
+    if dev_os == 'EOS':
+        from drivers.eos import EOSDriver
+        device = EOSDriver(hostname, username, password, use_ssl)
+    else:
+        raise Exception('Network OS not supported: %s' % dev_os)
+
+    device.open()
+    device.load_candidate_config(filename=config_file)
+
+    #content of the
+    diff = device.compare_config()
+    changed = len(diff) > 0
+
+    if diff_file is not None:
+        save_to_file(diff, diff_file)
+
+    if module.check_mode or not commit_changes:
+        module.exit_json(changed=False, msg=diff)
+    else:
+        if len(diff) > 0:
+            device.replace_config()
+        module.exit_json(changed=changed, msg=diff)
+
+    logger.info('DEVICE=%s CHANGED=%s STATUS=%s' % (hostname, len(changed.splitlines())), 'OK')
+
+    device.close()
+
+from ansible.module_utils.basic import *
+
+main()
