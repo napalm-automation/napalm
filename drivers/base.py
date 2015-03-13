@@ -49,10 +49,16 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
-    def replace_config(self):
+    def commit_config(self):
         """
         Applies the configuration loaded with the method load_candidate_config on the device. Note that the current
         configuration of the device is replaced with the new configuration.
+        """
+        raise NotImplementedError
+
+    def discard_config(self):
+        """
+        Discards the configuration loaded into the candidate.
         """
         raise NotImplementedError
 

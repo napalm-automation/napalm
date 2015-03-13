@@ -37,7 +37,7 @@ class TestEOSDriver(unittest.TestCase):
 
     def test_loading_config(self):
         self.device.load_candidate_config(filename=config.config_file_1)
-        self.device.replace_config()
+        self.device.commit_config()
         diff = self.device.compare_config()
         self.assertEqual(len(diff), 0)
 
@@ -49,7 +49,7 @@ class TestEOSDriver(unittest.TestCase):
     def test_loading_modified_config_replace_config_and_rollback(self):
         self.device.load_candidate_config(filename=config.config_file_2)
         orig_diff = self.device.compare_config()
-        self.device.replace_config()
+        self.device.commit_config()
         replace_config_diff = self.device.compare_config()
         self.device.rollback()
         last_diff = self.device.compare_config()
