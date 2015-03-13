@@ -59,8 +59,11 @@ class EOSDriver(NetworkDriver):
     def compare_config(self):
         return self.device.compare_config()
 
-    def replace_config(self):
+    def commit_config(self):
         self.device.replace_config()
+
+    def discard_config(self):
+        pass
 
     def rollback(self):
         self.device.rollback()
