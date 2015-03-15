@@ -1,2 +1,3 @@
 pyEOS==0.53
 ncclient
+pyIOSXR
