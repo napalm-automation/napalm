@@ -3,14 +3,6 @@ from base import NetworkDriver
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 
-def __execute_rpc__(conn, rpc_command):
-    output = conn.rpc(str(rpc_command))
-
-    if len(output.xpath('/rpc-reply/error')) > 0:
-        raise Exception(output.tostring)
-
-    return output
-
 
 class JunOSDriver(NetworkDriver):
 
@@ -22,7 +14,7 @@ class JunOSDriver(NetworkDriver):
 
     def open(self):
         self.device.open()
-        self.device.bind( cu=Config )
+        self.device.bind(cu=Config)
         self.device.cu.lock()
 
     def close(self):
