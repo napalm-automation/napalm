@@ -41,6 +41,16 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
+    def load_config_snippet(self, filename=None, config=None):
+        """
+        Populates the attribute candidate_config with the desired configuration. You can populate it from a file or
+        from a string. If you send both a filename and a string containing the configuration, the file takes precedence.
+
+        :param filename: Path to the file containing the desired configuration. By default is None.
+        :param config: String containing the desired configuration.
+        """
+        raise NotImplementedError
+
     def compare_config(self):
         """
 
