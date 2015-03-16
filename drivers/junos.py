@@ -1,7 +1,7 @@
 from base import NetworkDriver
 
-from ncclient import manager
-
+from jnpr.junos import Device
+from jnpr.junos.utils.config import Config
 
 def __execute_rpc__(conn, rpc_command):
     output = conn.rpc(str(rpc_command))
@@ -18,60 +18,35 @@ class JunOSDriver(NetworkDriver):
         self.hostname = hostname
         self.user = user
         self.password = password
+        self.device = Device(hostname, user=user, password=password)
 
     def open(self):
-        self.device = manager.connect(
-            host=self.hostname,
-            port=830,
-            username=self.user,
-            password=self.password,
-            timeout=10,
-            hostkey_verify=False,
-            device_params={'name':'junos'},
-        )
-        rpc_command = '<lock><target><candidate/></target></lock>'
-        __execute_rpc__(self.device, rpc_command)
+        self.device.open()
+        self.device.bind( cu=Config )
+        self.device.cu.lock()
 
     def close(self):
-        rpc_command = '<unlock><target><candidate/></target></unlock>'
-        __execute_rpc__(self.device, rpc_command)
-        self.device.close_session()
+        self.device.cu.unlock()
+        self.device.close()
 
     def load_candidate_config(self, filename=None, config=None):
-
         if filename is None:
             configuration = config
         else:
             with open(filename) as f:
                 configuration = f.read()
 
-        rpc_command = '''
-        <load-configuration format="text" action="replace">
-            <configuration-text>
-                %s
-            </configuration-text>
-        </load-configuration>
-        ''' % configuration
-
-        __execute_rpc__(self.device, rpc_command)
+        self.device.cu.load(configuration, format='text', overwrite=True)
 
     def compare_config(self):
-        rpc_command = '''
-        <get-configuration changed="changed" database= "candidate" format="text" compare="rollback" rollback="0">
-        </get-configuration>'''
-        conf = __execute_rpc__(self.device, rpc_command)
-        return conf.xpath('/rpc-reply/configuration-information/configuration-output')[0].text
+        return self.device.cu.diff()
 
     def commit_config(self):
-        rpc_command = '<commit/>'
-        __execute_rpc__(self.device, rpc_command)
+        self.device.cu.commit()
 
     def discard_config(self):
-        rpc_command = '<discard-changes/>'
-        __execute_rpc__(self.device, rpc_command)
+        self.device.cu.rollback(rb_id=0)
 
     def rollback(self):
-        rpc_command = '<load-configuration rollback="1"/>'
-        __execute_rpc__(self.device, rpc_command)
+        self.device.cu.rollback(rb_id=1)
         self.commit_config()
-
