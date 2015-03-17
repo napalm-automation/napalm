@@ -21,6 +21,7 @@ from objects.bgp import BGPInstance
 
 import config
 
+
 class TestEOSDriver(unittest.TestCase):
 
     @classmethod
@@ -36,18 +37,18 @@ class TestEOSDriver(unittest.TestCase):
         cls.device.close()
 
     def test_loading_config(self):
-        self.device.load_candidate_config(filename=config.config_file_1)
+        self.device.load_replace_candidate(filename=config.config_file_1)
         self.device.commit_config()
         diff = self.device.compare_config()
         self.assertEqual(len(diff), 0)
 
     def test_loading_modified_config_and_diff(self):
-        self.device.load_candidate_config(filename=config.config_file_2)
+        self.device.load_replace_candidate(filename=config.config_file_2)
         diff = self.device.compare_config()
         self.assertGreater(len(diff), 0)
 
     def test_loading_modified_config_replace_config_and_rollback(self):
-        self.device.load_candidate_config(filename=config.config_file_2)
+        self.device.load_replace_candidate(filename=config.config_file_2)
         orig_diff = self.device.compare_config()
         self.device.commit_config()
         replace_config_diff = self.device.compare_config()

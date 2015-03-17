@@ -20,6 +20,7 @@ from objects.bgp import BGPInstance, BGPNeighbor
 from objects.interface import Interface, InterfaceStatus
 from objects.lldp import LLDPNeighbor
 
+
 def _process_interface(interface):
     name = interface['name']
 
@@ -53,7 +54,7 @@ class EOSDriver(NetworkDriver):
     def close(self):
         self.device.close()
 
-    def load_candidate_config(self, filename=None, config=None):
+    def load_replace_candidate(self, filename=None, config=None):
         self.device.load_candidate_config(filename=filename, config=config)
 
     def compare_config(self):
