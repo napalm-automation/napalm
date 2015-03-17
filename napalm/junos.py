@@ -21,7 +21,7 @@ class JunOSDriver(NetworkDriver):
         self.device.cu.unlock()
         self.device.close()
 
-    def load_candidate_config(self, filename=None, config=None):
+    def load_replace_candidate(self, filename=None, config=None):
         if filename is None:
             configuration = config
         else:
@@ -31,7 +31,12 @@ class JunOSDriver(NetworkDriver):
         self.device.cu.load(configuration, format='text', overwrite=True)
 
     def compare_config(self):
-        return self.device.cu.diff()
+        diff = self.device.cu.diff()
+
+        if diff is None:
+            return ''
+        else:
+            return diff
 
     def commit_config(self):
         self.device.cu.commit()
