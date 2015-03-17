@@ -31,7 +31,7 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
-    def load_candidate_config(self, filename=None, config=None):
+    def load_replace_candidate(self, filename=None, config=None):
         """
         Populates the attribute candidate_config with the desired configuration. You can populate it from a file or
         from a string. If you send both a filename and a string containing the configuration, the file takes precedence.
@@ -41,7 +41,7 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
-    def load_config_snippet(self, filename=None, config=None):
+    def load_merge_candidate(self, filename=None, config=None):
         """
         Populates the attribute candidate_config with the desired configuration. You can populate it from a file or
         from a string. If you send both a filename and a string containing the configuration, the file takes precedence.
@@ -55,7 +55,7 @@ class NetworkDriver:
         """
 
         :return: A string showing the difference between the running_config and the candidate_config. The running_config is
-            loaded automatically just before doing the comparison so there is no neeed for you to do it.
+            loaded automatically just before doing the comparison so there is no need for you to do it.
         """
         raise NotImplementedError
 
