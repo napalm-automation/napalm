@@ -3,14 +3,14 @@
 
 
 class NetworkDriver:
-    def __init__(self, hostname, user, password):
+    def __init__(self, hostname, username, password):
         """
         This is the base class you have to inherit from when writing your own Network Driver to manage any device. You
         will, in addition, have to override all the methods specified on this class. Make sure you follow the guidelines
         for every method and that you return the correct data.
 
         :param hostname: (str) IP or FQDN of the device you want to connect to.
-        :param user: (str) Username you want to use
+        :param username: (str) Username you want to use
         :param password: (str) Password
         :return:
         """

@@ -2,15 +2,17 @@ from base import NetworkDriver
 
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
+from jnpr.junos.factory import loadyaml
 
+globals().update(loadyaml('/home/ejasinska/github/napalm/napalm/junos.views'))
 
 class JunOSDriver(NetworkDriver):
 
-    def __init__(self, hostname, user, password):
+    def __init__(self, hostname, username, password):
         self.hostname = hostname
-        self.user = user
+        self.username = username
         self.password = password
-        self.device = Device(hostname, user=user, password=password)
+        self.device = Device(hostname, user=username, password=password)
 
     def open(self):
         self.device.open()
@@ -47,3 +49,8 @@ class JunOSDriver(NetworkDriver):
     def rollback(self):
         self.device.cu.rollback(rb_id=1)
         self.commit_config()
+
+    def get_bgp_neighbors(self):
+	bgp_neighbors = bgp_neigh_tbl(self.device)
+        return bgp_neighbors.get()
+	

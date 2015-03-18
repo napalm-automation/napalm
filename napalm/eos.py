@@ -42,11 +42,11 @@ def _process_interface(interface):
 
 class EOSDriver(NetworkDriver):
 
-    def __init__(self, hostname, user, password):
+    def __init__(self, hostname, username, password):
         self.hostname = hostname
-        self.user = user
+        self.username = username
         self.password = password
-        self.device = EOS(hostname, user, password, use_ssl=True)
+        self.device = EOS(hostname, username, password, use_ssl=True)
 
     def open(self):
         self.device.open()
