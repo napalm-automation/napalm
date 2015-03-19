@@ -14,7 +14,7 @@
 
 import unittest
 
-from drivers.eos import EOSDriver
+from napalm.eos import EOSDriver
 from objects.facts import Facts
 from objects.interface import Interface
 from objects.bgp import BGPInstance
