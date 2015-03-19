@@ -26,17 +26,16 @@ logger = logging.getLogger('eos_install_config')
 
 DOCUMENTATION = '''
 ---
-module: eos_install_config
+module: napalm_install_config
 author: David Barroso <dbarroso@spotify.net>
 version_added: "1.0.0"
 short_description: Replaces the configuration taken from a file on a device running EOS.
 description:
-    This library will take the configuration from a file and load it into a device running EOS. The old configuration
-    will be replaced using the feature 'config replace terminal: force'. The use this module you need to enable access
-    to the device via the eAPI.
+    This library will take the configuration from a file and load it into a device running any OS supported by napalm.
+    The old configuration will be replaced by the new one.
 
 requirements:
-    - pyEOS
+    - napalm
 
 options:
     hostname:
@@ -51,9 +50,6 @@ options:
     password:
         description: Password
         required: true
-    use_ssl:
-        description: If set to True we will connect via https, if False we will use http instead. Default is True.
-        required: false
     config_file:
         description: Where to load the configuration from.
         required: true
@@ -71,19 +67,17 @@ EXAMPLES = '''
     In our playbook would have something like:
 
   tasks:
-    - name: Assembling configuration
-      assemble: src=compiled/{{ inventory_hostname }} dest=compiled/{{ inventory_hostname }}/running.conf
-
-    - name: Pushing configuration to EOS
-      eos_install_config:
+  - name: Assemble configuration
+    assemble: src=../compiled/{{ inventory_hostname }}/ dest=../compiled/{{ inventory_hostname }}/running.conf
+  - name: Push Configuration
+    napalm_install_config:
         hostname={{ inventory_hostname }}
-        username=admin
-        dev_os={{dev_os}}
+        username=dbarroso
+        dev_os={{os}}
         password=p4ssw0rd
-        use_ssl=False
-        config_file=~/spotify/network-ansible/compiled/{{ inventory_hostname }}/running.conf
+        config_file=../compiled/{{ inventory_hostname }}/running.conf
         commit_changes={{commit_changes}}
-        diff_file=logs/{{ inventory_hostname }}.log
+        diff_file=../compiled/{{ inventory_hostname }}/diff
 
     From the CLI we would trigger the playbook like:
 
@@ -108,8 +102,8 @@ def main():
             hostname=dict(required=True),
             username=dict(required=True),
             password=dict(required=True),
-            use_ssl=dict(required=False, default=True),
             config_file=dict(required=True),
+            dev_os=dict(required=True),
             commit_changes=dict(required=True),
             diff_file=dict(required=False, default=None),
         ),
@@ -120,7 +114,6 @@ def main():
     username = module.params['username']
     dev_os = module.params['dev_os']
     password = module.params['password']
-    use_ssl = module.params['use_ssl']
 
     config_file = module.params['config_file']
     commit_changes = module.params['commit_changes']
@@ -128,19 +121,18 @@ def main():
 
     if commit_changes.__class__ is str:
         commit_changes = ast.literal_eval(commit_changes)
-    if use_ssl.__class__ is str:
-        use_ssl = ast.literal_eval(use_ssl)
 
-    if dev_os == 'EOS':
-        from drivers.eos import EOSDriver
-        device = EOSDriver(hostname, username, password, use_ssl)
+    if dev_os.upper() == 'EOS':
+        from napalm.eos import EOSDriver as NetworkDriver
+    elif dev_os.upper() == 'JUNOS':
+        from napalm.junos import JunOSDriver as NetworkDriver
     else:
         raise Exception('Network OS not supported: %s' % dev_os)
 
+    device = NetworkDriver(hostname, username, password)
     device.open()
-    device.load_candidate_config(filename=config_file)
+    device.load_replace_candidate(filename=config_file)
 
-    #content of the
     diff = device.compare_config()
     changed = len(diff) > 0
 
@@ -148,13 +140,14 @@ def main():
         save_to_file(diff, diff_file)
 
     if module.check_mode or not commit_changes:
-        module.exit_json(changed=False, msg=diff)
+        device.discard_config()
+        module.exit_json(changed=changed, msg=diff)
     else:
-        if len(diff) > 0:
-            device.replace_config()
+        if changed:
+            device.commit_config()
         module.exit_json(changed=changed, msg=diff)
 
-    logger.info('DEVICE=%s CHANGED=%s STATUS=%s' % (hostname, len(changed.splitlines())), 'OK')
+    logger.info('DEVICE=%s CHANGED=%s STATUS=%s' % (hostname, changed, 'OK'))
 
     device.close()
 
