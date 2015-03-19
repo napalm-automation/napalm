@@ -32,6 +32,15 @@ class JunOSDriver(NetworkDriver):
 
         self.device.cu.load(configuration, format='text', overwrite=True)
 
+    def load_merge_candidate(self, filename=None, config=None):
+        if filename is None:
+            configuration = config
+        else:
+            with open(filename) as f:
+                configuration = f.read()
+
+        self.device.cu.load(configuration, format='text')
+
     def compare_config(self):
         diff = self.device.cu.diff()
 
