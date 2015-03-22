@@ -1,5 +1,16 @@
-# TODO check common API
-# TODO install pyEOS
+# Copyright 2014 Spotify AB. All rights reserved.
+#
+# The contents of this file are licensed under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with the
+# License. You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
 
 
 class NetworkDriver:
@@ -75,42 +86,5 @@ class NetworkDriver:
     def rollback(self):
         """
         If changes have been made, revert changes to the original state.
-        """
-        raise NotImplementedError
-
-    def get_facts(self):
-        """
-        Retrieves facts from the device.
-        :return: (Facts) Facts from the device.
-        """
-        raise NotImplementedError
-
-    def get_bgp_neighbors(self):
-        """
-        Retrieves BGP neighbors information from the device.
-        :return: (list of BGPNeighbor) List of BGPNeighbor from the device.
-        """
-        raise NotImplementedError
-
-    def get_interface(self, name):
-        """
-        Retrieves information from the available interfaces on the device.
-        :param name: (string) Interface name of the interface you want to get.
-        :return: (list of Interface) List of Interface from the device.
-        """
-        raise NotImplementedError
-
-    def get_interfaces(self):
-        """
-        Retrieves information from the available interfaces on the device.
-        :return: (list of Interface) List of Interface from the device.
-        """
-
-        raise NotImplementedError
-
-    def get_lldp_neighbors(self):
-        """
-        Retrieves LLDP information from the device.
-        :return: (list of LLDPNeighbor) List of LLDPNeighbor.
         """
         raise NotImplementedError
