@@ -14,6 +14,7 @@
 
 
 class NetworkDriver:
+
     def __init__(self, hostname, username, password):
         """
         This is the base class you have to inherit from when writing your own Network Driver to manage any device. You
