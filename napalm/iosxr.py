@@ -55,4 +55,3 @@ class IOSXRDriver(NetworkDriver):
 
     def rollback(self):
         self.device.rollback()
-
