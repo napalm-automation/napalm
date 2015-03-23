@@ -32,22 +32,22 @@ class IOSXRDriver(NetworkDriver):
         self.device.close()
 
     def load_replace_candidate(self, filename=None, config=None):
-	self.replace = True
+        self.replace = True
         self.device.load_candidate_config(filename=filename, config=config)
 
     def load_merge_candidate(self, filename=None, config=None):
         self.device.load_candidate_config(filename=filename, config=config)
 
     def compare_config(self):
-	if self.replace:
+        if self.replace:
             return self.device.compare_replace_config()
-	else:
+        else:
             return self.device.compare_config()
 
     def commit_config(self):
-	if self.replace:
-	    self.device.commit_replace_config()
-	else:
+        if self.replace:
+            self.device.commit_replace_config()
+        else:
             self.device.commit_config()
 
     def discard_config(self):
