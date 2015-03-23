@@ -122,14 +122,9 @@ def main():
     if commit_changes.__class__ is str:
         commit_changes = ast.literal_eval(commit_changes)
 
-    if dev_os.upper() == 'EOS':
-        from napalm.eos import EOSDriver as NetworkDriver
-    elif dev_os.upper() == 'JUNOS':
-        from napalm.junos import JunOSDriver as NetworkDriver
-    else:
-        raise Exception('Network OS not supported: %s' % dev_os)
+    network_driver = get_network_driver(dev_os)
 
-    device = NetworkDriver(hostname, username, password)
+    device = network_driver(hostname, username, password)
     device.open()
     device.load_replace_candidate(filename=config_file)
 
@@ -152,5 +147,6 @@ def main():
     device.close()
 
 from ansible.module_utils.basic import *
+from napalm import get_network_driver
 
 main()
