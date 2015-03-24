@@ -1,4 +1,4 @@
-pyEOS==0.54
+pyEOS
 ncclient
 junos-eznc
 pyIOSXR>=0.5
