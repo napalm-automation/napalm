@@ -63,7 +63,7 @@ class EOSDriver(NetworkDriver):
         if self.config_replace:
             return self.device.compare_config()
         else:
-            return '%s' % self.candidate_configuration
+            return '\n'.join(self.candidate_configuration)
 
     def commit_config(self):
         if self.config_replace:
