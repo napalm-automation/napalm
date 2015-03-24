@@ -35,7 +35,6 @@ class EOSDriver(NetworkDriver):
 
     def load_replace_candidate(self, filename=None, config=None):
         self.config_replace = True
-
         self.device.load_candidate_config(filename=filename, config=config)
 
     def load_merge_candidate(self, filename=None, config=None):
@@ -71,6 +70,7 @@ class EOSDriver(NetworkDriver):
             self.device.replace_config()
         else:
             self.device.run_commands(self.candidate_configuration)
+            self.candidate_configuration = list()
 
     def discard_config(self):
         pass
