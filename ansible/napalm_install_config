@@ -57,6 +57,10 @@ options:
         description: If set to True the configuration will be actually replaced. If the set to False, we will not
                      apply the changes, just check the differences.
         required: true
+    replace_config:
+        description: If set to True the entire configuration on the device will be replaced during the commit. If
+                     set to False, we will merge the new config with the existing one. Default: False.
+        required: False
     diff_file:
         description: A file where to store the "diff" between the running configuration and the new configuration. If
                      it's not set the diff between configurations is not saved.
@@ -76,7 +80,8 @@ EXAMPLES = '''
         dev_os={{os}}
         password=p4ssw0rd
         config_file=../compiled/{{ inventory_hostname }}/running.conf
-        commit_changes={{commit_changes}}
+        commit_changes={{ commit_changes }}
+        replace_config={{ replace_config }}
         diff_file=../compiled/{{ inventory_hostname }}/diff
 
     From the CLI we would trigger the playbook like:
@@ -105,6 +110,7 @@ def main():
             config_file=dict(required=True),
             dev_os=dict(required=True),
             commit_changes=dict(required=True),
+            replace_config=dict(required=True),
             diff_file=dict(required=False, default=None),
         ),
         supports_check_mode=True
@@ -117,16 +123,23 @@ def main():
 
     config_file = module.params['config_file']
     commit_changes = module.params['commit_changes']
+    replace_config = module.params['replace_config']
     diff_file = module.params['diff_file']
 
     if commit_changes.__class__ is str:
         commit_changes = ast.literal_eval(commit_changes)
+    if replace_config.__class__ is str:
+        replace_config = ast.literal_eval(replace_config)
 
     network_driver = get_network_driver(dev_os)
 
     device = network_driver(hostname, username, password)
     device.open()
-    device.load_replace_candidate(filename=config_file)
+
+    if replace_config:
+        device.load_replace_candidate(filename=config_file)
+    else:
+        device.load_merge_candidate(filename=config_file)
 
     diff = device.compare_config()
     changed = len(diff) > 0
