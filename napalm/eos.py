@@ -72,6 +72,8 @@ class EOSDriver(NetworkDriver):
             self.device.run_commands(self.candidate_configuration)
             self.candidate_configuration = list()
 
+        self.device.run_commands(['write memory'])
+
     def discard_config(self):
         pass
 
