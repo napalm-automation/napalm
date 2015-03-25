@@ -97,3 +97,4 @@ class EOSDriver(NetworkDriver):
     def rollback(self):
         self.device.rollback()
         self.device.run_commands(['write memory'])
+        self.device.load_candidate_config(config=self.device.get_config(format='text'))
