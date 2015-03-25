@@ -25,7 +25,7 @@ class TestNetworkDriver:
         with open(filename, 'r') as f:
             return f.read()
 
-    def test_loading_and_committing_config(self):
+    def test_replacing_and_committing_config(self):
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
         self.device.commit_config()
 
@@ -38,11 +38,11 @@ class TestNetworkDriver:
 
         self.assertEqual(len(diff), 0)
 
-    def test_loading_config_with_typo(self):
+    def test_replacing_config_with_typo(self):
         self.device.load_replace_candidate(filename='%s/new_typo.conf' % self.vendor)
         self.assertRaises(exceptions.ReplaceConfigException, self.device.commit_config)
 
-    def test_loading_modified_config_and_diff_and_discard(self):
+    def test_replacing_config_and_diff_and_discard(self):
         intended_diff = self.read_file('%s/new_good.diff' % self.vendor)
 
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
@@ -53,7 +53,7 @@ class TestNetworkDriver:
         result = (commit_diff == intended_diff) and (discard_diff == '')
         self.assertTrue(result)
 
-    def test_loading_modified_config_replace_config_and_rollback(self):
+    def test_replacing_config_and_rollback(self):
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
         orig_diff = self.device.compare_config()
         self.device.commit_config()
