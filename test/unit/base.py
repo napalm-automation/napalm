@@ -39,8 +39,13 @@ class TestNetworkDriver:
         self.assertEqual(len(diff), 0)
 
     def test_replacing_config_with_typo(self):
-        self.device.load_replace_candidate(filename='%s/new_typo.conf' % self.vendor)
-        self.assertRaises(exceptions.ReplaceConfigException, self.device.commit_config)
+        result = False
+        try:
+            self.device.load_replace_candidate(filename='%s/new_typo.conf' % self.vendor)
+            self.device.commit_config()
+        except exceptions.ReplaceConfigException:
+            result = True
+        self.assertTrue(result)
 
     def test_replacing_config_and_diff_and_discard(self):
         intended_diff = self.read_file('%s/new_good.diff' % self.vendor)
@@ -57,9 +62,15 @@ class TestNetworkDriver:
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
         orig_diff = self.device.compare_config()
         self.device.commit_config()
+
+        # Now we rollback changes
         replace_config_diff = self.device.compare_config()
         self.device.rollback()
+
+        # We try to load again the config. If the rollback was successful new diff should be like the first one
+        self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
         last_diff = self.device.compare_config()
+        self.device.discard_config()
 
         result = (orig_diff == last_diff) and ( len(replace_config_diff) == 0 )
 
@@ -79,15 +90,14 @@ class TestNetworkDriver:
         self.assertEqual(diff, intended_diff)
 
     def test_merge_configuration_typo_and_rollback(self):
-        self.device.load_merge_candidate(filename='%s/merge_typo.conf' % self.vendor)
-        diff = self.device.compare_config()
-
+        result = False
         try:
+            self.device.load_merge_candidate(filename='%s/merge_typo.conf' % self.vendor)
+            diff = self.device.compare_config()
             self.device.commit_config()
-            result = False
         except exceptions.MergeConfigException:
             # We load the original config as candidate. If the commit failed cleanly the compare_config should be empty
             self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
-            result = (diff > 0) and ( self.device.compare_config() == '')
+            result = self.device.compare_config() == ''
 
         self.assertTrue(result)
