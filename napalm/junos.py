@@ -16,7 +16,8 @@ from base import NetworkDriver
 
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
-
+from jnpr.junos.exception import ConfigLoadError
+from exceptions import ReplaceConfigException, MergeConfigException
 
 class JunOSDriver(NetworkDriver):
 
@@ -25,6 +26,7 @@ class JunOSDriver(NetworkDriver):
         self.username = username
         self.password = password
         self.device = Device(hostname, user=username, password=password)
+        self.config_replace = False
 
     def open(self):
         self.device.open()
@@ -35,23 +37,28 @@ class JunOSDriver(NetworkDriver):
         self.device.cu.unlock()
         self.device.close()
 
-    def load_replace_candidate(self, filename=None, config=None):
+    def _load_candidate(self, filename, config, overwrite):
         if filename is None:
             configuration = config
         else:
             with open(filename) as f:
                 configuration = f.read()
 
-        self.device.cu.load(configuration, format='text', overwrite=True)
+        try:
+            self.device.cu.load(configuration, format='text', overwrite=overwrite)
+        except ConfigLoadError as e:
+            if self.config_replace:
+                raise ReplaceConfigException(e.message)
+            else:
+                raise MergeConfigException(e.message)
+
+    def load_replace_candidate(self, filename=None, config=None):
+        self.config_replace = True
+        self._load_candidate(filename, config, True)
 
     def load_merge_candidate(self, filename=None, config=None):
-        if filename is None:
-            configuration = config
-        else:
-            with open(filename) as f:
-                configuration = f.read()
-
-        self.device.cu.load(configuration, format='text')
+        self.config_replace = False
+        self._load_candidate(filename, config, False)
 
     def compare_config(self):
         diff = self.device.cu.diff()
