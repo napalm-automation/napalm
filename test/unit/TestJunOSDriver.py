@@ -14,18 +14,18 @@
 
 import unittest
 
-from napalm.eos import EOSDriver
+from napalm.junos import JunOSDriver
 from base import TestNetworkDriver
 
 
-class TestEOSDriver(unittest.TestCase, TestNetworkDriver):
+class TestJunOSDriver(unittest.TestCase, TestNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '192.168.76.10'
+        hostname = '192.168.76.11'
         username = 'dbarroso'
         password = 'this_is_not_a_secure_password'
-        cls.vendor = 'eos'
+        cls.vendor = 'junos'
 
-        cls.device = EOSDriver(hostname, username, password)
+        cls.device = JunOSDriver(hostname, username, password)
         cls.device.open()
