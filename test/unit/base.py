@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+from napalm import exceptions
 
 class TestNetworkDriver:
 
@@ -19,9 +20,16 @@ class TestNetworkDriver:
     def tearDownClass(cls):
         cls.device.close()
 
-    def test_loading_config(self):
+    @staticmethod
+    def read_file(filename):
+        with open(filename, 'r') as f:
+            return f.read()
+
+    def test_loading_and_committing_config(self):
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
         self.device.commit_config()
+
+        # The diff should be empty as the configuration has been committed already
         diff = self.device.compare_config()
 
         # Reverting changes
@@ -34,10 +42,16 @@ class TestNetworkDriver:
         self.device.load_replace_candidate(filename='%s/new_typo.conf' % self.vendor)
         self.assertRaises(Exception, self.device.commit_config)
 
-    def test_loading_modified_config_and_diff(self):
+    def test_loading_modified_config_and_diff_and_discard(self):
+        intended_diff = self.read_file('%s/new_good.diff' % self.vendor)
+
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
-        diff = self.device.compare_config()
-        self.assertGreater(len(diff), 0)
+        commit_diff = self.device.compare_config()
+        self.device.discard_config()
+        discard_diff = self.device.compare_config()
+
+        result = (commit_diff == intended_diff) and (discard_diff == '')
+        self.assertTrue(result)
 
     def test_loading_modified_config_replace_config_and_rollback(self):
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
@@ -48,5 +62,32 @@ class TestNetworkDriver:
         last_diff = self.device.compare_config()
 
         result = (orig_diff == last_diff) and ( len(replace_config_diff) == 0 )
+
+        self.assertTrue(result)
+
+    def test_merge_configuration(self):
+        intended_diff = self.read_file('%s/merge_good.diff' % self.vendor)
+
+        self.device.load_merge_candidate(filename='%s/merge_good.conf' % self.vendor)
+        self.device.commit_config()
+
+        # Reverting changes
+        self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
+        diff = self.device.compare_config()
+        self.device.commit_config()
+
+        self.assertEqual(diff, intended_diff)
+
+    def test_merge_configuration_typo_and_rollback(self):
+        self.device.load_merge_candidate(filename='%s/merge_typo.conf' % self.vendor)
+        diff = self.device.compare_config()
+
+        try:
+            self.device.commit_config()
+            result = False
+        except exceptions.MergeConfigException:
+            # We load the original config as candidate. If the commit failed cleanly the compare_config should be empty
+            self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
+            result = (diff > 0) and ( self.device.compare_config() == '')
 
         self.assertTrue(result)
