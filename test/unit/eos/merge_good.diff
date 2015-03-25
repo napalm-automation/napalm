@@ -1,0 +1,5 @@
++ hostname pyeos-unittest
+- hostname NEWHOSTNAME
+interface Ethernet2
++ description bla
+- description BLALALAL

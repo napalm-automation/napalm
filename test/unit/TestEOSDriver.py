@@ -17,7 +17,6 @@ import unittest
 from napalm.eos import EOSDriver
 from base import TestNetworkDriver
 
-skip=False
 
 class TestEOSDriver(unittest.TestCase, TestNetworkDriver):
 
@@ -26,7 +25,7 @@ class TestEOSDriver(unittest.TestCase, TestNetworkDriver):
         hostname = '192.168.76.10'
         username = 'dbarroso'
         password = 'this_is_not_a_secure_password'
+        cls.vendor = 'eos'
 
         cls.device = EOSDriver(hostname, username, password)
         cls.device.open()
-        cls.vendor = 'eos'
