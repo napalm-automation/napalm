@@ -40,7 +40,7 @@ class TestNetworkDriver:
 
     def test_loading_config_with_typo(self):
         self.device.load_replace_candidate(filename='%s/new_typo.conf' % self.vendor)
-        self.assertRaises(Exception, self.device.commit_config)
+        self.assertRaises(exceptions.ReplaceConfigException, self.device.commit_config)
 
     def test_loading_modified_config_and_diff_and_discard(self):
         intended_diff = self.read_file('%s/new_good.diff' % self.vendor)
