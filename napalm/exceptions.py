@@ -1,0 +1,2 @@
+class MergeConfigException(Exception):
+    pass
