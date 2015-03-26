@@ -1,4 +1,4 @@
-# Copyright 2014 Spotify AB. All rights reserved.
+# Copyright 2015 Spotify AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with the
@@ -49,11 +49,12 @@ class EOSDriver(NetworkDriver):
             with open(filename) as f:
                 self.candidate_configuration = f.read()
 
+        print self.candidate_configuration
         self.candidate_configuration = self.candidate_configuration.split('\n')
         if 'configure' is not self.candidate_configuration[0]:
            self.candidate_configuration.insert(0, 'configure')
         if 'end' is not self.candidate_configuration[-1]:
-           self.candidate_configuration.insert(-1, 'end')
+           self.candidate_configuration.append('end')
 
         # If you send empty commands the whole thing breaks so we have to remove them
         i = 0
