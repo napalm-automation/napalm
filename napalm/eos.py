@@ -49,7 +49,6 @@ class EOSDriver(NetworkDriver):
             with open(filename) as f:
                 self.candidate_configuration = f.read()
 
-        print self.candidate_configuration
         self.candidate_configuration = self.candidate_configuration.split('\n')
         if 'configure' is not self.candidate_configuration[0]:
            self.candidate_configuration.insert(0, 'configure')
