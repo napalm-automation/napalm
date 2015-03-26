@@ -14,18 +14,18 @@
 
 import unittest
 
-from napalm.eos import EOSDriver
+from napalm.iosxr import IOSXRDriver
 from base import TestNetworkDriver
 
 
-class TestEOSDriver(unittest.TestCase, TestNetworkDriver):
+class TestIOSXRDriver(unittest.TestCase, TestNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '192.168.76.10'
+        hostname = '192.168.76.12'
         username = 'dbarroso'
         password = 'this_is_not_a_secure_password'
-        cls.vendor = 'eos'
+        cls.vendor = 'iosxr'
 
-        cls.device = EOSDriver(hostname, username, password)
+        cls.device = IOSXRDriver(hostname, username, password)
         cls.device.open()

@@ -1,4 +1,4 @@
-# Copyright 2014 Spotify AB. All rights reserved.
+# Copyright 2015 Spotify AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with the
@@ -12,9 +12,20 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-hostname = '10.48.71.3'
-username = 'admin'
-password = 'sp0tify'
-use_ssl = True
-config_file_1 = 'config01.txt'
-config_file_2 = 'config02.txt'
+import unittest
+
+from napalm.junos import JunOSDriver
+from base import TestNetworkDriver
+
+
+class TestJunOSDriver(unittest.TestCase, TestNetworkDriver):
+
+    @classmethod
+    def setUpClass(cls):
+        hostname = '192.168.76.11'
+        username = 'dbarroso'
+        password = 'this_is_not_a_secure_password'
+        cls.vendor = 'junos'
+
+        cls.device = JunOSDriver(hostname, username, password)
+        cls.device.open()

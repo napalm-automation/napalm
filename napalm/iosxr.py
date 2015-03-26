@@ -14,6 +14,10 @@
 
 from pyIOSXR import IOSXR
 
+from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
+
+from exceptions import MergeConfigException, ReplaceConfigException
+
 from base import NetworkDriver
 
 
@@ -24,6 +28,7 @@ class IOSXRDriver(NetworkDriver):
         self.username = username
         self.password = password
         self.device = IOSXR(hostname, username, password)
+        self.pending_changes = False
 
     def open(self):
         self.device.open()
@@ -32,14 +37,31 @@ class IOSXRDriver(NetworkDriver):
         self.device.close()
 
     def load_replace_candidate(self, filename=None, config=None):
+        self.pending_changes = True
         self.replace = True
-        self.device.load_candidate_config(filename=filename, config=config)
+
+        try:
+            self.device.load_candidate_config(filename=filename, config=config)
+        except InvalidInputError as e:
+            self.pending_changes = False
+            self.replace = False
+            raise ReplaceConfigException(e.message)
 
     def load_merge_candidate(self, filename=None, config=None):
-        self.device.load_candidate_config(filename=filename, config=config)
+        self.pending_changes = True
+        self.replace = False
+
+        try:
+            self.device.load_candidate_config(filename=filename, config=config)
+        except InvalidInputError as e:
+            self.pending_changes = False
+            self.replace = False
+            raise MergeConfigException(e.message)
 
     def compare_config(self):
-        if self.replace:
+        if not self.pending_changes:
+            return ''
+        elif self.replace:
             return self.device.compare_replace_config()
         else:
             return self.device.compare_config()
@@ -49,9 +71,11 @@ class IOSXRDriver(NetworkDriver):
             self.device.commit_replace_config()
         else:
             self.device.commit_config()
+        self.pending_changes = False
 
     def discard_config(self):
         self.device.discard_config()
+        self.pending_changes = False
 
     def rollback(self):
         self.device.rollback()

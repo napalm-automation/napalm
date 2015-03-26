@@ -13,8 +13,11 @@
 # the License.
 
 from pyEOS import EOS
+from pyEOS.exceptions import CommandError, ConfigReplaceError
 
 from base import NetworkDriver
+
+from exceptions import MergeConfigException, ReplaceConfigException
 
 
 class EOSDriver(NetworkDriver):
@@ -65,17 +68,33 @@ class EOSDriver(NetworkDriver):
         else:
             return '\n'.join(self.candidate_configuration)
 
+    def _commit_replace(self):
+        try:
+            self.device.replace_config()
+        except ConfigReplaceError as e:
+            raise ReplaceConfigException(e.message)
+
+    def _commit_merge(self):
+        # We load the original config so we can rollback if something goes bad
+        self.device.original_config = self.device.get_config(format='text')
+        try:
+            self.device.run_commands(self.candidate_configuration)
+        except CommandError as e:
+            self.rollback()
+            raise MergeConfigException(e.message)
+
     def commit_config(self):
         if self.config_replace:
-            self.device.replace_config()
+            self._commit_replace()
         else:
-            self.device.run_commands(self.candidate_configuration)
-            self.candidate_configuration = list()
+            self._commit_merge()
 
         self.device.run_commands(['write memory'])
 
     def discard_config(self):
-        pass
+        self.device.load_candidate_config(config=self.device.get_config(format='text'))
 
     def rollback(self):
         self.device.rollback()
+        self.device.run_commands(['write memory'])
+        self.device.load_candidate_config(config=self.device.get_config(format='text'))
