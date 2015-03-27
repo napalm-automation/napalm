@@ -19,7 +19,8 @@ from base import NetworkDriver
 
 from exceptions import MergeConfigException, ReplaceConfigException
 
-import datetime
+from datetime import datetime
+#import time
 
 
 class EOSDriver(NetworkDriver):
@@ -61,7 +62,7 @@ class EOSDriver(NetworkDriver):
             test_config.insert(0, 'configure session test')
             test_config.append('abort')
         else:
-            self.config_session = 'napalm_commit_%s' % datetime.datetime.now().strftime('%Y%m%d-%H%m%s')
+            self.config_session = 'napalm_commit_%s' % datetime.now().strftime('%Y%m%d-%H%m%s')
             test_config.insert(0, 'configure session %s' % self.config_session)
             test_config.append('end')
 
@@ -119,3 +120,20 @@ class EOSDriver(NetworkDriver):
         self.device.run_commands(['configure replace flash:rollback-0'])
         self.device.run_commands(['write memory'])
         self.device.load_candidate_config(config=self.device.get_config(format='text'))
+
+    '''
+    def get_facts(self):
+        output = self.device.show_version()
+        uptime = time.time() - output['bootupTimestamp']
+
+        interfaces = self.device.show_interfaces_status()['interfaceStatuses'].keys()
+
+        return {
+            'vendor': u'Arista',
+            'model': output['modelName'],
+            'serial_number': output['serialNumber'],
+            'os_version': output['internalVersion'],
+            'uptime': uptime,
+            'interface_list': interfaces
+        }
+    '''
