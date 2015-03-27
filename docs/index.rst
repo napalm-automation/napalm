@@ -28,10 +28,6 @@ You can get the driver you need by doing the following::
 
 Check the tutorials to see how to use the library and the driver section to check which methods are available and some notes regarding each driver.
 
-Notes on Network Operating Systems
-==================================
-
-
 Tutorials
 =========
 
