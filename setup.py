@@ -21,7 +21,7 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Operating System :: MacOS',
     ],
-    url="https://ghe.spotify.net/XNET/napalm",
+    url="https://github.com/spotify/napalm",
     include_package_data=True,
     install_requires = reqs,
     entry_points='''
