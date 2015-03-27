@@ -101,3 +101,21 @@ class TestNetworkDriver:
             result = self.device.compare_config() == ''
 
         self.assertTrue(result)
+
+    '''
+    def test_get_facts(self):
+        intended_facts = {
+            'vendor': unicode,
+            'model': unicode,
+            'os_version': unicode,
+            'serial_number': unicode,
+            'uptime': float,
+            'interface_list': list
+        }
+        facts_dictionary = dict()
+
+        for fact, value in self.device.get_facts().iteritems():
+            facts_dictionary[fact] = value.__class__
+
+        self.assertEqual(facts_dictionary, intended_facts)
+    '''
