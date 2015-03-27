@@ -93,3 +93,17 @@ class NetworkDriver:
         If changes were made, revert changes to the original state.
         """
         raise NotImplementedError
+
+    '''
+    def get_facts(self):
+        """
+        Returns a dictionary containing the following information:
+         * uptime - Uptime of the device in seconds.
+         * vendor - Manufacturer of the device.
+         * model - Device model.
+         * os_version - String with the OS version running on the device.
+         * serial_number - Serial number of the device
+         * interface_list - List of the interfaces of the device
+        """
+        raise NotImplementedError
+    '''

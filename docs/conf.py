@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# pyEOS documentation build configuration file, created by
+# napalm documentation build configuration file, created by
 # sphinx-quickstart on Tue Dec 16 13:17:14 2014.
 #
 # This file is execfile()d with the current directory set to its
@@ -47,8 +47,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'pyEOS'
-copyright = u'2014, David Barroso'
+project = u'NAPALM'
+copyright = u'2015, David Barroso'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -187,7 +187,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'pyEOSdoc'
+htmlhelp_basename = 'napalmdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -207,7 +207,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'pyEOS.tex', u'pyEOS Documentation',
+  ('index', 'napalm.tex', u'NAPALM Documentation',
    u'David Barroso', 'manual'),
 ]
 
@@ -237,7 +237,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'pyeos', u'pyEOS Documentation',
+    ('index', 'napalm', u'NAPALM Documentation',
      [u'David Barroso'], 1)
 ]
 
@@ -251,8 +251,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'pyEOS', u'pyEOS Documentation',
-   u'David Barroso', 'pyEOS', 'One line description of project.',
+  ('index', 'napalm', u'NAPALM Documentation',
+   u'David Barroso', 'napalm', 'One line description of project.',
    'Miscellaneous'),
 ]
 

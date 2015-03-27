@@ -85,17 +85,17 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/pyEOS.qhcp"
+	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/napalm.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/pyEOS.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/napalm.qhc"
 
 devhelp:
 	$(SPHINXBUILD) -b devhelp $(ALLSPHINXOPTS) $(BUILDDIR)/devhelp
 	@echo
 	@echo "Build finished."
 	@echo "To view the help file:"
-	@echo "# mkdir -p $$HOME/.local/share/devhelp/pyEOS"
-	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/pyEOS"
+	@echo "# mkdir -p $$HOME/.local/share/devhelp/napalm"
+	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/napalm"
 	@echo "# devhelp"
 
 epub:

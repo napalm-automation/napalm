@@ -1,7 +1,7 @@
-EOS
----
+NetworkDriver
+-------------
 
-.. autoclass:: pyEOS.eos.EOS
+.. autoclass:: napalm.base.NetworkDriver
     :members:
     :undoc-members:
     :show-inheritance:
