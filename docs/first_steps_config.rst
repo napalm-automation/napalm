@@ -1,7 +1,7 @@
 First Steps Manipulating Config
 ===============================
 
-NAPALM does not try to hide any configuration details. It only tries to provide a common interface and mechanisms to push configuration to the device so you can build your way around it. This method is very useful in combination with tools like `Ansible<http://www.ansible.com>`_.
+NAPALM does not try to hide any configuration details. It only tries to provide a common interface and mechanisms to push configuration to the device so you can build your way around it. This method is very useful in combination with tools like `Ansible <http://www.ansible.com>`_.
 
 Connecting to the device
 ------------------------
