@@ -24,3 +24,8 @@ To install, execute:
 ``
    pip install napalm
 ``
+
+Ansible
+=======
+
+There is an ansible module provided by this API. Make sure you read the documentation and you understand how it works before trying to use it.
