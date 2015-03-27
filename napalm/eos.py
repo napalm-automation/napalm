@@ -19,6 +19,8 @@ from base import NetworkDriver
 
 from exceptions import MergeConfigException, ReplaceConfigException
 
+import datetime
+
 
 class EOSDriver(NetworkDriver):
 
@@ -29,6 +31,7 @@ class EOSDriver(NetworkDriver):
         self.device = EOS(hostname, username, password, use_ssl=True)
         self.config_replace = False
         self.candidate_configuration = list()
+        self.config_session = None
 
     def open(self):
         self.device.open()
@@ -36,13 +39,7 @@ class EOSDriver(NetworkDriver):
     def close(self):
         self.device.close()
 
-    def load_replace_candidate(self, filename=None, config=None):
-        self.config_replace = True
-        self.device.load_candidate_config(filename=filename, config=config)
-
-    def load_merge_candidate(self, filename=None, config=None):
-        self.config_replace = False
-
+    def _load_and_test_config(self, filename, config, overwrite):
         if filename is None:
             self.candidate_configuration = config
         else:
@@ -50,51 +47,75 @@ class EOSDriver(NetworkDriver):
                 self.candidate_configuration = f.read()
 
         self.candidate_configuration = self.candidate_configuration.split('\n')
-        if 'configure' is not self.candidate_configuration[0]:
-           self.candidate_configuration.insert(0, 'configure')
-        if 'end' is not self.candidate_configuration[-1]:
-           self.candidate_configuration.append('end')
 
         # If you send empty commands the whole thing breaks so we have to remove them
-        i = 0
-        for line in self.candidate_configuration:
-            if line == '':
-                self.candidate_configuration.pop(i)
-            i += 1
+        while '' in self.candidate_configuration:
+            self.candidate_configuration.remove('')
+
+        test_config = list(self.candidate_configuration)
+
+        if 'end' in test_config:
+            test_config.remove('end')
+
+        if overwrite:
+            test_config.insert(0, 'configure session test')
+            test_config.append('abort')
+        else:
+            self.config_session = 'napalm_commit_%s' % datetime.datetime.now().strftime('%Y%m%d-%H%m%s')
+            test_config.insert(0, 'configure session %s' % self.config_session)
+            test_config.append('end')
+
+        output = self.device.run_commands(test_config)
+
+    def load_replace_candidate(self, filename=None, config=None):
+        try:
+            self._load_and_test_config(filename=filename, config=config, overwrite=True)
+            self.config_replace = True
+            self.device.load_candidate_config(filename=filename, config=config)
+        except CommandError as e:
+            raise ReplaceConfigException(e.message)
+
+    def load_merge_candidate(self, filename=None, config=None):
+        try:
+            self._load_and_test_config(filename=filename, config=config, overwrite=False)
+            self.config_replace = False
+        except CommandError as e:
+            self.discard_config()
+            raise MergeConfigException(e.message)
 
     def compare_config(self):
         if self.config_replace:
             return self.device.compare_config()
         else:
-            return '\n'.join(self.candidate_configuration)
+            commands = ['show session-config named %s diffs' % self.config_session]
+            return self.device.run_commands(commands, format='text')[1]['output']
 
     def _commit_replace(self):
-        try:
-            self.device.replace_config()
-        except ConfigReplaceError as e:
-            raise ReplaceConfigException(e.message)
+        self.device.replace_config()
 
     def _commit_merge(self):
-        # We load the original config so we can rollback if something goes bad
-        self.device.original_config = self.device.get_config(format='text')
-        try:
-            self.device.run_commands(self.candidate_configuration)
-        except CommandError as e:
-            self.rollback()
-            raise MergeConfigException(e.message)
+        self.candidate_configuration.insert(0, 'copy startup-config flash:rollback-0')
+        self.candidate_configuration.insert(0, 'configure session %s' % self.config_session)
+        if 'end' in self.candidate_configuration:
+            self.candidate_configuration.remove('end')
+        self.candidate_configuration.append('commit')
+        self.device.run_commands(self.candidate_configuration)
 
     def commit_config(self):
         if self.config_replace:
             self._commit_replace()
         else:
             self._commit_merge()
-
         self.device.run_commands(['write memory'])
 
     def discard_config(self):
+        if self.config_session is not None:
+            commands = ['configure session %s' % self.config_session, 'abort']
+            self.device.run_commands(commands)
+            self.config_session = None
         self.device.load_candidate_config(config=self.device.get_config(format='text'))
 
     def rollback(self):
-        self.device.rollback()
+        self.device.run_commands(['configure replace flash:rollback-0'])
         self.device.run_commands(['write memory'])
         self.device.load_candidate_config(config=self.device.get_config(format='text'))
