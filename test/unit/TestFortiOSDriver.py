@@ -12,23 +12,20 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from eos import EOSDriver
-from iosxr import IOSXRDriver
-from junos import JunOSDriver
-from fortios import FortiOSDriver
+import unittest
 
-def get_network_driver(vendor):
-    driver_mapping = {
-        'EOS': EOSDriver,
-        'ARISTA': EOSDriver,
-        'IOS-XR': IOSXRDriver,
-        'IOSXR': IOSXRDriver,
-        'JUNOS': JunOSDriver,
-        'JUNIPER': JunOSDriver,
-        'fortios': FortiOSDriver,
-    }
-    try:
-        return driver_mapping[vendor.upper()]
-    except KeyError:
-        raise Exception('Vendor/OS not supported: %s' % vendor)
+from napalm.fortios import FortiOSDriver
+from base import TestNetworkDriver
 
+
+class TestFortiOSDriver(unittest.TestCase, TestNetworkDriver):
+
+    @classmethod
+    def setUpClass(cls):
+        hostname = '192.168.76.13'
+        username = 'dbarroso'
+        password = 'this_is_not_a_secure_password'
+        cls.vendor = 'fortios'
+
+        cls.device = FortiOSDriver(hostname, username, password)
+        cls.device.open()
