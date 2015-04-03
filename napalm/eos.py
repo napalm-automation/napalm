@@ -50,10 +50,13 @@ class EOSDriver(NetworkDriver):
         self.candidate_configuration = self.candidate_configuration.split('\n')
 
         # If you send empty commands the whole thing breaks so we have to remove them
-        while '' in self.candidate_configuration:
-            self.candidate_configuration.remove('')
+        clean_candidate = list()
+        for line in self.candidate_configuration:
+            if not line.strip() == '':
+                clean_candidate.append(line)
 
-        test_config = list(self.candidate_configuration)
+        self.candidate_configuration = list(clean_candidate)
+        test_config = list(clean_candidate)
 
         if 'end' in test_config:
             test_config.remove('end')
@@ -69,12 +72,8 @@ class EOSDriver(NetworkDriver):
         output = self.device.run_commands(test_config)
 
     def load_replace_candidate(self, filename=None, config=None):
-        try:
-            self._load_and_test_config(filename=filename, config=config, overwrite=True)
-            self.config_replace = True
-            self.device.load_candidate_config(filename=filename, config=config)
-        except CommandError as e:
-            raise ReplaceConfigException(e.message)
+        self.config_replace = True
+        self.device.load_candidate_config(filename=filename, config=config)
 
     def load_merge_candidate(self, filename=None, config=None):
         try:
@@ -92,7 +91,10 @@ class EOSDriver(NetworkDriver):
             return self.device.run_commands(commands, format='text')[1]['output']
 
     def _commit_replace(self):
-        self.device.replace_config()
+        try:
+            self.device.replace_config()
+        except ConfigReplaceError as e:
+            raise ReplaceConfigException(e.message)
 
     def _commit_merge(self):
         self.candidate_configuration.insert(0, 'copy startup-config flash:rollback-0')
