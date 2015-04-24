@@ -18,6 +18,8 @@ class TestNetworkDriver:
 
     @classmethod
     def tearDownClass(cls):
+        cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
+        cls.device.commit_config()
         cls.device.close()
 
     @staticmethod
@@ -44,7 +46,9 @@ class TestNetworkDriver:
             self.device.load_replace_candidate(filename='%s/new_typo.conf' % self.vendor)
             self.device.commit_config()
         except exceptions.ReplaceConfigException:
-            result = True
+            self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
+            diff = self.device.compare_config()
+            result = True and len(diff) == 0
         self.assertTrue(result)
 
     def test_replacing_config_and_diff_and_discard(self):
