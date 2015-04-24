@@ -43,4 +43,12 @@ Drivers
    :maxdepth: 2
 
    base
+
+Caveats
+=======
+
+.. toctree::
+   :maxdepth: 2
+
    eos
+   fortios
