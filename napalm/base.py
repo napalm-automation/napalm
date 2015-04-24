@@ -94,7 +94,6 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
-    '''
     def get_facts(self):
         """
         Returns a dictionary containing the following information:
@@ -104,6 +103,101 @@ class NetworkDriver:
          * os_version - String with the OS version running on the device.
          * serial_number - Serial number of the device
          * interface_list - List of the interfaces of the device
+
+        For example:
+
+        {
+        'uptime': 151005.57332897186,
+        'vendor': u'Arista',
+        'os_version': u'4.14.3-2329074.gaatlantarel',
+        'serial_number': u'SN0123A34AS',
+        'model': u'vEOS',
+        'interface_list': [u'Ethernet2', u'Management1', u'Ethernet1', u'Ethernet3']
+        }
+
+        """
+
+
+        raise NotImplementedError
+
+    def get_interfaces(self):
+        """
+        Returns a dictionary of dictionaries. The keys for the first dictionary will be the interfaces in the devices.\
+        The inner dictionary will containing the following data for each interface:
+         * status (up/down/disabled)
+         * last_flapped (in seconds)
+         * tx_packets
+         * rx_packets
+         * tx_errors
+         * rx_errors
+         * tx_discards
+         * rx_discards
+
+        For example:
+
+        {
+            u'Management1':
+            {
+                'status': u'up',
+                'rx_packets': 0,
+                'tx_discards': 0,
+                'tx_errors': 0,
+                'last_flapped': -1,
+                'rx_errors': 0,
+                'rx_discards': 0,
+                'tx_packets': 0
+            },
+            u'Ethernet1':
+            {
+                'status': u'up',
+                'rx_packets': 1224,
+                'tx_discards': 0,
+                'tx_errors': 0,
+                'last_flapped': 1429734681.6860142,
+                'rx_errors': 0,
+                'rx_discards': 0,
+                'tx_packets': 7371
+            },
+            u'Ethernet2':
+            {
+                'status': u'up',
+                'rx_packets': 1189,
+                'tx_discards': 0,
+                'tx_errors': 0,
+                'last_flapped': 1429734681.686348,
+                'rx_errors': 0,
+                'rx_discards': 0,
+                'tx_packets': 7390
+            },
+            u'Ethernet3':
+            {
+                'status': u'down',
+                'rx_packets': 1185,
+                'tx_discards': 0,
+                'tx_errors': 0,
+                'last_flapped': 1429734681.686616,
+                'rx_errors': 0,
+                'rx_discards': 0,
+                'tx_packets': 7386
+            }
+        }
+
+
         """
         raise NotImplementedError
-    '''
+
+    def get_bgp_neighbors(self):
+        """
+        Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).\
+        The inner dictionary will containg the following data for each vrf:
+         * local_as
+         * neighbor - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
+           * remote_as
+           * status (up/down)
+           * uptime
+           * pfxRcvd
+           * pfcAcc
+
+
+        """
+        raise NotImplementedError
