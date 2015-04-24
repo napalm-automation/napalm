@@ -1,6 +1,9 @@
 EOS
 ----
 
+Rollback
+~~~~~~~~
+
 The rollback feature is supported only when committing from the API. In reality, what the API does during the commit operation is as follows::
 
     copy startup-config flash:rollback-0
