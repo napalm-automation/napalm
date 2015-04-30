@@ -100,6 +100,8 @@ class NetworkDriver:
          * uptime - Uptime of the device in seconds.
          * vendor - Manufacturer of the device.
          * model - Device model.
+         * hostname - Hostname of the device
+         * fqdn - Fqdn of the device
          * os_version - String with the OS version running on the device.
          * serial_number - Serial number of the device
          * interface_list - List of the interfaces of the device
@@ -112,6 +114,8 @@ class NetworkDriver:
         'os_version': u'4.14.3-2329074.gaatlantarel',
         'serial_number': u'SN0123A34AS',
         'model': u'vEOS',
+        'hostname': u'eos-router',
+        'fqdn': u'eos-router',
         'interface_list': [u'Ethernet2', u'Management1', u'Ethernet1', u'Ethernet3']
         }
 
