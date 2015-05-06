@@ -87,7 +87,9 @@ class JunOSDriver(NetworkDriver):
         if 'RE0' in output:
           uptime = output['RE0']['up_time']
 
-        interface_list = None
+        interfaces = junos_views.junos_iface_table(self.device)
+        interfaces.get()
+        interface_list = interfaces.keys()
 
         return {
             'vendor': u'Juniper',
@@ -102,30 +104,30 @@ class JunOSDriver(NetworkDriver):
 
     def get_interfaces(self):
 
-      interfaces = junos_views.junos_iface_table(self.device)
-      interfaces.get()
+        interfaces = junos_views.junos_iface_table(self.device)
+        interfaces.get()
 
-      # convert all the tuples to our dict structure
-      # i don't know how to do this any better...
-      result = {}
-      [result.update({iface:dict(interfaces[iface])}) for iface in interfaces.keys()]
+        # convert all the tuples to our dict structure
+        # i don't know how to do this any better...
+        result = {}
+        [result.update({iface:dict(interfaces[iface])}) for iface in interfaces.keys()]
 
-      return result
+        return result
 
     def get_bgp_neighbors(self):
 
-      bgp = junos_views.junos_bgp_table(self.device)
-      bgp.get()
+        bgp = junos_views.junos_bgp_table(self.device)
+        bgp.get()
 
-      result = bgp.items()
+        result = bgp.items()
 
-      return result
+        return result
 
     def get_lldp_neighbors(self):
 
-      lldp = junos_views.junos_lldp_table(self.device)
-      lldp.get()
+        lldp = junos_views.junos_lldp_table(self.device)
+        lldp.get()
 
-      result = lldp.items()
+        result = lldp.items()
 
-      return result
+        return result
