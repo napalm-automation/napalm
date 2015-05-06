@@ -242,7 +242,6 @@ class NetworkDriver:
                         {
                         'is_up': False,
                         'is_enabled': True,
-                        'status': 'down',
                         'uptime': -1,
                         'description': u'',
                         'received_prefixes': 0,
