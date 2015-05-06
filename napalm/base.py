@@ -128,159 +128,46 @@ class NetworkDriver:
         """
         Returns a dictionary of dictionaries. The keys for the first dictionary will be the interfaces in the devices.\
         The inner dictionary will containing the following data for each interface:
-         * status (up/down/disabled)
+         * oper_status (up/down)
+         * admin_status (enabled/disabled)
+         * description (string)
          * last_flapped (in seconds)
-         * tx_packets
-         * rx_packets
-         * tx_errors
-         * rx_errors
-         * tx_discards
-         * rx_discards
-         * ip_address_v4 - A list containing all IP Addresses in the device
+         * mode (bridged/routed)
+         * speed (in Mbit)
+         * macaddress (string)
 
         For example:
 
         {
         u'Management1':
             {
-            'status': 'down',
+            'oper_status': 'down',
+            'admin_staus': 'disabled',
             'description': u'',
             'last_flapped': -1,
             'mode': u'routed',
-            'ip_address_v4': ['192.168.76.10/24'],
-            'counters':
-                {
-                'rx_packets': 0,
-                'tx_discards': 0,
-                'tx_errors': 0,
-                'rx_errors': 0,
-                'rx_discards': 0,
-                'tx_packets': 0
-                }
+            'speed': 1000,
+            'macaddress': u'dead:beef:dead',
             },
         u'Ethernet1':
             {
-            'status': 'up',
-            'description': u'',
+            'oper_status': 'up',
+            'admin_staus': 'enabled',
+            'description': u'foo',
             'last_flapped': 1429978575.1554043,
             'mode': u'routed',
-            'ip_address_v4': ['10.0.0.10/24'],
-            'counters':
-                {
-                'rx_packets': 662,
-                'tx_discards': 0,
-                'tx_errors': 0,
-                'rx_errors': 0,
-                'rx_discards': 0,
-                'tx_packets': 203
-                }
+            'speed': 1000,
+            'macaddress': u'beef:dead:beef',
             },
         u'Ethernet2':
             {
-            'status': 'up',
+            'oper_status': 'up',
+            'admin_staus': 'enabled',
             'description': u'bla',
             'last_flapped': 1429978575.1555667,
-            'mode': u'routed',
-            'ip_address_v4': ['10.0.1.10/24'],
-            'counters':
-                {
-                'rx_packets': 314,
-                'tx_discards': 0,
-                'tx_errors': 0,
-                'rx_errors': 0,
-                'rx_discards': 0,
-                'tx_packets': 206
-                }
-            },
-        u'Ethernet3':
-            {
-            'status': 'up',
-            'native_vlan': 1,
-            'description': u'',
-            'switchport_mode': 'trunk',
-            'last_flapped': 1429978575.1557019,
-            'trunk_vlans': [2, 3, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 100, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200],
             'mode': u'bridged',
-            'counters':
-                {
-                'rx_packets': 130,
-                'tx_discards': 0,
-                'tx_errors': 0,
-                'rx_errors': 0,
-                'rx_discards': 0,
-                'tx_packets': 636
-                }
-            },
-        u'Ethernet4':
-            {
-            'status': 'up',
-            'access_vlan': 21,
-            'description': u'',
-            'switchport_mode': 'access',
-            'last_flapped': 1429978575.1558447,
-            'mode': u'bridged',
-            'counters':
-                {
-                'rx_packets': 74,
-                'tx_discards': 0,
-                'tx_errors': 0,
-                'rx_errors': 0,
-                'rx_discards': 0,
-                'tx_packets': 535
-                }
-            },
-        u'Loopback0':
-            {
-            'status': 'up',
-            'description': u'',
-            'last_flapped': 1429978563.382182,
-            'mode': u'routed',
-            'ip_address_v4': ['192.168.0.1/24'],
-            'counters':
-                {
-                'rx_packets': -1,
-                'tx_discards': -1,
-                'tx_errors': -1,
-                'rx_errors': -1,
-                'rx_discards': -1,
-                'tx_packets': -1
-                }
-            },
-        u'Vlan1':
-            {
-            'status': 'up',
-            'description': u'',
-            'last_flapped': 1429978571.7956057,
-            'mode': u'routed',
-            'ip_address_v4': [],
-            'counters':
-                {
-                'rx_packets': -1,
-                'tx_discards': -1,
-                'tx_errors': -1,
-                'rx_errors': -1,
-                'rx_discards': -1,
-                'tx_packets': -1
-                }
-            },
-        u'Vlan2':
-            {
-            'status': 'up',
-            'description': u'',
-            'last_flapped': 1429978571.7954528,
-            'mode': u'routed',
-            'ip_address_v4': ['192.168.255.1/25',
-            '192.168.255.193/26',
-            '192.168.255.129/26'],
-            'counters':
-                {
-                'rx_packets': -1,
-                'tx_discards': -1,
-                'tx_errors': -1,
-                'rx_errors': -1,
-                'rx_discards': -1,
-                'tx_packets': -1
-                }
+            'speed': 1000,
+            'macaddress': u'beef:beef:beef',
             }
         }
         """
