@@ -274,7 +274,7 @@ class EOSDriver(NetworkDriver):
                 bgp_neighbors[vrf]['peers'][n]['sent_prefixes'] = int(sent)
                 bgp_neighbors[vrf]['peers'][n]['accepted_prefixes'] = n_data['prefixAccepted']
 
-                bgp_neighbors[vrf]['peers'][n]['description'] = n_data_full.pop('Description', '').strip()
+                bgp_neighbors[vrf]['peers'][n]['description'] = n_data_full.pop('Description', '')
 
         return bgp_neighbors
 
