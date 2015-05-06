@@ -2,7 +2,7 @@ NAPALM
 ======
 NAPALM (Network Automation and Programmability Abstraction Layer with Multivendor support) is python library that implements a set of functions to interact with different vendors using a unified API.
 
-![NAPALM logo](/static/logo.png?raw=true "NAPALM logo")
+![NAPALM logo](static/logo.png?raw=true "NAPALM logo")
 
 NAPALM supports several methods to connect to the devices, to manipulate configuration and to retrieve data.
 
