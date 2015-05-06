@@ -128,12 +128,12 @@ class NetworkDriver:
         """
         Returns a dictionary of dictionaries. The keys for the first dictionary will be the interfaces in the devices.\
         The inner dictionary will containing the following data for each interface:
-         * oper_status (up/down)
-         * admin_status (enabled/disabled)
+         * is_up (True/False)
+         * is_enabled (True/False)
          * description (string)
-         * last_flapped (in seconds)
-         * mode (bridged/routed)
-         * speed (in Mbit)
+         * last_flapped (int in seconds)
+         * mode (string: bridged/routed)
+         * speed (int in Mbit)
          * macaddress (string)
 
         For example:
@@ -141,8 +141,8 @@ class NetworkDriver:
         {
         u'Management1':
             {
-            'oper_status': 'down',
-            'admin_staus': 'disabled',
+            'is_up': 'False',
+            'is_enabled': 'False',
             'description': u'',
             'last_flapped': -1,
             'mode': u'routed',
@@ -151,8 +151,8 @@ class NetworkDriver:
             },
         u'Ethernet1':
             {
-            'oper_status': 'up',
-            'admin_staus': 'enabled',
+            'is_up': 'True',
+            'is_enabled': 'True',
             'description': u'foo',
             'last_flapped': 1429978575.1554043,
             'mode': u'routed',
@@ -161,13 +161,23 @@ class NetworkDriver:
             },
         u'Ethernet2':
             {
-            'oper_status': 'up',
-            'admin_staus': 'enabled',
+            'is_up': 'True',
+            'is_enabled': 'True',
             'description': u'bla',
             'last_flapped': 1429978575.1555667,
             'mode': u'bridged',
             'speed': 1000,
             'macaddress': u'beef:beef:beef',
+            },
+        u'Ethernet3':
+            {
+            'is_up': 'False',
+            'is_enabled': 'True',
+            'description': u'bar',
+            'last_flapped': -1,
+            'mode': u'bridged',
+            'speed': 1000,
+            'macaddress': u'dead:dead:dead',
             }
         }
         """
