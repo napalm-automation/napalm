@@ -192,8 +192,10 @@ class NetworkDriver:
          * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
            * remote_as
            * status (up/down)
+           * description
            * uptime
-           * rcvd_prefixes
+           * received_prefixes
+           * accepted_prefixes
            * sent_prefixes
 
         For example:
@@ -208,36 +210,24 @@ class NetworkDriver:
                     u'10.0.0.11':
                         {
                         'status': 'up',
-                        'sent_prefixes': 3,
                         'uptime': 1429978587.950959,
-                        'rcvd_prefixes': 2,
+                        'description': u'',
+                        'received_prefixes': 2,
+                        'sent_prefixes': 3,
+                        'accepted_prefixes': 0,
                         'remote_as': 65001
                         },
                     u'1.1.1.1':
                         {
                         'status': 'down',
-                        'sent_prefixes': 0,
                         'uptime': 1429978579.950053,
-                        'rcvd_prefixes': 0,
+                        'description': u'',
+                        'received_prefixes': 0,
+                        'sent_prefixes': 0,
+                        'accepted_prefixes': 0,
                         'remote_as': 1
-                        },
-                    u'10.0.0.13':
-                        {
-                        'status': 'up',
-                        'sent_prefixes': 1,
-                        'uptime': 1429978581.953695,
-                        'rcvd_prefixes': 2,
-                        'remote_as': 65003
-                        },
-                    u'10.0.0.12':
-                        {
-                        'status': 'up',
-                        'sent_prefixes': 3,
-                        'uptime': 1429978585.952992,
-                        'rcvd_prefixes': 2,
-                        'remote_as': 65002
                         }
-                    },
+                    }
                 },
             u'vrfA':
                 {
@@ -248,28 +238,24 @@ class NetworkDriver:
                     u'10.0.1.12':
                         {
                         'status': 'down',
-                        'sent_prefixes': 0,
                         'uptime': 1429978582.967222,
-                        'rcvd_prefixes': 0,
+                        'description': u'',
+                        'received_prefixes': 0,
+                        'sent_prefixes': 0,
+                        'accepted_prefixes': 0,
                         'remote_as': 65012
                         },
                     u'10.0.1.13':
                         {
                         'status': 'down',
-                        'sent_prefixes': 0,
                         'uptime': 1429978582.967445,
-                        'rcvd_prefixes': 0,
-                        'remote_as': 65013
-                        },
-                    u'10.0.1.11':
-                        {
-                        'status': 'up',
+                        'description': u'',
+                        'received_prefixes': 0,
                         'sent_prefixes': 0,
-                        'uptime': 1429978708.9621,
-                        'rcvd_prefixes': 0,
-                        'remote_as': 65011
+                        'accepted_prefixes': 0,
+                        'remote_as': 65013
                         }
-                    },
+                    }
                 }
             }
 
