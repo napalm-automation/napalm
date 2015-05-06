@@ -187,14 +187,17 @@ class NetworkDriver:
         """
         Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).\
         The inner dictionary will containg the following data for each vrf:
-         * local_as
+         * local_as (int)
          * router_id
          * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
-           * remote_as
-           * status (up/down)
-           * uptime
-           * rcvd_prefixes
-           * sent_prefixes
+           * is_up (True/False)
+           * is_enabled (True/False)
+           * remote_as (int)
+           * description (string)
+           * uptime (int in seconds)
+           * received_prefixes (int)
+           * accepted_prefixes (int)
+           * sent_prefixes (int)
 
         For example:
 
@@ -202,74 +205,63 @@ class NetworkDriver:
             u'default':
                 {
                 'router_id': u'192.168.0.1',
-                'local_as': 65000
+                'local_as': 65000,
                 'peers':
                     {
                     u'10.0.0.11':
                         {
-                        'status': 'up',
-                        'sent_prefixes': 3,
+                        'is_up': True,
+                        'is_enabled': True,
                         'uptime': 1429978587.950959,
-                        'rcvd_prefixes': 2,
+                        'description': u'',
+                        'received_prefixes': 2,
+                        'sent_prefixes': 3,
+                        'accepted_prefixes': 0,
                         'remote_as': 65001
                         },
                     u'1.1.1.1':
                         {
-                        'status': 'down',
+                        'is_up': False,
+                        'is_enabled': False,
+                        'uptime': -1,
+                        'description': u'',
+                        'received_prefixes': 0,
                         'sent_prefixes': 0,
-                        'uptime': 1429978579.950053,
-                        'rcvd_prefixes': 0,
+                        'accepted_prefixes': 0,
                         'remote_as': 1
-                        },
-                    u'10.0.0.13':
-                        {
-                        'status': 'up',
-                        'sent_prefixes': 1,
-                        'uptime': 1429978581.953695,
-                        'rcvd_prefixes': 2,
-                        'remote_as': 65003
-                        },
-                    u'10.0.0.12':
-                        {
-                        'status': 'up',
-                        'sent_prefixes': 3,
-                        'uptime': 1429978585.952992,
-                        'rcvd_prefixes': 2,
-                        'remote_as': 65002
                         }
-                    },
+                    }
                 },
             u'vrfA':
                 {
                 'router_id': u'10.0.1.10',
-                'local_as': 65010
+                'local_as': 65010,
                 'peers':
                     {
                     u'10.0.1.12':
                         {
+                        'is_up': False,
+                        'is_enabled': True,
                         'status': 'down',
+                        'uptime': -1,
+                        'description': u'',
+                        'received_prefixes': 0,
                         'sent_prefixes': 0,
-                        'uptime': 1429978582.967222,
-                        'rcvd_prefixes': 0,
+                        'accepted_prefixes': 0,
                         'remote_as': 65012
                         },
                     u'10.0.1.13':
                         {
-                        'status': 'down',
+                        'is_up': False,
+                        'is_enabled': True,
+                        'uptime': -1,
+                        'description': u'',
+                        'received_prefixes': 0,
                         'sent_prefixes': 0,
-                        'uptime': 1429978582.967445,
-                        'rcvd_prefixes': 0,
+                        'accepted_prefixes': 0,
                         'remote_as': 65013
-                        },
-                    u'10.0.1.11':
-                        {
-                        'status': 'up',
-                        'sent_prefixes': 0,
-                        'uptime': 1429978708.9621,
-                        'rcvd_prefixes': 0,
-                        'remote_as': 65011
                         }
-                    },
+                    }
                 }
             }
 
