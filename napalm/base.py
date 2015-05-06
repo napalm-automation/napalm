@@ -134,7 +134,7 @@ class NetworkDriver:
          * last_flapped (int in seconds)
          * mode (string: bridged/routed)
          * speed (int in Mbit)
-         * macaddress (string)
+         * mac_address (string)
 
         For example:
 
@@ -147,7 +147,7 @@ class NetworkDriver:
             'last_flapped': -1,
             'mode': u'routed',
             'speed': 1000,
-            'macaddress': u'dead:beef:dead',
+            'mac_address': u'dead:beef:dead',
             },
         u'Ethernet1':
             {
@@ -157,7 +157,7 @@ class NetworkDriver:
             'last_flapped': 1429978575.1554043,
             'mode': u'routed',
             'speed': 1000,
-            'macaddress': u'beef:dead:beef',
+            'mac_address': u'beef:dead:beef',
             },
         u'Ethernet2':
             {
@@ -167,7 +167,7 @@ class NetworkDriver:
             'last_flapped': 1429978575.1555667,
             'mode': u'bridged',
             'speed': 1000,
-            'macaddress': u'beef:beef:beef',
+            'mac_address': u'beef:beef:beef',
             },
         u'Ethernet3':
             {
@@ -177,7 +177,7 @@ class NetworkDriver:
             'last_flapped': -1,
             'mode': u'bridged',
             'speed': 1000,
-            'macaddress': u'dead:dead:dead',
+            'mac_address': u'dead:dead:dead',
             }
         }
         """
