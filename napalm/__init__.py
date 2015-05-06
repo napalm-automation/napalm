@@ -25,7 +25,7 @@ def get_network_driver(vendor):
         'IOSXR': IOSXRDriver,
         'JUNOS': JunOSDriver,
         'JUNIPER': JunOSDriver,
-        'fortios': FortiOSDriver,
+        'FORTIOS': FortiOSDriver,
     }
     try:
         return driver_mapping[vendor.upper()]
