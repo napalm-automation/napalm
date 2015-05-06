@@ -23,7 +23,7 @@ def colon_separated_string_to_dict(string):
         line_data = line.split(':')
 
         if len(line_data) > 1:
-            dictionary[line_data[0].strip()] = ''.join(line_data[1:])
+            dictionary[line_data[0].strip()] = ''.join(line_data[1:]).strip()
         elif len(line_data) == 1:
             dictionary[line_data[0].strip()] = None
         else:
