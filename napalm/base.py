@@ -141,8 +141,8 @@ class NetworkDriver:
         {
         u'Management1':
             {
-            'is_up': 'False',
-            'is_enabled': 'False',
+            'is_up': False,
+            'is_enabled': False,
             'description': u'',
             'last_flapped': -1,
             'mode': u'routed',
@@ -151,8 +151,8 @@ class NetworkDriver:
             },
         u'Ethernet1':
             {
-            'is_up': 'True',
-            'is_enabled': 'True',
+            'is_up': True,
+            'is_enabled': True,
             'description': u'foo',
             'last_flapped': 1429978575.1554043,
             'mode': u'routed',
@@ -161,8 +161,8 @@ class NetworkDriver:
             },
         u'Ethernet2':
             {
-            'is_up': 'True',
-            'is_enabled': 'True',
+            'is_up': True,
+            'is_enabled': True,
             'description': u'bla',
             'last_flapped': 1429978575.1555667,
             'mode': u'bridged',
@@ -171,8 +171,8 @@ class NetworkDriver:
             },
         u'Ethernet3':
             {
-            'is_up': 'False',
-            'is_enabled': 'True',
+            'is_up': False,
+            'is_enabled': True,
             'description': u'bar',
             'last_flapped': -1,
             'mode': u'bridged',
