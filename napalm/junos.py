@@ -30,7 +30,7 @@ class JunOSDriver(NetworkDriver):
         self.config_replace = False
 
     def open(self):
-        self.device.open(gather_facts=False)
+        self.device.open()
         self.device.bind(cu=Config)
         self.device.cu.lock()
 
