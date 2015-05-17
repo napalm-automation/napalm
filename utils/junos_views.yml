@@ -24,8 +24,18 @@ junos_iface_view:
 
 
 ####
-#### BGP table 
+#### BGP tables
 ####
+
+junos_route_instance_table:
+  rpc: get-instance-information 
+  item: instance-core
+  key: instance-name
+  view: junos_route_instance_view
+
+junos_route_instance_view:
+  fields:
+    name: instance-name
 
 junos_bgp_table:
   rpc: get-bgp-neighbor-information
