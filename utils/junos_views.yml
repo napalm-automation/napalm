@@ -38,21 +38,20 @@ junos_route_instance_view:
     name: instance-name
 
 junos_bgp_table:
-  rpc: get-bgp-neighbor-information
+  rpc: get-bgp-summary-information
   item: bgp-peer
   key: peer-address
   view: junos_bgp_view
 
 junos_bgp_view:
   fields:
+    remote_as: { peer-as: int }
+    description: description
     is_up: { peer-state: True=Established }
     is_enabled: { shutdown: True=False }
     uptime: { elapsed-time/@seconds: int }
-    description: description
     received_prefixes: { bgp-rib/received-prefix-count: int }
     accepted_prefixes: { bgp-rib/accepted-prefix-count: int }
-    remote_as: { peer-as: int }
-
 
 ####
 #### LLDP table 
