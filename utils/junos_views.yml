@@ -22,7 +22,6 @@ junos_iface_view:
     speed: speed
     mac_address: current-physical-address
 
-
 ####
 #### BGP tables
 ####
