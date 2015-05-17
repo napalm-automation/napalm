@@ -117,11 +117,7 @@ class JunOSDriver(NetworkDriver):
     def get_bgp_neighbors(self):
 
         # init result dict
-        result = {
-          'peers': {},
-          'router_id': None,
-          'local_as': None,
-        }
+        result = {}
 
         instances = junos_views.junos_route_instance_table(self.device)
         instances.get()
@@ -130,7 +126,7 @@ class JunOSDriver(NetworkDriver):
         for vrf in vrfs:
             if not vrf.startswith('__'):
 
-                # init result dict
+                # init result dict for this vrf
                 result[vrf] = {
                     'peers': {},
                     'router_id': None,
