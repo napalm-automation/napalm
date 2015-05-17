@@ -30,7 +30,7 @@ class JunOSDriver(NetworkDriver):
         self.config_replace = False
 
     def open(self):
-        self.device.open()
+        self.device.open(gather_facts=False)
         self.device.bind(cu=Config)
         self.device.cu.lock()
 
@@ -116,10 +116,26 @@ class JunOSDriver(NetworkDriver):
 
     def get_bgp_neighbors(self):
 
-        bgp = junos_views.junos_bgp_table(self.device)
-        bgp.get()
+        # init result dict
+        result = {
+          'peers': {},
+          'router_id': None,
+          'local_as': None,
+        }
 
-        result = bgp.items()
+        instances = junos_views.junos_route_instance_table(self.device)
+        instances.get()
+        vrfs = instances.keys()
+
+        for vrf in vrfs:
+            if not vrf.startswith('__'):
+                bgp = junos_views.junos_bgp_table(self.device)
+                bgp.get(instance=vrf)
+
+                bgp_result = {}
+                [bgp_result.update({neigh:dict(bgp[neigh])}) for neigh in bgp.keys()]
+
+                result['peers'][vrf] = bgp_result
 
         return result
 
