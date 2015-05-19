@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+from utils import junos_views
 from base import NetworkDriver
 
 from jnpr.junos import Device
@@ -77,3 +78,77 @@ class JunOSDriver(NetworkDriver):
     def rollback(self):
         self.device.cu.rollback(rb_id=1)
         self.commit_config()
+
+    def get_facts(self):
+
+        output = self.device.facts
+
+        uptime = None
+        if 'RE0' in output:
+          uptime = output['RE0']['up_time']
+
+        interfaces = junos_views.junos_iface_table(self.device)
+        interfaces.get()
+        interface_list = interfaces.keys()
+
+        return {
+            'vendor': u'Juniper',
+            'model': output['model'],
+            'serial_number': output['serialnumber'],
+            'os_version': output['version'],
+            'hostname': output['hostname'],
+            'fqdn': output['fqdn'],
+            'uptime': uptime,
+            'interface_list': interface_list
+        }
+
+    def get_interfaces(self):
+
+        interfaces = junos_views.junos_iface_table(self.device)
+        interfaces.get()
+
+        # convert all the tuples to our dict structure
+        # i don't know how to do this any better...
+        result = {}
+        [result.update({iface:dict(interfaces[iface])}) for iface in interfaces.keys()]
+
+        return result
+
+    def get_bgp_neighbors(self):
+
+        # init result dict
+        result = {}
+
+        instances = junos_views.junos_route_instance_table(self.device)
+        instances.get()
+        vrfs = instances.keys()
+
+        for vrf in vrfs:
+            if not vrf.startswith('__'):
+
+                # init result dict for this vrf
+                result[vrf] = {
+                    'peers': {},
+                    'router_id': None,
+                    'local_as': None,
+                }
+
+                # fetch sessions for vrf
+                bgp = junos_views.junos_bgp_table(self.device)
+                bgp.get(instance=vrf)
+
+                # assemble result dict 
+                bgp_result = {}
+                [bgp_result.update({neigh:dict(bgp[neigh])}) for neigh in bgp.keys()]
+                result[vrf]['peers'] = bgp_result
+
+        return result
+
+    def get_lldp_neighbors(self):
+
+        lldp = junos_views.junos_lldp_table(self.device)
+        lldp.get()
+
+        result = lldp.items()
+
+        return result
