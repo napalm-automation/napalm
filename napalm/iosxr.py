@@ -12,13 +12,13 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from pyIOSXR import IOSXR
+import re
+from base import NetworkDriver
 
+from pyIOSXR import IOSXR
 from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
 
 from exceptions import MergeConfigException, ReplaceConfigException
-
-from base import NetworkDriver
 
 
 class IOSXRDriver(NetworkDriver):
@@ -79,3 +79,36 @@ class IOSXRDriver(NetworkDriver):
 
     def rollback(self):
         self.device.rollback()
+
+    def get_facts(self):
+
+        sh_ver = self.device.show_version()
+        match_sh_ver = re.search('Cisco IOS XR Software, Version (.*)\n.*\n(.*) uptime is (.*)\n.*\n(.*) Chassis .*\n', sh_ver)
+
+        os_version = match_sh_ver.group(1)
+        hostname = match_sh_ver.group(2)
+        uptime = match_sh_ver.group(3)
+        model = match_sh_ver.group(4)
+
+        sh_admin_ver = self.device.show_admin_version()
+        match_sh_admin_ver = re.search('SN: (.*)\n', sh_admin_ver)
+
+        serial_number = match_sh_admin_ver.group(1)
+
+        # todo 
+        fqdn = None
+        interface_list = []
+
+        result = {
+            'vendor': u'Cisco',
+            'os_version': os_version,
+            'hostname': hostname,
+            'uptime': uptime,
+            'model': model,
+            'serial_number': serial_number,
+            'fqdn': fqdn,
+            'interface_list': [],
+        }
+
+        return result
+
