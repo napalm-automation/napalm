@@ -22,7 +22,7 @@ from exceptions import MergeConfigException, ReplaceConfigException
 from datetime import datetime
 import time
 
-from utils.string_parsers import colon_separated_string_to_dict, hyphen_range
+from utils.string_parsers import colon_separated_string_to_dict, hyphen_range, sorted_nicely
 
 
 class EOSDriver(NetworkDriver):
@@ -131,7 +131,7 @@ class EOSDriver(NetworkDriver):
 
         uptime = time.time() - version['bootupTimestamp']
 
-        interfaces = self.device.show_interfaces_status()['interfaceStatuses'].keys()
+        interfaces = sorted_nicely(self.device.show_interfaces_status()['interfaceStatuses'].keys())
 
         return {
             'hostname': hostname['hostname'],
