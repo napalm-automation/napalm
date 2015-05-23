@@ -18,6 +18,55 @@ from pyFG.exceptions import FailedCommit, CommandExecutionException
 from base import NetworkDriver
 from exceptions import ReplaceConfigException, MergeConfigException
 
+from utils.string_parsers import colon_separated_string_to_dict
+
+import re
+
+
+def execute_get(device, cmd, separator=':', auto=False):
+    output = device.execute_command(cmd)
+
+    if auto:
+        if ':' in output[0]:
+            separator=':'
+        elif '\t' in output[0]:
+            separator='\t'
+        else:
+            raise Exception('Unknown separator for block:\n{}'.format(output))
+
+    return colon_separated_string_to_dict('\n'.join(output), separator)
+
+
+def convert_uptime_string_seconds(uptime):
+        regex_1 = re.compile(r"((?P<days>\d+) days,\s+)?((?P<hours>\d+) hours,\s+)?((?P<minutes>\d+) minutes)")
+        regex_2 = re.compile(r"((?P<hours>\d+)):((?P<minutes>\d+)):((?P<seconds>\d+))")
+
+        regex_list = [regex_1, regex_2]
+
+        uptime_dict = dict()
+        for regex in regex_list:
+            uptime_dict = regex.match(uptime)
+            if uptime_dict is not None:
+                uptime_dict = uptime_dict.groupdict()
+                break
+            uptime_dict = dict()
+
+        uptime_seconds = 0
+
+        for unit, value in uptime_dict.iteritems():
+            if unit == 'days':
+                uptime_seconds += int(value) * 86400
+            elif unit == 'hours':
+                uptime_seconds += int(value) * 3600
+            elif unit == 'minutes':
+                uptime_seconds += int(value) * 60
+            elif unit == 'seconds':
+                uptime_seconds += int(value)
+            else:
+                raise Exception('Unrecognized unit "{}" in uptime:{}'.format(unit, uptime))
+
+        return uptime_seconds
+
 
 class FortiOSDriver(NetworkDriver):
 
@@ -97,3 +146,97 @@ class FortiOSDriver(NetworkDriver):
         self.device.candidate_config['vpn certificate local']['Fortinet_SSLProxy'].del_param('private-key')
         self.device.candidate_config['vpn certificate local']['Fortinet_SSLProxy'].del_param('certificate')
         self.device.commit()
+
+    def get_facts(self):
+        system_status = execute_get(self.device, 'get system status')
+        performance_status = execute_get(self.device, 'get system performance status')
+
+        interfaces = execute_get(self.device, 'get system interface | grep ==')
+        interface_list = [x.split()[2] for x in interfaces.keys()]
+
+        domain = execute_get(self.device, 'get system dns | grep domain')['domain']
+
+        return {
+            'vendor': 'Fortigate',
+            'os_version': system_status['Version'].split(',')[0].split()[1],
+            'uptime': convert_uptime_string_seconds(performance_status['Uptime']),
+            'serial_number': system_status['Serial-Number'],
+            'model': system_status['Version'].split(',')[0].split()[0],
+            'hostname': system_status['Hostname'],
+            'fqdn': '{}.{}'.format(system_status['Hostname'], domain),
+            'interface_list': interface_list
+        }
+
+    @staticmethod
+    def _get_tab_separated_interfaces(output):
+        interface_statistics = {
+            'is_up': ('up' in output['State'] and 'up' or 'down'),
+            'speed': output['Speed'],
+            'mac_adddress': output['Current_HWaddr']
+        }
+        return interface_statistics
+
+    @staticmethod
+    def _get_unsupported_interfaces():
+        return {
+            'is_up': None,
+            'is_enabled': None,
+            'description': None,
+            'last_flapped': None,
+            'mode': None,
+            'speed': None,
+            'mac_address': None
+        }
+
+    def get_interfaces(self):
+        interface_statistics = dict()
+        self.device.load_config('system interface')
+        for iface in self.get_facts()['interface_list']:
+            try:
+                hw_output = execute_get(self.device, 'diagnose hardware deviceinfo nic {}'.format(iface), auto=True)
+                ifs = self._get_tab_separated_interfaces(hw_output)
+
+                ifs['is_enabled'] = self.device.running_config['system interface'][iface].get_param('status') != 'down'
+                ifs['description'] = self.device.running_config['system interface'][iface].get_param('description')
+                ifs['last_flapped'] = None
+                ifs['mode'] = 'routed'
+                ifs['last_flapped'] = None
+                interface_statistics[iface] = ifs
+            except CommandExecutionException:
+                interface_statistics[iface] = self._get_unsupported_interfaces()
+
+        return interface_statistics
+
+    def get_bgp_neighbors(self):
+        bgp_sum = self.device.execute_command('get router info bgp sum')
+        re_neigh = re.compile("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")
+        neighbors = {n.split()[0]: n.split()[1:] for n in bgp_sum if re.match(re_neigh, n)}
+
+        peers = dict()
+
+        self.device.load_config('router bgp')
+
+        for neighbor, parameters in neighbors.iteritems():
+            neigh_conf = self.device.running_config['router bgp']['neighbor']['{}'.format(neighbor)]
+            peers[neighbor] = dict()
+            peers[neighbor]['remote_as'] = int(neigh_conf.get_param('remote-as'))
+            peers[neighbor]['is_enabled'] = neigh_conf.get_param('shutdown') != 'enable' or False
+            peers[neighbor]['is_up'] = 'never' != parameters[7] or False
+            peers[neighbor]['uptime'] = convert_uptime_string_seconds(parameters[7])
+            peers[neighbor]['accepted_prefixes'] = int(self.device.execute_command('get router info bgp neighbor {} | grep "accepted prefixes"'.format(neighbor))[0].split()[0])
+            peers[neighbor]['sent_prefixes'] = int(self.device.execute_command('get router info bgp neighbor {} | grep "announced prefixes"'.format(neighbor))[0].split()[0])
+
+            received = self.device.execute_command('get router info bgp neighbors {} received-routes | grep prefixes'.format(neighbor))[0].split()
+            if len(received) > 0:
+                peers[neighbor]['received_prefixes'] = int(received[-1])
+            else:
+                # Soft-reconfig is not enabled
+                peers[neighbor]['received_prefixes'] = 0
+
+        return {
+            'default': {
+                'local_as': int(bgp_sum[0].split()[7]),
+                'router_id': bgp_sum[0].split()[3],
+                'peers': peers
+            }
+        }
