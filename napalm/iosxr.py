@@ -14,6 +14,7 @@
 
 import re
 from base import NetworkDriver
+from utils import string_parsers
 
 from pyIOSXR import IOSXR
 from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
@@ -87,7 +88,7 @@ class IOSXRDriver(NetworkDriver):
         os_version = match_sh_ver.group(1)
         hostname = match_sh_ver.group(2)
         fqdn = match_sh_ver.group(2)
-        uptime = match_sh_ver.group(3)
+        uptime = string_parsers.convert_uptime_string_seconds(match_sh_ver.group(3))
         model = match_sh_ver.group(4)
         serial_number = None
 
