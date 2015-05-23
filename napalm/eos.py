@@ -22,7 +22,7 @@ from exceptions import MergeConfigException, ReplaceConfigException
 from datetime import datetime
 import time
 
-from utils.string_parsers import colon_separated_string_to_dict, hyphen_range
+from utils.string_parsers import colon_separated_string_to_dict, hyphen_range, sorted_nicely
 
 
 class EOSDriver(NetworkDriver):
@@ -126,21 +126,27 @@ class EOSDriver(NetworkDriver):
         self.device.load_candidate_config(config=self.device.get_config(format='text'))
 
     def get_facts(self):
-        output = self.device.show_version()
-        uptime = time.time() - output['bootupTimestamp']
+        version = self.device.show_version()
+        hostname = self.device.show_hostname()
 
-        interfaces = self.device.show_interfaces_status()['interfaceStatuses'].keys()
+        uptime = time.time() - version['bootupTimestamp']
+
+        interfaces = [i for i in self.device.show_interfaces_status()['interfaceStatuses'].keys() if '.' not in i]
+        interfaces = sorted_nicely(interfaces)
 
         return {
+            'hostname': hostname['hostname'],
+            'fqdn': hostname['fqdn'],
             'vendor': u'Arista',
-            'model': output['modelName'],
-            'serial_number': output['serialNumber'],
-            'os_version': output['internalVersion'],
+            'model': version['modelName'],
+            'serial_number': version['serialNumber'],
+            'os_version': version['internalVersion'],
             'uptime': uptime,
             'interface_list': interfaces
         }
 
     def get_interfaces(self):
+        '''
         def _process_counters():
             interfaces[interface]['counters'] = dict()
             if counters is None:
@@ -191,7 +197,7 @@ class EOSDriver(NetworkDriver):
                     interfaces[interface]['trunk_vlans'] = range(1,4095)
                 else:
                     interfaces[interface]['trunk_vlans'] = hyphen_range(data[u'Trunking VLANs Enabled'])
-
+        '''
         output = self.device.show_interfaces()
 
         interfaces = dict()
@@ -199,27 +205,35 @@ class EOSDriver(NetworkDriver):
         for interface, values in output['interfaces'].iteritems():
             interfaces[interface] = dict()
 
+            if values['lineProtocolStatus'] == 'up':
+                interfaces[interface]['is_up'] = True
+                interfaces[interface]['is_enabled'] = True
+            else:
+                interfaces[interface]['is_up'] = False
+                if values['interfaceStatus'] == 'disabled':
+                    interfaces[interface]['is_enabled'] = False
+                else:
+                    interfaces[interface]['is_enabled'] = True
+
             interfaces[interface]['description'] = values['description']
 
-            status = values['lineProtocolStatus']
-
-            if status == 'up':
-                interfaces[interface]['status'] = 'up'
-            else:
-                interfaces[interface]['status'] = 'down'
-
-            interfaces[interface]['last_flapped'] = values.pop('lastStatusChangeTimestamp', -1)
-
-            counters = values.pop('interfaceCounters', None)
-            _process_counters()
+            interfaces[interface]['last_flapped'] = values.pop('lastStatusChangeTimestamp', None)
 
             interfaces[interface]['mode'] = values['forwardingModel']
 
-            if interfaces[interface]['mode'] == u'routed':
-                _process_routed_interface()
-            if interfaces[interface]['mode'] == u'bridged':
-                switchport_data = eval('self.device.show_interfaces_{}_switchport(format="text")'.format(interface))
-                _process_switched_interface()
+            interfaces[interface]['speed'] = values['bandwidth']
+            interfaces[interface]['mac_address'] = values.pop('physicalAddress', None)
+
+
+            #counters = values.pop('interfaceCounters', None)
+            #_process_counters()
+
+
+            #if interfaces[interface]['mode'] == u'routed':
+            #    _process_routed_interface()
+            #if interfaces[interface]['mode'] == u'bridged':
+            #    switchport_data = eval('self.device.show_interfaces_{}_switchport(format="text")'.format(interface))
+            #    _process_switched_interface()
 
         return interfaces
 
@@ -236,9 +250,16 @@ class EOSDriver(NetworkDriver):
                 bgp_neighbors[vrf]['peers'][n] = dict()
 
                 if n_data['peerState'] == 'Established':
-                    bgp_neighbors[vrf]['peers'][n]['status'] = 'up'
+                    bgp_neighbors[vrf]['peers'][n]['is_up'] = True
+                    bgp_neighbors[vrf]['peers'][n]['is_enabled'] = True
                 else:
-                    bgp_neighbors[vrf]['peers'][n]['status'] = 'down'
+                    bgp_neighbors[vrf]['peers'][n]['is_up'] = False
+
+                    reason = n_data.pop('peerStateIdleReason', None)
+                    if reason == 'Admin':
+                        bgp_neighbors[vrf]['peers'][n]['is_enabled'] = False
+                    else:
+                        bgp_neighbors[vrf]['peers'][n]['is_enabled'] = True
 
                 bgp_neighbors[vrf]['peers'][n]['remote_as'] = n_data['asn']
                 bgp_neighbors[vrf]['peers'][n]['uptime'] = n_data['upDownTime']
@@ -249,8 +270,12 @@ class EOSDriver(NetworkDriver):
 
                 n_data_full =  colon_separated_string_to_dict(raw_data)
                 sent, rcvd = n_data_full['IPv4 Unicast'].split()
-                bgp_neighbors[vrf]['peers'][n]['rcvd_prefixes'] = int(rcvd)
+
+                bgp_neighbors[vrf]['peers'][n]['received_prefixes'] = int(rcvd)
                 bgp_neighbors[vrf]['peers'][n]['sent_prefixes'] = int(sent)
+                bgp_neighbors[vrf]['peers'][n]['accepted_prefixes'] = n_data['prefixAccepted']
+
+                bgp_neighbors[vrf]['peers'][n]['description'] = n_data_full.pop('Description', '')
 
         return bgp_neighbors
 
