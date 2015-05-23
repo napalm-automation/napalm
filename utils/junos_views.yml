@@ -47,7 +47,7 @@ junos_bgp_view:
     remote_as: { peer-as: int }
     description: description
     is_up: { peer-state: True=Established }
-    is_enabled: { shutdown: True=False }
+    is_enabled: { peer-state: False=True }
     uptime: { elapsed-time/@seconds: int }
     received_prefixes: { bgp-rib/received-prefix-count: int }
     accepted_prefixes: { bgp-rib/accepted-prefix-count: int }
