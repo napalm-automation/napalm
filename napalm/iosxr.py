@@ -91,7 +91,7 @@ class IOSXRDriver(NetworkDriver):
         model = match_sh_ver.group(4)
         serial_number = None
 
-        # todo 
+        # todo
         interface_list = []
 
         result = {
@@ -168,9 +168,94 @@ class IOSXRDriver(NetworkDriver):
 
         # init result dict
         result = {}
+        # todo vrfs 
+        result['default'] = {}
+        result['default']['peers'] = {}
 
+        # fetch sh ip bgp output
         sh_bgp = self.device.show_ip_bgp_neighbors()
-        match_sh_bgp = re.search('', sh_bgp)
+        # split per bgp neighbor
+        bgp_list = sh_bgp.rstrip().split('\n\nBGP')
+        # for each neigh...
+        for neighbor in bgp_list:
+
+            peer_lines = neighbor.split('\n')
+
+            # init variables
+            is_up = None
+            is_enabled = None
+            uptime = None
+            description = None
+            received_prefixes = None
+            sent_prefixes = None
+            accepted_prefixes = None
+            remote_as = None
+
+            for line in peer_lines:
+
+                match1 = re.search('(BGP)? neighbor is (.*)',line)
+                if match1 is not None:
+                    peer_ip = match1.group(2)
+
+                match2 = re.search('BGP state = (.*)',line)
+                if match2 is not None:
+                    if match2.group(1) == 'Active':
+                        is_up = False
+                        is_enabled = True
+
+                match3 = re.search('Description: (.*)$',line)
+                if match3 is not None:
+                    description = match3.group(1)
+
+                match4 = re.search('Remote AS (\d*)',line)
+                if match4 is not None:
+                    remote_as = int(match4.group(1))
+
+
+            result['default']['peers'][peer_ip] = {
+                'is_up': is_up,
+                'is_enabled': is_enabled,
+                'uptime': uptime,
+                'description': description,
+                'received_prefixes': received_prefixes,
+                'sent_prefixes': sent_prefixes,
+                'accepted_prefixes': accepted_prefixes,
+                'remote_as': remote_as,
+            }
+
+        return result
+
+    def get_lldp_neighbors(self):
+
+        # init result dict
+        result = {}
+
+        # fetch sh ip bgp output
+        sh_lldp = self.device.show_lldp_neighbors()
+        # remove everything before
+        sh_lldp = sh_lldp.split('Hold-time  Capability     Port ID')[1]
+        # remove everything after
+        sh_lldp = sh_lldp.split('Total')[0]
+        # remove newlines 
+        sh_lldp = sh_lldp.strip()
+        # split remaining lines (one per lldp neigh entry)
+        lldp_line = sh_lldp.split('\n')
+
+        for line in lldp_line:
+
+            match1 = re.search('^([^\s]*)\s+([^\s]*)\s+(\d*)\s+\w\s+([^\s]*)$',line)
+            if match1 is not None:
+                local_port = match1.group(2)
+                lldp_neigh = {
+                    'hostname': match1.group(1),
+                    'ttl': match1.group(3),
+                    'port': match1.group(4),
+                }
+
+                if local_port in result:
+                    result[local_port].append( lldp_neigh )
+                else:
+                    result[local_port] = [ lldp_neigh ]
 
         return result
 
