@@ -18,7 +18,7 @@ from pyFG.exceptions import FailedCommit, CommandExecutionException
 from base import NetworkDriver
 from exceptions import ReplaceConfigException, MergeConfigException
 
-from utils.string_parsers import colon_separated_string_to_dict
+from utils.string_parsers import colon_separated_string_to_dict, convert_uptime_string_seconds
 
 import re
 
@@ -35,37 +35,6 @@ def execute_get(device, cmd, separator=':', auto=False):
             raise Exception('Unknown separator for block:\n{}'.format(output))
 
     return colon_separated_string_to_dict('\n'.join(output), separator)
-
-
-def convert_uptime_string_seconds(uptime):
-        regex_1 = re.compile(r"((?P<days>\d+) days,\s+)?((?P<hours>\d+) hours,\s+)?((?P<minutes>\d+) minutes)")
-        regex_2 = re.compile(r"((?P<hours>\d+)):((?P<minutes>\d+)):((?P<seconds>\d+))")
-
-        regex_list = [regex_1, regex_2]
-
-        uptime_dict = dict()
-        for regex in regex_list:
-            uptime_dict = regex.match(uptime)
-            if uptime_dict is not None:
-                uptime_dict = uptime_dict.groupdict()
-                break
-            uptime_dict = dict()
-
-        uptime_seconds = 0
-
-        for unit, value in uptime_dict.iteritems():
-            if unit == 'days':
-                uptime_seconds += int(value) * 86400
-            elif unit == 'hours':
-                uptime_seconds += int(value) * 3600
-            elif unit == 'minutes':
-                uptime_seconds += int(value) * 60
-            elif unit == 'seconds':
-                uptime_seconds += int(value)
-            else:
-                raise Exception('Unrecognized unit "{}" in uptime:{}'.format(unit, uptime))
-
-        return uptime_seconds
 
 
 class FortiOSDriver(NetworkDriver):
