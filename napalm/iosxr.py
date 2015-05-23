@@ -12,13 +12,13 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from pyIOSXR import IOSXR
+import re
+from base import NetworkDriver
 
+from pyIOSXR import IOSXR
 from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
 
 from exceptions import MergeConfigException, ReplaceConfigException
-
-from base import NetworkDriver
 
 
 class IOSXRDriver(NetworkDriver):
@@ -79,3 +79,98 @@ class IOSXRDriver(NetworkDriver):
 
     def rollback(self):
         self.device.rollback()
+
+    def get_facts(self):
+
+        sh_ver = self.device.show_version()
+        match_sh_ver = re.search('Cisco IOS XR Software, Version (.*)\nCopyright .*\n(.*) uptime is (.*)\nSystem .*\n(.* Series) ', sh_ver, re.DOTALL)
+        os_version = match_sh_ver.group(1)
+        hostname = match_sh_ver.group(2)
+        fqdn = match_sh_ver.group(2)
+        uptime = match_sh_ver.group(3)
+        model = match_sh_ver.group(4)
+        serial_number = None
+
+        # todo 
+        interface_list = []
+
+        result = {
+            'vendor': u'Cisco',
+            'os_version': os_version,
+            'hostname': hostname,
+            'uptime': uptime,
+            'model': model,
+            'serial_number': serial_number,
+            'fqdn': fqdn,
+            'interface_list': [],
+        }
+
+        return result
+
+    def get_interfaces(self):
+
+        # init result dict
+        result = {}
+
+        # fetch show interface output 
+        sh_int = self.device.show_interfaces()
+        # split per interface, eg by empty line
+        interface_list = sh_int.rstrip().split('\n\n')
+        # for each interface... 
+        for interface in interface_list:
+
+            # splitting this and matching each line avoids issues with order
+            # sorry... 
+            interface_lines = interface.split('\n')
+
+            # init variables to match for
+            interface_name = None
+            is_enabled = None
+            is_up = None
+            mac_address = None
+            description = None
+            speed = None
+
+            # loop though and match each line 
+            for line in interface_lines:
+
+                match1 = re.search('(.*) is (.*), line protocol is (.*)',line)
+                if match1 is not None:
+                    interface_name = match1.group(1)
+                    is_enabled = match1.group(2)
+                    is_up = match1.group(3)
+
+                match2 = re.search('\(bia (.*)\)',line)
+                if match2 is not None:
+                    mac_address = match2.group(1)
+
+                match3 = re.search('Description: (.*)$', line)
+                if match3 is not None:
+                    description = match3.group(1)
+
+                match4 = re.search('Full-duplex, (\d*)', line)
+                if match4 is not None:
+                    speed = match4.group(1)
+
+            result[interface_name] = {
+                'is_enabled': is_enabled,
+                'is_up': is_up,
+                'mac_address': mac_address,
+                'description': description,
+                'speed': speed,
+                'last_flapped': None,
+                'mode': None,
+            }
+
+        return result
+
+    def get_bgp_neighbors(self):
+
+        # init result dict
+        result = {}
+
+        sh_bgp = self.device.show_ip_bgp_neighbors()
+        match_sh_bgp = re.search('', sh_bgp)
+
+        return result
+
