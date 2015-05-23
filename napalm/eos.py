@@ -131,7 +131,8 @@ class EOSDriver(NetworkDriver):
 
         uptime = time.time() - version['bootupTimestamp']
 
-        interfaces = sorted_nicely(self.device.show_interfaces_status()['interfaceStatuses'].keys())
+        interfaces = [i for i in self.device.show_interfaces_status()['interfaceStatuses'].keys() if '.' not in i]
+        interfaces = sorted_nicely(interfaces)
 
         return {
             'hostname': hostname['hostname'],
