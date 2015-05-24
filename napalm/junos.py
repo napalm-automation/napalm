@@ -131,6 +131,10 @@ class JunOSDriver(NetworkDriver):
                     match1 = re.search('^(\d+)\w*$',interfaces[iface][item])
                     if match1 is not None:
                         result[iface]['speed'] = match1.group(1)
+                elif item == 'mac_address':
+                    match2 = re.search('^(\d+\:\d+\:\d+\:\d+\:\d+\:\d+)$',interfaces[iface][item])
+                    if match2 is not None:
+                        result[iface]['mac_address'] = match2.group(1)
                 else:
                     result[iface][item] = interfaces[iface][item]
 
