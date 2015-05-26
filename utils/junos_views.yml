@@ -51,6 +51,7 @@ junos_bgp_view:
     uptime: { elapsed-time/@seconds: int }
     received_prefixes: { bgp-rib/received-prefix-count: int }
     accepted_prefixes: { bgp-rib/accepted-prefix-count: int }
+    sent_prefixes: { bgp-rib/aadvertised-prefix-count: int }
 
 ####
 #### LLDP table 
