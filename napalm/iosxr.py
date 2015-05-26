@@ -160,7 +160,6 @@ class IOSXRDriver(NetworkDriver):
                 'description': description,
                 'speed': speed,
                 'last_flapped': None,
-                'mode': None,
             }
 
         return result

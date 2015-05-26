@@ -120,7 +120,6 @@ class JunOSDriver(NetworkDriver):
                 'is_enabled': None,
                 'description': None,
                 'last_flapped': None,
-                'mode': None,
                 'speed': None,
                 'mac_address': None,
             }
