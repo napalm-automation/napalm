@@ -248,7 +248,6 @@ class IOSXRDriver(NetworkDriver):
                 local_port = match1.group(2)
                 lldp_neigh = {
                     'hostname': match1.group(1),
-                    'ttl': match1.group(3),
                     'port': match1.group(4),
                 }
 

@@ -290,7 +290,6 @@ class EOSDriver(NetworkDriver):
                 {
                     'hostname': n['neighborDevice'],
                     'port': n['neighborPort'],
-                    'ttl': n['ttl']
                 }
             )
 
