@@ -22,6 +22,9 @@ from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError
 from exceptions import ReplaceConfigException, MergeConfigException
 
+from utils import string_parsers
+
+
 class JunOSDriver(NetworkDriver):
 
     def __init__(self, hostname, username, password):
@@ -100,7 +103,7 @@ class JunOSDriver(NetworkDriver):
             'os_version': output['version'],
             'hostname': output['hostname'],
             'fqdn': output['fqdn'],
-            'uptime': uptime,
+            'uptime': string_parsers.convert_uptime_string_seconds(uptime),
             'interface_list': interface_list
         }
 
