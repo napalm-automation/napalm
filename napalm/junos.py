@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+import re
+
 from utils import junos_views
 from base import NetworkDriver
 
@@ -104,13 +106,36 @@ class JunOSDriver(NetworkDriver):
 
     def get_interfaces(self):
 
+        # init result dict
+        result = {}
+
         interfaces = junos_views.junos_iface_table(self.device)
         interfaces.get()
 
-        # convert all the tuples to our dict structure
-        # i don't know how to do this any better...
-        result = {}
-        [result.update({iface:dict(interfaces[iface])}) for iface in interfaces.keys()]
+        # convert all the tuples to our pre-defined dict structure
+        for iface in interfaces.keys():
+
+            result[iface] = {
+                'is_up': None,
+                'is_enabled': None,
+                'description': None,
+                'last_flapped': None,
+                'speed': None,
+                'mac_address': None,
+            }
+
+            for item in interfaces[iface].keys():
+
+                if item == 'speed' and interfaces[iface][item] != None:
+                    match1 = re.search('^(\d+)\w*$',interfaces[iface][item])
+                    if match1 is not None:
+                        result[iface]['speed'] = match1.group(1)
+                elif item == 'mac_address' and interfaces[iface][item] != None:
+                    match2 = re.search('^([\d:]*)$',interfaces[iface][item])
+                    if match2 is not None:
+                        result[iface]['mac_address'] = match2.group(1)
+                else:
+                    result[iface][item] = interfaces[iface][item]
 
         return result
 
@@ -121,9 +146,8 @@ class JunOSDriver(NetworkDriver):
 
         instances = junos_views.junos_route_instance_table(self.device)
         instances.get()
-        vrfs = instances.keys()
 
-        for vrf in vrfs:
+        for vrf in instances.keys():
             if not vrf.startswith('__'):
 
                 # init result dict for this vrf
