@@ -219,7 +219,7 @@ class EOSDriver(NetworkDriver):
 
             interfaces[interface]['last_flapped'] = values.pop('lastStatusChangeTimestamp', None)
 
-            interfaces[interface]['mode'] = values['forwardingModel']
+            #interfaces[interface]['mode'] = values['forwardingModel']
 
             interfaces[interface]['speed'] = values['bandwidth']
             interfaces[interface]['mac_address'] = values.pop('physicalAddress', None)

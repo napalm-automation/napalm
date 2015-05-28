@@ -166,7 +166,7 @@ class FortiOSDriver(NetworkDriver):
                 ifs['is_enabled'] = self.device.running_config['system interface'][iface].get_param('status') != 'down'
                 ifs['description'] = self.device.running_config['system interface'][iface].get_param('description')
                 ifs['last_flapped'] = None
-                ifs['mode'] = 'routed'
+                #ifs['mode'] = 'routed'
                 ifs['last_flapped'] = None
                 interface_statistics[iface] = ifs
             except CommandExecutionException:
