@@ -269,7 +269,6 @@ class NetworkDriver:
         information:
             * hostname
             * port
-            * ttl
 
         For example:
 
@@ -279,7 +278,6 @@ class NetworkDriver:
                 {
                 'hostname': u'junos-unittest',
                 'port': u'520',
-                'ttl': 120
                 }
             ],
         u'Ethernet3':
@@ -287,7 +285,6 @@ class NetworkDriver:
                 {
                 'hostname': u'junos-unittest',
                 'port': u'522',
-                'ttl': 120
                 }
             ],
         u'Ethernet1':
@@ -295,12 +292,10 @@ class NetworkDriver:
                 {
                 'hostname': u'junos-unittest',
                 'port': u'519',
-                'ttl': 120
                 },
                 {
                 'hostname': u'ios-xrv-unittest',
                 'port': u'Gi0/0/0/0',
-                'ttl': 120
                 }
             ],
         u'Management1':
@@ -308,7 +303,6 @@ class NetworkDriver:
                 {
                 'hostname': u'junos-unittest',
                 'port': u'508',
-                'ttl': 120
                 }
             ]
         }
