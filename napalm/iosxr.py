@@ -84,16 +84,22 @@ class IOSXRDriver(NetworkDriver):
     def get_facts(self):
 
         sh_ver = self.device.show_version()
-        match_sh_ver = re.search('Cisco IOS XR Software, Version (.*)\nCopyright .*\n(.*) uptime is (.*)\nSystem .*\n(.* Series) ', sh_ver, re.DOTALL)
-        os_version = match_sh_ver.group(1)
-        hostname = match_sh_ver.group(2)
-        fqdn = match_sh_ver.group(2)
-        uptime = string_parsers.convert_uptime_string_seconds(match_sh_ver.group(3))
-        model = match_sh_ver.group(4)
-        serial_number = None
 
-        # todo
-        interface_list = []
+        for line in sh_ver.splitlines():
+            if 'Cisco IOS XR Software' in line:
+                os_version = line.split()[-1]
+            elif 'uptime' in line:
+                uptime = string_parsers.convert_uptime_string_seconds(line)
+                hostname = line.split()[0]
+                fqdn = line.split()[0]
+            elif 'Series' in line:
+                model = ' '.join(line.split()[1:3])
+
+        interface_list = list()
+
+        for x in self.device.show_interface_description().splitlines()[3:-1]:
+            if '.' not in x:
+                interface_list.append(x.split()[0])
 
         result = {
             'vendor': u'Cisco',
@@ -101,9 +107,9 @@ class IOSXRDriver(NetworkDriver):
             'hostname': hostname,
             'uptime': uptime,
             'model': model,
-            'serial_number': serial_number,
+            'serial_number': None,
             'fqdn': fqdn,
-            'interface_list': [],
+            'interface_list': interface_list,
         }
 
         return result
