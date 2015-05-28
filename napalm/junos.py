@@ -169,10 +169,13 @@ class JunOSDriver(NetworkDriver):
         return result
 
     def get_lldp_neighbors(self):
-
         lldp = junos_views.junos_lldp_table(self.device)
         lldp.get()
 
         result = lldp.items()
 
-        return result
+        neighbors = dict()
+        for neigh in result:
+            neighbors[neigh[0]] = { x[0]: x[1] for x in neigh[1]}
+
+        return neighbors
