@@ -179,6 +179,8 @@ class JunOSDriver(NetworkDriver):
 
         neighbors = dict()
         for neigh in result:
-            neighbors[neigh[0]] = { x[0]: x[1] for x in neigh[1]}
+            if neigh[0] not in neighbors.keys():
+                neighbors[neigh[0]] = list()
+            neighbors[neigh[0]].append({ x[0]: x[1] for x in neigh[1]})
 
         return neighbors
