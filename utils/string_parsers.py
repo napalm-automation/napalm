@@ -65,15 +65,14 @@ def convert_uptime_string_seconds(uptime):
     Convert uptime strings to seconds. The string can be formatted various ways, eg.
     1 hour, 56 minutes
     '''
-    regex_1 = re.compile(r"((?P<days>\d+) day(s)?,\s+)?((?P<hours>\d+) hour(s)?,\s+)?((?P<minutes>\d+) minute(s)?)")
+    regex_1 = re.compile(r"((?P<weeks>\d+) week(s)?,\s+)?((?P<days>\d+) day(s)?,\s+)?((?P<hours>\d+) hour(s)?,\s+)?((?P<minutes>\d+) minute(s)?)")
     regex_2 = re.compile(r"((?P<hours>\d+)):((?P<minutes>\d+)):((?P<seconds>\d+))")
 
     regex_list = [regex_1, regex_2]
 
-    # say whaaaat!?
     uptime_dict = dict()
     for regex in regex_list:
-        uptime_dict = regex.match(uptime)
+        uptime_dict = regex.search(uptime)
         if uptime_dict is not None:
             uptime_dict = uptime_dict.groupdict()
             break
@@ -83,7 +82,9 @@ def convert_uptime_string_seconds(uptime):
 
     for unit, value in uptime_dict.iteritems():
         if value != None:
-            if unit == 'days':
+            if unit == 'weeks':
+                uptime_seconds += int(value) * 604800
+            elif unit == 'days':
                 uptime_seconds += int(value) * 86400
             elif unit == 'hours':
                 uptime_seconds += int(value) * 3600
