@@ -234,33 +234,24 @@ class IOSXRDriver(NetworkDriver):
     def get_lldp_neighbors(self):
 
         # init result dict
-        result = {}
+        lldp = {}
 
         # fetch sh ip bgp output
-        sh_lldp = self.device.show_lldp_neighbors()
-        # remove everything before
-        sh_lldp = sh_lldp.split('Hold-time  Capability     Port ID')[1]
-        # remove everything after
-        sh_lldp = sh_lldp.split('Total')[0]
-        # remove newlines 
-        sh_lldp = sh_lldp.strip()
-        # split remaining lines (one per lldp neigh entry)
-        lldp_line = sh_lldp.split('\n')
+        sh_lldp = self.device.show_lldp_neighbors().splitlines()[5:-3]
 
-        for line in lldp_line:
+        print sh_lldp
 
-            match1 = re.search('^([^\s]*)\s+([^\s]*)\s+(\d*)\s+\w\s+([^\s]*)$',line)
-            if match1 is not None:
-                local_port = match1.group(2)
-                lldp_neigh = {
-                    'hostname': match1.group(1),
-                    'port': match1.group(4),
+        for n in sh_lldp:
+            local_interface = n.split()[1]
+            if local_interface not in lldp.keys():
+                lldp[local_interface] = list()
+
+            lldp[local_interface].append(
+                {
+                    'hostname': n.split()[0],
+                    'port': n.split()[4],
                 }
+            )
 
-                if local_port in result:
-                    result[local_port].append( lldp_neigh )
-                else:
-                    result[local_port] = [ lldp_neigh ]
-
-        return result
+        return lldp
 
