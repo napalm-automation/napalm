@@ -209,3 +209,6 @@ class FortiOSDriver(NetworkDriver):
                 'peers': peers
             }
         }
+
+    def get_lldp_neighbors(self):
+        return {}
