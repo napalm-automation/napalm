@@ -237,47 +237,47 @@ class EOSDriver(NetworkDriver):
 
         return interfaces
 
-    def get_bgp_neighbors(self):
-        bgp_neighbors = dict()
-
-        for vrf, vrf_data in self.device.show_ip_bgp_summary_vrf_all()['vrfs'].iteritems():
-            bgp_neighbors[vrf] = dict()
-            bgp_neighbors[vrf]['router_id'] = vrf_data['routerId']
-            bgp_neighbors[vrf]['local_as'] = vrf_data['asn']
-            bgp_neighbors[vrf]['peers'] = dict()
-
-            for n, n_data in vrf_data['peers'].iteritems():
-                bgp_neighbors[vrf]['peers'][n] = dict()
-
-                if n_data['peerState'] == 'Established':
-                    bgp_neighbors[vrf]['peers'][n]['is_up'] = True
-                    bgp_neighbors[vrf]['peers'][n]['is_enabled'] = True
-                else:
-                    bgp_neighbors[vrf]['peers'][n]['is_up'] = False
-
-                    reason = n_data.pop('peerStateIdleReason', None)
-                    if reason == 'Admin':
-                        bgp_neighbors[vrf]['peers'][n]['is_enabled'] = False
-                    else:
-                        bgp_neighbors[vrf]['peers'][n]['is_enabled'] = True
-
-                bgp_neighbors[vrf]['peers'][n]['remote_as'] = n_data['asn']
-                bgp_neighbors[vrf]['peers'][n]['uptime'] = n_data['upDownTime']
-
-                raw_data = eval(
-                    'self.device.show_ip_bgp_neighbors_vrf_{}(format="text", pipe="section {}")'.format(vrf, n)
-                )['output']
-
-                n_data_full =  colon_separated_string_to_dict(raw_data)
-                sent, rcvd = n_data_full['IPv4 Unicast'].split()
-
-                bgp_neighbors[vrf]['peers'][n]['received_prefixes'] = int(rcvd)
-                bgp_neighbors[vrf]['peers'][n]['sent_prefixes'] = int(sent)
-                bgp_neighbors[vrf]['peers'][n]['accepted_prefixes'] = n_data['prefixAccepted']
-
-                bgp_neighbors[vrf]['peers'][n]['description'] = n_data_full.pop('Description', '')
-
-        return bgp_neighbors
+    # def get_bgp_neighbors(self):
+    #     bgp_neighbors = dict()
+    #
+    #     for vrf, vrf_data in self.device.show_ip_bgp_summary_vrf_all()['vrfs'].iteritems():
+    #         bgp_neighbors[vrf] = dict()
+    #         bgp_neighbors[vrf]['router_id'] = vrf_data['routerId']
+    #         bgp_neighbors[vrf]['local_as'] = vrf_data['asn']
+    #         bgp_neighbors[vrf]['peers'] = dict()
+    #
+    #         for n, n_data in vrf_data['peers'].iteritems():
+    #             bgp_neighbors[vrf]['peers'][n] = dict()
+    #
+    #             if n_data['peerState'] == 'Established':
+    #                 bgp_neighbors[vrf]['peers'][n]['is_up'] = True
+    #                 bgp_neighbors[vrf]['peers'][n]['is_enabled'] = True
+    #             else:
+    #                 bgp_neighbors[vrf]['peers'][n]['is_up'] = False
+    #
+    #                 reason = n_data.pop('peerStateIdleReason', None)
+    #                 if reason == 'Admin':
+    #                     bgp_neighbors[vrf]['peers'][n]['is_enabled'] = False
+    #                 else:
+    #                     bgp_neighbors[vrf]['peers'][n]['is_enabled'] = True
+    #
+    #             bgp_neighbors[vrf]['peers'][n]['remote_as'] = n_data['asn']
+    #             bgp_neighbors[vrf]['peers'][n]['uptime'] = n_data['upDownTime']
+    #
+    #             raw_data = eval(
+    #                 'self.device.show_ip_bgp_neighbors_vrf_{}(format="text", pipe="section {}")'.format(vrf, n)
+    #             )['output']
+    #
+    #             n_data_full =  colon_separated_string_to_dict(raw_data)
+    #             sent, rcvd = n_data_full['IPv4 Unicast'].split()
+    #
+    #             bgp_neighbors[vrf]['peers'][n]['received_prefixes'] = int(rcvd)
+    #             bgp_neighbors[vrf]['peers'][n]['sent_prefixes'] = int(sent)
+    #             bgp_neighbors[vrf]['peers'][n]['accepted_prefixes'] = n_data['prefixAccepted']
+    #
+    #             bgp_neighbors[vrf]['peers'][n]['description'] = n_data_full.pop('Description', '')
+    #
+    #     return bgp_neighbors
 
     def get_lldp_neighbors(self):
         lldp = dict()
