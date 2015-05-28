@@ -132,7 +132,6 @@ class NetworkDriver:
          * is_enabled (True/False)
          * description (string)
          * last_flapped (int in seconds)
-         * mode (string: bridged/routed)
          * speed (int in Mbit)
          * mac_address (string)
 
@@ -145,7 +144,6 @@ class NetworkDriver:
             'is_enabled': False,
             'description': u'',
             'last_flapped': -1,
-            'mode': u'routed',
             'speed': 1000,
             'mac_address': u'dead:beef:dead',
             },
@@ -155,7 +153,6 @@ class NetworkDriver:
             'is_enabled': True,
             'description': u'foo',
             'last_flapped': 1429978575.1554043,
-            'mode': u'routed',
             'speed': 1000,
             'mac_address': u'beef:dead:beef',
             },
@@ -165,7 +162,6 @@ class NetworkDriver:
             'is_enabled': True,
             'description': u'bla',
             'last_flapped': 1429978575.1555667,
-            'mode': u'bridged',
             'speed': 1000,
             'mac_address': u'beef:beef:beef',
             },
@@ -175,7 +171,6 @@ class NetworkDriver:
             'is_enabled': True,
             'description': u'bar',
             'last_flapped': -1,
-            'mode': u'bridged',
             'speed': 1000,
             'mac_address': u'dead:dead:dead',
             }
