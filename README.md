@@ -40,10 +40,10 @@ There is an ansible module provided by this API. Make sure you read the document
 
 Mailing List
 =======
-If you have any questions, join the mailing list at: [<napalm-automation@googlegroups.com>](mailto:napalm-automation@googlegroups.com)
+If you have any questions, join the mailing list at [napalm-automation@googlegroups.com](mailto:napalm-automation@googlegroups.com)
 
 Authors
 =======
- * David Barroso [<dbarroso@spotify.com>](mailto:dbarroso@spotify.com)
- * Elisa Jasinska [<elisa@bigwaveit.org>](mailto:elisa@bigwaveit.org)
+ * David Barroso [(dbarroso@spotify.com)](mailto:dbarroso@spotify.com)
+ * Elisa Jasinska [(elisa@bigwaveit.org)](mailto:elisa@bigwaveit.org)
 
