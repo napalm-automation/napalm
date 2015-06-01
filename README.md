@@ -44,6 +44,6 @@ If you have any questions, join the mailing list at [napalm-automation@googlegro
 
 Authors
 =======
- * David Barroso [(dbarroso@spotify.com)](mailto:dbarroso@spotify.com)
- * Elisa Jasinska [(elisa@bigwaveit.org)](mailto:elisa@bigwaveit.org)
+ * David Barroso ([dbarroso@spotify.com](mailto:dbarroso@spotify.com))
+ * Elisa Jasinska ([elisa@bigwaveit.org](mailto:elisa@bigwaveit.org))
 
