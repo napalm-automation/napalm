@@ -35,7 +35,18 @@ To install, execute:
    pip install napalm
 ``
 
+Mailing List
+=======
+
+If you have any questions, join the mailing list: [napalm-automation](napalm-automation@googlegroups.com).
+
 Ansible
 =======
 
 There is an ansible module provided by this API. Make sure you read the documentation and you understand how it works before trying to use it.
+
+Authors
+=======
+ * David Barroso [dbarroso@spotify.com](dbarroso@spotify.com)
+ * Elisa Jasinska [elisa@bigwaveit.org](elisa@bigwaveit.org)
+
