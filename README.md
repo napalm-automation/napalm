@@ -40,7 +40,7 @@ There is an ansible module provided by this API. Make sure you read the document
 
 Mailing List
 =======
-If you have any questions, join the mailing list at [napalm-automation@googlegroups.com](mailto:napalm-automation@googlegroups.com)
+If you have any questions, join the users' mailing list at [napalm-automation@googlegroups.com](mailto:napalm-automation@googlegroups.com) and if you are developer and want to contribute to NAPALM feel free to join to the developers' mailing list at [napalm-dev@googlegroups.com](mailto:napalm-dev@googlegroups.com)
 
 Authors
 =======
