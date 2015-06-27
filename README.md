@@ -26,6 +26,9 @@ Before using the library, please, read the documentation (link below). Specially
 
 See the [Read the Docs](http://napalm.readthedocs.org)
 
+You can also watch a [live demo](https://youtu.be/93q-dHC0u0I) of NAPALM to see what it is and what it can do for you.
+
+
 Install
 =======
 To install, execute:
