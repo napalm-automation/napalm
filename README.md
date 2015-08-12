@@ -48,7 +48,7 @@ If you have any questions, join the users' mailing list at [napalm-automation@go
 IRC
 ===
 
-You can find the homologus IRC channels on freenode #napalm-automation and #napalm-dev. Feel free to join if you prefer a more direct approach.
+You can find the homologous IRC channels on freenode #napalm-automation and #napalm-dev. Feel free to join if you prefer a more direct approach.
 
 Authors
 =======
