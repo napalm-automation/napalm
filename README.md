@@ -45,6 +45,11 @@ Mailing List
 =======
 If you have any questions, join the users' mailing list at [napalm-automation@googlegroups.com](mailto:napalm-automation@googlegroups.com) and if you are developer and want to contribute to NAPALM feel free to join to the developers' mailing list at [napalm-dev@googlegroups.com](mailto:napalm-dev@googlegroups.com)
 
+IRC
+===
+
+You can find the homologus IRC channels on freenode #napalm-automation and #napalm-dev. Feel free to join if you prefer a more direct approach.
+
 Authors
 =======
  * David Barroso ([dbarroso@spotify.com](mailto:dbarroso@spotify.com))
