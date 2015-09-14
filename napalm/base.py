@@ -178,90 +178,90 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
-    def get_bgp_neighbors(self):
-        """
-        Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).\
-        The inner dictionary will containg the following data for each vrf:
-         * local_as (int)
-         * router_id
-         * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
-           * is_up (True/False)
-           * is_enabled (True/False)
-           * remote_as (int)
-           * description (string)
-           * uptime (int in seconds)
-           * received_prefixes (int)
-           * accepted_prefixes (int)
-           * sent_prefixes (int)
-
-        For example:
-
-            {
-            u'default':
-                {
-                'router_id': u'192.168.0.1',
-                'local_as': 65000,
-                'peers':
-                    {
-                    u'10.0.0.11':
-                        {
-                        'is_up': True,
-                        'is_enabled': True,
-                        'uptime': 1429978587.950959,
-                        'description': u'',
-                        'received_prefixes': 2,
-                        'sent_prefixes': 3,
-                        'accepted_prefixes': 0,
-                        'remote_as': 65001
-                        },
-                    u'1.1.1.1':
-                        {
-                        'is_up': False,
-                        'is_enabled': False,
-                        'uptime': -1,
-                        'description': u'',
-                        'received_prefixes': 0,
-                        'sent_prefixes': 0,
-                        'accepted_prefixes': 0,
-                        'remote_as': 1
-                        }
-                    }
-                },
-            u'vrfA':
-                {
-                'router_id': u'10.0.1.10',
-                'local_as': 65010,
-                'peers':
-                    {
-                    u'10.0.1.12':
-                        {
-                        'is_up': False,
-                        'is_enabled': True,
-                        'uptime': -1,
-                        'description': u'',
-                        'received_prefixes': 0,
-                        'sent_prefixes': 0,
-                        'accepted_prefixes': 0,
-                        'remote_as': 65012
-                        },
-                    u'10.0.1.13':
-                        {
-                        'is_up': False,
-                        'is_enabled': True,
-                        'uptime': -1,
-                        'description': u'',
-                        'received_prefixes': 0,
-                        'sent_prefixes': 0,
-                        'accepted_prefixes': 0,
-                        'remote_as': 65013
-                        }
-                    }
-                }
-            }
-
-
-        """
-        raise NotImplementedError
+    # def get_bgp_neighbors(self):
+    #     """
+    #     Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).\
+    #     The inner dictionary will containg the following data for each vrf:
+    #      * local_as (int)
+    #      * router_id
+    #      * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
+    #        * is_up (True/False)
+    #        * is_enabled (True/False)
+    #        * remote_as (int)
+    #        * description (string)
+    #        * uptime (int in seconds)
+    #        * received_prefixes (int)
+    #        * accepted_prefixes (int)
+    #        * sent_prefixes (int)
+    #
+    #     For example:
+    #
+    #         {
+    #         u'default':
+    #             {
+    #             'router_id': u'192.168.0.1',
+    #             'local_as': 65000,
+    #             'peers':
+    #                 {
+    #                 u'10.0.0.11':
+    #                     {
+    #                     'is_up': True,
+    #                     'is_enabled': True,
+    #                     'uptime': 1429978587.950959,
+    #                     'description': u'',
+    #                     'received_prefixes': 2,
+    #                     'sent_prefixes': 3,
+    #                     'accepted_prefixes': 0,
+    #                     'remote_as': 65001
+    #                     },
+    #                 u'1.1.1.1':
+    #                     {
+    #                     'is_up': False,
+    #                     'is_enabled': False,
+    #                     'uptime': -1,
+    #                     'description': u'',
+    #                     'received_prefixes': 0,
+    #                     'sent_prefixes': 0,
+    #                     'accepted_prefixes': 0,
+    #                     'remote_as': 1
+    #                     }
+    #                 }
+    #             },
+    #         u'vrfA':
+    #             {
+    #             'router_id': u'10.0.1.10',
+    #             'local_as': 65010,
+    #             'peers':
+    #                 {
+    #                 u'10.0.1.12':
+    #                     {
+    #                     'is_up': False,
+    #                     'is_enabled': True,
+    #                     'uptime': -1,
+    #                     'description': u'',
+    #                     'received_prefixes': 0,
+    #                     'sent_prefixes': 0,
+    #                     'accepted_prefixes': 0,
+    #                     'remote_as': 65012
+    #                     },
+    #                 u'10.0.1.13':
+    #                     {
+    #                     'is_up': False,
+    #                     'is_enabled': True,
+    #                     'uptime': -1,
+    #                     'description': u'',
+    #                     'received_prefixes': 0,
+    #                     'sent_prefixes': 0,
+    #                     'accepted_prefixes': 0,
+    #                     'remote_as': 65013
+    #                     }
+    #                 }
+    #             }
+    #         }
+    #
+    #
+    #     """
+    #     raise NotImplementedError
 
     def get_lldp_neighbors(self):
         """
@@ -269,7 +269,6 @@ class NetworkDriver:
         information:
             * hostname
             * port
-            * ttl
 
         For example:
 
@@ -279,7 +278,6 @@ class NetworkDriver:
                 {
                 'hostname': u'junos-unittest',
                 'port': u'520',
-                'ttl': 120
                 }
             ],
         u'Ethernet3':
@@ -287,7 +285,6 @@ class NetworkDriver:
                 {
                 'hostname': u'junos-unittest',
                 'port': u'522',
-                'ttl': 120
                 }
             ],
         u'Ethernet1':
@@ -295,12 +292,10 @@ class NetworkDriver:
                 {
                 'hostname': u'junos-unittest',
                 'port': u'519',
-                'ttl': 120
                 },
                 {
                 'hostname': u'ios-xrv-unittest',
                 'port': u'Gi0/0/0/0',
-                'ttl': 120
                 }
             ],
         u'Management1':
@@ -308,7 +303,6 @@ class NetworkDriver:
                 {
                 'hostname': u'junos-unittest',
                 'port': u'508',
-                'ttl': 120
                 }
             ]
         }
