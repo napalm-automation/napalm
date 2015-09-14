@@ -12,7 +12,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-import re
 from base import NetworkDriver
 from utils import string_parsers
 
@@ -30,6 +29,7 @@ class IOSXRDriver(NetworkDriver):
         self.password = password
         self.device = IOSXR(hostname, username, password)
         self.pending_changes = False
+        self.replace = False
 
     def open(self):
         self.device.open()
@@ -119,15 +119,15 @@ class IOSXRDriver(NetworkDriver):
         # init result dict
         result = {}
 
-        # fetch show interface output 
+        # fetch show interface output
         sh_int = self.device.show_interfaces()
         # split per interface, eg by empty line
         interface_list = sh_int.rstrip().split('\n\n')
-        # for each interface... 
+        # for each interface...
         for interface in interface_list:
 
             # splitting this and matching each line avoids issues with order
-            # sorry... 
+            # sorry...
             interface_lines = interface.split('\n')
 
             # init variables to match for
@@ -138,27 +138,20 @@ class IOSXRDriver(NetworkDriver):
             description = None
             speed = None
 
-            # loop though and match each line 
+            # loop though and match each line
             for line in interface_lines:
-
-                match1 = re.search('(.*) is (.*), line protocol is (.*)',line)
-                if match1 is not None:
-                    interface_name = match1.group(1)
-                    is_enabled = match1.group(2)
-                    is_up = match1.group(3)
-
-                match2 = re.search('\(bia (.*)\)',line)
-                if match2 is not None:
-                    mac_address = match2.group(1)
-
-                match3 = re.search('Description: (.*)$', line)
-                if match3 is not None:
-                    description = match3.group(1)
-
-                match4 = re.search('Full-duplex, (\d*)', line)
-                if match4 is not None:
-                    speed = match4.group(1)
-
+                description = ''
+                if 'line protocol' in line:
+                    lp = line.split()
+                    interface_name = lp[0]
+                    is_enabled = lp[2] == 'up,'
+                    is_up = lp[6] == 'up'
+                elif 'bia' in line:
+                    mac_address = line.split()[-1].replace(')', '')
+                elif 'Description' in line:
+                    description = ' '.join(line.split()[1:])
+                elif 'BW' in line:
+                    speed = int(line.split()[4])/1000
             result[interface_name] = {
                 'is_enabled': is_enabled,
                 'is_up': is_up,
@@ -239,8 +232,6 @@ class IOSXRDriver(NetworkDriver):
         # fetch sh ip bgp output
         sh_lldp = self.device.show_lldp_neighbors().splitlines()[5:-3]
 
-        print sh_lldp
-
         for n in sh_lldp:
             local_interface = n.split()[1]
             if local_interface not in lldp.keys():
@@ -254,4 +245,3 @@ class IOSXRDriver(NetworkDriver):
             )
 
         return lldp
-
