@@ -22,6 +22,9 @@ from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError
 from exceptions import ReplaceConfigException, MergeConfigException
 
+from utils import string_parsers
+
+
 class JunOSDriver(NetworkDriver):
 
     def __init__(self, hostname, username, password):
@@ -100,7 +103,7 @@ class JunOSDriver(NetworkDriver):
             'os_version': output['version'],
             'hostname': output['hostname'],
             'fqdn': output['fqdn'],
-            'uptime': uptime,
+            'uptime': string_parsers.convert_uptime_string_seconds(uptime),
             'interface_list': interface_list
         }
 
@@ -139,40 +142,45 @@ class JunOSDriver(NetworkDriver):
 
         return result
 
-    def get_bgp_neighbors(self):
-
-        # init result dict
-        result = {}
-
-        instances = junos_views.junos_route_instance_table(self.device)
-        instances.get()
-
-        for vrf in instances.keys():
-            if not vrf.startswith('__'):
-
-                # init result dict for this vrf
-                result[vrf] = {
-                    'peers': {},
-                    'router_id': None,
-                    'local_as': None,
-                }
-
-                # fetch sessions for vrf
-                bgp = junos_views.junos_bgp_table(self.device)
-                bgp.get(instance=vrf)
-
-                # assemble result dict 
-                bgp_result = {}
-                [bgp_result.update({neigh:dict(bgp[neigh])}) for neigh in bgp.keys()]
-                result[vrf]['peers'] = bgp_result
-
-        return result
+    # def get_bgp_neighbors(self):
+    #
+    #     # init result dict
+    #     result = {}
+    #
+    #     instances = junos_views.junos_route_instance_table(self.device)
+    #     instances.get()
+    #
+    #     for vrf in instances.keys():
+    #         if not vrf.startswith('__'):
+    #
+    #             # init result dict for this vrf
+    #             result[vrf] = {
+    #                 'peers': {},
+    #                 'router_id': None,
+    #                 'local_as': None,
+    #             }
+    #
+    #             # fetch sessions for vrf
+    #             bgp = junos_views.junos_bgp_table(self.device)
+    #             bgp.get(instance=vrf)
+    #
+    #             # assemble result dict
+    #             bgp_result = {}
+    #             [bgp_result.update({neigh:dict(bgp[neigh])}) for neigh in bgp.keys()]
+    #             result[vrf]['peers'] = bgp_result
+    #
+    #     return result
 
     def get_lldp_neighbors(self):
-
         lldp = junos_views.junos_lldp_table(self.device)
         lldp.get()
 
         result = lldp.items()
 
-        return result
+        neighbors = dict()
+        for neigh in result:
+            if neigh[0] not in neighbors.keys():
+                neighbors[neigh[0]] = list()
+            neighbors[neigh[0]].append({ x[0]: x[1] for x in neigh[1]})
+
+        return neighbors
