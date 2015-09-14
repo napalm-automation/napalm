@@ -60,12 +60,12 @@ junos_bgp_view:
 junos_lldp_table:
   rpc: get-lldp-neighbors-information
   item: lldp-neighbor-information
-  key: lldp-local-interface | lldp-local-port-id
+  key: lldp-local-port-id | lldp-local-interface
   view: junos_lldp_view
 
 junos_lldp_view:
   fields:
     hostname: lldp-remote-system-name
-    port: lldp-remote-port-description
+    port: lldp-remote-port-description | lldp-remote-port-id
 
 
