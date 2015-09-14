@@ -1,0 +1,20 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.define "eos" do |eos|
+    eos.vm.box = "vEOS-4.15.0F"
+    eos.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
+    eos.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
+    eos.vm.network "private_network", virtualbox__intnet: "link_3", ip: "169.254.1.11", auto_config: false
+
+    eos.vm.provision "shell", inline: <<-SHELL
+      FastCli -p 15 -c "configure
+      interface Management1
+        ip address 192.168.56.201/24 secondary"
+    SHELL
+
+  end
+
+end
