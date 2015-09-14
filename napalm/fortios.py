@@ -20,8 +20,6 @@ from exceptions import ReplaceConfigException, MergeConfigException
 
 from utils.string_parsers import colon_separated_string_to_dict, convert_uptime_string_seconds
 
-import re
-
 
 def execute_get(device, cmd, separator=':', auto=False):
     output = device.execute_command(cmd)
@@ -168,7 +166,7 @@ class FortiOSDriver(NetworkDriver):
                 ifs['is_enabled'] = self.device.running_config['system interface'][iface].get_param('status') != 'down'
                 ifs['description'] = self.device.running_config['system interface'][iface].get_param('description')
                 ifs['last_flapped'] = None
-                ifs['mode'] = 'routed'
+                #ifs['mode'] = 'routed'
                 ifs['last_flapped'] = None
                 interface_statistics[iface] = ifs
             except CommandExecutionException:
@@ -176,36 +174,39 @@ class FortiOSDriver(NetworkDriver):
 
         return interface_statistics
 
-    def get_bgp_neighbors(self):
-        bgp_sum = self.device.execute_command('get router info bgp sum')
-        re_neigh = re.compile("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")
-        neighbors = {n.split()[0]: n.split()[1:] for n in bgp_sum if re.match(re_neigh, n)}
+    # def get_bgp_neighbors(self):
+    #     bgp_sum = self.device.execute_command('get router info bgp sum')
+    #     re_neigh = re.compile("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")
+    #     neighbors = {n.split()[0]: n.split()[1:] for n in bgp_sum if re.match(re_neigh, n)}
+    #
+    #     peers = dict()
+    #
+    #     self.device.load_config('router bgp')
+    #
+    #     for neighbor, parameters in neighbors.iteritems():
+    #         neigh_conf = self.device.running_config['router bgp']['neighbor']['{}'.format(neighbor)]
+    #         peers[neighbor] = dict()
+    #         peers[neighbor]['remote_as'] = int(neigh_conf.get_param('remote-as'))
+    #         peers[neighbor]['is_enabled'] = neigh_conf.get_param('shutdown') != 'enable' or False
+    #         peers[neighbor]['is_up'] = 'never' != parameters[7] or False
+    #         peers[neighbor]['uptime'] = convert_uptime_string_seconds(parameters[7])
+    #         peers[neighbor]['accepted_prefixes'] = int(self.device.execute_command('get router info bgp neighbor {} | grep "accepted prefixes"'.format(neighbor))[0].split()[0])
+    #         peers[neighbor]['sent_prefixes'] = int(self.device.execute_command('get router info bgp neighbor {} | grep "announced prefixes"'.format(neighbor))[0].split()[0])
+    #
+    #         received = self.device.execute_command('get router info bgp neighbors {} received-routes | grep prefixes'.format(neighbor))[0].split()
+    #         if len(received) > 0:
+    #             peers[neighbor]['received_prefixes'] = int(received[-1])
+    #         else:
+    #             # Soft-reconfig is not enabled
+    #             peers[neighbor]['received_prefixes'] = 0
+    #
+    #     return {
+    #         'default': {
+    #             'local_as': int(bgp_sum[0].split()[7]),
+    #             'router_id': bgp_sum[0].split()[3],
+    #             'peers': peers
+    #         }
+    #     }
 
-        peers = dict()
-
-        self.device.load_config('router bgp')
-
-        for neighbor, parameters in neighbors.iteritems():
-            neigh_conf = self.device.running_config['router bgp']['neighbor']['{}'.format(neighbor)]
-            peers[neighbor] = dict()
-            peers[neighbor]['remote_as'] = int(neigh_conf.get_param('remote-as'))
-            peers[neighbor]['is_enabled'] = neigh_conf.get_param('shutdown') != 'enable' or False
-            peers[neighbor]['is_up'] = 'never' != parameters[7] or False
-            peers[neighbor]['uptime'] = convert_uptime_string_seconds(parameters[7])
-            peers[neighbor]['accepted_prefixes'] = int(self.device.execute_command('get router info bgp neighbor {} | grep "accepted prefixes"'.format(neighbor))[0].split()[0])
-            peers[neighbor]['sent_prefixes'] = int(self.device.execute_command('get router info bgp neighbor {} | grep "announced prefixes"'.format(neighbor))[0].split()[0])
-
-            received = self.device.execute_command('get router info bgp neighbors {} received-routes | grep prefixes'.format(neighbor))[0].split()
-            if len(received) > 0:
-                peers[neighbor]['received_prefixes'] = int(received[-1])
-            else:
-                # Soft-reconfig is not enabled
-                peers[neighbor]['received_prefixes'] = 0
-
-        return {
-            'default': {
-                'local_as': int(bgp_sum[0].split()[7]),
-                'router_id': bgp_sum[0].split()[3],
-                'peers': peers
-            }
-        }
+    def get_lldp_neighbors(self):
+        return {}
