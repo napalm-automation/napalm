@@ -88,7 +88,7 @@ class JunOSDriver(NetworkDriver):
 
         output = self.device.facts
 
-        uptime = None
+        uptime = 0
         if 'RE0' in output:
           uptime = output['RE0']['up_time']
 
