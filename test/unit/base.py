@@ -14,6 +14,7 @@
 
 from napalm import exceptions
 import difflib
+import models
 
 class TestNetworkDriver:
 
@@ -116,20 +117,42 @@ class TestNetworkDriver:
 
         self.assertTrue(result)
 
-    '''
+    @staticmethod
+    def _test_model(model, data):
+        same_keys = set(model.keys()) == set(data.keys())
+
+        if not same_keys:
+            print "model_keys: {}\ndata_keys: {}".format(model.keys(), data.keys())
+
+        correct_class = True
+        for key, instance_class in model.iteritems():
+            same_class = isinstance(data[key], instance_class)
+            correct_class = correct_class and same_class
+
+            if not same_class:
+                print "key: {}\nmodel_class: {}\ndata_class: {}".format(key, instance_class, data[key].__class__)
+
+        return correct_class and same_keys
+
+
     def test_get_facts(self):
-        intended_facts = {
-            'vendor': unicode,
-            'model': unicode,
-            'os_version': unicode,
-            'serial_number': unicode,
-            'uptime': float,
-            'interface_list': list
-        }
-        facts_dictionary = dict()
+        facts = self.device.get_facts()
+        result = self._test_model(models.facts, facts)
+        self.assertTrue(result)
 
-        for fact, value in self.device.get_facts().iteritems():
-            facts_dictionary[fact] = value.__class__
+    def test_get_interfaces(self):
+        result = True
 
-        self.assertEqual(facts_dictionary, intended_facts)
-    '''
+        for interface, interface_data in self.device.get_interfaces().iteritems():
+            result = result and self._test_model(models.interface, interface_data)
+
+        self.assertTrue(result)
+
+    def test_get_lldp_neighbors(self):
+        result = True
+
+        for interface, neighbor_list in self.device.get_lldp_neighbors().iteritems():
+            for neighbor in neighbor_list:
+                result = result and self._test_model(models.lldp_neighbors, neighbor)
+
+        self.assertTrue(result)
