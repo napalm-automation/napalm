@@ -12,7 +12,7 @@ Vagrant.configure(2) do |config|
     eos.vm.provision "shell", inline: <<-SHELL
       FastCli -p 15 -c "configure
       interface Management1
-        ip address 192.168.56.201/24 secondary"
+        ip address 192.168.56.201/24"
     SHELL
 
   end
