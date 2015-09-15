@@ -1,5 +1,17 @@
-+ hostname pyeos-unittest
-- hostname NEWHOSTNAME
-interface Ethernet2
-+ description bla
-- description BLALALAL
+@@ -3,8 +3,6 @@
+ ! boot system flash:/vEOS-lab.swi
+ !
+ transceiver qsfp default-mode 4x10G
+-!
+-hostname NEWHOSTNAME
+ !
+ spanning-tree mode mstp
+ !
+@@ -17,7 +15,6 @@
+ interface Ethernet1
+ !
+ interface Ethernet2
+-   description BLALALAL
+ !
+ interface Ethernet3
+ !
