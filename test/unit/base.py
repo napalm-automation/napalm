@@ -13,8 +13,10 @@
 # the License.
 
 from napalm import exceptions
+import difflib
 
 class TestNetworkDriver:
+
 
     @classmethod
     def tearDownClass(cls):
@@ -25,7 +27,12 @@ class TestNetworkDriver:
     @staticmethod
     def read_file(filename):
         with open(filename, 'r') as f:
-            return f.read()
+            return f.read().strip()
+
+    @staticmethod
+    def print_diff_strings(orig, new):
+        for line in difflib.context_diff(orig.splitlines(), new.splitlines()):
+            print line
 
     def test_replacing_and_committing_config(self):
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
@@ -48,6 +55,7 @@ class TestNetworkDriver:
         except exceptions.ReplaceConfigException:
             self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
             diff = self.device.compare_config()
+            self.device.discard_config()
             result = True and len(diff) == 0
         self.assertTrue(result)
 
@@ -58,6 +66,7 @@ class TestNetworkDriver:
         commit_diff = self.device.compare_config()
         self.device.discard_config()
         discard_diff = self.device.compare_config()
+        self.device.discard_config()
 
         result = (commit_diff == intended_diff) and (discard_diff == '')
         self.assertTrue(result)
@@ -98,11 +107,12 @@ class TestNetworkDriver:
         try:
             self.device.load_merge_candidate(filename='%s/merge_typo.conf' % self.vendor)
             diff = self.device.compare_config()
-            self.device.commit_config()
+            raise Exception("We shouldn't be here")
         except exceptions.MergeConfigException:
             # We load the original config as candidate. If the commit failed cleanly the compare_config should be empty
             self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
             result = self.device.compare_config() == ''
+            self.device.discard_config()
 
         self.assertTrue(result)
 
