@@ -178,6 +178,52 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
+    def get_lldp_neighbors(self):
+        """
+        Returns a dictionary where the keys are local ports and the value is a list of dictionaries with the following
+        information:
+            * hostname
+            * port
+
+        For example:
+
+        {
+        u'Ethernet2':
+            [
+                {
+                'hostname': u'junos-unittest',
+                'port': u'520',
+                }
+            ],
+        u'Ethernet3':
+            [
+                {
+                'hostname': u'junos-unittest',
+                'port': u'522',
+                }
+            ],
+        u'Ethernet1':
+            [
+                {
+                'hostname': u'junos-unittest',
+                'port': u'519',
+                },
+                {
+                'hostname': u'ios-xrv-unittest',
+                'port': u'Gi0/0/0/0',
+                }
+            ],
+        u'Management1':
+            [
+                {
+                'hostname': u'junos-unittest',
+                'port': u'508',
+                }
+            ]
+        }
+        """
+        raise NotImplementedError
+
     # def get_bgp_neighbors(self):
     #     """
     #     Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).\
@@ -262,49 +308,3 @@ class NetworkDriver:
     #
     #     """
     #     raise NotImplementedError
-
-    def get_lldp_neighbors(self):
-        """
-        Returns a dictionary where the keys are local ports and the value is a list of dictionaries with the following
-        information:
-            * hostname
-            * port
-
-        For example:
-
-        {
-        u'Ethernet2':
-            [
-                {
-                'hostname': u'junos-unittest',
-                'port': u'520',
-                }
-            ],
-        u'Ethernet3':
-            [
-                {
-                'hostname': u'junos-unittest',
-                'port': u'522',
-                }
-            ],
-        u'Ethernet1':
-            [
-                {
-                'hostname': u'junos-unittest',
-                'port': u'519',
-                },
-                {
-                'hostname': u'ios-xrv-unittest',
-                'port': u'Gi0/0/0/0',
-                }
-            ],
-        u'Management1':
-            [
-                {
-                'hostname': u'junos-unittest',
-                'port': u'508',
-                }
-            ]
-        }
-        """
-        raise NotImplementedError
