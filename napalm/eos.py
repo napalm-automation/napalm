@@ -21,7 +21,7 @@ from exceptions import MergeConfigException, ReplaceConfigException, SessionLock
 from datetime import datetime
 import time
 
-from utils.string_parsers import colon_separated_string_to_dict, hyphen_range, sorted_nicely
+from utils import string_parsers
 
 
 class EOSDriver(NetworkDriver):
@@ -127,13 +127,21 @@ class EOSDriver(NetworkDriver):
         self.device.run_commands(commands)
 
     def get_facts(self):
-        version = self.device.show_version()
-        hostname = self.device.show_hostname()
+        commands = list()
+        commands.append('show version')
+        commands.append('show hostname')
+        commands.append('show interfaces status')
+
+        result = self.device.run_commands(commands)
+
+        version = result[0]
+        hostname = result[1]
+        interfaces_dict = result[2]['interfaceStatuses']
 
         uptime = time.time() - version['bootupTimestamp']
 
-        interfaces = [i for i in self.device.show_interfaces_status()['interfaceStatuses'].keys() if '.' not in i]
-        interfaces = sorted_nicely(interfaces)
+        interfaces = [i for i in interfaces_dict.keys() if '.' not in i]
+        interfaces = string_parsers.sorted_nicely(interfaces)
 
         return {
             'hostname': hostname['hostname'],
@@ -143,63 +151,13 @@ class EOSDriver(NetworkDriver):
             'serial_number': version['serialNumber'],
             'os_version': version['internalVersion'],
             'uptime': int(uptime),
-            'interface_list': interfaces
+            'interface_list': interfaces,
         }
 
     def get_interfaces(self):
-        '''
-        def _process_counters():
-            interfaces[interface]['counters'] = dict()
-            if counters is None:
-                interfaces[interface]['counters']['tx_packets'] = -1
-                interfaces[interface]['counters']['rx_packets'] = -1
-                interfaces[interface]['counters']['tx_errors'] = -1
-                interfaces[interface]['counters']['rx_errors'] = -1
-                interfaces[interface]['counters']['tx_discards'] = -1
-                interfaces[interface]['counters']['rx_discards'] = -1
-            else:
-                interfaces[interface]['counters']['tx_packets'] = counters['outUcastPkts'] + \
-                                                      counters['outMulticastPkts'] + \
-                                                      counters['outBroadcastPkts']
-                interfaces[interface]['counters']['rx_packets'] = counters['inUcastPkts'] + \
-                                                      counters['inMulticastPkts'] + \
-                                                      counters['inBroadcastPkts']
-
-                interfaces[interface]['counters']['tx_errors'] = counters['totalOutErrors']
-                interfaces[interface]['counters']['rx_errors'] = counters['totalInErrors']
-
-                interfaces[interface]['counters']['tx_discards'] = counters['outDiscards']
-                interfaces[interface]['counters']['rx_discards'] = counters['inDiscards']
-
-        def _process_routed_interface():
-            interface_json = values.pop("interfaceAddress", [])
-            interfaces[interface]['ip_address_v4'] = list()
-
-            if len(interface_json) > 0:
-                interface_json = interface_json[0]
-                interfaces[interface]['ip_address_v4'].append('{}/{}'.format(
-                    interface_json['primaryIp']['address'], interface_json['primaryIp']['maskLen'])
-                )
-
-                for sec_ip, sec_values in interface_json['secondaryIps'].iteritems():
-                    interfaces[interface]['ip_address_v4'].append('{}/{}'.format(sec_ip, sec_values['maskLen']))
-
-        def _process_switched_interface():
-            data = colon_separated_string_to_dict(switchport_data['output'])
-
-            if data[u'Operational Mode'] == u'static access':
-                interfaces[interface]['switchport_mode'] = 'access'
-                interfaces[interface]['access_vlan'] = int(data[u'Access Mode VLAN'].split()[0])
-            elif data[u'Operational Mode'] == u'trunk':
-                interfaces[interface]['switchport_mode'] = 'trunk'
-                interfaces[interface]['native_vlan'] = int(data[u'Trunking Native Mode VLAN'].split()[0])
-
-                if data[u'Trunking VLANs Enabled'] == u'ALL':
-                    interfaces[interface]['trunk_vlans'] = range(1,4095)
-                else:
-                    interfaces[interface]['trunk_vlans'] = hyphen_range(data[u'Trunking VLANs Enabled'])
-        '''
-        output = self.device.show_interfaces()
+        commands = list()
+        commands.append('show interfaces')
+        output = self.device.run_commands(commands)[0]
 
         interfaces = dict()
 
@@ -220,23 +178,30 @@ class EOSDriver(NetworkDriver):
 
             interfaces[interface]['last_flapped'] = values.pop('lastStatusChangeTimestamp', None)
 
-            #interfaces[interface]['mode'] = values['forwardingModel']
-
             interfaces[interface]['speed'] = values['bandwidth']
             interfaces[interface]['mac_address'] = values.pop('physicalAddress', None)
 
-
-            #counters = values.pop('interfaceCounters', None)
-            #_process_counters()
-
-
-            #if interfaces[interface]['mode'] == u'routed':
-            #    _process_routed_interface()
-            #if interfaces[interface]['mode'] == u'bridged':
-            #    switchport_data = eval('self.device.show_interfaces_{}_switchport(format="text")'.format(interface))
-            #    _process_switched_interface()
-
         return interfaces
+
+    def get_lldp_neighbors(self):
+        commands = list()
+        commands.append('show lldp neighbors')
+        output = self.device.run_commands(commands)[0]['lldpNeighbors']
+
+        lldp = dict()
+
+        for n in output:
+            if n['port'] not in lldp.keys():
+                lldp[n['port']] = list()
+
+            lldp[n['port']].append(
+                {
+                    'hostname': n['neighborDevice'],
+                    'port': n['neighborPort'],
+                }
+            )
+
+        return lldp
 
     # def get_bgp_neighbors(self):
     #     bgp_neighbors = dict()
@@ -279,19 +244,3 @@ class EOSDriver(NetworkDriver):
     #             bgp_neighbors[vrf]['peers'][n]['description'] = n_data_full.pop('Description', '')
     #
     #     return bgp_neighbors
-
-    def get_lldp_neighbors(self):
-        lldp = dict()
-
-        for n in self.device.show_lldp_neighbors()['lldpNeighbors']:
-            if n['port'] not in lldp.keys():
-                lldp[n['port']] = list()
-
-            lldp[n['port']].append(
-                {
-                    'hostname': n['neighborDevice'],
-                    'port': n['neighborPort'],
-                }
-            )
-
-        return lldp
