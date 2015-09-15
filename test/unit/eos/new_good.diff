@@ -1,16 +1,39 @@
-+ hostname pyeos-unittest-changed
-- hostname pyeos-unittest
-router bgp 65000
-   vrf test
-     + neighbor 1.1.1.2 maximum-routes 12000
-     + neighbor 1.1.1.2 remote-as 1
-     - neighbor 1.1.1.1 remote-as 1
-     - neighbor 1.1.1.1 maximum-routes 12000
-   vrf test2
-     + neighbor 2.2.2.3 remote-as 2
-     + neighbor 2.2.2.3 maximum-routes 12000
-     - neighbor 2.2.2.2 remote-as 2
-     - neighbor 2.2.2.2 maximum-routes 12000
-interface Ethernet2
-+ description ble
-- description bla
+@@ -4,17 +4,20 @@
+ !
+ transceiver qsfp default-mode 4x10G
+ !
++hostname pyeos-unittest-changed
++!
+ spanning-tree mode mstp
+ !
+ aaa authorization exec default local
+ !
+-aaa root secret 5 $1$lpTXS9qH$EpnjrnfpPZZgiAbz5sxn21
++no aaa root
+ !
+-username admin privilege 15 role network-admin secret 5 $1$qOKYcS3Z$YQFjW2k04vX.jh7q3cIbB1
++username admin privilege 15 role network-admin secret 5 $1$Od4yU7aX$qt83nSW/F55td0V0CZZeR0
+ !
+ interface Ethernet1
+ !
+ interface Ethernet2
++   description ble
+ !
+ interface Ethernet3
+ !
+@@ -23,6 +26,15 @@
+ !
+ no ip routing
+ !
++router bgp 65000
++   vrf test
++      neighbor 1.1.1.2 remote-as 1
++      neighbor 1.1.1.2 maximum-routes 12000 
++   !
++   vrf test2
++      neighbor 2.2.2.3 remote-as 2
++      neighbor 2.2.2.3 maximum-routes 12000 
++!
+ management api http-commands
+    no shutdown
+ !
