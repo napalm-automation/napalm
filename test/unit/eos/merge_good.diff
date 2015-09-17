@@ -7,7 +7,7 @@
  !
  spanning-tree mode mstp
  !
-@@ -17,7 +15,6 @@
+@@ -18,7 +16,6 @@
  interface Ethernet1
  !
  interface Ethernet2

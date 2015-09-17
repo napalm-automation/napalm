@@ -1,4 +1,4 @@
-@@ -4,17 +4,20 @@
+@@ -4,11 +4,13 @@
  !
  transceiver qsfp default-mode 4x10G
  !
@@ -11,9 +11,9 @@
 -aaa root secret 5 $1$lpTXS9qH$EpnjrnfpPZZgiAbz5sxn21
 +no aaa root
  !
--username admin privilege 15 role network-admin secret 5 $1$qOKYcS3Z$YQFjW2k04vX.jh7q3cIbB1
-+username admin privilege 15 role network-admin secret 5 $1$Od4yU7aX$qt83nSW/F55td0V0CZZeR0
- !
+ username admin privilege 15 role network-admin secret 5 $1$RT/92Zg9$J8wD1qPAdQBcOhv4fefyt.
+ username vagrant privilege 15 role network-admin secret 5 $1$Lw2STh4k$bPEDVVTY2e7lf.vNlnNEO0
+@@ -16,6 +18,7 @@
  interface Ethernet1
  !
  interface Ethernet2
@@ -21,7 +21,7 @@
  !
  interface Ethernet3
  !
-@@ -23,6 +26,15 @@
+@@ -24,6 +27,15 @@
  !
  no ip routing
  !
