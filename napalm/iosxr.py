@@ -63,9 +63,9 @@ class IOSXRDriver(NetworkDriver):
         if not self.pending_changes:
             return ''
         elif self.replace:
-            return self.device.compare_replace_config()
+            return self.device.compare_replace_config().strip()
         else:
-            return self.device.compare_config()
+            return self.device.compare_config().strip()
 
     def commit_config(self):
         if self.replace:
@@ -103,12 +103,12 @@ class IOSXRDriver(NetworkDriver):
 
         result = {
             'vendor': u'Cisco',
-            'os_version': os_version,
-            'hostname': hostname,
+            'os_version': unicode(os_version),
+            'hostname': unicode(hostname),
             'uptime': uptime,
-            'model': model,
-            'serial_number': None,
-            'fqdn': fqdn,
+            'model': unicode(model),
+            'serial_number': u'',
+            'fqdn': unicode(fqdn),
             'interface_list': interface_list,
         }
 
@@ -155,10 +155,10 @@ class IOSXRDriver(NetworkDriver):
             result[interface_name] = {
                 'is_enabled': is_enabled,
                 'is_up': is_up,
-                'mac_address': mac_address,
-                'description': description,
+                'mac_address': unicode(mac_address),
+                'description': unicode(description),
                 'speed': speed,
-                'last_flapped': None,
+                'last_flapped': -1.0,
             }
 
         return result
@@ -239,8 +239,8 @@ class IOSXRDriver(NetworkDriver):
 
             lldp[local_interface].append(
                 {
-                    'hostname': n.split()[0],
-                    'port': n.split()[4],
+                    'hostname': unicode(n.split()[0]),
+                    'port': unicode(n.split()[4]),
                 }
             )
 
