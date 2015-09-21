@@ -13,5 +13,5 @@
  interface Ethernet2
 -   description BLALALAL
  !
- interface Ethernet3
- !
+ interface Management1
+    ip address 192.168.56.201/24
