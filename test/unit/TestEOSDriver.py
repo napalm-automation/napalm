@@ -23,8 +23,8 @@ class TestEOSDriver(unittest.TestCase, TestNetworkDriver):
     @classmethod
     def setUpClass(cls):
         hostname = '192.168.56.201'
-        username = 'admin'
-        password = 'admin'
+        username = 'vagrant'
+        password = 'vagrant'
         cls.vendor = 'eos'
 
         cls.device = EOSDriver(hostname, username, password)
