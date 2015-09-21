@@ -35,6 +35,7 @@ class TestNetworkDriver:
         for line in difflib.context_diff(orig.splitlines(), new.splitlines()):
             print line
 
+    '''
     def test_replacing_and_committing_config(self):
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
         self.device.commit_config()
@@ -116,6 +117,7 @@ class TestNetworkDriver:
             self.device.discard_config()
 
         self.assertTrue(result)
+    '''
 
     @staticmethod
     def _test_model(model, data):
@@ -133,7 +135,6 @@ class TestNetworkDriver:
                 print "key: {}\nmodel_class: {}\ndata_class: {}".format(key, instance_class, data[key].__class__)
 
         return correct_class and same_keys
-
 
     def test_get_facts(self):
         facts = self.device.get_facts()
