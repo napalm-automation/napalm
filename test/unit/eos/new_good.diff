@@ -13,15 +13,14 @@
  !
  username admin privilege 15 role network-admin secret 5 $1$RT/92Zg9$J8wD1qPAdQBcOhv4fefyt.
  username vagrant privilege 15 role network-admin secret 5 $1$Lw2STh4k$bPEDVVTY2e7lf.vNlnNEO0
-@@ -16,6 +18,7 @@
+@@ -16,12 +18,22 @@
  interface Ethernet1
  !
  interface Ethernet2
 +   description ble
  !
- interface Ethernet3
- !
-@@ -24,6 +27,15 @@
+ interface Management1
+    ip address 192.168.56.201/24
  !
  no ip routing
  !
