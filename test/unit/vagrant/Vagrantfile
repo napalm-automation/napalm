@@ -7,6 +7,9 @@ You will need the boxes:
  * hashicorp/precise64
  * vEOS-4.15.0F - https://github.com/dbarrosop/vagrant-veos/
  * IOSXRv-5.3.0 - https://github.com/dbarrosop/vagrant-iosxr/
+ * JunOS - juniper/ffp-12.1X47-D20.7-packetmode
+    * To provision and test JunOS first you have to add the ssh vagrant ssh key into the ssh-agent. I.e.:
+        ssh-add /opt/vagrant/embedded/gems/gems/vagrant-1.7.4/keys/vagrant
 
 For running unittests always start the base box and the box you want to test:
 
@@ -43,13 +46,27 @@ Vagrant.configure(2) do |config|
   config.vm.define "iosxr" do |iosxr|
     iosxr.vm.box = "IOSXRv-5.3.0"
 
-    iosxr.vm.network :forwarded_port, guest: 22, host: 12201, id: 'ssh'
+    iosxr.vm.network :forwarded_port, guest: 22, host: 12202, id: 'ssh'
 
     iosxr.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
     iosxr.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
 
     iosxr.vm.provision "host_shell", inline: <<-SHELL
-      ./provision.py iosxr 12201 vagrant vagrant
+      ./provision.py iosxr 12202 vagrant vagrant
+    SHELL
+
+  end
+
+  config.vm.define "junos" do |junos|
+    junos.vm.box = "juniper/ffp-12.1X47-D20.7-packetmode"
+
+    junos.vm.network :forwarded_port, guest: 22, host: 12203, id: 'ssh'
+
+    junos.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
+    junos.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
+
+    junos.vm.provision "host_shell", inline: <<-SHELL
+      ./provision.py junos 12203 vagrant vagrant
     SHELL
 
   end
