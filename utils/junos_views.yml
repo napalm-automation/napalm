@@ -1,7 +1,7 @@
 ---
 
 ####
-#### Interface table 
+#### Interface table
 ####
 
 junos_iface_table:
@@ -18,7 +18,7 @@ junos_iface_view:
     is_enabled: { admin-status: True=up }
     description: description
     last_flapped: { interface-flapped/@seconds: int }
-    mode: logical-interface/address-family/address-family-name 
+    #mode: logical-interface/address-family/address-family-name
     speed: speed
     mac_address: current-physical-address
 
@@ -27,7 +27,7 @@ junos_iface_view:
 ####
 
 junos_route_instance_table:
-  rpc: get-instance-information 
+  rpc: get-instance-information
   item: instance-core
   key: instance-name
   view: junos_route_instance_view
@@ -54,7 +54,7 @@ junos_bgp_view:
     sent_prefixes: { bgp-rib/aadvertised-prefix-count: int }
 
 ####
-#### LLDP table 
+#### LLDP table
 ####
 
 junos_lldp_table:
@@ -67,5 +67,3 @@ junos_lldp_view:
   fields:
     hostname: lldp-remote-system-name
     port: lldp-remote-port-description | lldp-remote-port-id
-
-
