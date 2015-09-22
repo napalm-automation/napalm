@@ -72,7 +72,7 @@ class JunOSDriver(NetworkDriver):
         if diff is None:
             return ''
         else:
-            return diff
+            return diff.strip()
 
     def commit_config(self):
         self.device.cu.commit()
@@ -90,7 +90,7 @@ class JunOSDriver(NetworkDriver):
 
         uptime = 0
         if 'RE0' in output:
-          uptime = output['RE0']['up_time']
+            uptime = output['RE0']['up_time']
 
         interfaces = junos_views.junos_iface_table(self.device)
         interfaces.get()
@@ -98,11 +98,11 @@ class JunOSDriver(NetworkDriver):
 
         return {
             'vendor': u'Juniper',
-            'model': output['model'],
-            'serial_number': output['serialnumber'],
-            'os_version': output['version'],
-            'hostname': output['hostname'],
-            'fqdn': output['fqdn'],
+            'model': unicode(output['model']),
+            'serial_number': unicode(output['serialnumber']),
+            'os_version': unicode(output['version']),
+            'hostname': unicode(output['hostname']),
+            'fqdn': unicode(output['fqdn']),
             'uptime': string_parsers.convert_uptime_string_seconds(uptime),
             'interface_list': interface_list
         }
@@ -117,28 +117,20 @@ class JunOSDriver(NetworkDriver):
 
         # convert all the tuples to our pre-defined dict structure
         for iface in interfaces.keys():
-
             result[iface] = {
-                'is_up': None,
-                'is_enabled': None,
-                'description': None,
-                'last_flapped': None,
-                'speed': None,
-                'mac_address': None,
+                'is_up': interfaces[iface]['is_up'],
+                'is_enabled': interfaces[iface]['is_enabled'],
+                'description': interfaces[iface]['description'] or u'',
+                'last_flapped': interfaces[iface]['last_flapped'] or -1,
+                'mac_address': unicode(interfaces[iface]['mac_address'])
             }
+            result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
 
-            for item in interfaces[iface].keys():
-
-                if item == 'speed' and interfaces[iface][item] != None:
-                    match1 = re.search('^(\d+)\w*$',interfaces[iface][item])
-                    if match1 is not None:
-                        result[iface]['speed'] = match1.group(1)
-                elif item == 'mac_address' and interfaces[iface][item] != None:
-                    match2 = re.search('^([\d:]*)$',interfaces[iface][item])
-                    if match2 is not None:
-                        result[iface]['mac_address'] = match2.group(1)
-                else:
-                    result[iface][item] = interfaces[iface][item]
+            match = re.search(r'\d+', interfaces[iface]['speed'] or '')
+            if match is not None:
+                result[iface]['speed'] = int(match.group(0))
+            else:
+                result[iface]['speed'] = -1
 
         return result
 
@@ -181,6 +173,6 @@ class JunOSDriver(NetworkDriver):
         for neigh in result:
             if neigh[0] not in neighbors.keys():
                 neighbors[neigh[0]] = list()
-            neighbors[neigh[0]].append({ x[0]: x[1] for x in neigh[1]})
+            neighbors[neigh[0]].append({ x[0]: unicode(x[1]) for x in neigh[1]})
 
         return neighbors
