@@ -4,7 +4,12 @@ import sys
 from pyIOSXR import IOSXR
 import pyeapi
 
+from jnpr.junos import Device
+from jnpr.junos.utils.config import Config
+import jnpr.junos.exception
+
 import pexpect, httplib
+
 
 def print_info_message():
     print "BOX is no longer reachable with vagrant up. Use ssh instead (check the IP in the initial conf)"
@@ -57,6 +62,24 @@ def provision_eos(port, username, password):
         print_info_message()
 
 
+def provision_junos(port, username, password):
+    device = Device('127.0.0.1', user=username, port=port)
+    device.open()
+    device.bind(cu=Config)
+
+    with open('../junos/initial.conf', 'r') as f:
+        configuration = f.read()
+
+    device.cu.load(configuration, format='text', overwrite=True)
+
+    try:
+        device.cu.commit()
+        device.close()
+    except jnpr.junos.exception.RpcTimeoutError:
+        # This actually means everything went fine
+        print_info_message()
+
+
 if __name__ == "__main__":
     os = sys.argv[1]
     port = sys.argv[2]
@@ -67,3 +90,5 @@ if __name__ == "__main__":
         provision_iosxr(port, username, password)
     elif os == 'eos':
         provision_eos(port, username, password)
+    elif os == 'junos':
+        provision_junos(port, username, password)
