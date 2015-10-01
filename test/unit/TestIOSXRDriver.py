@@ -22,10 +22,12 @@ class TestIOSXRDriver(unittest.TestCase, TestNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '192.168.76.12'
-        username = 'dbarroso'
-        password = 'this_is_not_a_secure_password'
+        hostname = '192.168.56.202'
+        username = 'vagrant'
+        password = 'vagrant'
         cls.vendor = 'iosxr'
 
         cls.device = IOSXRDriver(hostname, username, password)
         cls.device.open()
+        cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
+        cls.device.commit_config()
