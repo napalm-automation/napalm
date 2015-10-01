@@ -1,5 +1,5 @@
-pyEOS
+pyeapi
 ncclient
 junos-eznc
-pyIOSXR==0.6
+pyIOSXR
 pyFG

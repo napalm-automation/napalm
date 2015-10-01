@@ -17,3 +17,6 @@ class ReplaceConfigException(Exception):
 
 class MergeConfigException(Exception):
     pass
+
+class SessionLockedException(Exception):
+    pass
