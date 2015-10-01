@@ -141,7 +141,7 @@ def main():
     else:
         device.load_merge_candidate(filename=config_file)
 
-    diff = device.compare_config()
+    diff = device.compare_config().encode('utf-8')
     changed = len(diff) > 0
 
     if diff_file is not None:
