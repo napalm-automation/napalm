@@ -1,0 +1,74 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+"""
+You will need the boxes:
+
+ * hashicorp/precise64
+ * vEOS-4.15.0F - https://github.com/dbarrosop/vagrant-veos/
+ * IOSXRv-5.3.0 - https://github.com/dbarrosop/vagrant-iosxr/
+ * JunOS - juniper/ffp-12.1X47-D20.7-packetmode
+    * To provision and test JunOS first you have to add the ssh vagrant ssh key into the ssh-agent. I.e.:
+        ssh-add /opt/vagrant/embedded/gems/gems/vagrant-1.7.4/keys/vagrant
+
+For running unittests always start the base box and the box you want to test:
+
+    vagrant up base
+
+"""
+Vagrant.configure(2) do |config|
+
+  config.vm.define "base" do |base|
+    base.vm.box = "hashicorp/precise64"
+    base.vm.network "private_network", virtualbox__intnet: "link_1", ip: "10.0.1.100"
+    base.vm.network "private_network", virtualbox__intnet: "link_2", ip: "10.0.2.100"
+
+    base.vm.provision "shell", inline: <<-SHELL
+      sudo apt-get update
+      sudo apt-get install lldpd -y
+    SHELL
+  end
+
+  config.vm.define "eos" do |eos|
+    eos.vm.box = "vEOS-4.15.0F"
+
+    eos.vm.network :forwarded_port, guest: 443, host: 12443, id: 'https'
+
+    eos.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
+    eos.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
+
+    eos.vm.provision "host_shell", inline: <<-SHELL
+      ./provision.py eos 12443 vagrant vagrant
+    SHELL
+
+  end
+
+  config.vm.define "iosxr" do |iosxr|
+    iosxr.vm.box = "IOSXRv-5.3.0"
+
+    iosxr.vm.network :forwarded_port, guest: 22, host: 12202, id: 'ssh'
+
+    iosxr.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
+    iosxr.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
+
+    iosxr.vm.provision "host_shell", inline: <<-SHELL
+      ./provision.py iosxr 12202 vagrant vagrant
+    SHELL
+
+  end
+
+  config.vm.define "junos" do |junos|
+    junos.vm.box = "juniper/ffp-12.1X47-D20.7-packetmode"
+
+    junos.vm.network :forwarded_port, guest: 22, host: 12203, id: 'ssh'
+
+    junos.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
+    junos.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
+
+    junos.vm.provision "host_shell", inline: <<-SHELL
+      ./provision.py junos 12203 vagrant vagrant
+    SHELL
+
+  end
+
+end

@@ -70,8 +70,7 @@ class NetworkDriver:
 
     def compare_config(self):
         """
-
-        :return: A string showing the difference between the running configuration and the candidate configuration. The
+        :return: A string showing the difference between the running configuration and the candidate configuration. The\
         running_config is loaded automatically just before doing the comparison so there is no need for you to do it.
         """
         raise NotImplementedError
@@ -106,18 +105,18 @@ class NetworkDriver:
          * serial_number - Serial number of the device
          * interface_list - List of the interfaces of the device
 
-        For example:
+        For example::
 
-        {
-        'uptime': 151005.57332897186,
-        'vendor': u'Arista',
-        'os_version': u'4.14.3-2329074.gaatlantarel',
-        'serial_number': u'SN0123A34AS',
-        'model': u'vEOS',
-        'hostname': u'eos-router',
-        'fqdn': u'eos-router',
-        'interface_list': [u'Ethernet2', u'Management1', u'Ethernet1', u'Ethernet3']
-        }
+            {
+            'uptime': 151005.57332897186,
+            'vendor': u'Arista',
+            'os_version': u'4.14.3-2329074.gaatlantarel',
+            'serial_number': u'SN0123A34AS',
+            'model': u'vEOS',
+            'hostname': u'eos-router',
+            'fqdn': u'eos-router',
+            'interface_list': [u'Ethernet2', u'Management1', u'Ethernet1', u'Ethernet3']
+            }
 
         """
 
@@ -135,46 +134,92 @@ class NetworkDriver:
          * speed (int in Mbit)
          * mac_address (string)
 
-        For example:
+        For example::
 
-        {
-        u'Management1':
             {
-            'is_up': False,
-            'is_enabled': False,
-            'description': u'',
-            'last_flapped': -1,
-            'speed': 1000,
-            'mac_address': u'dead:beef:dead',
-            },
-        u'Ethernet1':
-            {
-            'is_up': True,
-            'is_enabled': True,
-            'description': u'foo',
-            'last_flapped': 1429978575.1554043,
-            'speed': 1000,
-            'mac_address': u'beef:dead:beef',
-            },
-        u'Ethernet2':
-            {
-            'is_up': True,
-            'is_enabled': True,
-            'description': u'bla',
-            'last_flapped': 1429978575.1555667,
-            'speed': 1000,
-            'mac_address': u'beef:beef:beef',
-            },
-        u'Ethernet3':
-            {
-            'is_up': False,
-            'is_enabled': True,
-            'description': u'bar',
-            'last_flapped': -1,
-            'speed': 1000,
-            'mac_address': u'dead:dead:dead',
+            u'Management1':
+                {
+                'is_up': False,
+                'is_enabled': False,
+                'description': u'',
+                'last_flapped': -1,
+                'speed': 1000,
+                'mac_address': u'dead:beef:dead',
+                },
+            u'Ethernet1':
+                {
+                'is_up': True,
+                'is_enabled': True,
+                'description': u'foo',
+                'last_flapped': 1429978575.1554043,
+                'speed': 1000,
+                'mac_address': u'beef:dead:beef',
+                },
+            u'Ethernet2':
+                {
+                'is_up': True,
+                'is_enabled': True,
+                'description': u'bla',
+                'last_flapped': 1429978575.1555667,
+                'speed': 1000,
+                'mac_address': u'beef:beef:beef',
+                },
+            u'Ethernet3':
+                {
+                'is_up': False,
+                'is_enabled': True,
+                'description': u'bar',
+                'last_flapped': -1,
+                'speed': 1000,
+                'mac_address': u'dead:dead:dead',
+                }
             }
-        }
+        """
+        raise NotImplementedError
+
+    def get_lldp_neighbors(self):
+        """
+        Returns a dictionary where the keys are local ports and the value is a list of dictionaries with the following \
+        information:
+            * hostname
+            * port
+
+        For example::
+
+            {
+            u'Ethernet2':
+                [
+                    {
+                    'hostname': u'junos-unittest',
+                    'port': u'520',
+                    }
+                ],
+            u'Ethernet3':
+                [
+                    {
+                    'hostname': u'junos-unittest',
+                    'port': u'522',
+                    }
+                ],
+            u'Ethernet1':
+                [
+                    {
+                    'hostname': u'junos-unittest',
+                    'port': u'519',
+                    },
+                    {
+                    'hostname': u'ios-xrv-unittest',
+                    'port': u'Gi0/0/0/0',
+                    }
+                ],
+            u'Management1':
+                [
+                    {
+                    'hostname': u'junos-unittest',
+                    'port': u'508',
+                    }
+                ]
+            }
         """
         raise NotImplementedError
 
@@ -262,49 +307,3 @@ class NetworkDriver:
     #
     #     """
     #     raise NotImplementedError
-
-    def get_lldp_neighbors(self):
-        """
-        Returns a dictionary where the keys are local ports and the value is a list of dictionaries with the following
-        information:
-            * hostname
-            * port
-
-        For example:
-
-        {
-        u'Ethernet2':
-            [
-                {
-                'hostname': u'junos-unittest',
-                'port': u'520',
-                }
-            ],
-        u'Ethernet3':
-            [
-                {
-                'hostname': u'junos-unittest',
-                'port': u'522',
-                }
-            ],
-        u'Ethernet1':
-            [
-                {
-                'hostname': u'junos-unittest',
-                'port': u'519',
-                },
-                {
-                'hostname': u'ios-xrv-unittest',
-                'port': u'Gi0/0/0/0',
-                }
-            ],
-        u'Management1':
-            [
-                {
-                'hostname': u'junos-unittest',
-                'port': u'508',
-                }
-            ]
-        }
-        """
-        raise NotImplementedError
