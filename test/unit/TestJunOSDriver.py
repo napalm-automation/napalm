@@ -22,9 +22,9 @@ class TestJunOSDriver(unittest.TestCase, TestNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '192.168.76.11'
-        username = 'dbarroso'
-        password = 'this_is_not_a_secure_password'
+        hostname = '192.168.56.203'
+        username = 'vagrant'
+        password = 'vagrant123'
         cls.vendor = 'junos'
 
         cls.device = JunOSDriver(hostname, username, password)
