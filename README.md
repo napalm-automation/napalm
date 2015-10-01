@@ -8,7 +8,7 @@ NAPALM supports several methods to connect to the devices, to manipulate configu
 
 Supported Network Operating Systems
 -----------------------------------
- * EOS - Using [pyEOS](https://github.com/spotify/pyeos). You need version 4.14.6M or superior.
+ * EOS - Using [pyeapi](https://github.com/arista-eosplus/pyeapi). You need version 4.14.6M or superior.
  * JunOS - Using [junos-eznc](https://github.com/Juniper/py-junos-eznc)
  * IOS-XR - Using [pyIOSXR](https://github.com/fooelisa/pyiosxr)
  * FortiOS - Using [pyFG](https://github.com/spotify/pyfg)
