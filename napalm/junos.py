@@ -36,6 +36,7 @@ class JunOSDriver(NetworkDriver):
 
     def open(self):
         self.device.open()
+        self.device.timeout = 60        
         self.device.bind(cu=Config)
         self.device.cu.lock()
 
