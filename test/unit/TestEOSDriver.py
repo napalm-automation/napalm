@@ -22,10 +22,13 @@ class TestEOSDriver(unittest.TestCase, TestNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '192.168.76.10'
-        username = 'dbarroso'
-        password = 'this_is_not_a_secure_password'
+        hostname = '192.168.56.201'
+        username = 'vagrant'
+        password = 'vagrant'
         cls.vendor = 'eos'
 
         cls.device = EOSDriver(hostname, username, password)
         cls.device.open()
+
+        cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
+        cls.device.commit_config()

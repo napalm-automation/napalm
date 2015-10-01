@@ -1,0 +1,69 @@
+---
+
+####
+#### Interface table
+####
+
+junos_iface_table:
+  rpc: get-interface-information
+  args:
+    extensive: True
+  args_key: interface_name
+  item: physical-interface
+  view: junos_iface_view
+
+junos_iface_view:
+  fields:
+    is_up: { oper-status: True=up }
+    is_enabled: { admin-status: True=up }
+    description: description
+    last_flapped: { interface-flapped/@seconds: int }
+    #mode: logical-interface/address-family/address-family-name
+    speed: speed
+    mac_address: current-physical-address
+
+####
+#### BGP tables
+####
+
+junos_route_instance_table:
+  rpc: get-instance-information
+  item: instance-core
+  key: instance-name
+  view: junos_route_instance_view
+
+junos_route_instance_view:
+  fields:
+    name: instance-name
+
+junos_bgp_table:
+  rpc: get-bgp-summary-information
+  item: bgp-peer
+  key: peer-address
+  view: junos_bgp_view
+
+junos_bgp_view:
+  fields:
+    remote_as: { peer-as: int }
+    description: description
+    is_up: { peer-state: True=Established }
+    is_enabled: { peer-state: False=True }
+    uptime: { elapsed-time/@seconds: int }
+    received_prefixes: { bgp-rib/received-prefix-count: int }
+    accepted_prefixes: { bgp-rib/accepted-prefix-count: int }
+    sent_prefixes: { bgp-rib/aadvertised-prefix-count: int }
+
+####
+#### LLDP table
+####
+
+junos_lldp_table:
+  rpc: get-lldp-neighbors-information
+  item: lldp-neighbor-information
+  key: lldp-local-port-id | lldp-local-interface
+  view: junos_lldp_view
+
+junos_lldp_view:
+  fields:
+    hostname: lldp-remote-system-name
+    port: lldp-remote-port-description | lldp-remote-port-id
