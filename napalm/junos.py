@@ -27,16 +27,17 @@ from utils import string_parsers
 
 class JunOSDriver(NetworkDriver):
 
-    def __init__(self, hostname, username, password):
+    def __init__(self, hostname, username, password, timeout=60):
         self.hostname = hostname
         self.username = username
         self.password = password
+        self.timeout = timeout
         self.device = Device(hostname, user=username, password=password)
         self.config_replace = False
 
     def open(self):
         self.device.open()
-        self.device.timeout = 60        
+        self.device.timeout = self.timeout
         self.device.bind(cu=Config)
         self.device.cu.lock()
 
