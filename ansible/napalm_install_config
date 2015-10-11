@@ -50,6 +50,10 @@ options:
     password:
         description: Password
         required: true
+    timeout:
+        description: Timeout for connections and requests to device
+        required: false
+        default: 60
     config_file:
         description: Where to load the configuration from.
         required: true
@@ -83,6 +87,7 @@ EXAMPLES = '''
         commit_changes={{ commit_changes }}
         replace_config={{ replace_config }}
         diff_file=../compiled/{{ inventory_hostname }}/diff
+        timeout={{timeout}}
 
     From the CLI we would trigger the playbook like:
 
@@ -107,6 +112,7 @@ def main():
             hostname=dict(required=True),
             username=dict(required=True),
             password=dict(required=True),
+            timeout=dict(required=False, default=60, type='int'),
             config_file=dict(required=True),
             dev_os=dict(required=True),
             commit_changes=dict(required=True),
@@ -120,6 +126,7 @@ def main():
     username = module.params['username']
     dev_os = module.params['dev_os']
     password = module.params['password']
+    timeout = module.params['timeout']
 
     config_file = module.params['config_file']
     commit_changes = module.params['commit_changes']
@@ -133,7 +140,7 @@ def main():
 
     network_driver = get_network_driver(dev_os)
 
-    device = network_driver(hostname, username, password)
+    device = network_driver(hostname, username, password, timeout)
     device.open()
 
     if replace_config:
