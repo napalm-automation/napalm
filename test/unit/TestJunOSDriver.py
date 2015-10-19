@@ -27,5 +27,5 @@ class TestJunOSDriver(unittest.TestCase, TestNetworkDriver):
         password = 'vagrant123'
         cls.vendor = 'junos'
 
-        cls.device = JunOSDriver(hostname, username, password)
+        cls.device = JunOSDriver(hostname, username, password, timeout=60)
         cls.device.open()
