@@ -37,11 +37,11 @@ def execute_get(device, cmd, separator=':', auto=False):
 
 class FortiOSDriver(NetworkDriver):
 
-    def __init__(self, hostname, username, password):
+    def __init__(self, hostname, username, password, timeout=60):
         self.hostname = hostname
         self.username = username
         self.password = password
-        self.device = FortiOS(hostname, username=username, password=password)
+        self.device = FortiOS(hostname, username=username, password=password, timeout=timeout)
         self.config_replace = False
 
     def open(self):

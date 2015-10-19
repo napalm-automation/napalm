@@ -27,5 +27,5 @@ class TestFortiOSDriver(unittest.TestCase, TestNetworkDriver):
         password = 'this_is_not_a_secure_password'
         cls.vendor = 'fortios'
 
-        cls.device = FortiOSDriver(hostname, username, password)
+        cls.device = FortiOSDriver(hostname, username, password, timeout=60)
         cls.device.open()
