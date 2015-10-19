@@ -27,7 +27,7 @@ class TestEOSDriver(unittest.TestCase, TestNetworkDriver):
         password = 'vagrant'
         cls.vendor = 'eos'
 
-        cls.device = EOSDriver(hostname, username, password)
+        cls.device = EOSDriver(hostname, username, password, timeout=60)
         cls.device.open()
 
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
