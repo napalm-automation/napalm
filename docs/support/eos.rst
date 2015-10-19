@@ -1,5 +1,11 @@
 EOS
-----
+---
+
+Minimum Version
+~~~~~~~~~~~~~~~
+
+
+To be able to support the ``compare_config`` method you will require to run at least EOS version `4.15.0F`.
 
 Rollback
 ~~~~~~~~
