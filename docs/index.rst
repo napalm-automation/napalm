@@ -28,13 +28,11 @@ You can get the driver you need by doing the following::
 
 Check the tutorials to see how to use the library and the driver section to check which methods are available and some notes regarding each driver.
 
-Tutorials
-=========
-
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
-   first_steps_config
+   tutorials/index
+   support/index
 
 Drivers
 =======
@@ -43,12 +41,3 @@ Drivers
    :maxdepth: 2
 
    base
-
-Caveats
-=======
-
-.. toctree::
-   :maxdepth: 2
-
-   eos
-   fortios
