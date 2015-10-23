@@ -12,25 +12,22 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from eos import EOSDriver
-from iosxr import IOSXRDriver
-from junos import JunOSDriver
-from fortios import FortiOSDriver
-from ibm import IBMDriver
+import unittest
 
-def get_network_driver(vendor):
-    driver_mapping = {
-        'EOS': EOSDriver,
-        'ARISTA': EOSDriver,
-        'IOS-XR': IOSXRDriver,
-        'IOSXR': IOSXRDriver,
-        'JUNOS': JunOSDriver,
-        'JUNIPER': JunOSDriver,
-        'FORTIOS': FortiOSDriver,
-        'IBM': IBMDriver,
-    }
-    try:
-        return driver_mapping[vendor.upper()]
-    except KeyError:
-        raise Exception('Vendor/OS not supported: %s' % vendor)
+from napalm.ibm import IBMDriver
+from base import TestNetworkDriver
 
+
+class TestIBMDriver(unittest.TestCase, TestNetworkDriver):
+
+    @classmethod
+    def setUpClass(cls):
+        hostname = '10.20.18.253'
+        username = 'admin'
+        password = 'admin'
+        cls.vendor = 'ibm'
+
+        cls.device = IBMDriver(hostname, username, password, timeout=60)
+        cls.device.open()
+        cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
+        cls.device.commit_config()
