@@ -64,13 +64,13 @@ options:
     diff_file:
         description: A file where to store the "diff" between the running configuration and the new configuration. If
                      it's not set the diff between configurations is not saved.
-        choices: ['true', 'false']
         required: False
     get_diffs:
         description:
             - Set to false to not have any diffs generated and always apply config.  Useful if platform does
               not support commands being used to generated diffs.  Note: By default diffs are generated
               even if the diff_file param is not set.
+        choices: ['true', 'false']
         required: False
 '''
 
