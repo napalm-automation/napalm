@@ -65,6 +65,13 @@ options:
         description: A file where to store the "diff" between the running configuration and the new configuration. If
                      it's not set the diff between configurations is not saved.
         required: False
+    get_diffs:
+        description:
+            - Set to false to not have any diffs generated and always apply config.  Useful if platform does
+              not support commands being used to generated diffs.  Note: By default diffs are generated
+              even if the diff_file param is not set.
+        choices: ['true', 'false']
+        required: False
 '''
 
 EXAMPLES = '''
@@ -112,6 +119,7 @@ def main():
             commit_changes=dict(required=True),
             replace_config=dict(required=True),
             diff_file=dict(required=False, default=None),
+            get_diffs=dict(required=False, choices=BOOLEANS, type='bool', default=True)
         ),
         supports_check_mode=True
     )
@@ -125,6 +133,7 @@ def main():
     commit_changes = module.params['commit_changes']
     replace_config = module.params['replace_config']
     diff_file = module.params['diff_file']
+    get_diffs = module.params['get_diffs']
 
     if commit_changes.__class__ is str:
         commit_changes = ast.literal_eval(commit_changes)
@@ -141,10 +150,14 @@ def main():
     else:
         device.load_merge_candidate(filename=config_file)
 
-    diff = device.compare_config().encode('utf-8')
-    changed = len(diff) > 0
+    if get_diffs:
+        diff = device.compare_config().encode('utf-8')
+        changed = len(diff) > 0
+    else:
+        changed = True
+        diff = None
 
-    if diff_file is not None:
+    if diff_file is not None and get_diffs:
         save_to_file(diff, diff_file)
 
     if module.check_mode or not commit_changes:
