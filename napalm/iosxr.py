@@ -23,11 +23,12 @@ from exceptions import MergeConfigException, ReplaceConfigException
 
 class IOSXRDriver(NetworkDriver):
 
-    def __init__(self, hostname, username, password):
+    def __init__(self, hostname, username, password, timeout=60):
         self.hostname = hostname
         self.username = username
         self.password = password
-        self.device = IOSXR(hostname, username, password)
+        self.timeout = timeout
+        self.device = IOSXR(hostname, username, password, timeout=timeout)
         self.pending_changes = False
         self.replace = False
 
