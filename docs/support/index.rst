@@ -40,7 +40,7 @@ _                       EOS         JunOS   IOS-XR      FortiOS
 .. [#c2] Not supported but emulated. Check caveats.
 
 .. warning:: Before building a workflow to deploy configuration it is important you understand what the table above means;
-            what are atomic changes and which devices support it, what does replacing or merging configuration means, etc.
+            what are atomic changes and which devices support it, what does replacing or merging configuration mean, etc.
             The key to success is to test your workflow and to try to break things on a lab first.
 
 Getters support matrix

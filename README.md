@@ -1,25 +1,22 @@
 NAPALM
 ======
-NAPALM (Network Automation and Programmability Abstraction Layer with Multivendor support) is python library that implements a set of functions to interact with different vendors using a unified API.
+NAPALM (Network Automation and Programmability Abstraction Layer with Multivendor support) is a Python library that implements a set of functions to interact with different router vendor devices using a unified API.
 
 ![NAPALM logo](static/logo.png?raw=true "NAPALM logo")
 
-NAPALM supports several methods to connect to the devices, to manipulate configuration and to retrieve data.
+NAPALM supports several methods to connect to the devices, to manipulate configurations or to retrieve data.
 
 Supported Network Operating Systems
 -----------------------------------
 
-Please, to see which devices are supported check the following [link](http://napalm.readthedocs.org/support/index.html). Make sure you understand the [caveats](http://napalm.readthedocs.org/support/index.html#caveats).
+Please check the following [link](http://napalm.readthedocs.org/support/index.html) to see which devices are supported. Make sure you understand the [caveats](http://napalm.readthedocs.org/support/index.html#caveats).
 
 Documentation
 =============
 
-Before using the library, please, read the documentation (link below). Specially the "caveats" section:
-
-See the [Read the Docs](http://napalm.readthedocs.org)
+Before using the library, please read the documentation at: [Read the Docs](http://napalm.readthedocs.org)
 
 You can also watch a [live demo](https://youtu.be/93q-dHC0u0I) of NAPALM to see what it is and what it can do for you.
-
 
 Install
 =======
