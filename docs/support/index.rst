@@ -19,7 +19,7 @@ _                       EOS         JunOS           IOS-XR      FortiOS         
 .. _junos-eznc: https://github.com/Juniper/py-junos-eznc
 .. _pyIOSXR: https://github.com/fooelisa/pyiosxr
 .. _pyFG: https://github.com/spotify/pyfg
-.. _bnclient: ???
+.. _bnclient: https://github.com/kderynski/blade-netconf-python-client
 
 
 .. warning:: Please, make sure you understand the caveats for your particular platforms before using the library.
