@@ -108,6 +108,7 @@ class TestNetworkDriver:
         try:
             self.device.load_merge_candidate(filename='%s/merge_typo.conf' % self.vendor)
             diff = self.device.compare_config()
+            self.device.commit_config()
             raise Exception("We shouldn't be here")
         except exceptions.MergeConfigException:
             # We load the original config as candidate. If the commit failed cleanly the compare_config should be empty
