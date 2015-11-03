@@ -3,3 +3,4 @@ ncclient
 junos-eznc
 pyIOSXR
 pyFG
+bnclient

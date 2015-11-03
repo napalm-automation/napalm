@@ -27,7 +27,7 @@ class TestIOSXRDriver(unittest.TestCase, TestNetworkDriver):
         password = 'vagrant'
         cls.vendor = 'iosxr'
 
-        cls.device = IOSXRDriver(hostname, username, password)
+        cls.device = IOSXRDriver(hostname, username, password, timeout=60)
         cls.device.open()
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
         cls.device.commit_config()
