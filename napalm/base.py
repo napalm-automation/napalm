@@ -224,87 +224,106 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
-    # def get_bgp_neighbors(self):
-    #     """
-    #     Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).\
-    #     The inner dictionary will containg the following data for each vrf:
-    #      * local_as (int)
-    #      * router_id
-    #      * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
-    #        * is_up (True/False)
-    #        * is_enabled (True/False)
-    #        * remote_as (int)
-    #        * description (string)
-    #        * uptime (int in seconds)
-    #        * received_prefixes (int)
-    #        * accepted_prefixes (int)
-    #        * sent_prefixes (int)
-    #
-    #     For example:
-    #
-    #         {
-    #         u'default':
-    #             {
-    #             'router_id': u'192.168.0.1',
-    #             'local_as': 65000,
-    #             'peers':
-    #                 {
-    #                 u'10.0.0.11':
-    #                     {
-    #                     'is_up': True,
-    #                     'is_enabled': True,
-    #                     'uptime': 1429978587.950959,
-    #                     'description': u'',
-    #                     'received_prefixes': 2,
-    #                     'sent_prefixes': 3,
-    #                     'accepted_prefixes': 0,
-    #                     'remote_as': 65001
-    #                     },
-    #                 u'1.1.1.1':
-    #                     {
-    #                     'is_up': False,
-    #                     'is_enabled': False,
-    #                     'uptime': -1,
-    #                     'description': u'',
-    #                     'received_prefixes': 0,
-    #                     'sent_prefixes': 0,
-    #                     'accepted_prefixes': 0,
-    #                     'remote_as': 1
-    #                     }
-    #                 }
-    #             },
-    #         u'vrfA':
-    #             {
-    #             'router_id': u'10.0.1.10',
-    #             'local_as': 65010,
-    #             'peers':
-    #                 {
-    #                 u'10.0.1.12':
-    #                     {
-    #                     'is_up': False,
-    #                     'is_enabled': True,
-    #                     'uptime': -1,
-    #                     'description': u'',
-    #                     'received_prefixes': 0,
-    #                     'sent_prefixes': 0,
-    #                     'accepted_prefixes': 0,
-    #                     'remote_as': 65012
-    #                     },
-    #                 u'10.0.1.13':
-    #                     {
-    #                     'is_up': False,
-    #                     'is_enabled': True,
-    #                     'uptime': -1,
-    #                     'description': u'',
-    #                     'received_prefixes': 0,
-    #                     'sent_prefixes': 0,
-    #                     'accepted_prefixes': 0,
-    #                     'remote_as': 65013
-    #                     }
-    #                 }
-    #             }
-    #         }
-    #
-    #
-    #     """
-    #     raise NotImplementedError
+    def get_bgp_neighbors(self):
+        """
+        Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).
+        The inner dictionary will contain the following data for each vrf:
+         * local_as (int)
+         * router_id
+         * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
+           * is_up (True/False)
+           * is_enabled (True/False)
+           * remote_as (int)
+           * description (string)
+           * uptime (int in seconds)
+           * address_family (dictionary) - A dictionary of address families available for the neighbor. So far it can
+             be 'ipv4' or 'ipv6'
+               * received_prefixes (int)
+               * accepted_prefixes (int)
+               * sent_prefixes (int)
+        """
+        raise NotImplementedError
+
+    def get_environment(self):
+        """
+        Returns a dictionary where:
+            * fans is a list of dictionaries that describe the state of the fans:
+                * location (string) - location of the fan
+                * status (boolean) - True if it's ok, false if it's broken
+            * temperature is a list of dictionaries that describe the state of the temperature sensors:
+                * location (string) - location of the fan
+                * temperature (int) - Temperature in celsius the sensor is reporting.
+                * is_alert (boolean) - True if the temperature is above the alert threshold
+                * is_critical (boolean) - True if the temperature is above the critical threshold
+            * power is a lit of dictionaries that describe the state of the power supplies:
+                * status (boolean) - True if it's ok, false if it's broken
+                * capacity (int) - Capacity in W that the power supply can support
+                * output (int) - Watts drawn by the system
+        """
+        raise NotImplementedError
+
+    def get_interfaces_counters(self):
+        """
+        Returns a dictionary of dictionaries where the first key is an interface name and the inner dictionary contains
+        the following keys:
+            * tx_errors (int)
+            * rx_errors (int)
+            * tx_discards (int)
+            * rx_discards (int)
+            * tx_octets (int)
+            * rx_octets (int)
+            * tx_unicast_packets (int)
+            * rx_unicast_packets (int)
+            * tx_multicast_packets (int)
+            * rx_multicast_packets (int)
+            * tx_broadcast_packets (int)
+            * rx_broadcast_packets (int)
+
+        Example:
+
+            {
+                u'Ethernet2': {
+                    'tx_multicast_packets': 699,
+                    'tx_discards': 0,
+                    'tx_octets': 88577,
+                    'tx_errors': 0,
+                    'rx_octets': 0,
+                    'tx_unicast_packets': 0,
+                    'rx_errors': 0,
+                    'tx_broadcast_packets': 0,
+                    'rx_multicast_packets': 0,
+                    'rx_broadcast_packets': 0,
+                    'rx_discards': 0,
+                    'rx_unicast_packets': 0
+                },
+                u'Management1': {
+                     'tx_multicast_packets': 0,
+                     'tx_discards': 0,
+                     'tx_octets': 159159,
+                     'tx_errors': 0,
+                     'rx_octets': 167644,
+                     'tx_unicast_packets': 1241,
+                     'rx_errors': 0,
+                     'tx_broadcast_packets': 0,
+                     'rx_multicast_packets': 0,
+                     'rx_broadcast_packets': 80,
+                     'rx_discards': 0,
+                     'rx_unicast_packets': 0
+                },
+                u'Ethernet1': {
+                     'tx_multicast_packets': 293,
+                     'tx_discards': 0,
+                     'tx_octets': 38639,
+                     'tx_errors': 0,
+                     'rx_octets': 0,
+                     'tx_unicast_packets': 0,
+                     'rx_errors': 0,
+                     'tx_broadcast_packets': 0,
+                     'rx_multicast_packets': 0,
+                     'rx_broadcast_packets': 0,
+                     'rx_discards': 0,
+                     'rx_unicast_packets': 0
+                }
+            }
+        """
+        raise NotImplementedError
