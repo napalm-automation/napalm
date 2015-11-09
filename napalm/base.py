@@ -247,18 +247,20 @@ class NetworkDriver:
     def get_environment(self):
         """
         Returns a dictionary where:
-            * fans is a list of dictionaries that describe the state of the fans:
-                * location (string) - location of the fan
+            * fans is a dictionary of dictionaries where the key is the location and the values:
                 * status (boolean) - True if it's ok, false if it's broken
-            * temperature is a list of dictionaries that describe the state of the temperature sensors:
-                * location (string) - location of the fan
+            * temperature is a dictionary of dictionaries where the key is the location and the values:
                 * temperature (int) - Temperature in celsius the sensor is reporting.
                 * is_alert (boolean) - True if the temperature is above the alert threshold
                 * is_critical (boolean) - True if the temperature is above the critical threshold
-            * power is a lit of dictionaries that describe the state of the power supplies:
+            * power is a dictionary of dictionaries where the key is the PSU id and the values:
                 * status (boolean) - True if it's ok, false if it's broken
                 * capacity (int) - Capacity in W that the power supply can support
                 * output (int) - Watts drawn by the system
+            * cpu is a dictionary of dictionaries where the key is the ID and the values
+                * %usage
+            * available_ram (int) - Total amount of RAM installed in the device
+            * used_ram (int) - RAM that is still free in the device
         """
         raise NotImplementedError
 
