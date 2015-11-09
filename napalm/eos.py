@@ -204,6 +204,38 @@ class EOSDriver(NetworkDriver):
 
         return lldp
 
+    def get_interfaces_counters(self):
+        commands = list()
+
+        commands.append('show interfaces counters')
+        commands.append('show interfaces counters errors')
+
+        output = self.device.run_commands(commands)
+
+        interface_counters = dict()
+
+        for interface, counters in output[0]['interfaces'].iteritems():
+            interface_counters[interface] = dict()
+
+            interface_counters[interface]['tx_octets'] = counters['outOctets']
+            interface_counters[interface]['rx_octets'] = counters['inOctets']
+            interface_counters[interface]['tx_unicast_packets'] = counters['outUcastPkts']
+            interface_counters[interface]['rx_unicast_packets'] = counters['inUcastPkts']
+            interface_counters[interface]['tx_multicast_packets'] = counters['outMulticastPkts']
+            interface_counters[interface]['rx_multicast_packets'] = counters['inMulticastPkts']
+            interface_counters[interface]['tx_broadcast_packets'] = counters['outBroadcastPkts']
+            interface_counters[interface]['rx_broadcast_packets'] = counters['inBroadcastPkts']
+            interface_counters[interface]['tx_discards'] = counters['outDiscards']
+            interface_counters[interface]['rx_discards'] = counters['inDiscards']
+
+            # Errors come from a different command
+            errors = output[1]['interfaceErrorCounters'][interface]
+            interface_counters[interface]['tx_errors'] = errors['outErrors']
+            interface_counters[interface]['rx_errors'] = errors['inErrors']
+
+
+        return interface_counters
+
     # def get_bgp_neighbors(self):
     #     bgp_neighbors = dict()
     #
