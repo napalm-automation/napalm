@@ -156,3 +156,11 @@ class TestNetworkDriver:
                 result = result and self._test_model(models.lldp_neighbors, neighbor)
 
         self.assertTrue(result)
+
+    def test_get_interfaces_counters(self):
+        result = True
+
+        for interface, interface_data in self.device.get_interfaces_counters().iteritems():
+            result = result and self._test_model(models.interface_counters, interface_data)
+
+        self.assertTrue(result)
