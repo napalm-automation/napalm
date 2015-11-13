@@ -43,7 +43,7 @@ You can find the homologous IRC channels on freenode #napalm-automation and #nap
 Slack
 =====
 
-If you prefer SLACK feel free to join the '''NAPALM''' channel on slack at [network.toCode()](https://networktocode.herokuapp.com/).
+If you prefer SLACK feel free to join the ``NAPALM`` channel on slack at [network.toCode()](https://networktocode.herokuapp.com/).
 
 
 Authors
