@@ -12,12 +12,14 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-import StringIO
+import tempfile
+import re
+from datetime import datetime
+
 
 from base import NetworkDriver
-from utils import string_parsers
 
-from pycsco.nxos.device import Device
+from pycsco.nxos.device import Device as NXOSDevice
 from pycsco.nxos.utils.file_copy import FileCopy
 from pycsco.nxos.utils import install_config
 from pycsco.nxos.utils import nxapi_lib
@@ -25,21 +27,29 @@ from pycsco.nxos.error import DiffError, FileTransferError, CLIError
 
 from exceptions import MergeConfigException, ReplaceConfigException
 
-BACKUP_FILE = 'config_' + str(datetime.now()).replace(' ', '_')
+def strip_trailing(string):
+    lines = list(x.rstrip(' ') for x in string.splitlines())
+    return '\n'.join(lines)
 
-class IOSXRDriver(NetworkDriver):
 
-    def __init__(self, hostname, username, password):
+class NXOSDriver(NetworkDriver):
+
+    def __init__(self, hostname, username, password, timeout=30):
         self.hostname = hostname
         self.username = username
         self.password = password
-        self.device = Device(username=username,
+        self.timeout = timeout
+        self.device = NXOSDevice(username=username,
                              password=password,
-                             ip=hostname)
+                             ip=hostname,
+                             timeout=timeout)
         self.replace = True
-        self.diff = None
+        self.loaded = False
         self.fc = None
         self.changed = False
+
+        self.temp_file = tempfile.NamedTemporaryFile()
+
 
     def open(self):
         pass
@@ -47,19 +57,16 @@ class IOSXRDriver(NetworkDriver):
     def close(self):
         pass
 
-    def _get_config_file(self, filename=None, config=None):
-        if filename is None:
-            config_file = StringIO.StringIO()
-            config_file.write(config)
-        else:
-            config_file = open(filename, "r")
-
-        return config_file
-
     def load_replace_candidate(self, filename=None, config=None):
         self.replace = True
+        self.loaded = True
 
-        cfg_file_path = self._get_config_file(filename, config)
+        if filename is None:
+            cfg_file_path = self.temp_file.name
+            self.temp_file.write(config)
+        else:
+            cfg_file_path = filename
+
         self.fc = FileCopy(self.device, cfg_file_path)
         if not self.fc.file_already_exists():
             try:
@@ -67,68 +74,75 @@ class IOSXRDriver(NetworkDriver):
             except FileTransferError as fte:
                 raise ReplaceConfigException(fte.message)
 
-        try:
-            self.diff = install_config.get_diff(self.device, self.fc.dst)
-        except DiffError as de:
-            raise ReplaceConfigException(de.message)
-
     def load_merge_candidate(self, filename=None, config=None):
         self.replace = False
+        self.loaded = True
         if filename is not None:
-            with open(filename) as f:
-                self.diff = f.read()
+            with open(filename, "r") as f:
+                self.merge_candidate = f.read()
         else:
-            self.diff = config
-
-        ## doesn't check if there's an error
+            self.merge_candidate = config
 
     def compare_config(self):
-        return self.diff
+        if not self.replace:
+            raise MergeConfigException('Comparison attempted when merge candidate loaded.')
+
+        if self.loaded:
+            messy_diff = install_config.get_diff(self.device, self.fc.dst)
+            clean_diff = strip_trailing(messy_diff)
+            return clean_diff
+
+        return ''
 
     def _commit_merge(self):
         commands = self.merge_candidate.splitlines()
-        for command in commands:
-            if command:
-                try:
-                    self.device.config(command)
-                except CLIError as ce:
-                    raise MergeConfigException(ce.message)
+        command_string = ';'.join(list(' %s ' % x.strip() for x in commands))
+        self.device.config(command_string)
 
     def commit_config(self):
-        install_config.save_config(self.device, BACKUP_FILE)
-        if not self.replace:
-            self._commit_merge()
+        self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
+        install_config.save_config(self.device, self.backup_file)
+        if self.replace:
+            if install_config.rollback(self.device, self.fc.dst) is False:
+                raise ReplaceConfigException
         else:
-            install_config.rollback(self.device, self.fc.dst)
+            try:
+                self._commit_merge()
+            except Exception as e:
+                raise MergeConfigException(str(e))
 
         self.changed = True
+        self.loaded = False
 
-    def _delete_file(filename):
-        self.device.config('terminal dont-ask')
-        self.device.config('delete {}'.format(filename))
-        self.device.config('no terminal dont-ask')
+    def _delete_file(self, filename):
+        self.device.show('terminal dont-ask', text=True)
+        self.device.show('delete {}'.format(filename), text=True)
+        self.device.show('no terminal dont-ask', text=True)
 
     def discard_config(self):
-        if self.replace:
-            self._delete_file(self.fc.dst)
+        if self.loaded and self.replace:
+            try:
+                self._delete_file(self.fc.dst)
+            except CLIError:
+                pass
 
-        self.diff = None
+        self.loaded = False
 
     def rollback(self):
         if self.changed:
-            install_config.rollback(self.device, BACKUP_FILE)
+            install_config.rollback(self.device, self.backup_file)
 
     def get_facts(self):
         results = {}
         facts_dict = nxapi_lib.get_facts(self.device)
-        results['uptime'] = 'N/A'
-        results['vendor'] = 'Cisco'
+        results['uptime'] = -1 # not implemented
+        results['vendor'] = unicode('Cisco')
         results['os_version'] = facts_dict.get('os')
-        results['serial_number'] = 'N/A'
+        results['serial_number'] = unicode('N/A')
         results['model'] = facts_dict.get('platform')
         results['hostname'] = facts_dict.get('hostname')
-        results['fqdn'] = 'N/A'
-        iface_list = results[interface_list] = []
+        results['fqdn'] = unicode('N/A')
+        iface_list = results['interface_list'] = []
 
         intf_dict = nxapi_lib.get_interfaces_dict(self.device)
         for intf_list in intf_dict.values():
@@ -142,14 +156,21 @@ class IOSXRDriver(NetworkDriver):
         intf_dict = nxapi_lib.get_interfaces_dict(self.device)
         for intf_list in intf_dict.values():
             for intf in intf_list:
-                intf_info = nxapi.get_interface(self.device, intf)
+                intf_info = nxapi_lib.get_interface(self.device, intf)
                 formatted_info = results[intf] = {}
                 formatted_info['is_up'] = 'up' in intf_info.get('state', intf_info.get('admin_state', '')).lower()
                 formatted_info['is_enabled'] = 'up' in intf_info.get('admin_state').lower()
-                formatted_info['description'] = intf_info.get('description')
-                formatted_info['last_flapped'] = 'N/A'
-                formatted_info['speed'] = intf_info.get('speed', 'N/A')
-                formatted_info['mac_address'] = intf_info.get('mac_address', 'N/A')
+                formatted_info['description'] = unicode(intf_info.get('description'))
+                formatted_info['last_flapped'] = -1.0 #not implemented
+
+                speed = intf_info.get('speed', '0')
+                try:
+                    speed = int(re.sub(r'[^\d]', '', speed).strip())
+                except ValueError:
+                    speed = -1
+
+                formatted_info['speed'] = speed
+                formatted_info['mac_address'] = unicode(intf_info.get('mac_address', 'N/A'))
 
         return results
 
@@ -159,10 +180,13 @@ class IOSXRDriver(NetworkDriver):
         for neighbor in neighbor_list:
             local_iface = neighbor.get('local_interface')
             if neighbor.get(local_iface) is None:
-                results[local_iface] = {}
+                if local_iface not in results:
+                    results[local_iface] = []
 
-            neighbor_dict = results[local_iface]
-            neighbor_dict['hostname'] = neighbor.get('neighbor')
-            neighbor_dict['port'] = neighbor.get('neighbor_interface')
+            neighbor_dict = {}
+            neighbor_dict['hostname'] = unicode(neighbor.get('neighbor'))
+            neighbor_dict['port'] = unicode(neighbor.get('neighbor_interface'))
+
+            results[local_iface].append(neighbor_dict)
 
         return results
