@@ -193,3 +193,6 @@ class NXOSDriver(NetworkDriver):
             results[local_iface].append(neighbor_dict)
 
         return results
+
+    def get_checkpoint_file(self):
+        return install_config.get_checkpoint(self.device)
