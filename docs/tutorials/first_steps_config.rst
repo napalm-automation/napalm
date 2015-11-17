@@ -1,28 +1,29 @@
 First Steps Manipulating Config
 ===============================
 
-NAPALM does not try to hide any configuration details. It only tries to provide a common interface and mechanisms to push configuration to the device so you can build your way around it. This method is very useful in combination with tools like `Ansible <http://www.ansible.com>`_.
+NAPALM tries to provide a common interface and mechanisms to push configuration and retrieve state data from network devices. This method is very useful in combination with tools like `Ansible <http://www.ansible.com>`_, which in turn allows you to manage a set of devices independent of their network OS.
 
-Connecting to the device
+Connecting to the Device
 ------------------------
 
-Now you can use that driver you got to connect to the device::
+Use the appropriate network driver to connect to the device::
 
     >>> from napalm import get_network_driver
     >>> driver = get_network_driver('eos')
     >>> device = driver('192.168.76.10', 'dbarroso', 'this_is_not_a_secure_password')
     >>> device.open()
 
-Replacing the configuration
----------------------------
+Configurations can be replaced entirely or merged into the existing device config. 
+You can load configuration either from a string or from a file.
 
-You can load configuration either from a string or from a file. You can also either merge configuration or replace it entirely.
+Replacing the Configuration
+---------------------------
 
 To replace the configuration do the following::
 
     >>> device.load_replace_candidate(filename='test/unit/eos/new_good.conf')
 
-Note that the changes have not been applied yet. Before applying the configuration you can actually check the changes::
+Note that the changes have not been applied yet. Before applying the configuration you can check the changes::
 
     >>> print device.compare_config()
     + hostname pyeos-unittest-changed
@@ -50,17 +51,10 @@ On the contrary, if you don't want the changes you can discard them::
 
     >>> device.discard_config()
 
-Rollback changes
-----------------
-
-If for some reason you committed the changes and you want to rollback::
-
-    >>> device.rollback()
-
-Merging configuration
+Merging Configuration
 ---------------------
 
-Merging configuration is equally easy but you need to load the configuration with another method::
+Merging configuration is similar, but you need to load the configuration with the merge method::
 
     >>> device.load_merge_candidate(config='hostname test\ninterface Ethernet2\ndescription bla')
     >>> print device.compare_config()
@@ -70,7 +64,18 @@ Merging configuration is equally easy but you need to load the configuration wit
     description bla
     end
 
-We can commit and rollback the changes in the same way as before:
+If you are happy with the changes you can commit them::
 
     >>> device.commit_config()
+
+On the contrary, if you don't want the changes you can discard them::
+
+    >>> device.discard_config()
+
+Rollback Changes
+----------------
+
+If for some reason you committed the changes and you want to rollback::
+
     >>> device.rollback()
+

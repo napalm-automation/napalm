@@ -4,3 +4,4 @@ junos-eznc
 pyIOSXR
 pyFG
 pycsco
+bnclient

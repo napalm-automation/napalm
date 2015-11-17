@@ -14,21 +14,20 @@
 
 import unittest
 
-from napalm.eos import EOSDriver
+from napalm.ibm import IBMDriver
 from base import TestNetworkDriver
 
 
-class TestEOSDriver(unittest.TestCase, TestNetworkDriver):
+class TestIBMDriver(unittest.TestCase, TestNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '192.168.56.201'
-        username = 'vagrant'
-        password = 'vagrant'
-        cls.vendor = 'eos'
+        hostname = '10.20.18.253'
+        username = 'admin'
+        password = 'admin'
+        cls.vendor = 'ibm'
 
-        cls.device = EOSDriver(hostname, username, password, timeout=60)
+        cls.device = IBMDriver(hostname, username, password, timeout=60)
         cls.device.open()
-
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
         cls.device.commit_config()

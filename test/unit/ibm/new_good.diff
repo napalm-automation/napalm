@@ -1,0 +1,33 @@
+ hostname "test-sw2"
+ !
+ !
++interface port 1
++	description "test description"
++	switchport mode trunk
++	switchport trunk allowed vlan 27,2000
++	switchport trunk native vlan 27
++	spanning-tree portfast
++	exit
++!
+ interface port XGE2
+ 	description "port 50 uplink"
+ 	switchport mode trunk
+ vlan 18
+ 	name "sysadmin"
+ !
++vlan 27
++	name "install"
++!
++vlan 2000
++	name "another test"
++!
++!
+ !
+ spanning-tree stp 18 vlan 18
++!
++spanning-tree stp 27 vlan 27
++!
++spanning-tree stp 95 vlan 2000
+ !
+ !
+ !
