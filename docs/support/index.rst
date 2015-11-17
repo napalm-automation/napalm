@@ -9,7 +9,7 @@ General support matrix
 _                       EOS         JunOS           IOS-XR      FortiOS         IBM            NXOS
 =====================   ==========  =============   =========== ==============  =============  ============
 **Driver Name**         eos         junos           iosxr       fortios         ibm            nxos
-**Structured data**     Yes         Yes             No          No              Yes            ???
+**Structured data**     Yes         Yes             No          No              Yes            Yes
 **Minimum version**     4.15.0F     12.1            5.1.0       5.2.0           ???            6.1
 **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_        `bnclient`_    `pycsco`_
 **Caveats**             :doc:`eos`                              :doc:`fortios`  :doc:`ibm`     :doc:`nxos`
