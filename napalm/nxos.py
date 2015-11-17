@@ -34,7 +34,7 @@ def strip_trailing(string):
 
 class NXOSDriver(NetworkDriver):
 
-    def __init__(self, hostname, username, password, timeout=30):
+    def __init__(self, hostname, username, password, timeout=60):
         self.hostname = hostname
         self.username = username
         self.password = password
@@ -48,22 +48,22 @@ class NXOSDriver(NetworkDriver):
         self.fc = None
         self.changed = False
 
-        self.temp_file = tempfile.NamedTemporaryFile()
-
-
     def open(self):
         pass
 
     def close(self):
-        pass
+        if self.changed:
+            self._delete_file(self.backup_file)
 
     def load_replace_candidate(self, filename=None, config=None):
         self.replace = True
         self.loaded = True
 
         if filename is None:
-            cfg_file_path = self.temp_file.name
-            self.temp_file.write(config)
+            temp_file = tempfile.NamedTemporaryFile()
+            temp_file.write(config)
+            temp_file.flush()
+            cfg_file_path = temp_file.name
         else:
             cfg_file_path = filename
 
@@ -84,10 +84,9 @@ class NXOSDriver(NetworkDriver):
             self.merge_candidate = config
 
     def compare_config(self):
-        if not self.replace:
-            raise MergeConfigException('Comparison attempted when merge candidate loaded.')
-
         if self.loaded:
+            if not self.replace:
+                return self.merge_candidate
             messy_diff = install_config.get_diff(self.device, self.fc.dst)
             clean_diff = strip_trailing(messy_diff)
             return clean_diff
@@ -100,19 +99,22 @@ class NXOSDriver(NetworkDriver):
         self.device.config(command_string)
 
     def commit_config(self):
-        self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-        install_config.save_config(self.device, self.backup_file)
-        if self.replace:
-            if install_config.rollback(self.device, self.fc.dst) is False:
-                raise ReplaceConfigException
-        else:
-            try:
-                self._commit_merge()
-            except Exception as e:
-                raise MergeConfigException(str(e))
+        if self.loaded:
+            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
+            install_config.save_config(self.device, self.backup_file)
+            if self.replace:
+                if install_config.rollback(self.device, self.fc.dst) is False:
+                    raise ReplaceConfigException
+            else:
+                try:
+                    self._commit_merge()
+                except Exception as e:
+                    raise MergeConfigException(str(e))
 
-        self.changed = True
-        self.loaded = False
+            self.changed = True
+            self.loaded = False
+        else:
+            raise ReplaceConfigException('No config loaded.')
 
     def _delete_file(self, filename):
         self.device.show('terminal dont-ask', text=True)
@@ -131,6 +133,7 @@ class NXOSDriver(NetworkDriver):
     def rollback(self):
         if self.changed:
             install_config.rollback(self.device, self.backup_file)
+            self.changed = False
 
     def get_facts(self):
         results = {}
