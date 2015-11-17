@@ -50,6 +50,10 @@ options:
     password:
         description: Password
         required: true
+    timeout:
+        description: Timeout for connections and requests to device
+        required: false
+        default: 60
     config_file:
         description: Where to load the configuration from.
         required: true
@@ -64,6 +68,13 @@ options:
     diff_file:
         description: A file where to store the "diff" between the running configuration and the new configuration. If
                      it's not set the diff between configurations is not saved.
+        required: False
+    get_diffs:
+        description:
+            - Set to false to not have any diffs generated and always apply config.  Useful if platform does
+              not support commands being used to generated diffs.  Note: By default diffs are generated
+              even if the diff_file param is not set.
+        choices: ['true', 'false']
         required: False
 '''
 
@@ -83,6 +94,7 @@ EXAMPLES = '''
         commit_changes={{ commit_changes }}
         replace_config={{ replace_config }}
         diff_file=../compiled/{{ inventory_hostname }}/diff
+        timeout={{timeout}}
 
     From the CLI we would trigger the playbook like:
 
@@ -107,11 +119,13 @@ def main():
             hostname=dict(required=True),
             username=dict(required=True),
             password=dict(required=True),
+            timeout=dict(required=False, default=60, type='int'),
             config_file=dict(required=True),
             dev_os=dict(required=True),
             commit_changes=dict(required=True),
             replace_config=dict(required=True),
             diff_file=dict(required=False, default=None),
+            get_diffs=dict(required=False, choices=BOOLEANS, type='bool', default=True)
         ),
         supports_check_mode=True
     )
@@ -120,11 +134,13 @@ def main():
     username = module.params['username']
     dev_os = module.params['dev_os']
     password = module.params['password']
+    timeout = module.params['timeout']
 
     config_file = module.params['config_file']
     commit_changes = module.params['commit_changes']
     replace_config = module.params['replace_config']
     diff_file = module.params['diff_file']
+    get_diffs = module.params['get_diffs']
 
     if commit_changes.__class__ is str:
         commit_changes = ast.literal_eval(commit_changes)
@@ -133,7 +149,7 @@ def main():
 
     network_driver = get_network_driver(dev_os)
 
-    device = network_driver(hostname, username, password)
+    device = network_driver(hostname, username, password, timeout)
     device.open()
 
     if replace_config:
@@ -141,10 +157,14 @@ def main():
     else:
         device.load_merge_candidate(filename=config_file)
 
-    diff = device.compare_config().encode('utf-8')
-    changed = len(diff) > 0
+    if get_diffs:
+        diff = device.compare_config().encode('utf-8')
+        changed = len(diff) > 0
+    else:
+        changed = True
+        diff = None
 
-    if diff_file is not None:
+    if diff_file is not None and get_diffs:
         save_to_file(diff, diff_file)
 
     if module.check_mode or not commit_changes:
