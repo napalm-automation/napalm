@@ -72,3 +72,4 @@ Caveats
    eos
    fortios
    ibm
+   nxos
