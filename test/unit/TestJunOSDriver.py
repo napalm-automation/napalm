@@ -37,7 +37,7 @@ class TestGetterJunOSDriver(unittest.TestCase, TestGettersNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        cls.mock = False
+        cls.mock = True
 
         hostname = '192.168.56.203'
         username = 'vagrant'
