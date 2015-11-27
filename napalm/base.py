@@ -228,9 +228,11 @@ class NetworkDriver:
         """
         Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).
         The inner dictionary will contain the following data for each vrf:
-         * local_as (int)
          * router_id
          * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
+           * local_as (int)
+           * remote_as (int)
+           * remote_id
            * is_up (True/False)
            * is_enabled (True/False)
            * remote_as (int)
