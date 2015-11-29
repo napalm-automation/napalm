@@ -38,21 +38,28 @@ class IOSDriver(NetworkDriver):
         """Closes the connection to the device."""
         self.device.disconnect() 
 
-    def discard_config(self, config):
-        if isinstance(config, dict):
-            for command in config:
-                if config[command] == 'changed':
-                    output = self.device.send_command(command)
-                else:
-                    no_command = 'no {0}'.format(command)
-                    output = self.device.send_command(no_command)
+    def discard_config(self):
+        if self.candidate_config is not None:
+            if isinstance(self.candidate_config, dict):
+                for command in self.candidate_config_commands:
+                    if command in self.candidate_config:
+                        if self.candidate_config[command] == 'changed':
+                            output = self.device.send_command(command)
+                        else:
+                            no_command = 'no {0}'.format(command)
+                            output = self.device.send_command(no_command)
+                self.candidate_config = None
+                self.candidate_config_commands = None
+            else:
+                self.candidate_config = None
+                self.candidate_config_commands = None
 
     def load_merge_candidate(self, filename=None, config=None):
         commands = list()
-        commands.append('enable')
-        commands.append(self.password)
-        commands.append('conf t')
-        commands_dict = {}
+        if self.first_touch:
+            commands.append('enable')
+            commands.append(self.password)
+            commands.append('conf t')
 
         if filename is not None:
             with open(filename, 'r') as new_config:
@@ -69,36 +76,67 @@ class IOSDriver(NetworkDriver):
             else:
                 commands.append(line.strip())
 
-        try:
-            index = 0
-            prompt = self.device.find_prompt()
-            for command in commands:
-                output = self.device.send_command(command)
-                new_prompt = self.device.find_prompt()
-                if index > 2:
-                    if '^' in output:
-                        self.discard_config(self, commands_dict)
-                    if new_prompt == prompt:
-                        commands_dict[command] = "unchanged"
-                    else:
-                        commands_dict[command] = "changed"
-                prompt = self.device.find_prompt()
-                index += 1
-        except:
-            self.discard_config(commands_dict)
+        self.candidate_config = commands
+        self.first_touch = False
 
     def compare_config(self):
-        pass
+        if self.candidate_config is not None:
+            if 'enable' in self.candidate_config:
+                commands = self.candidate_config[3::]
+                for command in commands:
+                    print "+ {0}".format(command)
+            else:
+                for command in commands:
+                    print "+ {0}".format(command)
 
     def commit_config(self):
-        commands = list()
-        commands.append('enable')
-        commands.append(self.password)
-        commands.append('copy running-config startup-config')
-        commands.append('startup-config')
+        if self.candidate_config is not None:
+            commands = self.candidate_config
+            commands.append('do copy run start')
+            commands.append('\n')
+            commands_dict = {}
+            self.candidate_config_commands = commands
 
-        for command in commands:
-            self.device.send_command(command)
+            try:
+                index = 0
+                prompt = self.device.find_prompt()
+                for command in commands:
+                    output = self.device.send_command(command)
+                    new_prompt = self.device.find_prompt()
+                    if (index > 2 and self.first_touch) or (self.first_touch is False):
+                        if '^' in output:
+                            self.candidate_config = commands_dict
+                            self.discard_config()
+                            break
+                        if new_prompt == prompt or 'hostname' in command:
+                            commands_dict[command] = "unchanged"
+                        else:
+                            commands_dict[command] = "changed"
+                    prompt = self.device.find_prompt()
+                    index += 1
+            except:
+                self.discard_config()
+
+            self.candidate_config = None
+            self.candidate_config_commands = None
+
+    def get_lldp_neighbors(device):
+        command = 'show lldp neighbors | begin Device ID'
+        lldp = {}
+
+        output = self.device.send_command(command)
+        splitted_output = content.split('\n')
+        for line in splitted_output:
+            neighbor = {}
+            if len(line) > 0 and 'Device ID' not in line and 'entries' not in line:
+                splitted_line = line.split()
+                device_id = unicode(splitted_line[0])
+                device_port = unicode(splitted_line[1])
+                port_id = unicode(splitted_line[-1])
+                neighbor['hostname'] = device_id
+                neighbor['port'] = port_id
+                lldp[device_port] = neighbor
+        return lldp
 
     def get_facts(self):
         """This function returns a set of facts from the devices."""
