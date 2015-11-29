@@ -125,7 +125,7 @@ class IOSDriver(NetworkDriver):
         lldp = {}
 
         output = self.device.send_command(command)
-        splitted_output = content.split('\n')
+        splitted_output = output.split('\n')
         for line in splitted_output:
             neighbor = {}
             if len(line) > 0 and 'Device ID' not in line and 'entries' not in line:
