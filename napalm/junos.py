@@ -22,6 +22,8 @@ from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError
 from exceptions import ReplaceConfigException, MergeConfigException
 
+
+
 from utils import string_parsers
 
 
@@ -135,6 +137,16 @@ class JunOSDriver(NetworkDriver):
                 result[iface]['speed'] = -1
 
         return result
+
+    def get_interfaces_counters(self):
+        query = junos_views.junos_iface_counter_table(self.device)
+        query.get()
+        interface_counters = dict()
+        for interface, counters in query.items():
+            interface_counters[interface] = {k: v for k, v in counters}
+        return interface_counters
+
+
 
     # def get_bgp_neighbors(self):
     #
