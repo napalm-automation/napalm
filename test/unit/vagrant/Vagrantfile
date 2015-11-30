@@ -5,7 +5,7 @@
 You will need the boxes:
 
  * hashicorp/precise64
- * vEOS-4.15.0F - https://github.com/dbarrosop/vagrant-veos/
+ * vEOS-4.15.2F - https://eos.arista.com/using-veos-with-vagrant-and-virtualbox/
  * IOSXRv-5.3.0 - https://github.com/dbarrosop/vagrant-iosxr/
  * JunOS - juniper/ffp-12.1X47-D20.7-packetmode
     * To provision and test JunOS first you have to add the ssh vagrant ssh key into the ssh-agent. I.e.:
@@ -30,7 +30,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define "eos" do |eos|
-    eos.vm.box = "vEOS-4.15.0F"
+    eos.vm.box = "vEOS-4.15.2F"
 
     eos.vm.network :forwarded_port, guest: 443, host: 12443, id: 'https'
 
