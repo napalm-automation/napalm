@@ -19,7 +19,7 @@ from pyIOSXR import IOSXR
 from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
 
 from exceptions import MergeConfigException, ReplaceConfigException
-
+import xml.etree.ElementTree as ET
 
 class IOSXRDriver(NetworkDriver):
     def __init__(self, hostname, username, password, timeout=60):
