@@ -16,8 +16,8 @@ from napalm import exceptions
 import difflib
 import models
 
-class TestNetworkDriver:
 
+class TestConfigNetworkDriver:
 
     @classmethod
     def tearDownClass(cls):
@@ -118,6 +118,8 @@ class TestNetworkDriver:
 
         self.assertTrue(result)
 
+
+class TestGettersNetworkDriver:
     @staticmethod
     def _test_model(model, data):
         same_keys = set(model.keys()) == set(data.keys())
@@ -162,5 +164,6 @@ class TestNetworkDriver:
 
         for interface, interface_data in self.device.get_interfaces_counters().iteritems():
             result = result and self._test_model(models.interface_counters, interface_data)
+            print interface, interface_data
 
         self.assertTrue(result)
