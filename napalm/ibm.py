@@ -41,7 +41,7 @@ class IBMDriver(NetworkDriver):
         return str.split(' ')
 
     def open(self):
-        self.bnc.connect()
+        self.bnc.connect(self.timeout)
         self.bnc.sendhello()
         self._get_config(self.filename_rollback)
 
