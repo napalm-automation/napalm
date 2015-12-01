@@ -321,7 +321,6 @@ class IOSXRDriver(NetworkDriver):
             neighbors = dict()
 
             for neighbor in result_tree.iter('Neighbor'):
-
                 this_neighbor = dict()
                 this_neighbor['local_as'] = int(neighbor.find('LocalAS').text)
                 this_neighbor['remote_as'] = int(neighbor.find(
@@ -348,25 +347,36 @@ class IOSXRDriver(NetworkDriver):
 
                 this_neighbor['address_family'] = dict()
 
-                for entry in neighbor.iter('AFData'):
-                    if entry.find('Entry/AFName').text == "IPv4":
-                        this_afi = "ipv4"
-                    elif entry.find('Entry/AFName').text == "IPv6":
-                        this_afi = "ipv6"
-                    else:
-                        this_afi = entry.find('Entry/AFName').text
+                if neighbor.find('ConnectionRemoteAddress/AFI').text == "IPv4":
+                    this_afi = "ipv4"
+                elif neighbor.find(
+                        'ConnectionRemoteAddress/AFI').text == "IPv6":
+                    this_afi = "ipv6"
+                else:
+                    this_afi = neighbor.find(
+                        'ConnectionRemoteAddress/AFI').text
 
-                    this_neighbor['address_family'][this_afi] = dict()
+                this_neighbor['address_family'][this_afi] = dict()
+
+                try:
                     this_neighbor['address_family'][this_afi][
-                        "received_prefixes"] = int(entry.find(
-                            'Entry/PrefixesAccepted').text) + int(entry.find(
-                                'Entry/PrefixesDenied').text)
+                        "received_prefixes"] = int(neighbor.find(
+                            'AFData/Entry/PrefixesAccepted').text) + int(
+                                neighbor.find(
+                                    'AFData/Entry/PrefixesDenied').text)
                     this_neighbor['address_family'][this_afi][
-                        "accepted_prefixes"] = int(entry.find(
-                            'Entry/PrefixesAccepted').text)
+                        "accepted_prefixes"] = int(neighbor.find(
+                            'AFData/Entry/PrefixesAccepted').text)
                     this_neighbor['address_family'][this_afi][
-                        "sent_prefixes"] = int(entry.find(
-                            'Entry/PrefixesAdvertised').text)
+                        "sent_prefixes"] = int(neighbor.find(
+                            'AFData/Entry/PrefixesAdvertised').text)
+                except AttributeError:
+                    this_neighbor['address_family'][this_afi][
+                        "received_prefixes"] = -1
+                    this_neighbor['address_family'][this_afi][
+                        "accepted_prefixes"] = -1
+                    this_neighbor['address_family'][this_afi][
+                        "sent_prefixes"] = -1
 
                 try:
                     neighbor_ip = str(neighbor.find(
