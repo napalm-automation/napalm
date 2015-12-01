@@ -232,7 +232,7 @@ class NetworkDriver:
          * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
            * local_as (int)
            * remote_as (int)
-           * remote_id
+           * remote_id - peer router id
            * is_up (True/False)
            * is_enabled (True/False)
            * remote_as (int)
