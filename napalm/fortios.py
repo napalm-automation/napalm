@@ -266,9 +266,9 @@ class FortiOSDriver(NetworkDriver):
                 if_data = data[1].split(' ')
                 interface_counters[if_name]['rx_octets'] = if_data[1].split(':')[1]
                 try:
-                    interface_counters[if_name]['rx_octets'] = if_data[6].split(':')[1]
+                    interface_counters[if_name]['tx_octets'] = if_data[6].split(':')[1]
                 except IndexError:
-                    interface_counters[if_name]['rx_octets'] = if_data[7].split(':')[1]
+                    interface_counters[if_name]['tx_octets'] = if_data[7].split(':')[1]
         return interface_counters
 
     def get_lldp_neighbors(self):
