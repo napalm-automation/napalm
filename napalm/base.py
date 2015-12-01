@@ -235,7 +235,6 @@ class NetworkDriver:
            * remote_id
            * is_up (True/False)
            * is_enabled (True/False)
-           * remote_as (int)
            * description (string)
            * uptime (int in seconds)
            * address_family (dictionary) - A dictionary of address families available for the neighbor. So far it can
@@ -262,7 +261,7 @@ class NetworkDriver:
             * cpu is a dictionary of dictionaries where the key is the ID and the values
                 * %usage
             * available_ram (int) - Total amount of RAM installed in the device
-            * used_ram (int) - RAM that is still free in the device
+            * used_ram (int) - amount of RAM that is in use
         """
         raise NotImplementedError
 
