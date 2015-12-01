@@ -164,6 +164,23 @@ class TestGettersNetworkDriver:
 
         for interface, interface_data in self.device.get_interfaces_counters().iteritems():
             result = result and self._test_model(models.interface_counters, interface_data)
-            print interface, interface_data
+
+        self.assertTrue(result)
+
+    def test_get_environment(self):
+        environment = self.device.get_environment()
+
+        result = True
+
+        for fan, fan_data in environment['fans'].iteritems():
+            result = result and self._test_model(models.fan, fan_data)
+
+        for power, power_data in environment['power'].iteritems():
+            result = result and self._test_model(models.power, power_data)
+
+        for temperature, temperature_data in environment['temperature'].iteritems():
+            result = result and self._test_model(models.temperature, temperature_data)
+
+        result = result and self._test_model(models.memory, environment['memory'])
 
         self.assertTrue(result)
