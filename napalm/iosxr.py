@@ -19,10 +19,9 @@ from pyIOSXR import IOSXR
 from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
 
 from exceptions import MergeConfigException, ReplaceConfigException
-
+import xml.etree.ElementTree as ET
 
 class IOSXRDriver(NetworkDriver):
-
     def __init__(self, hostname, username, password, timeout=60):
         self.hostname = hostname
         self.username = username
@@ -152,7 +151,7 @@ class IOSXRDriver(NetworkDriver):
                 elif 'Description' in line:
                     description = ' '.join(line.split()[1:])
                 elif 'BW' in line:
-                    speed = int(line.split()[4])/1000
+                    speed = int(line.split()[4]) / 1000
             result[interface_name] = {
                 'is_enabled': is_enabled,
                 'is_up': is_up,
@@ -163,6 +162,51 @@ class IOSXRDriver(NetworkDriver):
             }
 
         return result
+
+    def get_interface_counters(self):
+        rpc_command = "<Get><Operational><Interfaces><InterfaceTable></InterfaceTable></Interfaces></Operational></Get>"
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        interface_counters = dict()
+
+        for interface in result_tree.iter('Interface'):
+
+            interface_name = interface.find('InterfaceHandle').text
+
+            interface_stats = dict()
+
+            if not interface.find('InterfaceStatistics'):
+                continue
+            else:
+                interface_stats = dict()
+                interface_stats['tx_multicast_packets'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/MulticastPacketsSent').text)
+                interface_stats['tx_discards'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/OutputDrops').text)
+                interface_stats['tx_octets'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/BytesSent').text)
+                interface_stats['tx_errors'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/OutputErrors').text)
+                interface_stats['rx_octets'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/BytesReceived').text)
+                interface_stats['tx_unicast_packets'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/PacketsSent').text)
+                interface_stats['rx_errors'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/InputErrors').text)
+                interface_stats['tx_broadcast_packets'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/BroadcastPacketsSent').text)
+                interface_stats['rx_multicast_packets'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/MulticastPacketsReceived').text)
+                interface_stats['rx_broadcast_packets'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/BroadcastPacketsReceived').text)
+                interface_stats['rx_discards'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/InputDrops').text)
+                interface_stats['rx_unicast_packets'] = int(interface.find(
+                    'InterfaceStatistics/FullInterfaceStats/PacketsReceived').text)
+
+            interface_counters[interface_name] = interface_stats
+
+        return interface_counters
 
     # def get_bgp_neighbors(self):
     #
@@ -238,11 +282,9 @@ class IOSXRDriver(NetworkDriver):
             if local_interface not in lldp.keys():
                 lldp[local_interface] = list()
 
-            lldp[local_interface].append(
-                {
-                    'hostname': unicode(n.split()[0]),
-                    'port': unicode(n.split()[4]),
-                }
-            )
+            lldp[local_interface].append({
+                'hostname': unicode(n.split()[0]),
+                'port': unicode(n.split()[4]),
+            })
 
         return lldp
