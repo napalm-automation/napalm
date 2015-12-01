@@ -143,7 +143,7 @@ class JunOSDriver(NetworkDriver):
         query.get()
         interface_counters = dict()
         for interface, counters in query.items():
-            interface_counters[interface] = {k: v for k, v in counters}
+            interface_counters[interface] = {k: v or -1 for k, v in counters}
         return interface_counters
 
     @staticmethod
