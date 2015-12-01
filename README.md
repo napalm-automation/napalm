@@ -40,6 +40,12 @@ IRC
 
 You can find the homologous IRC channels on freenode #napalm-automation and #napalm-dev. Feel free to join if you prefer a more direct approach.
 
+Slack
+=====
+
+If you prefer SLACK feel free to join the ``NAPALM`` channel on slack at [network.toCode()](https://networktocode.herokuapp.com/).
+
+
 Authors
 =======
  * David Barroso ([dbarroso@spotify.com](mailto:dbarroso@spotify.com))
