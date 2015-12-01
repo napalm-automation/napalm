@@ -108,8 +108,7 @@ class IOSDriver(NetworkDriver):
                     output = self.device.send_command(command)
                     new_prompt = self.device.find_prompt()
                     if (index > 2 and self.first_touch) or (self.first_touch is False):
-                        if '^' in output:
-                            self.candidate_config = commands_dict
+                        self.candidate_config = commands_dict
                         if new_prompt == prompt or 'hostname' in command:
                             commands_dict[command] = "unchanged"
                         else:
