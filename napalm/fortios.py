@@ -174,12 +174,13 @@ class FortiOSDriver(NetworkDriver):
 
         return interface_statistics
 
-    def get_bgp_neighbors(self):
+    @staticmethod
+    def _search_line_in_lines(search, lines):
+        for l in lines:
+            if search in l:
+                return l
 
-        def search_line_in_lines(search, lines):
-            for l in lines:
-                if search in l:
-                    return l
+    def get_bgp_neighbors(self):
 
         families = ['ipv4', 'ipv6']
         terms = dict({'accepted_prefixes': 'accepted', 'sent_prefixes': 'announced'})
@@ -224,7 +225,7 @@ class FortiOSDriver(NetworkDriver):
                 block = detail_output[x:]
 
                 for term, fortiname in terms.iteritems():
-                    text = search_line_in_lines('%s prefixes' % fortiname, block)
+                    text = self._search_line_in_lines('%s prefixes' % fortiname, block)
                     t = [int(s) for s in text.split() if s.isdigit()][0]
                     neighbor_dict['address_family'][family][term] = t
 
@@ -275,10 +276,92 @@ class FortiOSDriver(NetworkDriver):
     def get_lldp_neighbors(self):
         return {}
 
+    def get_environment(self):
 
-        # def get_environment(self):
-        #     sensors_output = self.device.execute_command('execute sensor list')
-        #     from pprint import pprint
-        #     pprint(sensors_output)
-        #
-        #     return {}
+        def parse_string(line):
+            return re.sub(' +', ' ', line.lower())
+
+        def search_disabled(line):
+            m = re.search("(.+?) (.+?) alarm=(.+?) \(scanning disabled\)", line)
+            return m.group(2)
+
+        def search_normal(line):
+            m = re.search("(.+?) (.+?) alarm=(.+?) value=(.+?) threshold_status=(.+?)", line)
+            return m
+
+        def get_fans(fan_lines):
+            output = dict()
+            for fan_line in fan_lines:
+                if 'disabled' in fan_line:
+                    name = search_disabled(fan_line)
+                    output[name] = dict(status=False)
+                    continue
+
+                m = search_normal(fan_line)
+                output[m.group(2)] = dict(status=True)
+            return output
+
+        def get_cpu(cpu_lines):
+            output = dict()
+            for l in cpu_lines:
+                m = re.search('(.+?) states: (.+?)% user (.+?)% system (.+?)% nice (.+?)% idle', l)
+                cpuname = m.group(1)
+                idle = m.group(5)
+                output[cpuname] = 100 - int(idle)
+            return output
+
+        def get_memory(memory_line):
+            total, used = int(memory_line[1]) >> 20, int(memory_line[2]) >> 20  # convert from byte to MB
+            return dict(available_ram=total, used_ram=used)
+
+        def get_temperature(temperature_lines, detail_block):
+            output = dict()
+            for temp_line in temperature_lines:
+                if 'disabled' in temp_line:
+                    sensor_name = search_disabled(temp_line)
+                    output[sensor_name] = {'is_alert': False, 'is_critical': False, 'temperature': 0.0}
+                    continue
+
+                m = search_normal(temp_line)
+                sensor_name, temp_value, status = m.group(2), m.group(4), int(m.group(5))
+                is_alert = True if status == 1 else False
+
+                # find block
+                fullline = self._search_line_in_lines(sensor_name, detail_block)
+                index_line = detail_block.index(fullline)
+                sensor_block = detail_block[index_line:]
+
+                v = int(self._search_line_in_lines('upper_non_recoverable', sensor_block).split('=')[1])
+
+                output[sensor_name] = dict(temperature=float(temp_value), is_alert=is_alert,
+                                           is_critical=True if v > temp_value else False)
+
+            return output
+
+        out = dict()
+
+        sensors_block = [parse_string(x) for x in self.device.execute_command('execute sensor detail') if x]
+
+        # temp
+        temp_lines = [x for x in sensors_block if any([True for y in ['dts', 'temp', 'adt7490'] if y in x])]
+        out['temperature'] = get_temperature(temp_lines, sensors_block)
+
+
+        # fans
+        out['fans'] = get_fans([x for x in sensors_block if 'fan' in x and 'temp' not in x])
+
+        # cpu
+        out['cpu'] = get_cpu(
+            [x for x in self.device.execute_command('get system performance status | grep CPU')[1:] if x])
+
+        # memory
+        memory_command = 'diag hard sys mem | grep Mem:'
+        t = [x for x in re.split('\s+', self.device.execute_command(memory_command)[0]) if x]
+        out['memory'] = get_memory(t)
+
+        # power, not implemented
+        sensors = [x.split()[1] for x in sensors_block if x.split()[0].isdigit()]
+        psus = {x for x in sensors if x.startswith('ps')}
+        out['power'] = {t: {'status': True, 'capacity': -1.0, 'output': -1.0} for t in psus}
+
+        return out
