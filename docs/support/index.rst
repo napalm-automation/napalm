@@ -37,7 +37,7 @@ _                       EOS         JunOS   IOS-XR      FortiOS         IBM     
 **Config. merge**       Yes         Yes     Yes         Yes             Yes            Yes             Yes
 **Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c1]_     Yes [#c4]_      Yes
 **Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   No [#c2]_
-**Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes [#c2]_     Yes/No [#c5]_   No
+**Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes [#c2]_     Yes/No [#c5]_   Yes
 =====================   ==========  =====   ==========  ==============  =============  ============== 
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
