@@ -163,7 +163,7 @@ class IOSXRDriver(NetworkDriver):
 
         return result
 
-    def get_interface_counters(self):
+    def get_interfaces_counters(self):
         rpc_command = "<Get><Operational><Interfaces><InterfaceTable></InterfaceTable></Interfaces></Operational></Get>"
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
