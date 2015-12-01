@@ -243,6 +243,34 @@ class FortiOSDriver(NetworkDriver):
             }
         }
 
+    def get_interfaces_counters(self):
+        cmd = self.device.execute_command('fnsysctl ifconfig')
+        if_name = None
+        interface_counters = dict()
+        for line in cmd:
+            data = line.split('\t')
+            if (data[0] == '' or data[0] == ' ') and len(data) == 1:
+                continue
+            elif data[0] != '':
+                if_name = data[0]
+                interface_counters[if_name] = dict()
+            elif (data[1].startswith('RX packets') or data[1].startswith('TX packets')) and if_name:
+                if_data = data[1].split(' ')
+                direction = if_data[0].lower()
+                interface_counters[if_name][direction + '_unicast_packets'] = if_data[1].split(':')[1]
+                interface_counters[if_name][direction + '_errors'] = if_data[2].split(':')[1]
+                interface_counters[if_name][direction + '_discards'] = if_data[2].split(':')[1]
+                interface_counters[if_name][direction + '_multicast_packets'] = -1
+                interface_counters[if_name][direction + '_broadcast_packets'] = -1
+            elif data[1].startswith('RX bytes'):
+                if_data = data[1].split(' ')
+                interface_counters[if_name]['rx_octets'] = if_data[1].split(':')[1]
+                try:
+                    interface_counters[if_name]['rx_octets'] = if_data[6].split(':')[1]
+                except IndexError:
+                    interface_counters[if_name]['rx_octets'] = if_data[7].split(':')[1]
+        return interface_counters
+
     def get_lldp_neighbors(self):
         return {}
 
