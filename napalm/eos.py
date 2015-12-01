@@ -316,7 +316,7 @@ class EOSDriver(NetworkDriver):
         fans_output = output[0]
         temp_output = output[1]
         power_output = output[2]
-        cpu_output = self.device.run_commands('show processes top once', encoding='text')[0]['output']
+        cpu_output = self.device.run_commands(['show processes top once'], encoding='text')[0]['output']
 
         ''' Get fans counters '''
         for slot in fans_output['fanTraySlots']:
