@@ -36,3 +36,24 @@ interface_counters = {
     'tx_broadcast_packets': int,
     'rx_broadcast_packets': int,
 }
+
+temperature = {
+    'is_alert': bool,
+    'is_critical': bool,
+    'temperature': float,
+}
+
+power = {
+    'status': bool,
+    'output': float,
+    'capacity': float
+}
+
+memory = {
+    'used_ram': int,
+    'available_ram': int,
+}
+
+fan = {
+    'status': bool,
+}
