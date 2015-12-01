@@ -45,9 +45,6 @@ class TestGetterIOSXRDriver(unittest.TestCase, TestGettersNetworkDriver):
         cls.vendor = 'iosxr'
 
         cls.device = IOSXRDriver(hostname, username, password, timeout=60)
-        cls.device.open()
-        cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
-        cls.device.commit_config()
 
         if cls.mock:
             cls.device.device = FakeIOSXRDevice()
@@ -72,3 +69,7 @@ class FakeIOSXRDevice:
 
     def show_lldp_neighbors(self):
         return self.read_txt_file('iosxr/mock_data/show_lldp_neighbors.txt')
+
+    def make_rpc_call(self, rpc_call):
+        rpc_call = rpc_call.replace('<', '_').replace('>', '_').replace('/', '_')
+        return self.read_txt_file('iosxr/mock_data/{}.rpc'.format(rpc_call))

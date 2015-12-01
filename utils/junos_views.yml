@@ -16,7 +16,7 @@ junos_iface_view:
   fields:
     is_up: { oper-status: True=up }
     is_enabled: { admin-status: True=up }
-    description: description
+    description: { description: unicode }
     last_flapped: { interface-flapped/@seconds: int }
     #mode: logical-interface/address-family/address-family-name
     speed: speed
