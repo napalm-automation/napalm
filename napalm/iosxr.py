@@ -21,6 +21,7 @@ from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
 from exceptions import MergeConfigException, ReplaceConfigException
 import xml.etree.ElementTree as ET
 
+
 class IOSXRDriver(NetworkDriver):
     def __init__(self, hostname, username, password, timeout=60):
         self.hostname = hostname
@@ -163,7 +164,7 @@ class IOSXRDriver(NetworkDriver):
 
         return result
 
-    def get_interface_counters(self):
+    def get_interfaces_counters(self):
         rpc_command = "<Get><Operational><Interfaces><InterfaceTable></InterfaceTable></Interfaces></Operational></Get>"
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
@@ -208,66 +209,178 @@ class IOSXRDriver(NetworkDriver):
 
         return interface_counters
 
-    # def get_bgp_neighbors(self):
-    #
-    #     # init result dict
-    #     result = {}
-    #     # todo vrfs
-    #     result['default'] = {}
-    #     result['default']['peers'] = {}
-    #
-    #     # fetch sh ip bgp output
-    #     sh_bgp = self.device.show_ip_bgp_neighbors()
-    #     # split per bgp neighbor
-    #     bgp_list = sh_bgp.rstrip().split('\n\nBGP')
-    #     # for each neigh...
-    #     for neighbor in bgp_list:
-    #
-    #         peer_lines = neighbor.split('\n')
-    #
-    #         # init variables
-    #         is_up = None
-    #         is_enabled = None
-    #         uptime = None
-    #         description = None
-    #         received_prefixes = None
-    #         sent_prefixes = None
-    #         accepted_prefixes = None
-    #         remote_as = None
-    #
-    #         for line in peer_lines:
-    #
-    #             match1 = re.search('(BGP)? neighbor is (.*)',line)
-    #             if match1 is not None:
-    #                 peer_ip = match1.group(2)
-    #
-    #             match2 = re.search('BGP state = (.*)',line)
-    #             if match2 is not None:
-    #                 if match2.group(1) == 'Active':
-    #                     is_up = False
-    #                     is_enabled = True
-    #
-    #             match3 = re.search('Description: (.*)$',line)
-    #             if match3 is not None:
-    #                 description = match3.group(1)
-    #
-    #             match4 = re.search('Remote AS (\d*)',line)
-    #             if match4 is not None:
-    #                 remote_as = int(match4.group(1))
-    #
-    #
-    #         result['default']['peers'][peer_ip] = {
-    #             'is_up': is_up,
-    #             'is_enabled': is_enabled,
-    #             'uptime': uptime,
-    #             'description': description,
-    #             'received_prefixes': received_prefixes,
-    #             'sent_prefixes': sent_prefixes,
-    #             'accepted_prefixes': accepted_prefixes,
-    #             'remote_as': remote_as,
-    #         }
-    #
-    #     return result
+    def get_bgp_neighbors(self):
+        def generate_vrf_query(vrf_name):
+            """
+            Helper to provide XML-query for the VRF-type we're interested in.
+            """
+            if vrf_name == "global":
+                rpc_command = """<Get>
+                        <Operational>
+                            <BGP>
+                                <InstanceTable>
+                                    <Instance>
+                                        <Naming>
+                                            <InstanceName>
+                                                default
+                                            </InstanceName>
+                                        </Naming>
+                                        <InstanceActive>
+                                            <DefaultVRF>
+                                                <GlobalProcessInfo>
+                                                </GlobalProcessInfo>
+                                                <NeighborTable>
+                                                </NeighborTable>
+                                            </DefaultVRF>
+                                        </InstanceActive>
+                                    </Instance>
+                                </InstanceTable>
+                            </BGP>
+                        </Operational>
+                    </Get>"""
+
+            else:
+                rpc_command = """<Get>
+                        <Operational>
+                            <BGP>
+                                <InstanceTable>
+                                    <Instance>
+                                        <Naming>
+                                            <InstanceName>
+                                                default
+                                            </InstanceName>
+                                        </Naming>
+                                        <InstanceActive>
+                                            <VRFTable>
+                                                <VRF>
+                                                    <Naming>
+                                                        %s
+                                                    </Naming>
+                                                    <GlobalProcessInfo>
+                                                    </GlobalProcessInfo>
+                                                    <NeighborTable>
+                                                    </NeighborTable>
+                                                </VRF>
+                                            </VRFTable>
+                                         </InstanceActive>
+                                    </Instance>
+                                </InstanceTable>
+                            </BGP>
+                        </Operational>
+                    </Get>""" % vrf_name
+            return rpc_command
+
+        """
+        Initial run to figure out what VRF's are available
+        Decided to get this one from Configured-section because bulk-getting all instance-data to do the same could get ridiculously heavy
+        Assuming we're always interested in the DefaultVRF
+        """
+
+        active_vrfs = ["global"]
+
+        rpc_command = """<Get>
+                            <Operational>
+                                <BGP>
+                                    <ConfigInstanceTable>
+                                        <ConfigInstance>
+                                            <Naming>
+                                                <InstanceName>
+                                                    default
+                                                </InstanceName>
+                                            </Naming>
+                                            <ConfigInstanceVRFTable>
+                                            </ConfigInstanceVRFTable>
+                                        </ConfigInstance>
+                                    </ConfigInstanceTable>
+                                </BGP>
+                            </Operational>
+                        </Get>"""
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        #for node in result_tree.iter('ConfigVRF'):
+        #    active_vrfs.append(str(node.find('Naming/VRFName').text))
+
+        result = dict()
+
+        for vrf in active_vrfs:
+            rpc_command = generate_vrf_query(vrf)
+            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+            this_vrf = dict()
+            this_vrf['router_id'] = int()
+            this_vrf['peers'] = dict()
+
+            if vrf == "global":
+                this_vrf['router_id'] = result_tree.find(
+                    'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/DefaultVRF/GlobalProcessInfo/VRF/RouterID').text
+            else:
+                this_vrf['router_id'] = result_tree.find(
+                    'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/VRFTable/VRF/GlobalProcessInfo/VRF/RouterID').text
+
+            neighbors = dict()
+
+            for neighbor in result_tree.iter('Neighbor'):
+
+                this_neighbor = dict()
+                this_neighbor['local_as'] = int(neighbor.find('LocalAS').text)
+                this_neighbor['remote_as'] = int(neighbor.find(
+                    'RemoteAS').text)
+                this_neighbor['remote_id'] = str(neighbor.find(
+                    'RouterID').text)
+
+                if neighbor.find('ConnectionAdminStatus').text is "1":
+                    this_neighbor['is_enabled'] = True
+                try:
+                    this_neighbor['description'] = str(neighbor.find(
+                        'Description').text)
+                except:
+                    pass
+
+                if str(neighbor.find(
+                        'ConnectionState').text) == "BGP_ST_ESTAB":
+                    this_neighbor['is_up'] = True
+                    this_neighbor['uptime'] = int(neighbor.find(
+                        'ConnectionEstablishedTime').text)
+                else:
+                    this_neighbor['is_up'] = False
+                    this_neighbor['uptime'] = -1
+
+                this_neighbor['address_family'] = dict()
+
+                for entry in neighbor.iter('AFData'):
+                    if entry.find('Entry/AFName').text == "IPv4":
+                        this_afi = "ipv4"
+                    elif entry.find('Entry/AFName').text == "IPv6":
+                        this_afi = "ipv6"
+                    else:
+                        this_afi = entry.find('Entry/AFName').text
+
+                    this_neighbor['address_family'][this_afi] = dict()
+                    this_neighbor['address_family'][this_afi][
+                        "received_prefixes"] = int(entry.find(
+                            'Entry/PrefixesAccepted').text) + int(entry.find(
+                                'Entry/PrefixesDenied').text)
+                    this_neighbor['address_family'][this_afi][
+                        "accepted_prefixes"] = int(entry.find(
+                            'Entry/PrefixesAccepted').text)
+                    this_neighbor['address_family'][this_afi][
+                        "sent_prefixes"] = int(entry.find(
+                            'Entry/PrefixesAdvertised').text)
+
+                try:
+                    neighbor_ip = str(neighbor.find(
+                        'Naming/NeighborAddress/IPV4Address').text)
+                except:
+                    neighbor_ip = str(neighbor.find(
+                        'Naming/NeighborAddress/IPV6Address').text)
+
+                neighbors[neighbor_ip] = this_neighbor
+
+            this_vrf['peers'] = neighbors
+            result[vrf] = this_vrf
+
+        return result
 
     def get_lldp_neighbors(self):
 
