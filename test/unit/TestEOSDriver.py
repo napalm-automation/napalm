@@ -60,10 +60,18 @@ class FakeEOSDevice:
         with open(filename) as data_file:
             return json.load(data_file)
 
-    def run_commands(self, command_list):
+    @staticmethod
+    def read_txt_file(filename):
+        with open(filename) as data_file:
+            return data_file.read()
+
+    def run_commands(self, command_list, encoding='json'):
         result = list()
 
         for command in command_list:
-            result.append(self.read_json_file('eos/mock_data/{}.json'.format(command.replace(' ', '_'))))
+            if encoding == 'json':
+                result.append(self.read_json_file('eos/mock_data/{}.json'.format(command.replace(' ', '_'))))
+            else:
+                result.append({'output': self.read_txt_file('eos/mock_data/{}.txt'.format(command.replace(' ', '_')))})
 
         return result

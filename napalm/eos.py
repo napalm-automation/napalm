@@ -13,6 +13,7 @@
 # the License.
 
 import pyeapi
+import re
 
 from base import NetworkDriver
 
@@ -180,7 +181,7 @@ class EOSDriver(NetworkDriver):
             interfaces[interface]['last_flapped'] = values.pop('lastStatusChangeTimestamp', None)
 
             interfaces[interface]['speed'] = values['bandwidth']
-            interfaces[interface]['mac_address'] = values.pop('physicalAddress', None)
+            interfaces[interface]['mac_address'] = values.pop('physicalAddress', u'')
 
         return interfaces
 
@@ -315,34 +316,43 @@ class EOSDriver(NetworkDriver):
         fans_output = output[0]
         temp_output = output[1]
         power_output = output[2]
+        cpu_output = self.device.run_commands(['show processes top once'], encoding='text')[0]['output']
 
         ''' Get fans counters '''
         for slot in fans_output['fanTraySlots']:
-            if slot['status'] == 'ok':
-                environment_counters['fans'][slot['label']] = True
-            else:
-                environment_counters['fans'][slot['label']] = False
+            environment_counters['fans'][slot['label']] = dict()
+            environment_counters['fans'][slot['label']]['status'] = slot['status'] == 'ok'
 
         ''' Get temp counters '''
         for slot in temp_output:
             try:
                 for sensorsgroup in temp_output[slot]:
                     for sensor in sensorsgroup['tempSensors']:
-                        environment_counters['temperature'][sensor['name']] = sensor['currentTemperature'], (sensor['currentTemperature'] > sensor['overheatThreshold']), (sensor['currentTemperature'] > sensor['criticalThreshold'])
+                        environment_counters['temperature'][sensor['name']] = {
+                            'temperature': sensor['currentTemperature'],
+                            'is_alert': sensor['currentTemperature'] > sensor['overheatThreshold'],
+                            'is_critical': sensor['currentTemperature'] > sensor['criticalThreshold']
+                        }
             except:
                 pass
 
         ''' Get power counters '''
         for _, item in power_output.iteritems():
             for id, ps in item.iteritems():
-                environment_counters['power'][id] = ps['state'], ps['capacity'], ps['outputPower']
+                environment_counters['power'][id] = {
+                    'status': ps['state'] == 'ok',
+                    'capacity': ps['capacity'],
+                    'output': ps['outputPower']
+                }
 
         ''' Get CPU counters '''
-        import re
         m = re.search('(\d+.\d+)\%', cpu_output.splitlines()[2])
         environment_counters['cpu'][0] = float(m.group(1))
         m = re.search('(\d+)k\W+total\W+(\d+)k\W+used\W+(\d+)k\W+free', cpu_output.splitlines()[3])
-        environment_counters['available_ram'] = int(m.group(1))
-        environment_counters['used_ram'] = int(m.group(2))
+
+        environment_counters['memory'] = {
+            'available_ram': int(m.group(1)),
+            'used_ram': int(m.group(2))
+        }
 
         return environment_counters
