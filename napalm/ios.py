@@ -38,7 +38,7 @@ class IOSDriver(NetworkDriver):
         """Closes the connection to the device."""
         self.device.disconnect() 
 
-    def discard_config(self):
+    def rollback(self):
         if self.candidate_config is not None:
             if isinstance(self.candidate_config, dict):
                 for command in self.candidate_config_commands:
@@ -86,8 +86,12 @@ class IOSDriver(NetworkDriver):
                 for command in commands:
                     print "+ {0}".format(command)
             else:
-                for command in commands:
+                for command in self.candidate_config:
                     print "+ {0}".format(command)
+
+    def discard_config(self):
+        if self.candidate_config is not None:
+            self.candidate_config = None
 
     def commit_config(self):
         if self.candidate_config is not None:
@@ -106,8 +110,6 @@ class IOSDriver(NetworkDriver):
                     if (index > 2 and self.first_touch) or (self.first_touch is False):
                         if '^' in output:
                             self.candidate_config = commands_dict
-                            self.discard_config()
-                            break
                         if new_prompt == prompt or 'hostname' in command:
                             commands_dict[command] = "unchanged"
                         else:
@@ -115,10 +117,7 @@ class IOSDriver(NetworkDriver):
                     prompt = self.device.find_prompt()
                     index += 1
             except:
-                self.discard_config()
-
-            self.candidate_config = None
-            self.candidate_config_commands = None
+                self.rollback()
 
     def get_lldp_neighbors(device):
         command = 'show lldp neighbors | begin Device ID'
