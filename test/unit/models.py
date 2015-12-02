@@ -21,3 +21,56 @@ lldp_neighbors = {
     'hostname': unicode,
     'port': unicode,
 }
+
+interface_counters = {
+    'tx_errors': int,
+    'rx_errors': int,
+    'tx_discards': int,
+    'rx_discards': int,
+    'tx_octets': int,
+    'rx_octets': int,
+    'tx_unicast_packets': int,
+    'rx_unicast_packets': int,
+    'tx_multicast_packets': int,
+    'rx_multicast_packets': int,
+    'tx_broadcast_packets': int,
+    'rx_broadcast_packets': int,
+}
+
+temperature = {
+    'is_alert': bool,
+    'is_critical': bool,
+    'temperature': float,
+}
+
+power = {
+    'status': bool,
+    'output': float,
+    'capacity': float
+}
+
+memory = {
+    'used_ram': int,
+    'available_ram': int,
+}
+
+fan = {
+    'status': bool,
+}
+
+peer = {
+    'is_enabled': bool,
+    'uptime': int,
+    'remote_as': int,
+    'description': unicode,
+    'remote_id': unicode,
+    'local_as': int,
+    'is_up': bool,
+    'address_family': dict,
+}
+
+af = {
+    'sent_prefixes': int,
+    'accepted_prefixes': int,
+    'received_prefixes': int
+}
