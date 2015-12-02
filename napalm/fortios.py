@@ -124,13 +124,13 @@ class FortiOSDriver(NetworkDriver):
         domain = execute_get(self.device, 'get system dns | grep domain')['domain']
 
         return {
-            'vendor': 'Fortigate',
-            'os_version': system_status['Version'].split(',')[0].split()[1],
+            'vendor': unicode('Fortigate'),
+            'os_version': unicode(system_status['Version'].split(',')[0].split()[1]),
             'uptime': convert_uptime_string_seconds(performance_status['Uptime']),
-            'serial_number': system_status['Serial-Number'],
-            'model': system_status['Version'].split(',')[0].split()[0],
-            'hostname': system_status['Hostname'],
-            'fqdn': '{}.{}'.format(system_status['Hostname'], domain),
+            'serial_number': unicode(system_status['Serial-Number']),
+            'model': unicode(system_status['Version'].split(',')[0].split()[0]),
+            'hostname': unicode(system_status['Hostname']),
+            'fqdn': u'{}.{}'.format(system_status['Hostname'], domain),
             'interface_list': interface_list
         }
 
