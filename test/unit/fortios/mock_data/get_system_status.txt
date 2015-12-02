@@ -1,0 +1,24 @@
+vpn-sto3-z8r307-2 # get system status
+Version: FortiGate-800C v5.2.2,build0642,141118 (GA)
+Virus-DB: 16.00560(2012-10-19 08:31)
+Extended DB: 1.00000(2012-10-17 15:46)
+Extreme DB: 1.00000(2012-10-17 15:47)
+IPS-DB: 5.00555(2014-10-07 01:21)
+IPS-ETDB: 0.00000(2001-01-01 00:00)
+Serial-Number: FG800C3914800949
+Botnet DB: 1.00000(2012-05-28 22:51)
+BIOS version: 04000038
+System Part-Number: P11496-05
+Log hard disk: Available
+Hostname: vpn-sto3-z8r307-2
+Operation Mode: NAT
+Current virtual domain: root
+Max number of virtual domains: 10
+Virtual domains status: 1 in NAT mode, 0 in TP mode
+Virtual domain configuration: disable
+FIPS-CC mode: disable
+Current HA mode: a-p, master
+Branch point: 642
+Release Version Information: GA
+FortiOS x86-64: Yes
+System time: Thu Nov 26 06:46:57 2015

@@ -15,10 +15,10 @@
 import unittest
 
 from napalm.ibm import IBMDriver
-from base import TestNetworkDriver
+from base import TestConfigNetworkDriver
 
 
-class TestIBMDriver(unittest.TestCase, TestNetworkDriver):
+class TestConfigIBMDriver(unittest.TestCase, TestConfigNetworkDriver):
 
     @classmethod
     def setUpClass(cls):

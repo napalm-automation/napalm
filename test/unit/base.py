@@ -16,8 +16,8 @@ from napalm import exceptions
 import difflib
 import models
 
-class TestNetworkDriver:
 
+class TestConfigNetworkDriver:
 
     @classmethod
     def tearDownClass(cls):
@@ -118,6 +118,8 @@ class TestNetworkDriver:
 
         self.assertTrue(result)
 
+
+class TestGettersNetworkDriver:
     @staticmethod
     def _test_model(model, data):
         same_keys = set(model.keys()) == set(data.keys())
@@ -154,5 +156,50 @@ class TestNetworkDriver:
         for interface, neighbor_list in self.device.get_lldp_neighbors().iteritems():
             for neighbor in neighbor_list:
                 result = result and self._test_model(models.lldp_neighbors, neighbor)
+
+        self.assertTrue(result)
+
+    def test_get_interfaces_counters(self):
+        result = True
+
+        for interface, interface_data in self.device.get_interfaces_counters().iteritems():
+            result = result and self._test_model(models.interface_counters, interface_data)
+
+        self.assertTrue(result)
+
+    def test_get_environment(self):
+        environment = self.device.get_environment()
+
+        result = True
+
+        for fan, fan_data in environment['fans'].iteritems():
+            result = result and self._test_model(models.fan, fan_data)
+
+        for power, power_data in environment['power'].iteritems():
+            result = result and self._test_model(models.power, power_data)
+
+        for temperature, temperature_data in environment['temperature'].iteritems():
+            result = result and self._test_model(models.temperature, temperature_data)
+
+        result = result and self._test_model(models.memory, environment['memory'])
+
+        self.assertTrue(result)
+
+    def test_get_bgp_neighbors(self):
+        get_bgp_neighbors = self.device.get_bgp_neighbors()
+
+        result = 'global' in get_bgp_neighbors.keys()
+
+        if not result:
+            print('global is not part of the returned vrfs')
+
+        for vrf, vrf_data in get_bgp_neighbors.iteritems():
+            result = result and isinstance(vrf_data['router_id'], unicode)
+
+            for peer, peer_data in vrf_data['peers'].iteritems():
+                result = result and self._test_model(models.peer, peer_data)
+
+                for af, af_data in peer_data['address_family'].iteritems():
+                    result = result and self._test_model(models.af, af_data)
 
         self.assertTrue(result)
