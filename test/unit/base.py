@@ -184,3 +184,22 @@ class TestGettersNetworkDriver:
         result = result and self._test_model(models.memory, environment['memory'])
 
         self.assertTrue(result)
+
+    def test_get_bgp_neighbors(self):
+        get_bgp_neighbors = self.device.get_bgp_neighbors()
+
+        result = 'global' in get_bgp_neighbors.keys()
+
+        if not result:
+            print('global is not part of the returned vrfs')
+
+        for vrf, vrf_data in get_bgp_neighbors.iteritems():
+            result = result and isinstance(vrf_data['router_id'], unicode)
+
+            for peer, peer_data in vrf_data['peers'].iteritems():
+                result = result and self._test_model(models.peer, peer_data)
+
+                for af, af_data in peer_data['address_family'].iteritems():
+                    result = result and self._test_model(models.af, af_data)
+
+        self.assertTrue(result)
