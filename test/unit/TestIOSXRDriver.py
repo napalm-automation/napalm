@@ -71,5 +71,6 @@ class FakeIOSXRDevice:
         return self.read_txt_file('iosxr/mock_data/show_lldp_neighbors.txt')
 
     def make_rpc_call(self, rpc_call):
-        rpc_call = rpc_call.replace('<', '_').replace('>', '_').replace('/', '_')
-        return self.read_txt_file('iosxr/mock_data/{}.rpc'.format(rpc_call))
+        rpc_call = \
+            rpc_call.replace('<', '_').replace('>', '_').replace('/', '_').replace('\n', '').replace(' ', '')
+        return self.read_txt_file('iosxr/mock_data/{}.rpc'.format(rpc_call[0:150]))

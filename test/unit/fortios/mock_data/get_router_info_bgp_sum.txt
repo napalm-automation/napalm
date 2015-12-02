@@ -1,0 +1,11 @@
+BGP router identifier 193.235.32.243, local AS number 65432
+BGP table version is 20239
+454 BGP AS-PATH entries
+54 BGP community entries
+
+Neighbor        V         AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.15.2.99      4      65307   81901   90336        0    0    0    never Idle (Admin)
+10.15.2.101     4      65208  178986  227392    20238    0    0 13:58:12        1
+10.15.2.105     4      65209  163073  221322    20238    0    0 01w3d00h        1
+
+Total number of neighbors 3
