@@ -124,13 +124,13 @@ class FortiOSDriver(NetworkDriver):
         domain = execute_get(self.device, 'get system dns | grep domain')['domain']
 
         return {
-            'vendor': 'Fortigate',
-            'os_version': system_status['Version'].split(',')[0].split()[1],
+            'vendor': unicode('Fortigate'),
+            'os_version': unicode(system_status['Version'].split(',')[0].split()[1]),
             'uptime': convert_uptime_string_seconds(performance_status['Uptime']),
-            'serial_number': system_status['Serial-Number'],
-            'model': system_status['Version'].split(',')[0].split()[0],
-            'hostname': system_status['Hostname'],
-            'fqdn': '{}.{}'.format(system_status['Hostname'], domain),
+            'serial_number': unicode(system_status['Serial-Number']),
+            'model': unicode(system_status['Version'].split(',')[0].split()[0]),
+            'hostname': unicode(system_status['Hostname']),
+            'fqdn': u'{}.{}'.format(system_status['Hostname'], domain),
             'interface_list': interface_list
         }
 
@@ -205,15 +205,16 @@ class FortiOSDriver(NetworkDriver):
                 neighbor_dict['remote_as'] = int(neigh_conf.get_param('remote-as'))
                 neighbor_dict['is_up'] = 'never' != parameters[7] or False
                 neighbor_dict['is_enabled'] = neigh_conf.get_param('shutdown') != 'enable' or False
-                neighbor_dict['description'] = ''
+                neighbor_dict['description'] = u''
                 neighbor_dict['uptime'] = convert_uptime_string_seconds(parameters[7])
-                neighbor_dict['ipv4'] = dict()
-                neighbor_dict['ipv6'] = dict()
+                neighbor_dict['address_family'] = dict()
+                neighbor_dict['address_family']['ipv4'] = dict()
+                neighbor_dict['address_family']['ipv6'] = dict()
 
             detail_output = [x.lower() for x in self.device.execute_command(command_detail.format(neighbor))]
             m = re.search('remote router id (.+?)\n', '\n'.join(detail_output))
             if m:
-                neighbor_dict['remote_id'] = m.group(1)
+                neighbor_dict['remote_id'] = unicode(m.group(1))
             else:
                 raise Exception('cannot find remote router id for %s' % neighbor)
 
@@ -225,20 +226,20 @@ class FortiOSDriver(NetworkDriver):
                 for term, fortiname in terms.iteritems():
                     text = search_line_in_lines('%s prefixes' % fortiname, block)
                     t = [int(s) for s in text.split() if s.isdigit()][0]
-                    neighbor_dict[family][term] = t
+                    neighbor_dict['address_family'][family][term] = t
 
                 received = self.device.execute_command(
                     command_received.format(neighbor))[0].split()
                 if len(received) > 0:
-                    neighbor_dict[family]['received_prefixes'] = received[-1]
+                    neighbor_dict['address_family'][family]['received_prefixes'] = received[-1]
                 else:
                     # Soft-reconfig is not enabled
-                    neighbor_dict[family]['received_prefixes'] = 0
+                    neighbor_dict['address_family'][family]['received_prefixes'] = 0
             peers[neighbor] = neighbor_dict
 
         return {
-            'default': {
-                'router_id': bgp_sum[0].split()[3],
+            'global': {
+                'router_id': unicode(bgp_sum[0].split()[3]),
                 'peers': peers
             }
         }
