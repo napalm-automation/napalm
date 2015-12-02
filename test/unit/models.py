@@ -57,3 +57,20 @@ memory = {
 fan = {
     'status': bool,
 }
+
+peer = {
+    'is_enabled': bool,
+    'uptime': int,
+    'remote_as': int,
+    'description': unicode,
+    'remote_id': unicode,
+    'local_as': int,
+    'is_up': bool,
+    'address_family': dict,
+}
+
+af = {
+    'sent_prefixes': int,
+    'accepted_prefixes': int,
+    'received_prefixes': int
+}
