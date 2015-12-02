@@ -5,3 +5,4 @@ pyIOSXR
 pyFG
 pycsco
 bnclient
+netmiko
