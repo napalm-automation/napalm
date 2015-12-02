@@ -235,7 +235,6 @@ class NetworkDriver:
            * remote_id - peer router id
            * is_up (True/False)
            * is_enabled (True/False)
-           * remote_as (int)
            * description (string)
            * uptime (int in seconds)
            * address_family (dictionary) - A dictionary of address families available for the neighbor. So far it can
