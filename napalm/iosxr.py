@@ -298,8 +298,8 @@ class IOSXRDriver(NetworkDriver):
 
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
-        #for node in result_tree.iter('ConfigVRF'):
-        #    active_vrfs.append(str(node.find('Naming/VRFName').text))
+        for node in result_tree.iter('ConfigVRF'):
+            active_vrfs.append(str(node.find('Naming/VRFName').text))
 
         result = dict()
 
@@ -391,6 +391,74 @@ class IOSXRDriver(NetworkDriver):
             result[vrf] = this_vrf
 
         return result
+
+    def get_environment(self):
+        def get_module_xml_query(module):
+            return "<Get><AdminOperational><EnvironmentalMonitoring><RackTable><Rack><Naming><rack>0</rack></Naming><SlotTable><Slot><Naming><slot>%s</slot></Naming></Slot></SlotTable></Rack></RackTable></EnvironmentalMonitoring></AdminOperational></Get>" % module
+
+        environment_status = dict()
+        environment_status['fans'] = dict()
+        environment_status['temperature'] = dict()
+        environment_status['power'] = dict()
+        environment_status['cpu'] = dict()
+        environment_status['available_ram'] = int()
+        environment_status['used_ram'] = int()
+
+        #
+        # PSU's
+        #
+
+        # to become dynamic, bug report pending (cisco) - "Adminoper:Diag.RackTable.Rack{0}.PowerSupplyTable"
+        available_psus = ["PM0","PM1","PM2","PM3","PM4","PM5"]
+
+        for psu in available_psus:
+            rpc_command = get_module_xml_query(psu)
+            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+            psu_status = dict()
+            psu_status['status'] = False
+            psu_status['capacity'] = int()
+            psu_status['output'] = int()
+
+            for sensor in result_tree.iter('SensorName'):
+                if sensor.find('Naming/Name').text == "host__VOLT":
+                    this_psu_voltage = int(sensor.find('ValueBrief').text)
+                elif sensor.find('Naming/Name').text == "host__CURR":
+                    this_psu_current = int(sensor.find('ValueBrief').text)
+                elif sensor.find('Naming/Name').text == "host__PM":
+                    this_psu_capacity = int(sensor.find('ValueBrief').text)
+                
+            if this_psu_capacity > 0:
+                psu_status['capacity'] = this_psu_capacity
+                psu_status['status'] = True
+
+            if this_psu_current and this_psu_voltage:
+                psu_status['output'] = (this_psu_voltage * this_psu_current)/1000000
+
+            environment_status['power'][psu] = psu_status
+
+        #
+        # Memory
+        #
+        active_rsp = "RSP0"
+
+        rpc_command = "<Get><AdminOperational><MemorySummary></MemorySummary></AdminOperational></Get>"
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for node in result_tree.iter('Node'):
+            
+            if node.find('Naming/NodeName/Slot').text == active_rsp:
+                print "found active rsp"
+                available_ram = int(node.find('Summary/SystemRAMMemory').text)
+                free_ram = int(node.find('Summary/FreeApplicationMemory').text)
+                break
+    
+        if available_ram and free_ram:
+            used_ram = available_ram - free_ram
+            environment_status['available_ram'] = available_ram
+            environment_status['used_ram'] = used_ram
+
+        return environment_status
 
     def get_lldp_neighbors(self):
 
