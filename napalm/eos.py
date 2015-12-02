@@ -13,6 +13,7 @@
 # the License.
 
 import pyeapi
+import re
 
 from base import NetworkDriver
 
@@ -180,7 +181,7 @@ class EOSDriver(NetworkDriver):
             interfaces[interface]['last_flapped'] = values.pop('lastStatusChangeTimestamp', None)
 
             interfaces[interface]['speed'] = values['bandwidth']
-            interfaces[interface]['mac_address'] = values.pop('physicalAddress', None)
+            interfaces[interface]['mac_address'] = values.pop('physicalAddress', u'')
 
         return interfaces
 
@@ -203,6 +204,40 @@ class EOSDriver(NetworkDriver):
             )
 
         return lldp
+
+    def get_interfaces_counters(self):
+        commands = list()
+
+        commands.append('show interfaces counters')
+        commands.append('show interfaces counters errors')
+
+        output = self.device.run_commands(commands)
+
+        interface_counters = dict()
+
+        for interface, counters in output[0]['interfaces'].iteritems():
+            interface_counters[interface] = dict()
+
+            interface_counters[interface]['tx_octets'] = counters['outOctets']
+            interface_counters[interface]['rx_octets'] = counters['inOctets']
+            interface_counters[interface]['tx_unicast_packets'] = counters['outUcastPkts']
+            interface_counters[interface]['rx_unicast_packets'] = counters['inUcastPkts']
+            interface_counters[interface]['tx_multicast_packets'] = counters['outMulticastPkts']
+            interface_counters[interface]['rx_multicast_packets'] = counters['inMulticastPkts']
+            interface_counters[interface]['tx_broadcast_packets'] = counters['outBroadcastPkts']
+            interface_counters[interface]['rx_broadcast_packets'] = counters['inBroadcastPkts']
+            interface_counters[interface]['tx_discards'] = counters['outDiscards']
+            interface_counters[interface]['rx_discards'] = counters['inDiscards']
+
+            # Errors come from a different command
+            errors = output[1]['interfaceErrorCounters'][interface]
+            interface_counters[interface]['tx_errors'] = errors['outErrors']
+            interface_counters[interface]['rx_errors'] = errors['inErrors']
+
+
+        return interface_counters
+
+
 
     # def get_bgp_neighbors(self):
     #     bgp_neighbors = dict()
@@ -245,3 +280,79 @@ class EOSDriver(NetworkDriver):
     #             bgp_neighbors[vrf]['peers'][n]['description'] = n_data_full.pop('Description', '')
     #
     #     return bgp_neighbors
+
+    def get_environment(self):
+        """
+        Returns a dictionary where:
+            * fans is a dictionary of dictionaries where the key is the location and the values:
+                * status (boolean) - True if it's ok, false if it's broken
+            * temperature is a dictionary of dictionaries where the key is the location and the values:
+                * temperature (int) - Temperature in celsius the sensor is reporting.
+                * is_alert (boolean) - True if the temperature is above the alert threshold
+                * is_critical (boolean) - True if the temperature is above the critical threshold
+            * power is a dictionary of dictionaries where the key is the PSU id and the values:
+                * status (boolean) - True if it's ok, false if it's broken
+                * capacity (int) - Capacity in W that the power supply can support
+                * output (int) - Watts drawn by the system
+            * cpu is a dictionary of dictionaries where the key is the ID and the values
+                * %usage
+            * available_ram (int) - Total amount of RAM installed in the device
+            * used_ram (int) - RAM that is still free in the device
+        """
+        command = list()
+        command.append('show environment cooling')
+        command.append('show environment temperature')
+        command.append('show environment power')
+        output = self.device.run_commands(command)
+
+        environment_counters = dict()
+        environment_counters['fans'] = dict()
+        environment_counters['temperature'] = dict()
+        environment_counters['power'] = dict()
+        environment_counters['cpu'] = dict()
+        environment_counters['available_ram'] = ''
+        environment_counters['used_ram'] = ''
+
+        fans_output = output[0]
+        temp_output = output[1]
+        power_output = output[2]
+        cpu_output = self.device.run_commands(['show processes top once'], encoding='text')[0]['output']
+
+        ''' Get fans counters '''
+        for slot in fans_output['fanTraySlots']:
+            environment_counters['fans'][slot['label']] = dict()
+            environment_counters['fans'][slot['label']]['status'] = slot['status'] == 'ok'
+
+        ''' Get temp counters '''
+        for slot in temp_output:
+            try:
+                for sensorsgroup in temp_output[slot]:
+                    for sensor in sensorsgroup['tempSensors']:
+                        environment_counters['temperature'][sensor['name']] = {
+                            'temperature': sensor['currentTemperature'],
+                            'is_alert': sensor['currentTemperature'] > sensor['overheatThreshold'],
+                            'is_critical': sensor['currentTemperature'] > sensor['criticalThreshold']
+                        }
+            except:
+                pass
+
+        ''' Get power counters '''
+        for _, item in power_output.iteritems():
+            for id, ps in item.iteritems():
+                environment_counters['power'][id] = {
+                    'status': ps['state'] == 'ok',
+                    'capacity': ps['capacity'],
+                    'output': ps['outputPower']
+                }
+
+        ''' Get CPU counters '''
+        m = re.search('(\d+.\d+)\%', cpu_output.splitlines()[2])
+        environment_counters['cpu'][0] = float(m.group(1))
+        m = re.search('(\d+)k\W+total\W+(\d+)k\W+used\W+(\d+)k\W+free', cpu_output.splitlines()[3])
+
+        environment_counters['memory'] = {
+            'available_ram': int(m.group(1)),
+            'used_ram': int(m.group(2))
+        }
+
+        return environment_counters
