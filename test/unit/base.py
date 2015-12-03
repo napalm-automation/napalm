@@ -143,34 +143,36 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_interfaces(self):
-        result = True
+        get_interfaces = self.device.get_interfaces()
+        result = len(get_interfaces) > 0
 
-        for interface, interface_data in self.device.get_interfaces().iteritems():
+        for interface, interface_data in get_interfaces.iteritems():
             result = result and self._test_model(models.interface, interface_data)
 
         self.assertTrue(result)
 
     def test_get_lldp_neighbors(self):
-        result = True
+        get_lldp_neighbors = self.device.get_lldp_neighbors()
+        result = len(get_lldp_neighbors) > 0
 
-        for interface, neighbor_list in self.device.get_lldp_neighbors().iteritems():
+        for interface, neighbor_list in get_lldp_neighbors.iteritems():
             for neighbor in neighbor_list:
                 result = result and self._test_model(models.lldp_neighbors, neighbor)
 
         self.assertTrue(result)
 
     def test_get_interfaces_counters(self):
-        result = True
+        get_interfaces_counters = self.device.get_interfaces_counters()
+        result = len(self.device.get_interfaces_counters()) > 0
 
-        for interface, interface_data in self.device.get_interfaces_counters().iteritems():
+        for interface, interface_data in get_interfaces_counters.iteritems():
             result = result and self._test_model(models.interface_counters, interface_data)
 
         self.assertTrue(result)
 
     def test_get_environment(self):
         environment = self.device.get_environment()
-
-        result = True
+        result = len(environment) > 0
 
         for fan, fan_data in environment['fans'].iteritems():
             result = result and self._test_model(models.fan, fan_data)
@@ -187,7 +189,6 @@ class TestGettersNetworkDriver:
 
     def test_get_bgp_neighbors(self):
         get_bgp_neighbors = self.device.get_bgp_neighbors()
-
         result = 'global' in get_bgp_neighbors.keys()
 
         if not result:
