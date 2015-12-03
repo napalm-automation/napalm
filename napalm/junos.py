@@ -167,8 +167,8 @@ class JunOSDriver(NetworkDriver):
                     environment_data['power'][sensor_object] = dict()
 
                 # Set these values to -1, because Junos does not provide them
-                environment_data['power'][sensor_object]['capacity'] = -1
-                environment_data['power'][sensor_object]['output'] = -1
+                environment_data['power'][sensor_object]['capacity'] = -1.0
+                environment_data['power'][sensor_object]['output'] = -1.0
 
             if structured_object_data['class'] == 'Fans':
                 # Create a dict for the 'fans' key
@@ -202,7 +202,7 @@ class JunOSDriver(NetworkDriver):
                         environment_data['temperature'] = dict()
                         environment_data['temperature'][sensor_object] = dict()
 
-                    environment_data['temperature'][sensor_object]['temperature'] = structured_object_data['temperature']
+                    environment_data['temperature'][sensor_object]['temperature'] = float(structured_object_data['temperature'])
                     # Set a default value (False) to the key is_critical and is_alert
                     environment_data['temperature'][sensor_object]['is_alert'] = False
                     environment_data['temperature'][sensor_object]['is_critical'] = False
