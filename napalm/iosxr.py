@@ -335,6 +335,7 @@ class IOSXRDriver(NetworkDriver):
                     pass
 
                 this_neighbor['is_enabled'] = str(neighbor.find('ConnectionAdminStatus').text) is "1"
+
                 if str(neighbor.find('ConnectionAdminStatus').text) is "1":
                     this_neighbor['is_enabled'] = True
                 else:
@@ -382,6 +383,171 @@ class IOSXRDriver(NetworkDriver):
             result[vrf] = this_vrf
 
         return result
+
+    def get_environment(self):
+        def get_module_xml_query(module):
+            return """<Get>
+                        <AdminOperational>
+                            <EnvironmentalMonitoring>
+                                <RackTable>
+                                    <Rack>
+                                        <Naming>
+                                            <rack>0</rack>
+                                        </Naming>
+                                        <SlotTable>
+                                            <Slot>
+                                                <Naming>
+                                                    <slot>%s</slot>
+                                                </Naming>
+                                            </Slot>
+                                        </SlotTable>
+                                    </Rack>
+                                </RackTable>
+                            </EnvironmentalMonitoring>
+                        </AdminOperational>
+                    </Get>""" % module
+
+        environment_status = dict()
+        environment_status['fans'] = dict()
+        environment_status['temperature'] = dict()
+        environment_status['power'] = dict()
+        environment_status['cpu'] = dict()
+        environment_status['memory'] = int()
+        """
+        finding slots with equipment we're interested in
+        """
+        rpc_command = """<Get>
+            <AdminOperational>
+                <PlatformInventory>
+                    <RackTable>
+                        <Rack>
+                            <Naming>
+                                <Name>0</Name>
+                            </Naming>
+                            <SlotTable>
+                            </SlotTable>
+                        </Rack>
+                    </RackTable>
+                </PlatformInventory>
+            </AdminOperational>
+        </Get>"""
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        active_modules = defaultdict(list)
+
+        for slot in result_tree.iter("Slot"):
+            for card in slot.iter("CardTable"):
+                if card.find('Card/Attributes/FRUInfo/ModuleAdministrativeState').text == "ADMIN_UP":
+                    """
+                    found a slot that's expected to be UP. figuring out type and saving for later
+                    """
+                    slot_name = slot.find('Naming/Name').text
+                    module_type = re.sub("\d+", "", slot_name)
+                    if len(module_type) > 0:
+                        if slot_name not in ["PM6", "PM7"]:    # Cisco bug, chassis difference V01<->V02
+                            active_modules[module_type].append(slot_name)
+        """
+        PSU's
+        """
+        for psu in active_modules['PM']:
+            rpc_command = get_module_xml_query(psu)
+            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+            psu_status = dict()
+            psu_status['status'] = False
+            psu_status['capacity'] = int()
+            psu_status['output'] = int()
+
+            for sensor in result_tree.iter('SensorName'):
+                if sensor.find('Naming/Name').text == "host__VOLT":
+                    this_psu_voltage = int(sensor.find('ValueBrief').text)
+                elif sensor.find('Naming/Name').text == "host__CURR":
+                    this_psu_current = int(sensor.find('ValueBrief').text)
+                elif sensor.find('Naming/Name').text == "host__PM":
+                    this_psu_capacity = int(sensor.find('ValueBrief').text)
+
+            if this_psu_capacity > 0:
+                psu_status['capacity'] = this_psu_capacity
+                psu_status['status'] = True
+
+            if this_psu_current and this_psu_voltage:
+                psu_status['output'] = (this_psu_voltage * this_psu_current) / 1000000
+
+            environment_status['power'][psu] = psu_status
+
+        #
+        # Memory
+        #
+
+        rpc_command = "<Get><AdminOperational><MemorySummary></MemorySummary></AdminOperational></Get>"
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for node in result_tree.iter('Node'):
+            if node.find('Naming/NodeName/Slot').text == active_modules['RSP'][0]:    # first enabled RSP
+                available_ram = int(node.find('Summary/SystemRAMMemory').text)
+                free_ram = int(node.find('Summary/FreeApplicationMemory').text)
+                break    # we're only looking at one of the RSP's
+
+        if available_ram and free_ram:
+            used_ram = available_ram - free_ram
+            environment_status['available_ram'] = available_ram
+            environment_status['used_ram'] = used_ram
+
+        #
+        # Fans
+        #
+
+        for fan in active_modules['FT']:
+            rpc_command = get_module_xml_query(fan)
+            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+            for module in result_tree.iter('Module'):
+                for sensortype in module.iter('SensorType'):
+                    for sensorname in sensortype.iter('SensorNameTable'):
+                        if sensorname.find('SensorName/Naming/Name').text == "host__FanSpeed_0":
+                            environment_status['fans'][fan] = int(sensorname.find(
+                                'SensorName/ValueDetailed/Status').text) is 1
+
+        #
+        # CPU
+        #
+        cpu = dict()
+        cpu[0] = re.findall(r'\d+%', self.device.show_processes_cpu().splitlines()[0])[1]
+        environment_status["cpu"] = cpu
+
+        #
+        # Temperature
+        #
+        temperature = dict()
+
+        current_slot = ""
+        current_temp = ""
+
+        for line in self.device.show_environment_temperatures().splitlines():
+
+            try:
+                m = re.search(r'^[0-9]\/([^\/]+)\/.*$', line)
+                result = m.group(1)
+
+                if len(result) > 1:
+                    current_slot = result
+                else:
+                    current_slot = "LC%s" % result
+
+            except:
+                pass
+
+            if "Inlet0" in line:
+                current_temp = re.findall("\d+.\d+", line)[0]
+
+            if current_temp and current_slot:
+                temperature[current_slot] = current_temp
+                current_slot = ""
+                current_temp = ""
+
+        environment_status["temperature"] = temperature
+
+        return environment_status
 
     def get_lldp_neighbors(self):
 
