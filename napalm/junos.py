@@ -296,27 +296,40 @@ class JunOSDriver(NetworkDriver):
                 peer = neighbor.split('+')[0]
                 bgp_neigbor_data[instance_name]['peers'][peer] = dict()
                 for key in ['local_as', 'remote_as', 'is_up', 'is_enabled', 'description', 'remote_id']:
-                    bgp_neigbor_data[instance_name]['peers'][peer][key] = structured_neighbor_data[key] or u''
+                    if key == 'description':
+                        structured_neighbor_data[key] = unicode(structured_neighbor_data[key]) or u''
+                    if not structured_neighbor_data[key] and key == 'description':
+                        structured_neighbor_data[key] = u''
+                    if key == 'remote_id' and not structured_neighbor_data[key]:
+                        structured_neighbor_data[key] = u''
+                    bgp_neigbor_data[instance_name]['peers'][peer][key] = structured_neighbor_data[key]
                 if 'router_id' not in bgp_neigbor_data[instance_name].keys():
                     # we only need to set this once
-                    bgp_neigbor_data[instance_name]['router_id'] = structured_neighbor_data['local_id']
+                    bgp_neigbor_data[instance_name]['router_id'] = unicode(structured_neighbor_data['local_id'])
                 if structured_neighbor_data['is_up'] is False:
                     # if the session is down there is no table data to parse
-                    continue
+                    bgp_neigbor_data[instance_name]['peers'][peer]['address_family'] = dict()
                 elif isinstance(structured_neighbor_data['tables'], list):
                     for idx, table in enumerate(structured_neighbor_data['tables']):
                         family = self._get_address_family(table)
-                        bgp_neigbor_data[instance_name]['peers'][peer][family] = dict()
+                        bgp_neigbor_data[instance_name]['peers'][peer]['address_family'] = dict()
+                        bgp_neigbor_data[instance_name]['peers'][peer]['address_family'][family] = dict()
                         for metric in ['received_prefixes', 'accepted_prefixes', 'sent_prefixes']:
-                            bgp_neigbor_data[instance_name]['peers'][peer][family][metric] = structured_neighbor_data[metric][idx]
+                            bgp_neigbor_data[instance_name]['peers'][peer]['address_family'][family][metric] = structured_neighbor_data[metric][idx]
                 else:
                     family = self._get_address_family(structured_neighbor_data['tables'])
-                    bgp_neigbor_data[instance_name]['peers'][peer][family] = dict()
-                    bgp_neigbor_data[instance_name]['peers'][peer][family]['received_prefixes'] = structured_neighbor_data['received_prefixes']
-                    bgp_neigbor_data[instance_name]['peers'][peer][family]['accepted_prefixes'] = structured_neighbor_data['accepted_prefixes']
-                    bgp_neigbor_data[instance_name]['peers'][peer][family]['sent_prefixes'] = structured_neighbor_data['sent_prefixes']
+                    bgp_neigbor_data[instance_name]['peers'][peer]['address_family'] = dict()
+                    bgp_neigbor_data[instance_name]['peers'][peer]['address_family'][family] = dict()
+                    for metric in ['received_prefixes', 'accepted_prefixes', 'sent_prefixes']:
+                        bgp_neigbor_data[instance_name]['peers'][peer]['address_family'][family][metric] = structured_neighbor_data[metric]
             for neighbor, uptime in uptime_table.get(instance=instance).items():
                 bgp_neigbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
+        empty = list()
+        for key in bgp_neigbor_data:
+            if not bgp_neigbor_data[key]['peers']:
+                empty.append(key)
+        for k in empty:
+            del bgp_neigbor_data[k]
         return bgp_neigbor_data
 
     def get_lldp_neighbors(self):
