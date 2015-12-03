@@ -20,6 +20,8 @@ from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
 
 from exceptions import MergeConfigException, ReplaceConfigException
 import xml.etree.ElementTree as ET
+from collections import defaultdict
+import re
 
 
 class IOSXRDriver(NetworkDriver):
@@ -298,8 +300,8 @@ class IOSXRDriver(NetworkDriver):
 
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
-        #for node in result_tree.iter('ConfigVRF'):
-        #    active_vrfs.append(str(node.find('Naming/VRFName').text))
+        for node in result_tree.iter('ConfigVRF'):
+            active_vrfs.append(str(node.find('Naming/VRFName').text))
 
         result = dict()
 
@@ -308,39 +310,39 @@ class IOSXRDriver(NetworkDriver):
             result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
             this_vrf = dict()
-            this_vrf['router_id'] = int()
             this_vrf['peers'] = dict()
 
             if vrf == "global":
-                this_vrf['router_id'] = result_tree.find(
-                    'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/DefaultVRF/GlobalProcessInfo/VRF/RouterID').text
+                this_vrf['router_id'] = unicode(result_tree.find(
+                    'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/DefaultVRF/GlobalProcessInfo/VRF/RouterID').text)
             else:
-                this_vrf['router_id'] = result_tree.find(
-                    'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/VRFTable/VRF/GlobalProcessInfo/VRF/RouterID').text
+                this_vrf['router_id'] = unicode(result_tree.find(
+                    'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/VRFTable/VRF/GlobalProcessInfo/VRF/RouterID').text)
 
             neighbors = dict()
 
             for neighbor in result_tree.iter('Neighbor'):
                 this_neighbor = dict()
                 this_neighbor['local_as'] = int(neighbor.find('LocalAS').text)
-                this_neighbor['remote_as'] = int(neighbor.find(
-                    'RemoteAS').text)
-                this_neighbor['remote_id'] = str(neighbor.find(
-                    'RouterID').text)
+                this_neighbor['remote_as'] = int(neighbor.find('RemoteAS').text)
+                this_neighbor['remote_id'] = unicode(neighbor.find('RouterID').text)
 
                 if neighbor.find('ConnectionAdminStatus').text is "1":
                     this_neighbor['is_enabled'] = True
                 try:
-                    this_neighbor['description'] = str(neighbor.find(
-                        'Description').text)
+                    this_neighbor['description'] = unicode(neighbor.find('Description').text)
                 except:
                     pass
 
-                if str(neighbor.find(
-                        'ConnectionState').text) == "BGP_ST_ESTAB":
+                this_neighbor['is_enabled'] = str(neighbor.find('ConnectionAdminStatus').text) is "1"
+                if str(neighbor.find('ConnectionAdminStatus').text) is "1":
+                    this_neighbor['is_enabled'] = True
+                else:
+                    this_neighbor['is_enabled'] = False
+
+                if str(neighbor.find('ConnectionState').text) == "BGP_ST_ESTAB":
                     this_neighbor['is_up'] = True
-                    this_neighbor['uptime'] = int(neighbor.find(
-                        'ConnectionEstablishedTime').text)
+                    this_neighbor['uptime'] = int(neighbor.find('ConnectionEstablishedTime').text)
                 else:
                     this_neighbor['is_up'] = False
                     this_neighbor['uptime'] = -1
@@ -349,41 +351,30 @@ class IOSXRDriver(NetworkDriver):
 
                 if neighbor.find('ConnectionRemoteAddress/AFI').text == "IPv4":
                     this_afi = "ipv4"
-                elif neighbor.find(
-                        'ConnectionRemoteAddress/AFI').text == "IPv6":
+                elif neighbor.find('ConnectionRemoteAddress/AFI').text == "IPv6":
                     this_afi = "ipv6"
                 else:
-                    this_afi = neighbor.find(
-                        'ConnectionRemoteAddress/AFI').text
+                    this_afi = neighbor.find('ConnectionRemoteAddress/AFI').text
 
                 this_neighbor['address_family'][this_afi] = dict()
 
                 try:
                     this_neighbor['address_family'][this_afi][
-                        "received_prefixes"] = int(neighbor.find(
-                            'AFData/Entry/PrefixesAccepted').text) + int(
-                                neighbor.find(
-                                    'AFData/Entry/PrefixesDenied').text)
+                        "received_prefixes"] = int(neighbor.find('AFData/Entry/PrefixesAccepted').text) + int(
+                            neighbor.find('AFData/Entry/PrefixesDenied').text)
                     this_neighbor['address_family'][this_afi][
-                        "accepted_prefixes"] = int(neighbor.find(
-                            'AFData/Entry/PrefixesAccepted').text)
+                        "accepted_prefixes"] = int(neighbor.find('AFData/Entry/PrefixesAccepted').text)
                     this_neighbor['address_family'][this_afi][
-                        "sent_prefixes"] = int(neighbor.find(
-                            'AFData/Entry/PrefixesAdvertised').text)
+                        "sent_prefixes"] = int(neighbor.find('AFData/Entry/PrefixesAdvertised').text)
                 except AttributeError:
-                    this_neighbor['address_family'][this_afi][
-                        "received_prefixes"] = -1
-                    this_neighbor['address_family'][this_afi][
-                        "accepted_prefixes"] = -1
-                    this_neighbor['address_family'][this_afi][
-                        "sent_prefixes"] = -1
+                    this_neighbor['address_family'][this_afi]["received_prefixes"] = -1
+                    this_neighbor['address_family'][this_afi]["accepted_prefixes"] = -1
+                    this_neighbor['address_family'][this_afi]["sent_prefixes"] = -1
 
                 try:
-                    neighbor_ip = str(neighbor.find(
-                        'Naming/NeighborAddress/IPV4Address').text)
+                    neighbor_ip = unicode(neighbor.find('Naming/NeighborAddress/IPV4Address').text)
                 except:
-                    neighbor_ip = str(neighbor.find(
-                        'Naming/NeighborAddress/IPV6Address').text)
+                    neighbor_ip = unicode(neighbor.find('Naming/NeighborAddress/IPV6Address').text)
 
                 neighbors[neighbor_ip] = this_neighbor
 
@@ -405,9 +396,6 @@ class IOSXRDriver(NetworkDriver):
             if local_interface not in lldp.keys():
                 lldp[local_interface] = list()
 
-            lldp[local_interface].append({
-                'hostname': unicode(n.split()[0]),
-                'port': unicode(n.split()[4]),
-            })
+            lldp[local_interface].append({'hostname': unicode(n.split()[0]), 'port': unicode(n.split()[4]), })
 
         return lldp
