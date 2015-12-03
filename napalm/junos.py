@@ -146,6 +146,122 @@ class JunOSDriver(NetworkDriver):
             interface_counters[interface] = {k: v or -1 for k, v in counters}
         return interface_counters
 
+    def get_environment(self):
+        environment = junos_views.junos_enviroment_table(self.device)
+        routing_engine = junos_views.junos_routing_engine_table(self.device)
+        temperature_thresholds = junos_views.junos_temperature_thresholds(self.device)
+        environment.get()
+        routing_engine.get()
+        temperature_thresholds.get()
+        environment_data = dict()
+
+        for sensor_object, object_data in environment.items():
+            structured_object_data = {k: v for k, v in object_data}
+
+            if structured_object_data['class'] == 'Power':
+                # Create a dict for the 'power' key
+                try:
+                    environment_data['power'][sensor_object] = dict()
+                except KeyError:
+                    environment_data['power'] = dict()
+                    environment_data['power'][sensor_object] = dict()
+
+                # Set these values to -1, because Junos does not provide them
+                environment_data['power'][sensor_object]['capacity'] = -1
+                environment_data['power'][sensor_object]['output'] = -1
+
+            if structured_object_data['class'] == 'Fans':
+                # Create a dict for the 'fans' key
+                try:
+                    environment_data['fans'][sensor_object] = dict()
+                except KeyError:
+                    environment_data['fans'] = dict()
+                    environment_data['fans'][sensor_object] = dict()
+
+            if structured_object_data['status'] == 'OK' and structured_object_data['class'] == 'Power':
+                # If status is Failed, Absent or Testing, set status to False.
+                environment_data['power'][sensor_object]['status'] = True
+
+            elif structured_object_data['status'] != 'OK' and structured_object_data['class'] == 'Power':
+                environment_data['power'][sensor_object]['status'] = False
+
+            elif structured_object_data['status'] == 'OK' and structured_object_data['class'] == 'Fans':
+                # If status is Failed, Absent or Testing, set status to False.
+                environment_data['fans'][sensor_object]['status'] = True
+
+            elif structured_object_data['status'] != 'OK' and structured_object_data['class'] == 'Fans':
+                environment_data['fans'][sensor_object]['status'] = False
+
+            for temperature_object, temperature_data in temperature_thresholds.items():
+                structured_temperature_data = {k: v for k, v in temperature_data}
+                if structured_object_data['class'] == 'Temp':
+                    # Create a dict for the 'temperature' key
+                    try:
+                        environment_data['temperature'][sensor_object] = dict()
+                    except KeyError:
+                        environment_data['temperature'] = dict()
+                        environment_data['temperature'][sensor_object] = dict()
+
+                    environment_data['temperature'][sensor_object]['temperature'] = structured_object_data['temperature']
+                    # Set a default value (False) to the key is_critical and is_alert
+                    environment_data['temperature'][sensor_object]['is_alert'] = False
+                    environment_data['temperature'][sensor_object]['is_critical'] = False
+                    # Check if the working temperature is equal to or higher than alerting threshold
+                    if structured_temperature_data['red-alarm'] <= structured_object_data['temperature']:
+                        environment_data['temperature'][sensor_object]['is_critical'] = True
+                        environment_data['temperature'][sensor_object]['is_alert'] = True
+                    elif structured_temperature_data['yellow-alarm'] <= structured_object_data['temperature']:
+                        environment_data['temperature'][sensor_object]['is_alert'] = True
+
+        for routing_engine_object, routing_engine_data in routing_engine.items():
+            structured_routing_engine_data = {k: v for k, v in routing_engine_data}
+            # Create dicts for 'cpu' and 'memory'.
+            try:
+                environment_data['cpu'] = dict()
+                environment_data['cpu'][routing_engine_object] = dict()
+                environment_data['memory'] = dict()
+            except KeyError:
+                environment_data['cpu'] = dict()
+                environment_data['cpu'][routing_engine_object] = dict()
+                environment_data['memory'] = dict()
+            # Calculate the CPU usage by using the CPU idle value.
+            environment_data['cpu'][routing_engine_object]['%usage'] = 100 - structured_routing_engine_data['cpu-idle']
+            environment_data['memory']['available_ram'] = structured_routing_engine_data['memory-dram-size']
+            # Junos gives us RAM in %, so calculation has to be made.
+            # Sadly, bacause of this, results are not 100% accurate to the truth.
+            environment_data['memory']['used_ram'] = (structured_routing_engine_data['memory-dram-size'] / 100 * structured_routing_engine_data['memory-buffer-utilization'])
+
+        return environment_data
+
+    # def get_bgp_neighbors(self):
+    #
+    #     # init result dict
+    #     result = {}
+    #
+    #     instances = junos_views.junos_route_instance_table(self.device)
+    #     instances.get()
+    #
+    #     for vrf in instances.keys():
+    #         if not vrf.startswith('__'):
+    #
+    #             # init result dict for this vrf
+    #             result[vrf] = {
+    #                 'peers': {},
+    #                 'router_id': None,
+    #                 'local_as': None,
+    #             }
+    #
+    #             # fetch sessions for vrf
+    #             bgp = junos_views.junos_bgp_table(self.device)
+    #             bgp.get(instance=vrf)
+    #
+    #             # assemble result dict
+    #             bgp_result = {}
+    #             [bgp_result.update({neigh:dict(bgp[neigh])}) for neigh in bgp.keys()]
+    #             result[vrf]['peers'] = bgp_result
+    #
+    #     return result
+
     @staticmethod
     def _get_address_family(table):
         """
