@@ -196,6 +196,8 @@ class TestGettersNetworkDriver:
 
         for vrf, vrf_data in get_bgp_neighbors.iteritems():
             result = result and isinstance(vrf_data['router_id'], unicode)
+            if not result:
+                print('router-id is not unicode')
 
             for peer, peer_data in vrf_data['peers'].iteritems():
                 result = result and self._test_model(models.peer, peer_data)
