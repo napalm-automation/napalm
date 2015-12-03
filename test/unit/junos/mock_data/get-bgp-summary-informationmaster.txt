@@ -1,0 +1,5 @@
+<bgp-information>
+  <group-count>0</group-count>
+  <peer-count>0</peer-count>
+  <down-peer-count>0</down-peer-count>
+</bgp-information>
