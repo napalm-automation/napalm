@@ -1,0 +1,78 @@
+<environment-information>
+  <environment-item>
+    <name>FPC 0 Power Supply 0</name>
+    <class>Power</class>
+    <status>OK</status>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 Power Supply 1</name>
+    <class>Power</class>
+    <status>OK</status>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 CPU</name>
+    <class>Temp</class>
+    <status>OK</status>
+    <temperature celsius="36">36 degrees C / 96 degrees F</temperature>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 EX-PFE1</name>
+    <class>Temp</class>
+    <status>OK</status>
+    <temperature celsius="48">48 degrees C / 118 degrees F</temperature>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 EX-PFE2</name>
+    <class>Temp</class>
+    <status>OK</status>
+    <temperature celsius="67">67 degrees C / 152 degrees F</temperature>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 EX-PFE3</name>
+    <class>Temp</class>
+    <status>OK</status>
+    <temperature celsius="52">52 degrees C / 125 degrees F</temperature>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 GEPHY Front Left</name>
+    <class>Temp</class>
+    <status>OK</status>
+    <temperature celsius="41">41 degrees C / 105 degrees F</temperature>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 GEPHY Front Middle</name>
+    <class>Temp</class>
+    <status>OK</status>
+    <temperature celsius="51">51 degrees C / 123 degrees F</temperature>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 GEPHY Front Right</name>
+    <class>Temp</class>
+    <status>OK</status>
+    <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 Uplink Conn</name>
+    <class>Temp</class>
+    <status>OK</status>
+    <temperature celsius="45">45 degrees C / 113 degrees F</temperature>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 Fan 1</name>
+    <class>Fans</class>
+    <status>OK</status>
+    <comment>Spinning at full speed</comment>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 Fan 2</name>
+    <class>Fans</class>
+    <status>OK</status>
+    <comment>Spinning at full speed</comment>
+  </environment-item>
+  <environment-item>
+    <name>FPC 0 Fan 3</name>
+    <class>Fans</class>
+    <status>OK</status>
+    <comment>Spinning at full speed</comment>
+  </environment-item>
+</environment-information>
