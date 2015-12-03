@@ -69,7 +69,7 @@ junos_bgp_view:
     local_as: { local-as: int }
     peer_as: { peer-as: int }
     local_id: local-id
-    remote_id: peer-id
+    remote_id: { peer-id: unicode }
 
 ####
 #### LLDP table
