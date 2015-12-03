@@ -1,0 +1,104 @@
+{
+    "powerSupplies": {
+        "1": {
+            "outputPower": 296.0,
+            "fans": {
+                "FanP1/1": {
+                    "status": "ok",
+                    "speed": 69
+                }
+            },
+            "modelName": "PWR-2900AC",
+            "capacity": 2900.0,
+            "inputCurrent": 1.71875,
+            "tempSensors": {
+                "TempSensorP1/2": {
+                    "status": "ok",
+                    "temperature": 22.375
+                },
+                "TempSensorP1/1": {
+                    "status": "ok",
+                    "temperature": 29.5
+                }
+            },
+            "managed": true,
+            "outputCurrent": 24.72,
+            "state": "ok"
+        },
+        "3": {
+            "outputPower": 212.0,
+            "fans": {
+                "FanP3/1": {
+                    "status": "ok",
+                    "speed": 69
+                }
+            },
+            "modelName": "PWR-2900AC",
+            "capacity": 2900.0,
+            "inputCurrent": 1.40625,
+            "tempSensors": {
+                "TempSensorP3/1": {
+                    "status": "ok",
+                    "temperature": 29.875
+                },
+                "TempSensorP3/2": {
+                    "status": "ok",
+                    "temperature": 23.25
+                }
+            },
+            "managed": true,
+            "outputCurrent": 17.740000000000002,
+            "state": "ok"
+        },
+        "2": {
+            "outputPower": 212.0,
+            "fans": {
+                "FanP2/1": {
+                    "status": "ok",
+                    "speed": 69
+                }
+            },
+            "modelName": "PWR-2900AC",
+            "capacity": 2900.0,
+            "inputCurrent": 1.34375,
+            "tempSensors": {
+                "TempSensorP2/1": {
+                    "status": "ok",
+                    "temperature": 29.125
+                },
+                "TempSensorP2/2": {
+                    "status": "ok",
+                    "temperature": 22.25
+                }
+            },
+            "managed": true,
+            "outputCurrent": 17.84,
+            "state": "ok"
+        },
+        "4": {
+            "outputPower": 212.0,
+            "fans": {
+                "FanP4/1": {
+                    "status": "ok",
+                    "speed": 69
+                }
+            },
+            "modelName": "PWR-2900AC",
+            "capacity": 2900.0,
+            "inputCurrent": 1.53125,
+            "tempSensors": {
+                "TempSensorP4/2": {
+                    "status": "ok",
+                    "temperature": 24.0
+                },
+                "TempSensorP4/1": {
+                    "status": "ok",
+                    "temperature": 30.25
+                }
+            },
+            "managed": true,
+            "outputCurrent": 17.96,
+            "state": "ok"
+        }
+    }
+}
