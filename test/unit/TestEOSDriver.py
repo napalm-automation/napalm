@@ -14,11 +14,12 @@
 
 import unittest
 
-from napalm.eos import EOSDriver
-from base import TestNetworkDriver
+from napalm import eos
+from base import TestConfigNetworkDriver, TestGettersNetworkDriver
+import json
 
 
-class TestEOSDriver(unittest.TestCase, TestNetworkDriver):
+class TestConfigEOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
@@ -27,8 +28,50 @@ class TestEOSDriver(unittest.TestCase, TestNetworkDriver):
         password = 'vagrant'
         cls.vendor = 'eos'
 
-        cls.device = EOSDriver(hostname, username, password, timeout=60)
+        cls.device = eos.EOSDriver(hostname, username, password, timeout=60)
         cls.device.open()
 
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
         cls.device.commit_config()
+
+
+class TestGetterEOSDriver(unittest.TestCase, TestGettersNetworkDriver):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mock = True
+
+        hostname = '192.168.56.201'
+        username = 'vagrant'
+        password = 'vagrant'
+        cls.vendor = 'eos'
+
+        cls.device = eos.EOSDriver(hostname, username, password, timeout=60)
+
+        if cls.mock:
+            cls.device.device = FakeEOSDevice()
+        else:
+            cls.device.open()
+
+
+class FakeEOSDevice:
+    @staticmethod
+    def read_json_file(filename):
+        with open(filename) as data_file:
+            return json.load(data_file)
+
+    @staticmethod
+    def read_txt_file(filename):
+        with open(filename) as data_file:
+            return data_file.read()
+
+    def run_commands(self, command_list, encoding='json'):
+        result = list()
+
+        for command in command_list:
+            if encoding == 'json':
+                result.append(self.read_json_file('eos/mock_data/{}.json'.format(command.replace(' ', '_'))))
+            else:
+                result.append({'output': self.read_txt_file('eos/mock_data/{}.txt'.format(command.replace(' ', '_')))})
+
+        return result

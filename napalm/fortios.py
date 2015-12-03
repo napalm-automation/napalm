@@ -11,8 +11,9 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
+import re
 
-from pyFG.fortios import FortiOS, FortiConfig
+from pyFG.fortios import FortiOS, FortiConfig, logger
 from pyFG.exceptions import FailedCommit, CommandExecutionException
 
 from base import NetworkDriver
@@ -26,9 +27,9 @@ def execute_get(device, cmd, separator=':', auto=False):
 
     if auto:
         if ':' in output[0]:
-            separator=':'
+            separator = ':'
         elif '\t' in output[0]:
-            separator='\t'
+            separator = '\t'
         else:
             raise Exception('Unknown separator for block:\n{}'.format(output))
 
@@ -36,7 +37,6 @@ def execute_get(device, cmd, separator=':', auto=False):
 
 
 class FortiOSDriver(NetworkDriver):
-
     def __init__(self, hostname, username, password, timeout=60):
         self.hostname = hostname
         self.username = username
@@ -124,13 +124,13 @@ class FortiOSDriver(NetworkDriver):
         domain = execute_get(self.device, 'get system dns | grep domain')['domain']
 
         return {
-            'vendor': 'Fortigate',
-            'os_version': system_status['Version'].split(',')[0].split()[1],
+            'vendor': unicode('Fortigate'),
+            'os_version': unicode(system_status['Version'].split(',')[0].split()[1]),
             'uptime': convert_uptime_string_seconds(performance_status['Uptime']),
-            'serial_number': system_status['Serial-Number'],
-            'model': system_status['Version'].split(',')[0].split()[0],
-            'hostname': system_status['Hostname'],
-            'fqdn': '{}.{}'.format(system_status['Hostname'], domain),
+            'serial_number': unicode(system_status['Serial-Number']),
+            'model': unicode(system_status['Version'].split(',')[0].split()[0]),
+            'hostname': unicode(system_status['Hostname']),
+            'fqdn': u'{}.{}'.format(system_status['Hostname'], domain),
             'interface_list': interface_list
         }
 
@@ -166,7 +166,7 @@ class FortiOSDriver(NetworkDriver):
                 ifs['is_enabled'] = self.device.running_config['system interface'][iface].get_param('status') != 'down'
                 ifs['description'] = self.device.running_config['system interface'][iface].get_param('description')
                 ifs['last_flapped'] = None
-                #ifs['mode'] = 'routed'
+                # ifs['mode'] = 'routed'
                 ifs['last_flapped'] = None
                 interface_statistics[iface] = ifs
             except CommandExecutionException:
@@ -174,39 +174,111 @@ class FortiOSDriver(NetworkDriver):
 
         return interface_statistics
 
-    # def get_bgp_neighbors(self):
-    #     bgp_sum = self.device.execute_command('get router info bgp sum')
-    #     re_neigh = re.compile("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")
-    #     neighbors = {n.split()[0]: n.split()[1:] for n in bgp_sum if re.match(re_neigh, n)}
-    #
-    #     peers = dict()
-    #
-    #     self.device.load_config('router bgp')
-    #
-    #     for neighbor, parameters in neighbors.iteritems():
-    #         neigh_conf = self.device.running_config['router bgp']['neighbor']['{}'.format(neighbor)]
-    #         peers[neighbor] = dict()
-    #         peers[neighbor]['remote_as'] = int(neigh_conf.get_param('remote-as'))
-    #         peers[neighbor]['is_enabled'] = neigh_conf.get_param('shutdown') != 'enable' or False
-    #         peers[neighbor]['is_up'] = 'never' != parameters[7] or False
-    #         peers[neighbor]['uptime'] = convert_uptime_string_seconds(parameters[7])
-    #         peers[neighbor]['accepted_prefixes'] = int(self.device.execute_command('get router info bgp neighbor {} | grep "accepted prefixes"'.format(neighbor))[0].split()[0])
-    #         peers[neighbor]['sent_prefixes'] = int(self.device.execute_command('get router info bgp neighbor {} | grep "announced prefixes"'.format(neighbor))[0].split()[0])
-    #
-    #         received = self.device.execute_command('get router info bgp neighbors {} received-routes | grep prefixes'.format(neighbor))[0].split()
-    #         if len(received) > 0:
-    #             peers[neighbor]['received_prefixes'] = int(received[-1])
-    #         else:
-    #             # Soft-reconfig is not enabled
-    #             peers[neighbor]['received_prefixes'] = 0
-    #
-    #     return {
-    #         'default': {
-    #             'local_as': int(bgp_sum[0].split()[7]),
-    #             'router_id': bgp_sum[0].split()[3],
-    #             'peers': peers
-    #         }
-    #     }
+    def get_bgp_neighbors(self):
+
+        def search_line_in_lines(search, lines):
+            for l in lines:
+                if search in l:
+                    return l
+
+        families = ['ipv4', 'ipv6']
+        terms = dict({'accepted_prefixes': 'accepted', 'sent_prefixes': 'announced'})
+        command_sum = 'get router info bgp sum'
+        command_detail = 'get router info bgp neighbor {}'
+        command_received = 'get router info bgp neighbors {} received-routes | grep prefixes '
+        peers = dict()
+
+        bgp_sum = self.device.execute_command(command_sum)
+        re_neigh = re.compile("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")
+        neighbors = {n.split()[0]: n.split()[1:] for n in bgp_sum if re.match(re_neigh, n)}
+
+        self.device.load_config('router bgp')
+
+        for neighbor, parameters in neighbors.iteritems():
+            logger.debug('NEW PEER')
+            neigh_conf = self.device.running_config['router bgp']['neighbor']['{}'.format(neighbor)]
+
+            neighbor_dict = peers.get(neighbor, dict())
+
+            if not neighbor_dict:
+                neighbor_dict['local_as'] = int(bgp_sum[0].split()[7])
+                neighbor_dict['remote_as'] = int(neigh_conf.get_param('remote-as'))
+                neighbor_dict['is_up'] = 'never' != parameters[7] or False
+                neighbor_dict['is_enabled'] = neigh_conf.get_param('shutdown') != 'enable' or False
+                neighbor_dict['description'] = u''
+                neighbor_dict['uptime'] = convert_uptime_string_seconds(parameters[7])
+                neighbor_dict['address_family'] = dict()
+                neighbor_dict['address_family']['ipv4'] = dict()
+                neighbor_dict['address_family']['ipv6'] = dict()
+
+            detail_output = [x.lower() for x in self.device.execute_command(command_detail.format(neighbor))]
+            m = re.search('remote router id (.+?)\n', '\n'.join(detail_output))
+            if m:
+                neighbor_dict['remote_id'] = unicode(m.group(1))
+            else:
+                raise Exception('cannot find remote router id for %s' % neighbor)
+
+            for family in families:
+                # find block
+                x = detail_output.index(' for address family: {} unicast'.format(family))
+                block = detail_output[x:]
+
+                for term, fortiname in terms.iteritems():
+                    text = search_line_in_lines('%s prefixes' % fortiname, block)
+                    t = [int(s) for s in text.split() if s.isdigit()][0]
+                    neighbor_dict['address_family'][family][term] = t
+
+                received = self.device.execute_command(
+                    command_received.format(neighbor))[0].split()
+                if len(received) > 0:
+                    neighbor_dict['address_family'][family]['received_prefixes'] = received[-1]
+                else:
+                    # Soft-reconfig is not enabled
+                    neighbor_dict['address_family'][family]['received_prefixes'] = 0
+            peers[neighbor] = neighbor_dict
+
+        return {
+            'global': {
+                'router_id': unicode(bgp_sum[0].split()[3]),
+                'peers': peers
+            }
+        }
+
+    def get_interfaces_counters(self):
+        cmd = self.device.execute_command('fnsysctl ifconfig')
+        if_name = None
+        interface_counters = dict()
+        for line in cmd:
+            data = line.split('\t')
+            if (data[0] == '' or data[0] == ' ') and len(data) == 1:
+                continue
+            elif data[0] != '':
+                if_name = data[0]
+                interface_counters[if_name] = dict()
+            elif (data[1].startswith('RX packets') or data[1].startswith('TX packets')) and if_name:
+                if_data = data[1].split(' ')
+                direction = if_data[0].lower()
+                interface_counters[if_name][direction + '_unicast_packets'] = int(if_data[1].split(':')[1])
+                interface_counters[if_name][direction + '_errors'] = int(if_data[2].split(':')[1])
+                interface_counters[if_name][direction + '_discards'] = int(if_data[2].split(':')[1])
+                interface_counters[if_name][direction + '_multicast_packets'] = -1
+                interface_counters[if_name][direction + '_broadcast_packets'] = -1
+            elif data[1].startswith('RX bytes'):
+                if_data = data[1].split(' ')
+                interface_counters[if_name]['rx_octets'] = int(if_data[1].split(':')[1])
+                try:
+                    interface_counters[if_name]['tx_octets'] = int(if_data[6].split(':')[1])
+                except IndexError:
+                    interface_counters[if_name]['tx_octets'] = int(if_data[7].split(':')[1])
+        return interface_counters
 
     def get_lldp_neighbors(self):
         return {}
+
+
+        # def get_environment(self):
+        #     sensors_output = self.device.execute_command('execute sensor list')
+        #     from pprint import pprint
+        #     pprint(sensors_output)
+        #
+        #     return {}

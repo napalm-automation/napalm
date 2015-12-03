@@ -36,3 +36,41 @@ interface_counters = {
     'tx_broadcast_packets': int,
     'rx_broadcast_packets': int,
 }
+
+temperature = {
+    'is_alert': bool,
+    'is_critical': bool,
+    'temperature': float,
+}
+
+power = {
+    'status': bool,
+    'output': float,
+    'capacity': float
+}
+
+memory = {
+    'used_ram': int,
+    'available_ram': int,
+}
+
+fan = {
+    'status': bool,
+}
+
+peer = {
+    'is_enabled': bool,
+    'uptime': int,
+    'remote_as': int,
+    'description': unicode,
+    'remote_id': unicode,
+    'local_as': int,
+    'is_up': bool,
+    'address_family': dict,
+}
+
+af = {
+    'sent_prefixes': int,
+    'accepted_prefixes': int,
+    'received_prefixes': int
+}
