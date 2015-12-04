@@ -276,61 +276,61 @@ class JunOSDriver(NetworkDriver):
         family = table.split('.')[-2]
         return address_family_mapping[family]
 
+    def _parse_route_stats(self, neighbor):
+        data = {}
+        if not neighbor['is_up']:
+            pass
+        elif isinstance(neighbor['tables'], list):
+            for idx, table in enumerate(neighbor['tables']):
+                family = self._get_address_family(table)
+                data[family] = {}
+                data[family]['received_prefixes'] = neighbor['received_prefixes'][idx]
+                data[family]['accepted_prefixes'] = neighbor['accepted_prefixes'][idx]
+                data[family]['sent_prefixes'] = neighbor['sent_prefixes'][idx]
+        else:
+            family = self._get_address_family(neighbor['tables'])
+            data[family] = {}
+            data[family]['received_prefixes'] = neighbor['received_prefixes']
+            data[family]['accepted_prefixes'] = neighbor['accepted_prefixes']
+            data[family]['sent_prefixes'] = neighbor['sent_prefixes']
+        return data
+
+    @staticmethod
+    def _parse_value(value):
+        if isinstance(value, basestring):
+            return unicode(value)
+        elif value is None:
+            return u''
+        else:
+            return value
+
     def get_bgp_neighbors(self):
-        # Setup the views
         instances = junos_views.junos_route_instance_table(self.device)
         uptime_table = junos_views.junos_bgp_uptime_table(self.device)
-        bgp_neigbors = junos_views.junos_bgp_table(self.device)
-        # prepare data
-        bgp_neigbor_data = dict()
+        bgp_neighbors = junos_views.junos_bgp_table(self.device)
+        keys =['local_as', 'remote_as', 'is_up', 'is_enabled', 'description', 'remote_id']
+        bgp_neighbor_data = {}
         for instance, instance_data in instances.get().items():
             if instance.startswith('__'):
                 # junos internal instances
                 continue
-
             instance_name = "global" if instance == 'master' else instance
-
-            bgp_neigbor_data[instance_name] = dict(peers=dict())
-            for neighbor, neighbor_data in bgp_neigbors.get(instance=instance).items():
-                structured_neighbor_data = {k: v for k, v in neighbor_data}
-                peer = neighbor.split('+')[0]
-                bgp_neigbor_data[instance_name]['peers'][peer] = dict()
-                for key in ['local_as', 'remote_as', 'is_up', 'is_enabled', 'description', 'remote_id']:
-                    if key == 'description':
-                        structured_neighbor_data[key] = unicode(structured_neighbor_data[key]) or u''
-                    if not structured_neighbor_data[key] and key == 'description':
-                        structured_neighbor_data[key] = u''
-                    if key == 'remote_id' and not structured_neighbor_data[key]:
-                        structured_neighbor_data[key] = u''
-                    bgp_neigbor_data[instance_name]['peers'][peer][key] = structured_neighbor_data[key]
-                if 'router_id' not in bgp_neigbor_data[instance_name].keys():
+            bgp_neighbor_data[instance_name] = {'peers': {}}
+            for neighbor, data in bgp_neighbors.get(instance=instance).items():
+                neighbor_data = {k: v for k, v in data}
+                peer_ip = neighbor.split('+')[0]
+                if 'router_id' not in bgp_neighbor_data[instance_name]:
                     # we only need to set this once
-                    bgp_neigbor_data[instance_name]['router_id'] = unicode(structured_neighbor_data['local_id'])
-                if structured_neighbor_data['is_up'] is False:
-                    # if the session is down there is no table data to parse
-                    bgp_neigbor_data[instance_name]['peers'][peer]['address_family'] = dict()
-                elif isinstance(structured_neighbor_data['tables'], list):
-                    for idx, table in enumerate(structured_neighbor_data['tables']):
-                        family = self._get_address_family(table)
-                        bgp_neigbor_data[instance_name]['peers'][peer]['address_family'] = dict()
-                        bgp_neigbor_data[instance_name]['peers'][peer]['address_family'][family] = dict()
-                        for metric in ['received_prefixes', 'accepted_prefixes', 'sent_prefixes']:
-                            bgp_neigbor_data[instance_name]['peers'][peer]['address_family'][family][metric] = structured_neighbor_data[metric][idx]
-                else:
-                    family = self._get_address_family(structured_neighbor_data['tables'])
-                    bgp_neigbor_data[instance_name]['peers'][peer]['address_family'] = dict()
-                    bgp_neigbor_data[instance_name]['peers'][peer]['address_family'][family] = dict()
-                    for metric in ['received_prefixes', 'accepted_prefixes', 'sent_prefixes']:
-                        bgp_neigbor_data[instance_name]['peers'][peer]['address_family'][family][metric] = structured_neighbor_data[metric]
+                    bgp_neighbor_data[instance_name]['router_id'] = unicode(neighbor_data['local_id'])
+                peer = {key:self._parse_value(value) for key, value in neighbor_data.iteritems() if key in keys}
+                peer['address_family'] = self._parse_route_stats(neighbor_data)
+                bgp_neighbor_data[instance_name]['peers'][peer_ip] = peer
             for neighbor, uptime in uptime_table.get(instance=instance).items():
-                bgp_neigbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
-        empty = list()
-        for key in bgp_neigbor_data:
-            if not bgp_neigbor_data[key]['peers']:
-                empty.append(key)
-        for k in empty:
-            del bgp_neigbor_data[k]
-        return bgp_neigbor_data
+                bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
+        for key in bgp_neighbor_data.keys():
+            if not bgp_neighbor_data[key]['peers']:
+                del bgp_neighbor_data[key]
+        return bgp_neighbor_data
 
     def get_lldp_neighbors(self):
         lldp = junos_views.junos_lldp_table(self.device)
