@@ -118,7 +118,7 @@ class IOSDriver(NetworkDriver):
             except:
                 self.rollback()
 
-    def get_lldp_neighbors(device):
+    def get_lldp_neighbors(self):
         command = 'show lldp neighbors | begin Device ID'
         lldp = {}
 
