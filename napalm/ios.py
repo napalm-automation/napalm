@@ -24,6 +24,9 @@ class IOSDriver(NetworkDriver):
         self.username = username
         self.password = password
         self.timeout = timeout
+        self.first_touch = True
+        self.candidate_config = None
+        self.candidate_config_commands = None
         self.device = None
 
     def open(self):
@@ -77,7 +80,6 @@ class IOSDriver(NetworkDriver):
                 commands.append(line.strip())
 
         self.candidate_config = commands
-        self.first_touch = False
 
     def compare_config(self):
         if self.candidate_config is not None:
@@ -115,26 +117,10 @@ class IOSDriver(NetworkDriver):
                             commands_dict[command] = "changed"
                     prompt = self.device.find_prompt()
                     index += 1
+                self.first_touch = False
             except:
                 self.rollback()
-
-    def get_lldp_neighbors(self):
-        command = 'show lldp neighbors | begin Device ID'
-        lldp = {}
-
-        output = self.device.send_command(command)
-        splitted_output = output.split('\n')
-        for line in splitted_output:
-            neighbor = {}
-            if len(line) > 0 and 'Device ID' not in line and 'entries' not in line:
-                splitted_line = line.split()
-                device_id = unicode(splitted_line[0])
-                device_port = unicode(splitted_line[1])
-                port_id = unicode(splitted_line[-1])
-                neighbor['hostname'] = device_id
-                neighbor['port'] = port_id
-                lldp[device_port] = neighbor
-        return lldp
+                self.first_touch = False
 
     def get_facts(self):
         """This function returns a set of facts from the devices."""
@@ -214,7 +200,7 @@ class IOSDriver(NetworkDriver):
     def get_interfaces(self):
         interface_list = {}
         # default values.
-        last_flapped = -1.0
+        last_flapped = -1
         # command to execute.
         command = 'show interfaces description'
         # let's start.
@@ -270,14 +256,15 @@ class IOSDriver(NetworkDriver):
                 speed = group_speed["speed"]
                 speed_format = group_speed["speed_format"]
                 if speed_format == 'Mbit':
-                    interface_list[interface]['speed'] = int(speed)
+                    interface_list[interface]['speed'] = unicode(speed)
                 else:
                     speed = int(speed)/1000
-                    interface_list[interface]['speed'] = int(speed)
+                    interface_list[interface]['speed'] = unicode(speed)
             except AttributeError:
                 interface_list[interface]['speed'] = -1
 
         return interface_list
+
 
     def get_bgp_neighbors(self):
         commands = [
