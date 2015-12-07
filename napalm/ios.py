@@ -122,6 +122,24 @@ class IOSDriver(NetworkDriver):
                 self.rollback()
                 self.first_touch = False
 
+    def get_lldp_neighbors(self):
+        command = 'show lldp neighbors | begin Device ID'
+        lldp = {}
+
+        output = self.device.send_command(command)
+        splitted_output = output.split('\n')
+        for line in splitted_output:
+            neighbor = {}
+            if len(line) > 0 and 'Device ID' not in line and 'entries' not in line:
+                splitted_line = line.split()
+                device_id = unicode(splitted_line[0])
+                device_port = unicode(splitted_line[1])
+                port_id = unicode(splitted_line[-1])
+                neighbor['hostname'] = device_id
+                neighbor['port'] = port_id
+                lldp[device_port] = neighbor
+        return lldp
+
     def get_facts(self):
         """This function returns a set of facts from the devices."""
         results = {}
@@ -200,7 +218,7 @@ class IOSDriver(NetworkDriver):
     def get_interfaces(self):
         interface_list = {}
         # default values.
-        last_flapped = -1
+        last_flapped = -1.0
         # command to execute.
         command = 'show interfaces description'
         # let's start.
@@ -256,15 +274,14 @@ class IOSDriver(NetworkDriver):
                 speed = group_speed["speed"]
                 speed_format = group_speed["speed_format"]
                 if speed_format == 'Mbit':
-                    interface_list[interface]['speed'] = unicode(speed)
+                    interface_list[interface]['speed'] = int(speed)
                 else:
                     speed = int(speed)/1000
-                    interface_list[interface]['speed'] = unicode(speed)
+                    interface_list[interface]['speed'] = int(speed)
             except AttributeError:
                 interface_list[interface]['speed'] = -1
 
         return interface_list
-
 
     def get_bgp_neighbors(self):
         commands = [
