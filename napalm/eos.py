@@ -285,14 +285,15 @@ class EOSDriver(NetworkDriver):
                 elif re.search(IPv6_sent_regexp, line):
                     bgp_neighbors[peer]['ipv6'] = re.search(IPv6_sent_regexp, line).group(2)
                     continue
-
-            for peer in bgp_neighbors:
-                if peer == needed_peer:
-                    if bgp_neighbors[peer]['vrf'] == vrf:
-                        bgp_peer['remote_id'] = bgp_neighbors[peer]['remote_id']
-                        bgp_peer['description'] = bgp_neighbors[peer]['description']
-                        bgp_peer['ipv4'] = bgp_neighbors[peer]['ipv4']
-                        bgp_peer['ipv6'] = bgp_neighbors[peer]['ipv6']
+            try:
+                peer = next(peer for peer in bgp_neighbors if peer == needed_peer)
+            except StopIteration:
+                raise Exception("Peer %s not found in show bgp neighbors" % needed_peer)
+            if bgp_neighbors[peer]['vrf'] == vrf:
+                bgp_peer['remote_id'] = bgp_neighbors[peer]['remote_id']
+                bgp_peer['description'] = bgp_neighbors[peer]['description']
+                bgp_peer['ipv4'] = bgp_neighbors[peer]['ipv4']
+                bgp_peer['ipv6'] = bgp_neighbors[peer]['ipv6']
             return bgp_peer
 
         bgp_counters = dict()
@@ -307,10 +308,9 @@ class EOSDriver(NetworkDriver):
                     bgp_counters[vrf]['peers'][peer]['remote_as'] = int(output[id]['vrfs'][vrf]['peers'][peer]['asn'])
                     peerState = output[id]['vrfs'][vrf]['peers'][peer]['peerState']
                     bgp_counters[vrf]['peers'][peer]['is_up'] = peerState == 'Established'
-                    try:
-                        output[id]['vrfs'][vrf]['peers'][peer]['peerStateIdleReason']
+                    if 'peerStateIdleReason' in command[id]['vrfs'][vrf]['peers'][peer]:
                         bgp_counters[vrf]['peers'][peer]['is_enabled'] = False
-                    except:
+                    else:
                         bgp_counters[vrf]['peers'][peer]['is_enabled'] = peerState == 'Established' or peerState == 'Active'
                     bgp_counters[vrf]['peers'][peer]['uptime'] = int(output[id]['vrfs'][vrf]['peers'][peer]['upDownTime'])
                     bgp_peer = get_bgp_neighbor(peer, vrf, output[id+1])
