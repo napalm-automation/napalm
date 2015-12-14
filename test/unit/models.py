@@ -58,6 +58,10 @@ fan = {
     'status': bool,
 }
 
+cpu = {
+    '%usage': float,
+}
+
 peer = {
     'is_enabled': bool,
     'uptime': int,
