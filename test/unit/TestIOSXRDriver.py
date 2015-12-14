@@ -67,9 +67,6 @@ class FakeIOSXRDevice:
     def show_interface_description(self):
         return self.read_txt_file('iosxr/mock_data/show_interface_description.txt')
 
-    def show_processes_cpu(self):
-        return self.read_txt_file('iosxr/mock_data/show_processes_cpu.txt')
-
     def show_lldp_neighbors(self):
         return self.read_txt_file('iosxr/mock_data/show_lldp_neighbors.txt')
 

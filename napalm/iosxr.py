@@ -178,7 +178,7 @@ class IOSXRDriver(NetworkDriver):
 
             interface_stats = dict()
 
-            if not interface.find('InterfaceStatistics'):
+            if interface.find('InterfaceStatistics') is None:
                 continue
             else:
                 interface_stats = dict()
@@ -385,7 +385,7 @@ class IOSXRDriver(NetworkDriver):
         return result
 
     def get_environment(self):
-        def get_module_xml_query(module):
+        def get_module_xml_query(module,selection):
             return """<Get>
                         <AdminOperational>
                             <EnvironmentalMonitoring>
@@ -399,13 +399,14 @@ class IOSXRDriver(NetworkDriver):
                                                 <Naming>
                                                     <slot>%s</slot>
                                                 </Naming>
+                                                %s
                                             </Slot>
                                         </SlotTable>
                                     </Rack>
                                 </RackTable>
                             </EnvironmentalMonitoring>
                         </AdminOperational>
-                    </Get>""" % module
+                    </Get>""" % (module,selection)
 
         environment_status = dict()
         environment_status['fans'] = dict()
@@ -413,9 +414,8 @@ class IOSXRDriver(NetworkDriver):
         environment_status['power'] = dict()
         environment_status['cpu'] = dict()
         environment_status['memory'] = int()
-        """
-        finding slots with equipment we're interested in
-        """
+        
+        # finding slots with equipment we're interested in
         rpc_command = """<Get>
             <AdminOperational>
                 <PlatformInventory>
@@ -438,52 +438,58 @@ class IOSXRDriver(NetworkDriver):
 
         for slot in result_tree.iter("Slot"):
             for card in slot.iter("CardTable"):
+                #find enabled slots, figoure out type and save for later
                 if card.find('Card/Attributes/FRUInfo/ModuleAdministrativeState').text == "ADMIN_UP":
-                    """
-                    found a slot that's expected to be UP. figuring out type and saving for later
-                    """
+                    
                     slot_name = slot.find('Naming/Name').text
                     module_type = re.sub("\d+", "", slot_name)
                     if len(module_type) > 0:
-                        if slot_name not in ["PM6", "PM7"]:    # Cisco bug, chassis difference V01<->V02
-                            active_modules[module_type].append(slot_name)
-        """
-        PSU's
-        """
+                        active_modules[module_type].append(slot_name)
+                    else:
+                        active_modules["LC"].append(slot_name)
+
+        #
+        # PSU's
+        #
+
         for psu in active_modules['PM']:
-            rpc_command = get_module_xml_query(psu)
+            if psu in ["PM6", "PM7"]:    # Cisco bug, chassis difference V01<->V02
+                continue
+
+            rpc_command = get_module_xml_query(psu,'')
             result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
             psu_status = dict()
             psu_status['status'] = False
-            psu_status['capacity'] = int()
-            psu_status['output'] = int()
+            psu_status['capacity'] = float()
+            psu_status['output'] = float()
 
             for sensor in result_tree.iter('SensorName'):
                 if sensor.find('Naming/Name').text == "host__VOLT":
-                    this_psu_voltage = int(sensor.find('ValueBrief').text)
+                    this_psu_voltage = float(sensor.find('ValueBrief').text)
                 elif sensor.find('Naming/Name').text == "host__CURR":
-                    this_psu_current = int(sensor.find('ValueBrief').text)
+                    this_psu_current = float(sensor.find('ValueBrief').text)
                 elif sensor.find('Naming/Name').text == "host__PM":
-                    this_psu_capacity = int(sensor.find('ValueBrief').text)
+                    this_psu_capacity = float(sensor.find('ValueBrief').text)
 
             if this_psu_capacity > 0:
                 psu_status['capacity'] = this_psu_capacity
                 psu_status['status'] = True
 
             if this_psu_current and this_psu_voltage:
-                psu_status['output'] = (this_psu_voltage * this_psu_current) / 1000000
+                psu_status['output'] = (this_psu_voltage * this_psu_current) / 1000000.0
 
             environment_status['power'][psu] = psu_status
 
         #
         # Memory
         #
-
+        
         rpc_command = "<Get><AdminOperational><MemorySummary></MemorySummary></AdminOperational></Get>"
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
         for node in result_tree.iter('Node'):
+            print 
             if node.find('Naming/NodeName/Slot').text == active_modules['RSP'][0]:    # first enabled RSP
                 available_ram = int(node.find('Summary/SystemRAMMemory').text)
                 free_ram = int(node.find('Summary/FreeApplicationMemory').text)
@@ -491,61 +497,74 @@ class IOSXRDriver(NetworkDriver):
 
         if available_ram and free_ram:
             used_ram = available_ram - free_ram
-            environment_status['available_ram'] = available_ram
-            environment_status['used_ram'] = used_ram
+            memory = dict()
+            memory['available_ram'] = available_ram
+            memory['used_ram'] = used_ram
+            environment_status['memory'] = memory
 
         #
         # Fans
         #
 
         for fan in active_modules['FT']:
-            rpc_command = get_module_xml_query(fan)
+            rpc_command = get_module_xml_query(fan,'')
             result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
             for module in result_tree.iter('Module'):
                 for sensortype in module.iter('SensorType'):
                     for sensorname in sensortype.iter('SensorNameTable'):
                         if sensorname.find('SensorName/Naming/Name').text == "host__FanSpeed_0":
-                            environment_status['fans'][fan] = int(sensorname.find(
-                                'SensorName/ValueDetailed/Status').text) is 1
+                            environment_status['fans'][fan] = {'status': int(sensorname.find(
+                                'SensorName/ValueDetailed/Status').text) is 1}
 
         #
         # CPU
         #
         cpu = dict()
-        cpu[0] = re.findall(r'\d+%', self.device.show_processes_cpu().splitlines()[0])[1]
+ 
+        rpc_command = "<Get><Operational><SystemMonitoring></SystemMonitoring></Operational></Get>"
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for module in result_tree.iter('CPUUtilization'):
+            this_cpu = dict()
+            this_cpu["%usage"] = float(module.find('TotalCPUFiveMinute').text)
+
+            rack = module.find('Naming/NodeName/Rack').text
+            slot = module.find('Naming/NodeName/Slot').text
+            instance = module.find('Naming/NodeName/Instance').text
+            position =  "%s/%s/%s" % (rack,slot,instance)
+
+            cpu[position] = this_cpu
+
         environment_status["cpu"] = cpu
 
         #
         # Temperature
         #
+
         temperature = dict()
 
-        current_slot = ""
-        current_temp = ""
+        slot_list = set()
+        for category, slot in active_modules.iteritems():
+            slot_list |= set(slot)
 
-        for line in self.device.show_environment_temperatures().splitlines():
+        for slot in slot_list:
+            rpc_command = get_module_xml_query(slot,'')
+            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
-            try:
-                m = re.search(r'^[0-9]\/([^\/]+)\/.*$', line)
-                result = m.group(1)
+            for sensor in result_tree.findall(".//SensorName"):
+                if not sensor.find('Naming/Name').text == "host__Inlet0":
+                    continue
+                this_reading = dict()
+                this_reading['temperature'] = float(sensor.find('ValueBrief').text)
 
-                if len(result) > 1:
-                    current_slot = result
-                else:
-                    current_slot = "LC%s" % result
+                threshold_value = [float(x.text) for x in sensor.findall("ThresholdTable/Threshold/ValueBrief")]
 
-            except:
-                pass
+                this_reading['is_alert'] = threshold_value[2] <= this_reading['temperature'] <= threshold_value[3]
+                this_reading['is_critical'] = threshold_value[4] <= this_reading['temperature'] <= threshold_value[5]
 
-            if "Inlet0" in line:
-                current_temp = re.findall("\d+.\d+", line)[0]
+                this_reading['temperature'] = this_reading['temperature']/10
 
-            if current_temp and current_slot:
-                temperature[current_slot] = current_temp
-                current_slot = ""
-                current_temp = ""
-
-        environment_status["temperature"] = temperature
+                environment_status["temperature"][slot] = this_reading
 
         return environment_status
 

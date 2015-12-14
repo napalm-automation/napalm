@@ -179,12 +179,15 @@ class TestGettersNetworkDriver:
 
         for power, power_data in environment['power'].iteritems():
             result = result and self._test_model(models.power, power_data)
-
+        
         for temperature, temperature_data in environment['temperature'].iteritems():
             result = result and self._test_model(models.temperature, temperature_data)
 
-        result = result and self._test_model(models.memory, environment['memory'])
+        for cpu, cpu_data in environment['cpu'].iteritems():
+            result = result and self._test_model(models.cpu, cpu_data)
 
+        result = result and self._test_model(models.memory, environment['memory'])
+        
         self.assertTrue(result)
 
     def test_get_bgp_neighbors(self):
