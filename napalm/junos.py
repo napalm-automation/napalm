@@ -14,7 +14,7 @@
 
 import re
 
-from utils import junos_views
+from napalm.utils import junos_views
 from base import NetworkDriver
 
 from jnpr.junos import Device
