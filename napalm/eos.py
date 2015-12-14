@@ -22,7 +22,7 @@ from exceptions import MergeConfigException, ReplaceConfigException, SessionLock
 from datetime import datetime
 import time
 
-from utils import string_parsers
+from napalm.utils import string_parsers
 
 
 class EOSDriver(NetworkDriver):

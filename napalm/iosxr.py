@@ -13,7 +13,7 @@
 # the License.
 
 from base import NetworkDriver
-from utils import string_parsers
+from napalm.utils import string_parsers
 
 from pyIOSXR import IOSXR
 from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
