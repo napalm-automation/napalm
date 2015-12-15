@@ -69,7 +69,7 @@ junos_bgp_view:
     local_as: { local-as: int }
     peer_as: { peer-as: int }
     local_id: local-id
-    remote_id: peer-id
+    remote_id: { peer-id: unicode }
 
 ####
 #### LLDP table
@@ -131,3 +131,44 @@ junos_iface_counter_view:
   fields_txerrs:
     tx_errors: { output-errors: int }
     tx_discards: { output-drops: int }
+
+junos_enviroment_table:
+  rpc: get-environment-information
+  args:
+  item: environment-item
+  key: name
+  view: junos_enviroment_view
+
+junos_enviroment_view:
+  fields:
+    class: class
+    status: status
+    temperature: { temperature/@celsius: int }
+
+junos_routing_engine_table:
+  rpc: get-route-engine-information
+  args:
+  item: route-engine
+  key: slot
+  view: junos_routing_engine_view
+
+junos_routing_engine_view:
+  fields:
+    cpu-idle: { cpu-idle: int }
+    memory-dram-size: { memory-dram-size: int }
+    memory-buffer-utilization : { memory-buffer-utilization: int }
+
+junos_temperature_thresholds:
+  rpc: get-temperature-threshold-information
+  args:
+  item: temperature-threshold
+  key: name
+  view: junos_temperature_thresholds_view
+
+junos_temperature_thresholds_view:
+  fields:
+    name: name
+    yellow-alarm: { yellow-alarm: int }
+    red-alarm: { red-alarm: int }
+    tx_discards: { output-drops: int }
+

@@ -143,63 +143,70 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_interfaces(self):
-        result = True
+        get_interfaces = self.device.get_interfaces()
+        result = len(get_interfaces) > 0
 
-        for interface, interface_data in self.device.get_interfaces().iteritems():
+        for interface, interface_data in get_interfaces.iteritems():
             result = result and self._test_model(models.interface, interface_data)
 
         self.assertTrue(result)
 
     def test_get_lldp_neighbors(self):
-        result = True
+        get_lldp_neighbors = self.device.get_lldp_neighbors()
+        result = len(get_lldp_neighbors) > 0
 
-        for interface, neighbor_list in self.device.get_lldp_neighbors().iteritems():
+        for interface, neighbor_list in get_lldp_neighbors.iteritems():
             for neighbor in neighbor_list:
                 result = result and self._test_model(models.lldp_neighbors, neighbor)
 
         self.assertTrue(result)
 
     def test_get_interfaces_counters(self):
-        result = True
+        get_interfaces_counters = self.device.get_interfaces_counters()
+        result = len(self.device.get_interfaces_counters()) > 0
 
-        for interface, interface_data in self.device.get_interfaces_counters().iteritems():
+        for interface, interface_data in get_interfaces_counters.iteritems():
             result = result and self._test_model(models.interface_counters, interface_data)
 
         self.assertTrue(result)
 
     def test_get_environment(self):
         environment = self.device.get_environment()
-
-        result = True
+        result = len(environment) > 0
 
         for fan, fan_data in environment['fans'].iteritems():
             result = result and self._test_model(models.fan, fan_data)
 
         for power, power_data in environment['power'].iteritems():
             result = result and self._test_model(models.power, power_data)
-
+        
         for temperature, temperature_data in environment['temperature'].iteritems():
             result = result and self._test_model(models.temperature, temperature_data)
 
-        result = result and self._test_model(models.memory, environment['memory'])
+        for cpu, cpu_data in environment['cpu'].iteritems():
+            result = result and self._test_model(models.cpu, cpu_data)
 
+        result = result and self._test_model(models.memory, environment['memory'])
+        
         self.assertTrue(result)
 
     def test_get_bgp_neighbors(self):
         get_bgp_neighbors = self.device.get_bgp_neighbors()
-
         result = 'global' in get_bgp_neighbors.keys()
 
         if not result:
             print('global is not part of the returned vrfs')
+        else:
+            for vrf, vrf_data in get_bgp_neighbors.iteritems():
+                result = result and isinstance(vrf_data['router_id'], unicode)
+                if not result:
+                    print('router_id is not unicode')
 
-        for vrf, vrf_data in get_bgp_neighbors.iteritems():
-            result = result and isinstance(vrf_data['router_id'], unicode)
+                for peer, peer_data in vrf_data['peers'].iteritems():
+                    result = result and self._test_model(models.peer, peer_data)
 
-            for peer, peer_data in vrf_data['peers'].iteritems():
-                result = result and self._test_model(models.peer, peer_data)
+                    for af, af_data in peer_data['address_family'].iteritems():
+                        result = result and self._test_model(models.af, af_data)
 
-                for af, af_data in peer_data['address_family'].iteritems():
-                    result = result and self._test_model(models.af, af_data)
+            self.assertTrue(result)
 
-        self.assertTrue(result)

@@ -14,7 +14,7 @@
 
 import re
 
-from utils import junos_views
+from napalm.utils import junos_views
 from base import NetworkDriver
 
 from jnpr.junos import Device
@@ -146,6 +146,93 @@ class JunOSDriver(NetworkDriver):
             interface_counters[interface] = {k: v or -1 for k, v in counters}
         return interface_counters
 
+    def get_environment(self):
+        environment = junos_views.junos_enviroment_table(self.device)
+        routing_engine = junos_views.junos_routing_engine_table(self.device)
+        temperature_thresholds = junos_views.junos_temperature_thresholds(self.device)
+        environment.get()
+        routing_engine.get()
+        temperature_thresholds.get()
+        environment_data = dict()
+
+        for sensor_object, object_data in environment.items():
+            structured_object_data = {k: v for k, v in object_data}
+
+            if structured_object_data['class'] == 'Power':
+                # Create a dict for the 'power' key
+                try:
+                    environment_data['power'][sensor_object] = dict()
+                except KeyError:
+                    environment_data['power'] = dict()
+                    environment_data['power'][sensor_object] = dict()
+
+                # Set these values to -1, because Junos does not provide them
+                environment_data['power'][sensor_object]['capacity'] = -1.0
+                environment_data['power'][sensor_object]['output'] = -1.0
+
+            if structured_object_data['class'] == 'Fans':
+                # Create a dict for the 'fans' key
+                try:
+                    environment_data['fans'][sensor_object] = dict()
+                except KeyError:
+                    environment_data['fans'] = dict()
+                    environment_data['fans'][sensor_object] = dict()
+
+            if structured_object_data['status'] == 'OK' and structured_object_data['class'] == 'Power':
+                # If status is Failed, Absent or Testing, set status to False.
+                environment_data['power'][sensor_object]['status'] = True
+
+            elif structured_object_data['status'] != 'OK' and structured_object_data['class'] == 'Power':
+                environment_data['power'][sensor_object]['status'] = False
+
+            elif structured_object_data['status'] == 'OK' and structured_object_data['class'] == 'Fans':
+                # If status is Failed, Absent or Testing, set status to False.
+                environment_data['fans'][sensor_object]['status'] = True
+
+            elif structured_object_data['status'] != 'OK' and structured_object_data['class'] == 'Fans':
+                environment_data['fans'][sensor_object]['status'] = False
+
+            for temperature_object, temperature_data in temperature_thresholds.items():
+                structured_temperature_data = {k: v for k, v in temperature_data}
+                if structured_object_data['class'] == 'Temp':
+                    # Create a dict for the 'temperature' key
+                    try:
+                        environment_data['temperature'][sensor_object] = dict()
+                    except KeyError:
+                        environment_data['temperature'] = dict()
+                        environment_data['temperature'][sensor_object] = dict()
+
+                    environment_data['temperature'][sensor_object]['temperature'] = float(structured_object_data['temperature'])
+                    # Set a default value (False) to the key is_critical and is_alert
+                    environment_data['temperature'][sensor_object]['is_alert'] = False
+                    environment_data['temperature'][sensor_object]['is_critical'] = False
+                    # Check if the working temperature is equal to or higher than alerting threshold
+                    if structured_temperature_data['red-alarm'] <= structured_object_data['temperature']:
+                        environment_data['temperature'][sensor_object]['is_critical'] = True
+                        environment_data['temperature'][sensor_object]['is_alert'] = True
+                    elif structured_temperature_data['yellow-alarm'] <= structured_object_data['temperature']:
+                        environment_data['temperature'][sensor_object]['is_alert'] = True
+
+        for routing_engine_object, routing_engine_data in routing_engine.items():
+            structured_routing_engine_data = {k: v for k, v in routing_engine_data}
+            # Create dicts for 'cpu' and 'memory'.
+            try:
+                environment_data['cpu'] = dict()
+                environment_data['cpu'][routing_engine_object] = dict()
+                environment_data['memory'] = dict()
+            except KeyError:
+                environment_data['cpu'] = dict()
+                environment_data['cpu'][routing_engine_object] = dict()
+                environment_data['memory'] = dict()
+            # Calculate the CPU usage by using the CPU idle value.
+            environment_data['cpu'][routing_engine_object]['%usage'] = 100.0 - structured_routing_engine_data['cpu-idle']
+            environment_data['memory']['available_ram'] = structured_routing_engine_data['memory-dram-size']
+            # Junos gives us RAM in %, so calculation has to be made.
+            # Sadly, bacause of this, results are not 100% accurate to the truth.
+            environment_data['memory']['used_ram'] = (structured_routing_engine_data['memory-dram-size'] / 100 * structured_routing_engine_data['memory-buffer-utilization'])
+
+        return environment_data
+
     @staticmethod
     def _get_address_family(table):
         """
@@ -160,48 +247,61 @@ class JunOSDriver(NetworkDriver):
         family = table.split('.')[-2]
         return address_family_mapping[family]
 
+    def _parse_route_stats(self, neighbor):
+        data = {}
+        if not neighbor['is_up']:
+            pass
+        elif isinstance(neighbor['tables'], list):
+            for idx, table in enumerate(neighbor['tables']):
+                family = self._get_address_family(table)
+                data[family] = {}
+                data[family]['received_prefixes'] = neighbor['received_prefixes'][idx]
+                data[family]['accepted_prefixes'] = neighbor['accepted_prefixes'][idx]
+                data[family]['sent_prefixes'] = neighbor['sent_prefixes'][idx]
+        else:
+            family = self._get_address_family(neighbor['tables'])
+            data[family] = {}
+            data[family]['received_prefixes'] = neighbor['received_prefixes']
+            data[family]['accepted_prefixes'] = neighbor['accepted_prefixes']
+            data[family]['sent_prefixes'] = neighbor['sent_prefixes']
+        return data
+
+    @staticmethod
+    def _parse_value(value):
+        if isinstance(value, basestring):
+            return unicode(value)
+        elif value is None:
+            return u''
+        else:
+            return value
+
     def get_bgp_neighbors(self):
-        # Setup the views
         instances = junos_views.junos_route_instance_table(self.device)
         uptime_table = junos_views.junos_bgp_uptime_table(self.device)
-        bgp_neigbors = junos_views.junos_bgp_table(self.device)
-        # prepare data
-        bgp_neigbor_data = dict()
+        bgp_neighbors = junos_views.junos_bgp_table(self.device)
+        keys =['local_as', 'remote_as', 'is_up', 'is_enabled', 'description', 'remote_id']
+        bgp_neighbor_data = {}
         for instance, instance_data in instances.get().items():
             if instance.startswith('__'):
                 # junos internal instances
                 continue
-
             instance_name = "global" if instance == 'master' else instance
-
-            bgp_neigbor_data[instance_name] = dict(peers=dict())
-            for neighbor, neighbor_data in bgp_neigbors.get(instance=instance).items():
-                structured_neighbor_data = {k: v for k, v in neighbor_data}
-                peer = neighbor.split('+')[0]
-                bgp_neigbor_data[instance_name]['peers'][peer] = dict()
-                for key in ['local_as', 'remote_as', 'is_up', 'is_enabled', 'description', 'remote_id']:
-                    bgp_neigbor_data[instance_name]['peers'][peer][key] = structured_neighbor_data[key] or u''
-                if 'router_id' not in bgp_neigbor_data[instance_name].keys():
+            bgp_neighbor_data[instance_name] = {'peers': {}}
+            for neighbor, data in bgp_neighbors.get(instance=instance).items():
+                neighbor_data = {k: v for k, v in data}
+                peer_ip = neighbor.split('+')[0]
+                if 'router_id' not in bgp_neighbor_data[instance_name]:
                     # we only need to set this once
-                    bgp_neigbor_data[instance_name]['router_id'] = structured_neighbor_data['local_id']
-                if structured_neighbor_data['is_up'] is False:
-                    # if the session is down there is no table data to parse
-                    continue
-                elif isinstance(structured_neighbor_data['tables'], list):
-                    for idx, table in enumerate(structured_neighbor_data['tables']):
-                        family = self._get_address_family(table)
-                        bgp_neigbor_data[instance_name]['peers'][peer][family] = dict()
-                        for metric in ['received_prefixes', 'accepted_prefixes', 'sent_prefixes']:
-                            bgp_neigbor_data[instance_name]['peers'][peer][family][metric] = structured_neighbor_data[metric][idx]
-                else:
-                    family = self._get_address_family(structured_neighbor_data['tables'])
-                    bgp_neigbor_data[instance_name]['peers'][peer][family] = dict()
-                    bgp_neigbor_data[instance_name]['peers'][peer][family]['received_prefixes'] = structured_neighbor_data['received_prefixes']
-                    bgp_neigbor_data[instance_name]['peers'][peer][family]['accepted_prefixes'] = structured_neighbor_data['accepted_prefixes']
-                    bgp_neigbor_data[instance_name]['peers'][peer][family]['sent_prefixes'] = structured_neighbor_data['sent_prefixes']
+                    bgp_neighbor_data[instance_name]['router_id'] = unicode(neighbor_data['local_id'])
+                peer = {key:self._parse_value(value) for key, value in neighbor_data.iteritems() if key in keys}
+                peer['address_family'] = self._parse_route_stats(neighbor_data)
+                bgp_neighbor_data[instance_name]['peers'][peer_ip] = peer
             for neighbor, uptime in uptime_table.get(instance=instance).items():
-                bgp_neigbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
-        return bgp_neigbor_data
+                bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
+        for key in bgp_neighbor_data.keys():
+            if not bgp_neighbor_data[key]['peers']:
+                del bgp_neighbor_data[key]
+        return bgp_neighbor_data
 
     def get_lldp_neighbors(self):
         lldp = junos_views.junos_lldp_table(self.device)
