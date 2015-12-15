@@ -1,0 +1,5 @@
+CPU states: 0% user 5% system 0% nice 95% idle
+CPU0 states: 0% user 8% system 0% nice 92% idle
+CPU1 states: 0% user 4% system 0% nice 96% idle
+CPU2 states: 0% user 4% system 0% nice 96% idle
+CPU3 states: 0% user 4% system 0% nice 96% idle
