@@ -1,0 +1,63 @@
+{
+    "vrfs": {
+        "default": {
+            "routerId": "10.208.224.149",
+            "peers": {
+                "2001:7f8::f10:0:1": {
+                    "msgSent": 138207,
+                    "inMsgQueue": 0,
+                    "prefixReceived": 1,
+                    "upDownTime": 1448374400.650718,
+                    "version": 4,
+                    "msgReceived": 138206,
+                    "prefixAccepted": 0,
+                    "peerState": "Established",
+                    "outMsgQueue": 0,
+                    "underMaintenance": false,
+                    "asn": 3856
+                },
+                "2001:7f8::20ea:0:2": {
+                    "msgSent": 138232,
+                    "inMsgQueue": 0,
+                    "prefixReceived": 21,
+                    "upDownTime": 1448374477.663486,
+                    "version": 4,
+                    "msgReceived": 156257,
+                    "prefixAccepted": 0,
+                    "peerState": "Established",
+                    "outMsgQueue": 0,
+                    "underMaintenance": false,
+                    "asn": 8426
+                },
+                "2001:7f8::21b8:0:1": {
+                    "msgSent": 131100,
+                    "inMsgQueue": 0,
+                    "prefixReceived": 1,
+                    "upDownTime": 1448374399.665499,
+                    "version": 4,
+                    "msgReceived": 132797,
+                    "prefixAccepted": 0,
+                    "peerState": "Established",
+                    "outMsgQueue": 0,
+                    "underMaintenance": false,
+                    "asn": 8632
+                },
+                "2001:7f8::71d4:0:1": {
+                    "msgSent": 276459,
+                    "inMsgQueue": 0,
+                    "prefixReceived": 3,
+                    "upDownTime": 1448374403.678457,
+                    "version": 4,
+                    "msgReceived": 276495,
+                    "prefixAccepted": 0,
+                    "peerState": "Established",
+                    "outMsgQueue": 0,
+                    "underMaintenance": false,
+                    "asn": 29140
+                }
+            },
+            "vrf": "default",
+            "asn": 8403
+        }
+    }
+}
