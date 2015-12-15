@@ -13,13 +13,16 @@
 # the License.
 
 from base import NetworkDriver
-from utils import string_parsers
+from napalm.utils import string_parsers
 
 from pyIOSXR import IOSXR
 from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
 
 from exceptions import MergeConfigException, ReplaceConfigException
 import xml.etree.ElementTree as ET
+from collections import defaultdict
+import re
+
 
 class IOSXRDriver(NetworkDriver):
     def __init__(self, hostname, username, password, timeout=60):
@@ -175,7 +178,7 @@ class IOSXRDriver(NetworkDriver):
 
             interface_stats = dict()
 
-            if not interface.find('InterfaceStatistics'):
+            if interface.find('InterfaceStatistics') is None:
                 continue
             else:
                 interface_stats = dict()
@@ -208,66 +211,362 @@ class IOSXRDriver(NetworkDriver):
 
         return interface_counters
 
-    # def get_bgp_neighbors(self):
-    #
-    #     # init result dict
-    #     result = {}
-    #     # todo vrfs
-    #     result['default'] = {}
-    #     result['default']['peers'] = {}
-    #
-    #     # fetch sh ip bgp output
-    #     sh_bgp = self.device.show_ip_bgp_neighbors()
-    #     # split per bgp neighbor
-    #     bgp_list = sh_bgp.rstrip().split('\n\nBGP')
-    #     # for each neigh...
-    #     for neighbor in bgp_list:
-    #
-    #         peer_lines = neighbor.split('\n')
-    #
-    #         # init variables
-    #         is_up = None
-    #         is_enabled = None
-    #         uptime = None
-    #         description = None
-    #         received_prefixes = None
-    #         sent_prefixes = None
-    #         accepted_prefixes = None
-    #         remote_as = None
-    #
-    #         for line in peer_lines:
-    #
-    #             match1 = re.search('(BGP)? neighbor is (.*)',line)
-    #             if match1 is not None:
-    #                 peer_ip = match1.group(2)
-    #
-    #             match2 = re.search('BGP state = (.*)',line)
-    #             if match2 is not None:
-    #                 if match2.group(1) == 'Active':
-    #                     is_up = False
-    #                     is_enabled = True
-    #
-    #             match3 = re.search('Description: (.*)$',line)
-    #             if match3 is not None:
-    #                 description = match3.group(1)
-    #
-    #             match4 = re.search('Remote AS (\d*)',line)
-    #             if match4 is not None:
-    #                 remote_as = int(match4.group(1))
-    #
-    #
-    #         result['default']['peers'][peer_ip] = {
-    #             'is_up': is_up,
-    #             'is_enabled': is_enabled,
-    #             'uptime': uptime,
-    #             'description': description,
-    #             'received_prefixes': received_prefixes,
-    #             'sent_prefixes': sent_prefixes,
-    #             'accepted_prefixes': accepted_prefixes,
-    #             'remote_as': remote_as,
-    #         }
-    #
-    #     return result
+    def get_bgp_neighbors(self):
+        def generate_vrf_query(vrf_name):
+            """
+            Helper to provide XML-query for the VRF-type we're interested in.
+            """
+            if vrf_name == "global":
+                rpc_command = """<Get>
+                        <Operational>
+                            <BGP>
+                                <InstanceTable>
+                                    <Instance>
+                                        <Naming>
+                                            <InstanceName>
+                                                default
+                                            </InstanceName>
+                                        </Naming>
+                                        <InstanceActive>
+                                            <DefaultVRF>
+                                                <GlobalProcessInfo>
+                                                </GlobalProcessInfo>
+                                                <NeighborTable>
+                                                </NeighborTable>
+                                            </DefaultVRF>
+                                        </InstanceActive>
+                                    </Instance>
+                                </InstanceTable>
+                            </BGP>
+                        </Operational>
+                    </Get>"""
+
+            else:
+                rpc_command = """<Get>
+                        <Operational>
+                            <BGP>
+                                <InstanceTable>
+                                    <Instance>
+                                        <Naming>
+                                            <InstanceName>
+                                                default
+                                            </InstanceName>
+                                        </Naming>
+                                        <InstanceActive>
+                                            <VRFTable>
+                                                <VRF>
+                                                    <Naming>
+                                                        %s
+                                                    </Naming>
+                                                    <GlobalProcessInfo>
+                                                    </GlobalProcessInfo>
+                                                    <NeighborTable>
+                                                    </NeighborTable>
+                                                </VRF>
+                                            </VRFTable>
+                                         </InstanceActive>
+                                    </Instance>
+                                </InstanceTable>
+                            </BGP>
+                        </Operational>
+                    </Get>""" % vrf_name
+            return rpc_command
+
+        """
+        Initial run to figure out what VRF's are available
+        Decided to get this one from Configured-section because bulk-getting all instance-data to do the same could get ridiculously heavy
+        Assuming we're always interested in the DefaultVRF
+        """
+
+        active_vrfs = ["global"]
+
+        rpc_command = """<Get>
+                            <Operational>
+                                <BGP>
+                                    <ConfigInstanceTable>
+                                        <ConfigInstance>
+                                            <Naming>
+                                                <InstanceName>
+                                                    default
+                                                </InstanceName>
+                                            </Naming>
+                                            <ConfigInstanceVRFTable>
+                                            </ConfigInstanceVRFTable>
+                                        </ConfigInstance>
+                                    </ConfigInstanceTable>
+                                </BGP>
+                            </Operational>
+                        </Get>"""
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for node in result_tree.iter('ConfigVRF'):
+            active_vrfs.append(str(node.find('Naming/VRFName').text))
+
+        result = dict()
+
+        for vrf in active_vrfs:
+            rpc_command = generate_vrf_query(vrf)
+            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+            this_vrf = dict()
+            this_vrf['peers'] = dict()
+
+            if vrf == "global":
+                this_vrf['router_id'] = unicode(result_tree.find(
+                    'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/DefaultVRF/GlobalProcessInfo/VRF/RouterID').text)
+            else:
+                this_vrf['router_id'] = unicode(result_tree.find(
+                    'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/VRFTable/VRF/GlobalProcessInfo/VRF/RouterID').text)
+
+            neighbors = dict()
+
+            for neighbor in result_tree.iter('Neighbor'):
+                this_neighbor = dict()
+                this_neighbor['local_as'] = int(neighbor.find('LocalAS').text)
+                this_neighbor['remote_as'] = int(neighbor.find('RemoteAS').text)
+                this_neighbor['remote_id'] = unicode(neighbor.find('RouterID').text)
+
+                if neighbor.find('ConnectionAdminStatus').text is "1":
+                    this_neighbor['is_enabled'] = True
+                try:
+                    this_neighbor['description'] = unicode(neighbor.find('Description').text)
+                except:
+                    pass
+
+                this_neighbor['is_enabled'] = str(neighbor.find('ConnectionAdminStatus').text) is "1"
+
+                if str(neighbor.find('ConnectionAdminStatus').text) is "1":
+                    this_neighbor['is_enabled'] = True
+                else:
+                    this_neighbor['is_enabled'] = False
+
+                if str(neighbor.find('ConnectionState').text) == "BGP_ST_ESTAB":
+                    this_neighbor['is_up'] = True
+                    this_neighbor['uptime'] = int(neighbor.find('ConnectionEstablishedTime').text)
+                else:
+                    this_neighbor['is_up'] = False
+                    this_neighbor['uptime'] = -1
+
+                this_neighbor['address_family'] = dict()
+
+                if neighbor.find('ConnectionRemoteAddress/AFI').text == "IPv4":
+                    this_afi = "ipv4"
+                elif neighbor.find('ConnectionRemoteAddress/AFI').text == "IPv6":
+                    this_afi = "ipv6"
+                else:
+                    this_afi = neighbor.find('ConnectionRemoteAddress/AFI').text
+
+                this_neighbor['address_family'][this_afi] = dict()
+
+                try:
+                    this_neighbor['address_family'][this_afi][
+                        "received_prefixes"] = int(neighbor.find('AFData/Entry/PrefixesAccepted').text) + int(
+                            neighbor.find('AFData/Entry/PrefixesDenied').text)
+                    this_neighbor['address_family'][this_afi][
+                        "accepted_prefixes"] = int(neighbor.find('AFData/Entry/PrefixesAccepted').text)
+                    this_neighbor['address_family'][this_afi][
+                        "sent_prefixes"] = int(neighbor.find('AFData/Entry/PrefixesAdvertised').text)
+                except AttributeError:
+                    this_neighbor['address_family'][this_afi]["received_prefixes"] = -1
+                    this_neighbor['address_family'][this_afi]["accepted_prefixes"] = -1
+                    this_neighbor['address_family'][this_afi]["sent_prefixes"] = -1
+
+                try:
+                    neighbor_ip = unicode(neighbor.find('Naming/NeighborAddress/IPV4Address').text)
+                except:
+                    neighbor_ip = unicode(neighbor.find('Naming/NeighborAddress/IPV6Address').text)
+
+                neighbors[neighbor_ip] = this_neighbor
+
+            this_vrf['peers'] = neighbors
+            result[vrf] = this_vrf
+
+        return result
+
+    def get_environment(self):
+        def get_module_xml_query(module,selection):
+            return """<Get>
+                        <AdminOperational>
+                            <EnvironmentalMonitoring>
+                                <RackTable>
+                                    <Rack>
+                                        <Naming>
+                                            <rack>0</rack>
+                                        </Naming>
+                                        <SlotTable>
+                                            <Slot>
+                                                <Naming>
+                                                    <slot>%s</slot>
+                                                </Naming>
+                                                %s
+                                            </Slot>
+                                        </SlotTable>
+                                    </Rack>
+                                </RackTable>
+                            </EnvironmentalMonitoring>
+                        </AdminOperational>
+                    </Get>""" % (module,selection)
+
+        environment_status = dict()
+        environment_status['fans'] = dict()
+        environment_status['temperature'] = dict()
+        environment_status['power'] = dict()
+        environment_status['cpu'] = dict()
+        environment_status['memory'] = int()
+        
+        # finding slots with equipment we're interested in
+        rpc_command = """<Get>
+            <AdminOperational>
+                <PlatformInventory>
+                    <RackTable>
+                        <Rack>
+                            <Naming>
+                                <Name>0</Name>
+                            </Naming>
+                            <SlotTable>
+                            </SlotTable>
+                        </Rack>
+                    </RackTable>
+                </PlatformInventory>
+            </AdminOperational>
+        </Get>"""
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        active_modules = defaultdict(list)
+
+        for slot in result_tree.iter("Slot"):
+            for card in slot.iter("CardTable"):
+                #find enabled slots, figoure out type and save for later
+                if card.find('Card/Attributes/FRUInfo/ModuleAdministrativeState').text == "ADMIN_UP":
+                    
+                    slot_name = slot.find('Naming/Name').text
+                    module_type = re.sub("\d+", "", slot_name)
+                    if len(module_type) > 0:
+                        active_modules[module_type].append(slot_name)
+                    else:
+                        active_modules["LC"].append(slot_name)
+
+        #
+        # PSU's
+        #
+
+        for psu in active_modules['PM']:
+            if psu in ["PM6", "PM7"]:    # Cisco bug, chassis difference V01<->V02
+                continue
+
+            rpc_command = get_module_xml_query(psu,'')
+            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+            psu_status = dict()
+            psu_status['status'] = False
+            psu_status['capacity'] = float()
+            psu_status['output'] = float()
+
+            for sensor in result_tree.iter('SensorName'):
+                if sensor.find('Naming/Name').text == "host__VOLT":
+                    this_psu_voltage = float(sensor.find('ValueBrief').text)
+                elif sensor.find('Naming/Name').text == "host__CURR":
+                    this_psu_current = float(sensor.find('ValueBrief').text)
+                elif sensor.find('Naming/Name').text == "host__PM":
+                    this_psu_capacity = float(sensor.find('ValueBrief').text)
+
+            if this_psu_capacity > 0:
+                psu_status['capacity'] = this_psu_capacity
+                psu_status['status'] = True
+
+            if this_psu_current and this_psu_voltage:
+                psu_status['output'] = (this_psu_voltage * this_psu_current) / 1000000.0
+
+            environment_status['power'][psu] = psu_status
+
+        #
+        # Memory
+        #
+        
+        rpc_command = "<Get><AdminOperational><MemorySummary></MemorySummary></AdminOperational></Get>"
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for node in result_tree.iter('Node'):
+            print 
+            if node.find('Naming/NodeName/Slot').text == active_modules['RSP'][0]:    # first enabled RSP
+                available_ram = int(node.find('Summary/SystemRAMMemory').text)
+                free_ram = int(node.find('Summary/FreeApplicationMemory').text)
+                break    # we're only looking at one of the RSP's
+
+        if available_ram and free_ram:
+            used_ram = available_ram - free_ram
+            memory = dict()
+            memory['available_ram'] = available_ram
+            memory['used_ram'] = used_ram
+            environment_status['memory'] = memory
+
+        #
+        # Fans
+        #
+
+        for fan in active_modules['FT']:
+            rpc_command = get_module_xml_query(fan,'')
+            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+            for module in result_tree.iter('Module'):
+                for sensortype in module.iter('SensorType'):
+                    for sensorname in sensortype.iter('SensorNameTable'):
+                        if sensorname.find('SensorName/Naming/Name').text == "host__FanSpeed_0":
+                            environment_status['fans'][fan] = {'status': int(sensorname.find(
+                                'SensorName/ValueDetailed/Status').text) is 1}
+
+        #
+        # CPU
+        #
+        cpu = dict()
+ 
+        rpc_command = "<Get><Operational><SystemMonitoring></SystemMonitoring></Operational></Get>"
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for module in result_tree.iter('CPUUtilization'):
+            this_cpu = dict()
+            this_cpu["%usage"] = float(module.find('TotalCPUFiveMinute').text)
+
+            rack = module.find('Naming/NodeName/Rack').text
+            slot = module.find('Naming/NodeName/Slot').text
+            instance = module.find('Naming/NodeName/Instance').text
+            position =  "%s/%s/%s" % (rack,slot,instance)
+
+            cpu[position] = this_cpu
+
+        environment_status["cpu"] = cpu
+
+        #
+        # Temperature
+        #
+
+        temperature = dict()
+
+        slot_list = set()
+        for category, slot in active_modules.iteritems():
+            slot_list |= set(slot)
+
+        for slot in slot_list:
+            rpc_command = get_module_xml_query(slot,'')
+            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+            for sensor in result_tree.findall(".//SensorName"):
+                if not sensor.find('Naming/Name').text == "host__Inlet0":
+                    continue
+                this_reading = dict()
+                this_reading['temperature'] = float(sensor.find('ValueBrief').text)
+
+                threshold_value = [float(x.text) for x in sensor.findall("ThresholdTable/Threshold/ValueBrief")]
+
+                this_reading['is_alert'] = threshold_value[2] <= this_reading['temperature'] <= threshold_value[3]
+                this_reading['is_critical'] = threshold_value[4] <= this_reading['temperature'] <= threshold_value[5]
+
+                this_reading['temperature'] = this_reading['temperature']/10
+
+                environment_status["temperature"][slot] = this_reading
+
+        return environment_status
 
     def get_lldp_neighbors(self):
 
@@ -282,9 +581,6 @@ class IOSXRDriver(NetworkDriver):
             if local_interface not in lldp.keys():
                 lldp[local_interface] = list()
 
-            lldp[local_interface].append({
-                'hostname': unicode(n.split()[0]),
-                'port': unicode(n.split()[4]),
-            })
+            lldp[local_interface].append({'hostname': unicode(n.split()[0]), 'port': unicode(n.split()[4]), })
 
         return lldp
