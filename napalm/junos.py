@@ -225,42 +225,13 @@ class JunOSDriver(NetworkDriver):
                 environment_data['cpu'][routing_engine_object] = dict()
                 environment_data['memory'] = dict()
             # Calculate the CPU usage by using the CPU idle value.
-            environment_data['cpu'][routing_engine_object]['%usage'] = 100 - structured_routing_engine_data['cpu-idle']
+            environment_data['cpu'][routing_engine_object]['%usage'] = 100.0 - structured_routing_engine_data['cpu-idle']
             environment_data['memory']['available_ram'] = structured_routing_engine_data['memory-dram-size']
             # Junos gives us RAM in %, so calculation has to be made.
             # Sadly, bacause of this, results are not 100% accurate to the truth.
             environment_data['memory']['used_ram'] = (structured_routing_engine_data['memory-dram-size'] / 100 * structured_routing_engine_data['memory-buffer-utilization'])
 
         return environment_data
-
-    # def get_bgp_neighbors(self):
-    #
-    #     # init result dict
-    #     result = {}
-    #
-    #     instances = junos_views.junos_route_instance_table(self.device)
-    #     instances.get()
-    #
-    #     for vrf in instances.keys():
-    #         if not vrf.startswith('__'):
-    #
-    #             # init result dict for this vrf
-    #             result[vrf] = {
-    #                 'peers': {},
-    #                 'router_id': None,
-    #                 'local_as': None,
-    #             }
-    #
-    #             # fetch sessions for vrf
-    #             bgp = junos_views.junos_bgp_table(self.device)
-    #             bgp.get(instance=vrf)
-    #
-    #             # assemble result dict
-    #             bgp_result = {}
-    #             [bgp_result.update({neigh:dict(bgp[neigh])}) for neigh in bgp.keys()]
-    #             result[vrf]['peers'] = bgp_result
-    #
-    #     return result
 
     @staticmethod
     def _get_address_family(table):

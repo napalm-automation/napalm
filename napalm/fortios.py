@@ -12,13 +12,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 import re
-
 from pyFG.fortios import FortiOS, FortiConfig, logger
 from pyFG.exceptions import FailedCommit, CommandExecutionException
-
 from base import NetworkDriver
 from exceptions import ReplaceConfigException, MergeConfigException
-
 from napalm.utils.string_parsers import colon_separated_string_to_dict, convert_uptime_string_seconds
 
 
@@ -307,7 +304,9 @@ class FortiOSDriver(NetworkDriver):
                 m = re.search('(.+?) states: (.+?)% user (.+?)% system (.+?)% nice (.+?)% idle', l)
                 cpuname = m.group(1)
                 idle = m.group(5)
-                output[cpuname] = 100 - int(idle)
+                output[cpuname] = {
+                    '%usage': 100.0 - int(idle)
+                }
             return output
 
         def get_memory(memory_line):
@@ -345,7 +344,6 @@ class FortiOSDriver(NetworkDriver):
         # temp
         temp_lines = [x for x in sensors_block if any([True for y in ['dts', 'temp', 'adt7490'] if y in x])]
         out['temperature'] = get_temperature(temp_lines, sensors_block)
-
 
         # fans
         out['fans'] = get_fans([x for x in sensors_block if 'fan' in x and 'temp' not in x])
