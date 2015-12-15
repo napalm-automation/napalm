@@ -1,0 +1,115 @@
+{
+    "vrfs": {
+        "public": {
+            "routerId": "10.240.212.2",
+            "peers": {
+                "10.240.161.159": {
+                    "outMsgQueue": 0,
+                    "peerStateIdleReason": "Admin",
+                    "version": 4,
+                    "msgSent": 251663,
+                    "inMsgQueue": 0,
+                    "msgReceived": 259976,
+                    "prefixAccepted": 0,
+                    "prefixReceived": 0,
+                    "peerState": "Established",
+                    "upDownTime": 1441805829.766247,
+                    "asn": 4200102114
+                },
+                "10.240.160.201": {
+                    "outMsgQueue": 0,
+                    "version": 4,
+                    "msgSent": 352976,
+                    "inMsgQueue": 0,
+                    "msgReceived": 365937,
+                    "prefixAccepted": 0,
+                    "prefixReceived": 0,
+                    "peerState": "Established",
+                    "upDownTime": 1438864651.752042,
+                    "asn": 4200102105
+                },
+                "10.240.160.203": {
+                    "outMsgQueue": 0,
+                    "version": 4,
+                    "msgSent": 329552,
+                    "inMsgQueue": 0,
+                    "msgReceived": 340528,
+                    "prefixAccepted": 0,
+                    "prefixReceived": 0,
+                    "peerState": "Established",
+                    "upDownTime": 1439558603.752355,
+                    "asn": 4200102106
+                },
+                "10.240.160.205": {
+                    "outMsgQueue": 0,
+                    "version": 4,
+                    "msgSent": 329553,
+                    "inMsgQueue": 0,
+                    "msgReceived": 340539,
+                    "prefixAccepted": 0,
+                    "prefixReceived": 0,
+                    "peerState": "Established",
+                    "upDownTime": 1439558615.752671,
+                    "asn": 4200102107
+                }
+            },
+            "vrf": "public",
+            "asn": 4200102900
+        },
+        "service": {
+            "routerId": "10.240.208.2",
+            "peers": {
+                "10.240.112.185": {
+                    "outMsgQueue": 0,
+                    "version": 4,
+                    "msgSent": 470510,
+                    "inMsgQueue": 0,
+                    "msgReceived": 501980,
+                    "prefixAccepted": 1,
+                    "prefixReceived": 1,
+                    "peerState": "Established",
+                    "upDownTime": 1435246775.799272,
+                    "asn": 4200103176
+                },
+                "10.240.112.187": {
+                    "outMsgQueue": 0,
+                    "version": 4,
+                    "msgSent": 470870,
+                    "inMsgQueue": 0,
+                    "msgReceived": 502000,
+                    "prefixAccepted": 1,
+                    "prefixReceived": 1,
+                    "peerState": "Established",
+                    "upDownTime": 1436657587.799585,
+                    "asn": 4200103157
+                },
+                "10.240.112.181": {
+                    "outMsgQueue": 0,
+                    "version": 4,
+                    "msgSent": 323979,
+                    "inMsgQueue": 0,
+                    "msgReceived": 345641,
+                    "prefixAccepted": 1,
+                    "prefixReceived": 1,
+                    "peerState": "Established",
+                    "upDownTime": 1439497916.798645,
+                    "asn": 4200103177
+                },
+                "10.240.112.183": {
+                    "outMsgQueue": 0,
+                    "version": 4,
+                    "msgSent": 470470,
+                    "inMsgQueue": 0,
+                    "msgReceived": 502028,
+                    "prefixAccepted": 1,
+                    "prefixReceived": 1,
+                    "peerState": "Established",
+                    "upDownTime": 1435246725.798959,
+                    "asn": 4200103172
+                }
+            },
+            "vrf": "service",
+            "asn": 4200103900
+        }
+    }
+}
