@@ -24,6 +24,9 @@ class IOSDriver(NetworkDriver):
         self.username = username
         self.password = password
         self.timeout = timeout
+        self.first_touch = True
+        self.candidate_config = None
+        self.candidate_config_commands = None
         self.device = None
 
     def open(self):
@@ -77,7 +80,6 @@ class IOSDriver(NetworkDriver):
                 commands.append(line.strip())
 
         self.candidate_config = commands
-        self.first_touch = False
 
     def compare_config(self):
         if self.candidate_config is not None:
@@ -115,10 +117,12 @@ class IOSDriver(NetworkDriver):
                             commands_dict[command] = "changed"
                     prompt = self.device.find_prompt()
                     index += 1
+                self.first_touch = False
             except:
                 self.rollback()
+                self.first_touch = False
 
-    def get_lldp_neighbors(device):
+    def get_lldp_neighbors(self):
         command = 'show lldp neighbors | begin Device ID'
         lldp = {}
 
