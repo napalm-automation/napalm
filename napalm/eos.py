@@ -14,19 +14,14 @@
 
 import pyeapi
 import re
-
 from base import NetworkDriver
-
 from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException
-
 from datetime import datetime
 import time
-
-from utils import string_parsers
+from napalm.utils import string_parsers
 
 
 class EOSDriver(NetworkDriver):
-
     def __init__(self, hostname, username, password, timeout=60):
         self.device = None
         self.hostname = hostname
@@ -234,9 +229,7 @@ class EOSDriver(NetworkDriver):
             interface_counters[interface]['tx_errors'] = errors['outErrors']
             interface_counters[interface]['rx_errors'] = errors['inErrors']
 
-
         return interface_counters
-
 
     def get_bgp_neighbors(self):
 
@@ -328,8 +321,6 @@ class EOSDriver(NetworkDriver):
         bgp_counters['global'] = bgp_counters.pop('default')
         return bgp_counters
 
-
-
     def get_environment(self):
         """
         Returns a dictionary where:
@@ -396,7 +387,9 @@ class EOSDriver(NetworkDriver):
 
         ''' Get CPU counters '''
         m = re.search('(\d+.\d+)\%', cpu_output.splitlines()[2])
-        environment_counters['cpu'][0] = float(m.group(1))
+        environment_counters['cpu'][0] = {
+            '%usage': float(m.group(1))
+        }
         m = re.search('(\d+)k\W+total\W+(\d+)k\W+used\W+(\d+)k\W+free', cpu_output.splitlines()[3])
 
         environment_counters['memory'] = {
