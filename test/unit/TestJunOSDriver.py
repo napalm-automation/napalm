@@ -69,10 +69,13 @@ class FakeRPCObject:
             return data_file.read()
 
     def __getattr__(self, item):
-        self.xml_string = self.read_txt_file('junos/mock_data/{}.txt'.format(item))
+        self.item = item
         return self
 
     def response(self, **rpc_args):
-        return lxml.etree.fromstring(self.xml_string)
+        instance = rpc_args.pop('instance', '')
+
+        xml_string = self.read_txt_file('junos/mock_data/{}{}.txt'.format(self.item, instance))
+        return lxml.etree.fromstring(xml_string)
 
     __call__ = response
