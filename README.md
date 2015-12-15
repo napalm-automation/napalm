@@ -18,6 +18,11 @@ Before using the library, please read the documentation at: [Read the Docs](http
 
 You can also watch a [live demo](https://youtu.be/93q-dHC0u0I) of NAPALM to see what it is and what it can do for you.
 
+Blog Posts
+----------
+
+* [Adding Cisco IOS support to NAPALM (Network Automation and Programmability Abstraction Layer with Multivendor support)](https://projectme10.wordpress.com/2015/12/07/adding-cisco-ios-support-to-napalm-network-automation-and-programmability-abstraction-layer-with-multivendor-support/)
+
 Install
 =======
 To install, execute:
@@ -50,4 +55,4 @@ Authors
 =======
  * David Barroso ([dbarroso@spotify.com](mailto:dbarroso@spotify.com))
  * Elisa Jasinska ([elisa@bigwaveit.org](mailto:elisa@bigwaveit.org))
-
+ * Many others, check the [contributors](https://github.com/spotify/napalm/graphs/contributors) page for details.
