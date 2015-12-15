@@ -196,16 +196,17 @@ class TestGettersNetworkDriver:
 
         if not result:
             print('global is not part of the returned vrfs')
+        else:
+            for vrf, vrf_data in get_bgp_neighbors.iteritems():
+                result = result and isinstance(vrf_data['router_id'], unicode)
+                if not result:
+                    print('router_id is not unicode')
 
-        for vrf, vrf_data in get_bgp_neighbors.iteritems():
-            result = result and isinstance(vrf_data['router_id'], unicode)
-            if not result:
-                print('router-id is not unicode')
+                for peer, peer_data in vrf_data['peers'].iteritems():
+                    result = result and self._test_model(models.peer, peer_data)
 
-            for peer, peer_data in vrf_data['peers'].iteritems():
-                result = result and self._test_model(models.peer, peer_data)
+                    for af, af_data in peer_data['address_family'].iteritems():
+                        result = result and self._test_model(models.af, af_data)
 
-                for af, af_data in peer_data['address_family'].iteritems():
-                    result = result and self._test_model(models.af, af_data)
+            self.assertTrue(result)
 
-        self.assertTrue(result)
