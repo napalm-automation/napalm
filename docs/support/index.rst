@@ -56,13 +56,16 @@ Getters support matrix
 .. |yes|   unicode:: U+02705 .. Yes
 .. |no|    unicode:: U+0274C .. No
 
-======================  =====  =====   ======  =======  ======  ======  ======
-_                       EOS    JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS
-======================  =====  =====   ======  =======  ======  ======  ======
-**get_facts**           |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|
-**get_interfaces**      |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|
-**get_lldp_neighbors**  |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|
-======================  =====  =====   ======  =======  ======  ======
+==========================  =====  =====   ======  =======  ======  ======  ======
+_                           EOS    JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS
+==========================  =====  =====   ======  =======  ======  ======  ======
+**get_facts**               |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|
+**get_interfaces**          |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|
+**get_lldp_neighbors**      |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|
+**get_bgp_neighbors**       |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|
+**get_environment**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|
+**get_interface_counters**  |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|
+==========================  =====  =====   ======  =======  ======  ======  ======
 
 Caveats
 -------
