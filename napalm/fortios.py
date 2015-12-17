@@ -153,22 +153,45 @@ class FortiOSDriver(NetworkDriver):
         }
 
     def get_interfaces(self):
-        interface_statistics = dict()
-        self.device.load_config('system interface')
-        for iface in self.get_facts()['interface_list']:
-            try:
-                hw_output = execute_get(self.device, 'diagnose hardware deviceinfo nic {}'.format(iface), auto=True)
-                ifs = self._get_tab_separated_interfaces(hw_output)
-
-                ifs['is_enabled'] = self.device.running_config['system interface'][iface].get_param('status') != 'down'
-                ifs['description'] = self.device.running_config['system interface'][iface].get_param('description')
-                ifs['last_flapped'] = None
-                # ifs['mode'] = 'routed'
-                ifs['last_flapped'] = None
-                interface_statistics[iface] = ifs
-            except CommandExecutionException:
-                interface_statistics[iface] = self._get_unsupported_interfaces()
-
+        cmd_prefix = ''
+        try:
+            cmd_data = self.device.execute_command('diagnose hardware deviceinfo nic')
+        except CommandExecutionException:
+            cmd_data = self.device.execute_command('conf global\n diagnose hardware deviceinfo nic ')
+            cmd_prefix = 'conf global\n'
+        
+        interface_list = [x.replace('\t', '') for x in cmd_data if x.startswith('\t')]
+        interface_statistics = {}
+        for interface in interface_list:
+            if_data = self.device.execute_command(cmd_prefix + 'diagnose hardware deviceinfo nic {}'.format(interface))
+            parsed_data = {}
+            if interface.startswith('mgmt'):
+                for line in if_data:
+                    if line.startswith('Speed'):
+                        if line.split('\t')[-1].split(' ')[0].isdigit():
+                            parsed_data['speed'] = int(line.split('\t')[-1].split(' ')[0])
+                        else:
+                            parsed_data['speed'] = -1
+                    elif line.startswith('Link'):
+                        parsed_data['is_up'] = line.split('\t')[-1] is 'up'
+                    elif line.startswith('Current_HWaddr'):
+                        parsed_data['mac_address'] = unicode(line.split('\t')[-1])
+                parsed_data['is_enabled'] = True
+                parsed_data['description'] = u''
+                parsed_data['last_flapped'] = -1.0
+            else:
+                for line in if_data:
+                    if line.startswith('Admin'):
+                        parsed_data['is_enabled'] = line.split(':')[-1] is 'up'
+                    elif line.startswith('PHY Status'):
+                        parsed_data['is_up'] = line.split(':')[-1] is 'up'
+                    elif line.startswith('PHY Speed'):
+                        parsed_data['speed'] = int(line.split(':')[-1])
+                    elif line.startswith('Current_HWaddr'):
+                        parsed_data['mac_address'] = unicode(line.split(' ')[-1])
+                parsed_data['description'] = u''
+                parsed_data['last_flapped'] = -1.0
+            interface_statistics[interface] = parsed_data
         return interface_statistics
 
     @staticmethod
@@ -363,3 +386,4 @@ class FortiOSDriver(NetworkDriver):
         out['power'] = {t: {'status': True, 'capacity': -1.0, 'output': -1.0} for t in psus}
 
         return out
+
