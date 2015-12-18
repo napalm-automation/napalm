@@ -24,7 +24,7 @@ class IOSDriver(NetworkDriver):
     '''NAPALM Cisco IOS Handler'''
     def __init__(self, hostname, username, password, timeout=60, dest_file_system='flash:',
                  candidate_cfg='candidate_config.txt', rollback_cfg='rollback_config.txt',
-                 merge_cfg='merge_config.txt')
+                 merge_cfg='merge_config.txt'):
         self.hostname = hostname
         self.username = username
         self.password = password
@@ -79,6 +79,56 @@ class IOSDriver(NetworkDriver):
                     msg = "SCP transfer to remote device failed"
                 raise MergeConfigException(msg)
 
+    def compare_config(self, file1=None, file2='running-config',
+                       file1_file_system=None, file2_file_system='system:'):
+        '''
+        show archive config differences <file1> <file2>
+
+        Default operation is to compare self.candidate_cfg to system:running-config
+        '''
+        # Set defaults if not passed as arguments
+        if file1 is None:
+            file1 = self.candidate_cfg
+        if file1_file_system is None:
+            file1_file_system = self.dest_file_system
+        cfg_file1 = self.gen_full_path(filename=file1, file_system=file1_file_system)
+        cfg_file2 = self.gen_full_path(filename=file2, file_system=file2_file_system)
+
+        cmd = 'show archive config differences {} {}'.format(cfg_file1, cfg_file2)
+        diff = self.device.send_command(cmd)
+        return diff.strip()
+
+    def commit_config(self, filename=None):
+        '''
+        If replacement operation, perform 'configure replace' for the entire config.
+
+        If merge operation, perform copy <file> running-config.
+        '''
+        if filename is None:
+            filename = self.candidate_cfg
+
+        # Always generate a rollback config
+        self.gen_rollback_cfg()
+
+        # Replace operation
+        if self.config_replace:
+            if filename is None:
+                filename = self.candidate_cfg
+            cfg_file = self.gen_full_path(filename)
+            if not self.check_file_exists(cfg_file):
+                raise ReplaceConfigException("Destination candidate config file does not exist")
+            cmd = 'configure replace {} force'.format(cfg_file)
+            print self.device.send_command(cmd)
+        # Merge operation
+        else:
+            if filename is None:
+                filename = self.merge_cfg
+            cfg_file = self.gen_full_path(filename)
+            cmd = 'copy {} running-config'.format(cfg_file)
+            self.disable_confirm()
+            print self.device.send_command(cmd)
+            self.enable_confirm()
+
     def scp_file(self, source_file, dest_file, file_system):
         '''
         SCP file to remote device
@@ -97,7 +147,7 @@ class IOSDriver(NetworkDriver):
                 msg = "File already exists and has correct MD5: no SCP needed"
                 return (True, msg)
             if not scp_transfer.verify_space_available():
-                msg = "Insufficient space available on remote device")
+                msg = "Insufficient space available on remote device"
                 return (False, msg)
 
             if enable_scp:
@@ -111,28 +161,12 @@ class IOSDriver(NetworkDriver):
                 msg = "File successfully transferred to remote device"
                 return (True, msg)
             else:
-                msg="File transfer to remote device failed"
+                msg = "File transfer to remote device failed"
                 return (False, msg)
 
             return (False, '')
 
-    def compare_config(self, file1=None, file2=None):
-        '''
-        show archive config differences <file1> <file2>
-
-        Default operation is to compare self.candidate_cfg to system:running-config
-        '''
-        # FIX argument passing probably won't work here
-        if file1 is None:
-            file1 = self.candidate_cfg
-        cfg_file1 = '{}/{}'.format(self.dest_file_system, file1)
-        if file2 is None:
-            file2 = 'system:running-config'
-        cfg_file2 = file2
-        cmd = 'show archive config differences {} {}'.format(cfg_file1, cfg_file2)
-        diff = self.device.send_command(cmd)
-        return diff.strip()
-
+    #### HERE ####
     def rollback(self, filename=None):
         '''Rollback configuration to filename or to self.rollback_cfg file'''
         if filename is None:
@@ -161,7 +195,12 @@ class IOSDriver(NetworkDriver):
 
     def gen_full_path(self, filename, file_system=None):
         '''Generate full file path on remote device'''
-        return cfg_file = '{}/{}'.format(self.dest_file_system, filename)
+        if file_system is None:
+            return '{}/{}'.format(self.dest_file_system, filename)
+        else:
+            if not ":" in file_system:
+                raise ValueError("Invalid file_system specified: {}".format(file_system))
+            return '{}/{}'.format(file_system, filename)
 
     def gen_rollback_cfg(self):
         '''
@@ -195,30 +234,6 @@ class IOSDriver(NetworkDriver):
             return True
         print output
         return False
-
-    def commit_config(self, filename=None):
-        '''
-        If replacement operation, perform 'configure replace' for the entire config.
-        
-        If merge operation, perform copy <file> running-config.
-        '''
-        if filename is None:
-            filename = self.candidate_cfg
-
-        # Always generate a rollback config
-        self.gen_rollback_cfg()
-        if self.config_replace:
-            cfg_file = '{}/{}'.format(self.dest_file_system, filename)
-            if not self.check_file_exists(cfg_file):
-                raise ReplaceConfigException("Destination candidate config file does not exist")
-            cmd = 'configure replace {} force'.format(cfg_file)
-            # FIX - use more canonical 'copy run start, but that prompts'
-            #cmd2 = 'write mem'
-        else:
-            # FIX for config merge
-            cmd = ''
-        output = self.device.send_command(cmd)
-        print output
 
     def get_lldp_neighbors(self):
         command = 'show lldp neighbors | begin Device ID'
