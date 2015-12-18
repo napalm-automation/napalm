@@ -104,9 +104,6 @@ class IOSDriver(NetworkDriver):
 
         If merge operation, perform copy <file> running-config.
         '''
-        if filename is None:
-            filename = self.candidate_cfg
-
         # Always generate a rollback config
         self.gen_rollback_cfg()
 
@@ -116,7 +113,7 @@ class IOSDriver(NetworkDriver):
                 filename = self.candidate_cfg
             cfg_file = self.gen_full_path(filename)
             if not self.check_file_exists(cfg_file):
-                raise ReplaceConfigException("Destination candidate config file does not exist")
+                raise ReplaceConfigException("Candidate config file does not exist")
             cmd = 'configure replace {} force'.format(cfg_file)
             print self.device.send_command(cmd)
         # Merge operation
@@ -124,6 +121,8 @@ class IOSDriver(NetworkDriver):
             if filename is None:
                 filename = self.merge_cfg
             cfg_file = self.gen_full_path(filename)
+            if not self.check_file_exists(cfg_file):
+                raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
             self.disable_confirm()
             print self.device.send_command(cmd)
