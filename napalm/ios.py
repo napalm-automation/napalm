@@ -12,10 +12,11 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from netmiko import ConnectHandler
-from base import NetworkDriver
-
 import re
+from netmiko import ConnectHandler, FileTransfer
+from napalm.base import NetworkDriver
+from napalm.exceptions import ReplaceConfigException, MergeConfigException
+
 
 class IOSDriver(NetworkDriver):
 
@@ -29,17 +30,58 @@ class IOSDriver(NetworkDriver):
         self.candidate_config_commands = None
         self.device = None
 
+        self.config_replace = False
+
     def open(self):
         """Opens a connection to the device."""
         self.device = ConnectHandler(
             device_type='cisco_ios',
             ip=self.hostname,
             username=self.username,
-            password=self.password)
+            password=self.password,
+            verbose=False)
 
     def close(self):
         """Closes the connection to the device."""
         self.device.disconnect()
+
+    def load_replace_candidate(self, filename=None, config=None):
+        '''
+        SCP file to device filesystem, defaults to flash:/candidate_config.txt
+
+        Returns None (or raise exception if error)
+        '''
+        self.config_replace = True
+
+        # FIX (hard-coded)
+        dest_file_system = 'flash:'
+        dest_file = 'candidate_config.txt'
+        # FIX - will auto configure SCP by default
+        enable_scp = True
+
+        # FIX - straight configuration inline is not currently implemented
+        if config:
+            raise NotImplementedError
+        if filename:
+            with FileTransfer(self.device, source_file=filename,
+                              dest_file=dest_file, file_system=dest_file_system) as scp_transfer:
+
+                # Check if file already exists and has correct MD5
+                if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
+                    return None
+                if not scp_transfer.verify_space_available():
+                    raise ReplaceConfigException("Insufficient space available on remote device")
+
+                # Transfer file
+                if enable_scp:
+                    scp_transfer.enable_scp()
+
+                scp_transfer.transfer_file()
+                if scp_transfer.verify_file():
+                    msg="File successfully transferred to remote device"
+                else:
+                    msg="File transfer to remote device failed"
+                    raise ReplaceConfigException(msg)
 
     def rollback(self):
         if self.candidate_config is not None:
