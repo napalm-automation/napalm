@@ -22,21 +22,19 @@ from napalm.exceptions import ReplaceConfigException, MergeConfigException
 
 class IOSDriver(NetworkDriver):
     '''NAPALM Cisco IOS Handler'''
-    def __init__(self, hostname, username, password, timeout=60):
+    def __init__(self, hostname, username, password, timeout=60, dest_file_system='flash:',
+                 candidate_cfg='candidate_config.txt', rollback_cfg='rollback_config.txt',
+                 merge_cfg='merge_config.txt')
         self.hostname = hostname
         self.username = username
         self.password = password
         self.timeout = timeout
-        self.first_touch = True
-        self.candidate_config = None
-        self.candidate_config_commands = None
         self.device = None
-
         self.config_replace = False
-        # FIX -- hard-coded
-        self.candidate_cfg='candidate_config.txt'
-        self.rollback_cfg='rollback_config.txt'
-        self.dest_file_system='flash:'
+        self.candidate_cfg = candidate_cfg
+        self.merge_cfg = merge_cfg
+        self.rollback_cfg = rollback_cfg
+        self.dest_file_system = dest_file_system
 
     def open(self):
         """Opens a connection to the device."""
@@ -49,71 +47,74 @@ class IOSDriver(NetworkDriver):
 
     def load_replace_candidate(self, filename=None, config=None):
         '''
-        SCP file to device filesystem, defaults to flash:/candidate_config.txt
+        SCP file to device filesystem, defaults to candidate_config
 
-        Returns None (or raise exception if error)
+        Return None or raise exception
         '''
         self.config_replace = True
-
-        # FIX (hard-coded)
-        dest_file_system = 'flash:'
-        dest_file = 'candidate_config.txt'
-        # FIX - will auto configure SCP by default
-        enable_scp = True
-
-        # FIX - straight configuration inline is not currently implemented
         if config:
             raise NotImplementedError
         if filename:
-            with FileTransfer(self.device, source_file=filename,
-                              dest_file=dest_file, file_system=dest_file_system) as scp_transfer:
-                # Check if file already exists and has correct MD5
-                if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
-                    return None
-                if not scp_transfer.verify_space_available():
-                    raise ReplaceConfigException("Insufficient space available on remote device")
-                # Transfer file
-                if enable_scp:
-                    scp_transfer.enable_scp()
-                scp_transfer.transfer_file()
-                if scp_transfer.verify_file():
-                    msg="File successfully transferred to remote device"
-                else:
-                    msg="File transfer to remote device failed"
-                    raise ReplaceConfigException(msg)
-
-    def rollback(self, filename=None):
-        '''
-        Rollback configuration to previous archive file 'rollback_config.txt'
-        or to specified filename.
-        '''
-        if filename is None:
-            filename = self.rollback_cfg
-        commit_config(filename=filename)
+            (return_status, msg) = self.scp_file(source_file=filename,
+                                                 dest_file=self.candidate_cfg,
+                                                 file_system=self.dest_file_system)
+            if not return_status:
+                if msg == '':
+                    msg = "SCP transfer to remote device failed"
+                raise ReplaceConfigException(msg)
 
     def load_merge_candidate(self, filename=None, config=None):
-        commands = list()
-        if self.first_touch:
-            commands.append('enable')
-            commands.append(self.password)
-            commands.append('conf t')
+        '''
+        SCP file to remote device
 
-        if filename is not None:
-            with open(filename, 'r') as new_config:
-                configuration = new_config.readlines()
-        else:
-            if isinstance(config, list):
-                configuration = config
+        Merge configuration in: copy <file> running-config
+        '''
+        if config:
+            raise NotImplementedError
+        if filename:
+            (return_status, msg) = self.scp_file(source_file=filename, dest_file=self.merge_cfg,
+                                                 file_system=self.dest_file_system)
+            if not return_status:
+                if msg == '':
+                    msg = "SCP transfer to remote device failed"
+                raise MergeConfigException(msg)
+
+    def scp_file(self, source_file, dest_file, file_system):
+        '''
+        SCP file to remote device
+
+        Return (status, msg)
+        status = boolean
+        msg = details on what happened
+        '''
+        # Will automaticall enable SCP on remote device
+        enable_scp = True
+        with FileTransfer(self.device, source_file=source_file,
+                          dest_file=dest_file, file_system=file_system) as scp_transfer:
+
+            # Check if file already exists and has correct MD5
+            if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
+                msg = "File already exists and has correct MD5: no SCP needed"
+                return (True, msg)
+            if not scp_transfer.verify_space_available():
+                msg = "Insufficient space available on remote device")
+                return (False, msg)
+
+            if enable_scp:
+                scp_transfer.enable_scp()
+
+            # Transfer file
+            scp_transfer.transfer_file()
+
+            # Compares MD5 between local-remote files
+            if scp_transfer.verify_file():
+                msg = "File successfully transferred to remote device"
+                return (True, msg)
             else:
-                configuration = config.splitlines()
+                msg="File transfer to remote device failed"
+                return (False, msg)
 
-        for line in configuration:
-            if line.strip() == '' or line.strip() == '!':
-                continue
-            else:
-                commands.append(line.strip())
-
-        self.candidate_config = commands
+            return (False, '')
 
     def compare_config(self, file1=None, file2=None):
         '''
@@ -131,6 +132,12 @@ class IOSDriver(NetworkDriver):
         cmd = 'show archive config differences {} {}'.format(cfg_file1, cfg_file2)
         diff = self.device.send_command(cmd)
         return diff.strip()
+
+    def rollback(self, filename=None):
+        '''Rollback configuration to filename or to self.rollback_cfg file'''
+        if filename is None:
+            filename = self.rollback_cfg
+        commit_config(filename=filename)
 
     def discard_config(self):
         '''
@@ -151,6 +158,10 @@ class IOSDriver(NetworkDriver):
         '''Disable IOS confirmations on file operations (global config command)'''
         cmd = 'file prompt quiet'
         self.device.send_config_set([cmd])
+
+    def gen_full_path(self, filename, file_system=None):
+        '''Generate full file path on remote device'''
+        return cfg_file = '{}/{}'.format(self.dest_file_system, filename)
 
     def gen_rollback_cfg(self):
         '''
