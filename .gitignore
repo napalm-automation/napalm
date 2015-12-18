@@ -56,3 +56,4 @@ docs/_build/
 .DS_Store
 
 env
+*.swp
