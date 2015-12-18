@@ -1,3 +1,7 @@
+'''
+Should create a rollback file
+'''
+
 # Copyright 2015 Spotify AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
@@ -19,7 +23,7 @@ from napalm.exceptions import ReplaceConfigException, MergeConfigException
 
 
 class IOSDriver(NetworkDriver):
-
+    '''NAPALM Cisco IOS Handler'''
     def __init__(self, hostname, username, password, timeout=60):
         self.hostname = hostname
         self.username = username
@@ -65,17 +69,14 @@ class IOSDriver(NetworkDriver):
         if filename:
             with FileTransfer(self.device, source_file=filename,
                               dest_file=dest_file, file_system=dest_file_system) as scp_transfer:
-
                 # Check if file already exists and has correct MD5
                 if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
                     return None
                 if not scp_transfer.verify_space_available():
                     raise ReplaceConfigException("Insufficient space available on remote device")
-
                 # Transfer file
                 if enable_scp:
                     scp_transfer.enable_scp()
-
                 scp_transfer.transfer_file()
                 if scp_transfer.verify_file():
                     msg="File successfully transferred to remote device"
@@ -84,20 +85,11 @@ class IOSDriver(NetworkDriver):
                     raise ReplaceConfigException(msg)
 
     def rollback(self):
-        if self.candidate_config is not None:
-            if isinstance(self.candidate_config, dict):
-                for command in self.candidate_config_commands:
-                    if command in self.candidate_config:
-                        if self.candidate_config[command] == 'changed':
-                            output = self.device.send_command(command)
-                        else:
-                            no_command = 'no {0}'.format(command)
-                            output = self.device.send_command(no_command)
-                self.candidate_config = None
-                self.candidate_config_commands = None
-            else:
-                self.candidate_config = None
-                self.candidate_config_commands = None
+        '''
+        Rollback configuration to previous archive file 'rollback_config.txt'
+        or to specified filename.
+        '''
+        pass
 
     def load_merge_candidate(self, filename=None, config=None):
         commands = list()
@@ -137,32 +129,43 @@ class IOSDriver(NetworkDriver):
         if self.candidate_config is not None:
             self.candidate_config = None
 
-    def commit_config(self):
-        if self.candidate_config is not None:
-            commands = self.candidate_config
-            commands.append('do copy run start')
-            commands.append('\n')
-            commands_dict = {}
-            self.candidate_config_commands = commands
+    def enable_confirm(self):
+        '''Enable IOS confirmations on file operations (global config command)'''
+        cmd = 'no file prompt quiet'
+        self.device.send_config_set([cmd])
 
-            try:
-                index = 0
-                prompt = self.device.find_prompt()
-                for command in commands:
-                    output = self.device.send_command(command)
-                    new_prompt = self.device.find_prompt()
-                    if (index > 2 and self.first_touch) or (self.first_touch is False):
-                        self.candidate_config = commands_dict
-                        if new_prompt == prompt or 'hostname' in command:
-                            commands_dict[command] = "unchanged"
-                        else:
-                            commands_dict[command] = "changed"
-                    prompt = self.device.find_prompt()
-                    index += 1
-                self.first_touch = False
-            except:
-                self.rollback()
-                self.first_touch = False
+    def disable_confirm(self):
+        '''Disable IOS confirmations on file operations (global config command)'''
+        cmd = 'file prompt quiet'
+        self.device.send_config_set([cmd])
+
+    def gen_rollback_cfg(self):
+        '''
+        Generate a configuration that can be used for rollback
+        '''
+        # FIX hard-coded to flash:
+        cmd = 'copy running-config flash:rollback_config.txt'
+        self.disable_confirm()
+        output = self.device.send_command(cmd)
+        self.enable_confirm()
+        print output
+
+    def commit_config(self):
+        '''
+        Perform 'configure replace' for entire replacement config.
+
+        Perform copy <file> running-config for merge operation.
+        '''
+        # Always generate a rollback config before performing commit
+        self.gen_rollback_cfg()
+        if self.config_replace:
+            # FIX - hard-coded to flash:
+            cmd = 'configure replace flash:/candidate_config.txt force'
+        else:
+            # FIX for config merge
+            cmd = ''
+        output = self.device.send_command(cmd)
+        print output
 
     def get_lldp_neighbors(self):
         command = 'show lldp neighbors | begin Device ID'
