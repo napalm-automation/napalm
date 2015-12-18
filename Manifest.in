@@ -1,2 +1,2 @@
 include requirements.txt
-include utils/*.yml
+include napalm/utils/*.yml
