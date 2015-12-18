@@ -39,7 +39,7 @@ class IOSDriver(NetworkDriver):
 
     def close(self):
         """Closes the connection to the device."""
-        self.device.disconnect() 
+        self.device.disconnect()
 
     def rollback(self):
         if self.candidate_config is not None:
@@ -144,9 +144,9 @@ class IOSDriver(NetworkDriver):
         """This function returns a set of facts from the devices."""
         results = {}
         # creating the parsing regex.
-        uptime_regex = ".*uptime\sis\s(?P<uptime>\d+\s\w+(,\s\d+\s+\w+){0,4}).*"
-        show_ver_regex = ".*Software\s\((?P<image>.+)\),\sVersion\s(?P<version>.+), RELEASE.*"
-        model_regex = ".*Cisco\s(?P<model>\d+).*"
+        uptime_regex = r".*uptime\sis\s(?P<uptime>\d+\s\w+(,\s\d+\s+\w+){0,4}).*"
+        show_ver_regex = r".*Software\s\((?P<image>.+)\),\sVersion\s(?P<version>.+), RELEASE.*"
+        model_regex = r".*Cisco\s(?P<model>\d+).*"
 
         # commands to execute.
         commands = [
@@ -213,7 +213,7 @@ class IOSDriver(NetworkDriver):
             'interface_list': interface_list
         }
         return results
-                        
+
 
     def get_interfaces(self):
         interface_list = {}
@@ -225,8 +225,8 @@ class IOSDriver(NetworkDriver):
         output = self.device.send_command(command)
         splitted_output = output.split('\n')
         # creating the parsing regex.
-        mac_regex = ".*,\saddress\sis\s(?P<mac_address>\S+).*"
-        speed_regex = ".*BW\s(?P<speed>\d+)\s(?P<speed_format>\S+).*"
+        mac_regex = r".*,\saddress\sis\s(?P<mac_address>\S+).*"
+        speed_regex = r".*BW\s(?P<speed>\d+)\s(?P<speed_format>\S+).*"
         for i in range(1, len(splitted_output)):
             params = {}
             interface = splitted_output[i].split()[0]
@@ -288,7 +288,7 @@ class IOSDriver(NetworkDriver):
             "show ip bgp summary",
             "show ip bgp summary | begin Neighbor"
             ]
-        bgp_regex = ".*router\sidentifier\s(?P<router_id>\S+),\slocal\sAS\snumber\s(?P<local_as>\d+).*"
+        bgp_regex = r".*router\sidentifier\s(?P<router_id>\S+),\slocal\sAS\snumber\s(?P<local_as>\d+).*"
         bgp_neighbors = {}
         for command in commands:
             family = {}
@@ -335,7 +335,7 @@ class IOSDriver(NetworkDriver):
                     family_params = {}
                     if 'Description' in line:
                         description_line = line.split()
-                        description = ' '.join(description_line[1::]) 
+                        description = ' '.join(description_line[1:])
                         flag = 1
                     if flag == 1:
                         bgp_neighbors[neighbor]['description'] = description
@@ -360,7 +360,7 @@ class IOSDriver(NetworkDriver):
                         family[address_family] = family_params
                         bgp_neighbors[neighbor]['address_family'] = family
 
-        return bgp_neighbors 
+        return bgp_neighbors
 
 
     def get_interfaces_counters(self):
@@ -434,4 +434,5 @@ class IOSDriver(NetworkDriver):
                     counters[interface]['tx_discards'] = tx_discards
                     counters[interface]['tx_errors'] = tx_errors
 
-        return counters        
+        return counters
+
