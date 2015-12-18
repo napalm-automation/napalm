@@ -1,6 +1,4 @@
-'''
-Should create a rollback file
-'''
+'''NAPALM Cisco IOS Handler'''
 
 # Copyright 2015 Spotify AB. All rights reserved.
 #
@@ -35,15 +33,15 @@ class IOSDriver(NetworkDriver):
         self.device = None
 
         self.config_replace = False
+        # FIX -- hard-coded
+        self.candidate_cfg='candidate_config.txt'
+        self.rollback_cfg='rollback_config.txt'
+        self.dest_file_system='flash:'
 
     def open(self):
         """Opens a connection to the device."""
-        self.device = ConnectHandler(
-            device_type='cisco_ios',
-            ip=self.hostname,
-            username=self.username,
-            password=self.password,
-            verbose=False)
+        self.device = ConnectHandler(device_type='cisco_ios', ip=self.hostname,
+                                     username=self.username, password=self.password, verbose=False)
 
     def close(self):
         """Closes the connection to the device."""
@@ -84,12 +82,14 @@ class IOSDriver(NetworkDriver):
                     msg="File transfer to remote device failed"
                     raise ReplaceConfigException(msg)
 
-    def rollback(self):
+    def rollback(self, filename=None):
         '''
         Rollback configuration to previous archive file 'rollback_config.txt'
         or to specified filename.
         '''
-        pass
+        if filename is None:
+            filename = self.rollback_cfg
+        commit_config(filename=filename)
 
     def load_merge_candidate(self, filename=None, config=None):
         commands = list()
@@ -115,19 +115,32 @@ class IOSDriver(NetworkDriver):
 
         self.candidate_config = commands
 
-    def compare_config(self):
-        if self.candidate_config is not None:
-            if 'enable' in self.candidate_config:
-                commands = self.candidate_config[3::]
-                for command in commands:
-                    print "+ {0}".format(command)
-            else:
-                for command in self.candidate_config:
-                    print "+ {0}".format(command)
+    def compare_config(self, file1=None, file2=None):
+        '''
+        show archive config differences <file1> <file2>
+
+        Default operation is to compare self.candidate_cfg to system:running-config
+        '''
+        # FIX argument passing probably won't work here
+        if file1 is None:
+            file1 = self.candidate_cfg
+        cfg_file1 = '{}/{}'.format(self.dest_file_system, file1)
+        if file2 is None:
+            file2 = 'system:running-config'
+        cfg_file2 = file2
+        cmd = 'show archive config differences {} {}'.format(cfg_file1, cfg_file2)
+        diff = self.device.send_command(cmd)
+        return diff.strip()
 
     def discard_config(self):
-        if self.candidate_config is not None:
-            self.candidate_config = None
+        '''
+        Set candidate_cfg to current running-config
+        '''
+        # FIX hard-coded to flash:
+        cmd = 'copy running-config flash:candidate_config.txt'
+        self.disable_confirm()
+        output = self.device.send_command(cmd)
+        self.enable_confirm()
 
     def enable_confirm(self):
         '''Enable IOS confirmations on file operations (global config command)'''
@@ -150,17 +163,46 @@ class IOSDriver(NetworkDriver):
         self.enable_confirm()
         print output
 
-    def commit_config(self):
+    def check_file_exists(self, cfg_file):
         '''
-        Perform 'configure replace' for entire replacement config.
+        Check that the file exists on remote device using full path
 
-        Perform copy <file> running-config for merge operation.
+        For example
+        # dir flash:/candidate_config.txt
+        Directory of flash:/candidate_config.txt
+
+        33  -rw-        5592  Dec 18 2015 10:50:22 -08:00  candidate_config.txt
+
+        return boolean
         '''
-        # Always generate a rollback config before performing commit
+        cmd = 'dir {}'.format(cfg_file)
+        success_pattern = 'Directory of {}'.format(cfg_file)
+        output = self.device.send_command(cmd)
+        if 'Error opening' in output:
+            return False
+        elif success_pattern in output:
+            return True
+        print output
+        return False
+
+    def commit_config(self, filename=None):
+        '''
+        If replacement operation, perform 'configure replace' for the entire config.
+        
+        If merge operation, perform copy <file> running-config.
+        '''
+        if filename is None:
+            filename = self.candidate_cfg
+
+        # Always generate a rollback config
         self.gen_rollback_cfg()
         if self.config_replace:
-            # FIX - hard-coded to flash:
-            cmd = 'configure replace flash:/candidate_config.txt force'
+            cfg_file = '{}/{}'.format(self.dest_file_system, filename)
+            if not self.check_file_exists(cfg_file):
+                raise ReplaceConfigException("Destination candidate config file does not exist")
+            cmd = 'configure replace {} force'.format(cfg_file)
+            # FIX - use more canonical 'copy run start, but that prompts'
+            #cmd2 = 'write mem'
         else:
             # FIX for config merge
             cmd = ''
