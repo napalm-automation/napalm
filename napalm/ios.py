@@ -104,15 +104,15 @@ class IOSDriver(NetworkDriver):
 
         If merge operation, perform copy <file> running-config.
         '''
-        # Always generate a rollback config
-        self.gen_rollback_cfg()
+        # Always generate a rollback config on commit
+        self._gen_rollback_cfg()
 
         # Replace operation
         if self.config_replace:
             if filename is None:
                 filename = self.candidate_cfg
             cfg_file = self.gen_full_path(filename)
-            if not self.check_file_exists(cfg_file):
+            if not self._check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
             cmd = 'configure replace {} force'.format(cfg_file)
             self.device.send_command(cmd)
@@ -121,12 +121,12 @@ class IOSDriver(NetworkDriver):
             if filename is None:
                 filename = self.merge_cfg
             cfg_file = self.gen_full_path(filename)
-            if not self.check_file_exists(cfg_file):
+            if not self._check_file_exists(cfg_file):
                 raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
-            self.disable_confirm()
+            self._disable_confirm()
             self.device.send_command(cmd)
-            self.enable_confirm()
+            self._enable_confirm()
 
     def discard_config(self):
         '''
@@ -134,16 +134,19 @@ class IOSDriver(NetworkDriver):
         '''
         cfg_file = self.gen_full_path(self.candidate_cfg)
         cmd = 'copy running-config {}'.format(cfg_file)
-        self.disable_confirm()
+        self._disable_confirm()
         output = self.device.send_command(cmd)
-        self.enable_confirm()
+        self._enable_confirm()
 
     def rollback(self, filename=None):
         '''Rollback configuration to filename or to self.rollback_cfg file'''
-        self.config_replace = True
         if filename is None:
             filename = self.rollback_cfg
-        commit_config(filename=filename)
+        cfg_file = self.gen_full_path(filename)
+        if not self._check_file_exists(cfg_file):
+            raise ReplaceConfigException("Rollback config file does not exist")
+        cmd = 'configure replace {} force'.format(cfg_file)
+        self.device.send_command(cmd)
 
     def scp_file(self, source_file, dest_file, file_system):
         '''
@@ -182,12 +185,12 @@ class IOSDriver(NetworkDriver):
 
             return (False, '')
 
-    def enable_confirm(self):
+    def _enable_confirm(self):
         '''Enable IOS confirmations on file operations (global config command)'''
         cmd = 'no file prompt quiet'
         self.device.send_config_set([cmd])
 
-    def disable_confirm(self):
+    def _disable_confirm(self):
         '''Disable IOS confirmations on file operations (global config command)'''
         cmd = 'file prompt quiet'
         self.device.send_config_set([cmd])
@@ -201,20 +204,21 @@ class IOSDriver(NetworkDriver):
                 raise ValueError("Invalid file_system specified: {}".format(file_system))
             return '{}/{}'.format(file_system, filename)
 
-    def gen_rollback_cfg(self):
+    def _gen_rollback_cfg(self):
         '''
-        Generate a configuration that can be used for rollback
+        Save a configuration that can be used for rollback
         '''
-        # FIX hard-coded to flash:
-        cmd = 'copy running-config flash:rollback_config.txt'
-        self.disable_confirm()
+        cfg_file = self.gen_full_path(self.rollback_cfg)
+        cmd = 'copy running-config {}'.format(cfg_file)
+        self._disable_confirm()
         output = self.device.send_command(cmd)
-        self.enable_confirm()
-        print output
+        self._enable_confirm()
 
-    def check_file_exists(self, cfg_file):
+    def _check_file_exists(self, cfg_file):
         '''
         Check that the file exists on remote device using full path
+        
+        cfg_file is full path i.e. flash:/file_name
 
         For example
         # dir flash:/candidate_config.txt
