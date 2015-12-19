@@ -135,7 +135,7 @@ class IOSDriver(NetworkDriver):
         cfg_file = self.gen_full_path(self.candidate_cfg)
         cmd = 'copy running-config {}'.format(cfg_file)
         self._disable_confirm()
-        output = self.device.send_command(cmd)
+        self.device.send_command(cmd)
         self._enable_confirm()
 
     def rollback(self, filename=None):
@@ -200,7 +200,7 @@ class IOSDriver(NetworkDriver):
         if file_system is None:
             return '{}/{}'.format(self.dest_file_system, filename)
         else:
-            if not ":" in file_system:
+            if ":" not in file_system:
                 raise ValueError("Invalid file_system specified: {}".format(file_system))
             return '{}/{}'.format(file_system, filename)
 
@@ -211,13 +211,13 @@ class IOSDriver(NetworkDriver):
         cfg_file = self.gen_full_path(self.rollback_cfg)
         cmd = 'copy running-config {}'.format(cfg_file)
         self._disable_confirm()
-        output = self.device.send_command(cmd)
+        self.device.send_command(cmd)
         self._enable_confirm()
 
     def _check_file_exists(self, cfg_file):
         '''
         Check that the file exists on remote device using full path
-        
+
         cfg_file is full path i.e. flash:/file_name
 
         For example
@@ -329,7 +329,6 @@ class IOSDriver(NetworkDriver):
             'interface_list': interface_list
         }
         return results
-
 
     def get_interfaces(self):
         interface_list = {}
@@ -478,7 +477,6 @@ class IOSDriver(NetworkDriver):
 
         return bgp_neighbors
 
-
     def get_interfaces_counters(self):
         command = 'show interface counters'
         counters = {}
@@ -551,4 +549,3 @@ class IOSDriver(NetworkDriver):
                     counters[interface]['tx_errors'] = tx_errors
 
         return counters
-
