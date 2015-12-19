@@ -115,7 +115,7 @@ class IOSDriver(NetworkDriver):
             if not self.check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
             cmd = 'configure replace {} force'.format(cfg_file)
-            print self.device.send_command(cmd)
+            self.device.send_command(cmd)
         # Merge operation
         else:
             if filename is None:
@@ -125,8 +125,25 @@ class IOSDriver(NetworkDriver):
                 raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
             self.disable_confirm()
-            print self.device.send_command(cmd)
+            self.device.send_command(cmd)
             self.enable_confirm()
+
+    def discard_config(self):
+        '''
+        Set candidate_cfg to current running-config
+        '''
+        cfg_file = self.gen_full_path(self.candidate_cfg)
+        cmd = 'copy running-config {}'.format(cfg_file)
+        self.disable_confirm()
+        output = self.device.send_command(cmd)
+        self.enable_confirm()
+
+    def rollback(self, filename=None):
+        '''Rollback configuration to filename or to self.rollback_cfg file'''
+        self.config_replace = True
+        if filename is None:
+            filename = self.rollback_cfg
+        commit_config(filename=filename)
 
     def scp_file(self, source_file, dest_file, file_system):
         '''
@@ -164,23 +181,6 @@ class IOSDriver(NetworkDriver):
                 return (False, msg)
 
             return (False, '')
-
-    #### HERE ####
-    def rollback(self, filename=None):
-        '''Rollback configuration to filename or to self.rollback_cfg file'''
-        if filename is None:
-            filename = self.rollback_cfg
-        commit_config(filename=filename)
-
-    def discard_config(self):
-        '''
-        Set candidate_cfg to current running-config
-        '''
-        # FIX hard-coded to flash:
-        cmd = 'copy running-config flash:candidate_config.txt'
-        self.disable_confirm()
-        output = self.device.send_command(cmd)
-        self.enable_confirm()
 
     def enable_confirm(self):
         '''Enable IOS confirmations on file operations (global config command)'''
