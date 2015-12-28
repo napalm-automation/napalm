@@ -9,7 +9,7 @@ NAPALM supports several methods to connect to the devices, to manipulate configu
 Supported Network Operating Systems
 -----------------------------------
 
-Please check the following [link](http://napalm.readthedocs.org/support/index.html) to see which devices are supported. Make sure you understand the [caveats](http://napalm.readthedocs.org/support/index.html#caveats).
+Please check the following [link](http://napalm.readthedocs.org/en/latest/support/index.html) to see which devices are supported. Make sure you understand the [caveats](http://napalm.readthedocs.org/en/latest/support/index.html#caveats).
 
 Documentation
 =============
