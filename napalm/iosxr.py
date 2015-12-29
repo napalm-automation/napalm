@@ -323,39 +323,27 @@ class IOSXRDriver(NetworkDriver):
 
             for neighbor in result_tree.iter('Neighbor'):
                 this_neighbor = dict()
+                this_neighbor['is_up'] = False
+                this_neighbor['is_enabled'] = False
+                this_neighbor['uptime'] = -1
                 this_neighbor['local_as'] = int(neighbor.find('LocalAS').text)
                 this_neighbor['remote_as'] = int(neighbor.find('RemoteAS').text)
                 this_neighbor['remote_id'] = unicode(neighbor.find('RouterID').text)
 
-                if neighbor.find('ConnectionAdminStatus').text is "1":
-                    this_neighbor['is_enabled'] = True
                 try:
                     this_neighbor['description'] = unicode(neighbor.find('Description').text)
                 except:
-                    pass
+                    this_neighbor['description'] = u''
 
                 this_neighbor['is_enabled'] = str(neighbor.find('ConnectionAdminStatus').text) is "1"
-
-                if str(neighbor.find('ConnectionAdminStatus').text) is "1":
-                    this_neighbor['is_enabled'] = True
-                else:
-                    this_neighbor['is_enabled'] = False
 
                 if str(neighbor.find('ConnectionState').text) == "BGP_ST_ESTAB":
                     this_neighbor['is_up'] = True
                     this_neighbor['uptime'] = int(neighbor.find('ConnectionEstablishedTime').text)
-                else:
-                    this_neighbor['is_up'] = False
-                    this_neighbor['uptime'] = -1
 
                 this_neighbor['address_family'] = dict()
 
-                if neighbor.find('ConnectionRemoteAddress/AFI').text == "IPv4":
-                    this_afi = "ipv4"
-                elif neighbor.find('ConnectionRemoteAddress/AFI').text == "IPv6":
-                    this_afi = "ipv6"
-                else:
-                    this_afi = neighbor.find('ConnectionRemoteAddress/AFI').text
+                this_afi = neighbor.find('ConnectionRemoteAddress/AFI').text.lower()
 
                 this_neighbor['address_family'][this_afi] = dict()
 
@@ -385,28 +373,10 @@ class IOSXRDriver(NetworkDriver):
         return result
 
     def get_environment(self):
-        def get_module_xml_query(module,selection):
-            return """<Get>
-                        <AdminOperational>
-                            <EnvironmentalMonitoring>
-                                <RackTable>
-                                    <Rack>
-                                        <Naming>
-                                            <rack>0</rack>
-                                        </Naming>
-                                        <SlotTable>
-                                            <Slot>
-                                                <Naming>
-                                                    <slot>%s</slot>
-                                                </Naming>
-                                                %s
-                                            </Slot>
-                                        </SlotTable>
-                                    </Rack>
-                                </RackTable>
-                            </EnvironmentalMonitoring>
-                        </AdminOperational>
-                    </Get>""" % (module,selection)
+        def get_tree_by_slot(big_tree, slot_name):          
+            for slot in big_tree.iter("Slot"):
+                if slot.find('Naming/slot').text == slot_name:
+                    return slot
 
         environment_status = dict()
         environment_status['fans'] = dict()
@@ -415,56 +385,33 @@ class IOSXRDriver(NetworkDriver):
         environment_status['cpu'] = dict()
         environment_status['memory'] = int()
         
-        # finding slots with equipment we're interested in
-        rpc_command = """<Get>
-            <AdminOperational>
-                <PlatformInventory>
-                    <RackTable>
-                        <Rack>
-                            <Naming>
-                                <Name>0</Name>
-                            </Naming>
-                            <SlotTable>
-                            </SlotTable>
-                        </Rack>
-                    </RackTable>
-                </PlatformInventory>
-            </AdminOperational>
-        </Get>"""
-
-        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+        ## finding slots with equipment we're interested in
+        main_query = "<Get><AdminOperational><EnvironmentalMonitoring></EnvironmentalMonitoring></AdminOperational></Get>"
+        main_result_tree = ET.fromstring(self.device.make_rpc_call(main_query))
 
         active_modules = defaultdict(list)
 
-        for slot in result_tree.iter("Slot"):
-            for card in slot.iter("CardTable"):
-                #find enabled slots, figoure out type and save for later
-                if card.find('Card/Attributes/FRUInfo/ModuleAdministrativeState').text == "ADMIN_UP":
-                    
-                    slot_name = slot.find('Naming/Name').text
-                    module_type = re.sub("\d+", "", slot_name)
-                    if len(module_type) > 0:
-                        active_modules[module_type].append(slot_name)
-                    else:
-                        active_modules["LC"].append(slot_name)
+        for slot in main_result_tree.iter("Slot"):
+            slot_name = slot.find('Naming/slot').text
+            module_type = re.sub("\d+", "", slot_name)
+            if len(module_type) > 0:
+                active_modules[module_type].append(slot_name)
+            else:
+                active_modules["LC"].append(slot_name)
 
         #
         # PSU's
         #
-
         for psu in active_modules['PM']:
-            if psu in ["PM6", "PM7"]:    # Cisco bug, chassis difference V01<->V02
-                continue
-
-            rpc_command = get_module_xml_query(psu,'')
-            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+            psu_result_tree = get_tree_by_slot(main_result_tree,psu)
 
             psu_status = dict()
             psu_status['status'] = False
             psu_status['capacity'] = float()
             psu_status['output'] = float()
 
-            for sensor in result_tree.iter('SensorName'):
+            for sensor in psu_result_tree.iter('SensorName'):
+                
                 if sensor.find('Naming/Name').text == "host__VOLT":
                     this_psu_voltage = float(sensor.find('ValueBrief').text)
                 elif sensor.find('Naming/Name').text == "host__CURR":
@@ -480,16 +427,15 @@ class IOSXRDriver(NetworkDriver):
                 psu_status['output'] = (this_psu_voltage * this_psu_current) / 1000000.0
 
             environment_status['power'][psu] = psu_status
-
+        
         #
         # Memory
         #
         
         rpc_command = "<Get><AdminOperational><MemorySummary></MemorySummary></AdminOperational></Get>"
-        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+        memory_result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
-        for node in result_tree.iter('Node'):
-            print 
+        for node in memory_result_tree.iter('Node'):
             if node.find('Naming/NodeName/Slot').text == active_modules['RSP'][0]:    # first enabled RSP
                 available_ram = int(node.find('Summary/SystemRAMMemory').text)
                 free_ram = int(node.find('Summary/FreeApplicationMemory').text)
@@ -507,14 +453,10 @@ class IOSXRDriver(NetworkDriver):
         #
 
         for fan in active_modules['FT']:
-            rpc_command = get_module_xml_query(fan,'')
-            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
-            for module in result_tree.iter('Module'):
-                for sensortype in module.iter('SensorType'):
-                    for sensorname in sensortype.iter('SensorNameTable'):
-                        if sensorname.find('SensorName/Naming/Name').text == "host__FanSpeed_0":
-                            environment_status['fans'][fan] = {'status': int(sensorname.find(
-                                'SensorName/ValueDetailed/Status').text) is 1}
+            fan_result_tree = get_tree_by_slot(main_result_tree,fan)
+            for sensorname in main_result_tree.findall(".//SensorNameTable"):
+                if sensorname.find('SensorName/Naming/Name').text == "host__FanSpeed_0":
+                    environment_status['fans'][fan] = {'status': int(sensorname.find('SensorName/ValueDetailed/Status').text) is 1}
 
         #
         # CPU
@@ -522,9 +464,9 @@ class IOSXRDriver(NetworkDriver):
         cpu = dict()
  
         rpc_command = "<Get><Operational><SystemMonitoring></SystemMonitoring></Operational></Get>"
-        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+        cpu_result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
-        for module in result_tree.iter('CPUUtilization'):
+        for module in cpu_result_tree.iter('CPUUtilization'):
             this_cpu = dict()
             this_cpu["%usage"] = float(module.find('TotalCPUFiveMinute').text)
 
@@ -548,10 +490,7 @@ class IOSXRDriver(NetworkDriver):
             slot_list |= set(slot)
 
         for slot in slot_list:
-            rpc_command = get_module_xml_query(slot,'')
-            result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
-
-            for sensor in result_tree.findall(".//SensorName"):
+            for sensor in main_result_tree.findall(".//SensorName"):
                 if not sensor.find('Naming/Name').text == "host__Inlet0":
                     continue
                 this_reading = dict()
