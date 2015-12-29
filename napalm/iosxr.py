@@ -387,7 +387,7 @@ class IOSXRDriver(NetworkDriver):
         
         ## finding slots with equipment we're interested in
         main_query = "<Get><AdminOperational><EnvironmentalMonitoring></EnvironmentalMonitoring></AdminOperational></Get>"
-	self.timeout = 180
+        self.timeout = 180
         main_result_tree = ET.fromstring(self.device.make_rpc_call(main_query))
 
         active_modules = defaultdict(list)
