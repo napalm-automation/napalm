@@ -122,8 +122,8 @@ def main():
             timeout=dict(required=False, default=60, type='int'),
             config_file=dict(required=True),
             dev_os=dict(required=True),
-            commit_changes=dict(required=True),
-            replace_config=dict(required=True),
+            commit_changes=dict(required=True, type='bool'),
+            replace_config=dict(required=True, type='bool'),
             diff_file=dict(required=False, default=None),
             get_diffs=dict(required=False, choices=BOOLEANS, type='bool', default=True)
         ),
