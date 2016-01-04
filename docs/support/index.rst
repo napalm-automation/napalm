@@ -61,8 +61,8 @@ _                           EOS    JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS
 ==========================  =====  =====   ======  =======  ======  ======  ======
 **get_facts**               |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|
 **get_interfaces**          |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|
-**get_lldp_neighbors**      |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|
-**get_bgp_neighbors**       |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|
+**get_lldp_neighbors**      |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|
+**get_bgp_neighbors**       |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|
 **get_environment**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|
 **get_interface_counters**  |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|
 ==========================  =====  =====   ======  =======  ======  ======  ======
