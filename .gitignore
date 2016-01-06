@@ -58,7 +58,3 @@ docs/_build/
 env
 *.swp
 
-test/unit/ios/new_good.conf
-test/unit/ios/initial.conf.orig
-napalm/fix_script.sh
-
