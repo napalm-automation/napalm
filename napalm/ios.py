@@ -14,7 +14,11 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+from __future__ import print_function
+
 import re
+from datetime import datetime
+
 from netmiko import ConnectHandler, FileTransfer
 from napalm.base import NetworkDriver
 from napalm.exceptions import ReplaceConfigException, MergeConfigException
@@ -24,7 +28,7 @@ class IOSDriver(NetworkDriver):
     '''NAPALM Cisco IOS Handler'''
     def __init__(self, hostname, username, password, timeout=60, dest_file_system='flash:',
                  candidate_cfg='candidate_config.txt', rollback_cfg='rollback_config.txt',
-                 merge_cfg='merge_config.txt'):
+                 merge_cfg='merge_config.txt', global_delay_factor=.2):
         self.hostname = hostname
         self.username = username
         self.password = password
@@ -35,11 +39,13 @@ class IOSDriver(NetworkDriver):
         self.merge_cfg = merge_cfg
         self.rollback_cfg = rollback_cfg
         self.dest_file_system = dest_file_system
+        self.global_delay_factor = global_delay_factor
 
     def open(self):
         """Opens a connection to the device."""
         self.device = ConnectHandler(device_type='cisco_ios', ip=self.hostname,
-                                     username=self.username, password=self.password, verbose=False)
+                                     username=self.username, password=self.password,
+                                     global_delay_factor=self.global_delay_factor, verbose=False)
 
     def close(self):
         """Closes the connection to the device."""
@@ -69,6 +75,7 @@ class IOSDriver(NetworkDriver):
 
         Merge configuration in: copy <file> running-config
         '''
+        self.config_replace = False
         if config:
             raise NotImplementedError
         if filename:
@@ -78,6 +85,30 @@ class IOSDriver(NetworkDriver):
                 if msg == '':
                     msg = "SCP transfer to remote device failed"
                 raise MergeConfigException(msg)
+
+    @staticmethod
+    def normalize_compare_config(diff):
+        '''
+        Cisco IOS outputs the following during 'config differences command':
+        !Contextual Config Diffs:
+
+        Also in certain contexts 'file prompt quiet' will be added to config
+        this config difference will be stripped
+        '''
+        ignore_strings = [
+            '!Contextual Config Diffs:',
+            '!No changes were found',
+            '-file prompt quiet',
+            '+file prompt quiet',
+        ]
+
+        diff_lines = diff.splitlines()
+        for ignore in ignore_strings:
+            try:
+                diff_lines.remove(ignore)
+            except ValueError:
+                pass
+        return "\n".join(diff_lines)
 
     def compare_config(self, file1=None, file2='running-config',
                        file1_file_system=None, file2_file_system='system:'):
@@ -96,6 +127,7 @@ class IOSDriver(NetworkDriver):
 
         cmd = 'show archive config differences {} {}'.format(cfg_file1, cfg_file2)
         diff = self.device.send_command(cmd)
+        diff = self.normalize_compare_config(diff)
         return diff.strip()
 
     def commit_config(self, filename=None):
@@ -115,7 +147,7 @@ class IOSDriver(NetworkDriver):
             if not self._check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
             cmd = 'configure replace {} force'.format(cfg_file)
-            self.device.send_command(cmd)
+            self.device.send_command(cmd, delay_factor=1)
         # Merge operation
         else:
             if filename is None:
@@ -158,9 +190,13 @@ class IOSDriver(NetworkDriver):
         '''
         # Will automaticall enable SCP on remote device
         enable_scp = True
+        debug = False
+
         with FileTransfer(self.device, source_file=source_file,
                           dest_file=dest_file, file_system=file_system) as scp_transfer:
 
+            if debug:
+                print("check1: {}".format(datetime.now()))
             # Check if file already exists and has correct MD5
             if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
                 msg = "File already exists and has correct MD5: no SCP needed"
@@ -169,11 +205,17 @@ class IOSDriver(NetworkDriver):
                 msg = "Insufficient space available on remote device"
                 return (False, msg)
 
+            if debug:
+                print("check2: {}".format(datetime.now()))
             if enable_scp:
                 scp_transfer.enable_scp()
 
+            if debug:
+                print("check3: {}".format(datetime.now()))
             # Transfer file
             scp_transfer.transfer_file()
+            if debug:
+                print("check4: {}".format(datetime.now()))
 
             # Compares MD5 between local-remote files
             if scp_transfer.verify_file():
@@ -182,6 +224,8 @@ class IOSDriver(NetworkDriver):
             else:
                 msg = "File transfer to remote device failed"
                 return (False, msg)
+            if debug:
+                print("check5: {}".format(datetime.now()))
 
             return (False, '')
 
@@ -235,7 +279,6 @@ class IOSDriver(NetworkDriver):
             return False
         elif success_pattern in output:
             return True
-        print output
         return False
 
     def get_lldp_neighbors(self):
