@@ -64,19 +64,19 @@ options:
     replace_config:
         description: If set to True the entire configuration on the device will be replaced during the commit. If
                      set to False, we will merge the new config with the existing one. Default: false.
-        choices: [yes,on,1,true,1,no,off,0,false,0]
+        choices: [yes,on,1,true,no,off,0,false]
         required: False
     diff_file:
         description: A file where to store the "diff" between the running configuration and the new configuration. If
                      it's not set the diff between configurations is not saved.
-        choices: [yes,on,1,true,1,no,off,0,false,0]
+        choices: [yes,on,1,true,no,off,0,false]
         required: False
     get_diffs:
         description:
             - Set to false to not have any diffs generated and always apply config.  Useful if platform does
               not support commands being used to generated diffs.  Note: By default diffs are generated
               even if the diff_file param is not set.
-        choices: [yes,on,1,true,1,no,off,0,false,0]
+        choices: [yes,on,1,true,no,off,0,false]
         required: False
 '''
 
