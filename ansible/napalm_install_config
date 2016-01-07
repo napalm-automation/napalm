@@ -27,7 +27,7 @@ logger = logging.getLogger('eos_install_config')
 DOCUMENTATION = '''
 ---
 module: napalm_install_config
-author: David Barroso <dbarroso@spotify.net>
+author: David Barroso <dbarrosop@dravetech.com>
 version_added: "1.0.0"
 short_description: Replaces the configuration taken from a file on a device supported by NAPALM.
 description:
