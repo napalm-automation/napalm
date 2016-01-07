@@ -38,19 +38,23 @@ def main():
             username=dict(required=True),
             password=dict(required=True),
             dev_os=dict(required=True),
+            optional_args=dict(required=False, type='dict', default=None)
         ),
         supports_check_mode=True
     )
 
+    if module.params['optional_args'] is None:
+        optional_args = {}
+    else:
+        optional_args = module.params['optional_args']
     hostname = module.params['hostname']
     username = module.params['username']
     dev_os = module.params['dev_os']
     password = module.params['password']
 
-
     network_driver = get_network_driver(dev_os)
 
-    device = network_driver(hostname, username, password)
+    device = network_driver(hostname, username, password, optional_args=optional_args)
     device.open()
 
     facts = device.get_facts()
