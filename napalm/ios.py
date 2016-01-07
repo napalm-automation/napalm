@@ -26,20 +26,20 @@ from napalm.exceptions import ReplaceConfigException, MergeConfigException
 
 class IOSDriver(NetworkDriver):
     '''NAPALM Cisco IOS Handler'''
-    def __init__(self, hostname, username, password, timeout=60, dest_file_system='flash:',
-                 candidate_cfg='candidate_config.txt', rollback_cfg='rollback_config.txt',
-                 merge_cfg='merge_config.txt', global_delay_factor=.2):
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        if optional_args is None:
+            optional_args = {}
         self.hostname = hostname
         self.username = username
         self.password = password
         self.timeout = timeout
+        self.candidate_cfg = optional_args.get('candidate_cfg', 'candidate_config.txt')
+        self.merge_cfg = optional_args.get('merge_cfg', 'merge_config.txt')
+        self.rollback_cfg = optional_args.get('rollback_cfg', 'rollback_config.txt')
+        self.dest_file_system = optional_args.get('dest_file_system', 'flash:')
+        self.global_delay_factor = optional_args.get('global_delay_factor', .5)
         self.device = None
         self.config_replace = False
-        self.candidate_cfg = candidate_cfg
-        self.merge_cfg = merge_cfg
-        self.rollback_cfg = rollback_cfg
-        self.dest_file_system = dest_file_system
-        self.global_delay_factor = global_delay_factor
 
     def open(self):
         """Opens a connection to the device."""
