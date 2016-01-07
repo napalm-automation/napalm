@@ -58,7 +58,11 @@ class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         password = getpass()
         cls.vendor = 'ios'
         driver = get_network_driver(cls.vendor)
-        cls.device = driver(ip_addr, username, password)
+        optional_args = {}
+        optional_args['dest_file_system'] = 'flash:'
+        optional_args['global_delay_factor'] = .7
+
+        cls.device = driver(ip_addr, username, password, optional_args=optional_args)
         cls.device.open()
         cls.device.get_facts()
 
