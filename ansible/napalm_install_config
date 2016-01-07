@@ -63,18 +63,20 @@ options:
         required: true
     replace_config:
         description: If set to True the entire configuration on the device will be replaced during the commit. If
-                     set to False, we will merge the new config with the existing one. Default: False.
+                     set to False, we will merge the new config with the existing one. Default: false.
+        choices: [yes,on,1,true,no,off,0,false]
         required: False
     diff_file:
         description: A file where to store the "diff" between the running configuration and the new configuration. If
                      it's not set the diff between configurations is not saved.
+        choices: [yes,on,1,true,no,off,0,false]
         required: False
     get_diffs:
         description:
             - Set to false to not have any diffs generated and always apply config.  Useful if platform does
               not support commands being used to generated diffs.  Note: By default diffs are generated
               even if the diff_file param is not set.
-        choices: ['true', 'false']
+        choices: [yes,on,1,true,no,off,0,false]
         required: False
 '''
 
@@ -122,8 +124,8 @@ def main():
             timeout=dict(required=False, default=60, type='int'),
             config_file=dict(required=True),
             dev_os=dict(required=True),
-            commit_changes=dict(required=True),
-            replace_config=dict(required=True),
+            commit_changes=dict(required=True, choices=BOOLEANS, type='bool'),
+            replace_config=dict(required=False, choices=BOOLEANS, type='bool', default=False),
             diff_file=dict(required=False, default=None),
             get_diffs=dict(required=False, choices=BOOLEANS, type='bool', default=True)
         ),
@@ -142,10 +144,6 @@ def main():
     diff_file = module.params['diff_file']
     get_diffs = module.params['get_diffs']
 
-    if commit_changes.__class__ is str:
-        commit_changes = ast.literal_eval(commit_changes)
-    if replace_config.__class__ is str:
-        replace_config = ast.literal_eval(replace_config)
 
     network_driver = get_network_driver(dev_os)
 
