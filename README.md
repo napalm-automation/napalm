@@ -53,7 +53,7 @@ If you prefer SLACK feel free to join the ``NAPALM`` channel on slack at [networ
 
 Authors
 =======
- * David Barroso ([dbarroso@dravetech.com](mailto:dbarroso@dravetech.com))
+ * David Barroso ([dbarrosop@dravetech.com](mailto:dbarroso@dravetech.com))
  * Elisa Jasinska ([elisa@bigwaveit.org](mailto:elisa@bigwaveit.org))
  * Many others, check the [contributors](https://github.com/napalm-automation/napalm/graphs/contributors) page for details.
 
