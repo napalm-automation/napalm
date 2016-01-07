@@ -25,7 +25,9 @@ import re
 
 
 class IOSXRDriver(NetworkDriver):
-    def __init__(self, hostname, username, password, timeout=60):
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        if optional_args is None:
+            optional_args = {}
         self.hostname = hostname
         self.username = username
         self.password = password
