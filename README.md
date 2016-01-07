@@ -60,6 +60,7 @@ Authors
 Thanks
 ======
 
-This project was founded by David Barroso as part of [Spotify][spotify] and Elisa Jasinska as part of BigWave IT. Originally it was hosted by the [Spotify][spotify] organization but due to the many contributions received by third parties we agreed creating a dedicated organization for NAPALM and give a big thanks to [Spotify][spotify] for the support. 
+This project was founded by David Barroso as part of [Spotify][spotify] and Elisa Jasinska as part of [BigWave IT][bigwave]. Originally it was hosted by the [Spotify][spotify] organization but due to the many contributions received by third parties we agreed creating a dedicated organization for NAPALM and give a big thanks to [Spotify][spotify] for the support. 
 
-[spotify]: www.spotify.com
+[spotify]: http://www.spotify.com
+[bigwave]: http://bigwaveit.org/
