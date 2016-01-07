@@ -53,6 +53,13 @@ If you prefer SLACK feel free to join the ``NAPALM`` channel on slack at [networ
 
 Authors
 =======
- * David Barroso ([dbarroso@spotify.com](mailto:dbarroso@spotify.com))
+ * David Barroso ([dbarroso@dravetech.com](mailto:dbarroso@dravetech.com))
  * Elisa Jasinska ([elisa@bigwaveit.org](mailto:elisa@bigwaveit.org))
  * Many others, check the [contributors](https://github.com/spotify/napalm/graphs/contributors) page for details.
+
+Thanks
+======
+
+This project was founded by David Barroso as part of [Spotify][spotify] and Elisa Jasinska as part of BigWave IT. Originally it was hosted by the [Spotify][spotify] organization but due to the many contributions received by third parties we agreed creating a dedicated organization for NAPALM and give a big thanks to [Spotify][spotify] for the support. 
+
+[spotify]: www.spotify.com
