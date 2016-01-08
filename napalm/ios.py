@@ -39,6 +39,7 @@ class IOSDriver(NetworkDriver):
         self.dest_file_system = optional_args.get('dest_file_system', 'flash:')
         self.global_delay_factor = optional_args.get('global_delay_factor', .5)
         self.port = optional_args.get('port', 22)
+        self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
         self.device = None
         self.config_replace = False
 
@@ -142,7 +143,10 @@ class IOSDriver(NetworkDriver):
             cfg_file = self.gen_full_path(filename)
             if not self._check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
-            cmd = 'configure replace {} force'.format(cfg_file)
+            if self.auto_rollback_on_error:
+                cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
+            else:
+                cmd = 'configure replace {} force'.format(cfg_file)
             self.device.send_command(cmd, delay_factor=1)
         # Merge operation
         else:
