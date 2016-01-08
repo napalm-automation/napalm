@@ -122,7 +122,7 @@ class IOSDriver(NetworkDriver):
         new_file_full = self.gen_full_path(filename=new_file, file_system=new_file_system)
 
         cmd = 'show archive config differences {} {}'.format(base_file_full, new_file_full)
-        diff = self.device.send_command(cmd, delay_factor=1)
+        diff = self.device.send_command(cmd, delay_factor=1.5)
         diff = self.normalize_compare_config(diff)
         return diff.strip()
 
