@@ -38,12 +38,13 @@ class IOSDriver(NetworkDriver):
         self.rollback_cfg = optional_args.get('rollback_cfg', 'rollback_config.txt')
         self.dest_file_system = optional_args.get('dest_file_system', 'flash:')
         self.global_delay_factor = optional_args.get('global_delay_factor', .5)
+        self.port = optional_args.get('port', 22)
         self.device = None
         self.config_replace = False
 
     def open(self):
         """Opens a connection to the device."""
-        self.device = ConnectHandler(device_type='cisco_ios', ip=self.hostname,
+        self.device = ConnectHandler(device_type='cisco_ios', ip=self.hostname, port=self.port,
                                      username=self.username, password=self.password,
                                      global_delay_factor=self.global_delay_factor, verbose=False)
 
@@ -88,45 +89,40 @@ class IOSDriver(NetworkDriver):
 
     @staticmethod
     def normalize_compare_config(diff):
-        '''
-        Cisco IOS outputs the following during 'config differences command':
-        !Contextual Config Diffs:
-
-        Also in certain contexts 'file prompt quiet' will be added to config
-        this config difference will be stripped
-        '''
+        '''Filter out strings that should not show up in the diff'''
         ignore_strings = [
-            '!Contextual Config Diffs:',
-            '!No changes were found',
-            '-file prompt quiet',
-            '+file prompt quiet',
+            'Contextual Config Diffs',
+            'No changes were found',
+            'file prompt quiet',
+            'ntp clock-period'
         ]
+    
+        new_list = []
+        for line in diff.splitlines():
+            for ignore in ignore_strings:
+                if ignore in line:
+                    break
+            else:   # nobreak
+                new_list.append(line)
+        return "\n".join(new_list)
 
-        diff_lines = diff.splitlines()
-        for ignore in ignore_strings:
-            try:
-                diff_lines.remove(ignore)
-            except ValueError:
-                pass
-        return "\n".join(diff_lines)
-
-    def compare_config(self, file1=None, file2='running-config',
-                       file1_file_system=None, file2_file_system='system:'):
+    def compare_config(self, base_file='running-config', new_file=None,
+                       base_file_system='system:', new_file_system=None):
         '''
-        show archive config differences <file1> <file2>
+        show archive config differences <base_file> <new_file>
 
-        Default operation is to compare self.candidate_cfg to system:running-config
+        Default operation is to compare system:running-config to self.candidate_cfg
         '''
         # Set defaults if not passed as arguments
-        if file1 is None:
-            file1 = self.candidate_cfg
-        if file1_file_system is None:
-            file1_file_system = self.dest_file_system
-        cfg_file1 = self.gen_full_path(filename=file1, file_system=file1_file_system)
-        cfg_file2 = self.gen_full_path(filename=file2, file_system=file2_file_system)
+        if new_file is None:
+            new_file = self.candidate_cfg
+        if new_file_system is None:
+            new_file_system = self.dest_file_system
+        base_file_full = self.gen_full_path(filename=base_file, file_system=base_file_system)
+        new_file_full = self.gen_full_path(filename=new_file, file_system=new_file_system)
 
-        cmd = 'show archive config differences {} {}'.format(cfg_file1, cfg_file2)
-        diff = self.device.send_command(cmd)
+        cmd = 'show archive config differences {} {}'.format(base_file_full, new_file_full)
+        diff = self.device.send_command(cmd, delay_factor=1)
         diff = self.normalize_compare_config(diff)
         return diff.strip()
 
