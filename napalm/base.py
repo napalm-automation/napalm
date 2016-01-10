@@ -49,11 +49,11 @@ class NetworkDriver:
         """
         This method is going to check if the exception exc_type is part of the builtins exceptions or part of the
         napalm exceptions. If it is not, it will print a message on the screen giving instructions to fill a bug.
+        Finally it will raise the original exception.
 
         :param exc_type: Exception class.
         :param exc_value: Exception object.
         :param exc_traceback: Traceback.
-        :return:
         """
         if exc_type.__name__ not in dir(napalm.exceptions) and \
                         exc_type.__name__ not in __builtins__.keys():
