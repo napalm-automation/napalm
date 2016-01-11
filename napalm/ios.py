@@ -123,7 +123,7 @@ class IOSDriver(NetworkDriver):
         new_file_full = self.gen_full_path(filename=new_file, file_system=new_file_system)
 
         cmd = 'show archive config differences {} {}'.format(base_file_full, new_file_full)
-        diff = self.device.send_command(cmd, delay_factor=4)
+        diff = self.device.send_command_expect(cmd)
         diff = self.normalize_compare_config(diff)
         return diff.strip()
 
@@ -157,17 +157,16 @@ class IOSDriver(NetworkDriver):
                 raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
             self._disable_confirm()
-            self.device.send_command(cmd)
+            self.device.send_command_expect(cmd)
             self._enable_confirm()
 
     def discard_config(self):
-        '''
-        Set candidate_cfg to current running-config
-        '''
-        cfg_file = self.gen_full_path(self.candidate_cfg)
-        cmd = 'copy running-config {}'.format(cfg_file)
+        '''Set candidate_cfg to current running-config. Erase the merge_cfg file'''
+        discard_candidate = 'copy running-config {}'.format(self.gen_full_path(self.candidate_cfg))
+        discard_merge = 'copy null: {}'.format(self.gen_full_path(self.merge_cfg))
         self._disable_confirm()
-        self.device.send_command(cmd)
+        self.device.send_command_expect(discard_candidate)
+        self.device.send_command_expect(discard_merge)
         self._enable_confirm()
 
     def rollback(self, filename=None):
@@ -178,7 +177,7 @@ class IOSDriver(NetworkDriver):
         if not self._check_file_exists(cfg_file):
             raise ReplaceConfigException("Rollback config file does not exist")
         cmd = 'configure replace {} force'.format(cfg_file)
-        self.device.send_command(cmd)
+        self.device.send_command_expect(cmd)
 
     def scp_file(self, source_file, dest_file, file_system):
         '''
@@ -255,7 +254,7 @@ class IOSDriver(NetworkDriver):
         cfg_file = self.gen_full_path(self.rollback_cfg)
         cmd = 'copy running-config {}'.format(cfg_file)
         self._disable_confirm()
-        self.device.send_command(cmd)
+        self.device.send_command_expect(cmd)
         self._enable_confirm()
 
     def _check_file_exists(self, cfg_file):
@@ -274,7 +273,7 @@ class IOSDriver(NetworkDriver):
         '''
         cmd = 'dir {}'.format(cfg_file)
         success_pattern = 'Directory of {}'.format(cfg_file)
-        output = self.device.send_command(cmd)
+        output = self.device.send_command_expect(cmd)
         if 'Error opening' in output:
             return False
         elif success_pattern in output:
