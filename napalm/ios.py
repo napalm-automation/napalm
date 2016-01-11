@@ -147,7 +147,7 @@ class IOSDriver(NetworkDriver):
                 cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
             else:
                 cmd = 'configure replace {} force'.format(cfg_file)
-            self.device.send_command(cmd, delay_factor=1)
+            self.device.send_command_expect(cmd)
         # Merge operation
         else:
             if filename is None:
