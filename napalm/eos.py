@@ -19,6 +19,7 @@ from exceptions import MergeConfigException, ReplaceConfigException, SessionLock
 from datetime import datetime
 import time
 from napalm.utils import string_parsers
+from collections import defaultdict
 
 
 class EOSDriver(NetworkDriver):
@@ -292,33 +293,33 @@ class EOSDriver(NetworkDriver):
                 bgp_peer['ipv6'] = bgp_neighbors[peer]['ipv6']
             return bgp_peer
 
-        bgp_counters = dict()
-        for id in [0,1]:
-            for vrf in output_summary[id]['vrfs']:
-                bgp_counters[vrf] = dict()
-                bgp_counters[vrf]['router_id'] = unicode(output_summary[id]['vrfs'][vrf]['routerId'])
+        bgp_counters = defaultdict(dict)
+        for output_id in [0, 1]:
+            for vrf in output_summary[output_id]['vrfs']:
+                bgp_counters[vrf]['router_id'] = unicode(output_summary[output_id]['vrfs'][vrf]['routerId'])
                 bgp_counters[vrf]['peers'] = dict()
-                for peer in output_summary[id]['vrfs'][vrf]['peers']:
+                for peer in output_summary[output_id]['vrfs'][vrf]['peers']:
                     bgp_counters[vrf]['peers'][peer] = dict()
-                    bgp_counters[vrf]['peers'][peer]['local_as'] = int(output_summary[id]['vrfs'][vrf]['asn'])
-                    bgp_counters[vrf]['peers'][peer]['remote_as'] = int(output_summary[id]['vrfs'][vrf]['peers'][peer]['asn'])
-                    peerState = output_summary[id]['vrfs'][vrf]['peers'][peer]['peerState']
+                    bgp_counters[vrf]['peers'][peer]['local_as'] = int(output_summary[output_id]['vrfs'][vrf]['asn'])
+                    bgp_counters[vrf]['peers'][peer]['remote_as'] = int(output_summary[output_id]['vrfs'][vrf]['peers'][peer]['asn'])
+                    peerState = output_summary[output_id]['vrfs'][vrf]['peers'][peer]['peerState']
                     bgp_counters[vrf]['peers'][peer]['is_up'] = peerState == 'Established'
-                    if 'peerStateIdleReason' in output_summary[id]['vrfs'][vrf]['peers'][peer]:
+                    if 'peerStateIdleReason' in output_summary[output_id]['vrfs'][vrf]['peers'][peer]:
                         bgp_counters[vrf]['peers'][peer]['is_enabled'] = False
                     else:
                         bgp_counters[vrf]['peers'][peer]['is_enabled'] = peerState == 'Established' or peerState == 'Active'
-                    bgp_counters[vrf]['peers'][peer]['uptime'] = int(output_summary[id]['vrfs'][vrf]['peers'][peer]['upDownTime'])
-                    bgp_peer = get_bgp_neighbor(peer, vrf, output_neighbors[id]['output'])
+                    bgp_counters[vrf]['peers'][peer]['uptime'] = int(output_summary[output_id]['vrfs'][vrf]['peers'][peer]['upDownTime'])
+                    bgp_peer = get_bgp_neighbor(peer, vrf, output_neighbors[output_id]['output'])
                     bgp_counters[vrf]['peers'][peer]['remote_id'] = unicode(bgp_peer['remote_id'])
                     bgp_counters[vrf]['peers'][peer]['description'] = unicode(bgp_peer['description'])
                     bgp_counters[vrf]['peers'][peer]['address_family'] = dict()
                     for family in ['ipv4', 'ipv6']:
                         bgp_counters[vrf]['peers'][peer]['address_family'][family] = dict()
-                        bgp_counters[vrf]['peers'][peer]['address_family'][family]['received_prefixes'] = int(output_summary[id]['vrfs'][vrf]['peers'][peer]['prefixReceived'])
-                        bgp_counters[vrf]['peers'][peer]['address_family'][family]['accepted_prefixes'] = int(output_summary[id]['vrfs'][vrf]['peers'][peer]['prefixAccepted'])
+                        bgp_counters[vrf]['peers'][peer]['address_family'][family]['received_prefixes'] = int(output_summary[output_id]['vrfs'][vrf]['peers'][peer]['prefixReceived'])
+                        bgp_counters[vrf]['peers'][peer]['address_family'][family]['accepted_prefixes'] = int(output_summary[output_id]['vrfs'][vrf]['peers'][peer]['prefixAccepted'])
                         bgp_counters[vrf]['peers'][peer]['address_family'][family]['sent_prefixes'] = int(bgp_peer[family])
-        bgp_counters['global'] = bgp_counters.pop('default')
+        if 'default' in bgp_counters.keys():
+            bgp_counters['global'] = bgp_counters.pop('default')
         return bgp_counters
 
     def get_environment(self):
