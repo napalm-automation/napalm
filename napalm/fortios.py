@@ -34,11 +34,12 @@ def execute_get(device, cmd, separator=':', auto=False):
 
 
 class FortiOSDriver(NetworkDriver):
-    def __init__(self, hostname, username, password, timeout=60):
+    def __init__(self, hostname, username, password, timeout=60, **kwargs):
         self.hostname = hostname
         self.username = username
         self.password = password
-        self.device = FortiOS(hostname, username=username, password=password, timeout=timeout)
+        self.device = FortiOS(hostname, username=username, password=password, timeout=timeout,
+                              vdom=kwargs['vdom'] if 'vdom' in kwargs else None)
         self.config_replace = False
 
     def open(self):
@@ -46,6 +47,14 @@ class FortiOSDriver(NetworkDriver):
 
     def close(self):
         self.device.close()
+
+    def execute_command_with_vdom(self, command):
+        if self.device.vdom:
+            command = 'conf vdom\nedit %s\n%s\nend' % (self.device.vdom, command)
+            output = self.device.execute_command(command)
+            return output[3:]  # remove vdom line
+        else:
+            return self.device.execute_command(command)
 
     def _load_config(self, filename, config):
         if filename is None:
@@ -159,7 +168,7 @@ class FortiOSDriver(NetworkDriver):
         except CommandExecutionException:
             cmd_data = self.device.execute_command('conf global\n diagnose hardware deviceinfo nic ')
             cmd_prefix = 'conf global\n'
-        
+
         interface_list = [x.replace('\t', '') for x in cmd_data if x.startswith('\t')]
         interface_statistics = {}
         for interface in interface_list:
@@ -209,10 +218,9 @@ class FortiOSDriver(NetworkDriver):
         command_received = 'get router info bgp neighbors {} received-routes | grep prefixes '
         peers = dict()
 
-        bgp_sum = self.device.execute_command(command_sum)
+        bgp_sum = self.execute_command_with_vdom(command=command_sum)
         re_neigh = re.compile("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")
         neighbors = {n.split()[0]: n.split()[1:] for n in bgp_sum if re.match(re_neigh, n)}
-
         self.device.load_config('router bgp')
 
         for neighbor, parameters in neighbors.iteritems():
@@ -232,7 +240,8 @@ class FortiOSDriver(NetworkDriver):
                 neighbor_dict['address_family']['ipv4'] = dict()
                 neighbor_dict['address_family']['ipv6'] = dict()
 
-            detail_output = [x.lower() for x in self.device.execute_command(command_detail.format(neighbor))]
+            detail_output = [x.lower() for x in
+                             self.execute_command_with_vdom(command=command_detail.format(neighbor))]
             m = re.search('remote router id (.+?)\n', '\n'.join(detail_output))
             if m:
                 neighbor_dict['remote_id'] = unicode(m.group(1))
@@ -249,8 +258,7 @@ class FortiOSDriver(NetworkDriver):
                     t = [int(s) for s in text.split() if s.isdigit()][0]
                     neighbor_dict['address_family'][family][term] = t
 
-                received = self.device.execute_command(
-                    command_received.format(neighbor))[0].split()
+                received = self.execute_command_with_vdom(command=command_received.format(neighbor))[0].split()
                 if len(received) > 0:
                     neighbor_dict['address_family'][family]['received_prefixes'] = received[-1]
                 else:
@@ -386,4 +394,3 @@ class FortiOSDriver(NetworkDriver):
         out['power'] = {t: {'status': True, 'capacity': -1.0, 'output': -1.0} for t in psus}
 
         return out
-
