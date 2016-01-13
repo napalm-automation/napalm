@@ -122,15 +122,6 @@ class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         invalid_file = self.device._check_file_exists('flash:/bogus_999.txt')
         self.assertFalse(invalid_file)
 
-#    def test_merge_configuration_typo_and_rollback(self):
-#        '''
-#        Cisco IOS using 'configure replace' will accept the config with a typo
-#        command, but will just reject the relevant command.
-#
-#        Consequently, this test is N/A
-#        '''
-#        self.assertTrue(True)
-
 if __name__ == '__main__':
     print
     print "Starting tests: "
