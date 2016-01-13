@@ -64,97 +64,12 @@ class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
         cls.device = driver(ip_addr, username, password, optional_args=optional_args)
         cls.device.open()
-        cls.device.get_facts()
 
-    def test_replacing_and_committing_config(self):
-        '''Test load_replace_candidate(), compare_config(), and commit_config()'''
-        intended_diff = self.read_file('%s/test_replace.diff' % self.vendor)
+        # Setup initial state
+        cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
+        cls.device.commit_config()
 
-        # Set initial device configuration
-        self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
-        self.device.commit_config()
-
-        # Install new config with a configuration change
-        self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
-        self.device.commit_config()
-
-        # The diff should be empty as the configuration has been committed already
-        diff = self.device.compare_config()
-        diff = diff.strip()
-        self.assertEqual(diff, '')
-
-        # Load initial.conf into candidate_config so you can compare
-        self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
-        diff = self.device.compare_config()
-        self.assertEqual(diff, intended_diff)
-
-    def test_replacing_config_and_diff_and_discard(self):
-        '''Handled via other tests'''
-        self.assertTrue(True)
-
-    def test_discard(self):
-        '''Test discard_config()'''
-        # Set initial device configuration
-        self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
-        self.device.commit_config()
-
-        # Load new candidate config
-        self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
-        commit_diff = self.device.compare_config()
-        self.assertNotEqual(commit_diff, '')
-
-        # Discard the config
-        self.device.discard_config()
-        discard_diff = self.device.compare_config()
-        self.assertEqual(discard_diff, '')
-
-    def test_replacing_config_and_rollback(self):
-        '''Test rollback'''
-        # Set initial device configuration
-        self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
-        self.device.commit_config()
-
-        # Load a new config
-        self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
-        orig_diff = self.device.compare_config()
-        self.device.commit_config()
-
-        # Now we rollback changes
-        replace_config_diff = self.device.compare_config()
-        self.assertEqual(replace_config_diff, '')
-        self.device.rollback()
-
-        # Try to load config again. New diff should be the same as the original diff
-        self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
-        last_diff = self.device.compare_config()
-        self.assertEqual(orig_diff, last_diff)
-
-        # Discard the config
-        self.device.discard_config()
-
-    def test_merge_configuration(self):
-        '''Test load_merge_candidate(), compare_config(), and commit_config()'''
-        debug = False
-        intended_diff = self.read_file('%s/merge_good.diff' % self.vendor)
-        if debug:
-            print "intended_diff: \n{}".format(intended_diff)
-
-        # Set initial device configuration
-        self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
-        self.device.commit_config()
-
-        # Merge change
-        self.device.load_merge_candidate(filename='%s/merge_good.conf' % self.vendor)
-        self.device.commit_config()
-
-        # Perform diff (verify merge occurred)
-        diff = self.device.compare_config()
-        if debug:
-            print "diff: \n{}".format(diff)
-
-        self.assertEqual(diff, intended_diff)
-
-    def test_confirm(self):
+    def test_ios_only_confirm(self):
         '''
         Test _disable_confirm() and _enable_confirm()
 
@@ -182,7 +97,7 @@ class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         output = output.strip()
         self.assertEqual(output, '')
 
-    def test_gen_full_path(self):
+    def test_ios_only_gen_full_path(self):
         '''Test gen_full_path() method'''
         output = self.device.gen_full_path(self.device.candidate_cfg)
         self.assertEqual(output, 'flash:/candidate_config.txt')
@@ -196,7 +111,7 @@ class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         output = self.device.gen_full_path(filename='running-config', file_system='system:')
         self.assertEqual(output, 'system:/running-config')
 
-    def test_check_file_exists(self):
+    def test_ios_only_check_file_exists(self):
         '''Test _check_file_exists() method'''
         # Locate file at flash:/candidate_config.txt
         self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
@@ -207,23 +122,14 @@ class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         invalid_file = self.device._check_file_exists('flash:/bogus_999.txt')
         self.assertFalse(invalid_file)
 
-    def test_replacing_config_with_typo(self):
-        '''
-        Cisco IOS using 'configure replace' will accept the config with a typo
-        command, but will just reject the relevant command.
-
-        Consequently, this test is N/A
-        '''
-        self.assertTrue(True)
-
-    def test_merge_configuration_typo_and_rollback(self):
-        '''
-        Cisco IOS using 'configure replace' will accept the config with a typo
-        command, but will just reject the relevant command.
-
-        Consequently, this test is N/A
-        '''
-        self.assertTrue(True)
+#    def test_merge_configuration_typo_and_rollback(self):
+#        '''
+#        Cisco IOS using 'configure replace' will accept the config with a typo
+#        command, but will just reject the relevant command.
+#
+#        Consequently, this test is N/A
+#        '''
+#        self.assertTrue(True)
 
 if __name__ == '__main__':
     print
