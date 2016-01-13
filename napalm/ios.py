@@ -147,7 +147,10 @@ class IOSDriver(NetworkDriver):
                 cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
             else:
                 cmd = 'configure replace {} force'.format(cfg_file)
-            self.device.send_command_expect(cmd)
+            output = self.device.send_command_expect(cmd)
+            if ('Failed to apply command' in output) or \
+                ('original configuration has been successfully restored' in output):
+                raise ReplaceConfigException("Candidate config could not be applied")
         # Merge operation
         else:
             if filename is None:
@@ -157,8 +160,11 @@ class IOSDriver(NetworkDriver):
                 raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
             self._disable_confirm()
-            self.device.send_command_expect(cmd)
+            output = self.device.send_command_expect(cmd)
             self._enable_confirm()
+            if 'Invalid input detected' in output:
+                self.rollback()
+                raise MergeConfigException("Configuration merge failed; automatic rollback attempted")
 
     def discard_config(self):
         '''Set candidate_cfg to current running-config. Erase the merge_cfg file'''
