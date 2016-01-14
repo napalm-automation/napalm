@@ -1,63 +1,37 @@
 {
     "vrfs": {
         "default": {
-            "routerId": "10.208.224.149",
+            "routerId": "192.168.56.3",
             "peers": {
-                "2001:7f8::f10:0:1": {
-                    "msgSent": 138207,
+                "2001:7f8::f10:0:2": {
+                    "msgSent": 5,
                     "inMsgQueue": 0,
-                    "prefixReceived": 1,
-                    "upDownTime": 1448374400.650718,
+                    "prefixReceived": 0,
+                    "upDownTime": 1452681618.167685,
                     "version": 4,
-                    "msgReceived": 138206,
+                    "msgReceived": 5,
                     "prefixAccepted": 0,
                     "peerState": "Established",
                     "outMsgQueue": 0,
                     "underMaintenance": false,
-                    "asn": 3856
+                    "asn": 65002
                 },
-                "2001:7f8::20ea:0:2": {
-                    "msgSent": 138232,
+                "2001:7f8::f10:0:3": {
+                    "msgSent": 267,
                     "inMsgQueue": 0,
-                    "prefixReceived": 21,
-                    "upDownTime": 1448374477.663486,
+                    "prefixReceived": 0,
+                    "upDownTime": 1452696202.499104,
                     "version": 4,
-                    "msgReceived": 156257,
+                    "msgReceived": 263,
                     "prefixAccepted": 0,
-                    "peerState": "Established",
+                    "peerState": "Active",
                     "outMsgQueue": 0,
                     "underMaintenance": false,
-                    "asn": 8426
-                },
-                "2001:7f8::21b8:0:1": {
-                    "msgSent": 131100,
-                    "inMsgQueue": 0,
-                    "prefixReceived": 1,
-                    "upDownTime": 1448374399.665499,
-                    "version": 4,
-                    "msgReceived": 132797,
-                    "prefixAccepted": 0,
-                    "peerState": "Established",
-                    "outMsgQueue": 0,
-                    "underMaintenance": false,
-                    "asn": 8632
-                },
-                "2001:7f8::71d4:0:1": {
-                    "msgSent": 276459,
-                    "inMsgQueue": 0,
-                    "prefixReceived": 3,
-                    "upDownTime": 1448374403.678457,
-                    "version": 4,
-                    "msgReceived": 276495,
-                    "prefixAccepted": 0,
-                    "peerState": "Established",
-                    "outMsgQueue": 0,
-                    "underMaintenance": false,
-                    "asn": 29140
+                    "asn": 65001
                 }
             },
             "vrf": "default",
-            "asn": 8403
+            "asn": 65001
         }
     }
 }
