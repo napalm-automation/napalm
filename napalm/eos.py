@@ -209,11 +209,11 @@ class EOSDriver(NetworkDriver):
 
         output = self.device.run_commands(commands)
 
-        interface_counters = dict()
-
+        interface_counters = defaultdict(dict)
         for interface, counters in output[0]['interfaces'].iteritems():
-            interface_counters[interface] = dict()
-
+            if '.' in interface or 'Port-Channel' in interface:
+                # skip subinterfaces and port channels
+                continue
             interface_counters[interface]['tx_octets'] = counters['outOctets']
             interface_counters[interface]['rx_octets'] = counters['inOctets']
             interface_counters[interface]['tx_unicast_packets'] = counters['outUcastPkts']
