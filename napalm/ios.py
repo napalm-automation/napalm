@@ -23,6 +23,11 @@ from netmiko import ConnectHandler, FileTransfer
 from napalm.base import NetworkDriver
 from napalm.exceptions import ReplaceConfigException, MergeConfigException
 
+# Easier to store these as constants
+HOUR_SECONDS = 3600
+DAY_SECONDS = 24 * HOUR_SECONDS
+WEEK_SECONDS = 7 * DAY_SECONDS
+YEAR_SECONDS = 365 * DAY_SECONDS
 
 class IOSDriver(NetworkDriver):
     '''NAPALM Cisco IOS Handler'''
@@ -304,69 +309,93 @@ class IOSDriver(NetworkDriver):
                 lldp[device_port] = neighbor
         return lldp
 
+    @staticmethod
+    def parse_uptime(uptime_str):
+        '''
+        Extract the uptime string from the given Cisco IOS Device.
+
+        Return the uptime in seconds as an integer
+        '''
+        # Initialize to zero
+        (years, weeks, days, hours, minutes) = (0, 0, 0, 0, 0)
+
+        uptime_str = uptime_str.strip()
+        time_list = uptime_str.split(',')
+        for element in time_list:
+            if re.search("year", element):
+                years = int(element.split()[0])
+            elif re.search("week", element):
+                weeks = int(element.split()[0])
+            elif re.search("day", element):
+                days = int(element.split()[0])
+            elif re.search("hour", element):
+                hours = int(element.split()[0])
+            elif re.search("minute", element):
+                minutes = int(element.split()[0])
+
+        uptime_sec = (years * YEAR_SECONDS) + (weeks * WEEK_SECONDS) + (days * DAY_SECONDS) + \
+                     (hours * 3600) + (minutes * 60)
+        return uptime_sec
+
     def get_facts(self):
         """This function returns a set of facts from the devices."""
-        results = {}
         # creating the parsing regex.
-        uptime_regex = r".*uptime\sis\s(?P<uptime>\d+\s\w+(,\s\d+\s+\w+){0,4}).*"
-        show_ver_regex = r".*Software\s\((?P<image>.+)\),\sVersion\s(?P<version>.+), RELEASE.*"
         model_regex = r".*Cisco\s(?P<model>\d+).*"
 
-        # commands to execute.
-        commands = [
-            'show version',
-            'show ip interface brief'
-            ]
-
         # default values.
-        vendor = unicode('Cisco')
-        fqdn = unicode('N/A')
-        serial_number = unicode('N/A')
+        vendor = u'Cisco'
+        uptime = -1
+        serial_number, fqdn, os_version, hostname = (u'Unknown', u'Unknown',
+                                                     u'Unknown', u'Unknown')
 
-        for command in commands:
-            output = self.device.send_command(command)
-            if command == 'show version':
-                # uptime filter
-                try:
-                    match_uptime = re.match(uptime_regex, output, re.DOTALL)
-                    group_uptime = match_uptime.groupdict()
-                    uptime = unicode(group_uptime["uptime"])
-                except AttributeError:
-                    uptime = -1
+        # obtain output from device
+        show_ver = self.device.send_command('show version')
+        show_hosts = self.device.send_command('show hosts')
+        show_ip_int_br = self.device.send_command('show ip int brief')
 
-                # model filter.
-                try:
-                    match_model = re.match(model_regex, output, re.DOTALL)
-                    group_model = match_model.groupdict()
-                    model = unicode(group_model["model"])
-                except AttributeError:
-                    model = -1
+        # uptime/serial_number/IOS version
+        for line in show_ver.splitlines():
+            if ' uptime is ' in line:
+                hostname, uptime_str = line.split(' uptime is ')
+                uptime = self.parse_uptime(uptime_str) 
+                hostname = hostname.strip()
+            if 'Processor board ID' in line:
+                _, serial_number = line.split("Processor board ID ")
+                serial_number = serial_number.strip()
+            if re.search(r"Cisco IOS Software", line):
+                _, os_version = line.split("Cisco IOS Software, ")
+                os_version = os_version.strip()
+            elif ( re.search(r"IOS (tm).+Software", line)):
+                _, os_version = line.split("IOS (tm) ")
+                os_version = os_version.strip()
 
-                # version filter.
-                try:
-                    match_version = re.match(show_ver_regex, output, re.DOTALL)
-                    group_version = match_version.groupdict()
-                    image = unicode(group_version["image"])
-                    os_version = unicode(group_version["version"])
-                except AttributeError:
-                    os_version = -1
+        # Determine domain_name and fqdn
+        for line in show_hosts.splitlines():
+            if 'Default domain' in line:
+                _, domain_name = line.split("Default domain is ")
+                domain_name = domain_name.strip()
+                break
+        if domain_name != 'Unknown' and hostname != 'Unknown':
+            fqdn = u'{}.{}'.format(hostname, domain_name)
 
-                # hostname filter.
-                output_splittted = output.split('\n')
-                for line in output_splittted:
-                    if "uptime" in line:
-                        hostname_line = line.split()
-                        hostname = unicode(hostname_line[0])
+        # model filter
+        try:
+            match_model = re.match(model_regex, show_ver, re.DOTALL)
+            group_model = match_model.groupdict()
+            model = group_model["model"]
+        except AttributeError:
+            model = u'Unknown'
 
-            # interface_list filter.
-            elif command == 'show ip interface brief':
-                interface_list = []
-                splitted_output = output.split('\n')
-                for i in range(1, len(splitted_output)):
-                    interface = splitted_output[i].split()[0]
-                    interface_list.append(interface)
-        # parsing results.
-        results = {
+        # interface_list filter
+        interface_list = []
+        show_ip_int_br = show_ip_int_br.strip()
+        for line in show_ip_int_br.splitlines():
+            if 'Interface ' in line:
+                continue
+            interface = line.split()[0]
+            interface_list.append(interface)
+
+        return {
             'uptime': uptime,
             'vendor': vendor,
             'os_version': os_version,
@@ -376,7 +405,6 @@ class IOSDriver(NetworkDriver):
             'fqdn': fqdn,
             'interface_list': interface_list
         }
-        return results
 
     def get_interfaces(self):
         interface_list = {}
