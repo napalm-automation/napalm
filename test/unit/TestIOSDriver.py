@@ -114,29 +114,29 @@ class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         self.assertFalse(invalid_file)
 
 
-class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
-    '''
-    Get operations:
-    get_lldp_neighbors
-    get_facts
-    get_interfaces
-    get_bgp_neighbors
-    get_interfaces_counters
-    '''
-
-    @classmethod
-    def setUpClass(cls):
-        username = 'pyclass'
-        ip_addr = raw_input("Enter device ip or hostname: ")
-        ip_addr = ip_addr.strip()
-        password = getpass()
-        cls.vendor = 'ios'
-        driver = get_network_driver(cls.vendor)
-        optional_args = {}
-        optional_args['dest_file_system'] = 'flash:'
-
-        cls.device = driver(ip_addr, username, password, optional_args=optional_args)
-        cls.device.open()
+#class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
+#    '''
+#    Get operations:
+#    get_lldp_neighbors
+#    get_facts
+#    get_interfaces
+#    get_bgp_neighbors
+#    get_interfaces_counters
+#    '''
+#
+#    @classmethod
+#    def setUpClass(cls):
+#        username = 'pyclass'
+#        ip_addr = raw_input("Enter device ip or hostname: ")
+#        ip_addr = ip_addr.strip()
+#        password = getpass()
+#        cls.vendor = 'ios'
+#        driver = get_network_driver(cls.vendor)
+#        optional_args = {}
+#        optional_args['dest_file_system'] = 'flash:'
+#
+#        cls.device = driver(ip_addr, username, password, optional_args=optional_args)
+#        cls.device.open()
 
 if __name__ == '__main__':
     print
