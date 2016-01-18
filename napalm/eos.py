@@ -37,7 +37,8 @@ class EOSDriver(NetworkDriver):
             host=self.hostname,
             username=self.username,
             password=self.password,
-            port=443
+            port=443,
+            timeout=self.timeout
         )
         self.device = pyeapi.client.Node(connection)
 
