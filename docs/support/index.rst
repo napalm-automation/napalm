@@ -94,9 +94,7 @@ NAPALM supports passing certain optional arguments to some drivers. To do that y
 List of supported optional arguments
 ____________________________________
 
-==========================  =====  ===================================
-optional_arg                Usage  Supported by
-==========================  =====  ===================================
+  * :code:`fortios_vdom` (fortios) - VDOM to connect to.
 
 Adding optional arguments to NAPALM drivers
 ___________________________________________
