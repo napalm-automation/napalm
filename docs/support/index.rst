@@ -38,7 +38,7 @@ _                       EOS         JunOS   IOS-XR      FortiOS         IBM     
 **Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c1]_     Yes [#c4]_      Yes
 **Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   No [#c2]_
 **Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes [#c2]_     Yes/No [#c5]_   Yes
-=====================   ==========  =====   ==========  ==============  =============  ============== 
+=====================   ==========  =====   ==========  ==============  =============  ==============  ==============
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
@@ -78,3 +78,29 @@ Caveats
    ibm
    nxos
    ios
+
+Optional arguments
+------------------
+
+NAPALM supports passing certain optional arguments to some drivers. To do that you have to pass a dictionary via the
+:code:`optional_args` parameter when creating the object::
+
+    >>> from napalm import get_network_driver
+    >>> driver = get_network_driver('eos')
+    >>> optional_args = {'my_optional_arg1': 'my_value1', 'my_optional_arg2': 'my_value2'}
+    >>> device = driver('192.168.76.10', 'dbarroso', 'this_is_not_a_secure_password', optional_args=optional_args)
+    >>> device.open()
+
+List of supported optional arguments
+____________________________________
+
+==========================  =====  ===================================
+optional_arg                Usage  Supported by
+==========================  =====  ===================================
+
+Adding optional arguments to NAPALM drivers
+___________________________________________
+
+If you are a developer and want to add an optional argument to a driver, please, follow this pattern when naming the
+argument; :code:`$driver_name-$usage` if the argument applies only to a particular driver. For example, the optional
+argument :code:`fortios_vdom` is used only by the FortiOS driver to select a particular vdom.
