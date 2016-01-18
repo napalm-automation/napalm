@@ -209,11 +209,11 @@ class EOSDriver(NetworkDriver):
 
         output = self.device.run_commands(commands)
 
-        interface_counters = dict()
-
+        interface_counters = defaultdict(dict)
         for interface, counters in output[0]['interfaces'].iteritems():
-            interface_counters[interface] = dict()
-
+            if '.' in interface or 'Port-Channel' in interface:
+                # skip subinterfaces and port channels
+                continue
             interface_counters[interface]['tx_octets'] = counters['outOctets']
             interface_counters[interface]['rx_octets'] = counters['inOctets']
             interface_counters[interface]['tx_unicast_packets'] = counters['outUcastPkts']
@@ -306,7 +306,7 @@ class EOSDriver(NetworkDriver):
                     bgp_counters[vrf]['peers'][peer] = peer_info
         lines = []
         [lines.extend(x['output'].splitlines()) for x in output_neighbor_cmds]
-        for line in lines:
+        while lines:
             """
             Raw output from the command looks like the following:
 
@@ -317,8 +317,7 @@ class EOSDriver(NetworkDriver):
                  IPv6 Unicast:           0         0
               Local AS is 2, local router ID 2.2.2.2
             """
-            if line is '':
-                continue
+
             neighbor, r_as = self._parse_neigbor_info(lines.pop(0))
             # this line can be either description or rid info
             next_line = lines.pop(0)
