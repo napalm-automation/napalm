@@ -22,12 +22,15 @@ class TestConfigIOSXRDriver(unittest.TestCase, TestConfigNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '192.168.56.202'
+        hostname = '127.0.0.1'
         username = 'vagrant'
         password = 'vagrant'
         cls.vendor = 'iosxr'
 
-        cls.device = IOSXRDriver(hostname, username, password, timeout=60)
+        optional_args = {
+            'port': 12202,
+        }
+        cls.device = IOSXRDriver(hostname, username, password, timeout=60, optional_args=optional_args)
         cls.device.open()
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
         cls.device.commit_config()
