@@ -407,45 +407,51 @@ class IOSDriver(NetworkDriver):
         }
 
     def get_interfaces(self):
+        '''
+        Get interface details
+    
+        last_flapped is not implemented
+        '''
         interface_list = {}
+
         # default values.
         last_flapped = -1.0
-        # command to execute.
-        command = 'show interfaces description'
-        # let's start.
-        output = self.device.send_command(command)
-        splitted_output = output.split('\n')
+
         # creating the parsing regex.
         mac_regex = r".*,\saddress\sis\s(?P<mac_address>\S+).*"
         speed_regex = r".*BW\s(?P<speed>\d+)\s(?P<speed_format>\S+).*"
-        for i in range(1, len(splitted_output)):
-            params = {}
-            interface = splitted_output[i].split()[0]
-            if splitted_output[i].split()[1] == 'up':
-                is_enabled = True
+
+        command = 'show interfaces description'
+        output = self.device.send_command(command)
+        for line in output.splitlines():
+            if 'Interface' in line and 'Status' in line:
+                continue
+            fields = line.split()
+            if len(fields) == 3:
+                interface, status, protocol = fields
+                description = u''
+            elif fields > 3:
+                interface, status, protocol = fields[:3]
+                description = u" ".join(fields[3:])
             else:
+                raise ValueError("Unexpected response from the router")
+
+            status = status.lower()
+            protocol = protocol.lower()
+            if 'admin' in status:
                 is_enabled = False
-            if splitted_output[i].split()[2] == 'up':
+            else:
+                is_enabled = True
+            if 'up' in protocol:
                 is_up = True
             else:
                 is_up = False
-            # parsing descriptions.
-            if is_up and is_enabled and len(splitted_output[i].split()) > 3:
-                description_list = splitted_output[i].split()[3::]
-                description = ' '.join(description_list)
-            elif is_enabled and len(splitted_output[i].split()) > 3:
-                description_list = splitted_output[i].split()[3::]
-                description = ' '.join(description_list)
-            elif len(splitted_output[i].split()) > 4:
-                description_list = splitted_output[i].split()[4::]
-                description = ' '.join(description_list)
-            else:
-                description = ''
-            # parsing all the values.
-            params['is_up'] = is_up
-            params['is_enabled'] = is_enabled
-            params['description'] = description
-            interface_list[interface] = params
+            interface_list[interface] = {
+                'is_up': is_up,
+                'is_enabled': is_enabled,
+                'description': description,
+                'last_flapped': last_flapped,
+            }
 
         for interface in interface_list:
             show_command = "show interface {0}".format(interface)
@@ -455,7 +461,7 @@ class IOSDriver(NetworkDriver):
                 match_mac = re.match(mac_regex, interface_output, re.DOTALL)
                 group_mac = match_mac.groupdict()
                 mac_address = group_mac["mac_address"]
-                interface_list[interface]['mac_address'] = unicode(mac_address)
+                interface_list[interface]['mac_address'] = mac_address
             except AttributeError:
                 interface_list[interface]['mac_address'] = -1
             try:
@@ -470,6 +476,8 @@ class IOSDriver(NetworkDriver):
                     speed = int(speed)/1000
                     interface_list[interface]['speed'] = int(speed)
             except AttributeError:
+                interface_list[interface]['speed'] = -1
+            except ValueError:
                 interface_list[interface]['speed'] = -1
 
         return interface_list
