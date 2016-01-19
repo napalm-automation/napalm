@@ -24,12 +24,15 @@ class TestConfigJunOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '192.168.56.203'
+        hostname = '127.0.0.1'
         username = 'vagrant'
         password = 'vagrant123'
         cls.vendor = 'junos'
 
-        cls.device = JunOSDriver(hostname, username, password, timeout=60)
+        optional_args = {
+            'port': 12203,
+        }
+        cls.device = JunOSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
         cls.device.open()
 
 
