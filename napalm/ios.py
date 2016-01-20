@@ -292,21 +292,32 @@ class IOSDriver(NetworkDriver):
         return False
 
     def get_lldp_neighbors(self):
-        command = 'show lldp neighbors | begin Device ID'
+        '''
+        Output command format:
+        Device ID           Local Intf     Hold-time  Capability      Port ID
+        twb-sf-hpsw1        Fa4            120        B               17
+ 
+        Total entries displayed: 1
+
+        return data structure is a dictionary, key is local_port
+        {u'Fa4': [{'hostname': u'twb-sf-hpsw1', 'port': u'17'}]}
+    
+        value is a list where each entry in the list is a dict
+        '''
         lldp = {}
 
+        command = 'show lldp neighbors | begin Device ID'
         output = self.device.send_command(command)
-        splitted_output = output.split('\n')
-        for line in splitted_output:
-            neighbor = {}
-            if len(line) > 0 and 'Device ID' not in line and 'entries' not in line:
-                splitted_line = line.split()
-                device_id = unicode(splitted_line[0])
-                device_port = unicode(splitted_line[1])
-                port_id = unicode(splitted_line[-1])
-                neighbor['hostname'] = device_id
-                neighbor['port'] = port_id
-                lldp[device_port] = neighbor
+        for line in output.splitlines():
+            line = line.strip()
+            if 'Device ID' in line or 'entries' in line or line == '':
+                continue
+            device_id, local_port, _, _, remote_port  = line.split()
+            lldp.setdefault(local_port, [])
+            lldp[local_port].append({
+                'hostname': device_id,
+                'port': remote_port,
+            })
         return lldp
 
     @staticmethod
