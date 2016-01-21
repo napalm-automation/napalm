@@ -22,141 +22,6 @@ junos_iface_view:
     speed: speed
     mac_address: current-physical-address
 
-###
-### ARP Table
-###
-
-junos_arp_table:
-  rpc: get-arp-table-information
-  item: arp-table-entry
-  key: interface-name
-  view: junos_arp_view
-
-junos_arp_view:
-  fields:
-    mac_address: mac-address
-    ip_address: ip-address
-    hostname: hostname
-    flags: arp-table-entry-flags
-
-###
-### LLDP Neighbors
-###
-
-junos_lldp_neighbors_detail_table:
-  rpc: get-lldp-neighbors-information
-  item: lldp-neighbor-information
-  key: lldp-local-port-id
-  view: junos_lldp_neighbors_detail_view
-
-junos_lldp_neighbors_detail_view:
-  fields:
-    parent_interface: lldp-local-parent-interface-name
-    remote_port: lldp-remote-port-id
-    remote_system_chassis_id: lldp-remote-chassis-id
-    remote_system_name: lldp-remote-system-name
-
-###
-### Route Information
-###
-
-junos_route_table:
-  rpc: get-route-information
-  args_key:
-    destination
-  item: route-table/rt
-  key: rt-destination
-  view: junos_route_table_view
-
-junos_route_table_view:
-  fields:
-    protocol: rt-entry/protocol-name
-    active_tag: rt-entry/active-tag
-    age: {rt-entry/age/@seconds: int}
-    as_path: rt-entry/as-path
-    next_hop: rt-entry/nh/to
-    via: rt-entry/nh/via
-    local_preference: {rt-entry/local-preference: int}
-    preference: {rt-entry/preference: int}
-
-###
-### MAC Address table
-###
-
-junos_mac_address_table:
-  rpc: get-bridge-mac-table
-  item: l2ald-mac-entry
-  key: l2-mac-logical-interface
-  view: junos_mac_address_view
-
-junos_mac_address_view:
-  fields:
-    vlan: {l2-bridge-vlan: int}
-    logical_interface: l2-mac-logical-interface
-    bridge_domain: l2-mac-bridging-domain
-    logical_system: logical-system
-    base_logical_interface: l2-mac-base-logical-interface
-    mac_addresses: l2-mac-address
-    routing_instance: l2-mac-routing-instance
-
-####
-#### BGP Details
-####
-
-junos_bgp_tables_summary_table:
-  rpc: get-bgp-summary-information
-  args:
-    instance: ''
-    group: ''
-  item: bgp-rib
-  key: name
-  view: junos_bgp_tables_summary_view
-
-junos_bgp_tables_summary_view:
-  fields:
-    routing_table: name
-    total_prefix_count: total-prefix-count
-    received_prefix_count: received-prefix-count
-    active_prefix_count: active-prefix-count
-    suppressed_prefix_count: suppressed-prefix-count
-    history_prefix_count: history-prefix-count
-    damped_prefix_count: damped-prefix-count
-    total_external_prefix_count: total-external-prefix-count
-    active_external_prefix_count: active-external-prefix-count
-    accepted_external_prefix_count: accepted-external-prefix-count
-    suppressed_external_prefix_count: suppressed-external-prefix-count
-    total_internal_prefix_count: total-internal-prefix-count
-    active_internal_prefix_count: active-internal-prefix-count
-    accepted_internal_prefix_count: accepted-internal-prefix-count
-    suppressed_internal_prefix_count: suppressed-internal-prefix-count
-    pending_prefix_count: pending-prefix-count
-    bgp_rib_state: bgp-rib-state
-
-junos_bgp_peers_summary_table:
-  rpc: get-bgp-summary-information
-  args:
-    instance: ''
-    group: ''
-  item: bgp-peer
-  key: peer-as
-  view: junos_bgp_peers_summary_view
-
-junos_bgp_peers_summary_view:
-  fields:
-    peer_address: peer-address
-    peer_as: peer-as
-    input_messages: input-messages
-    output_messages: output-messages
-    route_queue_count: route-queue-count
-    flap_count: flap-count
-    elapsed_time: elapsed-time
-    peer_state: peer-state
-    rib_name: bgp-rib/name
-    active_prefix_count: bgp-rib/active-prefix-count
-    received_prefix_count: bgp-rib/received-prefix-count
-    accepted_prefix_count: bgp-rib/accepted-prefix-count
-    suppressed_prefix_count: bgp-rib/suppressed-prefix-count
-
 ####
 #### BGP tables
 ####
@@ -305,3 +170,137 @@ junos_temperature_thresholds_view:
     red-alarm: { red-alarm: int }
     tx_discards: { output-drops: int }
 
+###
+### ARP Table
+###
+
+junos_arp_table:
+  rpc: get-arp-table-information
+  item: arp-table-entry
+  key: interface-name
+  view: junos_arp_view
+
+junos_arp_view:
+  fields:
+    mac_address: mac-address
+    ip_address: ip-address
+    hostname: hostname
+    flags: arp-table-entry-flags
+
+###
+### LLDP Neighbors
+###
+
+junos_lldp_neighbors_detail_table:
+  rpc: get-lldp-neighbors-information
+  item: lldp-neighbor-information
+  key: lldp-local-port-id
+  view: junos_lldp_neighbors_detail_view
+
+junos_lldp_neighbors_detail_view:
+  fields:
+    parent_interface: lldp-local-parent-interface-name
+    remote_port: lldp-remote-port-id
+    remote_system_chassis_id: lldp-remote-chassis-id
+    remote_system_name: lldp-remote-system-name
+
+###
+### Route Information
+###
+
+junos_route_table:
+  rpc: get-route-information
+  args_key:
+    destination
+  item: route-table/rt
+  key: rt-destination
+  view: junos_route_table_view
+
+junos_route_table_view:
+  fields:
+    protocol: rt-entry/protocol-name
+    active_route: {rt-entry/active-tag: True=*}
+    age: {rt-entry/age/@seconds: int}
+    as_path: rt-entry/as-path
+    next_hop: rt-entry/nh/to
+    outgoing_interface: rt-entry/nh/via
+    local_preference: {rt-entry/local-preference: int}
+    preference: {rt-entry/preference: int}
+
+###
+### MAC Address table
+###
+
+junos_mac_address_table:
+  rpc: get-bridge-mac-table
+  item: l2ald-mac-entry
+  key: l2-mac-logical-interface
+  view: junos_mac_address_view
+
+junos_mac_address_view:
+  fields:
+    vlan: {l2-bridge-vlan: int}
+    logical_interface: l2-mac-logical-interface
+    bridge_domain: l2-mac-bridging-domain
+    logical_system: logical-system
+    base_logical_interface: l2-mac-base-logical-interface
+    mac_addresses: l2-mac-address
+    routing_instance: l2-mac-routing-instance
+
+####
+#### BGP Neighbors and Routing Tables Stats
+####
+
+junos_bgp_tables_summary_table:
+  rpc: get-bgp-summary-information
+  args:
+    instance: ''
+    group: ''
+  item: bgp-rib
+  key: name
+  view: junos_bgp_tables_summary_view
+
+junos_bgp_tables_summary_view:
+  fields:
+    routing_table: name
+    total_prefix_count: {total-prefix-count: int}
+    received_prefix_count: {received-prefix-countL: int}
+    active_prefix_count: {active-prefix-count: int}
+    suppressed_prefix_count: {suppressed-prefix-count: int}
+    history_prefix_count: {history-prefix-count: int}
+    damped_prefix_count: {damped-prefix-count: int}
+    total_external_prefix_count: {total-external-prefix-count: int}
+    active_external_prefix_count: {active-external-prefix-count: int}
+    accepted_external_prefix_count: {accepted-external-prefix-count: int}
+    suppressed_external_prefix_count: {suppressed-external-prefix-count: int}
+    total_internal_prefix_count: {total-internal-prefix-count: int}
+    active_internal_prefix_count: {active-internal-prefix-count: int}
+    accepted_internal_prefix_count: {accepted-internal-prefix-count: int}
+    suppressed_internal_prefix_count: {suppressed-internal-prefix-count: int}
+    pending_prefix_count: {pending-prefix-count: int}
+    bgp_rib_state: bgp-rib-state
+
+junos_bgp_peers_summary_table:
+  rpc: get-bgp-summary-information
+  args:
+    instance: ''
+    group: ''
+  item: bgp-peer
+  key: peer-as
+  view: junos_bgp_peers_summary_view
+
+junos_bgp_peers_summary_view:
+  fields:
+    peer_address: peer-address
+    peer_as: {peer-as: int}
+    input_messages: {input-messages: int}
+    output_messages: {output-messages: int}
+    route_queue_count: {route-queue-count: int}
+    flap_count: {flap-count: int}
+    elapsed_time: {elapsed-time/@seconds: int}
+    peer_state: peer-state
+    rib_name: bgp-rib/name
+    active_prefix_count: {bgp-rib/active-prefix-count: int}
+    received_prefix_count: {bgp-rib/received-prefix-count: int}
+    accepted_prefix_count: {bgp-rib/accepted-prefix-count: int}
+    suppressed_prefix_count: {bgp-rib/suppressed-prefix-count: int}

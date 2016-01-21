@@ -473,10 +473,16 @@ class JunOSDriver(NetworkDriver):
             if prefix not in routes.keys():
                 routes[prefix] = list()
             route_detail = route[1]
-            number_of_routes = len(route_detail[0][1])
-            for route_no in range(0, number_of_routes):
+            # TODO have to do it in the clean fucking way!!!!
+            if type(route_detail[0][1]) is list:
+                number_of_routes = len(route_detail[0][1])
+                for route_no in range(0, number_of_routes):
+                        routes[prefix].append({
+                            route_params[0]:  route_params[1][route_no] for route_params in route_detail
+                        })
+            else:
                 routes[prefix].append({
-                    route_params[0]:  route_params[1][route_no] for route_params in route_detail
+                    route_params[0]:  route_params[1] for route_params in route_detail
                 })
 
         return routes
