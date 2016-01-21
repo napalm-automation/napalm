@@ -20,6 +20,7 @@ from base import NetworkDriver
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError
+from jnpr.junos.exception import RpcTimeoutError
 from exceptions import ReplaceConfigException, MergeConfigException
 
 
@@ -316,3 +317,166 @@ class JunOSDriver(NetworkDriver):
             neighbors[neigh[0]].append({x[0]: unicode(x[1]) for x in neigh[1]})
 
         return neighbors
+
+    def cli(self, command = ''):
+
+        if not command:
+            return 'Please enter a valid command!'
+
+        return self.device.cli(command)
+
+
+    def get_arp_table(self):
+
+        arp_table = dict()
+
+        return arp_table
+
+    def get_lldp_neighbors_detail(self):
+
+        lldp_neighbors = dict()
+
+        lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
+
+        lldp_table.get()
+        lldp_items = lldp_table.items()
+
+        for lldp_item in lldp_items:
+            interface_name = lldp_item[0]
+            if interface_name not in lldp_neighbors.keys():
+                lldp_neighbors[interface_name] = list()
+            lldp_neighbors[interface_name].append({
+                detail[0]: detail[1] for detail in lldp_item[1]
+            })
+
+        return lldp_neighbors
+
+    def get_mac_address_table(self):
+
+        mac_address_table = dict()
+
+        mac_table = junos_views.junos_mac_address_table(self.device)
+
+        mac_table.get()
+        mac_table_items = mac_table.items()
+
+        for mac_table_entry in mac_table_items:
+            interface_name = mac_table_entry[0]
+            if interface_name not in mac_address_table.keys():
+                mac_address_table[interface_name] = dict()
+            vlan_id = mac_table_entry[1][0][1]
+            if vlan_id not in mac_address_table[interface_name].keys():
+                mac_address_table[interface_name][vlan_id] = list()
+            mac_address_table[interface_name][vlan_id].append(
+                {elem[0]: elem[1] for elem in mac_table_entry[1] if elem[0] != 'vlan'}
+            )
+
+        return mac_address_table
+
+    def get_ntp_peers(self):
+
+        # NTP Peers does not have XML RPC defined...
+
+        ntp_peers = dict()
+
+        REGEX = (
+            '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
+            '\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
+            '\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
+            '\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
+            '\s+([0-9\.]+)\s?$'
+        )
+
+        ntp_assoc_output = self.device.cli('show ntp associations')
+        ntp_assoc_output_lines = ntp_assoc_output.split('\n')
+
+        for ntp_assoc_output_line in ntp_assoc_output_lines[3:-1]: #except last line
+            line_search = re.search(REGEX, ntp_assoc_output_line, re.I)
+            if not line_search:
+                continue # pattern not found
+            line_groups = line_search.groups()
+            try:
+                ntp_peers[line_groups[1]] = {
+                    'referenceid'   : line_groups[2],
+                    'stratum'       : int(line_groups[3]),
+                    'type'          : line_groups[4],
+                    'when'          : line_groups[5],
+                    'hostpoll'      : int(line_groups[6]),
+                    'reachability'  : line_groups[7],
+                    'delay'         : float(line_groups[8]),
+                    'offset'        : float(line_groups[9]),
+                    'jitter'        : float(line_groups[10])
+                }
+            except Exception:
+                continue
+
+        return ntp_peers
+
+    def get_bgp_summary(self, instance = '', group = ''):
+
+        bgp_summary = {
+            'tables': {}, # with an overview over all tables
+            'peers' : {}  # and over the peers only, grouped by AS number
+        }
+
+        bgp_tables_summary_table = junos_views.junos_bgp_tables_summary_table(self.device)
+        bgp_peers_summary_table  = junos_views.junos_bgp_peers_summary_table(self.device)
+
+        bgp_tables_summary_table.get(
+            instance = instance,
+            group = group
+        )
+        bgp_peers_summary_table.get(
+            instance = instance,
+            group = group
+        )
+        bgp_tables_summary_items = bgp_tables_summary_table.items()
+        bgp_peers_summary_items = bgp_peers_summary_table.items()
+
+        for bgp_tables_summary_entry in bgp_tables_summary_items:
+            rib_name = bgp_tables_summary_entry[0]
+            bgp_summary['tables'][rib_name] = {
+                elem[0]: elem[1] for elem in bgp_tables_summary_entry[1]
+            }
+
+        for bgp_peers_summary_entry in bgp_peers_summary_items:
+            peer_as = bgp_peers_summary_entry[0]
+            if peer_as not in bgp_summary['peers'].keys():
+                bgp_summary['peers'][peer_as] = list()
+            bgp_summary['peers'][peer_as].append(
+                {elem[0]: elem[1] for elem in bgp_peers_summary_entry[1]}
+            )
+
+        return bgp_summary
+
+    def show_route(self, destination = ''):
+
+        routes = {}
+
+        if not destination:
+            return 'Please specify a valid destination!'
+
+        routes_table = junos_views.junos_route_table(self.device)
+        try:
+            routes_table.get(
+                destination = destination
+            )
+        except RpcTimeoutError:
+            return 'Too many routes returned! Please try with a diffrent prefix!'
+        except Exception:
+            return 'Cannot retrieve routes!'
+
+        routes_items = routes_table.items()
+
+        for route in routes_items:
+            prefix = route[0]
+            if prefix not in routes.keys():
+                routes[prefix] = list()
+            route_detail = route[1]
+            number_of_routes = len(route_detail[0][1])
+            for route_no in range(0, number_of_routes):
+                routes[prefix].append({
+                    route_params[0]:  route_params[1][route_no] for route_params in route_detail
+                })
+
+        return routes
