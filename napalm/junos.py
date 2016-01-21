@@ -387,7 +387,7 @@ class JunOSDriver(NetworkDriver):
             '\s+([0-9\.]+)\s?$'
         )
 
-        ntp_assoc_output = self.device.cli('show ntp associations')
+        ntp_assoc_output = self.device.cli('show ntp associations no-resolve')
         ntp_assoc_output_lines = ntp_assoc_output.split('\n')
 
         for ntp_assoc_output_line in ntp_assoc_output_lines[3:-1]: #except last line
@@ -402,13 +402,13 @@ class JunOSDriver(NetworkDriver):
                     'type'          : line_groups[4],
                     'when'          : line_groups[5],
                     'hostpoll'      : int(line_groups[6]),
-                    'reachability'  : line_groups[7],
+                    'reachability'  : int(line_groups[7]),
                     'delay'         : float(line_groups[8]),
                     'offset'        : float(line_groups[9]),
                     'jitter'        : float(line_groups[10])
                 }
             except Exception:
-                continue
+                continue # jump to next line
 
         return ntp_peers
 
@@ -474,6 +474,7 @@ class JunOSDriver(NetworkDriver):
                 routes[prefix] = list()
             route_detail = route[1]
             # TODO have to do it in the clean fucking way!!!!
+            # TODO preferably with hierarchical Junos YAML Views
             if type(route_detail[0][1]) is list:
                 number_of_routes = len(route_detail[0][1])
                 for route_no in range(0, number_of_routes):
