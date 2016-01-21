@@ -573,74 +573,77 @@ class IOSDriver(NetworkDriver):
         return bgp_neighbors
 
     def get_interfaces_counters(self):
-        command = 'show interface counters'
+        '''
+        Return
+        'tx_errors': int,
+        'rx_errors': int,
+        'tx_discards': int,
+        'rx_discards': int,
+        'tx_octets': int,
+        'rx_octets': int,
+        'tx_unicast_packets': int,
+        'rx_unicast_packets': int,
+        'tx_multicast_packets': int,
+        'rx_multicast_packets': int,
+        'tx_broadcast_packets': int,
+        'rx_broadcast_packets': int,
+
+        Currently doesn't determine output broadcasts, multicasts
+        Doesn't determine tx_discards or rx_discards
+        '''
         counters = {}
+        command = 'show interfaces'
         output = self.device.send_command(command)
-        if len(output) > 0:
-            splitted_output = output.split('\n')
-            for i in range(0, len(splitted_output)):
-                if 'OutOctets' in splitted_output[i]:
-                    marker = i
-            rx_counters = splitted_output[1:marker]
-            tx_counters = splitted_output[marker::]
-            for line in range(1, len(rx_counters)):
-                params = {}
-                if len(rx_counters[line]) > 0:
-                    rx_counters_splitted = rx_counters[line].split()
-                    interface = rx_counters_splitted[0]
-                    try:
-                        rx_octets = int(rx_counters_splitted[1])
-                    except:
-                        rx_octets = -1
-                    try:
-                        rx_unicast_packets = int(rx_counters_splitted[2])
-                    except:
-                        rx_unicast_packets = -1
-                    try:
-                        rx_multicast_packets = int(rx_counters_splitted[3])
-                    except:
-                        rx_multicast_packets = -1
-                    try:
-                        rx_broadcast_packets = int(rx_counters_splitted[4])
-                    except:
-                        rx_broadcast_packets = -1
-                    rx_discards = unicode('N/A')
-                    rx_errors = unicode('N/A')
-                    params['rx_octets'] = rx_octets
-                    params['rx_unicast_packets'] = rx_unicast_packets
-                    params['rx_broadcast_packets'] = rx_broadcast_packets
-                    params['rx_multicast_packets'] = rx_multicast_packets
-                    params['rx_discards'] = rx_discards
-                    params['rx_errors'] = rx_errors
-                    counters[interface] = params
-
-            for line in range(1, len(tx_counters)):
-                if len(tx_counters[line]) > 0:
-                    tx_counters_splitted = tx_counters[line].split()
-                    interface = tx_counters_splitted[0]
-                    try:
-                        tx_octets = int(tx_counters_splitted[1])
-                    except:
-                        tx_octets = -1
-                    try:
-                        tx_unicast_packets = int(tx_counters_splitted[2])
-                    except:
-                        tx_unicast_packets = -1
-                    try:
-                        tx_multicast_packets = int(tx_counters_splitted[3])
-                    except:
-                        tx_multicast_packets = -1
-                    try:
-                        tx_broadcast_packets = int(tx_counters_splitted[4])
-                    except:
-                        tx_broadcast_packets = -1
-                    tx_discards = unicode('N/A')
-                    tx_errors = unicode('N/A')
-                    counters[interface]['tx_octets'] = tx_octets
-                    counters[interface]['tx_unicast_packets'] = tx_unicast_packets
-                    counters[interface]['tx_broadcast_packets'] = tx_broadcast_packets
-                    counters[interface]['tx_multicast_packets'] = tx_multicast_packets
-                    counters[interface]['tx_discards'] = tx_discards
-                    counters[interface]['tx_errors'] = tx_errors
-
+        output = output.strip()
+        
+        # Break output into per-interface sections
+        interface_strings = re.split(r'.* line protocol is .*', output, re.M)
+        header_strings = re.findall(r'.* line protocol is .*', output, re.M)
+        
+        empty = interface_strings.pop(0).strip()
+        if empty:
+            raise ValueError("Unexpected output from: {}".format(command))
+        
+        # Parse out the interface names
+        intf = []
+        for intf_line in header_strings:
+            interface, _ =  re.split(r" is .* line protocol is ", intf_line)
+            intf.append(interface.strip())
+        
+        if len(intf) != len(interface_strings):
+            raise ValueError("Unexpected output from: {}".format(command))
+        
+        # Re-join interface names with interface strings
+        for interface, interface_str in zip(intf, interface_strings):
+            counters.setdefault(interface, {})
+            for line in interface_str.splitlines():
+                if 'packets input' in line:
+                    # '0 packets input, 0 bytes, 0 no buffer'
+                    match = re.search(r"(\d+) packets input.*(\d+) bytes", line)
+                    counters[interface]['rx_unicast_packets'] = int(match.group(1))
+                    counters[interface]['rx_octets'] = int(match.group(2))
+                elif 'broadcast' in line:
+                    # 'Received 0 broadcasts (0 multicasts)'
+                    # 'Received 264071 broadcasts (39327 IP multicasts)'
+                    match = re.search(r"Received (\d+) broadcasts.*(\d+).*multicasts", line)
+                    counters[interface]['rx_broadcast_packets'] = int(match.group(1))
+                    counters[interface]['rx_multicast_packets'] = int(match.group(2))
+                elif 'packets output' in line:
+                    # '0 packets output, 0 bytes, 0 underruns'
+                    match = re.search(r"(\d+) packets output.*(\d+) bytes", line)
+                    counters[interface]['tx_unicast_packets'] = int(match.group(1))
+                    counters[interface]['tx_octets'] = int(match.group(2))
+                    counters[interface]['tx_broadcast_packets'] = -1
+                    counters[interface]['tx_multicast_packets'] = -1
+                elif 'input errors' in line:
+                    # '0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored'
+                    match = re.search(r"(\d+) input errors", line)
+                    counters[interface]['rx_errors'] = int(match.group(1))
+                    counters[interface]['rx_discards'] = -1
+                elif 'output errors' in line:
+                    # '0 output errors, 0 collisions, 1 interface resets'
+                    match = re.search(r"(\d+) output errors", line)
+                    counters[interface]['tx_errors'] = int(match.group(1))
+                    counters[interface]['tx_discards'] = -1
+        
         return counters
