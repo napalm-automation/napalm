@@ -16,6 +16,7 @@ from base import NetworkDriver
 from napalm.utils import string_parsers
 
 from pyIOSXR import IOSXR
+from pyIOSXR.iosxr import __execute_show__
 from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
 
 from exceptions import MergeConfigException, ReplaceConfigException
@@ -414,7 +415,7 @@ class IOSXRDriver(NetworkDriver):
         environment_status['power'] = dict()
         environment_status['cpu'] = dict()
         environment_status['memory'] = int()
-        
+
         # finding slots with equipment we're interested in
         rpc_command = """<Get>
             <AdminOperational>
@@ -440,7 +441,7 @@ class IOSXRDriver(NetworkDriver):
             for card in slot.iter("CardTable"):
                 #find enabled slots, figoure out type and save for later
                 if card.find('Card/Attributes/FRUInfo/ModuleAdministrativeState').text == "ADMIN_UP":
-                    
+
                     slot_name = slot.find('Naming/Name').text
                     module_type = re.sub("\d+", "", slot_name)
                     if len(module_type) > 0:
@@ -484,12 +485,12 @@ class IOSXRDriver(NetworkDriver):
         #
         # Memory
         #
-        
+
         rpc_command = "<Get><AdminOperational><MemorySummary></MemorySummary></AdminOperational></Get>"
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
         for node in result_tree.iter('Node'):
-            print 
+            print
             if node.find('Naming/NodeName/Slot').text == active_modules['RSP'][0]:    # first enabled RSP
                 available_ram = int(node.find('Summary/SystemRAMMemory').text)
                 free_ram = int(node.find('Summary/FreeApplicationMemory').text)
@@ -520,7 +521,7 @@ class IOSXRDriver(NetworkDriver):
         # CPU
         #
         cpu = dict()
- 
+
         rpc_command = "<Get><Operational><SystemMonitoring></SystemMonitoring></Operational></Get>"
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
@@ -584,3 +585,227 @@ class IOSXRDriver(NetworkDriver):
             lldp[local_interface].append({'hostname': unicode(n.split()[0]), 'port': unicode(n.split()[4]), })
 
         return lldp
+
+    def cli(self, command = ''):
+
+        if not command:
+            return 'Please enter a valid command!'
+
+        try:
+            return __execute_show__(self.device.device, command, self.timeout)
+        except TimeoutError:
+            return 'Execution of command `{command}` took too long! Please adjust your params!'.format(
+                command = command
+            )
+
+    def get_arp_table(self):
+
+        arp_table = dict()
+
+        rpc_command = '<Get><Operational><ARP></ARP></Operational></Get>'
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        return arp_table
+
+    def get_lldp_neighbors_detail(self):
+
+        lldp_neighbors = dict()
+
+        rpc_command = '<Get><Operational><LLDP></LLDP></Operational></Get>'
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for neighbor in result_tree.findall('.//Neighbors/DetailTable/Detail/Entry'):
+            if neighbor is None:
+                continue
+            try:
+                interface_name      = neighbor.find('ReceivingInterfaceName').text
+                parent_interface    = neighbor.find('ReceivingParentInterfaceName').text
+                device_id           = neighbor.find('DeviceID').text
+                chassis_id          = neighbor.find('ChassisID').text
+                port_id             = neighbor.find('PortIDDetail').text
+                port_descr          = neighbor.find('Detail/PortDescription').text
+                system_name         = neighbor.find('Detail/SystemName').text
+                system_descr        = neighbor.find('Detail/SystemDescription').text
+                # few other optional...
+                # time_remaining = neighbor.find('Detail/TimeRemaining').text
+                # system_capabilities = neighbor.find('Detail/SystemCapabilities').text
+                # enabled_capabilities = neighbor.find('Detail/EnabledCapabilities').text
+                # media_attachement_unit_type = neighbor.find('Detail/MediaAttachmentUnitType').text
+                # port_vlan_id = neighbor.find('Detail/PortVlanID').text
+                if interface_name not in lldp_neighbors.keys():
+                    lldp_neighbors[interface_name] = list()
+                lldp_neighbors[interface_name].append({
+                    'parent_interface'          : parent_interface,
+                    'remote_device_id'          : device_id,
+                    'remote_system_chassis_id'  : chassis_id,
+                    'remote_port'               : port_id,
+                    'remote_port_description'   : port_descr,
+                    'remote_system_name'        : system_name,
+                    'remote_system_description' : system_descr
+                })
+            except Exception:
+                continue # jump to next neighbor
+
+        return lldp_neighbors
+
+    def get_mac_address_table(self):
+
+        # RPC equivalent?
+
+        return {}
+
+    def get_ntp_peers(self):
+
+        ntp_peers = dict()
+
+        rpc_command = '<Get><Operational><NTP><NodeTable></NodeTable></NTP></Operational></Get>'
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for node in result_tree.iter('PeerInfoCommon'):
+            if node is None:
+                continue
+            try:
+                address         = node.find('Address').text
+                referenceid     = node.find('ReferenceID').text
+                hostpoll        = int(node.find('HostPoll').text)
+                reachability    = node.find('Reachability').text
+                stratum         = int(node.find('Stratum').text)
+                delay           = float(node.find('Delay').text)
+                offset          = float(node.find('Offset').text)
+                jitter          = float(node.find('Dispersion').text)
+                ntp_peers[address] = {
+                    'referenceid'   : referenceid,
+                    'stratum'       : stratum,
+                    'type'          : None,
+                    'when'          : None,
+                    'hostpoll'      : hostpoll,
+                    'reachability'  : reachability,
+                    'delay'         : delay,
+                    'offset'        : offset,
+                    'jitter'        : jitter
+                }
+            except Exception:
+                continue
+
+        return ntp_peers
+
+    def get_bgp_summary(self, instance = '', group = ''):
+
+        # incomplete neighbor list int the RPC
+
+        return self.get_bgp_neighbors()
+
+    def show_route(self, destination = ''):
+
+        routes = {}
+
+        if not destination:
+            return 'Please specify a valid destination!'
+
+        dest_split = destination.split('/')
+        network = dest_split[0]
+        prefix_tag = ''
+        if len(dest_split) == 2:
+            prefix_tag = '''
+                <PrefixLength>
+                    {prefix_length}
+                </PrefixLength>
+            '''.format(prefix_length = dest_split[1])
+
+        rpc_command = '''
+                <Get>
+                    <Operational>
+                        <RIB>
+                            <VRFTable>
+                                <VRF>
+                                    <Naming>
+                                        <VRFName>
+                                            default
+                                        </VRFName>
+                                    </Naming>
+                                    <AFTable>
+                                        <AF>
+                                            <Naming>
+                                                <AFName>
+                                                    IPv4
+                                                </AFName>
+                                            </Naming>
+                                            <SAFTable>
+                                                <SAF>
+                                                    <Naming>
+                                                        <SAFName>
+                                                            Unicast
+                                                        </SAFName>
+                                                    </Naming>
+                                                    <IP_RIBRouteTable>
+                                                        <IP_RIBRoute>
+                                                            <Naming>
+                                                                <RouteTableName>
+                                                                    default
+                                                                </RouteTableName>
+                                                            </Naming>
+                                                            <RouteTable>
+                                                              <Route>
+                                                                <Naming>
+                                                                  <Address>
+                                                                    {network}
+                                                                  </Address>
+                                                                  {prefix}
+                                                                </Naming>
+                                                              </Route>
+                                                            </RouteTable>
+                                                        </IP_RIBRoute>
+                                                    </IP_RIBRouteTable>
+                                              </SAF>
+                                            </SAFTable>
+                                        </AF>
+                                    </AFTable>
+                                </VRF>
+                            </VRFTable>
+                        </RIB>
+                    </Operational>
+                </Get>
+        '''.format(
+            network = network,
+            prefix  = prefix_tag
+        )
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for route in result_tree.iter('Route'):
+            try:
+                address  = route.find('Prefix').text
+                length   = route.find('PrefixLength').text
+                distance = route.find('Distance').text
+                protocol = route.find('ProtocolName').text
+                priority = route.find('Priority').text
+                distance = route.find('Distance').text
+                age      = route.find('RouteAge').text
+            except Exception:
+                continue
+            for route_entry in route.findall('RoutePath/Entry'):
+                try:
+                    next_hop  = route_entry.find('Address').text
+                    from_peer = route_entry.find('InformationSource').text
+                except Exception:
+                    continue
+            destination = '{prefix}/{length}'.format(
+                prefix = address,
+                length = length
+            )
+            if destination not in routes.keys():
+                routes[destination] = list()
+            routes[destination].append({
+                'active-tag'        : None,
+                'age'               : age,
+                'as-path'           : None,
+                'local-preference'  : priority,
+                'next-hop'          : next_hop,
+                'protocol'          : protocol,
+                'via'               : None
+            })
+
+        return routes
