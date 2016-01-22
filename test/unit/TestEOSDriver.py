@@ -17,6 +17,7 @@ import unittest
 from napalm import eos
 from base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import json
+import re
 
 
 class TestConfigEOSDriver(unittest.TestCase, TestConfigNetworkDriver):
@@ -72,6 +73,7 @@ class FakeEOSDevice:
             if encoding == 'json':
                 result.append(self.read_json_file('eos/mock_data/{}.json'.format(command.replace(' ', '_'))))
             else:
-                result.append({'output': self.read_txt_file('eos/mock_data/{}.txt'.format(command.replace(' ', '_')))})
+                cmd = re.sub(r'[\[\]\*\^\+\s\|]', '_', command)
+                result.append({'output': self.read_txt_file('eos/mock_data/{}.txt'.format(cmd))})
 
         return result

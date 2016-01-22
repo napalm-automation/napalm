@@ -19,10 +19,11 @@ from exceptions import MergeConfigException, ReplaceConfigException, SessionLock
 from datetime import datetime
 import time
 from napalm.utils import string_parsers
+from collections import defaultdict
 
 
 class EOSDriver(NetworkDriver):
-    def __init__(self, hostname, username, password, timeout=60):
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         self.device = None
         self.hostname = hostname
         self.username = username
@@ -36,7 +37,8 @@ class EOSDriver(NetworkDriver):
             host=self.hostname,
             username=self.username,
             password=self.password,
-            port=443
+            port=443,
+            timeout=self.timeout
         )
         self.device = pyeapi.client.Node(connection)
 
@@ -231,94 +233,128 @@ class EOSDriver(NetworkDriver):
 
         return interface_counters
 
+    @staticmethod
+    def _parse_neigbor_info(line):
+        m = re.match('BGP neighbor is (?P<neighbor>.*?), remote AS (?P<as>.*?), .*', line)
+        return m.group('neighbor'), m.group('as')
+
+    @staticmethod
+    def _parse_rid_info(line):
+        m = re.match('.*BGP version 4, remote router ID (?P<rid>.*?), VRF (?P<vrf>.*?)$', line)
+        return m.group('rid'), m.group('vrf')
+
+    @staticmethod
+    def _parse_desc(line):
+        m = re.match('\s+Description: (?P<description>.*?)', line)
+        if m:
+            return m.group('description')
+        else:
+            return None
+
+    @staticmethod
+    def _parse_local_info(line):
+        m = re.match('Local AS is (?P<as>.*?),.*', line)
+        return m.group('as')
+
+    @staticmethod
+    def _parse_prefix_info(line):
+        m = re.match('(\s*?)(?P<af>IPv[46]) Unicast:\s*(?P<sent>\d+)\s*(?P<received>\d+)', line)
+        return m.group('sent'), m.group('received')
+
     def get_bgp_neighbors(self):
+        NEIGHBOR_FILTER = 'bgp neighbors vrf all | include remote AS | remote router ID |^\s*IPv[46] Unicast:.*[0-9]+|^Local AS|Desc'
+        output_summary_cmds = self.device.run_commands(
+            ['show ipv6 bgp summary vrf all', 'show ip bgp summary vrf all'],
+            encoding='json')
+        output_neighbor_cmds = self.device.run_commands(
+            ['show ip ' + NEIGHBOR_FILTER, 'show ipv6 ' + NEIGHBOR_FILTER],
+            encoding='text')
 
-        commands_json = list()
-        commands_txt = list()
-        commands_json.append('show ip bgp summary vrf all')
-        commands_json.append('show ipv6 bgp summary vrf all')
-        commands_txt.append('show ip bgp neighbors vrf all | include remote AS|remote router ID|Description|^ *IPv[4-6] Unicast:')
-        commands_txt.append('show ipv6 bgp neighbors vrf all | include remote AS|remote router ID|Description|^ *IPv[4-6] Unicast:')
+        bgp_counters = defaultdict(lambda: dict(peers=dict()))
+        for summary in output_summary_cmds:
+            """
+            Json output looks as follows
+            "vrfs": {
+                "default": {
+                    "routerId": 1,
+                    "asn": 1,
+                    "peers": {
+                        "1.1.1.1": {
+                            "msgSent": 1,
+                            "inMsgQueue": 0,
+                            "prefixReceived": 3926,
+                            "upDownTime": 1449501378.418644,
+                            "version": 4,
+                            "msgReceived": 59616,
+                            "prefixAccepted": 3926,
+                            "peerState": "Established",
+                            "outMsgQueue": 0,
+                            "underMaintenance": false,
+                            "asn": 1
+                        }
+                    }
+                }
+            }
+            """
+            for vrf, vrf_data in summary['vrfs'].iteritems():
+                bgp_counters[vrf]['router_id'] = vrf_data['routerId']
+                for peer, peer_data in vrf_data['peers'].iteritems():
+                    peer_info = {
+                        'is_up': peer_data['peerState'] == 'Established',
+                        'is_enabled': peer_data['peerState'] == 'Established' or peer_data['peerState'] == 'Active',
+                        'uptime': int(peer_data['upDownTime'])
+                    }
+                    bgp_counters[vrf]['peers'][peer] = peer_info
+        lines = []
+        [lines.extend(x['output'].splitlines()) for x in output_neighbor_cmds]
+        for line in lines:
+            """
+            Raw output from the command looks like the following:
 
-        output_summary = self.device.run_commands(commands_json, encoding='json')
-        output_neighbors = self.device.run_commands(commands_txt, encoding='text')
+              BGP neighbor is 1.1.1.1, remote AS 1, external link
+                Description: Very info such descriptive
+                BGP version 4, remote router ID 1.1.1.1, VRF my_vrf
+                 IPv4 Unicast:         683        78
+                 IPv6 Unicast:           0         0
+              Local AS is 2, local router ID 2.2.2.2
+            """
+            if line is '':
+                continue
+            neighbor, r_as = self._parse_neigbor_info(lines.pop(0))
+            # this line can be either description or rid info
+            next_line = lines.pop(0)
+            desc = self._parse_desc(next_line)
+            if desc is None:
+                rid, vrf = self._parse_rid_info(next_line)
+                desc = ''
+            else:
+                rid, vrf = self._parse_rid_info(lines.pop(0))
 
-        ##########################################
-        # no JSON available for show ip bgp neigh
-        # Using 'show ipv[4-6] bgp neighbors vrf all | i remote AS|remote router ID|Description|^ *IPv[4-6] Unicast:'
-        # NOTE: if there is no description, EOS does not print the line.
+            v4_sent, v4_recv = self._parse_prefix_info(lines.pop(0))
+            v6_sent, v6_recv = self._parse_prefix_info(lines.pop(0))
+            local_as = self._parse_local_info(lines.pop(0))
+            data = {
+                'remote_as': int(r_as),
+                'remote_id': unicode(rid),
+                'local_as': int(local_as),
+                'description': unicode(desc),
+                'address_family': {
+                    'ipv4': {
+                        'sent_prefixes': int(v4_sent),
+                        'received_prefixes': int(v4_recv),
+                        'accepted_prefixes': -1
+                    },
+                    'ipv6': {
+                        'sent_prefixes': int(v6_sent),
+                        'received_prefixes': int(v6_recv),
+                        'accepted_prefixes': -1
+                    }
+                }
+            }
+            bgp_counters[vrf]['peers'][neighbor].update(data)
 
-
-        # Regex the output from show ip bgp neigh
-        def get_bgp_neighbor(needed_peer, vrf, output_to_parse):
-            import re
-
-            bgp_neighbors = dict()
-            bgp_peer = dict()
-            neighbor_regexp = re.compile('BGP neighbor is (.*?),')
-            description_regexp = re.compile('Description: (.*?)$')
-            remote_id_regexp = re.compile('remote router ID (.*?),')
-            vrf_regexp = re.compile('VRF (.*?)$')
-            IPv4_sent_regexp = re.compile('IPv4 Unicast: ( *)(\d*) ')
-            IPv6_sent_regexp = re.compile('IPv6 Unicast: ( *)(\d*) ')
-
-            for line in output_to_parse.splitlines():
-                if re.search(neighbor_regexp, line):
-                    peer = re.search(neighbor_regexp, line).group(1)
-                    bgp_neighbors[peer] = dict()
-                    bgp_neighbors[peer]['description'] = ''
-                    continue
-                elif re.search(description_regexp, line):
-                    bgp_neighbors[peer]['description'] = re.search(description_regexp, line).group(1)
-                    continue
-                elif re.search(remote_id_regexp, line):
-                    bgp_neighbors[peer]['remote_id'] = re.search(remote_id_regexp, line).group(1)
-                    bgp_neighbors[peer]['vrf'] = re.search(vrf_regexp, line).group(1)
-                    continue
-                elif re.search(IPv4_sent_regexp, line):
-                    bgp_neighbors[peer]['ipv4'] = re.search(IPv4_sent_regexp, line).group(2)
-                    continue
-                elif re.search(IPv6_sent_regexp, line):
-                    bgp_neighbors[peer]['ipv6'] = re.search(IPv6_sent_regexp, line).group(2)
-                    continue
-            try:
-                peer = next(peer for peer in bgp_neighbors if peer == needed_peer)
-            except StopIteration:
-                raise Exception("Peer %s not found in show bgp neighbors" % needed_peer)
-            if bgp_neighbors[peer]['vrf'] == vrf:
-                bgp_peer['remote_id'] = bgp_neighbors[peer]['remote_id']
-                bgp_peer['description'] = bgp_neighbors[peer]['description']
-                bgp_peer['ipv4'] = bgp_neighbors[peer]['ipv4']
-                bgp_peer['ipv6'] = bgp_neighbors[peer]['ipv6']
-            return bgp_peer
-
-        bgp_counters = dict()
-        for id in [0,1]:
-            for vrf in output_summary[id]['vrfs']:
-                bgp_counters[vrf] = dict()
-                bgp_counters[vrf]['router_id'] = unicode(output_summary[id]['vrfs'][vrf]['routerId'])
-                bgp_counters[vrf]['peers'] = dict()
-                for peer in output_summary[id]['vrfs'][vrf]['peers']:
-                    bgp_counters[vrf]['peers'][peer] = dict()
-                    bgp_counters[vrf]['peers'][peer]['local_as'] = int(output_summary[id]['vrfs'][vrf]['asn'])
-                    bgp_counters[vrf]['peers'][peer]['remote_as'] = int(output_summary[id]['vrfs'][vrf]['peers'][peer]['asn'])
-                    peerState = output_summary[id]['vrfs'][vrf]['peers'][peer]['peerState']
-                    bgp_counters[vrf]['peers'][peer]['is_up'] = peerState == 'Established'
-                    if 'peerStateIdleReason' in output_summary[id]['vrfs'][vrf]['peers'][peer]:
-                        bgp_counters[vrf]['peers'][peer]['is_enabled'] = False
-                    else:
-                        bgp_counters[vrf]['peers'][peer]['is_enabled'] = peerState == 'Established' or peerState == 'Active'
-                    bgp_counters[vrf]['peers'][peer]['uptime'] = int(output_summary[id]['vrfs'][vrf]['peers'][peer]['upDownTime'])
-                    bgp_peer = get_bgp_neighbor(peer, vrf, output_neighbors[id]['output'])
-                    bgp_counters[vrf]['peers'][peer]['remote_id'] = unicode(bgp_peer['remote_id'])
-                    bgp_counters[vrf]['peers'][peer]['description'] = unicode(bgp_peer['description'])
-                    bgp_counters[vrf]['peers'][peer]['address_family'] = dict()
-                    for family in ['ipv4', 'ipv6']:
-                        bgp_counters[vrf]['peers'][peer]['address_family'][family] = dict()
-                        bgp_counters[vrf]['peers'][peer]['address_family'][family]['received_prefixes'] = int(output_summary[id]['vrfs'][vrf]['peers'][peer]['prefixReceived'])
-                        bgp_counters[vrf]['peers'][peer]['address_family'][family]['accepted_prefixes'] = int(output_summary[id]['vrfs'][vrf]['peers'][peer]['prefixAccepted'])
-                        bgp_counters[vrf]['peers'][peer]['address_family'][family]['sent_prefixes'] = int(bgp_peer[family])
-        bgp_counters['global'] = bgp_counters.pop('default')
+        if 'default' in bgp_counters.keys():
+            bgp_counters['global'] = bgp_counters.pop('default')
         return bgp_counters
 
     def get_environment(self):

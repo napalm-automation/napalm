@@ -17,7 +17,7 @@ import sys
 
 class NetworkDriver:
 
-    def __init__(self, hostname, username, password, timeout):
+    def __init__(self, hostname, username, password, timeout, optional_args):
         """
         This is the base class you have to inherit from when writing your own Network Driver to manage any device. You
         will, in addition, have to override all the methods specified on this class. Make sure you follow the guidelines
@@ -27,6 +27,7 @@ class NetworkDriver:
         :param username: (str) Username you want to use
         :param password: (str) Password
         :param timeout: (int) Time in seconds to wait for the device to respond.
+        :param optional_args: (dict) Pass additional arguments to underlying driver
         :return:
         """
         raise NotImplementedError
