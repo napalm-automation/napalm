@@ -19,26 +19,18 @@ from exceptions import ReplaceConfigException, MergeConfigException
 from napalm.utils.string_parsers import colon_separated_string_to_dict, convert_uptime_string_seconds
 
 
-def execute_get(device, cmd, separator=':', auto=False):
-    output = device.execute_command(cmd)
-
-    if auto:
-        if ':' in output[0]:
-            separator = ':'
-        elif '\t' in output[0]:
-            separator = '\t'
-        else:
-            raise Exception('Unknown separator for block:\n{}'.format(output))
-
-    return colon_separated_string_to_dict('\n'.join(output), separator)
-
-
 class FortiOSDriver(NetworkDriver):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         self.hostname = hostname
         self.username = username
         self.password = password
-        self.device = FortiOS(hostname, username=username, password=password, timeout=timeout)
+
+        if optional_args is not None:
+            self.vdom = optional_args.pop('fortios_vdom', None)
+        else:
+            self.vdom = None
+
+        self.device = FortiOS(hostname, username=username, password=password, timeout=timeout, vdom=self.vdom)
         self.config_replace = False
 
     def open(self):
@@ -46,6 +38,40 @@ class FortiOSDriver(NetworkDriver):
 
     def close(self):
         self.device.close()
+
+    def execute_command_with_vdom(self, command, vdom=None):
+        # If the user doesn't specify a particular vdom we use the default vdom for the object.
+        vdom = vdom or self.vdom
+
+        if vdom == 'global' and self.vdom is not None:
+            # If vdom is global we go to the global vdom, execute the commands and then back to the root.
+            # There is a catch, if the device doesn't have vdoms enabled we have to execute the command in the root
+            command = 'conf global\n{command}\nend'.format(command=command)
+
+            # We skip the lines telling us that we changed vdom
+            return self.device.execute_command(command)[1:-2]
+        elif vdom not in ['global', None]:
+            # If we have a vdom we change to the vdom, execute the commands and then exit back to the root
+            command = 'conf vdom\nedit {vdom}\n{command}\nend'.format(vdom=vdom, command=command)
+
+            # We skip the lines telling us that we changed vdom
+            return self.device.execute_command(command)[3:-2]
+        else:
+            # If there is no vdom we just execute the command
+            return self.device.execute_command(command)
+
+    def get_command_with_vdom(self, cmd, separator=':', auto=False, vdom=None):
+        output = self.execute_command_with_vdom(cmd, vdom)
+
+        if auto:
+            if ':' in output[0]:
+                separator = ':'
+            elif '\t' in output[0]:
+                separator = '\t'
+            else:
+                raise Exception('Unknown separator for block:\n{}'.format(output))
+
+        return colon_separated_string_to_dict('\n'.join(output), separator)
 
     def _load_config(self, filename, config):
         if filename is None:
@@ -85,7 +111,7 @@ class FortiOSDriver(NetworkDriver):
 
     def commit_config(self):
         try:
-            self.device.execute_command('execute backup config flash commit_with_napalm')
+            self.execute_command_with_vdom('execute backup config flash commit_with_napalm')
             self.device.commit()
             self.discard_config()
         except FailedCommit as e:
@@ -99,9 +125,10 @@ class FortiOSDriver(NetworkDriver):
         self.device.load_config(in_candidate=True)
 
     def rollback(self):
-        output = self.device.execute_command('fnsysctl ls -l data2/config')
+        output = self.execute_command_with_vdom('fnsysctl ls -l data2/config', vdom=None)
         rollback_file = output[-2].split()[-1]
-        rollback_config = self.device.execute_command('fnsysctl cat data2/config/%s' % rollback_file)
+        rollback_config = self.execute_command_with_vdom(
+            'fnsysctl cat data2/config/{rollback_file}'.format(rollback_file))
 
         self.device.load_config(empty_candidate=True)
         self.load_replace_candidate(config=rollback_config)
@@ -112,13 +139,13 @@ class FortiOSDriver(NetworkDriver):
         self.device.commit()
 
     def get_facts(self):
-        system_status = execute_get(self.device, 'get system status')
-        performance_status = execute_get(self.device, 'get system performance status')
+        system_status = self.get_command_with_vdom('get system status', vdom='global')
+        performance_status = self.get_command_with_vdom('get system performance status', vdom='global')
 
-        interfaces = execute_get(self.device, 'get system interface | grep ==')
-        interface_list = [x.split()[2] for x in interfaces.keys()]
+        interfaces = self.execute_command_with_vdom('get system interface | grep ==', vdom='global')
+        interface_list = [x.split()[2] for x in interfaces if x.strip() is not '']
 
-        domain = execute_get(self.device, 'get system dns | grep domain')['domain']
+        domain = self.get_command_with_vdom('get system dns | grep domain', vdom='global')['domain']
 
         return {
             'vendor': unicode('Fortigate'),
@@ -153,17 +180,13 @@ class FortiOSDriver(NetworkDriver):
         }
 
     def get_interfaces(self):
-        cmd_prefix = ''
-        try:
-            cmd_data = self.device.execute_command('diagnose hardware deviceinfo nic')
-        except CommandExecutionException:
-            cmd_data = self.device.execute_command('conf global\n diagnose hardware deviceinfo nic ')
-            cmd_prefix = 'conf global\n'
-        
+        cmd_data = self.execute_command_with_vdom('diagnose hardware deviceinfo nic', vdom='global')
+
         interface_list = [x.replace('\t', '') for x in cmd_data if x.startswith('\t')]
         interface_statistics = {}
         for interface in interface_list:
-            if_data = self.device.execute_command(cmd_prefix + 'diagnose hardware deviceinfo nic {}'.format(interface))
+            if_data = self.execute_command_with_vdom(
+                'diagnose hardware deviceinfo nic {}'.format(interface), vdom='global')
             parsed_data = {}
             if interface.startswith('mgmt'):
                 for line in if_data:
@@ -209,7 +232,8 @@ class FortiOSDriver(NetworkDriver):
         command_received = 'get router info bgp neighbors {} received-routes | grep prefixes '
         peers = dict()
 
-        bgp_sum = self.device.execute_command(command_sum)
+        bgp_sum = self.execute_command_with_vdom(command_sum)
+
         re_neigh = re.compile("^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+")
         neighbors = {n.split()[0]: n.split()[1:] for n in bgp_sum if re.match(re_neigh, n)}
 
@@ -232,7 +256,7 @@ class FortiOSDriver(NetworkDriver):
                 neighbor_dict['address_family']['ipv4'] = dict()
                 neighbor_dict['address_family']['ipv6'] = dict()
 
-            detail_output = [x.lower() for x in self.device.execute_command(command_detail.format(neighbor))]
+            detail_output = [x.lower() for x in self.execute_command_with_vdom(command_detail.format(neighbor))]
             m = re.search('remote router id (.+?)\n', '\n'.join(detail_output))
             if m:
                 neighbor_dict['remote_id'] = unicode(m.group(1))
@@ -249,7 +273,7 @@ class FortiOSDriver(NetworkDriver):
                     t = [int(s) for s in text.split() if s.isdigit()][0]
                     neighbor_dict['address_family'][family][term] = t
 
-                received = self.device.execute_command(
+                received = self.execute_command_with_vdom(
                     command_received.format(neighbor))[0].split()
                 if len(received) > 0:
                     neighbor_dict['address_family'][family]['received_prefixes'] = received[-1]
@@ -266,7 +290,7 @@ class FortiOSDriver(NetworkDriver):
         }
 
     def get_interfaces_counters(self):
-        cmd = self.device.execute_command('fnsysctl ifconfig')
+        cmd = self.execute_command_with_vdom('fnsysctl ifconfig', vdom=None)
         if_name = None
         interface_counters = dict()
         for line in cmd:
@@ -362,7 +386,7 @@ class FortiOSDriver(NetworkDriver):
 
         out = dict()
 
-        sensors_block = [parse_string(x) for x in self.device.execute_command('execute sensor detail') if x]
+        sensors_block = [parse_string(x) for x in self.execute_command_with_vdom('execute sensor detail', vdom='global') if x]
 
         # temp
         temp_lines = [x for x in sensors_block if any([True for y in ['dts', 'temp', 'adt7490'] if y in x])]
@@ -373,11 +397,11 @@ class FortiOSDriver(NetworkDriver):
 
         # cpu
         out['cpu'] = get_cpu(
-            [x for x in self.device.execute_command('get system performance status | grep CPU')[1:] if x])
+            [x for x in self.execute_command_with_vdom('get system performance status | grep CPU', vdom='global')[1:] if x])
 
         # memory
         memory_command = 'diag hard sys mem | grep Mem:'
-        t = [x for x in re.split('\s+', self.device.execute_command(memory_command)[0]) if x]
+        t = [x for x in re.split('\s+', self.execute_command_with_vdom(memory_command, vdom='global')[0]) if x]
         out['memory'] = get_memory(t)
 
         # power, not implemented
