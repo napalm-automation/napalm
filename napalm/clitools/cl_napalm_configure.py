@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import argparse
 import sys
 import getpass
@@ -54,9 +56,16 @@ def build_help():
         help='Strategy to use to deploy configuration. Default: replace.'
     )
     parser.add_argument(
+        '--optional_args', '-o',
+        dest='optional_args',
+        action='store',
+        help='String with comma separated key=value pairs that will be passed via optional_args to the driver.',
+    )
+    parser.add_argument(
         '--dry-run', '-d',
         dest='dry_run',
         action='store_true',
+        default=None,
         help='Only returns diff, it does not deploy the configuration.',
     )
     parser.add_argument(
@@ -90,12 +99,16 @@ class CustomException(Exception):
     pass
 
 
-def run(vendor, hostname, user, password, strategy, config_file, dry_run):
+def run(vendor, hostname, user, password, strategy, optional_args, config_file, dry_run):
     logger.debug('Getting driver for OS "{driver}"'.format(driver=vendor))
     driver = get_network_driver(vendor)
 
-    logger.debug('Connecting to device "{device}" with user "{user}"'.format(device=hostname, user=user))
-    with driver(hostname, user, password) as device:
+    if optional_args is not None:
+        optional_args = {x.split('=')[0]: x.split('=')[1] for x in optional_args.replace(' ', '').split(',')}
+
+    logger.debug('Connecting to device "{device}" with user "{user}" and optional_args={optional_args}'.format(
+                    device=hostname, user=user, optional_args=optional_args))
+    with driver(hostname, user, password, optional_args=optional_args) as device:
         logger.debug('Strategy for loading configuration is "{strategy}"'.format(strategy=strategy))
         if strategy == 'replace':
             strategy_method = device.load_replace_candidate
@@ -122,7 +135,8 @@ def main():
     args = build_help()
     configure_logging(args.debug)
 
-    print run(args.vendor, args.hostname, args.user, args.password, args.strategy, args.config_file, args.dry_run)
+    print(run(args.vendor, args.hostname, args.user, args.password, args.strategy,
+              args.optional_args, args.config_file, args.dry_run))
     sys.exit(0)
 
 
