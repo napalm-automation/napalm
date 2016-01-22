@@ -650,26 +650,9 @@ class IOSDriver(NetworkDriver):
 
     def get_environment(self):
         '''
-        returns {
-            'power' = {
-                'status': bool,
-                'output': float,
-                'capacity': float
-            }
-            'memory' = {
-                'used_ram': int,
-                'available_ram': int,
-            }
-            'fan' = {
-                'status': bool,
-            }
-            'cpu' = {
-                '%usage': float,
-            }
-        }
-
-        power, fan are currently not implemented
+        power, fan, temperature are currently not implemented
         cpu is using 1-minute average
+        cpu hard-coded to cpu0 (i.e. only a single CPU)
         '''
         environment = {}
         cpu_cmd = 'show proc cpu'
@@ -677,7 +660,6 @@ class IOSDriver(NetworkDriver):
 
         output = self.device.send_command(cpu_cmd)
         output = output.strip()
-        print(output)
         for line in output.splitlines():
             if 'CPU utilization' in line:
                 'CPU utilization for five seconds: 2%/0%; one minute: 2%; five minutes: 1%'
@@ -685,11 +667,11 @@ class IOSDriver(NetworkDriver):
                 match = re.search(cpu_regex, line)
                 break
         environment.setdefault('cpu', {})
-        environment['cpu']['%usage'] = float(match.group(1))
+        environment['cpu'][0] = {}
+        environment['cpu'][0]['%usage'] = float(match.group(1))
 
         output = self.device.send_command(mem_cmd)
         output = output.strip()
-        print(output)
         for line in output.splitlines():
             if 'Processor' in line:
                 _, _, _, proc_used_mem, proc_free_mem = line.split()[:5]
@@ -701,14 +683,21 @@ class IOSDriver(NetworkDriver):
         environment['memory']['used_ram'] = used_mem
         environment['memory']['available_ram'] = free_mem
 
-        # Initialize 'power' and 'fan' to default values
-        environment['power'] = {
+        # Initialize 'power', 'fan', and 'temperature' to default values (not implemented)
+        environment.setdefault('power', {})
+        environment['power']['invalid'] = {
             'status': True,
             'output': -1.0,
             'capacity': -1.0,
         }
-        environment['fan'] = {
+        environment.setdefault('fans', {})
+        environment['fans']['invalid'] = {
             'status': True,
         }
-
+        environment.setdefault('temperature', {})
+        environment['temperature']['invalid'] = {
+            'is_alert': False,
+            'is_critical': False,
+            'temperature': -1.0,
+        }
         return environment
