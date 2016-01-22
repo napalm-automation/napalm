@@ -7,18 +7,18 @@ class Test_script_cl_napalm_configure(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.hostname = '192.168.56.201'
+        cls.hostname = 'localhost'
         cls.username = 'vagrant'
         cls.password = 'vagrant'
         cls.vendor = 'eos'
-        cls.__restore_initial_config(cls.vendor, cls.hostname, cls.username, cls.password)
+        cls.optional_args = {'port': 12443}
+        cls.optional_args_string = "port=12443, asd=asd"
 
-    @staticmethod
-    def __restore_initial_config(vendor, hostname, username, password):
-        initial_config = '{}/initial.conf'.format(vendor)
+    def setUp(self):
+        initial_config = '{}/initial.conf'.format(self.vendor)
 
-        driver = get_network_driver(vendor)
-        device = driver(hostname, username, password, timeout=60)
+        driver = get_network_driver(self.vendor)
+        device = driver(self.hostname, self.username, self.password, timeout=60, optional_args=self.optional_args)
         device.open()
         device.load_replace_candidate(filename=initial_config)
         device.commit_config()
@@ -29,9 +29,11 @@ class Test_script_cl_napalm_configure(unittest.TestCase):
         config_file = '{}/merge_good.conf'.format(self.vendor)
         dry_run = True
 
-        o_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy, config_file, dry_run)
+        o_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy,
+                              self.optional_args_string, config_file, dry_run)
         not_empty_result = len(o_result)
-        n_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy, config_file, dry_run)
+        n_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy,
+                              self.optional_args_string, config_file, dry_run)
 
         self.assertTrue(o_result == n_result and not_empty_result)
 
@@ -40,12 +42,12 @@ class Test_script_cl_napalm_configure(unittest.TestCase):
         config_file = '{}/merge_good.conf'.format(self.vendor)
         dry_run = False
 
-        o_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy, config_file, dry_run)
+        o_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy,
+                              self.optional_args_string, config_file, dry_run)
         not_empty_result = len(o_result)
-        n_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy, config_file, dry_run)
+        n_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy,
+                              self.optional_args_string, config_file, dry_run)
 
-        # Go back to initial config
-        self.__restore_initial_config(self.vendor, self.hostname, self.username, self.password)
         self.assertTrue(o_result != n_result and not_empty_result)
 
     def test_replace_config(self):
@@ -53,10 +55,10 @@ class Test_script_cl_napalm_configure(unittest.TestCase):
         config_file = '{}/new_good.conf'.format(self.vendor)
         dry_run = False
 
-        o_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy, config_file, dry_run)
+        o_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy,
+                              self.optional_args_string, config_file, dry_run)
         not_empty_result = len(o_result)
-        n_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy, config_file, dry_run)
+        n_result = script.run(self.vendor, self.hostname, self.username, self.password, strategy,
+                              self.optional_args_string, config_file, dry_run)
 
-        # Go back to initial config
-        self.__restore_initial_config(self.vendor, self.hostname, self.username, self.password)
         self.assertTrue(o_result != n_result and not_empty_result)
