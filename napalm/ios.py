@@ -647,3 +647,68 @@ class IOSDriver(NetworkDriver):
                     counters[interface]['tx_discards'] = -1
         
         return counters
+
+    def get_environment(self):
+        '''
+        returns {
+            'power' = {
+                'status': bool,
+                'output': float,
+                'capacity': float
+            }
+            'memory' = {
+                'used_ram': int,
+                'available_ram': int,
+            }
+            'fan' = {
+                'status': bool,
+            }
+            'cpu' = {
+                '%usage': float,
+            }
+        }
+
+        power, fan are currently not implemented
+        cpu is using 1-minute average
+        '''
+        environment = {}
+        cpu_cmd = 'show proc cpu'
+        mem_cmd = 'show memory statistics'
+
+        output = self.device.send_command(cpu_cmd)
+        output = output.strip()
+        print(output)
+        for line in output.splitlines():
+            if 'CPU utilization' in line:
+                'CPU utilization for five seconds: 2%/0%; one minute: 2%; five minutes: 1%'
+                cpu_regex = r'^.*one minute: (\d+)%; five.*$'
+                match = re.search(cpu_regex, line)
+                break
+        environment.setdefault('cpu', {})
+        environment['cpu']['%usage'] = float(match.group(1))
+
+        output = self.device.send_command(mem_cmd)
+        output = output.strip()
+        print(output)
+        for line in output.splitlines():
+            if 'Processor' in line:
+                _, _, _, proc_used_mem, proc_free_mem = line.split()[:5]
+            elif 'I/O' in line:
+                _, _, _, io_used_mem, io_free_mem = line.split()[:5]
+        used_mem = int(proc_used_mem) + int(io_used_mem)
+        free_mem = int(proc_free_mem) + int(io_free_mem)
+        environment.setdefault('memory', {})
+        environment['memory']['used_ram'] = used_mem
+        environment['memory']['available_ram'] = free_mem
+
+        # Initialize 'power' and 'fan' to default values
+        environment['power'] = {
+            'status': True,
+            'output': -1.0,
+            'capacity': -1.0,
+        }
+        environment['fan'] = {
+            'status': True,
+        }
+
+        return environment
