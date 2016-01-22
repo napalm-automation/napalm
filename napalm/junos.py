@@ -34,8 +34,13 @@ class JunOSDriver(NetworkDriver):
         self.username = username
         self.password = password
         self.timeout = timeout
-        self.device = Device(hostname, user=username, password=password)
         self.config_replace = False
+
+        if optional_args is None:
+            optional_args = {}
+        self.port = optional_args.pop('port', 22)
+
+        self.device = Device(hostname, user=username, password=password, port=self.port)
 
     def open(self):
         self.device.open()
