@@ -94,13 +94,13 @@ NAPALM supports passing certain optional arguments to some drivers. To do that y
 List of supported optional arguments
 ____________________________________
 
-==========================  =====  ===================================
-optional_arg                Usage  Supported by
-==========================  =====  ===================================
+  * :code:`fortios_vdom` (fortios) - VDOM to connect to.
+  * :code:`port` (eos, iosxr, junos) - Allows you to specify a port other than the default.
 
 Adding optional arguments to NAPALM drivers
 ___________________________________________
 
 If you are a developer and want to add an optional argument to a driver, please, follow this pattern when naming the
 argument; :code:`$driver_name-$usage` if the argument applies only to a particular driver. For example, the optional
-argument :code:`fortios_vdom` is used only by the FortiOS driver to select a particular vdom.
+argument :code:`fortios_vdom` is used only by the FortiOS driver to select a particular vdom. Otherwise, just name it
+:code:`$driver_name-$usage`. For example the :code:`port` optional argument.
