@@ -31,13 +31,17 @@ class EOSDriver(NetworkDriver):
         self.timeout = timeout
         self.config_session = None
 
+        if optional_args is None:
+            optional_args = {}
+        self.port = optional_args.pop('port', 443)
+
     def open(self):
         connection = pyeapi.client.connect(
             transport='https',
             host=self.hostname,
             username=self.username,
             password=self.password,
-            port=443,
+            port=self.port,
             timeout=self.timeout
         )
         self.device = pyeapi.client.Node(connection)

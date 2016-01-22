@@ -14,4 +14,4 @@
 -   description BLALALAL
  !
  interface Management1
-    ip address 192.168.56.201/24
+    ip address 10.0.2.15/24

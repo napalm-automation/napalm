@@ -24,12 +24,15 @@ class TestConfigEOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '192.168.56.201'
+        hostname = '127.0.0.1'
         username = 'vagrant'
         password = 'vagrant'
         cls.vendor = 'eos'
 
-        cls.device = eos.EOSDriver(hostname, username, password, timeout=60)
+        optional_args = {
+            'port': 12443,
+        }
+        cls.device = eos.EOSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
         cls.device.open()
 
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
@@ -42,12 +45,15 @@ class TestGetterEOSDriver(unittest.TestCase, TestGettersNetworkDriver):
     def setUpClass(cls):
         cls.mock = True
 
-        hostname = '192.168.56.201'
+        hostname = '127.0.0.1'
         username = 'vagrant'
         password = 'vagrant'
         cls.vendor = 'eos'
 
-        cls.device = eos.EOSDriver(hostname, username, password, timeout=60)
+        optional_args = {
+            'port': 12443,
+        }
+        cls.device = eos.EOSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
 
         if cls.mock:
             cls.device.device = FakeEOSDevice()
