@@ -33,7 +33,7 @@ class EOSDriver(NetworkDriver):
 
         if optional_args is None:
             optional_args = {}
-        self.port = optional_args.pop('port', 443)
+        self.port = optional_args.get('port', 443)
 
     def open(self):
         connection = pyeapi.client.connect(
