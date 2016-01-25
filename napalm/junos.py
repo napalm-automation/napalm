@@ -42,10 +42,10 @@ class JunOSDriver(NetworkDriver):
         self.device.open()
         self.device.timeout = self.timeout
         self.device.bind(cu=Config)
-        self.device.cu.lock()
+        # self.device.cu.lock()
 
     def close(self):
-        self.device.cu.unlock()
+        # self.device.cu.unlock()
         self.device.close()
 
     def _load_candidate(self, filename, config, overwrite):
