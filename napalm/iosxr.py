@@ -19,7 +19,7 @@ from pyIOSXR import IOSXR
 from pyIOSXR.iosxr import __execute_show__
 from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
 
-from exceptions import MergeConfigException, ReplaceConfigException
+# from exceptions import MergeConfigException, ReplaceConfigException
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 import re
@@ -692,11 +692,81 @@ class IOSXRDriver(NetworkDriver):
 
         return ntp_peers
 
-    def get_bgp_summary(self, instance = '', group = ''):
 
-        # incomplete neighbor list int the RPC
+    def get_bgp_stats(self, group = ''):
 
-        return self.get_bgp_neighbors()
+        bgp_stats = {}
+
+        return bgp_stats
+
+
+    def get_bgp_neighbors(self, neighbor_address = ''):
+
+        bgp_neighbors = dict()
+
+        rpc_command = '''
+                <Get>
+                    <Operational>
+                        <BGP>
+                            <InstanceTable>
+                                <Instance>
+                                    <Naming>
+                                        <InstanceName>
+                                            default
+                                        </InstanceName>
+                                    </Naming>
+                                    <InstanceActive>
+                                        <DefaultVRF>
+                                            <GlobalProcessInfo>
+                                            </GlobalProcessInfo>
+                                            <NeighborTable>
+                                            </NeighborTable>
+                                        </DefaultVRF>
+                                    </InstanceActive>
+                                </Instance>
+                            </InstanceTable>
+                        </BGP>
+                    </Operational>
+                </Get>
+        '''
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        print ET.tostring(result_tree)
+
+        for neighbor in result_tree.iter('Neighbor'):
+            try:
+                local_as                = int(neighbor.find('LocalAS').text)
+                peer_as                 = int(neighbor.find('RemoteAS').text)
+                description             = neighbor.find('Description').text
+                up                      = (neighbor.find('ConnectionState').text == 'BGP_ST_ESTAB')
+                elapsed_time            = neighbor.find('ConnectionEstablishedTime').text
+                peer_address_tag        = neighbor.find('ConnectionRemoteAddress/IPV4Address') or neighbor.find('ConnectionRemoteAddress/IPV6Address')
+                peer_address            = peer_address_tag.text
+                input_messages          = int(neighbor.find('MessgesReceived').text)
+                output_messages         = int(neighbor.find('MessagesSent').text)
+                connection_up_count     = int(neighbor.find('ConnectionUpCount').text)
+                connection_down_count   = int(neighbor.find('ConnectionDownCount').text)
+                local_port = int(neighbor.find('ConnectionLocalPort').text)
+                remote_port = int(neighbor.find('ConnectionRemotePort').text)
+                flap_count = connection_down_count / 2
+                if up:
+                    flap_count -= 1
+                if peer_as not in bgp_neighbors.keys():
+                    bgp_neighbors[peer_as] = list()
+                bgp_neighbors[peer_as].append({
+                    'peer_address'      : peer_address,
+                    'input_messages'    : input_messages,
+                    'output_messages'   : output_messages,
+                    'peer_as'           : peer_as,
+                    'up'                : up,
+                    'elapsed_time'      : elapsed_time,
+                    'flap_count'        : flap_count
+                })
+            except Exception:
+                continue
+
+        return bgp_neighbors
 
     def show_route(self, destination = ''):
 
@@ -809,3 +879,14 @@ class IOSXRDriver(NetworkDriver):
             })
 
         return routes
+
+
+if __name__ == '__main__':
+
+    d = IOSXRDriver('edge01.yyz01', 'netconf', 'b3tt3rw3b')
+
+    d.open()
+
+    d.get_bgp_summary()
+
+    d.close()

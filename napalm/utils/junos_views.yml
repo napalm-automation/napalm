@@ -280,26 +280,34 @@ junos_bgp_tables_summary_view:
     pending_prefix_count: {pending-prefix-count: int}
     bgp_rib_state: bgp-rib-state
 
-junos_bgp_peers_summary_table:
-  rpc: get-bgp-summary-information
-  args:
-    instance: ''
-    group: ''
+junos_bgp_neighbors_table:
+  rpc: get-bgp-neighbor-information
+  args_key: neighbor_address
   item: bgp-peer
   key: peer-as
-  view: junos_bgp_peers_summary_view
+  view: junos_bgp_neighbors_view
 
-junos_bgp_peers_summary_view:
+junos_bgp_neighbors_view:
   fields:
     peer_address: peer-address
     peer_as: {peer-as: int}
+    peer_type: peer-type
+    local_as: {local-as: int}
+    up: {peer-state: True=Established}
     input_messages: {input-messages: int}
     output_messages: {output-messages: int}
     route_queue_count: {route-queue-count: int}
     flap_count: {flap-count: int}
+    last_flap_event: last-flap-event
+    local_interface_name: local-interface-name
+    local_interface_index: local-interface-index
+    last_received: {last-received: int}
+    last_sent: {last-sent: int}
+    last_checked: {last-checked: int}
     elapsed_time: {elapsed-time/@seconds: int}
-    peer_state: peer-state
     rib_name: bgp-rib/name
+    export_policy: bgp-option-information/export-policy
+    import_policy: bgp-option-information/import-policy
     active_prefix_count: {bgp-rib/active-prefix-count: int}
     received_prefix_count: {bgp-rib/received-prefix-count: int}
     accepted_prefix_count: {bgp-rib/accepted-prefix-count: int}

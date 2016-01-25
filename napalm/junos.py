@@ -412,42 +412,32 @@ class JunOSDriver(NetworkDriver):
 
         return ntp_peers
 
-    def get_bgp_summary(self, instance = '', group = ''):
+    def get_bgp_stats(self, group = ''):
 
-        bgp_summary = {
-            'tables': {}, # with an overview over all tables
-            'peers' : {}  # and over the peers only, grouped by AS number
-        }
+        bgp_stats = dict()
 
-        bgp_tables_summary_table = junos_views.junos_bgp_tables_summary_table(self.device)
-        bgp_peers_summary_table  = junos_views.junos_bgp_peers_summary_table(self.device)
+        return bgp_stats
 
-        bgp_tables_summary_table.get(
-            instance = instance,
-            group = group
-        )
+    def get_bgp_neighbors(self, neighbor_address = ''):
+
+        bgp_neighbors = dict()
+
+        bgp_peers_summary_table  = junos_views.junos_bgp_neighbors_table(self.device)
+
         bgp_peers_summary_table.get(
-            instance = instance,
-            group = group
+            neighbor_address = neighbor_address
         )
-        bgp_tables_summary_items = bgp_tables_summary_table.items()
         bgp_peers_summary_items = bgp_peers_summary_table.items()
-
-        for bgp_tables_summary_entry in bgp_tables_summary_items:
-            rib_name = bgp_tables_summary_entry[0]
-            bgp_summary['tables'][rib_name] = {
-                elem[0]: elem[1] for elem in bgp_tables_summary_entry[1]
-            }
 
         for bgp_peers_summary_entry in bgp_peers_summary_items:
             peer_as = bgp_peers_summary_entry[0]
-            if peer_as not in bgp_summary['peers'].keys():
-                bgp_summary['peers'][peer_as] = list()
-            bgp_summary['peers'][peer_as].append(
+            if peer_as not in bgp_neighbors.keys():
+                bgp_neighbors[peer_as] = list()
+            bgp_neighbors[peer_as].append(
                 {elem[0]: elem[1] for elem in bgp_peers_summary_entry[1]}
             )
 
-        return bgp_summary
+        return bgp_neighbors
 
     def show_route(self, destination = ''):
 
