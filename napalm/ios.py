@@ -102,7 +102,7 @@ class IOSDriver(NetworkDriver):
             'file prompt quiet',
             'ntp clock-period'
         ]
-    
+
         new_list = []
         for line in diff.splitlines():
             for ignore in ignore_strings:
@@ -169,7 +169,8 @@ class IOSDriver(NetworkDriver):
             self._enable_confirm()
             if 'Invalid input detected' in output:
                 self.rollback()
-                raise MergeConfigException("Configuration merge failed; automatic rollback attempted")
+                merge_error = "Configuration merge failed; automatic rollback attempted"
+                raise MergeConfigException(merge_error)
 
     def discard_config(self):
         '''Set candidate_cfg to current running-config. Erase the merge_cfg file'''
@@ -296,12 +297,12 @@ class IOSDriver(NetworkDriver):
         Output command format:
         Device ID           Local Intf     Hold-time  Capability      Port ID
         twb-sf-hpsw1        Fa4            120        B               17
- 
+
         Total entries displayed: 1
 
         return data structure is a dictionary, key is local_port
         {u'Fa4': [{'hostname': u'twb-sf-hpsw1', 'port': u'17'}]}
-    
+
         value is a list where each entry in the list is a dict
         '''
         lldp = {}
@@ -312,7 +313,7 @@ class IOSDriver(NetworkDriver):
             line = line.strip()
             if 'Device ID' in line or 'entries' in line or line == '':
                 continue
-            device_id, local_port, _, _, remote_port  = line.split()
+            device_id, local_port, _, _, remote_port = line.split()
             lldp.setdefault(local_port, [])
             lldp[local_port].append({
                 'hostname': device_id,
@@ -368,15 +369,17 @@ class IOSDriver(NetworkDriver):
         for line in show_ver.splitlines():
             if ' uptime is ' in line:
                 hostname, uptime_str = line.split(' uptime is ')
-                uptime = self.parse_uptime(uptime_str) 
+                uptime = self.parse_uptime(uptime_str)
                 hostname = hostname.strip()
+
             if 'Processor board ID' in line:
                 _, serial_number = line.split("Processor board ID ")
                 serial_number = serial_number.strip()
+
             if re.search(r"Cisco IOS Software", line):
                 _, os_version = line.split("Cisco IOS Software, ")
                 os_version = os_version.strip()
-            elif ( re.search(r"IOS (tm).+Software", line)):
+            elif re.search(r"IOS (tm).+Software", line):
                 _, os_version = line.split("IOS (tm) ")
                 os_version = os_version.strip()
 
@@ -420,7 +423,7 @@ class IOSDriver(NetworkDriver):
     def get_interfaces(self):
         '''
         Get interface details
-    
+
         last_flapped is not implemented
         '''
         interface_list = {}
@@ -453,10 +456,7 @@ class IOSDriver(NetworkDriver):
                 is_enabled = False
             else:
                 is_enabled = True
-            if 'up' in protocol:
-                is_up = True
-            else:
-                is_up = False
+            is_up = bool('up' in protocol)
             interface_list[interface] = {
                 'is_up': is_up,
                 'is_enabled': is_enabled,
@@ -493,84 +493,177 @@ class IOSDriver(NetworkDriver):
 
         return interface_list
 
+    @staticmethod
+    def bgp_time_conversion(bgp_uptime):
+        '''
+        Convert string time to seconds
+
+        Examples
+        00:14:23
+        00:13:40
+        00:00:21
+        00:00:13
+        00:00:49
+        1d11h
+        1d17h
+        1w0d
+        8w5d
+        1y28w
+        never
+        '''
+        bgp_uptime = bgp_uptime.strip()
+        uptime_letters = set(['w', 'h', 'd'])
+    
+        if 'never' in bgp_uptime:
+            return -1
+        elif ':' in bgp_uptime:
+            times = bgp_uptime.split(":")
+            times = [int(x) for x in times]
+            hours, minutes, seconds = times
+            return (hours * 3600) + (minutes * 60) + seconds
+        # Check if any letters 'w', 'h', 'd' are in the time string
+        elif uptime_letters & set(bgp_uptime):
+            form1 = r'(\d+)d(\d+)h'     # 1d17h
+            form2 = r'(\d+)w(\d+)d'     # 8w5d
+            form3 = r'(\d+)y(\d+)w'     # 1y28w
+            match = re.search(form1, bgp_uptime)
+            if match:
+                days = int(match.group(1))
+                hours = int(match.group(2))
+                return (days * DAY_SECONDS) + (hours * 3600)
+            match = re.search(form2, bgp_uptime)
+            if match:
+                weeks = int(match.group(1))
+                days = int(match.group(2))
+                return (weeks * WEEK_SECONDS) + (days * DAY_SECONDS)
+            match = re.search(form3, bgp_uptime)
+            if match:
+                years = int(match.group(1))
+                weeks = int(match.group(2))
+                return (years * YEAR_SECONDS) + (weeks * WEEK_SECONDS)
+        raise ValueError("Unexpected value for BGP uptime string: {}".format(bgp_uptime))
+
     def get_bgp_neighbors(self):
-        commands = [
-            "show ip bgp summary",
-            "show ip bgp summary | begin Neighbor"
-            ]
-        bgp_regex = r".*router\sidentifier\s(?P<router_id>\S+),\slocal\sAS\snumber\s(?P<local_as>\d+).*"
-        bgp_neighbors = {}
-        for command in commands:
-            family = {}
-            output = self.device.send_command(command)
-            if command == "show ip bgp summary":
-                try:
-                    # router_id and local_as filters.
-                    match_bgp = re.match(bgp_regex, output, re.DOTALL)
-                    group_bgp = match_bgp.groupdict()
-                    router_id = group_bgp["router_id"]
-                    local_as = group_bgp["local_as"]
-                except AttributeError:
-                    router_id = -1
-                    local_as = -1
+        '''
+        BGP neighbor information
+
+        Currently, no VRF support
+        Not tested with IPv6
+
+        Example output of 'show ip bgp summary' only peer table
+        Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down State/PfxRcd
+        10.100.1.1      4   200      26      22      199    0    0 00:14:23 23
+        10.200.1.1      4   300      21      51      199    0    0 00:13:40 0
+        192.168.1.2     4   200      19      17        0    0    0 00:00:21 2
+        1.1.1.1         4     1       0       0        0    0    0 never    Active
+        3.3.3.3         4     2       0       0        0    0    0 never    Idle
+        1.1.1.2         4     1      11       9        0    0    0 00:00:13 Idle (Admin)
+        1.1.1.3         4 27506  256642   11327     2527    0    0 1w0d     519
+        1.1.1.4         4 46887 1015641   19982     2527    0    0 1w0d     365
+        192.168.1.237   4 60000    2139    2355 13683280    0    0 1d11h    4 (SE)
+        10.90.1.4       4 65015    2508    2502      170    0    0 1d17h    163
+        172.30.155.20   4   111       0       0        0    0    0 never    Active
+        1.1.1.5         4  6500      54      28        0    0    0 00:00:49 Idle (PfxCt)
+        10.1.4.46       4  3979   95244   98874   267067    0    0 8w5d     254
+        10.1.4.58       4  3979    2715    3045   267067    0    0 1d21h    2
+        10.1.1.85       4 65417 8344303 8343570      235    0    0 1y28w    2
+        '''
+        cmd_bgp_summary = 'show ip bgp summary'
+        bgp_neighbor_data = {}
+        bgp_neighbor_data['global'] = {}
+
+        output = self.device.send_command(cmd_bgp_summary).strip()
+        for line in output.splitlines():
+            if 'router identifier' in line:
+                'BGP router identifier 172.16.1.1, local AS number 100'
+                rid_regex = r'^.* router identifier (\d+\.\d+\.\d+\.\d+), local AS number (\d+)'
+                match = re.search(rid_regex, line)
+                router_id = match.group(1)
+                local_as = int(match.group(2))
+                break
+        bgp_neighbor_data['global']['router_id'] = router_id
+        bgp_neighbor_data['global']['peers'] = {}
+
+        cmd_neighbor_table = 'show ip bgp summary | begin Neighbor'
+        output = self.device.send_command(cmd_neighbor_table).strip()
+        for line in output.splitlines():
+            line = line.strip()
+            if 'Neighbor' in line or line == '':
+                continue
+            fields = line.split()[:10]
+            peer_id, bgp_version, remote_as, msg_rcvd, msg_sent, table_version, in_queue, \
+            out_queue, up_time, state_prefix = fields
+
+            if '(Admin)' in state_prefix:
+                is_enabled = False
             else:
-                splitted_output = output.split('\n')
-                for i in range(1, len(splitted_output)):
-                    params = {}
-                    neighbor_line = splitted_output[i].split()
-                    peer = neighbor_line[0]
-                    remote_as = neighbor_line[2]
-                    uptime = neighbor_line[8]
-                    try:
-                        int(neighbor_line[-1])
-                        is_up = True
-                        is_enabled = True
-                    except:
-                        is_up = -1
-                        is_enabled = -1
-                    params["router_id"] = router_id
-                    params["local_as"] = local_as
-                    params["remote_as"] = remote_as
-                    params["is_up"] = is_up
-                    params["is_enabled"] = is_enabled
-                    params["uptime"] = uptime
-                    bgp_neighbors[peer] = params
+                is_enabled = True
+            try:
+                state_prefix = int(state_prefix)
+                is_up = True
+            except ValueError:
+                is_up = False
 
-            for neighbor in bgp_neighbors:
-                flag = 0
-                command = "show ip bgp neighbor {0}".format(neighbor)
-                neighbor_output = self.device.send_command(command)
-                splitted_output = neighbor_output.split('\n')
-                for line in splitted_output:
-                    family_params = {}
-                    if 'Description' in line:
-                        description_line = line.split()
-                        description = ' '.join(description_line[1:])
-                        flag = 1
-                    if flag == 1:
-                        bgp_neighbors[neighbor]['description'] = description
-                    else:
-                        bgp_neighbors[neighbor]['description'] = ""
-                    if 'address family' in line:
-                        addr_family_line = line.split()
-                        address_family = addr_family_line[3]
-                    if 'Prefixes Current:' in line:
-                        current_prefix_line = line.split()
-                        try:
-                            sent_prefixes = int(current_prefix_line[2])
-                        except:
-                            sent_prefixes = -1
-                        try:
-                            received_prefixes = int(current_prefix_line[3])
-                        except:
-                            received_prefixes = -1
-                        family_params['sent_prefixes'] = sent_prefixes
-                        family_params['received_prefixes'] = received_prefixes
-                        family_params['accepted_prefixes'] = unicode('N/A')
-                        family[address_family] = family_params
-                        bgp_neighbors[neighbor]['address_family'] = family
+            if bgp_version == '4':
+                address_family = 'ipv4'
+            elif bgp_version == '6':
+                address_family = 'ipv6'
+            else:
+                raise ValueError("BGP neighbor parsing failed")
 
-        return bgp_neighbors
+            cmd_remote_rid = 'show ip bgp neighbors {} | inc router ID'.format(peer_id)
+            # output: BGP version 4, remote router ID 1.1.1.1
+            remote_rid_out = self.device.send_command(cmd_remote_rid).strip()
+            remote_rid = remote_rid_out.split()[-1]
+
+            bgp_neighbor_data['global']['peers'].setdefault(peer_id, {})
+            peer_dict = {}
+            peer_dict['uptime'] = self.bgp_time_conversion(up_time)
+            peer_dict['remote_as'] = int(remote_as)
+            peer_dict['description'] = u''
+            peer_dict['local_as'] = local_as
+            peer_dict['is_enabled'] = is_enabled
+            peer_dict['is_up'] = is_up
+            peer_dict['remote_id'] = remote_rid
+
+            cmd_current_prefixes = 'show ip bgp neighbors {} | inc Prefixes Current'.format(peer_id)
+            # output: Prefixes Current:               0          0
+            current_prefixes_out = self.device.send_command(cmd_current_prefixes).strip()
+            pattern = r'Prefixes Current:\s+(\d+)\s+(\d+).*'  # Prefixes Current:    0     0
+            match = re.search(pattern, current_prefixes_out)
+            if match:
+                sent_prefixes = int(match.group(1))
+                accepted_prefixes = int(match.group(1))
+            else:
+                sent_prefixes = accepted_prefixes = -1
+
+            cmd_filtered_prefixes = 'show ip bgp neighbors {} | section Local Policy'.format(peer_id)
+            # output:
+            # Local Policy Denied Prefixes:    --------    -------
+            # prefix-list                           0          2
+            # Total:                                0          2
+            filtered_prefixes_out = self.device.send_command(cmd_filtered_prefixes).strip()
+            accepted_prefixes = int(accepted_prefixes)
+            sent_prefixes = int(sent_prefixes)
+            pattern = r'Total:\s+\d+\s+(\d+).*'    # Total:     0          2
+            match = re.search(pattern, filtered_prefixes_out)
+            if match:
+                filtered_prefixes = int(match.group(1))
+                received_prefixes = filtered_prefixes + accepted_prefixes
+            else:
+                # If unable to determine filtered prefixes set received prefixes to accepted
+                received_prefixes = accepted_prefixes
+
+            af_dict = {}
+            af_dict.setdefault(address_family, {})
+            af_dict[address_family]['sent_prefixes'] = sent_prefixes
+            af_dict[address_family]['accepted_prefixes'] = accepted_prefixes
+            af_dict[address_family]['received_prefixes'] = received_prefixes
+
+            peer_dict['address_family'] = af_dict
+            bgp_neighbor_data['global']['peers'][peer_id] = peer_dict
+
+        return bgp_neighbor_data
 
     def get_interfaces_counters(self):
         '''
@@ -595,24 +688,24 @@ class IOSDriver(NetworkDriver):
         command = 'show interfaces'
         output = self.device.send_command(command)
         output = output.strip()
-        
+
         # Break output into per-interface sections
         interface_strings = re.split(r'.* line protocol is .*', output, re.M)
         header_strings = re.findall(r'.* line protocol is .*', output, re.M)
-        
+
         empty = interface_strings.pop(0).strip()
         if empty:
             raise ValueError("Unexpected output from: {}".format(command))
-        
+
         # Parse out the interface names
         intf = []
         for intf_line in header_strings:
-            interface, _ =  re.split(r" is .* line protocol is ", intf_line)
+            interface, _ = re.split(r" is .* line protocol is ", intf_line)
             intf.append(interface.strip())
-        
+
         if len(intf) != len(interface_strings):
             raise ValueError("Unexpected output from: {}".format(command))
-        
+
         # Re-join interface names with interface strings
         for interface, interface_str in zip(intf, interface_strings):
             counters.setdefault(interface, {})
@@ -645,7 +738,7 @@ class IOSDriver(NetworkDriver):
                     match = re.search(r"(\d+) output errors", line)
                     counters[interface]['tx_errors'] = int(match.group(1))
                     counters[interface]['tx_discards'] = -1
-        
+
         return counters
 
     def get_environment(self):
