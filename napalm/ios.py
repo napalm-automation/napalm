@@ -513,7 +513,7 @@ class IOSDriver(NetworkDriver):
         '''
         bgp_uptime = bgp_uptime.strip()
         uptime_letters = set(['w', 'h', 'd'])
-    
+
         if 'never' in bgp_uptime:
             return -1
         elif ':' in bgp_uptime:
@@ -575,7 +575,7 @@ class IOSDriver(NetworkDriver):
         output = self.device.send_command(cmd_bgp_summary).strip()
         for line in output.splitlines():
             if 'router identifier' in line:
-                'BGP router identifier 172.16.1.1, local AS number 100'
+                # BGP router identifier 172.16.1.1, local AS number 100
                 rid_regex = r'^.* router identifier (\d+\.\d+\.\d+\.\d+), local AS number (\d+)'
                 match = re.search(rid_regex, line)
                 router_id = match.group(1)
@@ -637,12 +637,12 @@ class IOSDriver(NetworkDriver):
             else:
                 sent_prefixes = accepted_prefixes = -1
 
-            cmd_filtered_prefixes = 'show ip bgp neighbors {} | section Local Policy'.format(peer_id)
+            cmd_filtered_prefix = 'show ip bgp neighbors {} | section Local Policy'.format(peer_id)
             # output:
             # Local Policy Denied Prefixes:    --------    -------
             # prefix-list                           0          2
             # Total:                                0          2
-            filtered_prefixes_out = self.device.send_command(cmd_filtered_prefixes).strip()
+            filtered_prefixes_out = self.device.send_command(cmd_filtered_prefix).strip()
             accepted_prefixes = int(accepted_prefixes)
             sent_prefixes = int(sent_prefixes)
             pattern = r'Total:\s+\d+\s+(\d+).*'    # Total:     0          2
@@ -755,7 +755,7 @@ class IOSDriver(NetworkDriver):
         output = output.strip()
         for line in output.splitlines():
             if 'CPU utilization' in line:
-                'CPU utilization for five seconds: 2%/0%; one minute: 2%; five minutes: 1%'
+                # CPU utilization for five seconds: 2%/0%; one minute: 2%; five minutes: 1%
                 cpu_regex = r'^.*one minute: (\d+)%; five.*$'
                 match = re.search(cpu_regex, line)
                 break
