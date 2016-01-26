@@ -21,7 +21,7 @@ from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError
 from jnpr.junos.exception import RpcTimeoutError
-from exceptions import ReplaceConfigException, MergeConfigException
+# from exceptions import ReplaceConfigException, MergeConfigException
 
 
 
@@ -325,6 +325,21 @@ class JunOSDriver(NetworkDriver):
 
         return self.device.cli(command)
 
+
+    def get_interfaces_ip(self):
+
+        ip_list = []
+
+        ip_table = junos_views.junos_ip_interfaces_table(self.device)
+        ip_table.get()
+        ip_items = ip_table.items()
+
+        for interface in ip_items:
+            interface_ip_list = interface[1][0][1]
+            if interface_ip_list:
+                ip_list.extend(interface_ip_list)
+
+        return ip_list
 
     def get_arp_table(self):
 

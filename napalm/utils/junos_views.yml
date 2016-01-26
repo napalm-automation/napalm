@@ -312,3 +312,16 @@ junos_bgp_neighbors_view:
     received_prefix_count: {bgp-rib/received-prefix-count: int}
     accepted_prefix_count: {bgp-rib/accepted-prefix-count: int}
     suppressed_prefix_count: {bgp-rib/suppressed-prefix-count: int}
+
+###
+### Interfaces IPs
+###
+
+junos_ip_interfaces_table:
+  rpc: get-interface-information
+  item: physical-interface
+  view: junos_ip_interfaces_view
+
+junos_ip_interfaces_view:
+  fields:
+    ip: logical-interface/address-family/interface-address/ifa-local

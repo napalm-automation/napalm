@@ -598,6 +598,10 @@ class IOSXRDriver(NetworkDriver):
                 command = command
             )
 
+    def get_interfaces_ip(self):
+
+        return []
+
     def get_arp_table(self):
 
         arp_table = dict()
@@ -747,6 +751,11 @@ class IOSXRDriver(NetworkDriver):
                 output_messages         = int(neighbor.find('MessagesSent').text)
                 connection_up_count     = int(neighbor.find('ConnectionUpCount').text)
                 connection_down_count   = int(neighbor.find('ConnectionDownCount').text)
+                import_policy           = neighbor.find('RoutePolicyIn').text
+                export_policy           = neighbor.find('RoutePolicyOut').text
+                accepted_prefixes       = int(neighbor.find('PrefixesAccepted').text)
+                supressed_prefixes      = int(neighbor.find('PrefixesDenied').text)
+                advertised_prefixes     = int(neighbor.find('PrefixesAdvertised'.text))
                 local_port = int(neighbor.find('ConnectionLocalPort').text)
                 remote_port = int(neighbor.find('ConnectionRemotePort').text)
                 flap_count = connection_down_count / 2
