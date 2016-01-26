@@ -114,29 +114,47 @@ class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         self.assertFalse(invalid_file)
 
 
-#class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
-#    '''
-#    Get operations:
-#    get_lldp_neighbors
-#    get_facts
-#    get_interfaces
-#    get_bgp_neighbors
-#    get_interfaces_counters
-#    '''
-#
-#    @classmethod
-#    def setUpClass(cls):
-#        username = 'pyclass'
-#        ip_addr = raw_input("Enter device ip or hostname: ")
-#        ip_addr = ip_addr.strip()
-#        password = getpass()
-#        cls.vendor = 'ios'
-#        driver = get_network_driver(cls.vendor)
-#        optional_args = {}
-#        optional_args['dest_file_system'] = 'flash:'
-#
-#        cls.device = driver(ip_addr, username, password, optional_args=optional_args)
-#        cls.device.open()
+class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
+    '''
+    Get operations:
+    get_lldp_neighbors
+    get_facts
+    get_interfaces
+    get_bgp_neighbors
+    get_interfaces_counters
+    '''
+    @classmethod
+    def setUpClass(cls):
+        username = 'pyclass'
+        ip_addr = raw_input("Enter device ip or hostname: ")
+        ip_addr = ip_addr.strip()
+        password = getpass()
+        cls.vendor = 'ios'
+        driver = get_network_driver(cls.vendor)
+        optional_args = {}
+        optional_args['dest_file_system'] = 'flash:'
+
+        cls.device = driver(ip_addr, username, password, optional_args=optional_args)
+        cls.device.open()
+
+    def test_ios_only_bgp_time_conversion(self):
+        '''Verify time conversion static method'''
+        test_cases = {
+            "1w0d": 604800,
+            "00:14:23": 863,
+            "00:13:40": 820,
+            "00:00:21": 21,
+            "00:00:13": 13,
+            "00:00:49": 49,
+            "1d11h": 126000,
+            "1d17h": 147600,
+            "8w5d": 5270400,
+            "1y28w": 48470400,
+            "never": -1,
+        }
+
+        for bgp_time, result in test_cases.iteritems():
+            self.assertEqual(self.device.bgp_time_conversion(bgp_time), result)
 
 if __name__ == '__main__':
     print
