@@ -474,7 +474,7 @@ class IOSDriver(NetworkDriver):
                 mac_address = group_mac["mac_address"]
                 interface_list[interface]['mac_address'] = mac_address
             except AttributeError:
-                interface_list[interface]['mac_address'] = -1
+                interface_list[interface]['mac_address'] = u'N/A'
             try:
                 # BW filter.
                 match_speed = re.match(speed_regex, interface_output, re.DOTALL)
