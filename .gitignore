@@ -58,5 +58,3 @@ docs/_build/
 env
 *.swp
 
-test/unit/ios/*.conf
-napalm/fix_script.sh
