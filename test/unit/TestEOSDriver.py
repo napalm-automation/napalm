@@ -17,18 +17,22 @@ import unittest
 from napalm import eos
 from base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import json
+import re
 
 
 class TestConfigEOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '192.168.56.201'
+        hostname = '127.0.0.1'
         username = 'vagrant'
         password = 'vagrant'
         cls.vendor = 'eos'
 
-        cls.device = eos.EOSDriver(hostname, username, password, timeout=60)
+        optional_args = {
+            'port': 12443,
+        }
+        cls.device = eos.EOSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
         cls.device.open()
 
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
@@ -41,12 +45,15 @@ class TestGetterEOSDriver(unittest.TestCase, TestGettersNetworkDriver):
     def setUpClass(cls):
         cls.mock = True
 
-        hostname = '192.168.56.201'
+        hostname = '127.0.0.1'
         username = 'vagrant'
         password = 'vagrant'
         cls.vendor = 'eos'
 
-        cls.device = eos.EOSDriver(hostname, username, password, timeout=60)
+        optional_args = {
+            'port': 12443,
+        }
+        cls.device = eos.EOSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
 
         if cls.mock:
             cls.device.device = FakeEOSDevice()
@@ -72,6 +79,7 @@ class FakeEOSDevice:
             if encoding == 'json':
                 result.append(self.read_json_file('eos/mock_data/{}.json'.format(command.replace(' ', '_'))))
             else:
-                result.append({'output': self.read_txt_file('eos/mock_data/{}.txt'.format(command.replace(' ', '_')))})
+                cmd = re.sub(r'[\[\]\*\^\+\s\|]', '_', command)
+                result.append({'output': self.read_txt_file('eos/mock_data/{}.txt'.format(cmd))})
 
         return result

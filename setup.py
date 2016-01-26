@@ -1,6 +1,6 @@
 import uuid
 
-__author__ = 'David Barroso <dbarroso@spotify.net>'
+__author__ = 'David Barroso <dbarrosop@dravetech.com>'
 from setuptools import setup, find_packages
 from pip.req import parse_requirements
 
@@ -10,10 +10,10 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm",
-    version="0.50.1",
+    version="0.50.3",
     packages=find_packages(),
     author="David Barroso",
-    author_email="dbarroso@spotify.net",
+    author_email="dbarrosop@dravetech.com",
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
     classifiers=[
         'Topic :: Utilities',
@@ -21,7 +21,7 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Operating System :: MacOS',
     ],
-    url="https://github.com/spotify/napalm",
+    url="https://github.com/napalm-automation/napalm",
     include_package_data=True,
     install_requires = reqs,
     entry_points='''
