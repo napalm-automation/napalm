@@ -15,7 +15,7 @@
 import pyeapi
 import re
 from base import NetworkDriver
-from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException
+# from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException
 from datetime import datetime
 import time
 from napalm.utils import string_parsers
@@ -434,3 +434,62 @@ class EOSDriver(NetworkDriver):
         }
 
         return environment_counters
+
+    def get_mac_address_table(self):
+
+        mac_table = dict()
+
+        return mac_table
+
+    def get_lldp_neighbors_detail(self):
+
+        lldp_neighbors = dict()
+
+        commands = list()
+        commands.append('show lldp neighbors detail')
+
+        output = self.device.run_commands(commands)[0]['lldpNeighbors']
+
+        for interface in output:
+            neighbor_info = output.get(interface).get('lldpNeighborInfo')
+            if not neighbor_info:
+                # in case of empty infos
+                continue
+            neighbor_info = neighbor_info[0]
+            if interface not in lldp_neighbors.keys():
+                lldp_neighbors[interface] = list()
+            lldp_neighbors[interface].append(
+                {
+                    'interface_descr': neighbor_info.get('neighborInterfaceInfo').get('interfaceDescription'),
+                    'remote_port':  neighbor_info.get('neighborInterfaceInfo').get('interfaceId'),
+                    'remote_system_name': neighbor_info.get('systemName'),
+                    'remote_system_descr': neighbor_info.get('systemDescription'),
+                    'remote_chassis_id': neighbor_info.get('chassisId')
+                }
+            )
+
+        return lldp_neighbors
+
+    def get_arp_table(self):
+
+        arp_table = dict()
+
+        return arp_table
+
+    def get_bgp_neighbors(self, neighbor_address = ''):
+
+        bgp_neighbors = dict()
+
+        return bgp_neighbors
+
+    def get_ntp_peers(self, destination = ''):
+
+        ntp_peers = dict()
+
+        return ntp_peers
+
+    def show_route(self, destination = ''):
+
+        route = dict()
+
+        return route
