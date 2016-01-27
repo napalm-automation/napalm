@@ -720,9 +720,18 @@ class IOSDriver(NetworkDriver):
                 elif 'broadcast' in line:
                     # 'Received 0 broadcasts (0 multicasts)'
                     # 'Received 264071 broadcasts (39327 IP multicasts)'
+                    # 'Received 338 broadcasts, 0 runts, 0 giants, 0 throttles'
                     match = re.search(r"Received (\d+) broadcasts.*(\d+).*multicasts", line)
-                    counters[interface]['rx_broadcast_packets'] = int(match.group(1))
-                    counters[interface]['rx_multicast_packets'] = int(match.group(2))
+                    alt_match = re.search(r"Received (\d+) broadcasts.*", line)
+                    if match:
+                        counters[interface]['rx_broadcast_packets'] = int(match.group(1))
+                        counters[interface]['rx_multicast_packets'] = int(match.group(2))
+                    elif alt_match:
+                        counters[interface]['rx_broadcast_packets'] = int(alt_match.group(1))
+                        counters[interface]['rx_multicast_packets'] = -1
+                    else:
+                        counters[interface]['rx_broadcast_packets'] = -1
+                        counters[interface]['rx_multicast_packets'] = -1
                 elif 'packets output' in line:
                     # '0 packets output, 0 bytes, 0 underruns'
                     match = re.search(r"(\d+) packets output.*(\d+) bytes", line)
