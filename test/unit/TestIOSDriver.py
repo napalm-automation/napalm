@@ -51,7 +51,6 @@ class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         driver = get_network_driver(cls.vendor)
         optional_args = {}
         optional_args['dest_file_system'] = 'flash:'
-        optional_args['global_delay_factor'] = .7
 
         cls.device = driver(ip_addr, username, password, optional_args=optional_args)
         cls.device.open()
@@ -91,26 +90,25 @@ class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
     def test_ios_only_gen_full_path(self):
         '''Test gen_full_path() method'''
         output = self.device.gen_full_path(self.device.candidate_cfg)
-        self.assertEqual(output, 'flash:/candidate_config.txt')
+        self.assertEqual(output, self.device.dest_file_system + '/candidate_config.txt')
 
         output = self.device.gen_full_path(self.device.rollback_cfg)
-        self.assertEqual(output, 'flash:/rollback_config.txt')
+        self.assertEqual(output, self.device.dest_file_system + '/rollback_config.txt')
 
         output = self.device.gen_full_path(self.device.merge_cfg)
-        self.assertEqual(output, 'flash:/merge_config.txt')
+        self.assertEqual(output, self.device.dest_file_system + '/merge_config.txt')
 
         output = self.device.gen_full_path(filename='running-config', file_system='system:')
         self.assertEqual(output, 'system:/running-config')
 
     def test_ios_only_check_file_exists(self):
         '''Test _check_file_exists() method'''
-        # Locate file at flash:/candidate_config.txt
         self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
 
-        valid_file = self.device._check_file_exists('flash:/candidate_config.txt')
+        valid_file = self.device._check_file_exists(self.device.dest_file_system + '/candidate_config.txt')
         self.assertTrue(valid_file)
 
-        invalid_file = self.device._check_file_exists('flash:/bogus_999.txt')
+        invalid_file = self.device._check_file_exists(self.device.dest_file_system + '/bogus_999.txt')
         self.assertFalse(invalid_file)
 
 
@@ -133,6 +131,7 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
         driver = get_network_driver(cls.vendor)
         optional_args = {}
         optional_args['dest_file_system'] = 'flash:'
+        optional_args['port'] = 9622
 
         cls.device = driver(ip_addr, username, password, optional_args=optional_args)
         cls.device.open()
