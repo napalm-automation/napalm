@@ -138,21 +138,33 @@ class IOSDriver(NetworkDriver):
 
         If merge operation, perform copy <file> running-config.
         '''
+        debug = True
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
         # Replace operation
+        if debug:
+            base_time = datetime.now()
+            print("check1: {}".format(base_time))
         if self.config_replace:
             if filename is None:
                 filename = self.candidate_cfg
             cfg_file = self.gen_full_path(filename)
             if not self._check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
+            if debug:
+                print("check2 (check_file_exists)")
+                print("Time delta: {}".format(datetime.now() - base_time))
+                base_time = datetime.now()
             if self.auto_rollback_on_error:
                 cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
             else:
                 cmd = 'configure replace {} force'.format(cfg_file)
             output = self.device.send_command_expect(cmd)
+            if debug:
+                print("check3 (configure replace)")
+                print("Time delta: {}".format(datetime.now() - base_time))
+                base_time = datetime.now()
             if ('Failed to apply command' in output) or \
                 ('original configuration has been successfully restored' in output):
                 raise ReplaceConfigException("Candidate config could not be applied")
@@ -201,13 +213,14 @@ class IOSDriver(NetworkDriver):
         '''
         # Will automaticall enable SCP on remote device
         enable_scp = True
-        debug = False
+        debug = True
 
         with FileTransfer(self.device, source_file=source_file,
                           dest_file=dest_file, file_system=file_system) as scp_transfer:
 
             if debug:
-                print("check1: {}".format(datetime.now()))
+                base_time = datetime.now()
+                print("check1: {}".format(base_time))
             # Check if file already exists and has correct MD5
             if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
                 msg = "File already exists and has correct MD5: no SCP needed"
@@ -217,26 +230,35 @@ class IOSDriver(NetworkDriver):
                 return (False, msg)
 
             if debug:
-                print("check2: {}".format(datetime.now()))
+                print("check2 (file already exists, correct md5, space available)")
+                print("Time delta: {}".format(datetime.now() - base_time))
+                base_time = datetime.now()
             if enable_scp:
                 scp_transfer.enable_scp()
 
             if debug:
-                print("check3: {}".format(datetime.now()))
+                print("check3 (enable_scp)")
+                print("Time delta: {}".format(datetime.now() - base_time))
+                base_time = datetime.now()
             # Transfer file
             scp_transfer.transfer_file()
             if debug:
-                print("check4: {}".format(datetime.now()))
+                print("check4 (transfer_file)")
+                print("Time delta: {}".format(datetime.now() - base_time))
+                base_time = datetime.now()
 
             # Compares MD5 between local-remote files
             if scp_transfer.verify_file():
                 msg = "File successfully transferred to remote device"
+                if debug:
+                    print("check5: {}".format(datetime.now()))
                 return (True, msg)
             else:
                 msg = "File transfer to remote device failed"
                 return (False, msg)
             if debug:
-                print("check5: {}".format(datetime.now()))
+                print("check5 (verify_file)")
+                print("Time delta: {}".format(datetime.now() - base_time))
 
             return (False, '')
 
@@ -303,12 +325,14 @@ class IOSDriver(NetworkDriver):
         return data structure is a dictionary, key is local_port
         {u'Fa4': [{'hostname': u'twb-sf-hpsw1', 'port': u'17'}]}
 
-        value is a list where each entry in the list is a dict
+        and value is a list where each entry in the list is a dict
         '''
         lldp = {}
 
         command = 'show lldp neighbors | begin Device ID'
         output = self.device.send_command(command)
+        if '% Invalid input' in output:
+            return {}
         for line in output.splitlines():
             line = line.strip()
             if 'Device ID' in line or 'entries' in line or line == '':
