@@ -573,6 +573,8 @@ class IOSDriver(NetworkDriver):
         bgp_neighbor_data['global'] = {}
 
         output = self.device.send_command(cmd_bgp_summary).strip()
+        if 'Neighbor' not in output:
+            return {}
         for line in output.splitlines():
             if 'router identifier' in line:
                 # BGP router identifier 172.16.1.1, local AS number 100
