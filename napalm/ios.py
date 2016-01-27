@@ -138,7 +138,7 @@ class IOSDriver(NetworkDriver):
 
         If merge operation, perform copy <file> running-config.
         '''
-        debug = True
+        debug = False
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
@@ -213,7 +213,7 @@ class IOSDriver(NetworkDriver):
         '''
         # Will automaticall enable SCP on remote device
         enable_scp = True
-        debug = True
+        debug = False
 
         with FileTransfer(self.device, source_file=source_file,
                           dest_file=dest_file, file_system=file_system) as scp_transfer:
