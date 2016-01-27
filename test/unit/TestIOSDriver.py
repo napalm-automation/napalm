@@ -131,7 +131,6 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
         driver = get_network_driver(cls.vendor)
         optional_args = {}
         optional_args['dest_file_system'] = 'flash:'
-        optional_args['port'] = 9622
 
         cls.device = driver(ip_addr, username, password, optional_args=optional_args)
         cls.device.open()
