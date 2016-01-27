@@ -19,7 +19,7 @@ from pyIOSXR import IOSXR
 from pyIOSXR.iosxr import __execute_show__
 from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
 
-# from exceptions import MergeConfigException, ReplaceConfigException
+from exceptions import MergeConfigException, ReplaceConfigException
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 import re

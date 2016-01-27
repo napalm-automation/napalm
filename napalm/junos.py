@@ -21,7 +21,7 @@ from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError
 from jnpr.junos.exception import RpcTimeoutError
-# from exceptions import ReplaceConfigException, MergeConfigException
+from exceptions import ReplaceConfigException, MergeConfigException
 
 
 
