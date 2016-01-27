@@ -14,24 +14,100 @@
 
 from base import NetworkDriver
 
+from pyPluribus import PluribusDevice
+
+from utils import string_parsers
+
 
 class PluribusDriver(NetworkDriver):
 
-    def __init__(self, hostname, username, password, timeout = 60):
+    def __init__(self, hostname, username, password, timeout = 60, optional_args = None):
 
-        pass
+        self.hostname = hostname
+        self.username = username
+        self.password = password
+        self.timeout  = timeout
 
+        if optional_args is None:
+            optional_args = {}
+        self.port = optional_args.get('port', 22)
+
+        self.device = PluribusDevice(hostname, username, password, self.port, timeout)
 
     def open(self):
 
-        pass
-
+        self.device.open()
 
     def close(self):
 
-        pass
+        self.device.close()
 
     def cli(self, command = ''):
 
-        pass
+        return self.device.cli(command)
+
+    def get_facts(self):
+
+        switch_info = self.device.execute_show('show switch-info')
+        lines = switch_info.split('\n')[1:4]
+
+        hostname = lines[0].split(';')[1].strip()
+        model    = lines[1].split(';')[1].strip()
+        serial   = lines[2].split(';')[1].strip()
+
+        software_info = self.device.execute_show('software-show')
+        lines = software_info.split('\n')[1:2]
+
+        os_ver = lines[0].split(';')[1].strip()
+
+        system_stats = self.device.execute_show('system-stats-show')
+        lines = system_stats.split('\n')[1:2]
+
+        uptime_str = lines[0].split(';')[9].strip()
+
+        interfaces = []
+        port_stats = self.device.execute_show('port-stats-show')
+        lines = port_stats.split('\n')[1:-1]
+
+        for line in lines:
+            interface = line.split(';')[9].strip()
+            interfaces.append(interface)
+
+        facts = {
+            'vendor'        : u'Pluribus',
+            'os_version'    : unicode(os_ver),
+            'hostname'      : unicode(hostname),
+            'uptime'        : string_parsers.convert_uptime_string_seconds(uptime_str),
+            'model'         : unicode(model),
+            'serial_number' : unicode(serial),
+            'interface_list': interfaces
+        }
+
+        return facts
+
+    def get_lldp_neighbors_detail(self):
+
+        lldp_neighbors = dict()
+
+        lldp_show = self.device.execute_show('lldp-show')
+        lines = lldp_show.split('\n')[1:-1]
+
+        for line in lines:
+            neighbor_details    = line.split(';')
+            port                = neighbor_details[1].strip()
+            chassis             = neighbor_details[2].strip()
+            port_id             = neighbor_details[3].strip()
+            port_descr          = neighbor_details[4].strip()
+            system_name         = neighbor_details[6].strip()
+            if port not in lldp_neighbors.keys():
+                lldp_neighbors[port] = list()
+            lldp_neighbors[port] = {
+                'parent_interface'          : None,
+                'remote_port'               : port_id,
+                'remote_port_name'          : port_descr,
+                'remote_system_chassis_id'  : chassis,
+                'remote_system_name'        : system_name
+            }
+
+        return lldp_neighbors
 
