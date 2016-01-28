@@ -318,6 +318,27 @@ class JunOSDriver(NetworkDriver):
 
         return neighbors
 
+    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+
+        bgp_neighbors = dict()
+
+        bgp_peers_summary_table  = junos_views.junos_bgp_neighbors_table(self.device)
+
+        bgp_peers_summary_table.get(
+            neighbor_address = neighbor_address
+        )
+        bgp_peers_summary_items = bgp_peers_summary_table.items()
+
+        for bgp_peers_summary_entry in bgp_peers_summary_items:
+            peer_as = bgp_peers_summary_entry[0]
+            if peer_as not in bgp_neighbors.keys():
+                bgp_neighbors[peer_as] = list()
+            bgp_neighbors[peer_as].append(
+                {elem[0]: elem[1] for elem in bgp_peers_summary_entry[1]}
+            )
+
+        return bgp_neighbors
+
     def cli(self, command = ''):
 
         if not command:
@@ -325,72 +346,77 @@ class JunOSDriver(NetworkDriver):
 
         return self.device.cli(command)
 
+    def get_arp_table(self, interface = '', host = '', ip = '', mac = ''):
 
-    def get_interfaces_ip(self):
-
-        ip_list = []
-
-        ip_table = junos_views.junos_ip_interfaces_table(self.device)
-        ip_table.get()
-        ip_items = ip_table.items()
-
-        for interface in ip_items:
-            interface_ip_list = interface[1][0][1]
-            if interface_ip_list:
-                ip_list.extend(interface_ip_list)
-
-        return ip_list
-
-    def get_arp_table(self):
+        # could use ArpTable
+        # from jnpr.junos.op.phyport import ArpTable
+        # and simply use it
+        # but
+        # we need:
+        #   - filters
+        #   - group by VLAN ID
+        #   - hostname & TTE fields as well
 
         arp_table = dict()
 
+        arp_table_raw = junos_views.junos_arp_table(self.device)
+
+        filters = dict()
+        if interface:
+            filters['interface'] = interface
+        if host:
+            filters['hostname'] = host
+
+        arp_table_raw.get(**filters)
+        arp_table_items = arp_table_raw.items()
+
+        for arp_table_entry in arp_table_items:
+            interface = arp_table_entry[0]
+            if interface not in arp_table.keys():
+                arp_table[interface] = list()
+            arp_table[interface].append(
+                {elem[0]: elem[1] for elem in arp_table_entry[1]}
+            )
+
         return arp_table
 
-    def get_lldp_neighbors_detail(self):
-
-        lldp_neighbors = dict()
-
-        lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
-
-        lldp_table.get()
-        lldp_items = lldp_table.items()
-
-        for lldp_item in lldp_items:
-            interface_name = lldp_item[0]
-            if interface_name not in lldp_neighbors.keys():
-                lldp_neighbors[interface_name] = list()
-            lldp_neighbors[interface_name].append({
-                detail[0]: detail[1] for detail in lldp_item[1]
-            })
-
-        return lldp_neighbors
-
-    def get_mac_address_table(self):
+    def get_mac_address_table(self, address = '', interface = '', dynamic = False, static = False, vlan = None):
 
         mac_address_table = dict()
 
         mac_table = junos_views.junos_mac_address_table(self.device)
 
-        mac_table.get()
+        filters = dict()
+        if address:
+            filters['address'] = address
+        if vlan:
+            filters['vlan_id'] = str(vlan)
+
+        mac_table.get(**filters)
         mac_table_items = mac_table.items()
 
+        default_values = {
+            'static'    : False,
+            'active'    : True,
+            'moves'     : None,
+            'last_move' : None
+        }
+
         for mac_table_entry in mac_table_items:
-            interface_name = mac_table_entry[0]
-            if interface_name not in mac_address_table.keys():
-                mac_address_table[interface_name] = dict()
-            vlan_id = mac_table_entry[1][0][1]
-            if vlan_id not in mac_address_table[interface_name].keys():
-                mac_address_table[interface_name][vlan_id] = list()
-            mac_address_table[interface_name][vlan_id].append(
-                {elem[0]: elem[1] for elem in mac_table_entry[1] if elem[0] != 'vlan'}
-            )
+            vlan = int(mac_table_entry[0])
+            if vlan not in mac_address_table.keys():
+                mac_address_table[vlan] = list()
+            mac_entry = {elem[0]: elem[1] for elem in mac_table_entry[1]}
+            mac_entry.update(default_values)
+            mac_address_table[vlan].append(mac_entry)
 
         return mac_address_table
 
     def get_ntp_peers(self):
 
-        # NTP Peers does not have XML RPC defined...
+        # NTP Peers does not have XML RPC defined
+        # thus we need to retrieve raw text and parse...
+        # :(
 
         ntp_peers = dict()
 
@@ -403,7 +429,7 @@ class JunOSDriver(NetworkDriver):
         )
 
         ntp_assoc_output = self.device.cli('show ntp associations no-resolve')
-        ntp_assoc_output_lines = ntp_assoc_output.split('\n')
+        ntp_assoc_output_lines = ntp_assoc_output.splitlines()
 
         for ntp_assoc_output_line in ntp_assoc_output_lines[3:-1]: #except last line
             line_search = re.search(REGEX, ntp_assoc_output_line, re.I)
@@ -427,34 +453,28 @@ class JunOSDriver(NetworkDriver):
 
         return ntp_peers
 
-    def get_bgp_stats(self, group = ''):
+    def get_lldp_neighbors_detail(self, interface = ''):
 
-        bgp_stats = dict()
+        lldp_neighbors = dict()
 
-        return bgp_stats
+        lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
+        lldp_table.get()
 
-    def get_bgp_neighbors(self, neighbor_address = ''):
+        lldp_items = lldp_table.items()
 
-        bgp_neighbors = dict()
-
-        bgp_peers_summary_table  = junos_views.junos_bgp_neighbors_table(self.device)
-
-        bgp_peers_summary_table.get(
-            neighbor_address = neighbor_address
-        )
-        bgp_peers_summary_items = bgp_peers_summary_table.items()
-
-        for bgp_peers_summary_entry in bgp_peers_summary_items:
-            peer_as = bgp_peers_summary_entry[0]
-            if peer_as not in bgp_neighbors.keys():
-                bgp_neighbors[peer_as] = list()
-            bgp_neighbors[peer_as].append(
-                {elem[0]: elem[1] for elem in bgp_peers_summary_entry[1]}
+        for lldp_item in lldp_items:
+            interface = lldp_item[0]
+            if interface not in lldp_neighbors.keys():
+                lldp_neighbors[interface] = list()
+            lldp_neighbors[interface].append(
+                {elem[0]: elem[1] for elem in lldp_item[1]}
             )
 
-        return bgp_neighbors
+        return lldp_neighbors
 
     def show_route(self, destination = ''):
+
+        # again RouteTable from jnpr.junos.op is not complete enough
 
         routes = {}
 
@@ -467,6 +487,10 @@ class JunOSDriver(NetworkDriver):
                 destination = destination
             )
         except RpcTimeoutError:
+            # on devices with milions of routes
+            # in case the destination is too generic (e.g.: 10/8)
+            # will take very very long to determine all routes and
+            # moreover will return a huge list
             return 'Too many routes returned! Please try with a diffrent prefix!'
         except Exception:
             return 'Cannot retrieve routes!'
@@ -478,8 +502,7 @@ class JunOSDriver(NetworkDriver):
             if prefix not in routes.keys():
                 routes[prefix] = list()
             route_detail = route[1]
-            # TODO have to do it in the clean fucking way!!!!
-            # TODO preferably with hierarchical Junos YAML Views
+            # TODO switch to hierachical views
             if type(route_detail[0][1]) is list:
                 number_of_routes = len(route_detail[0][1])
                 for route_no in range(0, number_of_routes):
@@ -492,3 +515,18 @@ class JunOSDriver(NetworkDriver):
                 })
 
         return routes
+
+    def get_interfaces_ip(self):
+
+        ip_list = []
+
+        ip_table = junos_views.junos_ip_interfaces_table(self.device)
+        ip_table.get()
+        ip_items = ip_table.items()
+
+        for interface in ip_items:
+            interface_ip_list = interface[1][0][1]
+            if interface_ip_list:
+                ip_list.extend(interface_ip_list)
+
+        return ip_list

@@ -176,16 +176,21 @@ junos_temperature_thresholds_view:
 
 junos_arp_table:
   rpc: get-arp-table-information
+  args:
+    expiration-time: true
+  args_key:
+    - interface
+    - hostname
   item: arp-table-entry
   key: interface-name
   view: junos_arp_view
 
 junos_arp_view:
   fields:
-    mac_address: mac-address
-    ip_address: ip-address
+    mac: mac-address
+    ip: ip-address
     hostname: hostname
-    flags: arp-table-entry-flags
+    tte: time-to-expire
 
 ###
 ### LLDP Neighbors
@@ -199,10 +204,17 @@ junos_lldp_neighbors_detail_table:
 
 junos_lldp_neighbors_detail_view:
   fields:
+    interface: lldp-local-port-id
     parent_interface: lldp-local-parent-interface-name
     remote_port: lldp-remote-port-id
-    remote_system_chassis_id: lldp-remote-chassis-id
+    remote_chassis_id: lldp-remote-chassis-id
+    remote_port: lldp-remote-port-id
+    remote_port_description: lldp-remote-port-description
     remote_system_name: lldp-remote-system-name
+    remote_system_description: lldp-system-description/lldp-remote-system-description
+    remote_system_capab: lldp-remote-system-capabilities-supported
+    remote_system_enable_capab: lldp-remote-system-capabilities-enabled
+
 
 ###
 ### Route Information
@@ -217,15 +229,17 @@ junos_route_table:
   view: junos_route_table_view
 
 junos_route_table_view:
-  fields:
-    protocol: rt-entry/protocol-name
-    active_route: {rt-entry/active-tag: True=*}
-    age: {rt-entry/age/@seconds: int}
-    as_path: rt-entry/as-path
-    next_hop: rt-entry/nh/to
-    outgoing_interface: rt-entry/nh/via
-    local_preference: {rt-entry/local-preference: int}
-    preference: {rt-entry/preference: int}
+  groups:
+    entry: rt-entry
+  fields_entry:
+    protocol: protocol-name
+    active_route: {active-tag: True=*}
+    age: {age/@seconds: int}
+    as_path: as-path
+    next_hop: nh/to
+    outgoing_interface: nh/via
+    local_preference: {local-preference: int}
+    preference: {preference: int}
 
 ###
 ### MAC Address table
@@ -234,17 +248,18 @@ junos_route_table_view:
 junos_mac_address_table:
   rpc: get-bridge-mac-table
   item: l2ald-mac-entry
-  key: l2-mac-logical-interface
+  args:
+    extensive: True
+  args_key:
+    - interface
+    - vlan_id
+  key: l2-bridge-vlan
   view: junos_mac_address_view
 
 junos_mac_address_view:
   fields:
-    vlan: {l2-bridge-vlan: int}
-    logical_interface: l2-mac-logical-interface
-    bridge_domain: l2-mac-bridging-domain
-    logical_system: logical-system
-    base_logical_interface: l2-mac-base-logical-interface
-    mac_addresses: l2-mac-address
+    interface: l2-mac-logical-interface
+    mac: l2-mac-address
     routing_instance: l2-mac-routing-instance
 
 ####

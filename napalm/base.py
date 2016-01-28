@@ -364,3 +364,35 @@ class NetworkDriver:
             }
         """
         raise NotImplementedError
+
+    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+
+        raise NotImplementedError
+
+    def cli(self, command = ''):
+
+        raise NotImplementedError
+
+    def get_arp_table(self, interface = '', host = '', ip = '', mac = ''):
+
+        raise NotImplementedError
+
+    def get_mac_address_table(self, address ='', interface = '', dynamic = False, static = False, vlan = None):
+
+        raise NotImplementedError
+
+    def get_ntp_peers(self):
+
+        raise NotImplementedError
+
+    def get_lldp_neighbors_detail(self):
+
+        raise NotImplementedError
+
+    def show_route(self, destination = ''):
+
+        raise NotImplementedError
+
+    def get_interfaces_ip(self):
+
+        raise NotImplementedError

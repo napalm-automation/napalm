@@ -42,10 +42,6 @@ class PluribusDriver(NetworkDriver):
 
         self.device.close()
 
-    def cli(self, command = ''):
-
-        return self.device.cli(command)
-
     def get_facts(self):
 
         switch_info = self.device.execute_show('show switch-info')
@@ -85,7 +81,60 @@ class PluribusDriver(NetworkDriver):
 
         return facts
 
-    def get_lldp_neighbors_detail(self):
+    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+
+        bgp_neighbors = dict()
+
+        return bgp_neighbors
+
+    def cli(self, command = ''):
+
+        return self.device.cli(command)
+
+    def get_arp_table(self, interface = '', host = '', ip = '', mac = ''):
+
+        arp_table = dict()
+
+        return arp_table
+
+    def get_mac_address_table(self, address = '', interface = '', dynamic = False, static = False, vlan = None):
+
+        mac_table = dict()
+
+        mac_show = self.device.execute_show('l2-table-show')
+        lines = mac_show.split('\n')[1:-1]
+
+        for line in lines:
+            mac_details = line.split(';')
+            mac         = mac_details[2].strip()
+            vlan        = int(mac_details[3].strip())
+            ports       = mac_details[8].strip()
+            active      = (mac_details[9].strip == 'active')
+            hostname    = mac_details[10].strip()
+            status      = mac_details[11].strip()
+            migrate     = mac_details[-1].strip()
+            if vlan not in mac_table.keys():
+                mac_table[vlan] = list()
+            mac_table[vlan].append(
+                {
+                    'mac'       : mac,
+                    'interface' : ports,
+                    'active'    : active,
+                    'hostname'  : hostname,
+                    'status'    : status,
+                    'migrate'   : migrate
+                }
+            )
+
+        return mac_table
+
+    def get_ntp_peers(self):
+
+        ntp_peers = dict()
+
+        return ntp_peers
+
+    def get_lldp_neighbors_detail(self, interface = ''):
 
         lldp_neighbors = dict()
 
@@ -111,55 +160,14 @@ class PluribusDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def get_mac_address_table(self):
-
-        mac_table = dict()
-
-        mac_show = self.device.execute_show('l2-table-show')
-        lines = mac_show.split('\n')[1:-1]
-
-        for line in lines:
-            mac_details = line.split(';')
-            mac         = mac_details[2].strip()
-            vlan        = int(mac_details[3].strip())
-            ports       = mac_details[8].strip()
-            active      = (mac_details[9].strip == 'active')
-            hostname    = mac_details[10].strip()
-            status      = mac_details[11].strip()
-            migrate     = mac_details[-1].strip()
-            if vlan not in mac_table.keys():
-                mac_table[vlan] = list()
-            mac_table[vlan].append({
-                'mac'       : mac,
-                'interface' : ports,
-                'active'    : active,
-                'hostname'  : hostname,
-                'status'    : status,
-                'migrate'   : migrate
-            })
-
-        return mac_table
-
-    def get_arp_table(self):
-
-        arp_table = dict()
-
-        return arp_table
-
-    def get_bgp_neighbors(self, neighbor_address = ''):
-
-        bgp_neighbors = dict()
-
-        return bgp_neighbors
-
-    def get_ntp_peers(self):
-
-        ntp_peers = dict()
-
-        return ntp_peers
-
     def show_route(self, destination = ''):
 
         route = dict()
 
         return route
+
+    def get_interfaces_ip(self):
+
+        ip_list = list()
+
+        return ip_list

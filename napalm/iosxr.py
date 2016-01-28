@@ -598,11 +598,8 @@ class IOSXRDriver(NetworkDriver):
                 command = command
             )
 
-    def get_interfaces_ip(self):
 
-        return []
-
-    def get_arp_table(self):
+    def get_arp_table(self, interface = '', host = '', ip = '', mac = ''):
 
         arp_table = dict()
 
@@ -610,9 +607,97 @@ class IOSXRDriver(NetworkDriver):
 
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
+        for arp_entry in result_tree.findall('.//ResolutionHistoryDynamic/Entry/Entry'):
+            try:
+                age_nsec  = int(arp_entry.find('NsecTimestamp').text)
+                age_sec   = age_nsec * (10**(-9))
+                interface = arp_entry.find('IDBInterfaceName').text
+                ip        = arp_entry.find('IPv4Address').text
+                mac       = arp_entry.find('MACAddress').text
+
+                if interface not in arp_table.keys():
+                    arp_table[interface] = list()
+                arp_table[interface].append(
+                    {
+                        'mac'   : mac,
+                        'ip'    : ip,
+                        'age'   : age_sec
+                    }
+                )
+            except Exception:
+                continue
+
         return arp_table
 
-    def get_lldp_neighbors_detail(self):
+    def get_mac_address_table(self, address = '', interface = '', dynamic = False, static = False, vlan = None):
+
+        mac_table = dict()
+
+        rpc_command = '<Get><Operational><L2VPNForwarding></L2VPNForwarding></Operational></Get>'
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for mac_entry in result_tree.findall('.//L2FIBMACDetailTable/L2FIBMACDetail'):
+            try:
+                mac         = mac_entry.find('Naming/Address').text
+                vlan        = int(mac_entry.find('Naming/Name').text.replace('vlan', ''))
+                interface   = mac_entry.find('Segment/AC/InterfaceHandle').text
+
+                if vlan not in mac_table.keys():
+                    mac_table[vlan] = list()
+                mac_table[vlan].append(
+                    {
+                        'mac'       : mac,
+                        'interface' : interface,
+                        'active'    : True,
+                        'static'    : False,
+                        'moves'     : None,
+                        'last_move' : None
+                    }
+                )
+
+            except Exception:
+                continue
+
+        return mac_table
+
+    def get_ntp_peers(self):
+
+        ntp_peers = dict()
+
+        rpc_command = '<Get><Operational><NTP><NodeTable></NodeTable></NTP></Operational></Get>'
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for node in result_tree.iter('PeerInfoCommon'):
+            if node is None:
+                continue
+            try:
+                address         = node.find('Address').text
+                referenceid     = node.find('ReferenceID').text
+                hostpoll        = int(node.find('HostPoll').text)
+                reachability    = node.find('Reachability').text
+                stratum         = int(node.find('Stratum').text)
+                delay           = float(node.find('Delay').text)
+                offset          = float(node.find('Offset').text)
+                jitter          = float(node.find('Dispersion').text)
+                ntp_peers[address] = {
+                    'referenceid'   : referenceid,
+                    'stratum'       : stratum,
+                    'type'          : None,
+                    'when'          : None,
+                    'hostpoll'      : hostpoll,
+                    'reachability'  : reachability,
+                    'delay'         : delay,
+                    'offset'        : offset,
+                    'jitter'        : jitter
+                }
+            except Exception:
+                continue
+
+        return ntp_peers
+
+    def get_lldp_neighbors_detail(self, interface = ''):
 
         lldp_neighbors = dict()
 
@@ -654,57 +739,7 @@ class IOSXRDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def get_mac_address_table(self):
-
-        # RPC equivalent?
-
-        return {}
-
-    def get_ntp_peers(self):
-
-        ntp_peers = dict()
-
-        rpc_command = '<Get><Operational><NTP><NodeTable></NodeTable></NTP></Operational></Get>'
-
-        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
-
-        for node in result_tree.iter('PeerInfoCommon'):
-            if node is None:
-                continue
-            try:
-                address         = node.find('Address').text
-                referenceid     = node.find('ReferenceID').text
-                hostpoll        = int(node.find('HostPoll').text)
-                reachability    = node.find('Reachability').text
-                stratum         = int(node.find('Stratum').text)
-                delay           = float(node.find('Delay').text)
-                offset          = float(node.find('Offset').text)
-                jitter          = float(node.find('Dispersion').text)
-                ntp_peers[address] = {
-                    'referenceid'   : referenceid,
-                    'stratum'       : stratum,
-                    'type'          : None,
-                    'when'          : None,
-                    'hostpoll'      : hostpoll,
-                    'reachability'  : reachability,
-                    'delay'         : delay,
-                    'offset'        : offset,
-                    'jitter'        : jitter
-                }
-            except Exception:
-                continue
-
-        return ntp_peers
-
-
-    def get_bgp_stats(self, group = ''):
-
-        bgp_stats = {}
-
-        return bgp_stats
-
-
-    def get_bgp_neighbors(self, neighbor_address = ''):
+    def get_bgp_neighbors_detail(self, neighbor_address = ''):
 
         bgp_neighbors = dict()
 
@@ -735,8 +770,6 @@ class IOSXRDriver(NetworkDriver):
         '''
 
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
-
-        print ET.tostring(result_tree)
 
         for neighbor in result_tree.iter('Neighbor'):
             try:
@@ -889,13 +922,31 @@ class IOSXRDriver(NetworkDriver):
 
         return routes
 
+    def get_interfaces_ip(self):
 
-if __name__ == '__main__':
+        ip_list = list()
 
-    d = IOSXRDriver('edge01.yyz01', 'netconf', 'b3tt3rw3b')
+        rpc_command_ipv4 = '<Get><Operational><IPV4Network></IPV4Network></Operational></Get>'
 
-    d.open()
+        ipv4_tree = ET.fromstring(self.device.make_rpc_call(rpc_command_ipv4))
 
-    d.get_bgp_summary()
+        for interface in ipv4_tree.findall('.//InterfaceTable/Interface'):
+            try:
+                primary_ipv4 = interface.find('VRFTable/VRF/Detail/PrimaryAddress').text
+                if primary_ipv4 not in [None, '0.0.0.0']:
+                    ip_list.append(primary_ipv4)
+                secondary_ipv4 = interface.find('VRFTable/VRF/Detail/SecondaryAddress').text
+                # in case of failure / secondary address not set, will jump to the next entry
+                if secondary_ipv4 not in [None, '::']:
+                    ip_list.append(secondary_ipv4)
+            except Exception:
+                continue
 
-    d.close()
+        rpc_command_ipv6 = '<Get><Operational><IPV6Network></IPV6Network></Operational></Get>'
+
+        ipv6_tree = ET.fromstring(self.device.make_rpc_call(rpc_command_ipv6))
+
+        for interface in ipv6_tree.findall('.//InterfaceData/VRFTable/VRF/GlobalDetailTable/GlobalDetail/AddressList/Entry/Address'):
+            ip_list.append(interface.text)
+
+        return ip_list

@@ -15,7 +15,7 @@
 import pyeapi
 import re
 from base import NetworkDriver
-# from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException
+from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException
 from datetime import datetime
 import time
 from napalm.utils import string_parsers
@@ -435,30 +435,226 @@ class EOSDriver(NetworkDriver):
 
         return environment_counters
 
-    def get_mac_address_table(self):
+
+    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+
+        bgp_neighbors = dict()
+
+        return bgp_neighbors
+
+    def cli(self, command = ''):
+
+        if not command:
+            return 'Please enter a valid command!'
+
+        commands = list()
+        commands.append(command)
+
+        output = ''
+
+        try:
+            output = self.device.run_commands(commands, encoding = 'text')[0].get('output')
+        except pyeapi.eapilib.CommandError:
+            return 'Unrecognized command {0}'.format(command)
+        except Exception:
+            return ''
+
+        return output
+
+    def get_arp_table(self,  interface = '', host = '', ip = '', mac = ''):
+
+        arp_table = dict()
+
+        filters = list()
+        if interface:
+            filters.append(
+                'interface {name}'.format(
+                    name = interface
+                )
+            )
+        if host:
+            filters.append(
+                'host {name}'.format(
+                    name = host
+                )
+            )
+        if ip:
+            filters.append(ip)
+        if mac:
+             filters.append(
+                'mac-address {mac}'.format(
+                    mac = mac
+                )
+            )
+
+        commands = list()
+        commands.append(
+            'show arp {filters}'.format(
+                filters = ' '.join(filters)
+            )
+        )
+
+        ipv4_neighbors = []
+        try:
+            ipv4_neighbors = self.device.run_commands(commands)[0].get('ipV4Neighbors', [])
+        except pyeapi.eapilib.CommandError:
+            return {}
+
+        for neighbor in ipv4_neighbors:
+            interface   = neighbor.get('interface')
+            mac         = neighbor.get('hwAddress')
+            ip          = neighbor.get('address')
+            age         = neighbor.get('age')
+            if interface not in arp_table.keys():
+                arp_table[interface] = list()
+            arp_table[interface].append(
+                {
+                    'mac'   : mac,
+                    'ip'    : ip,
+                    'age'   : age
+                }
+            )
+
+        return arp_table
+
+    def get_mac_address_table(self, address = '', interface = '', dynamic = False, static = False, vlan = None):
 
         mac_table = dict()
 
-        return mac_table
-
-    def get_lldp_neighbors_detail(self):
-
-        lldp_neighbors = dict()
+        filters = list()
+        if address:
+             filters.append(
+                'address {addr}'.format(
+                    addr = address
+                )
+            )
+        if interface:
+             filters.append(
+                'interface {name}'.format(
+                    name = interface
+                )
+            )
+        if dynamic is True:
+            static = False
+            filters.append('dynamic')
+        if static is True:
+            filters.append('static')
+        if type(vlan) is int:
+            filters.append(
+                'vlan {id}'.format(
+                    id = vlan
+                )
+            )
 
         commands = list()
-        commands.append('show lldp neighbors detail')
+        commands.append(
+            'show mac address-table {filters}'.format(
+                filters = ' '.join(filters)
+            )
+        )
 
-        output = self.device.run_commands(commands)[0]['lldpNeighbors']
+        mac_entries = []
+        try:
+            mac_entries = self.device.run_commands(commands)[0].get('unicastTable', {}).get('tableEntries', [])
+        except Exception:
+            return {}
 
-        for interface in output:
-            neighbor_info = output.get(interface).get('lldpNeighborInfo')
+        for mac_entry in mac_entries:
+            vlan        = int(mac_entry.get('vlanId'))
+            interface   = mac_entry.get('interface')
+            mac         = mac_entry.get('macAddress')
+            static      = (mac_entry.get('entryType') == 'static')
+            last_move   = mac_entry.get('lastMove')
+            moves       = mac_entry.get('moves')
+            if vlan not in mac_table.keys():
+                mac_table[vlan] = list()
+            mac_table[vlan].append(
+                {
+                    'mac'       : mac,
+                    'interface' : interface,
+                    'active'    : True,
+                    'static'    : static,
+                    'moves'     : moves,
+                    'last_move' : last_move
+                }
+            )
+
+        return mac_table
+
+    def get_ntp_peers(self):
+
+        ntp_peers = dict()
+
+        REGEX = (
+            '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
+            '\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
+            '\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
+            '\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
+            '\s+([0-9\.]+)\s?$'
+        )
+
+        commands = list()
+        commands.append('show ntp associations')
+
+        # output = self.device.run_commands(commands)
+        # pyeapi.eapilib.CommandError: CLI command 2 of 2 'show ntp associations' failed: unconverted command
+        # JSON output not yet implemented...
+
+        ntp_assoc = self.device.run_commands(commands, encoding = 'text')[0].get('output', '\n\n')
+        ntp_assoc_lines = ntp_assoc.splitlines()[2:]
+
+        for ntp_assoc in ntp_assoc_lines:
+            line_search = re.search(REGEX, ntp_assoc, re.I)
+            if not line_search:
+                continue # pattern not found
+            line_groups = line_search.groups()
+            try:
+                ntp_peers[line_groups[1]] = {
+                    'referenceid'   : line_groups[2],
+                    'stratum'       : int(line_groups[3]),
+                    'type'          : line_groups[4],
+                    'when'          : line_groups[5],
+                    'hostpoll'      : int(line_groups[6]),
+                    'reachability'  : int(line_groups[7]),
+                    'delay'         : float(line_groups[8]),
+                    'offset'        : float(line_groups[9]),
+                    'jitter'        : float(line_groups[10])
+                }
+            except Exception:
+                continue # jump to next line
+
+        return ntp_peers
+
+    def get_lldp_neighbors_detail(self, interface = ''):
+
+        lldp_neighbors_out = dict()
+
+        filters = list()
+        if interface:
+            filters.append(interface)
+
+        commands = list()
+        commands.append(
+            'show lldp neighbors {filters} detail'.format(
+                filters = ' '.join(filters)
+            )
+        )
+
+        lldp_neighbors_in = {}
+        try:
+            lldp_neighbors_in = self.device.run_commands(commands)[0].get('lldpNeighbors', {})
+        except Exception:
+            return {}
+
+        for interface in lldp_neighbors_in:
+            neighbor_info = lldp_neighbors_in.get(interface).get('lldpNeighborInfo', {})
             if not neighbor_info:
                 # in case of empty infos
                 continue
             neighbor_info = neighbor_info[0]
-            if interface not in lldp_neighbors.keys():
-                lldp_neighbors[interface] = list()
-            lldp_neighbors[interface].append(
+            if interface not in lldp_neighbors_out.keys():
+                lldp_neighbors_out[interface] = list()
+            lldp_neighbors_out[interface].append(
                 {
                     'interface_descr': neighbor_info.get('neighborInterfaceInfo').get('interfaceDescription'),
                     'remote_port':  neighbor_info.get('neighborInterfaceInfo').get('interfaceId'),
@@ -468,28 +664,31 @@ class EOSDriver(NetworkDriver):
                 }
             )
 
-        return lldp_neighbors
-
-    def get_arp_table(self):
-
-        arp_table = dict()
-
-        return arp_table
-
-    def get_bgp_neighbors(self, neighbor_address = ''):
-
-        bgp_neighbors = dict()
-
-        return bgp_neighbors
-
-    def get_ntp_peers(self, destination = ''):
-
-        ntp_peers = dict()
-
-        return ntp_peers
+        return lldp_neighbors_out
 
     def show_route(self, destination = ''):
 
         route = dict()
 
         return route
+
+
+    def get_interfaces_ip(self):
+
+        ip_list = []
+
+        commands = list()
+        commands.append('show ip interfaces brief')
+
+        interfaces_out = self.device.run_commands(commands, encoding = 'text')[0].get('output', '\n\n')
+        interfaces_lines = interfaces_out.splitlines()[2:]
+
+        for interface in interfaces_lines:
+            ip = interface.split()[1]
+            if ip == 'unassigned':
+                continue
+            ip_nw = ip.split('/')
+            if len(ip_nw) == 2:
+                ip_list.append(ip_nw[0])
+
+        return ip_list
