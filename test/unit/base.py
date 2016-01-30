@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+from __future__ import print_function
+
 from napalm import exceptions
 import difflib
 import models
@@ -33,7 +35,7 @@ class TestConfigNetworkDriver:
     @staticmethod
     def print_diff_strings(orig, new):
         for line in difflib.context_diff(orig.splitlines(), new.splitlines()):
-            print line
+            print(line)
 
     def test_replacing_and_committing_config(self):
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
@@ -65,6 +67,9 @@ class TestConfigNetworkDriver:
 
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
         commit_diff = self.device.compare_config()
+
+        print(commit_diff)
+
         self.device.discard_config()
         discard_diff = self.device.compare_config()
         self.device.discard_config()
@@ -86,7 +91,7 @@ class TestConfigNetworkDriver:
         last_diff = self.device.compare_config()
         self.device.discard_config()
 
-        result = (orig_diff == last_diff) and ( len(replace_config_diff) == 0 )
+        result = (orig_diff == last_diff) and (len(replace_config_diff) == 0)
 
         self.assertTrue(result)
 
@@ -99,6 +104,9 @@ class TestConfigNetworkDriver:
         # Reverting changes
         self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
         diff = self.device.compare_config()
+
+        print(diff)
+
         self.device.commit_config()
 
         self.assertEqual(diff, intended_diff)
@@ -120,12 +128,13 @@ class TestConfigNetworkDriver:
 
 
 class TestGettersNetworkDriver:
+
     @staticmethod
     def _test_model(model, data):
         same_keys = set(model.keys()) == set(data.keys())
 
         if not same_keys:
-            print "model_keys: {}\ndata_keys: {}".format(model.keys(), data.keys())
+            print("model_keys: {}\ndata_keys: {}".format(model.keys(), data.keys()))
 
         correct_class = True
         for key, instance_class in model.iteritems():
@@ -133,7 +142,7 @@ class TestGettersNetworkDriver:
             correct_class = correct_class and same_class
 
             if not same_class:
-                print "key: {}\nmodel_class: {}\ndata_class: {}".format(key, instance_class, data[key].__class__)
+                print("key: {}\nmodel_class: {}\ndata_class: {}".format(key, instance_class, data[key].__class__))
 
         return correct_class and same_keys
 
@@ -179,7 +188,7 @@ class TestGettersNetworkDriver:
 
         for power, power_data in environment['power'].iteritems():
             result = result and self._test_model(models.power, power_data)
-        
+
         for temperature, temperature_data in environment['temperature'].iteritems():
             result = result and self._test_model(models.temperature, temperature_data)
 
@@ -187,7 +196,7 @@ class TestGettersNetworkDriver:
             result = result and self._test_model(models.cpu, cpu_data)
 
         result = result and self._test_model(models.memory, environment['memory'])
-        
+
         self.assertTrue(result)
 
     def test_get_bgp_neighbors(self):
@@ -209,4 +218,3 @@ class TestGettersNetworkDriver:
                         result = result and self._test_model(models.af, af_data)
 
             self.assertTrue(result)
-
