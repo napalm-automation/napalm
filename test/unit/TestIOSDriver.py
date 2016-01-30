@@ -17,12 +17,13 @@ from napalm import get_network_driver
 from base import TestConfigNetworkDriver, TestGettersNetworkDriver
 from getpass import getpass
 
+
 class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
     '''
     Core file operations:
     load_replace_candidate  Tested
     load_merge_candidate    Tested
-    compare_config          Tested 
+    compare_config          Tested
     commit_config           Tested
     discard_config          Tested
     rollback                Tested
@@ -121,6 +122,7 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
     get_bgp_neighbors
     get_interfaces_counters
     '''
+
     @classmethod
     def setUpClass(cls):
         username = 'pyclass'
@@ -154,8 +156,8 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
         for bgp_time, result in test_cases.iteritems():
             self.assertEqual(self.device.bgp_time_conversion(bgp_time), result)
 
+
 if __name__ == '__main__':
     print
     print "Starting tests: "
     unittest.main()
-

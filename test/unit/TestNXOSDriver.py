@@ -32,5 +32,6 @@ class TestNXOSDriver(unittest.TestCase, TestNetworkDriver):
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
         cls.device.commit_config()
 
+
 if __name__ == '__main__':
     unittest.main()
