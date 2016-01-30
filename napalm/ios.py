@@ -1,3 +1,5 @@
+'''NAPALM Cisco IOS Handler'''
+
 # Copyright 2015 Spotify AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
@@ -12,197 +14,426 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from netmiko import ConnectHandler
-from base import NetworkDriver
+from __future__ import print_function
 
 import re
+from datetime import datetime
+
+from netmiko import ConnectHandler, FileTransfer
+from napalm.base import NetworkDriver
+from napalm.exceptions import ReplaceConfigException, MergeConfigException
+
+# Easier to store these as constants
+HOUR_SECONDS = 3600
+DAY_SECONDS = 24 * HOUR_SECONDS
+WEEK_SECONDS = 7 * DAY_SECONDS
+YEAR_SECONDS = 365 * DAY_SECONDS
 
 class IOSDriver(NetworkDriver):
-
+    '''NAPALM Cisco IOS Handler'''
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        if optional_args is None:
+            optional_args = {}
         self.hostname = hostname
         self.username = username
         self.password = password
         self.timeout = timeout
-        self.first_touch = True
-        self.candidate_config = None
-        self.candidate_config_commands = None
+        self.candidate_cfg = optional_args.get('candidate_cfg', 'candidate_config.txt')
+        self.merge_cfg = optional_args.get('merge_cfg', 'merge_config.txt')
+        self.rollback_cfg = optional_args.get('rollback_cfg', 'rollback_config.txt')
+        self.dest_file_system = optional_args.get('dest_file_system', 'flash:')
+        self.global_delay_factor = optional_args.get('global_delay_factor', .5)
+        self.port = optional_args.get('port', 22)
+        self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
         self.device = None
+        self.config_replace = False
 
     def open(self):
         """Opens a connection to the device."""
-        self.device = ConnectHandler(
-            device_type='cisco_ios',
-            ip=self.hostname,
-            username=self.username,
-            password=self.password)
+        self.device = ConnectHandler(device_type='cisco_ios', ip=self.hostname, port=self.port,
+                                     username=self.username, password=self.password,
+                                     global_delay_factor=self.global_delay_factor, verbose=False)
 
     def close(self):
         """Closes the connection to the device."""
-        self.device.disconnect() 
+        self.device.disconnect()
 
-    def rollback(self):
-        if self.candidate_config is not None:
-            if isinstance(self.candidate_config, dict):
-                for command in self.candidate_config_commands:
-                    if command in self.candidate_config:
-                        if self.candidate_config[command] == 'changed':
-                            output = self.device.send_command(command)
-                        else:
-                            no_command = 'no {0}'.format(command)
-                            output = self.device.send_command(no_command)
-                self.candidate_config = None
-                self.candidate_config_commands = None
-            else:
-                self.candidate_config = None
-                self.candidate_config_commands = None
+    def load_replace_candidate(self, filename=None, config=None):
+        '''
+        SCP file to device filesystem, defaults to candidate_config
+
+        Return None or raise exception
+        '''
+        self.config_replace = True
+        if config:
+            raise NotImplementedError
+        if filename:
+            (return_status, msg) = self.scp_file(source_file=filename,
+                                                 dest_file=self.candidate_cfg,
+                                                 file_system=self.dest_file_system)
+            if not return_status:
+                if msg == '':
+                    msg = "SCP transfer to remote device failed"
+                raise ReplaceConfigException(msg)
 
     def load_merge_candidate(self, filename=None, config=None):
-        commands = list()
-        if self.first_touch:
-            commands.append('enable')
-            commands.append(self.password)
-            commands.append('conf t')
+        '''
+        SCP file to remote device
 
-        if filename is not None:
-            with open(filename, 'r') as new_config:
-                configuration = new_config.readlines()
+        Merge configuration in: copy <file> running-config
+        '''
+        self.config_replace = False
+        if config:
+            raise NotImplementedError
+        if filename:
+            (return_status, msg) = self.scp_file(source_file=filename, dest_file=self.merge_cfg,
+                                                 file_system=self.dest_file_system)
+            if not return_status:
+                if msg == '':
+                    msg = "SCP transfer to remote device failed"
+                raise MergeConfigException(msg)
+
+    @staticmethod
+    def normalize_compare_config(diff):
+        '''Filter out strings that should not show up in the diff'''
+        ignore_strings = [
+            'Contextual Config Diffs',
+            'No changes were found',
+            'file prompt quiet',
+            'ntp clock-period'
+        ]
+
+        new_list = []
+        for line in diff.splitlines():
+            for ignore in ignore_strings:
+                if ignore in line:
+                    break
+            else:   # nobreak
+                new_list.append(line)
+        return "\n".join(new_list)
+
+    def compare_config(self, base_file='running-config', new_file=None,
+                       base_file_system='system:', new_file_system=None):
+        '''
+        show archive config differences <base_file> <new_file>
+
+        Default operation is to compare system:running-config to self.candidate_cfg
+        '''
+        # Set defaults if not passed as arguments
+        if new_file is None:
+            new_file = self.candidate_cfg
+        if new_file_system is None:
+            new_file_system = self.dest_file_system
+        base_file_full = self.gen_full_path(filename=base_file, file_system=base_file_system)
+        new_file_full = self.gen_full_path(filename=new_file, file_system=new_file_system)
+
+        cmd = 'show archive config differences {} {}'.format(base_file_full, new_file_full)
+        diff = self.device.send_command_expect(cmd)
+        diff = self.normalize_compare_config(diff)
+        return diff.strip()
+
+    def commit_config(self, filename=None):
+        '''
+        If replacement operation, perform 'configure replace' for the entire config.
+
+        If merge operation, perform copy <file> running-config.
+        '''
+        debug = False
+        # Always generate a rollback config on commit
+        self._gen_rollback_cfg()
+
+        # Replace operation
+        if debug:
+            base_time = datetime.now()
+            print("check1: {}".format(base_time))
+        if self.config_replace:
+            if filename is None:
+                filename = self.candidate_cfg
+            cfg_file = self.gen_full_path(filename)
+            if not self._check_file_exists(cfg_file):
+                raise ReplaceConfigException("Candidate config file does not exist")
+            if debug:
+                print("check2 (check_file_exists)")
+                print("Time delta: {}".format(datetime.now() - base_time))
+                base_time = datetime.now()
+            if self.auto_rollback_on_error:
+                cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
+            else:
+                cmd = 'configure replace {} force'.format(cfg_file)
+            output = self.device.send_command_expect(cmd)
+            if debug:
+                print("check3 (configure replace)")
+                print("Time delta: {}".format(datetime.now() - base_time))
+                base_time = datetime.now()
+            if ('Failed to apply command' in output) or \
+                ('original configuration has been successfully restored' in output):
+                raise ReplaceConfigException("Candidate config could not be applied")
+        # Merge operation
         else:
-            if isinstance(config, list):
-                configuration = config
-            else:
-                configuration = config.splitlines()
-
-        for line in configuration:
-            if line.strip() == '' or line.strip() == '!':
-                continue
-            else:
-                commands.append(line.strip())
-
-        self.candidate_config = commands
-
-    def compare_config(self):
-        if self.candidate_config is not None:
-            if 'enable' in self.candidate_config:
-                commands = self.candidate_config[3::]
-                for command in commands:
-                    print "+ {0}".format(command)
-            else:
-                for command in self.candidate_config:
-                    print "+ {0}".format(command)
+            if filename is None:
+                filename = self.merge_cfg
+            cfg_file = self.gen_full_path(filename)
+            if not self._check_file_exists(cfg_file):
+                raise MergeConfigException("Merge source config file does not exist")
+            cmd = 'copy {} running-config'.format(cfg_file)
+            self._disable_confirm()
+            output = self.device.send_command_expect(cmd)
+            self._enable_confirm()
+            if 'Invalid input detected' in output:
+                self.rollback()
+                merge_error = "Configuration merge failed; automatic rollback attempted"
+                raise MergeConfigException(merge_error)
 
     def discard_config(self):
-        if self.candidate_config is not None:
-            self.candidate_config = None
+        '''Set candidate_cfg to current running-config. Erase the merge_cfg file'''
+        discard_candidate = 'copy running-config {}'.format(self.gen_full_path(self.candidate_cfg))
+        discard_merge = 'copy null: {}'.format(self.gen_full_path(self.merge_cfg))
+        self._disable_confirm()
+        self.device.send_command_expect(discard_candidate)
+        self.device.send_command_expect(discard_merge)
+        self._enable_confirm()
 
-    def commit_config(self):
-        if self.candidate_config is not None:
-            commands = self.candidate_config
-            commands.append('do copy run start')
-            commands.append('\n')
-            commands_dict = {}
-            self.candidate_config_commands = commands
+    def rollback(self, filename=None):
+        '''Rollback configuration to filename or to self.rollback_cfg file'''
+        if filename is None:
+            filename = self.rollback_cfg
+        cfg_file = self.gen_full_path(filename)
+        if not self._check_file_exists(cfg_file):
+            raise ReplaceConfigException("Rollback config file does not exist")
+        cmd = 'configure replace {} force'.format(cfg_file)
+        self.device.send_command_expect(cmd)
 
-            try:
-                index = 0
-                prompt = self.device.find_prompt()
-                for command in commands:
-                    output = self.device.send_command(command)
-                    new_prompt = self.device.find_prompt()
-                    if (index > 2 and self.first_touch) or (self.first_touch is False):
-                        self.candidate_config = commands_dict
-                        if new_prompt == prompt or 'hostname' in command:
-                            commands_dict[command] = "unchanged"
-                        else:
-                            commands_dict[command] = "changed"
-                    prompt = self.device.find_prompt()
-                    index += 1
-                self.first_touch = False
-            except:
-                self.rollback()
-                self.first_touch = False
+    def scp_file(self, source_file, dest_file, file_system):
+        '''
+        SCP file to remote device
+
+        Return (status, msg)
+        status = boolean
+        msg = details on what happened
+        '''
+        # Will automaticall enable SCP on remote device
+        enable_scp = True
+        debug = False
+
+        with FileTransfer(self.device, source_file=source_file,
+                          dest_file=dest_file, file_system=file_system) as scp_transfer:
+
+            if debug:
+                base_time = datetime.now()
+                print("check1: {}".format(base_time))
+            # Check if file already exists and has correct MD5
+            if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
+                msg = "File already exists and has correct MD5: no SCP needed"
+                return (True, msg)
+            if not scp_transfer.verify_space_available():
+                msg = "Insufficient space available on remote device"
+                return (False, msg)
+
+            if debug:
+                print("check2 (file already exists, correct md5, space available)")
+                print("Time delta: {}".format(datetime.now() - base_time))
+                base_time = datetime.now()
+            if enable_scp:
+                scp_transfer.enable_scp()
+
+            if debug:
+                print("check3 (enable_scp)")
+                print("Time delta: {}".format(datetime.now() - base_time))
+                base_time = datetime.now()
+            # Transfer file
+            scp_transfer.transfer_file()
+            if debug:
+                print("check4 (transfer_file)")
+                print("Time delta: {}".format(datetime.now() - base_time))
+                base_time = datetime.now()
+
+            # Compares MD5 between local-remote files
+            if scp_transfer.verify_file():
+                msg = "File successfully transferred to remote device"
+                if debug:
+                    print("check5: {}".format(datetime.now()))
+                return (True, msg)
+            else:
+                msg = "File transfer to remote device failed"
+                return (False, msg)
+            if debug:
+                print("check5 (verify_file)")
+                print("Time delta: {}".format(datetime.now() - base_time))
+
+            return (False, '')
+
+    def _enable_confirm(self):
+        '''Enable IOS confirmations on file operations (global config command)'''
+        cmd = 'no file prompt quiet'
+        self.device.send_config_set([cmd])
+
+    def _disable_confirm(self):
+        '''Disable IOS confirmations on file operations (global config command)'''
+        cmd = 'file prompt quiet'
+        self.device.send_config_set([cmd])
+
+    def gen_full_path(self, filename, file_system=None):
+        '''Generate full file path on remote device'''
+        if file_system is None:
+            return '{}/{}'.format(self.dest_file_system, filename)
+        else:
+            if ":" not in file_system:
+                raise ValueError("Invalid file_system specified: {}".format(file_system))
+            return '{}/{}'.format(file_system, filename)
+
+    def _gen_rollback_cfg(self):
+        '''
+        Save a configuration that can be used for rollback
+        '''
+        cfg_file = self.gen_full_path(self.rollback_cfg)
+        cmd = 'copy running-config {}'.format(cfg_file)
+        self._disable_confirm()
+        self.device.send_command_expect(cmd)
+        self._enable_confirm()
+
+    def _check_file_exists(self, cfg_file):
+        '''
+        Check that the file exists on remote device using full path
+
+        cfg_file is full path i.e. flash:/file_name
+
+        For example
+        # dir flash:/candidate_config.txt
+        Directory of flash:/candidate_config.txt
+
+        33  -rw-        5592  Dec 18 2015 10:50:22 -08:00  candidate_config.txt
+
+        return boolean
+        '''
+        cmd = 'dir {}'.format(cfg_file)
+        success_pattern = 'Directory of {}'.format(cfg_file)
+        output = self.device.send_command_expect(cmd)
+        if 'Error opening' in output:
+            return False
+        elif success_pattern in output:
+            return True
+        return False
 
     def get_lldp_neighbors(self):
-        command = 'show lldp neighbors | begin Device ID'
+        '''
+        Output command format:
+        Device ID           Local Intf     Hold-time  Capability      Port ID
+        twb-sf-hpsw1        Fa4            120        B               17
+
+        Total entries displayed: 1
+
+        return data structure is a dictionary, key is local_port
+        {u'Fa4': [{'hostname': u'twb-sf-hpsw1', 'port': u'17'}]}
+
+        and value is a list where each entry in the list is a dict
+        '''
         lldp = {}
 
+        command = 'show lldp neighbors | begin Device ID'
         output = self.device.send_command(command)
-        splitted_output = output.split('\n')
-        for line in splitted_output:
-            neighbor = {}
-            if len(line) > 0 and 'Device ID' not in line and 'entries' not in line:
-                splitted_line = line.split()
-                device_id = unicode(splitted_line[0])
-                device_port = unicode(splitted_line[1])
-                port_id = unicode(splitted_line[-1])
-                neighbor['hostname'] = device_id
-                neighbor['port'] = port_id
-                lldp[device_port] = neighbor
+        if '% Invalid input' in output:
+            return {}
+        for line in output.splitlines():
+            line = line.strip()
+            if 'Device ID' in line or 'entries' in line or line == '':
+                continue
+            device_id, local_port, _, _, remote_port = line.split()
+            lldp.setdefault(local_port, [])
+            lldp[local_port].append({
+                'hostname': device_id,
+                'port': remote_port,
+            })
         return lldp
+
+    @staticmethod
+    def parse_uptime(uptime_str):
+        '''
+        Extract the uptime string from the given Cisco IOS Device.
+
+        Return the uptime in seconds as an integer
+        '''
+        # Initialize to zero
+        (years, weeks, days, hours, minutes) = (0, 0, 0, 0, 0)
+
+        uptime_str = uptime_str.strip()
+        time_list = uptime_str.split(',')
+        for element in time_list:
+            if re.search("year", element):
+                years = int(element.split()[0])
+            elif re.search("week", element):
+                weeks = int(element.split()[0])
+            elif re.search("day", element):
+                days = int(element.split()[0])
+            elif re.search("hour", element):
+                hours = int(element.split()[0])
+            elif re.search("minute", element):
+                minutes = int(element.split()[0])
+
+        uptime_sec = (years * YEAR_SECONDS) + (weeks * WEEK_SECONDS) + (days * DAY_SECONDS) + \
+                     (hours * 3600) + (minutes * 60)
+        return uptime_sec
 
     def get_facts(self):
         """This function returns a set of facts from the devices."""
-        results = {}
         # creating the parsing regex.
-        uptime_regex = ".*uptime\sis\s(?P<uptime>\d+\s\w+(,\s\d+\s+\w+){0,4}).*"
-        show_ver_regex = ".*Software\s\((?P<image>.+)\),\sVersion\s(?P<version>.+), RELEASE.*"
-        model_regex = ".*Cisco\s(?P<model>\d+).*"
-
-        # commands to execute.
-        commands = [
-            'show version',
-            'show ip interface brief'
-            ]
+        model_regex = r".*Cisco\s(?P<model>\d+).*"
 
         # default values.
-        vendor = unicode('Cisco')
-        fqdn = unicode('N/A')
-        serial_number = unicode('N/A')
+        vendor = u'Cisco'
+        uptime = -1
+        serial_number, fqdn, os_version, hostname = (u'Unknown', u'Unknown',
+                                                     u'Unknown', u'Unknown')
 
-        for command in commands:
-            output = self.device.send_command(command)
-            if command == 'show version':
-                # uptime filter
-                try:
-                    match_uptime = re.match(uptime_regex, output, re.DOTALL)
-                    group_uptime = match_uptime.groupdict()
-                    uptime = unicode(group_uptime["uptime"])
-                except AttributeError:
-                    uptime = -1
+        # obtain output from device
+        show_ver = self.device.send_command('show version')
+        show_hosts = self.device.send_command('show hosts')
+        show_ip_int_br = self.device.send_command('show ip int brief')
 
-                # model filter.
-                try:
-                    match_model = re.match(model_regex, output, re.DOTALL)
-                    group_model = match_model.groupdict()
-                    model = unicode(group_model["model"])
-                except AttributeError:
-                    model = -1
+        # uptime/serial_number/IOS version
+        for line in show_ver.splitlines():
+            if ' uptime is ' in line:
+                hostname, uptime_str = line.split(' uptime is ')
+                uptime = self.parse_uptime(uptime_str)
+                hostname = hostname.strip()
 
-                # version filter.
-                try:
-                    match_version = re.match(show_ver_regex, output, re.DOTALL)
-                    group_version = match_version.groupdict()
-                    image = unicode(group_version["image"])
-                    os_version = unicode(group_version["version"])
-                except AttributeError:
-                    os_version = -1
+            if 'Processor board ID' in line:
+                _, serial_number = line.split("Processor board ID ")
+                serial_number = serial_number.strip()
 
-                # hostname filter.
-                output_splittted = output.split('\n')
-                for line in output_splittted:
-                    if "uptime" in line:
-                        hostname_line = line.split()
-                        hostname = unicode(hostname_line[0])
+            if re.search(r"Cisco IOS Software", line):
+                _, os_version = line.split("Cisco IOS Software, ")
+                os_version = os_version.strip()
+            elif re.search(r"IOS (tm).+Software", line):
+                _, os_version = line.split("IOS (tm) ")
+                os_version = os_version.strip()
 
-            # interface_list filter.
-            elif command == 'show ip interface brief':
-                interface_list = []
-                splitted_output = output.split('\n')
-                for i in range(1, len(splitted_output)):
-                    interface = splitted_output[i].split()[0]
-                    interface_list.append(interface)
-        # parsing results.
-        results = {
+        # Determine domain_name and fqdn
+        for line in show_hosts.splitlines():
+            if 'Default domain' in line:
+                _, domain_name = line.split("Default domain is ")
+                domain_name = domain_name.strip()
+                break
+        if domain_name != 'Unknown' and hostname != 'Unknown':
+            fqdn = u'{}.{}'.format(hostname, domain_name)
+
+        # model filter
+        try:
+            match_model = re.match(model_regex, show_ver, re.DOTALL)
+            group_model = match_model.groupdict()
+            model = group_model["model"]
+        except AttributeError:
+            model = u'Unknown'
+
+        # interface_list filter
+        interface_list = []
+        show_ip_int_br = show_ip_int_br.strip()
+        for line in show_ip_int_br.splitlines():
+            if 'Interface ' in line:
+                continue
+            interface = line.split()[0]
+            interface_list.append(interface)
+
+        return {
             'uptime': uptime,
             'vendor': vendor,
             'os_version': os_version,
@@ -212,49 +443,50 @@ class IOSDriver(NetworkDriver):
             'fqdn': fqdn,
             'interface_list': interface_list
         }
-        return results
-                        
 
     def get_interfaces(self):
+        '''
+        Get interface details
+
+        last_flapped is not implemented
+        '''
         interface_list = {}
+
         # default values.
         last_flapped = -1.0
-        # command to execute.
-        command = 'show interfaces description'
-        # let's start.
-        output = self.device.send_command(command)
-        splitted_output = output.split('\n')
+
         # creating the parsing regex.
-        mac_regex = ".*,\saddress\sis\s(?P<mac_address>\S+).*"
-        speed_regex = ".*BW\s(?P<speed>\d+)\s(?P<speed_format>\S+).*"
-        for i in range(1, len(splitted_output)):
-            params = {}
-            interface = splitted_output[i].split()[0]
-            if splitted_output[i].split()[1] == 'up':
-                is_enabled = True
+        mac_regex = r".*,\saddress\sis\s(?P<mac_address>\S+).*"
+        speed_regex = r".*BW\s(?P<speed>\d+)\s(?P<speed_format>\S+).*"
+
+        command = 'show interfaces description'
+        output = self.device.send_command(command)
+        for line in output.splitlines():
+            if 'Interface' in line and 'Status' in line:
+                continue
+            fields = line.split()
+            if len(fields) == 3:
+                interface, status, protocol = fields
+                description = u''
+            elif fields > 3:
+                interface, status, protocol = fields[:3]
+                description = u" ".join(fields[3:])
             else:
+                raise ValueError("Unexpected response from the router")
+
+            status = status.lower()
+            protocol = protocol.lower()
+            if 'admin' in status:
                 is_enabled = False
-            if splitted_output[i].split()[2] == 'up':
-                is_up = True
             else:
-                is_up = False
-            # parsing descriptions.
-            if is_up and is_enabled and len(splitted_output[i].split()) > 3:
-                description_list = splitted_output[i].split()[3::]
-                description = ' '.join(description_list)
-            elif is_enabled and len(splitted_output[i].split()) > 3:
-                description_list = splitted_output[i].split()[3::]
-                description = ' '.join(description_list)
-            elif len(splitted_output[i].split()) > 4:
-                description_list = splitted_output[i].split()[4::]
-                description = ' '.join(description_list)
-            else:
-                description = ''
-            # parsing all the values.
-            params['is_up'] = is_up
-            params['is_enabled'] = is_enabled
-            params['description'] = description
-            interface_list[interface] = params
+                is_enabled = True
+            is_up = bool('up' in protocol)
+            interface_list[interface] = {
+                'is_up': is_up,
+                'is_enabled': is_enabled,
+                'description': description,
+                'last_flapped': last_flapped,
+            }
 
         for interface in interface_list:
             show_command = "show interface {0}".format(interface)
@@ -264,9 +496,9 @@ class IOSDriver(NetworkDriver):
                 match_mac = re.match(mac_regex, interface_output, re.DOTALL)
                 group_mac = match_mac.groupdict()
                 mac_address = group_mac["mac_address"]
-                interface_list[interface]['mac_address'] = unicode(mac_address)
+                interface_list[interface]['mac_address'] = mac_address
             except AttributeError:
-                interface_list[interface]['mac_address'] = -1
+                interface_list[interface]['mac_address'] = u'N/A'
             try:
                 # BW filter.
                 match_speed = re.match(speed_regex, interface_output, re.DOTALL)
@@ -280,158 +512,320 @@ class IOSDriver(NetworkDriver):
                     interface_list[interface]['speed'] = int(speed)
             except AttributeError:
                 interface_list[interface]['speed'] = -1
+            except ValueError:
+                interface_list[interface]['speed'] = -1
 
         return interface_list
 
+    @staticmethod
+    def bgp_time_conversion(bgp_uptime):
+        '''
+        Convert string time to seconds
+
+        Examples
+        00:14:23
+        00:13:40
+        00:00:21
+        00:00:13
+        00:00:49
+        1d11h
+        1d17h
+        1w0d
+        8w5d
+        1y28w
+        never
+        '''
+        bgp_uptime = bgp_uptime.strip()
+        uptime_letters = set(['w', 'h', 'd'])
+
+        if 'never' in bgp_uptime:
+            return -1
+        elif ':' in bgp_uptime:
+            times = bgp_uptime.split(":")
+            times = [int(x) for x in times]
+            hours, minutes, seconds = times
+            return (hours * 3600) + (minutes * 60) + seconds
+        # Check if any letters 'w', 'h', 'd' are in the time string
+        elif uptime_letters & set(bgp_uptime):
+            form1 = r'(\d+)d(\d+)h'     # 1d17h
+            form2 = r'(\d+)w(\d+)d'     # 8w5d
+            form3 = r'(\d+)y(\d+)w'     # 1y28w
+            match = re.search(form1, bgp_uptime)
+            if match:
+                days = int(match.group(1))
+                hours = int(match.group(2))
+                return (days * DAY_SECONDS) + (hours * 3600)
+            match = re.search(form2, bgp_uptime)
+            if match:
+                weeks = int(match.group(1))
+                days = int(match.group(2))
+                return (weeks * WEEK_SECONDS) + (days * DAY_SECONDS)
+            match = re.search(form3, bgp_uptime)
+            if match:
+                years = int(match.group(1))
+                weeks = int(match.group(2))
+                return (years * YEAR_SECONDS) + (weeks * WEEK_SECONDS)
+        raise ValueError("Unexpected value for BGP uptime string: {}".format(bgp_uptime))
+
     def get_bgp_neighbors(self):
-        commands = [
-            "show ip bgp summary",
-            "show ip bgp summary | begin Neighbor"
-            ]
-        bgp_regex = ".*router\sidentifier\s(?P<router_id>\S+),\slocal\sAS\snumber\s(?P<local_as>\d+).*"
-        bgp_neighbors = {}
-        for command in commands:
-            family = {}
-            output = self.device.send_command(command)
-            if command == "show ip bgp summary":
-                try:
-                    # router_id and local_as filters.
-                    match_bgp = re.match(bgp_regex, output, re.DOTALL)
-                    group_bgp = match_bgp.groupdict()
-                    router_id = group_bgp["router_id"]
-                    local_as = group_bgp["local_as"]
-                except AttributeError:
-                    router_id = -1
-                    local_as = -1
+        '''
+        BGP neighbor information
+
+        Currently, no VRF support
+        Not tested with IPv6
+
+        Example output of 'show ip bgp summary' only peer table
+        Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down State/PfxRcd
+        10.100.1.1      4   200      26      22      199    0    0 00:14:23 23
+        10.200.1.1      4   300      21      51      199    0    0 00:13:40 0
+        192.168.1.2     4   200      19      17        0    0    0 00:00:21 2
+        1.1.1.1         4     1       0       0        0    0    0 never    Active
+        3.3.3.3         4     2       0       0        0    0    0 never    Idle
+        1.1.1.2         4     1      11       9        0    0    0 00:00:13 Idle (Admin)
+        1.1.1.3         4 27506  256642   11327     2527    0    0 1w0d     519
+        1.1.1.4         4 46887 1015641   19982     2527    0    0 1w0d     365
+        192.168.1.237   4 60000    2139    2355 13683280    0    0 1d11h    4 (SE)
+        10.90.1.4       4 65015    2508    2502      170    0    0 1d17h    163
+        172.30.155.20   4   111       0       0        0    0    0 never    Active
+        1.1.1.5         4  6500      54      28        0    0    0 00:00:49 Idle (PfxCt)
+        10.1.4.46       4  3979   95244   98874   267067    0    0 8w5d     254
+        10.1.4.58       4  3979    2715    3045   267067    0    0 1d21h    2
+        10.1.1.85       4 65417 8344303 8343570      235    0    0 1y28w    2
+        '''
+        cmd_bgp_summary = 'show ip bgp summary'
+        bgp_neighbor_data = {}
+        bgp_neighbor_data['global'] = {}
+
+        output = self.device.send_command(cmd_bgp_summary).strip()
+        if 'Neighbor' not in output:
+            return {}
+        for line in output.splitlines():
+            if 'router identifier' in line:
+                # BGP router identifier 172.16.1.1, local AS number 100
+                rid_regex = r'^.* router identifier (\d+\.\d+\.\d+\.\d+), local AS number (\d+)'
+                match = re.search(rid_regex, line)
+                router_id = match.group(1)
+                local_as = int(match.group(2))
+                break
+        bgp_neighbor_data['global']['router_id'] = router_id
+        bgp_neighbor_data['global']['peers'] = {}
+
+        cmd_neighbor_table = 'show ip bgp summary | begin Neighbor'
+        output = self.device.send_command(cmd_neighbor_table).strip()
+        for line in output.splitlines():
+            line = line.strip()
+            if 'Neighbor' in line or line == '':
+                continue
+            fields = line.split()[:10]
+            peer_id, bgp_version, remote_as, msg_rcvd, msg_sent, table_version, in_queue, \
+            out_queue, up_time, state_prefix = fields
+
+            if '(Admin)' in state_prefix:
+                is_enabled = False
             else:
-                splitted_output = output.split('\n')
-                for i in range(1, len(splitted_output)):
-                    params = {}
-                    neighbor_line = splitted_output[i].split()
-                    peer = neighbor_line[0]
-                    remote_as = neighbor_line[2]
-                    uptime = neighbor_line[8]
-                    try:
-                        int(neighbor_line[-1])
-                        is_up = True
-                        is_enabled = True
-                    except:
-                        is_up = -1
-                        is_enabled = -1
-                    params["router_id"] = router_id
-                    params["local_as"] = local_as
-                    params["remote_as"] = remote_as
-                    params["is_up"] = is_up
-                    params["is_enabled"] = is_enabled
-                    params["uptime"] = uptime
-                    bgp_neighbors[peer] = params
+                is_enabled = True
+            try:
+                state_prefix = int(state_prefix)
+                is_up = True
+            except ValueError:
+                is_up = False
 
-            for neighbor in bgp_neighbors:
-                flag = 0
-                command = "show ip bgp neighbor {0}".format(neighbor)
-                neighbor_output = self.device.send_command(command)
-                splitted_output = neighbor_output.split('\n')
-                for line in splitted_output:
-                    family_params = {}
-                    if 'Description' in line:
-                        description_line = line.split()
-                        description = ' '.join(description_line[1::]) 
-                        flag = 1
-                    if flag == 1:
-                        bgp_neighbors[neighbor]['description'] = description
-                    else:
-                        bgp_neighbors[neighbor]['description'] = ""
-                    if 'address family' in line:
-                        addr_family_line = line.split()
-                        address_family = addr_family_line[3]
-                    if 'Prefixes Current:' in line:
-                        current_prefix_line = line.split()
-                        try:
-                            sent_prefixes = int(current_prefix_line[2])
-                        except:
-                            sent_prefixes = -1
-                        try:
-                            received_prefixes = int(current_prefix_line[3])
-                        except:
-                            received_prefixes = -1
-                        family_params['sent_prefixes'] = sent_prefixes
-                        family_params['received_prefixes'] = received_prefixes
-                        family_params['accepted_prefixes'] = unicode('N/A')
-                        family[address_family] = family_params
-                        bgp_neighbors[neighbor]['address_family'] = family
+            if bgp_version == '4':
+                address_family = 'ipv4'
+            elif bgp_version == '6':
+                address_family = 'ipv6'
+            else:
+                raise ValueError("BGP neighbor parsing failed")
 
-        return bgp_neighbors 
+            cmd_remote_rid = 'show ip bgp neighbors {} | inc router ID'.format(peer_id)
+            # output: BGP version 4, remote router ID 1.1.1.1
+            remote_rid_out = self.device.send_command(cmd_remote_rid).strip()
+            remote_rid = remote_rid_out.split()[-1]
 
+            bgp_neighbor_data['global']['peers'].setdefault(peer_id, {})
+            peer_dict = {}
+            peer_dict['uptime'] = self.bgp_time_conversion(up_time)
+            peer_dict['remote_as'] = int(remote_as)
+            peer_dict['description'] = u''
+            peer_dict['local_as'] = local_as
+            peer_dict['is_enabled'] = is_enabled
+            peer_dict['is_up'] = is_up
+            peer_dict['remote_id'] = remote_rid
+
+            cmd_current_prefixes = 'show ip bgp neighbors {} | inc Prefixes Current'.format(peer_id)
+            # output: Prefixes Current:               0          0
+            current_prefixes_out = self.device.send_command(cmd_current_prefixes).strip()
+            pattern = r'Prefixes Current:\s+(\d+)\s+(\d+).*'  # Prefixes Current:    0     0
+            match = re.search(pattern, current_prefixes_out)
+            if match:
+                sent_prefixes = int(match.group(1))
+                accepted_prefixes = int(match.group(1))
+            else:
+                sent_prefixes = accepted_prefixes = -1
+
+            cmd_filtered_prefix = 'show ip bgp neighbors {} | section Local Policy'.format(peer_id)
+            # output:
+            # Local Policy Denied Prefixes:    --------    -------
+            # prefix-list                           0          2
+            # Total:                                0          2
+            filtered_prefixes_out = self.device.send_command(cmd_filtered_prefix).strip()
+            accepted_prefixes = int(accepted_prefixes)
+            sent_prefixes = int(sent_prefixes)
+            pattern = r'Total:\s+\d+\s+(\d+).*'    # Total:     0          2
+            match = re.search(pattern, filtered_prefixes_out)
+            if match:
+                filtered_prefixes = int(match.group(1))
+                received_prefixes = filtered_prefixes + accepted_prefixes
+            else:
+                # If unable to determine filtered prefixes set received prefixes to accepted
+                received_prefixes = accepted_prefixes
+
+            af_dict = {}
+            af_dict.setdefault(address_family, {})
+            af_dict[address_family]['sent_prefixes'] = sent_prefixes
+            af_dict[address_family]['accepted_prefixes'] = accepted_prefixes
+            af_dict[address_family]['received_prefixes'] = received_prefixes
+
+            peer_dict['address_family'] = af_dict
+            bgp_neighbor_data['global']['peers'][peer_id] = peer_dict
+
+        return bgp_neighbor_data
 
     def get_interfaces_counters(self):
-        command = 'show interface counters'
+        '''
+        Return
+        'tx_errors': int,
+        'rx_errors': int,
+        'tx_discards': int,
+        'rx_discards': int,
+        'tx_octets': int,
+        'rx_octets': int,
+        'tx_unicast_packets': int,
+        'rx_unicast_packets': int,
+        'tx_multicast_packets': int,
+        'rx_multicast_packets': int,
+        'tx_broadcast_packets': int,
+        'rx_broadcast_packets': int,
+
+        Currently doesn't determine output broadcasts, multicasts
+        Doesn't determine tx_discards or rx_discards
+        '''
         counters = {}
+        command = 'show interfaces'
         output = self.device.send_command(command)
-        if len(output) > 0:
-            splitted_output = output.split('\n')
-            for i in range(0, len(splitted_output)):
-                if 'OutOctets' in splitted_output[i]:
-                    marker = i
-            rx_counters = splitted_output[1:marker]
-            tx_counters = splitted_output[marker::]
-            for line in range(1, len(rx_counters)):
-                params = {}
-                if len(rx_counters[line]) > 0:
-                    rx_counters_splitted = rx_counters[line].split()
-                    interface = rx_counters_splitted[0]
-                    try:
-                        rx_octets = int(rx_counters_splitted[1])
-                    except:
-                        rx_octets = -1
-                    try:
-                        rx_unicast_packets = int(rx_counters_splitted[2])
-                    except:
-                        rx_unicast_packets = -1
-                    try:
-                        rx_multicast_packets = int(rx_counters_splitted[3])
-                    except:
-                        rx_multicast_packets = -1
-                    try:
-                        rx_broadcast_packets = int(rx_counters_splitted[4])
-                    except:
-                        rx_broadcast_packets = -1
-                    rx_discards = unicode('N/A')
-                    rx_errors = unicode('N/A')
-                    params['rx_octets'] = rx_octets
-                    params['rx_unicast_packets'] = rx_unicast_packets
-                    params['rx_broadcast_packets'] = rx_broadcast_packets
-                    params['rx_multicast_packets'] = rx_multicast_packets
-                    params['rx_discards'] = rx_discards
-                    params['rx_errors'] = rx_errors
-                    counters[interface] = params
+        output = output.strip()
 
-            for line in range(1, len(tx_counters)):
-                if len(tx_counters[line]) > 0:
-                    tx_counters_splitted = tx_counters[line].split()
-                    interface = tx_counters_splitted[0]
-                    try:
-                        tx_octets = int(tx_counters_splitted[1])
-                    except:
-                        tx_octets = -1
-                    try:
-                        tx_unicast_packets = int(tx_counters_splitted[2])
-                    except:
-                        tx_unicast_packets = -1
-                    try:
-                        tx_multicast_packets = int(tx_counters_splitted[3])
-                    except:
-                        tx_multicast_packets = -1
-                    try:
-                        tx_broadcast_packets = int(tx_counters_splitted[4])
-                    except:
-                        tx_broadcast_packets = -1
-                    tx_discards = unicode('N/A')
-                    tx_errors = unicode('N/A')
-                    counters[interface]['tx_octets'] = tx_octets
-                    counters[interface]['tx_unicast_packets'] = tx_unicast_packets
-                    counters[interface]['tx_broadcast_packets'] = tx_broadcast_packets
-                    counters[interface]['tx_multicast_packets'] = tx_multicast_packets
-                    counters[interface]['tx_discards'] = tx_discards
-                    counters[interface]['tx_errors'] = tx_errors
+        # Break output into per-interface sections
+        interface_strings = re.split(r'.* line protocol is .*', output, re.M)
+        header_strings = re.findall(r'.* line protocol is .*', output, re.M)
 
-        return counters        
+        empty = interface_strings.pop(0).strip()
+        if empty:
+            raise ValueError("Unexpected output from: {}".format(command))
+
+        # Parse out the interface names
+        intf = []
+        for intf_line in header_strings:
+            interface, _ = re.split(r" is .* line protocol is ", intf_line)
+            intf.append(interface.strip())
+
+        if len(intf) != len(interface_strings):
+            raise ValueError("Unexpected output from: {}".format(command))
+
+        # Re-join interface names with interface strings
+        for interface, interface_str in zip(intf, interface_strings):
+            counters.setdefault(interface, {})
+            for line in interface_str.splitlines():
+                if 'packets input' in line:
+                    # '0 packets input, 0 bytes, 0 no buffer'
+                    match = re.search(r"(\d+) packets input.*(\d+) bytes", line)
+                    counters[interface]['rx_unicast_packets'] = int(match.group(1))
+                    counters[interface]['rx_octets'] = int(match.group(2))
+                elif 'broadcast' in line:
+                    # 'Received 0 broadcasts (0 multicasts)'
+                    # 'Received 264071 broadcasts (39327 IP multicasts)'
+                    # 'Received 338 broadcasts, 0 runts, 0 giants, 0 throttles'
+                    match = re.search(r"Received (\d+) broadcasts.*(\d+).*multicasts", line)
+                    alt_match = re.search(r"Received (\d+) broadcasts.*", line)
+                    if match:
+                        counters[interface]['rx_broadcast_packets'] = int(match.group(1))
+                        counters[interface]['rx_multicast_packets'] = int(match.group(2))
+                    elif alt_match:
+                        counters[interface]['rx_broadcast_packets'] = int(alt_match.group(1))
+                        counters[interface]['rx_multicast_packets'] = -1
+                    else:
+                        counters[interface]['rx_broadcast_packets'] = -1
+                        counters[interface]['rx_multicast_packets'] = -1
+                elif 'packets output' in line:
+                    # '0 packets output, 0 bytes, 0 underruns'
+                    match = re.search(r"(\d+) packets output.*(\d+) bytes", line)
+                    counters[interface]['tx_unicast_packets'] = int(match.group(1))
+                    counters[interface]['tx_octets'] = int(match.group(2))
+                    counters[interface]['tx_broadcast_packets'] = -1
+                    counters[interface]['tx_multicast_packets'] = -1
+                elif 'input errors' in line:
+                    # '0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored'
+                    match = re.search(r"(\d+) input errors", line)
+                    counters[interface]['rx_errors'] = int(match.group(1))
+                    counters[interface]['rx_discards'] = -1
+                elif 'output errors' in line:
+                    # '0 output errors, 0 collisions, 1 interface resets'
+                    match = re.search(r"(\d+) output errors", line)
+                    counters[interface]['tx_errors'] = int(match.group(1))
+                    counters[interface]['tx_discards'] = -1
+
+        return counters
+
+    def get_environment(self):
+        '''
+        power, fan, temperature are currently not implemented
+        cpu is using 1-minute average
+        cpu hard-coded to cpu0 (i.e. only a single CPU)
+        '''
+        environment = {}
+        cpu_cmd = 'show proc cpu'
+        mem_cmd = 'show memory statistics'
+
+        output = self.device.send_command(cpu_cmd)
+        output = output.strip()
+        for line in output.splitlines():
+            if 'CPU utilization' in line:
+                # CPU utilization for five seconds: 2%/0%; one minute: 2%; five minutes: 1%
+                cpu_regex = r'^.*one minute: (\d+)%; five.*$'
+                match = re.search(cpu_regex, line)
+                break
+        environment.setdefault('cpu', {})
+        environment['cpu'][0] = {}
+        environment['cpu'][0]['%usage'] = float(match.group(1))
+
+        output = self.device.send_command(mem_cmd)
+        output = output.strip()
+        for line in output.splitlines():
+            if 'Processor' in line:
+                _, _, _, proc_used_mem, proc_free_mem = line.split()[:5]
+            elif 'I/O' in line:
+                _, _, _, io_used_mem, io_free_mem = line.split()[:5]
+        used_mem = int(proc_used_mem) + int(io_used_mem)
+        free_mem = int(proc_free_mem) + int(io_free_mem)
+        environment.setdefault('memory', {})
+        environment['memory']['used_ram'] = used_mem
+        environment['memory']['available_ram'] = free_mem
+
+        # Initialize 'power', 'fan', and 'temperature' to default values (not implemented)
+        environment.setdefault('power', {})
+        environment['power']['invalid'] = {
+            'status': True,
+            'output': -1.0,
+            'capacity': -1.0,
+        }
+        environment.setdefault('fans', {})
+        environment['fans']['invalid'] = {
+            'status': True,
+        }
+        environment.setdefault('temperature', {})
+        environment['temperature']['invalid'] = {
+            'is_alert': False,
+            'is_critical': False,
+            'temperature': -1.0,
+        }
+        return environment

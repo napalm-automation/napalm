@@ -1,0 +1,2 @@
++logging buffered 20000
+-logging buffered 9000
