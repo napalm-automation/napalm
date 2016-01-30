@@ -26,7 +26,7 @@ class FortiOSDriver(NetworkDriver):
         self.password = password
 
         if optional_args is not None:
-            self.vdom = optional_args.pop('fortios_vdom', None)
+            self.vdom = optional_args.get('fortios_vdom', None)
         else:
             self.vdom = None
 
