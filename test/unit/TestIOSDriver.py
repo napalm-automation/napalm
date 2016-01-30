@@ -18,7 +18,7 @@ from base import TestConfigNetworkDriver, TestGettersNetworkDriver
 from getpass import getpass
 
 
-class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
+class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
     '''
     Core file operations:
     load_replace_candidate  Tested
@@ -44,14 +44,12 @@ class TestIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        username = 'pyclass'
-        ip_addr = raw_input("Enter device ip or hostname: ")
-        ip_addr = ip_addr.strip()
-        password = getpass()
+        ip_addr = '127.0.0.1'
+        username = 'vagrant'
+        password = 'vagrant'
         cls.vendor = 'ios'
         driver = get_network_driver(cls.vendor)
-        optional_args = {}
-        optional_args['dest_file_system'] = 'flash:'
+        optional_args = {'port': 12204, 'dest_file_system': 'bootflash:'}
 
         cls.device = driver(ip_addr, username, password, optional_args=optional_args)
         cls.device.open()
