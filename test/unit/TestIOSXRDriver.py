@@ -27,9 +27,7 @@ class TestConfigIOSXRDriver(unittest.TestCase, TestConfigNetworkDriver):
         password = 'vagrant'
         cls.vendor = 'iosxr'
 
-        optional_args = {
-            'port': 12202,
-        }
+        optional_args = {'port': 12202,}
         cls.device = IOSXRDriver(hostname, username, password, timeout=60, optional_args=optional_args)
         cls.device.open()
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
@@ -56,6 +54,7 @@ class TestGetterIOSXRDriver(unittest.TestCase, TestGettersNetworkDriver):
 
 
 class FakeIOSXRDevice:
+
     @staticmethod
     def read_txt_file(filename):
         with open(filename) as data_file:
