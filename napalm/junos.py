@@ -38,7 +38,7 @@ class JunOSDriver(NetworkDriver):
 
         if optional_args is None:
             optional_args = {}
-        self.port = optional_args.pop('port', 22)
+        self.port = optional_args.get('port', 22)
 
         self.device = Device(hostname, user=username, password=password, port=self.port)
 
