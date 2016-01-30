@@ -29,9 +29,7 @@ class TestConfigJunOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         password = 'vagrant123'
         cls.vendor = 'junos'
 
-        optional_args = {
-            'port': 12203,
-        }
+        optional_args = {'port': 12203,}
         cls.device = JunOSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
         cls.device.open()
 
@@ -56,9 +54,31 @@ class TestGetterJunOSDriver(unittest.TestCase, TestGettersNetworkDriver):
 
 
 class FakeJunOSDevice:
+
     def __init__(self):
         self.rpc = FakeRPCObject()
-        self.facts = {'domain': None, 'hostname': 'vsrx', 'ifd_style': 'CLASSIC', '2RE': False, 'serialnumber': 'beb914a9cca3', 'fqdn': 'vsrx', 'virtual': True, 'switch_style': 'NONE', 'version': '12.1X47-D20.7', 'HOME': '/cf/var/home/vagrant', 'srx_cluster': False, 'model': 'FIREFLY-PERIMETER', 'RE0': {'status': 'Testing', 'last_reboot_reason': 'Router rebooted after a normal shutdown.', 'model': 'FIREFLY-PERIMETER RE', 'up_time': '1 hour, 13 minutes, 37 seconds'}, 'vc_capable': False, 'personality': 'SRX_BRANCH'}
+        self.facts = {
+            'domain': None,
+            'hostname': 'vsrx',
+            'ifd_style': 'CLASSIC',
+            '2RE': False,
+            'serialnumber': 'beb914a9cca3',
+            'fqdn': 'vsrx',
+            'virtual': True,
+            'switch_style': 'NONE',
+            'version': '12.1X47-D20.7',
+            'HOME': '/cf/var/home/vagrant',
+            'srx_cluster': False,
+            'model': 'FIREFLY-PERIMETER',
+            'RE0': {
+                'status': 'Testing',
+                'last_reboot_reason': 'Router rebooted after a normal shutdown.',
+                'model': 'FIREFLY-PERIMETER RE',
+                'up_time': '1 hour, 13 minutes, 37 seconds'
+            },
+            'vc_capable': False,
+            'personality': 'SRX_BRANCH'
+        }
 
 
 class FakeRPCObject:
