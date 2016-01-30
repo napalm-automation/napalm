@@ -6,10 +6,11 @@ You will need the boxes:
 
  * hashicorp/precise64
  * vEOS-4.15.2F - https://eos.arista.com/using-veos-with-vagrant-and-virtualbox/
- * IOSXRv-5.3.0 - https://github.com/dbarrosop/vagrant-iosxr/
+ * IOSXRv-5.3.0 - https://www.dravetech.com/blog/2016/01/14/vagrant_box_ios_xr.html
  * JunOS - juniper/ffp-12.1X47-D20.7-packetmode
     * To provision and test JunOS first you have to add the ssh vagrant ssh key into the ssh-agent. I.e.:
         ssh-add /opt/vagrant/embedded/gems/gems/vagrant-1.7.4/keys/vagrant
+  * csr100v
 
 For running unittests always start the base box and the box you want to test:
 
@@ -36,11 +37,6 @@ Vagrant.configure(2) do |config|
 
     eos.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
     eos.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
-
-    eos.vm.provision "host_shell", inline: <<-SHELL
-      ./provision.py eos 12443 vagrant vagrant
-    SHELL
-
   end
 
   config.vm.define "iosxr" do |iosxr|
@@ -50,11 +46,6 @@ Vagrant.configure(2) do |config|
 
     iosxr.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
     iosxr.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
-
-    iosxr.vm.provision "host_shell", inline: <<-SHELL
-      ./provision.py iosxr 12202 vagrant vagrant
-    SHELL
-
   end
 
   config.vm.define "junos" do |junos|
@@ -64,11 +55,15 @@ Vagrant.configure(2) do |config|
 
     junos.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
     junos.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
+  end
 
-    junos.vm.provision "host_shell", inline: <<-SHELL
-      ./provision.py junos 12203 vagrant vagrant
-    SHELL
+  config.vm.define "ios" do |ios|
+    ios.vm.box = "csr1000v"
 
+    ios.vm.network :forwarded_port, guest: 22, host: 12204, id: 'ssh'
+
+    ios.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
+    ios.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
   end
 
 end
