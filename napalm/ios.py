@@ -29,8 +29,10 @@ DAY_SECONDS = 24 * HOUR_SECONDS
 WEEK_SECONDS = 7 * DAY_SECONDS
 YEAR_SECONDS = 365 * DAY_SECONDS
 
+
 class IOSDriver(NetworkDriver):
     '''NAPALM Cisco IOS Handler'''
+
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -50,9 +52,13 @@ class IOSDriver(NetworkDriver):
 
     def open(self):
         """Opens a connection to the device."""
-        self.device = ConnectHandler(device_type='cisco_ios', ip=self.hostname, port=self.port,
-                                     username=self.username, password=self.password,
-                                     global_delay_factor=self.global_delay_factor, verbose=False)
+        self.device = ConnectHandler(device_type='cisco_ios',
+                                     ip=self.hostname,
+                                     port=self.port,
+                                     username=self.username,
+                                     password=self.password,
+                                     global_delay_factor=self.global_delay_factor,
+                                     verbose=False)
 
     def close(self):
         """Closes the connection to the device."""
@@ -86,7 +92,8 @@ class IOSDriver(NetworkDriver):
         if config:
             raise NotImplementedError
         if filename:
-            (return_status, msg) = self.scp_file(source_file=filename, dest_file=self.merge_cfg,
+            (return_status, msg) = self.scp_file(source_file=filename,
+                                                 dest_file=self.merge_cfg,
                                                  file_system=self.dest_file_system)
             if not return_status:
                 if msg == '':
@@ -96,24 +103,22 @@ class IOSDriver(NetworkDriver):
     @staticmethod
     def normalize_compare_config(diff):
         '''Filter out strings that should not show up in the diff'''
-        ignore_strings = [
-            'Contextual Config Diffs',
-            'No changes were found',
-            'file prompt quiet',
-            'ntp clock-period'
-        ]
+        ignore_strings = ['Contextual Config Diffs', 'No changes were found', 'file prompt quiet', 'ntp clock-period']
 
         new_list = []
         for line in diff.splitlines():
             for ignore in ignore_strings:
                 if ignore in line:
                     break
-            else:   # nobreak
+            else:  # nobreak
                 new_list.append(line)
         return "\n".join(new_list)
 
-    def compare_config(self, base_file='running-config', new_file=None,
-                       base_file_system='system:', new_file_system=None):
+    def compare_config(self,
+                       base_file='running-config',
+                       new_file=None,
+                       base_file_system='system:',
+                       new_file_system=None):
         '''
         show archive config differences <base_file> <new_file>
 
@@ -215,8 +220,10 @@ class IOSDriver(NetworkDriver):
         enable_scp = True
         debug = False
 
-        with FileTransfer(self.device, source_file=source_file,
-                          dest_file=dest_file, file_system=file_system) as scp_transfer:
+        with FileTransfer(self.device,
+                          source_file=source_file,
+                          dest_file=dest_file,
+                          file_system=file_system) as scp_transfer:
 
             if debug:
                 base_time = datetime.now()
@@ -339,10 +346,7 @@ class IOSDriver(NetworkDriver):
                 continue
             device_id, local_port, _, _, remote_port = line.split()
             lldp.setdefault(local_port, [])
-            lldp[local_port].append({
-                'hostname': device_id,
-                'port': remote_port,
-            })
+            lldp[local_port].append({'hostname': device_id, 'port': remote_port,})
         return lldp
 
     @staticmethod
@@ -381,8 +385,7 @@ class IOSDriver(NetworkDriver):
         # default values.
         vendor = u'Cisco'
         uptime = -1
-        serial_number, fqdn, os_version, hostname = (u'Unknown', u'Unknown',
-                                                     u'Unknown', u'Unknown')
+        serial_number, fqdn, os_version, hostname = (u'Unknown', u'Unknown', u'Unknown', u'Unknown')
 
         # obtain output from device
         show_ver = self.device.send_command('show version')
@@ -508,7 +511,7 @@ class IOSDriver(NetworkDriver):
                 if speed_format == 'Mbit':
                     interface_list[interface]['speed'] = int(speed)
                 else:
-                    speed = int(speed)/1000
+                    speed = int(speed) / 1000
                     interface_list[interface]['speed'] = int(speed)
             except AttributeError:
                 interface_list[interface]['speed'] = -1
@@ -547,9 +550,9 @@ class IOSDriver(NetworkDriver):
             return (hours * 3600) + (minutes * 60) + seconds
         # Check if any letters 'w', 'h', 'd' are in the time string
         elif uptime_letters & set(bgp_uptime):
-            form1 = r'(\d+)d(\d+)h'     # 1d17h
-            form2 = r'(\d+)w(\d+)d'     # 8w5d
-            form3 = r'(\d+)y(\d+)w'     # 1y28w
+            form1 = r'(\d+)d(\d+)h'  # 1d17h
+            form2 = r'(\d+)w(\d+)d'  # 8w5d
+            form3 = r'(\d+)y(\d+)w'  # 1y28w
             match = re.search(form1, bgp_uptime)
             if match:
                 days = int(match.group(1))
@@ -671,7 +674,7 @@ class IOSDriver(NetworkDriver):
             filtered_prefixes_out = self.device.send_command(cmd_filtered_prefix).strip()
             accepted_prefixes = int(accepted_prefixes)
             sent_prefixes = int(sent_prefixes)
-            pattern = r'Total:\s+\d+\s+(\d+).*'    # Total:     0          2
+            pattern = r'Total:\s+\d+\s+(\d+).*'  # Total:     0          2
             match = re.search(pattern, filtered_prefixes_out)
             if match:
                 filtered_prefixes = int(match.group(1))
@@ -813,19 +816,9 @@ class IOSDriver(NetworkDriver):
 
         # Initialize 'power', 'fan', and 'temperature' to default values (not implemented)
         environment.setdefault('power', {})
-        environment['power']['invalid'] = {
-            'status': True,
-            'output': -1.0,
-            'capacity': -1.0,
-        }
+        environment['power']['invalid'] = {'status': True, 'output': -1.0, 'capacity': -1.0,}
         environment.setdefault('fans', {})
-        environment['fans']['invalid'] = {
-            'status': True,
-        }
+        environment['fans']['invalid'] = {'status': True,}
         environment.setdefault('temperature', {})
-        environment['temperature']['invalid'] = {
-            'is_alert': False,
-            'is_critical': False,
-            'temperature': -1.0,
-        }
+        environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0,}
         return environment
