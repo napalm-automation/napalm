@@ -29,9 +29,7 @@ class TestConfigEOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         password = 'vagrant'
         cls.vendor = 'eos'
 
-        optional_args = {
-            'port': 12443,
-        }
+        optional_args = {'port': 12443,}
         cls.device = eos.EOSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
         cls.device.open()
 
@@ -50,9 +48,7 @@ class TestGetterEOSDriver(unittest.TestCase, TestGettersNetworkDriver):
         password = 'vagrant'
         cls.vendor = 'eos'
 
-        optional_args = {
-            'port': 12443,
-        }
+        optional_args = {'port': 12443,}
         cls.device = eos.EOSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
 
         if cls.mock:
@@ -62,6 +58,7 @@ class TestGetterEOSDriver(unittest.TestCase, TestGettersNetworkDriver):
 
 
 class FakeEOSDevice:
+
     @staticmethod
     def read_json_file(filename):
         with open(filename) as data_file:
