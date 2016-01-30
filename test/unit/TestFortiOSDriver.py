@@ -20,6 +20,7 @@ from pyFG.fortios import FortiConfig
 
 
 class TestConfigFortiOSDriver(unittest.TestCase, TestConfigNetworkDriver):
+
     @classmethod
     def setUpClass(cls):
         hostname = '192.168.76.13'
@@ -32,6 +33,7 @@ class TestConfigFortiOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
 
 class TestGetterFortiOSDriver(unittest.TestCase, TestGettersNetworkDriver):
+
     @classmethod
     def setUpClass(cls):
         cls.mock = True
@@ -50,6 +52,7 @@ class TestGetterFortiOSDriver(unittest.TestCase, TestGettersNetworkDriver):
 
 
 class FakeFortiOSDevice:
+
     @staticmethod
     def read_txt_file(filename):
         with open(filename) as data_file:
