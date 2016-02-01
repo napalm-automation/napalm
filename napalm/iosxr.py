@@ -576,8 +576,6 @@ class IOSXRDriver(NetworkDriver):
 
         # init result dict
         lldp = {}
-
-        # fetch sh ip bgp output
         sh_lldp = self.device.show_lldp_neighbors().splitlines()[5:-3]
 
         for n in sh_lldp:
