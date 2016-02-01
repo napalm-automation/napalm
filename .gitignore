@@ -60,4 +60,7 @@ env
 
 napalm/fix_script.sh
 test/unit/ios/*.conf
-
+test/unit/iosxr/*.conf
+test/unit/iosxr/*.diff
+test/unit/test_devices.py
+test/unit/test_devices.pyc
