@@ -78,3 +78,12 @@ af = {
     'accepted_prefixes': int,
     'received_prefixes': int
 }
+
+mac_address_table = {
+    'mac'       : str,
+    'interface' : str,
+    'static'    : bool,
+    'active'    : bool,
+    'moves'     : int,
+    'last_move' : float
+}
