@@ -630,3 +630,31 @@ class JunOSDriver(NetworkDriver):
             bgp_neighbors[peer_as].append(neighbor_details)
 
         return bgp_neighbors
+
+    def get_arp_table(self):
+
+        # could use ArpTable
+        # from jnpr.junos.op.phyport import ArpTable
+        # and simply use it
+        # but
+        # we need:
+        #   - filters
+        #   - group by VLAN ID
+        #   - hostname & TTE fields as well
+
+        arp_table = list()
+
+        arp_table_raw = junos_views.junos_arp_table(self.device)
+        arp_table_raw.get()
+        arp_table_items = arp_table_raw.items()
+
+        for arp_table_entry in arp_table_items:
+            arp_entry = {
+                elem[0]: elem[1] for elem in arp_table_entry[1]
+            }
+            tte = arp_entry.pop('tte', 0.0)
+            arp_entry['age'] = tte
+            # must compute age based on TTE
+            arp_table.append(arp_entry)
+
+        return arp_table

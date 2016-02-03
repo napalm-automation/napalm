@@ -339,3 +339,22 @@ junos_bgp_neighbors_view:
     suppressed_prefix_count: {bgp-rib/suppressed-prefix-count: int}
     advertise_prefix_count: {bgp-rib/advertised-prefix-count: int}
     flap_count: {flap-count: int}
+
+###
+### ARP Table
+###
+
+junos_arp_table:
+  rpc: get-arp-table-information
+  args:
+    expiration-time: true
+  item: arp-table-entry
+  key: interface-name
+  view: junos_arp_view
+
+junos_arp_view:
+  fields:
+    interface: {interface-name: unicode}
+    mac: {mac-address: unicode}
+    ip: {ip-address: unicode}
+    tte: {time-to-expire: float}
