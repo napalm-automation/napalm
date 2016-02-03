@@ -22,6 +22,7 @@ from pyIOSXR.exceptions import InvalidInputError, XMLCLIError, TimeoutError
 from exceptions import MergeConfigException, ReplaceConfigException, CommandErrorException, CommandTimeoutException
 import xml.etree.ElementTree as ET
 from collections import defaultdict
+from time import time
 import re
 
 
@@ -906,3 +907,34 @@ class IOSXRDriver(NetworkDriver):
                 continue
 
         return bgp_neighbors
+
+    def get_arp_table(self):
+
+        arp_table = list()
+
+        rpc_command = '<Get><Operational><ARP></ARP></Operational></Get>'
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for arp_entry in result_tree.findall('.//ResolutionHistoryDynamic/Entry/Entry'):
+            try:
+                age_nsec  = float(arp_entry.find('NsecTimestamp').text)
+                age_sec   = time() - age_nsec * 1e-9
+                interface = unicode(arp_entry.find('IDBInterfaceName').text)
+                ip        = unicode(arp_entry.find('IPv4Address').text)
+                mac_raw   = arp_entry.find('MACAddress').text
+                mac_all   = mac_raw.replace('.', '').replace(':', '')
+                mac_format= unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
+
+                arp_table.append(
+                    {
+                        'interface' : interface,
+                        'mac'       : mac_format,
+                        'ip'        : ip,
+                        'age'       : age_sec
+                    }
+                )
+            except Exception:
+                continue
+
+        return arp_table
