@@ -252,3 +252,12 @@ class TestGettersNetworkDriver:
                 result = result and self._test_model(models.peer_details, neighbor)
 
         self.assertTrue(result)
+
+    def test_get_arp_table(self):
+
+        get_arp_table = self.device.get_arp_table()
+
+        result = len(get_arp_table) > 0
+
+        for arp_entry in get_arp_table:
+            result = result and self._test_model(models.arp_table, arp_entry)
