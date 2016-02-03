@@ -816,3 +816,52 @@ class JunOSDriver(NetworkDriver):
             mac_address_table.append(mac_entry)
 
         return mac_address_table
+
+    def get_route_to(self, destination = ''):
+
+        routes = {}
+
+        if not destination:
+            raise TypeError('Please specify a valid destination!')
+
+        routes_table = junos_views.junos_route_table(self.device)
+
+        try:
+            routes_table.get(
+                destination = destination
+            )
+        except RpcTimeoutError:
+            # on devices with milions of routes
+            # in case the destination is too generic (e.g.: 10/8)
+            # will take very very long to determine all routes and
+            # moreover will return a huge list
+            raise CommandTimeoutException('Too many routes returned! Please try with a longer prefix!')
+        except Exception as e:
+            raise CommandErrorException('Cannot retrieve routes! Reason: {err}'.format(err = e))
+
+        routes_items = routes_table.items()
+
+        for route in routes_items:
+            d = dict()
+            next_hop = route[0]
+            d = {elem[0]: elem[1] for elem in route[1]}
+            destination = d.pop('destination', '')
+            for key in ['current_active', 'selected_next_hop', 'last_active']:
+                value = d.get(key)
+                if value is None:
+                    d[key] = False
+            as_path = d.get('as_path')
+            if as_path is not None:
+                d['as_path'] = as_path.split(' I ')[0].replace('AS path:', '').replace('I', '').strip()
+                # to be sure that contains only AS Numbers
+            if d.get('inactive_reason') is None:
+                d['inactive_reason'] = u''
+            communities = d.get('communities')
+            if type(communities) is not list:
+                d['communities'] = [communities]
+            d['next_hop'] = unicode(next_hop)
+            if destination not in routes.keys():
+                routes[destination] = list()
+            routes[destination].append(d)
+
+        return routes

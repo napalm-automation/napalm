@@ -399,3 +399,28 @@ junos_mac_address_view:
     interface: {l2-mac-logical-interface: unicode}
     mac: {l2-mac-address: unicode}
     vlan: {l2-bridge-vlan: int}
+
+###
+### Route Information
+###
+
+junos_route_table:
+  rpc: get-route-information
+  args_key:
+    destination
+  item: route-table/rt
+  key: rt-destination
+  view: junos_route_table_view
+
+junos_route_table_view:
+  groups:
+    entry: rt-entry
+  fields_entry:
+    protocol: protocol-name
+    active_route: {active-tag: True=*}
+    age: {age/@seconds: int}
+    as_path: as-path
+    next_hop: nh/to
+    outgoing_interface: nh/via
+    local_preference: {local-preference: int}
+    preference: {preference: int}

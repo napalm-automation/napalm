@@ -1082,3 +1082,208 @@ class IOSXRDriver(NetworkDriver):
                 continue
 
         return mac_table
+
+    def get_route_to(self, destination = ''):
+
+        routes = {}
+
+        if not destination:
+            raise TypeError('Please specify a valid destination!')
+
+        dest_split = destination.split('/')
+        network = dest_split[0]
+        prefix_tag = ''
+        if len(dest_split) == 2:
+            prefix_tag = '''
+                <PrefixLength>
+                    {prefix_length}
+                </PrefixLength>
+            '''.format(prefix_length = dest_split[1])
+
+        route_info_rpc_command = '''
+            <Get>
+                <Operational>
+                    <RIB>
+                        <VRFTable>
+                            <VRF>
+                                <Naming>
+                                    <VRFName>
+                                        default
+                                    </VRFName>
+                                </Naming>
+                                <AFTable>
+                                    <AF>
+                                        <Naming>
+                                            <AFName>
+                                                IPv4
+                                            </AFName>
+                                        </Naming>
+                                        <SAFTable>
+                                            <SAF>
+                                                <Naming>
+                                                    <SAFName>
+                                                        Unicast
+                                                    </SAFName>
+                                                </Naming>
+                                                <IP_RIBRouteTable>
+                                                    <IP_RIBRoute>
+                                                        <Naming>
+                                                            <RouteTableName>
+                                                                default
+                                                            </RouteTableName>
+                                                        </Naming>
+                                                        <RouteTable>
+                                                            <Route>
+                                                                <Naming>
+                                                                    <Address>
+                                                                        {network}
+                                                                    </Address>
+                                                                    {prefix}
+                                                                </Naming>
+                                                            </Route>
+                                                        </RouteTable>
+                                                    </IP_RIBRoute>
+                                                </IP_RIBRouteTable>
+                                          </SAF>
+                                        </SAFTable>
+                                    </AF>
+                                </AFTable>
+                            </VRF>
+                        </VRFTable>
+                    </RIB>
+                </Operational>
+            </Get>
+        '''.format(
+            network = network,
+            prefix  = prefix_tag
+        )
+
+        routes_tree = ET.fromstring(self.device.make_rpc_call(route_info_rpc_command))
+
+        for route in routes_tree.iter('Route'):
+            route_details = dict()
+            try:
+                address  = route.find('Prefix').text
+                length   = route.find('PrefixLength').text
+                distance = int(route.find('Distance').text)
+                protocol = unicode(route.find('ProtocolName').text.upper())
+                priority = int(route.find('Priority').text)
+                age      = int(route.find('RouteAge').text)
+                destination = unicode('{prefix}/{length}'.format(
+                    prefix = address,
+                    length = length
+                ))
+                if destination not in routes.keys():
+                    routes[destination] = list()
+            except Exception:
+                continue
+
+            route_details = {
+                'current_active'    : False,
+                'last_active'       : False,
+                'age'               : age,
+                'as_path'           : u'',
+                'local_preference'  : 0,
+                'next_hop'          : u'',
+                'protocol'          : protocol,
+                'outgoing_interface': u'',
+                'local_as'          : 0,
+                'remote_as'         : 0,
+                'preference'        : priority,
+                'preference2'       : distance,
+                'communities'       : [],
+                'selected_next_hop' : False,
+                'inactive_reason'   : u''
+            }
+
+            # from BGP will try to get some more information
+            if protocol == 'BGP' and False:
+                # TODO
+                # looks like IOS-XR does not filter correctly
+                # got to check that otherwise will never provide correct info...
+                # !IMPORTANT
+                bgp_route_info_rpc_command = '''
+                    <Get>
+                        <Operational>
+                            <BGP>
+                                <Active>
+                                    <DefaultVRF>
+                                        <AFTable>
+                                            <AF>
+                                                <Naming>
+                                                    <AFName>
+                                                        IPv4Unicast
+                                                    </AFName>
+                                                </Naming>
+                                                <PathTable>
+                                                    <Path>
+                                                        <Naming>
+                                                            <Network>
+                                                                <IPV4Address>
+                                                                    {network}
+                                                                </IPV4Address>
+                                                                <IPV4PrefixLength>
+                                                                    {prefix_len}
+                                                                </IPV4PrefixLength>
+                                                            </Network>
+                                                        </Naming>
+                                                    </Path>
+                                                </PathTable>
+                                            </AF>
+                                        </AFTable>
+                                    </DefaultVRF>
+                                </Active>
+                            </BGP>
+                        </Operational>
+                    </Get>
+                '''.format(
+                    network     = network,
+                    prefix_len  = dest_split[-1]
+                )
+                bgp_route_tree = ET.fromstring(self.device.make_rpc_call(bgp_route_info_rpc_command))
+                for bgp_path in bgp_route_tree.iter('Path'):
+                    try:
+                        best_path       = eval(
+                            bgp_path.find('PathInformation/IsBestPath').text.title()
+                        )
+                        backup          = eval(
+                            bgp_path.find('PathInformation/IsPathBackup').text.title()
+                        )
+                        local_preference= int(
+                            bgp_path.find('AttributesAfterPolicyIn/CommonAttributes/LocalPreference').text
+                        )
+                        remote_as       = int(
+                            bgp_path.find('AttributesAfterPolicyIn/CommonAttributes/NeighborAS').text
+                        )
+                        as_path         = ' '.join(
+                        [bgp_as.text in bgp_path.findall('AttributesAfterPolicyIn/CommonAttributes/NeighborAS/Entry')]
+                        )
+                        # TODO not quite correct
+                    except Exception:
+                        continue
+                    single_route_details = route_details.copy()
+                    single_route_details.update({
+                        'current_active'    : best_path,
+                        'local_preference'  : local_preference,
+                        'as_path'           : as_path,
+                        'remote_as'         : remote_as
+                    })
+                    routes[destination].append(single_route_details)
+
+            else:
+                first_route = True
+                for route_entry in route.findall('RoutePath/Entry'):
+                    # get all possible entries
+                    try:
+                        next_hop  = unicode(route_entry.find('Address').text)
+                    except Exception:
+                        continue
+                    single_route_details = route_details.copy()
+                    single_route_details.update({
+                        'current_active': first_route,
+                        'next_hop'      : next_hop
+                    })
+                    routes[destination].append(single_route_details)
+                    first_route = False
+
+        return routes
