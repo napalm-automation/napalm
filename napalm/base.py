@@ -367,3 +367,41 @@ class NetworkDriver:
             }
         """
         raise NotImplementedError
+
+    def get_lldp_neighbors_detail(self, interface = ''):
+        """
+        Returns a detailed view of the LLDP neighbors as a dictionary
+        containing lists of dictionaries for each interface.
+
+        Inner dictionaries contain fields:
+            * parent_interface (string)
+            * interface_description (string)
+            * remote_port (string)
+            * remote_port_description (string)
+            * remote_chassis_id (string)
+            * remote_system_name (string)
+            * remote_system_description (string)
+            * remote_system_capab (string)
+            * remote_system_enabled_capab (string)
+
+        Example:
+            {
+                'TenGigE0/0/0/8': [
+                    {
+                        'parent_interface': u'Bundle-Ether8',
+                        'interface_description': u'TenGigE0/0/0/8',
+                        'remote_chassis_id': u'8c60.4f69.e96c',
+                        'remote_system_name': u'switch',
+                        'remote_port': u'Eth2/2/1',
+                        'remote_port_description': u'Ethernet2/2/1',
+                        'remote_system_description': u'''Cisco Nexus Operating System (NX-OS) Software 7.1(0)N1(1a)
+                              TAC support: http://www.cisco.com/tac
+                              Copyright (c) 2002-2015, Cisco Systems, Inc. All rights reserved.''',
+                        'remote_system_capab': u'B, R',
+                        'remote_system_enable_capab': u'B'
+                    }
+                ]
+            }
+
+        """
+        raise NotImplementedError

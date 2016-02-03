@@ -438,3 +438,49 @@ class EOSDriver(NetworkDriver):
         }
 
         return environment_counters
+
+    def get_lldp_neighbors_detail(self, interface = ''):
+
+        lldp_neighbors_out = dict()
+
+        filters = list()
+        if interface:
+            filters.append(interface)
+
+        commands = list()
+        commands.append(
+            'show lldp neighbors {filters} detail'.format(
+                filters = ' '.join(filters)
+            )
+        )
+
+        lldp_neighbors_in = {}
+        try:
+            lldp_neighbors_in = self.device.run_commands(commands)[0].get('lldpNeighbors', {})
+        except Exception:
+            return {}
+
+        for interface in lldp_neighbors_in:
+            interface_neighbors = lldp_neighbors_in.get(interface).get('lldpNeighborInfo', {})
+            if not interface_neighbors:
+                # in case of empty infos
+                continue
+            for neighbor in interface_neighbors: # it is provided a list of neighbors per interface
+                if interface not in lldp_neighbors_out.keys():
+                    lldp_neighbors_out[interface] = list()
+                capabilities = neighbor.get('systemCapabilities')
+                lldp_neighbors_out[interface].append(
+                    {
+                        'parent_interface'              : interface, # no parent interfaces
+                        # 'interface_description'         : neighbor.get('neighborInterfaceInfo', {}).get('interfaceDescription', u''),
+                        'remote_port'                   : neighbor.get('neighborInterfaceInfo', {}).get('interfaceId', u''),
+                        'remote_port_description'       : u'',
+                        'remote_system_name'            : neighbor.get('systemName', u''),
+                        'remote_system_description'     : neighbor.get('systemDescription', u''),
+                        'remote_chassis_id'             : neighbor.get('chassisId', u''),
+                        'remote_system_capab'           : unicode(', '.join(capabilities)),
+                        'remote_system_enable_capab'   : unicode(', '.join([capability for capability in capabilities.keys() if capabilities[capability]]))
+                    }
+                )
+
+        return lldp_neighbors_out

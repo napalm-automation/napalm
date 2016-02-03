@@ -418,7 +418,7 @@ class IOSXRDriver(NetworkDriver):
         environment_status['power'] = dict()
         environment_status['cpu'] = dict()
         environment_status['memory'] = int()
-        
+
         # finding slots with equipment we're interested in
         rpc_command = """<Get>
             <AdminOperational>
@@ -444,7 +444,7 @@ class IOSXRDriver(NetworkDriver):
             for card in slot.iter("CardTable"):
                 #find enabled slots, figoure out type and save for later
                 if card.find('Card/Attributes/FRUInfo/ModuleAdministrativeState').text == "ADMIN_UP":
-                    
+
                     slot_name = slot.find('Naming/Name').text
                     module_type = re.sub("\d+", "", slot_name)
                     if len(module_type) > 0:
@@ -488,12 +488,12 @@ class IOSXRDriver(NetworkDriver):
         #
         # Memory
         #
-        
+
         rpc_command = "<Get><AdminOperational><MemorySummary></MemorySummary></AdminOperational></Get>"
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
         for node in result_tree.iter('Node'):
-            print 
+            print
             if node.find('Naming/NodeName/Slot').text == active_modules['RSP'][0]:    # first enabled RSP
                 available_ram = int(node.find('Summary/SystemRAMMemory').text)
                 free_ram = int(node.find('Summary/FreeApplicationMemory').text)
@@ -524,7 +524,7 @@ class IOSXRDriver(NetworkDriver):
         # CPU
         #
         cpu = dict()
- 
+
         rpc_command = "<Get><Operational><SystemMonitoring></SystemMonitoring></Operational></Get>"
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
@@ -586,3 +586,47 @@ class IOSXRDriver(NetworkDriver):
             lldp[local_interface].append({'hostname': unicode(n.split()[0]), 'port': unicode(n.split()[4]), })
 
         return lldp
+
+    def get_lldp_neighbors_detail(self, interface = ''):
+
+        lldp_neighbors = dict()
+
+        rpc_command = '<Get><Operational><LLDP></LLDP></Operational></Get>'
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for neighbor in result_tree.findall('.//Neighbors/DetailTable/Detail/Entry'):
+            if neighbor is None:
+                continue
+            try:
+                interface_name      = unicode(neighbor.find('ReceivingInterfaceName').text)
+                parent_interface    = unicode(neighbor.find('ReceivingParentInterfaceName').text)
+                device_id           = unicode(neighbor.find('DeviceID').text)
+                chassis_id          = unicode(neighbor.find('ChassisID').text)
+                port_id             = unicode(neighbor.find('PortIDDetail').text)
+                port_descr          = unicode(neighbor.find('Detail/PortDescription').text)
+                system_name         = unicode(neighbor.find('Detail/SystemName').text)
+                system_descr        = unicode(neighbor.find('Detail/SystemDescription').text)
+                system_capabilities = unicode(neighbor.find('Detail/SystemCapabilities').text)
+                enabled_capabilities= unicode(neighbor.find('Detail/EnabledCapabilities').text)
+                # few other optional...
+                # time_remaining = neighbor.find('Detail/TimeRemaining').text
+                # media_attachement_unit_type = neighbor.find('Detail/MediaAttachmentUnitType').text
+                # port_vlan_id = neighbor.find('Detail/PortVlanID').text
+
+                if interface_name not in lldp_neighbors.keys():
+                    lldp_neighbors[interface_name] = list()
+                lldp_neighbors[interface_name].append({
+                    'parent_interface'              : parent_interface,
+                    'remote_chassis_id'             : chassis_id,
+                    'remote_port'                   : port_id,
+                    'remote_port_description'       : port_descr,
+                    'remote_system_name'            : system_name,
+                    'remote_system_description'     : system_descr,
+                    'remote_system_capab'           : system_capabilities,
+                    'remote_system_enable_capab'    :  enabled_capabilities
+                })
+            except Exception:
+                continue # jump to next neighbor
+
+        return lldp_neighbors
