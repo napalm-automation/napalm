@@ -216,6 +216,6 @@ class TestGettersNetworkDriver:
 
         result = len(get_arp_table) > 0
 
-        for interface, interface_arp_entries in get_arp_table.items():
+        for interface, interface_arp_entries in get_arp_table.iteritems():
             for arp_entry in interface_arp_entries:
                 result = result and self._test_model(models.arp_table, arp_entry)
