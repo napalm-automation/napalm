@@ -81,6 +81,30 @@ class FakeJunOSDevice:
             'personality': 'SRX_BRANCH'
         }
 
+    @staticmethod
+    def read_txt_file(filename):
+        with open(filename) as data_file:
+            return data_file.read()
+
+    def cli(self, command = ''):
+        return self.read_txt_file(
+            'junos/mock_data/{parsed_command}.txt'.format(
+                parsed_command = command.replace(' ', '_')
+            )
+        )
+
+    @staticmethod
+    def read_txt_file(filename):
+        with open(filename) as data_file:
+            return data_file.read()
+
+    def cli(self, command = ''):
+        return self.read_txt_file(
+            'junos/mock_data/{parsed_command}.txt'.format(
+                parsed_command = command.replace(' ', '_')
+            )
+        )
+
 
 class FakeRPCObject:
 
