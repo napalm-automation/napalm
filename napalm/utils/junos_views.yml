@@ -360,3 +360,20 @@ junos_arp_view:
     mac: {mac-address: unicode}
     ip: {ip-address: unicode}
     tte: {time-to-expire: float}
+
+###
+### Interfaces IPs
+###
+
+junos_ip_interfaces_table:
+  rpc: get-interface-information
+  item: physical-interface/logical-interface/address-family/interface-address
+  args:
+    terse: True
+  key: ifa-local
+  view: junos_ip_interfaces_view
+
+junos_ip_interfaces_view:
+  fields:
+    family: ../address-family-name
+    interface: ../../name
