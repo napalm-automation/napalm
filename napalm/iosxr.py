@@ -792,3 +792,117 @@ class IOSXRDriver(NetworkDriver):
                 break
 
         return bgp_config
+
+    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+
+        bgp_neighbors = dict()
+
+        rpc_command = '''
+                <Get>
+                    <Operational>
+                        <BGP>
+                            <InstanceTable>
+                                <Instance>
+                                    <Naming>
+                                        <InstanceName>
+                                            default
+                                        </InstanceName>
+                                    </Naming>
+                                    <InstanceActive>
+                                        <DefaultVRF>
+                                            <GlobalProcessInfo>
+                                            </GlobalProcessInfo>
+                                            <NeighborTable>
+                                            </NeighborTable>
+                                        </DefaultVRF>
+                                    </InstanceActive>
+                                </Instance>
+                            </InstanceTable>
+                        </BGP>
+                    </Operational>
+                </Get>
+        '''
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        _CISCO_STATE_FUN_ = {
+            'BGP_ST_ESTAB': 'Established',
+            3: 'EstabSync'
+        }
+        # field ConnectionState presents information as string
+        # while in PreviousConnectionState we can find an integer...
+
+        for neighbor in result_tree.iter('Neighbor'):
+            try:
+                up                          = (self._find_txt(neighbor, 'ConnectionState') == 'BGP_ST_ESTAB')
+                local_as                    = int(self._find_txt(neighbor, 'LocalAS', 0))
+                remote_as                   = int(self._find_txt(neighbor, 'RemoteAS', 0))
+                remote_address              = unicode(self._find_txt(neighbor, 'Naming/NeighborAddress/IPV4Address') or self._find_txt(neighbor, 'Naming/NeighborAddress/IPV6Address'))
+                local_address_configured    = eval(self._find_txt(neighbor, 'IsLocalAddressConfigured').title())
+                local_address               = unicode(self._find_txt(neighbor, 'ConnectionLocalAddress/IPV4Address') or self._find_txt(neighbor, 'ConnectionLocalAddress/IPV6Address'))
+                local_port                  = int(self._find_txt(neighbor, 'ConnectionLocalPort'))
+                remote_address              = unicode(self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV4Address') or self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV6Address'))
+                remote_port                 = int(self._find_txt(neighbor, 'ConnectionRemotePort'))
+                multihop                    = eval(self._find_txt(neighbor, 'IsExternalNeighborNotDirectlyConnected').title())
+                import_policy               = unicode(self._find_txt(neighbor, 'AFData/Entry/RoutePolicyIn'))
+                export_policy               = unicode(self._find_txt(neighbor, 'AFData/Entry/RoutePolicyOut'))
+                input_messages              = int(self._find_txt(neighbor, 'MessgesReceived', 0))
+                output_messages             = int(self._find_txt(neighbor, 'MessagesSent', 0))
+                connection_up_count         = int(self._find_txt(neighbor, 'ConnectionUpCount', 0))
+                connection_down_count       = int(self._find_txt(neighbor, 'ConnectionDownCount', 0))
+                messages_queued_out         = int(self._find_txt(neighbor, 'MessagesQueuedOut', 0))
+                connection_state            = unicode(_CISCO_STATE_FUN_.get(self._find_txt(neighbor, 'ConnectionState')))
+                previous_connection_state   = unicode(_CISCO_STATE_FUN_.get(self._find_txt(neighbor, 'PreviousConnectionState')))
+                active_prefix_count         = int(self._find_txt(neighbor, 'AFData/Entry/NumberOfBestpaths', 0))
+                accepted_prefix_count       = int(self._find_txt(neighbor, 'AFData/Entry/PrefixesAccepted', 0))
+                suppressed_prefix_count     = int(self._find_txt(neighbor, 'AFData/Entry/PrefixesDenied', 0))
+                received_prefix_count       = accepted_prefix_count + suppressed_prefix_count # not quite right...
+                advertise_prefix_count      = int(self._find_txt(neighbor, 'AFData/Entry/PrefixesAdvertised', 0))
+                suppress_4byte_as           = eval(self._find_txt(neighbor, 'Suppress4ByteAs', 'false').title())
+                local_as_prepend            = not eval(self._find_txt(neighbor, 'LocalASNoPrepend', 'false').title())
+                holdtime                    = int(self._find_txt(neighbor, 'HoldTime', 0))
+                configured_holdtime         = int(self._find_txt(neighbor, 'ConfiguredHoldTime', 0))
+                keepalive                   = int(self._find_txt(neighbor, 'KeepAliveTime', 0))
+                configured_keepalive        = int(self._find_txt(neighbor, 'ConfiguredKeepalive', 0))
+                flap_count = connection_down_count / 2
+                if up:
+                    flap_count -= 1
+                if remote_as not in bgp_neighbors.keys():
+                    bgp_neighbors[remote_as] = list()
+                bgp_neighbors[remote_as].append({
+                    'up'                        : up,
+                    'local_as'                  : local_as,
+                    'remote_as'                 : remote_as,
+                    'local_address'             : local_address,
+                    'local_address_configured'  : local_address_configured,
+                    'local_port'                : local_port,
+                    'remote_address'            : remote_address,
+                    'remote_port'               : remote_port,
+                    'multihop'                  : multihop,
+                    'import_policy'             : import_policy,
+                    'export_policy'             : export_policy,
+                    'input_messages'            : input_messages,
+                    'output_messages'           : output_messages,
+                    'input_updates'             : 0,
+                    'output_updates'            : 0,
+                    'messages_queued_out'       : messages_queued_out,
+                    'connection_state'          : connection_state,
+                    'previous_connection_state' : previous_connection_state,
+                    'last_event'                : u'',
+                    'suppress_4byte_as'         : suppress_4byte_as,
+                    'local_as_prepend'          : local_as_prepend,
+                    'holdtime'                  : holdtime,
+                    'configured_holdtime'       : configured_holdtime,
+                    'keepalive'                 : keepalive,
+                    'configured_keepalive'      : configured_keepalive,
+                    'active_prefix_count'       : active_prefix_count,
+                    'received_prefix_count'     : received_prefix_count,
+                    'accepted_prefix_count'     : accepted_prefix_count,
+                    'suppressed_prefix_count'   : suppressed_prefix_count,
+                    'advertise_prefix_count'    : advertise_prefix_count,
+                    'flap_count'                : flap_count
+                })
+            except Exception:
+                continue
+
+        return bgp_neighbors

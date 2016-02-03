@@ -517,3 +517,82 @@ class NetworkDriver:
             }
         """
         raise NotImplementedError
+
+    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+
+        """
+        Returns a detailed view of the BGP neighbors as a dictionary of lists.
+        The keys of the dictionary represent the AS number of the neighbors.
+        Inner dictionaries contain the following fields:
+            * up (boolean)
+            * local_as (int)
+            * remote_as (int)
+            * local_address (unicode)
+            * local_address_configured (boolean)
+            * local_port (int)
+            * remote_address (unicode)
+            * remote_port (int)
+            * multihop (boolean)
+            * import_policy (unicode)
+            * export_policy (unicode)
+            * input_messages (int)
+            * output_messages (int)
+            * input_updates (int)
+            * output_updates (int)
+            * messages_queued_out (int)
+            * connection_state (unicode)
+            * previous_connection_state (unicode)
+            * last_event (unicode)
+            * suppress_4byte_as (boolean)
+            * local_as_prepend (boolean)
+            * holdtime (int)
+            * configured_holdtime (int)
+            * keepalive (int)
+            * configured_keepalive (int)
+            * active_prefix_count (int)
+            * received-prefix-count (int)
+            * accepted-prefix-count (int)
+            * suppressed-prefix-count (int)
+            * advertised-prefix-count (int)
+            * flap_count (int)
+
+        Example:
+            {
+                8121: [
+                    {
+                        'up'                        : True,
+                        'local_as'                  : 13335,
+                        'remote_as'                 : 8121,
+                        'local_address'             : u'172.101.76.1',
+                        'local_address_configured'  : True,
+                        'local_port'                : 179,
+                        'remote_address'            : u'192.247.78.0',
+                        'remote_port'               : 58380,
+                        'multihop'                  : False,
+                        'import_policy'             : u'4-NTT-TRANSIT-IN',
+                        'export_policy'             : u'4-NTT-TRANSIT-OUT',
+                        'input_messages'            : 123,
+                        'output_messages'           : 13,
+                        'input_updates'             : 123,
+                        'output_updates'            : 5,
+                        'messages_queued_out'       : 23,
+                        'connection_state'          : u'Established',
+                        'previous_connection_state' : u'EstabSync',
+                        'last_event'                : u'RecvKeepAlive',
+                        'suppress_4byte_as'         : False,
+                        'local_as_prepend'          : False,
+                        'holdtime'                  : 90,
+                        'configured_holdtime'       : 90,
+                        'keepalive'                 : 30,
+                        'configured_keepalive'      : 30,
+                        'active_prefix_count'       : 132808,
+                        'received_prefix_count'     : 566739,
+                        'accepted_prefix_count'     : 566479,
+                        'suppressed_prefix_count'   : 0,
+                        'advertise_prefix_count'    : 0,
+                        'flap_count'                : 27
+                    }
+                ]
+            }
+        """
+        raise NotImplementedError
