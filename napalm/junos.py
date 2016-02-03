@@ -551,3 +551,44 @@ class JunOSDriver(NetworkDriver):
             bgp_config[bgp_group_name]['neighbors'] = bgp_neighbors.get(bgp_group_name, {})
 
         return bgp_config
+
+    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+
+        bgp_neighbors = dict()
+
+        bgp_neighbors_table  = junos_views.junos_bgp_neighbors_table(self.device)
+
+        bgp_neighbors_table.get(
+            neighbor_address = neighbor_address
+        )
+        bgp_neighbors_items = bgp_neighbors_table.items()
+
+        for bgp_neighbor in bgp_neighbors_items:
+            peer_as = bgp_neighbor[0]
+            if peer_as not in bgp_neighbors.keys():
+                bgp_neighbors[peer_as] = list()
+            neighbor_details = {elem[0]: elem[1] for elem in bgp_neighbor[1]}
+            options = neighbor_details.pop('options', '')
+            if 'Multihop' in options:
+                neighbor_details['multihop'] = True
+            if 'LocalAddress' in options:
+                neighbor_details['local_address_configured'] = True
+            four_byte_as = neighbor_details.pop('4byte_as', 0)
+            local_address = neighbor_details.pop('local_address', '')
+            local_details = local_address.split('+')
+            neighbor_details['local_address'] = unicode(local_details[0])
+            if len(local_details) == 2:
+                neighbor_details['local_port']= int(local_details[1])
+            else:
+                neighbor_details['local_port']=179
+            neighbor_details['suppress_4byte_as'] = (peer_as != four_byte_as)
+            peer_address = neighbor_details.pop('peer_address', '')
+            remote_details = peer_address.split('+')
+            neighbor_details['remote_address'] = unicode(remote_details[0])
+            if len(remote_details) == 2:
+                neighbor_details['remote_port']    = int(remote_details[1])
+            else:
+                neighbor_details['remote_port'] = 179
+            bgp_neighbors[peer_as].append(neighbor_details)
+
+        return bgp_neighbors
