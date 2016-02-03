@@ -160,3 +160,15 @@ arp_table = {
     'ip'        : unicode,
     'age'       : float
 }
+
+ntp_peer = {
+    'referenceid'   : unicode,
+    'stratum'       : int,
+    'type'          : unicode,
+    'when'          : unicode,
+    'hostpoll'      : int,
+    'reachability'  : int,
+    'delay'         : float,
+    'offset'        : float,
+    'jitter'        : float
+}
