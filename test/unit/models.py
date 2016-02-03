@@ -78,3 +78,9 @@ af = {
     'accepted_prefixes': int,
     'received_prefixes': int
 }
+
+arp_table = {
+    'mac': str,
+    'ip' : str,
+    'age': float
+}

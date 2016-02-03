@@ -179,7 +179,7 @@ class TestGettersNetworkDriver:
 
         for power, power_data in environment['power'].iteritems():
             result = result and self._test_model(models.power, power_data)
-        
+
         for temperature, temperature_data in environment['temperature'].iteritems():
             result = result and self._test_model(models.temperature, temperature_data)
 
@@ -187,7 +187,7 @@ class TestGettersNetworkDriver:
             result = result and self._test_model(models.cpu, cpu_data)
 
         result = result and self._test_model(models.memory, environment['memory'])
-        
+
         self.assertTrue(result)
 
     def test_get_bgp_neighbors(self):
@@ -210,3 +210,12 @@ class TestGettersNetworkDriver:
 
             self.assertTrue(result)
 
+    def test_get_arp_table(self):
+
+        get_arp_table = self.device.get_arp_table()
+
+        result = len(get_arp_table) > 0
+
+        for interface, interface_arp_entries in get_arp_table.items():
+            for arp_entry in interface_arp_entries:
+                result = result and self._test_model(models.arp_table, arp_entry)
