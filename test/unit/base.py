@@ -211,7 +211,7 @@ class TestGettersNetworkDriver:
             self.assertTrue(result)
 
     def test_get_mac_address_table(self):
-        get_mac_address_table = self.get_mac_address_table()
+        get_mac_address_table = self.device.get_mac_address_table()
 
         result = len(get_mac_address_table) > 0
 
