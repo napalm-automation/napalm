@@ -218,3 +218,15 @@ class TestGettersNetworkDriver:
                         result = result and self._test_model(models.af, af_data)
 
             self.assertTrue(result)
+
+    def test_get_lldp_neighbors_detail(self):
+
+        get_lldp_neighbors_detail = self.device.get_lldp_neighbors_detail()
+
+        result = len(get_lldp_neighbors_detail) > 0
+
+        for interface, neighbor_list in get_lldp_neighbors_detail.iteritems():
+            for neighbor in neighbor_list:
+                result = result and self._test_model(models.lldp_neighbors_detail, neighbor)
+
+        self.assertTrue(result)
