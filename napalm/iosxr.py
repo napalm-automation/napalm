@@ -938,3 +938,39 @@ class IOSXRDriver(NetworkDriver):
                 continue
 
         return arp_table
+
+    def get_ntp_peers(self):
+
+        ntp_peers = dict()
+
+        rpc_command = '<Get><Operational><NTP><NodeTable></NodeTable></NTP></Operational></Get>'
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for node in result_tree.iter('PeerInfoCommon'):
+            if node is None:
+                continue
+            try:
+                address         = unicode(node.find('Address').text)
+                referenceid     = unicode(node.find('ReferenceID').text)
+                hostpoll        = int(node.find('HostPoll').text)
+                reachability    = int(node.find('Reachability').text)
+                stratum         = int(node.find('Stratum').text)
+                delay           = float(node.find('Delay').text)
+                offset          = float(node.find('Offset').text)
+                jitter          = float(node.find('Dispersion').text)
+                ntp_peers[address] = {
+                    'referenceid'   : referenceid,
+                    'stratum'       : stratum,
+                    'type'          : u'',
+                    'when'          : u'',
+                    'hostpoll'      : hostpoll,
+                    'reachability'  : reachability,
+                    'delay'         : delay,
+                    'offset'        : offset,
+                    'jitter'        : jitter
+                }
+            except Exception:
+                continue
+
+        return ntp_peers
