@@ -78,3 +78,15 @@ af = {
     'accepted_prefixes': int,
     'received_prefixes': int
 }
+
+ntp_peer = {
+    'referenceid'   : str,
+    'stratum'       : int,
+    'type'          : str,
+    'when'          : str,
+    'hostpoll'      : int,
+    'reachability'  : int,
+    'delay'         : float,
+    'offset'        : float,
+    'jitter'        : float
+}
