@@ -341,3 +341,13 @@ class JunOSDriver(NetworkDriver):
             )
 
         return lldp_neighbors
+
+    def cli(self, command = None):
+
+        if type(comamnd) is not str:
+            return 'Please enter a valid command!'
+
+        try:
+            return self.device.cli(command)
+        except Exception as e:
+            return 'Unable to execute command: "{0}"'.format(e)

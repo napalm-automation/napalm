@@ -405,3 +405,10 @@ class NetworkDriver:
 
         """
         raise NotImplementedError
+
+    def cli(self, command = None):
+
+        """
+        Will execute a valid command on the CLI and returns the output.
+        """
+        raise NotImplementedError

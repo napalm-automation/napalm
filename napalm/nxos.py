@@ -12,6 +12,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# import xmltodict
+# used for XML output from the API
+
 import tempfile
 import re
 from datetime import datetime
@@ -56,6 +59,31 @@ class NXOSDriver(NetworkDriver):
     def close(self):
         if self.changed:
             self._delete_file(self.backup_file)
+
+    def _get_reply_body(self, result):
+        # useful for debugging
+        return result.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
+
+    def _get_reply_table(self, result, tablename, rowname):
+        # still useful for debugging
+        return self._get_reply_body(result).get(tablename, {}).get(rowname, [])
+
+    def _get_command_table(self, command, tablename, rowname):
+
+        result = {}
+
+        try:
+            # xml_result          = self.device.show(command)
+            # json_output  = xmltodict.parse(xml_result[1])
+
+            # or directly retrive JSON
+            result = self.device.show(command, fmat = 'json')
+            json_output = eval(result[1])
+            # which will converted to a plain dictionary
+        except Exception:
+            return []
+
+        return self._get_reply_table(json_output, tablename, rowname)
 
     def load_replace_candidate(self, filename=None, config=None):
         self.replace = True
@@ -276,3 +304,15 @@ class NXOSDriver(NetworkDriver):
                 lldp_neighbors[interface_name].append(lldp_neighbor)
 
         return lldp_neighbors
+
+    def cli(self, command = None):
+
+        if type(command) is not str:
+            return 'Please enter a valid command!'
+
+        try:
+            string_output = self.device.show(command, fmat = 'json', text = True)[1]
+            dict_output   = eval(string_output)
+            return self._get_reply_body(dict_output)
+        except Exception as e:
+            return 'Unable to execute command: "{0}"'.format(e)

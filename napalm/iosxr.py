@@ -16,6 +16,7 @@ from base import NetworkDriver
 from napalm.utils import string_parsers
 
 from pyIOSXR import IOSXR
+from pyIOSXR.iosxr import __execute_show__
 from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
 
 from exceptions import MergeConfigException, ReplaceConfigException
@@ -630,3 +631,17 @@ class IOSXRDriver(NetworkDriver):
                 continue # jump to next neighbor
 
         return lldp_neighbors
+
+    def cli(self, command = None):
+
+        if type(command) is not str:
+            return 'Please enter a valid command!'
+
+        try:
+            return __execute_show__(self.device.device, command, self.timeout)
+        except TimeoutError:
+            return 'Execution of command "{command}" took too long! Please adjust your params!'.format(
+                command = command
+            )
+        except Exception as e:
+            return 'Unable to execute command: "{0}"'.format(e)
