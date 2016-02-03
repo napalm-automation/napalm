@@ -389,3 +389,81 @@ class NXOSDriver(NetworkDriver):
             }
 
         return ntp_peers
+
+    def get_interfaces_ip(self):
+
+        interfaces_ip = dict()
+
+        command_ipv4 = 'show ip interface'
+
+        ipv4_interf_table_vrf = self._get_command_table(command_ipv4, 'TABLE_intf', 'ROW_intf')
+
+        if type(ipv4_interf_table_vrf) is dict:
+            # when there's one single entry, it is not returned as a list
+            # with one single element
+            # but as a simple dict
+            ipv4_interf_table_vrf = [ipv4_interf_table_vrf]
+
+        for interface in ipv4_interf_table_vrf:
+            interface_name = unicode(interface.get('intf-name', ''))
+            address = unicode(interface.get('prefix', ''))
+            prefix  = int(interface.get('masklen', ''))
+            if interface_name not in interfaces_ip.keys():
+                interfaces_ip[interface_name] = dict()
+            if u'ipv4' not in interfaces_ip[interface_name].keys():
+                interfaces_ip[interface_name][u'ipv4'] = dict()
+            if address not in interfaces_ip[interface_name].get(u'ipv4'):
+                interfaces_ip[interface_name][u'ipv4'][address] = dict()
+            interfaces_ip[interface_name][u'ipv4'][address].update({
+                'prefix_length': prefix
+            })
+            secondary_addresses = interface.get('TABLE_secondary_address', {}).get('ROW_secondary_address', [])
+            if type(secondary_addresses) is dict:
+                secondary_addresses = [secondary_addresses]
+            for secondary_address in secondary_addresses:
+                secondary_address_ip        = unicode(secondary_address.get('prefix1', ''))
+                secondary_address_prefix    = int(secondary_address.get('masklen1', ''))
+                if u'ipv4' not in interfaces_ip[interface_name].keys():
+                    interfaces_ip[interface_name][u'ipv4'] = dict()
+                if secondary_address_ip not in interfaces_ip[interface_name].get(u'ipv4'):
+                    interfaces_ip[interface_name][u'ipv4'][secondary_address_ip] = dict()
+                interfaces_ip[interface_name][u'ipv4'][secondary_address_ip].update({
+                    'prefix_length': secondary_address_prefix
+                })
+
+        command_ipv6 = 'show ip6 interface'
+
+        ipv6_interf_table_vrf = self._get_command_table(command_ipv6, 'TABLE_intf', 'ROW_intf')
+
+        if type(ipv6_interf_table_vrf) is dict:
+            ipv6_interf_table_vrf = [ipv6_interf_table_vrf]
+
+        for interface in ipv6_interf_table_vrf:
+            interface_name = unicode(interface.get('intf-name', ''))
+            address = unicode(interface.get('addr', ''))
+            prefix  = int(interface.get('prefix', '').split('/')[-1])
+            if interface_name not in interfaces_ip.keys():
+                interfaces_ip[interface_name] = dict()
+            if u'ipv6' not in interfaces_ip[interface_name].keys():
+                interfaces_ip[interface_name][u'ipv6'] = dict()
+            if address not in interfaces_ip[interface_name].get('ipv6'):
+                interfaces_ip[interface_name][u'ipv6'][address] = dict()
+            interfaces_ip[interface_name][u'ipv6'][address].update({
+                u'prefix_length': prefix
+            })
+            secondary_addresses = interface.get('TABLE_sec_addr', {}).get('ROW_sec_addr', [])
+            if type(secondary_addresses) is dict:
+                secondary_addresses = [secondary_addresses]
+            for secondary_address in secondary_addresses:
+                sec_prefix = secondary_address.get('sec-prefix', '').split('/')
+                secondary_address_ip        = unicode(sec_prefix[0])
+                secondary_address_prefix    = int(sec_prefix[-1])
+                if u'ipv6' not in interfaces_ip[interface_name].keys():
+                    interfaces_ip[interface_name][u'ipv6'] = dict()
+                if secondary_address_ip not in interfaces_ip[interface_name].get(u'ipv6'):
+                    interfaces_ip[interface_name][u'ipv6'][secondary_address_ip] = dict()
+                interfaces_ip[interface_name][u'ipv6'][secondary_address_ip].update({
+                    u'prefix_length': secondary_address_prefix
+                })
+
+        return interfaces_ip

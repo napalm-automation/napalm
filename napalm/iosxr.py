@@ -972,3 +972,55 @@ class IOSXRDriver(NetworkDriver):
                 continue
 
         return ntp_peers
+
+    def get_interfaces_ip(self):
+
+        interfaces_ip = dict()
+
+        rpc_command_ipv4 = '<Get><Operational><IPV4Network></IPV4Network></Operational></Get>'
+
+        ipv4_tree = ET.fromstring(self.device.make_rpc_call(rpc_command_ipv4))
+
+        for interface in ipv4_tree.findall('.//InterfaceTable/Interface'):
+            try:
+                interface_name = unicode(interface.find('Naming/InterfaceName').text)
+                print interface_name
+                primary_ip     = unicode(interface.find('VRFTable/VRF/Detail/PrimaryAddress').text)
+                primary_prefix = int(interface.find('VRFTable/VRF/Detail/PrefixLength').text)
+                if interface_name not in interfaces_ip.keys():
+                    interfaces_ip[interface_name] = dict()
+                if u'ipv4' not in interfaces_ip[interface_name].keys():
+                    interfaces_ip[interface_name][u'ipv4'] = dict()
+                if primary_ip not in interfaces_ip[interface_name].get(u'ipv4', {}).keys():
+                    interfaces_ip[interface_name][u'ipv4'][primary_ip] = {
+                        u'prefix_length': primary_prefix
+                    }
+                for secondary_address in interface.findall('VRFTable/VRF/Detail/SecondaryAddress/Entry'):
+                    secondary_ip        = unicode(secondary_address.find('Address').text)
+                    secondary_prefix    = int(secondary_address.find('PrefixLength').text)
+                    if secondary_ip not in interfaces_ip[interface_name]:
+                        interfaces_ip[interface_name][u'ipv4'][secondary_ip] = {
+                            u'prefix_length': secondary_prefix
+                        }
+            except Exception:
+                continue
+
+        rpc_command_ipv6 = '<Get><Operational><IPV6Network></IPV6Network></Operational></Get>'
+
+        ipv6_tree = ET.fromstring(self.device.make_rpc_call(rpc_command_ipv6))
+
+        for interface in ipv6_tree.findall('.//InterfaceData/VRFTable/VRF/GlobalDetailTable/GlobalDetail'):
+            interface_name = unicode(interface.find('Naming/InterfaceName').text)
+            if interface_name not in interfaces_ip.keys():
+                interfaces_ip[interface_name] = dict()
+            if u'ipv6' not in interfaces_ip[interface_name].keys():
+                interfaces_ip[interface_name][u'ipv6'] = dict()
+            for address in interface.findall('AddressList/Entry'):
+                address_ip      = unicode(address.find('Address').text)
+                address_prefix  = int(address.find('PrefixLength').text)
+                if address_ip not in interfaces_ip[interface_name].get(u'ipv6', {}).keys():
+                    interfaces_ip[interface_name][u'ipv6'][address_ip] = {
+                        u'prefix_length': address_prefix
+                    }
+
+        return interfaces_ip

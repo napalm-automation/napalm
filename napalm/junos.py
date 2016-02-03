@@ -713,3 +713,39 @@ class JunOSDriver(NetworkDriver):
                 continue # jump to next line
 
         return ntp_peers
+
+    def get_interfaces_ip(self):
+
+        interfaces_ip = dict()
+
+        interface_table = junos_views.junos_ip_interfaces_table(self.device)
+        interface_table.get()
+        interface_table_items = interface_table.items()
+
+        _FAMILY_VMAP_ = {
+            'inet'  : u'ipv4',
+            'inet6' : u'ipv6'
+            # can add more mappings
+        }
+
+        for interface_details in interface_table_items:
+            try:
+                ip_address = interface_details[0]
+                address    = unicode(ip_address.split('/')[0])
+                prefix     = int(ip_address.split('/')[1])
+                interface  = unicode(interface_details[1][0][1])
+                family_raw = interface_details[1][1][1]
+                family     = _FAMILY_VMAP_.get(family_raw)
+                if not family:
+                    continue
+                if interface not in interfaces_ip:
+                    interfaces_ip[interface] = dict()
+                if family not in interfaces_ip[interface]:
+                    interfaces_ip[interface][family] = dict()
+                if address not in interfaces_ip[interface][family]:
+                    interfaces_ip[interface][family][address] = dict()
+                interfaces_ip[interface][family][address][u'prefix_length'] = prefix
+            except Exception:
+                continue
+
+        return interfaces_ip
