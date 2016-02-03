@@ -22,6 +22,7 @@ from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError
 from exceptions import ReplaceConfigException, MergeConfigException
 
+from lxml import etree as ET
 
 
 from utils import string_parsers
@@ -321,3 +322,22 @@ class JunOSDriver(NetworkDriver):
             neighbors[neigh[0]].append({x[0]: unicode(x[1]) for x in neigh[1]})
 
         return neighbors
+
+    def get_lldp_neighbors_detail(self, interface = ''):
+
+        lldp_neighbors = dict()
+
+        lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
+        lldp_table.get()
+
+        lldp_items = lldp_table.items()
+
+        for lldp_item in lldp_items:
+            interface = lldp_item[0]
+            if interface not in lldp_neighbors.keys():
+                lldp_neighbors[interface] = list()
+            lldp_neighbors[interface].append(
+                {elem[0]: elem[1] for elem in lldp_item[1]}
+            )
+
+        return lldp_neighbors
