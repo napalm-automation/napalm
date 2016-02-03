@@ -484,3 +484,18 @@ class EOSDriver(NetworkDriver):
                 )
 
         return lldp_neighbors_out
+
+    def cli(self, command = None):
+
+        if type(command) is not str:
+            return 'Please enter a valid command!'
+
+        commands = list()
+        commands.append(command)
+
+        try:
+            return self.device.run_commands(commands, encoding = 'text')[0].get('output')
+        except pyeapi.eapilib.CommandError:
+            return 'Unrecognized command: "{0}"'.format(command)
+        except Exception as e:
+            return 'Unable to execute command: "{0}"'.format(e)
