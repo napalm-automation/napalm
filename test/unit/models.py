@@ -153,3 +153,10 @@ peer_details = {
     'advertise_prefix_count'    : int,
     'flap_count'                : int
 }
+
+arp_table = {
+    'interface' : unicode,
+    'mac'       : unicode,
+    'ip'        : unicode,
+    'age'       : float
+}

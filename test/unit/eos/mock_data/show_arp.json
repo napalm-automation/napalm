@@ -1,0 +1,20 @@
+{
+    "dynamicEntries": 699,
+    "ipV4Neighbors": [
+        {
+            "hwAddress": "dc38.e111.97cf",
+            "address": "172.17.17.1",
+            "interface": "Ethernet45",
+            "age": 0
+        },
+        {
+            "hwAddress": "90e2.ba5c.25fd",
+            "address": "172.17.17.1",
+            "interface": "Ethernet36",
+            "age": 0
+        }
+    ],
+    "notLearnedEntries": 19,
+    "totalEntries": 699,
+    "staticEntries": 0
+}
