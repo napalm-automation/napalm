@@ -20,6 +20,7 @@ from base import NetworkDriver
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError
+from jnpr.junos.exception import RpcTimeoutError
 from exceptions import ReplaceConfigException, MergeConfigException
 
 
@@ -46,10 +47,10 @@ class JunOSDriver(NetworkDriver):
         self.device.open()
         self.device.timeout = self.timeout
         self.device.bind(cu=Config)
-        self.device.cu.lock()
+        # self.device.cu.lock()
 
     def close(self):
-        self.device.cu.unlock()
+        # self.device.cu.unlock()
         self.device.close()
 
     def _load_candidate(self, filename, config, overwrite):
@@ -321,3 +322,216 @@ class JunOSDriver(NetworkDriver):
             neighbors[neigh[0]].append({x[0]: unicode(x[1]) for x in neigh[1]})
 
         return neighbors
+
+    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+
+        bgp_neighbors = dict()
+
+        bgp_peers_summary_table  = junos_views.junos_bgp_neighbors_table(self.device)
+
+        bgp_peers_summary_table.get(
+            neighbor_address = neighbor_address
+        )
+        bgp_peers_summary_items = bgp_peers_summary_table.items()
+
+        for bgp_peers_summary_entry in bgp_peers_summary_items:
+            peer_as = bgp_peers_summary_entry[0]
+            if peer_as not in bgp_neighbors.keys():
+                bgp_neighbors[peer_as] = list()
+            bgp_neighbors[peer_as].append(
+                {elem[0]: elem[1] for elem in bgp_peers_summary_entry[1]}
+            )
+
+        return bgp_neighbors
+
+    def cli(self, command = ''):
+
+        if not command:
+            return 'Please enter a valid command!'
+
+        return self.device.cli(command)
+
+    def get_arp_table(self, interface = '', host = '', ip = '', mac = ''):
+
+        # could use ArpTable
+        # from jnpr.junos.op.phyport import ArpTable
+        # and simply use it
+        # but
+        # we need:
+        #   - filters
+        #   - group by VLAN ID
+        #   - hostname & TTE fields as well
+
+        arp_table = dict()
+
+        arp_table_raw = junos_views.junos_arp_table(self.device)
+
+        filters = dict()
+        if interface:
+            filters['interface'] = interface
+        if host:
+            filters['hostname'] = host
+
+        arp_table_raw.get(**filters)
+        arp_table_items = arp_table_raw.items()
+
+        for arp_table_entry in arp_table_items:
+            interface = arp_table_entry[0]
+            if interface not in arp_table.keys():
+                arp_table[interface] = list()
+            arp_table[interface].append(
+                {elem[0]: elem[1] for elem in arp_table_entry[1]}
+            )
+
+        return arp_table
+
+    def get_mac_address_table(self, address = '', interface = '', dynamic = False, static = False, vlan = None):
+
+        mac_address_table = dict()
+
+        mac_table = junos_views.junos_mac_address_table(self.device)
+
+        filters = dict()
+        if address:
+            filters['address'] = address
+        if vlan:
+            filters['vlan_id'] = str(vlan)
+
+        mac_table.get(**filters)
+        mac_table_items = mac_table.items()
+
+        default_values = {
+            'static'    : False,
+            'active'    : True,
+            'moves'     : None,
+            'last_move' : None
+        }
+
+        for mac_table_entry in mac_table_items:
+            vlan = int(mac_table_entry[0])
+            if vlan not in mac_address_table.keys():
+                mac_address_table[vlan] = list()
+            mac_entry = {elem[0]: elem[1] for elem in mac_table_entry[1]}
+            mac_entry.update(default_values)
+            mac_address_table[vlan].append(mac_entry)
+
+        return mac_address_table
+
+    def get_ntp_peers(self):
+
+        # NTP Peers does not have XML RPC defined
+        # thus we need to retrieve raw text and parse...
+        # :(
+
+        ntp_peers = dict()
+
+        REGEX = (
+            '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
+            '\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
+            '\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
+            '\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
+            '\s+([0-9\.]+)\s?$'
+        )
+
+        ntp_assoc_output = self.device.cli('show ntp associations no-resolve')
+        ntp_assoc_output_lines = ntp_assoc_output.splitlines()
+
+        for ntp_assoc_output_line in ntp_assoc_output_lines[3:-1]: #except last line
+            line_search = re.search(REGEX, ntp_assoc_output_line, re.I)
+            if not line_search:
+                continue # pattern not found
+            line_groups = line_search.groups()
+            try:
+                ntp_peers[line_groups[1]] = {
+                    'referenceid'   : line_groups[2],
+                    'stratum'       : int(line_groups[3]),
+                    'type'          : line_groups[4],
+                    'when'          : line_groups[5],
+                    'hostpoll'      : int(line_groups[6]),
+                    'reachability'  : int(line_groups[7]),
+                    'delay'         : float(line_groups[8]),
+                    'offset'        : float(line_groups[9]),
+                    'jitter'        : float(line_groups[10])
+                }
+            except Exception:
+                continue # jump to next line
+
+        return ntp_peers
+
+    def get_lldp_neighbors_detail(self, interface = ''):
+
+        lldp_neighbors = dict()
+
+        lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
+        lldp_table.get()
+
+        lldp_items = lldp_table.items()
+
+        for lldp_item in lldp_items:
+            interface = lldp_item[0]
+            if interface not in lldp_neighbors.keys():
+                lldp_neighbors[interface] = list()
+            lldp_neighbors[interface].append(
+                {elem[0]: elem[1] for elem in lldp_item[1]}
+            )
+
+        return lldp_neighbors
+
+    def show_route(self, destination = ''):
+
+        # again RouteTable from jnpr.junos.op is not complete enough
+
+        routes = {}
+
+        if not destination:
+            return 'Please specify a valid destination!'
+
+        routes_table = junos_views.junos_route_table(self.device)
+        try:
+            routes_table.get(
+                destination = destination
+            )
+        except RpcTimeoutError:
+            # on devices with milions of routes
+            # in case the destination is too generic (e.g.: 10/8)
+            # will take very very long to determine all routes and
+            # moreover will return a huge list
+            return 'Too many routes returned! Please try with a diffrent prefix!'
+        except Exception:
+            return 'Cannot retrieve routes!'
+
+        routes_items = routes_table.items()
+
+        for route in routes_items:
+            prefix = route[0]
+            if prefix not in routes.keys():
+                routes[prefix] = list()
+            route_detail = route[1]
+            # TODO switch to hierachical views
+            if type(route_detail[0][1]) is list:
+                number_of_routes = len(route_detail[0][1])
+                for route_no in range(0, number_of_routes):
+                        routes[prefix].append({
+                            route_params[0]:  route_params[1][route_no] for route_params in route_detail
+                        })
+            else:
+                routes[prefix].append({
+                    route_params[0]:  route_params[1] for route_params in route_detail
+                })
+
+        return routes
+
+    def get_interfaces_ip(self):
+
+        ip_list = []
+
+        ip_table = junos_views.junos_ip_interfaces_table(self.device)
+        ip_table.get()
+        ip_items = ip_table.items()
+
+        for interface in ip_items:
+            interface_ip_list = interface[1][0][1]
+            if interface_ip_list:
+                ip_list.extend(interface_ip_list)
+
+        return ip_list

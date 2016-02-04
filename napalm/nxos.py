@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+import xmltodict
+
 import tempfile
 import re
 from datetime import datetime
@@ -198,3 +200,289 @@ class NXOSDriver(NetworkDriver):
 
     def get_checkpoint_file(self):
         return install_config.get_checkpoint(self.device)
+
+    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+
+        bgp_neighbors = dict()
+
+        return bgp_neighbors
+
+    def _get_reply_body(self, result):
+
+        # useful for debugging
+
+        return result.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
+
+    def _get_reply_table(self, result, tablename, rowname):
+
+        # still useful for debugging
+        return self._get_reply_body(result).get(tablename, {}).get(rowname, [])
+
+    def _get_command_table(self, command, tablename, rowname):
+
+        result = {}
+
+        try:
+            # xml_result          = self.device.show(command)
+            # json_output  = xmltodict.parse(xml_result[1])
+
+            # or directly retrive JSON
+            result = self.device.show(command, fmat = 'json')
+            json_output = eval(result[1])
+            # which will converted to a plain dictionary
+        except Exception:
+            return []
+
+        return self._get_reply_table(json_output, tablename, rowname)
+
+    def cli(self, command = ''):
+
+        if not command:
+            return 'Please enter a valid command!'
+
+        try:
+            string_output = self.device.show(command, fmat = 'json', text = True)[1]
+            dict_output   = eval(string_output)
+            return self._get_reply_body(dict_output)
+        except Exception as e:
+            return e
+
+        return ''
+
+    def get_arp_table(self, interface = '', host = '', ip = '', mac = ''):
+
+        arp_table = dict()
+
+        filter = ''
+
+        if interface:
+            filter  = interface
+            ip      = ''
+        if ip:
+            filter = ip
+
+        command = 'show ip arp {filter}'.format(
+            filter = filter
+        )
+
+        arp_table_raw = self._get_command_table(command, 'TABLE_vrf', 'ROW_vrf').get('TABLE_adj', {}).get('ROW_adj', [])
+
+        if type(arp_table_raw) is dict:
+            arp_table_raw = [arp_table_raw]
+
+        for arp_table_entry in arp_table_raw:
+            ip          = arp_table_entry.get('ip-addr-out')
+            mac         = arp_table_entry.get('mac')
+            age         = arp_table_entry.get('time-stamp') # TODO convert time to seconds
+            interface   = arp_table_entry.get('intf-out')
+            if interface not in arp_table.keys():
+                arp_table[interface] = list()
+            arp_table[interface].append(
+                {
+                    'mac'   : mac,
+                    'ip'    : ip,
+                    'age'   : age
+                }
+            )
+
+        return arp_table
+
+
+    def get_mac_address_table(self, address ='', interface = '', dynamic = False, static = False, vlan = None):
+
+        mac_table = dict()
+
+        raw_command = 'show mac address-table'
+
+        filter = '' # NXOS allows only one single filter :(
+
+        # will set the filters
+        if address:
+            filter = 'address {mac}'.format(
+                        mac = address
+                    )
+            # deactivate the other filters in case they happen to be set...
+            interface = ''
+            dynamic = False
+            static = False
+            vlan = ''
+        if interface:
+            filter = 'interface {name}'.format(
+                        name = interface
+                    )
+            dynamic = False
+            static = False
+            vlan   = ''
+        if dynamic is True:
+            filter = 'dynamic'
+            static = False
+            vlan   = ''
+        if static is True:
+            filter = 'static'
+            vlan = ''
+        if type(vlan) is int:
+            filter = 'vlan {id}'.format(
+                        id = vlan
+                    )
+
+        command = '{raw_command} {filter}'.format(
+            raw_command = raw_command,
+            filter      = filter
+        )
+
+        mac_table_raw = self._get_command_table(command, 'TABLE_mac_address', 'ROW_mac_address')
+
+        if type(mac_table_raw) is dict:
+            mac_table_raw = [mac_table_raw]
+
+        for mac_entry in mac_table_raw:
+            mac         = mac_entry.get('disp_mac_addr')
+            interface   = mac_entry.get('disp_port')
+            age         = mac_entry.get('disp_age')
+            vlan        = int(mac_entry.get('disp_vlan'))
+            active      = True
+            static      = (mac_entry.get('disp_is_static') != '0')
+            moves       = None
+            last_move   = None
+            if vlan not in mac_table.keys():
+                mac_table[vlan] = list()
+            mac_table[vlan].append(
+                {
+                    'mac'       : mac,
+                    'interface' : interface,
+                    'active'    : active,
+                    'static'    : static,
+                    'moves'     : moves,
+                    'last_move' : last_move
+                }
+            )
+
+        return mac_table
+
+    def get_ntp_peers(self):
+
+        ntp_peers = dict()
+
+        command = 'show ntp peer-status'
+
+        ntp_peers_table = self._get_command_table(command, 'TABLE_peersstatus', 'ROW_peersstatus')
+
+        if type(ntp_peers_table) is dict:
+            ntp_peers_table = [ntp_peers_table]
+
+        for ntp_peer in ntp_peers_table:
+            peer_address = ntp_peer.get('remote')
+            stratum      = int(ntp_peer.get('st'))
+            hostpoll     = int(ntp_peer.get('poll'))
+            reachability = int(ntp_peer.get('reach'))
+            delay        = float(ntp_peer.get('delay'))
+            ntp_peers[peer_address] = {
+                'referenceid'   : None,
+                'stratum'       : stratum,
+                'type'          : None,
+                'when'          : None,
+                'hostpoll'      : hostpoll,
+                'reachability'  : reachability,
+                'delay'         : delay,
+                'offset'        : 0.0,
+                'jitter'        : 0.0
+            }
+
+        return ntp_peers
+
+    def get_lldp_neighbors_detail(self, interface = ''):
+
+        lldp_neighbors = dict()
+
+        filter = ''
+        if interface:
+            filter = 'interface {name} '.format(
+                name = interface
+            )
+
+        command = 'show lldp neighbors {filter}detail'.format(
+            filter = filter
+        ) # seems that show LLDP neighbors detail does not return JSON output...
+
+        lldp_neighbors_table_str = self.cli(command)
+        # thus we need to take the raw text output
+
+        lldp_neighbors_list = lldp_neighbors_table_str.splitlines()
+
+        if not lldp_neighbors_list:
+            return lldp_neighbors # empty dict
+
+        CHASSIS_REGEX       = '^(Chassis id:)\s+([a-z0-9\.]+)$'
+        PORT_REGEX          = '^(Port id:)\s+([0-9]+)$'
+        LOCAL_PORT_ID_REGEX = '^(Local Port id:)\s+(.*)$'
+        PORT_DESCR_REGEX    = '^(Port Description:)\s+(.*)$'
+        SYSTEM_NAME_REGEX   = '^(System Name:)\s+(.*)$'
+        SYSTEM_DESCR_REGEX  = '^(System Description:)\s+(.*)$'
+        SYST_CAPAB_REEGX    = '^(System Capabilities:)\s+(.*)$'
+        ENABL_CAPAB_REGEX   = '^(Enabled Capabilities:)\s+(.*)$'
+        VLAN_ID_REGEX       = '^(Vlan ID:)\s+(.*)$'
+
+        lldp_neighbor = {}
+        interface_name = None
+        for line in lldp_neighbors_list:
+            chassis_rgx = re.search(CHASSIS_REGEX, line, re.I)
+            if chassis_rgx:
+                lldp_neighbor = {
+                    'chassis_id': chassis_rgx.groups()[1]
+                }
+                continue
+            port_rgx = re.search(PORT_REGEX, line, re.I)
+            if port_rgx:
+                lldp_neighbor['local_port_id'] = port_rgx.groups()[1]
+                continue # jump to next line
+            local_port_rgx = re.search(LOCAL_PORT_ID_REGEX, line, re.I)
+            if local_port_rgx:
+                interface_name = local_port_rgx.groups()[1]
+                continue
+            port_descr_rgx = re.search(PORT_DESCR_REGEX, line, re.I)
+            if port_descr_rgx:
+                lldp_neighbor['local_port_descr'] = port_descr_rgx.groups()[1]
+                continue
+            syst_name_rgx = re.search(SYSTEM_NAME_REGEX, line, re.I)
+            if syst_name_rgx:
+                lldp_neighbor['remote_system_name'] = syst_name_rgx.groups()[1]
+                continue
+            syst_capab_rgx = re.search(SYST_CAPAB_REEGX, line, re.I)
+            if syst_capab_rgx:
+                lldp_neighbor['remote_system_capabilities'] = syst_capab_rgx.groups()[1]
+                continue
+            syst_enabled_rgx = re.search(ENABL_CAPAB_REGEX, line, re.I)
+            if syst_enabled_rgx:
+                lldp_neighbor['remote_system_enabled_capabilities'] = syst_enabled_rgx.groups()[1]
+                continue
+            vlan_rgx = re.search(VLAN_ID_REGEX, line, re.I)
+            if vlan_rgx:
+                # at the end of the loop
+                if interface_name not in lldp_neighbors.keys():
+                    lldp_neighbors[interface_name] = list()
+                lldp_neighbors[interface_name].append(lldp_neighbor)
+
+        return lldp_neighbors
+
+    def show_route(self, destination = ''):
+
+        return {}
+
+    def get_interfaces_ip(self):
+
+        ip_list = list()
+
+        command = 'show ip interface brief'
+
+        ip_interf_table_vrf = self._get_command_table(command, 'TABLE_intf', 'ROW_intf')
+
+        if type(ip_interf_table_vrf) is dict:
+            # when there's one single entry, it is not returned as a list
+            # with one single element
+            # but as a simple dict
+            ip_interf_table_vrf = [ip_interf_table_vrf]
+
+        for interface in ip_interf_table_vrf:
+            ip_list.append(interface.get('prefix'))
+
+        return ip_list
