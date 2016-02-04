@@ -78,4 +78,7 @@ class FakeRPCObject:
         xml_string = self.read_txt_file('junos/mock_data/{}{}.txt'.format(self.item, instance))
         return lxml.etree.fromstring(xml_string)
 
+    def get_ntp_peers(self):
+        return self.read_txt_file('junos/mock_data/show_ntp_associations_no-resolve.txt')
+
     __call__ = response

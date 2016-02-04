@@ -70,6 +70,9 @@ class FakeIOSXRDevice:
     def show_lldp_neighbors(self):
         return self.read_txt_file('iosxr/mock_data/show_lldp_neighbors.txt')
 
+    def get_ntp_peers(self):
+        return self.read_txt_file('iosxr/mock_data/show_ntp_associations.txt')
+
     def make_rpc_call(self, rpc_call):
         rpc_call = \
             rpc_call.replace('<', '_').replace('>', '_').replace('/', '_').replace('\n', '').replace(' ', '')
