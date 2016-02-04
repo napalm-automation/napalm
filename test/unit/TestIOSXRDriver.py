@@ -50,9 +50,6 @@ class TestGetterIOSXRDriver(unittest.TestCase, TestGettersNetworkDriver):
             cls.device.device = FakeIOSXRDevice()
         else:
             cls.device.open()
-            
-    def get_ntp_peers(self):
-        return self.read_txt_file('iosxr/mock_data/show_ntp_associations.txt')
 
 
 class FakeIOSXRDevice:
