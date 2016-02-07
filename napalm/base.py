@@ -261,41 +261,43 @@ class NetworkDriver:
         """
         Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).
         The inner dictionary will contain the following data for each vrf:
-         * router_id
-         * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
-           * local_as (int)
-           * remote_as (int)
-           * remote_id - peer router id
-           * is_up (True/False)
-           * is_enabled (True/False)
-           * description (string)
-           * uptime (int in seconds)
-           * address_family (dictionary) - A dictionary of address families available for the neighbor. So far it can
-             be 'ipv4' or 'ipv6'
-               * received_prefixes (int)
-               * accepted_prefixes (int)
-               * sent_prefixes (int)
+
+          * router_id
+          * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
+             * local_as (int)
+             * remote_as (int)
+             * remote_id - peer router id
+             * is_up (True/False)
+             * is_enabled (True/False)
+             * description (string)
+             * uptime (int in seconds)
+             * address_family (dictionary) - A dictionary of address families available for the neighbor. So far it can\
+               be 'ipv4' or 'ipv6'
+                * received_prefixes (int)
+                * accepted_prefixes (int)
+                * sent_prefixes (int)
         """
         raise NotImplementedError
 
     def get_environment(self):
         """
         Returns a dictionary where:
+
             * fans is a dictionary of dictionaries where the key is the location and the values:
-                * status (boolean) - True if it's ok, false if it's broken
+                 * status (boolean) - True if it's ok, false if it's broken
             * temperature is a dictionary of dictionaries where the key is the location and the values:
-                * temperature (float) - Temperature in celsius the sensor is reporting.
-                * is_alert (boolean) - True if the temperature is above the alert threshold
-                * is_critical (boolean) - True if the temperature is above the critical threshold
+                 * temperature (float) - Temperature in celsius the sensor is reporting.
+                 * is_alert (boolean) - True if the temperature is above the alert threshold
+                 * is_critical (boolean) - True if the temperature is above the critical threshold
             * power is a dictionary of dictionaries where the key is the PSU id and the values:
-                * status (boolean) - True if it's ok, false if it's broken
-                * capacity (float) - Capacity in W that the power supply can support
-                * output (float) - Watts drawn by the system
+                 * status (boolean) - True if it's ok, false if it's broken
+                 * capacity (float) - Capacity in W that the power supply can support
+                 * output (float) - Watts drawn by the system
             * cpu is a dictionary of dictionaries where the key is the ID and the values
-                * %usage
+                 * %usage
             * memory is a dictionary with:
-                * available_ram (int) - Total amount of RAM installed in the device
-                * used_ram (int) - RAM in use in the device
+                 * available_ram (int) - Total amount of RAM installed in the device
+                 * used_ram (int) - RAM in use in the device
         """
         raise NotImplementedError
 
@@ -303,6 +305,7 @@ class NetworkDriver:
         """
         Returns a dictionary of dictionaries where the first key is an interface name and the inner dictionary contains
         the following keys:
+
             * tx_errors (int)
             * rx_errors (int)
             * tx_discards (int)
@@ -316,7 +319,7 @@ class NetworkDriver:
             * tx_broadcast_packets (int)
             * rx_broadcast_packets (int)
 
-        Example:
+        Example::
 
             {
                 u'Ethernet2': {
