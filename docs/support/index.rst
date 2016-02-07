@@ -95,7 +95,7 @@ List of supported optional arguments
 ____________________________________
 
   * :code:`fortios_vdom` (fortios) - VDOM to connect to.
-  * :code:`port` (eos, iosxr, junos) - Allows you to specify a port other than the default.
+  * :code:`port` (eos, iosxr, junos, ios) - Allows you to specify a port other than the default.
 
 Adding optional arguments to NAPALM drivers
 ___________________________________________
