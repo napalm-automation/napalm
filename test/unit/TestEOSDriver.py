@@ -76,7 +76,7 @@ class FakeEOSDevice:
             if encoding == 'json':
                 result.append(self.read_json_file('eos/mock_data/{}.json'.format(command.replace(' ', '_'))))
             else:
-                cmd = re.sub(r'[\[\]\*\^\+\s\|]', '_', command)
+                cmd = re.sub(r'[^a-zA-Z0-9]+', '_', command)
                 result.append({'output': self.read_txt_file('eos/mock_data/{}.txt'.format(cmd))})
 
         return result
