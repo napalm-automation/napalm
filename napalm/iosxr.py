@@ -335,8 +335,8 @@ class IOSXRDriver(NetworkDriver):
                     this_neighbor['is_enabled'] = True
                 try:
                     this_neighbor['description'] = unicode(neighbor.find('Description').text)
-                except:
-                    pass
+                except AttributeError:
+                    this_neighbor['description'] = u''
 
                 this_neighbor['is_enabled'] = str(neighbor.find('ConnectionAdminStatus').text) is "1"
 
@@ -378,7 +378,7 @@ class IOSXRDriver(NetworkDriver):
 
                 try:
                     neighbor_ip = unicode(neighbor.find('Naming/NeighborAddress/IPV4Address').text)
-                except:
+                except AttributeError:
                     neighbor_ip = unicode(neighbor.find('Naming/NeighborAddress/IPV6Address').text)
 
                 neighbors[neighbor_ip] = this_neighbor
@@ -576,8 +576,6 @@ class IOSXRDriver(NetworkDriver):
 
         # init result dict
         lldp = {}
-
-        # fetch sh ip bgp output
         sh_lldp = self.device.show_lldp_neighbors().splitlines()[5:-3]
 
         for n in sh_lldp:
