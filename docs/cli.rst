@@ -111,4 +111,4 @@ Errors are detected as well::
         raise MergeConfigException(e.message)
     napalm.exceptions.MergeConfigException: Error [1002]: CLI command 5 of 5 'descriptin BLALALAL' failed: invalid command
 
-For more information, run ```cl_napalm_configure --help```.
+For more information, run ``cl_napalm_configure --help``.
