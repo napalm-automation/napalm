@@ -520,6 +520,109 @@ class IOSDriver(NetworkDriver):
 
         return interface_list
 
+
+    def get_interfaces_ip(self):
+        '''
+        Get interface ip details
+        Returns a dict of dicts
+
+        Example Output:
+
+        {   u'FastEthernet8': {   'ipv4': {   u'10.66.43.169': {   'prefix-length': 22}}},
+            u'Loopback555': {   'ipv4': {   u'192.168.1.1': {   'prefix-length': 24}},
+                                'ipv6': {   u'1::1': {   'prefix-length': 64},
+                                            u'2001:DB8:1::1': {   'prefix-length': 64},
+                                            u'2::': {   'prefix-length': 64},
+                                            u'FE80::3': {   'prefix-length': u'N/A'}}},
+            u'Tunnel0': {   'ipv4': {   u'10.63.100.9': {   'prefix-length': 24}}},
+            u'Tunnel1': {   'ipv4': {   u'10.63.101.9': {   'prefix-length': 24}}},
+            u'Vlan100': {   'ipv4': {   u'10.40.0.1': {   'prefix-length': 24},
+                                        u'10.41.0.1': {   'prefix-length': 24},
+                                        u'10.65.0.1': {   'prefix-length': 24}}},
+            u'Vlan200': {   'ipv4': {   u'10.63.176.57': {   'prefix-length': 29}}}}
+        '''
+
+        interfaces = {}
+
+        command = 'show ip interface brief'
+        output = self.device.send_command(command)
+        for line in output.splitlines():
+            if 'Interface' in line and 'Status' in line:
+                continue
+            fields = line.split()
+            if len(fields) >= 3:
+                interface = fields[0]
+            else:
+                raise ValueError("Unexpected response from the router")
+            interfaces.update({interface: {}})
+
+        # Parse IP Address and Subnet Mask from Interfaces
+        for interface in interfaces:
+            show_command = "show run interface {0}".format(interface)
+            interface_output = self.device.send_command(show_command)
+            for line in interface_output.splitlines():
+                if 'ip address ' in line and 'no ip address' not in line:
+                    fields = line.split()
+                    if len(fields) == 3:
+                        # Check for 'ip address dhcp', convert to ip address and mask
+                        if fields[2] == 'dhcp':
+                            show_command = "show interface {0} | in Internet address is".format(interface)
+                            show_int = self.device.send_command(show_command)
+                            int_fields = show_int.split()
+                            ip_address, subnet = int_fields[3].split(r'/')
+                            interfaces[interface]['ipv4'] = {ip_address: {}}
+                            try:
+                                interfaces[interface]['ipv4'][ip_address] = {'prefix-length': int(subnet)}
+                            except ValueError:
+                                interfaces[interface]['ipv4'][ip_address] = {'prefix-length': u'N/A'}
+                    elif len(fields) in [4, 5]:
+                        # Check for 'ip address 10.10.10.1 255.255.255.0'
+                        # Check for 'ip address 10.10.11.1 255.255.255.0 secondary'
+                        if 'ipv4' not in interfaces[interface].keys():
+                            interfaces[interface].update({'ipv4': {}})
+                        ip_address = fields[2]
+
+                        try:
+                            subnet = sum([bin(int(x)).count('1') for x in fields[3].split('.')])
+                        except ValueError:
+                            subnet = u'N/A'
+
+                        ip_dict = {'prefix-length': subnet}
+                        interfaces[interface]['ipv4'].update({ip_address: {}})
+                        interfaces[interface]['ipv4'][ip_address].update(ip_dict)
+                    else:
+                        raise ValueError(u"Unexpected Response from the device")
+
+                # Check IPv6
+                if 'ipv6 address ' in line:
+                    fields = line.split()
+                    ip_address = fields[2]
+                    if 'ipv6' not in interfaces[interface].keys():
+                            interfaces[interface].update({'ipv6': {}})
+
+                    try:
+                        if r'/' in ip_address:
+                            # check for 'ipv6 address 1::1/64'
+                            ip_address, subnet = ip_address.split(r'/')
+                            interfaces[interface]['ipv6'].update({ip_address: {}})
+                            ip_dict = {'prefix-length': int(subnet)}
+                        else:
+                            # check for 'ipv6 address FE80::3 link-local'
+                            interfaces[interface]['ipv6'].update({ip_address: {}})
+                            ip_dict = {'prefix-length': u'N/A'}
+
+                        interfaces[interface]['ipv6'][ip_address].update(ip_dict)
+                    except AttributeError:
+                        raise ValueError(u"Unexpected Response from the device")
+
+        # remove keys with no data
+        for key in interfaces.keys():
+            if not bool(interfaces[key]):
+                del interfaces[key]
+
+        return interfaces
+
+
     @staticmethod
     def bgp_time_conversion(bgp_uptime):
         '''
