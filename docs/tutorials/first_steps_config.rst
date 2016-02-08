@@ -13,7 +13,7 @@ Use the appropriate network driver to connect to the device::
     >>> device = driver('192.168.76.10', 'dbarroso', 'this_is_not_a_secure_password')
     >>> device.open()
 
-Configurations can be replaced entirely or merged into the existing device config. 
+Configurations can be replaced entirely or merged into the existing device config.
 You can load configuration either from a string or from a file.
 
 Replacing the Configuration
@@ -79,3 +79,9 @@ If for some reason you committed the changes and you want to rollback::
 
     >>> device.rollback()
 
+Disconnecting
+-------------
+
+To close the session with the device just do::
+
+    >>> device.close()
