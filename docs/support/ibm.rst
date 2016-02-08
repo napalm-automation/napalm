@@ -1,5 +1,5 @@
 IBM Networking Operating System
--------
+-------------------------------
 
 Rollback
 ~~~~~~~~

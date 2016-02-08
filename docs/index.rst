@@ -40,4 +40,5 @@ Documentation
 
    tutorials/index
    support/index
+   cli
    base
