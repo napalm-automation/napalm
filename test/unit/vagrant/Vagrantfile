@@ -31,7 +31,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define "eos" do |eos|
-    eos.vm.box = "vEOS-4.15.2F"
+    eos.vm.box = "vEOS-lab-4.15.2.1F"
 
     eos.vm.network :forwarded_port, guest: 443, host: 12443, id: 'https'
 
