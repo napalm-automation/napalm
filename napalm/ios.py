@@ -452,7 +452,30 @@ class IOSDriver(NetworkDriver):
         Get interface details
 
         last_flapped is not implemented
+
+        Example Output:
+
+        {   u'Vlan1': {   'description': u'N/A',
+                      'is_enabled': True,
+                      'is_up': True,
+                      'last_flapped': -1.0,
+                      'mac_address': u'a493.4cc1.67a7',
+                      'speed': 100},
+        u'Vlan100': {   'description': u'Data Network',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'last_flapped': -1.0,
+                        'mac_address': u'a493.4cc1.67a7',
+                        'speed': 100},
+        u'Vlan200': {   'description': u'Voice Network',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'last_flapped': -1.0,
+                        'mac_address': u'a493.4cc1.67a7',
+                        'speed': 100}}
+
         '''
+
         interface_list = {}
 
         # default values.
@@ -462,20 +485,37 @@ class IOSDriver(NetworkDriver):
         mac_regex = r".*,\saddress\sis\s(?P<mac_address>\S+).*"
         speed_regex = r".*BW\s(?P<speed>\d+)\s(?P<speed_format>\S+).*"
 
-        command = 'show interfaces description'
+        command = 'show ip interface brief'
         output = self.device.send_command(command)
         for line in output.splitlines():
             if 'Interface' in line and 'Status' in line:
                 continue
             fields = line.split()
-            if len(fields) == 3:
-                interface, status, protocol = fields
-                description = u''
-            elif fields > 3:
-                interface, status, protocol = fields[:3]
-                description = u" ".join(fields[3:])
+            """
+            router#sh ip interface brief
+            Interface                  IP-Address      OK? Method Status                Protocol
+            FastEthernet8              10.65.43.169    YES DHCP   up                    up
+            GigabitEthernet0           unassigned      YES NVRAM  administratively down down
+            Loopback234                unassigned      YES unset  up                    up
+            Loopback555                unassigned      YES unset  up                    up
+            NVI0                       unassigned      YES unset  administratively down down
+            Tunnel0                    10.63.100.9     YES NVRAM  up                    up
+            Tunnel1                    10.63.101.9     YES NVRAM  up                    up
+            Vlan1                      unassigned      YES unset  up                    up
+            Vlan100                    10.40.0.1       YES NVRAM  up                    up
+            Vlan200                    10.63.176.57    YES NVRAM  up                    up
+            Wlan-GigabitEthernet0      unassigned      YES unset  up                    up
+            wlan-ap0                   10.40.0.1       YES unset  up                    up
+            """
+
+            # Check for administratively down
+            if len(fields) == 6:
+                interface, ip_address, ok, method, status, protocol = fields
+            elif len(fields) == 7:
+                # Administratively down is two fields in the output for status
+                interface, ip_address, ok, method, status, status2, protocol = fields
             else:
-                raise ValueError("Unexpected response from the router")
+                raise ValueError(u"Unexpected Response from the device")
 
             status = status.lower()
             protocol = protocol.lower()
@@ -487,13 +527,19 @@ class IOSDriver(NetworkDriver):
             interface_list[interface] = {
                 'is_up': is_up,
                 'is_enabled': is_enabled,
-                'description': description,
                 'last_flapped': last_flapped,
             }
 
         for interface in interface_list:
             show_command = "show interface {0}".format(interface)
             interface_output = self.device.send_command(show_command)
+            try:
+                # description filter
+                description = re.search(r"  Description: (.+)", interface_output)
+                interface_list[interface]['description'] = description.group(1).strip('\r')
+            except AttributeError:
+                interface_list[interface]['description'] = u'N/A'
+
             try:
                 # mac_address filter.
                 match_mac = re.match(mac_regex, interface_output, re.DOTALL)
@@ -519,6 +565,7 @@ class IOSDriver(NetworkDriver):
                 interface_list[interface]['speed'] = -1
 
         return interface_list
+
 
     @staticmethod
     def bgp_time_conversion(bgp_uptime):
