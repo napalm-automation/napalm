@@ -324,29 +324,111 @@ class IOSDriver(NetworkDriver):
     def get_lldp_neighbors(self):
         '''
         Output command format:
-        Device ID           Local Intf     Hold-time  Capability      Port ID
-        twb-sf-hpsw1        Fa4            120        B               17
 
-        Total entries displayed: 1
+            show lldp neighbors detail
 
-        return data structure is a dictionary, key is local_port
-        {u'Fa4': [{'hostname': u'twb-sf-hpsw1', 'port': u'17'}]}
+            ------------------------------------------------
+            Local Intf: Gi0/1
+            Chassis id: G404-0844
+            Port id: PORT-3
+            Port Description - not advertised
+            System Name: UEC-WDBYMNUEC1-UNI-53055
 
-        and value is a list where each entry in the list is a dict
+            System Description:
+            AMN-1000-GT, FW: AMT_7.0.0.1_2517, HO: Dry-contact Input
+
+            Time remaining: 103 seconds
+            System Capabilities - not advertised
+            Enabled Capabilities - not advertised
+            Management Addresses:
+                IP: 172.29.118.206
+            Auto Negotiation - not supported
+            Physical media capabilities - not advertised
+            Media Attachment Unit type - not advertised
+            Vlan ID: - not advertised
+
+        Return data structure is a dictionary, key is local_port:
+
+        {   u'FastEthernet2': [   {   'hostname': u'SEP204C9ED7CB80',
+                                      'port': u'204C9ED7CB80:P1'}],
+            u'FastEthernet3': [   {   'hostname': u'SEP10BD1801A0B4',
+                                      'port': u'10BD1801A0B4:P1'}],
+            u'FastEthernet7': [{   'hostname': u'Meraki Network', 'port': u'1'}]}
+
+
+        Caveats:
+
+        The original way this method was built used the following command:
+
+            customer-router-2901#sh lldp neighbors
+            Capability codes:
+                (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+                (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+
+            Device ID           Local Intf     Hold-time  Capability      Port ID
+            UEC-WDBYMNUEC1-UNI-5Gi0/1          121                        PORT-3
+            SEP10BD1801A0B4     Fa3            180        B,T             10BD1801A0B4:P1
+            SEP204C9ED7CB80     Fa2            180        B,T             204C9ED7CB80:P1
+            Meraki Network      Fa7            120        B               1
+
+        I observed a couple of different issues that happened when the data was split:
+
+            1. If the 'Device ID' is too long it will run into the interface name and not split correctly
+            2. In the 'Capability' field, if multiple codes are returned the split would not line up with the variables
+
+        One issue I observed when using 'show lldp neighbors detail' is that not all versions of IOS will return the
+        'Local Intf:' output meaning you will not have the key to build the dict so you end up returning an emtpy dict.
+        I choose to use this method because it seems more predictable.
+
+        There is probably room to improve this if someone has better design ideas.
         '''
+
         lldp = {}
 
-        command = 'show lldp neighbors | begin Device ID'
+        command = 'show lldp neighbors detail'
         output = self.device.send_command(command)
+
+        # Check if router supports the command
         if '% Invalid input' in output:
             return {}
-        for line in output.splitlines():
-            line = line.strip()
-            if 'Device ID' in line or 'entries' in line or line == '':
+
+        split_output = output.split('------------------------------------------------')
+
+        for line in split_output:
+            # Skip the first line
+            if line == '':
                 continue
-            device_id, local_port, _, _, remote_port = line.split()
+            local_interface = re.search(r"Local Intf: (.+)", line)
+            if local_interface:
+                # Query router for full interface name using abbreviated name
+                command = 'show int {}'.format(local_interface.group(1))
+                output = self.device.send_command(command)
+
+                if 'line protocol' in output:
+                    split_output = output.split()
+                    local_port = split_output[0]
+                else:
+                    # If unable to return local interface skip to next line, need the interface to build the dictionary
+                    continue
+            else:
+                # If unable to return local interface skip to next line, need the interface to build the dictionary
+                continue
+
+            system_name = re.search(r"System Name: (.+)", line)
+            if system_name:
+                device_id = system_name.group(1)
+            else:
+                device_id = u'N/A'
+
+            port_id = re.search(r"Port id: (.+)", line)
+            if port_id:
+                remote_port = port_id.group(1)
+            else:
+                remote_port = u'N/A'
+
             lldp.setdefault(local_port, [])
             lldp[local_port].append({'hostname': device_id, 'port': remote_port,})
+
         return lldp
 
     @staticmethod
