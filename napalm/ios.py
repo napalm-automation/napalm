@@ -321,7 +321,7 @@ class IOSDriver(NetworkDriver):
             return True
         return False
 
-    def get_lldp_neighbors(self):
+    def get_lldp_neighbors_detail(self):
         '''
         Output command format:
 
