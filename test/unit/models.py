@@ -90,3 +90,32 @@ lldp_neighbors_detail = {
     'remote_system_capab'       : unicode,
     'remote_system_enable_capab': unicode
 }
+
+bgp_config_group = {
+    'type'           : unicode,
+    'description'    : unicode,
+    'apply_groups'   : list,
+    'multihop_ttl'   : int,
+    'multipath'      : bool,
+    'local_address'  : unicode,
+    'local_as'       : int,
+    'peer_as'        : int,
+    'import_policy'  : unicode,
+    'export_policy'  : unicode,
+    'remove_private' : bool,
+    'prefix_limit'   : dict,
+    'neighbors'      : dict
+}
+
+bgp_config_neighbor = {
+    'description'       : unicode,
+    'import_policy'     : unicode,
+    'export_policy'     : unicode,
+    'local_address'     : unicode,
+    'authentication_key': unicode,
+    'nhs'               : bool,
+    'route_reflector'   : bool,
+    'local_as'          : int,
+    'peer_as'           : int,
+    'prefix_limit'      : dict
+}

@@ -57,6 +57,7 @@ class FakeJunOSDevice:
 
     def __init__(self):
         self.rpc = FakeRPCObject()
+        self.ON_JUNOS = True # necessary for fake devices
         self.facts = {
             'domain': None,
             'hostname': 'vsrx',
@@ -100,5 +101,16 @@ class FakeRPCObject:
 
         xml_string = self.read_txt_file('junos/mock_data/{}{}.txt'.format(self.item, instance))
         return lxml.etree.fromstring(xml_string)
+
+    def get_config(self, get_cmd = '', options = {}):
+
+        # get_cmd is an XML tree that requests a specific part of the config
+        # E.g.: <configuration><protocols><bgp><group/></bgp></protocols></configuration>
+
+        # there's one single RPC for the config file: get-configuration
+        # I think we should have on single text file where to add different config parts
+        # probably it would be less messy?
+        with open('junos/mock_data/get-configuration.txt') as config_file:
+            return lxml.etree.fromstring(config_file.read())
 
     __call__ = response
