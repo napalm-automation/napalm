@@ -866,20 +866,23 @@ class IOSDriver(NetworkDriver):
             if line == "" or 'address' in line or 'sys.peer' in line:
                 continue
 
-            address, ref_clock, st, when, poll, reach, delay, offset, disp = line.split()
-            peer = {
-                'referenceid': ref_clock,
-                'stratum': st,
-                'type': '',
-                'when': when,
-                'hostpoll': poll,
-                'reachability': reach,
-                'delay': delay,
-                'offset': offset,
-                'jitter': disp
-            }
+            if len(line.split()) == 9:
+                address, ref_clock, st, when, poll, reach, delay, offset, disp = line.split()
+                peer = {
+                    'referenceid': ref_clock,
+                    'stratum': st,
+                    'type': '',
+                    'when': when,
+                    'hostpoll': poll,
+                    'reachability': reach,
+                    'delay': delay,
+                    'offset': offset,
+                    'jitter': disp
+                }
 
-            ntp_peers.setdefault(address, {})
-            ntp_peers[address].update(peer)
+                ntp_peers.setdefault(address, {})
+                ntp_peers[address].update(peer)
+            else:
+                raise ValueError("Unexpected output from: {}".format(line.split()))
 
         return ntp_peers
