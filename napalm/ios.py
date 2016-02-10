@@ -882,6 +882,8 @@ class IOSDriver(NetworkDriver):
             if 'Protocol' in line:
                 continue
 
+            if len(line) == 0:
+                return {}
             if len(line.split()) == 6:
                 protocol, address, age, mac, type, interface = line.split()
                 entry = {
