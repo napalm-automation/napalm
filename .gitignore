@@ -58,6 +58,5 @@ docs/_build/
 env
 *.swp
 
-napalm/fix_script.sh
 test/unit/test_devices.py
 
