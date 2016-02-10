@@ -822,3 +822,64 @@ class IOSDriver(NetworkDriver):
         environment.setdefault('temperature', {})
         environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0,}
         return environment
+
+    def get_ntp_peers(self):
+        """
++        Returns a dictionary of dictionaries with the details of each NTP peer.
++        Each key of the dictionary is the IP Address of the NTP peer.
++        Details of the peer are represented by the following fields:
++
++            * referenceid (string)
++            * stratum (int)
++            * type (string)
++            * when (string)
++            * hostpoll (int)
++            * reachability (int)
++            * delay (float)
++            * offset (float)
++            * jitter (float)
++
++        Example:
++            {
++                '188.114.101.4': {
++                    'referenceid'   : '188.114.100.1',
++                    'stratum'       : 4,
++                    'type'          : '-',
++                    'when'          : 107,
++                    'hostpoll'      : 256,
++                    'reachability'  : 377,
++                    'delay'         : 164.228,
++                    'offset'        : -13.866,
++                    'jitter'        : 2.695
++                }
++            }
++        """
+
+        ntp_peers = {}
+        command = 'show ntp associations'
+        output = self.device.send_command(command)
+
+        output = output.split('\n')
+
+        for line in output:
+            # Skip first two lines and last line of command output
+            if line == "" or 'address' in line or 'sys.peer' in line:
+                continue
+
+            address, ref_clock, st, when, poll, reach, delay, offset, disp = line.split()
+            peer = {
+                'referenceid': ref_clock,
+                'stratum': st,
+                'type': '',
+                'when': when,
+                'hostpoll': poll,
+                'reachability': reach,
+                'delay': delay,
+                'offset': offset,
+                'jitter': disp
+            }
+
+            ntp_peers.setdefault(address, {})
+            ntp_peers[address].update(peer)
+
+        return ntp_peers
