@@ -322,68 +322,40 @@ class IOSDriver(NetworkDriver):
         return False
 
     def get_lldp_neighbors_detail(self):
-        '''
-        Output command format:
-
-            show lldp neighbors detail
-
-            ------------------------------------------------
-            Local Intf: Gi0/1
-            Chassis id: G404-0844
-            Port id: PORT-3
-            Port Description - not advertised
-            System Name: UEC-WDBYMNUEC1-UNI-53055
-
-            System Description:
-            AMN-1000-GT, FW: AMT_7.0.0.1_2517, HO: Dry-contact Input
-
-            Time remaining: 103 seconds
-            System Capabilities - not advertised
-            Enabled Capabilities - not advertised
-            Management Addresses:
-                IP: 172.29.118.206
-            Auto Negotiation - not supported
-            Physical media capabilities - not advertised
-            Media Attachment Unit type - not advertised
-            Vlan ID: - not advertised
-
-        Return data structure is a dictionary, key is local_port:
-
-        {   u'FastEthernet2': [   {   'hostname': u'SEP204C9ED7CB80',
-                                      'port': u'204C9ED7CB80:P1'}],
-            u'FastEthernet3': [   {   'hostname': u'SEP10BD1801A0B4',
-                                      'port': u'10BD1801A0B4:P1'}],
-            u'FastEthernet7': [{   'hostname': u'Meraki Network', 'port': u'1'}]}
-
-
-        Caveats:
-
-        The original way this method was built used the following command:
-
-            customer-router-2901#sh lldp neighbors
-            Capability codes:
-                (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
-                (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
-
-            Device ID           Local Intf     Hold-time  Capability      Port ID
-            UEC-WDBYMNUEC1-UNI-5Gi0/1          121                        PORT-3
-            SEP10BD1801A0B4     Fa3            180        B,T             10BD1801A0B4:P1
-            SEP204C9ED7CB80     Fa2            180        B,T             204C9ED7CB80:P1
-            Meraki Network      Fa7            120        B               1
-
-        I observed a couple of different issues that happened when the data was split:
-
-            1. If the 'Device ID' is too long it will run into the interface name and not split correctly
-            2. In the 'Capability' field, if multiple codes are returned the split would not line up with the variables
+        """
+        Returns a detailed view of the LLDP neighbors as a dictionary
+        containing lists of dictionaries for each interface.
+        Inner dictionaries contain fields:
+            * parent_interface (string), this value doesnt appear to exist on IOS, defaulting it to 'N/A'
+            * interface_description (string)
+            * remote_port (string)
+            * remote_port_description (string)
+            * remote_chassis_id (string)
+            * remote_system_name (string)
+            * remote_system_description (string)
+            * remote_system_capab (string)
+            * remote_system_enabled_capab (string)
+            * remote_management_address (string)
+        Example:
+            {
+                'FastEthernet2': [   {   'interface_description': 'FastEthernet2',
+                         'parent_interface': u'N/A',
+                         'remote_chassis_id': u'10.63.176.58',
+                         'remote_management_address': u'10.63.176.58',
+                         'remote_port': u'204C9ED7CB80:P1',
+                         'remote_port_description': u'SW PORT',
+                         'remote_system_capab': u'B,T',
+                         'remote_system_enabled_capab': u'B,T',
+                         'remote_system_name': u'SEP204C9ED7CB80',
+                         'remote_system_name_description': u'Cisco IP Phone 8841, V1, sip88xx.10-2-2-16.loads'}]
+            }
 
         One issue I observed when using 'show lldp neighbors detail' is that not all versions of IOS will return the
-        'Local Intf:' output meaning you will not have the key to build the dict so you end up returning an emtpy dict.
-        I choose to use this method because it seems more predictable.
-
-        There is probably room to improve this if someone has better design ideas.
-        '''
+        'Local Intf:' In these instances I populate the interface name with 'unknown_x', x increments on loop iteration
+        """
 
         lldp = {}
+        counter = 0
 
         command = 'show lldp neighbors detail'
         output = self.device.send_command(command)
@@ -408,17 +380,13 @@ class IOSDriver(NetworkDriver):
                     split_output = output.split()
                     local_port = split_output[0]
                 else:
-                    # If unable to return local interface skip to next line, need the interface to build the dictionary
-                    continue
+                    # If unable to return local populate unknown_x
+                    local_port = 'unknown_{}'.format(counter)
+                    counter +=1
             else:
-                # If unable to return local interface skip to next line, need the interface to build the dictionary
-                continue
-
-            system_name = re.search(r"System Name: (.+)", line)
-            if system_name:
-                device_id = system_name.group(1)
-            else:
-                device_id = u'N/A'
+                # If unable to return local populate unknown_x
+                local_port = 'unknown_{}'.format(counter)
+                counter += 1
 
             port_id = re.search(r"Port id: (.+)", line)
             if port_id:
@@ -426,8 +394,61 @@ class IOSDriver(NetworkDriver):
             else:
                 remote_port = u'N/A'
 
+            port_description = re.search(r"Port Description: (.+)", line)
+            if port_description:
+                remote_port_description = port_description.group(1)
+            else:
+                remote_port_description = u'N/A'
+
+            chassis_id = re.search(r"Chassis id: (.+)", line)
+            if chassis_id:
+                remote_chassis_id = chassis_id.group(1)
+            else:
+                remote_chassis_id = u'N/A'
+
+            system_name = re.search(r"System Name: (.+)", line)
+            if system_name:
+                remote_system_name = system_name.group(1)
+            else:
+                remote_system_name = u'N/A'
+
+            system_description = re.search(r"System Description: \n(.+)", line)
+            if system_description:
+                remote_system_description = system_description.group(1)
+            else:
+                remote_system_description = u'N/A'
+
+            system_capabilities = re.search(r"System Capabilities: (.+)", line)
+            if system_capabilities:
+                remote_system_capab = system_capabilities.group(1)
+            else:
+                remote_system_capab = u'N/A'
+
+            enabled_capabilities = re.search(r"Enabled Capabilities: (.+)", line)
+            if enabled_capabilities:
+                remote_system_enabled_capab = enabled_capabilities.group(1)
+            else:
+                remote_system_enabled_capab = u'N/A'
+
+            remote_address = re.search(r"Management Addresses:\n    IP: (.+)", line)
+            if remote_address:
+                remote_management_address = remote_address.group(1)
+            else:
+                remote_management_address = u'N/A'
+
             lldp.setdefault(local_port, [])
-            lldp[local_port].append({'hostname': device_id, 'port': remote_port,})
+            lldp[local_port].append(
+                {'parent_interface': u'N/A',
+                 'interface_description': local_port,
+                 'remote_port': remote_port,
+                 'remote_port_description': remote_port_description,
+                 'remote_chassis_id': remote_chassis_id,
+                 'remote_system_name': remote_system_name,
+                 'remote_system_name_description': remote_system_description,
+                 'remote_system_capab': remote_system_capab,
+                 'remote_system_enabled_capab': remote_system_enabled_capab,
+                 'remote_management_address': remote_management_address
+                 })
 
         return lldp
 
