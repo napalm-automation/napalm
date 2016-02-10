@@ -822,3 +822,164 @@ class IOSDriver(NetworkDriver):
         environment.setdefault('temperature', {})
         environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0,}
         return environment
+
+    def get_mac_address_table(self, address ='', interface = '', dynamic = False, static = False, vlan = None):
+
+        """
+        Returns a dictionary with lists of dictionaries. The keys of the main dictionary represents VLAN ID.
+        Inner dictionaries contain details for the MAC addresses in the VLAN:
+            * mac (string)
+            * interface (string)
+            * active (boolean)
+            * static (boolean)
+        Example:
+            {
+                100: [
+                    {
+                        'mac'       : '00:1c:58:29:4a:71',
+                        'interface' : 'Ethernet47',
+                        'static'    : False,
+                        'active'    : True
+                    },
+                    {
+                        'mac'       : '8c:60:4f:58:e1:c1',
+                        'interface' : 'xe-1/0/1',
+                        'static'    : False,
+                        'active'    : True
+                    }
+                ],
+                900: [
+                    {
+                        'mac'       : 'f4:b5:2f:56:72:01',
+                        'interface' : 'ae7.900',
+                        'static'    : False,
+                        'active'    : True
+                    }
+                ]
+            }
+
+            It is also possible to limit the output by applying the following filters:
+                * address       : to retrieve details for one specific MAC address
+                * interface     : MAC addresses seen on one single interface
+                * dynamic       : return only dynamic entries
+                * static        : return only static entries
+                * vlan          : to get the MAC addresses in a specific VLAN
+            E.g.: get_mac_address_table(interface = 'xe-1/0/1', vlan = 100) will return
+            {
+                100: [
+                    {
+                        'mac'       : '8c:60:4f:58:e1:c1',
+                        'interface' : 'xe-1/0/1',
+                        'static'    : False,
+                        'active'    : True
+                    }
+                ]
+            }
+        """
+
+        mac_address_table = {}
+        original_mac = address
+        command = ''
+
+        # Clean-up MAC Address
+        if address:
+            regex = re.compile('[^a-fA-F0-9]')
+            address = regex.sub('', address)
+            if len(address) == 12:
+                address = '{}.{}.{}'.format(address[:4], address[4:8], address[8:])
+            else:
+                raise ValueError("Unexpected value for MAC Address: {}".format(original_mac))
+
+        # Check for bad input
+        if dynamic is True and static is True:
+            raise ValueError('Both Dynamic and Static Variables Cannot be True')
+
+        # Check the mac-address-table without specifying static or dynamic
+        if address and interface and vlan and not dynamic and not static:
+            command = 'show mac-address-table address {} interface {} vlan {}'.format(address, interface, vlan)
+        elif address and interface and not dynamic and not static:
+            command = 'show mac-address-table address {} interface {}'.format(address, interface)
+        elif address and vlan and not dynamic and not static:
+            command = 'show mac-address-table address {} vlan {}'.format(address, vlan)
+        elif interface and vlan and not dynamic and not static:
+            command = 'show mac-address-table interface {} vlan {}'.format(interface, vlan)
+        elif interface and not dynamic and not static:
+            command = 'show mac-address-table interface {}'.format(interface)
+        elif vlan and not dynamic and not static:
+            command = 'show mac-address-table vlan {}'.format(vlan)
+        elif address and not dynamic and not static:
+            command = 'show mac-address-table address {}'.format(address)
+        elif not dynamic and not static:
+            command = 'show mac-address-table'
+
+        # Set table type static or dynamic
+        if dynamic:
+            table_type = 'dynamic'
+        elif static:
+            table_type = 'static'
+        else:
+            table_type = ''
+
+        # Set device command for showing static/dynamic mac-address-table
+        if 'show mac-address-table' in command:
+            pass
+        elif command is '':
+            # Check the mac-address-table while specifying static or dynamic
+            if address and interface and vlan:
+                command = 'show mac-address-table {} address {} interface {} vlan {}'.format(table_type, address, interface, vlan)
+            elif address and interface:
+                command = 'show mac-address-table {} address {} interface {}'.format(table_type, address, interface)
+            elif address and vlan:
+                command = 'show mac-address-table {} address {} vlan {}'.format(table_type, address, vlan)
+            elif interface and vlan:
+                command = 'show mac-address-table {} interface {} vlan {}'.format(table_type, interface, vlan)
+            elif interface:
+                command = 'show mac-address-table {} interface {}'.format(table_type, interface)
+            elif vlan:
+                command = 'show mac-address-table {} vlan {}'.format(table_type, vlan)
+            elif address:
+                command = 'show mac-address-table {} address {}'.format(table_type, address)
+            else:
+                command = 'show mac-address-table {}'.format(table_type)
+        else:
+            raise ValueError('Something not correct in the logic to build the router input command')
+
+        output = self.device.send_command(command)
+        output = output.strip().split('\n')
+
+        for line in output:
+            # If showing specific table skip line
+            if 'Address Table' in line:
+                continue
+            # Skip first two lines
+            if 'Destination' in line or '-----' in line:
+                continue
+
+            if len(line.split()) == 0:
+                return mac_address_table
+            elif len(line.split()) == 4:
+                mac, mac_type, vlan, interface = line.split()
+
+                if mac_type.lower() in ['self', 'static']:
+                    static = True
+                else:
+                    static = False
+
+                if mac_type.lower() in ['dynamic']:
+                    active = True
+                else:
+                    active = False
+
+                entry = {
+                    'mac': mac,
+                    'interface': interface,
+                    'static': static,
+                    'active': active
+                }
+
+                mac_address_table.setdefault(vlan, [])
+                mac_address_table[vlan].append(entry)
+            else:
+                raise ValueError("Unexpected output from: {}".format(line.split()))
+
+        return mac_address_table
