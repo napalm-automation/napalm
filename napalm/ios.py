@@ -866,7 +866,9 @@ class IOSDriver(NetworkDriver):
             if line == "" or 'address' in line or 'sys.peer' in line:
                 continue
 
-            if len(line.split()) == 9:
+            if '%NTP is not enabled' in line:
+                return {}
+            elif len(line.split()) == 9:
                 address, ref_clock, st, when, poll, reach, delay, offset, disp = line.split()
                 peer = {
                     'referenceid': ref_clock,
