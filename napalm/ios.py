@@ -822,3 +822,15 @@ class IOSDriver(NetworkDriver):
         environment.setdefault('temperature', {})
         environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0,}
         return environment
+
+    def cli(self, command=''):
+        """
+        Will execute a desired command an the CLI and return the output
+        """
+
+        if not command:
+            return "Please enter a valid command"
+
+        output = self.device.send_command(command)
+
+        return output
