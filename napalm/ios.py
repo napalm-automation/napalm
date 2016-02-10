@@ -955,7 +955,7 @@ class IOSDriver(NetworkDriver):
             if 'Destination' in line or '-----' in line:
                 continue
 
-            if len(line.split()) == 0:
+            if len(line) == 0:
                 return mac_address_table
             elif len(line.split()) == 4:
                 mac, mac_type, vlan, interface = line.split()
