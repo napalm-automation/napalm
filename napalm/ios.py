@@ -825,35 +825,33 @@ class IOSDriver(NetworkDriver):
 
     def get_ntp_peers(self):
         """
-+        Returns a dictionary of dictionaries with the details of each NTP peer.
-+        Each key of the dictionary is the IP Address of the NTP peer.
-+        Details of the peer are represented by the following fields:
-+
-+            * referenceid (string)
-+            * stratum (int)
-+            * type (string)
-+            * when (string)
-+            * hostpoll (int)
-+            * reachability (int)
-+            * delay (float)
-+            * offset (float)
-+            * jitter (float)
-+
-+        Example:
-+            {
-+                '188.114.101.4': {
-+                    'referenceid'   : '188.114.100.1',
-+                    'stratum'       : 4,
-+                    'type'          : '-',
-+                    'when'          : 107,
-+                    'hostpoll'      : 256,
-+                    'reachability'  : 377,
-+                    'delay'         : 164.228,
-+                    'offset'        : -13.866,
-+                    'jitter'        : 2.695
-+                }
-+            }
-+        """
+        Returns a dictionary of dictionaries with the details of each NTP peer.
+        Each key of the dictionary is the IP Address of the NTP peer.
+        Details of the peer are represented by the following fields:
+            * referenceid (string)
+            * stratum (int)
+            * type (string)
+            * when (string)
+            * hostpoll (int)
+            * reachability (int)
+            * delay (float)
+            * offset (float)
+            * jitter (float)
+        Example:
+            {
+                '188.114.101.4': {
+                    'referenceid'   : '188.114.100.1',
+                    'stratum'       : 4,
+                    'type'          : '-',
+                    'when'          : 107,
+                    'hostpoll'      : 256,
+                    'reachability'  : 377,
+                    'delay'         : 164.228,
+                    'offset'        : -13.866,
+                    'jitter'        : 2.695
+                }
+            }
+        """
 
         ntp_peers = {}
         command = 'show ntp associations'
