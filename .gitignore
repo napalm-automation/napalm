@@ -57,3 +57,6 @@ docs/_build/
 
 env
 *.swp
+
+test/unit/test_devices.py
+
