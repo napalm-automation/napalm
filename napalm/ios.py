@@ -528,18 +528,18 @@ class IOSDriver(NetworkDriver):
 
         Example Output:
 
-        {   u'FastEthernet8': {   'ipv4': {   u'10.66.43.169': {   'prefix-length': 22}}},
-            u'Loopback555': {   'ipv4': {   u'192.168.1.1': {   'prefix-length': 24}},
-                                'ipv6': {   u'1::1': {   'prefix-length': 64},
-                                            u'2001:DB8:1::1': {   'prefix-length': 64},
-                                            u'2::': {   'prefix-length': 64},
-                                            u'FE80::3': {   'prefix-length': u'N/A'}}},
-            u'Tunnel0': {   'ipv4': {   u'10.63.100.9': {   'prefix-length': 24}}},
-            u'Tunnel1': {   'ipv4': {   u'10.63.101.9': {   'prefix-length': 24}}},
-            u'Vlan100': {   'ipv4': {   u'10.40.0.1': {   'prefix-length': 24},
-                                        u'10.41.0.1': {   'prefix-length': 24},
-                                        u'10.65.0.1': {   'prefix-length': 24}}},
-            u'Vlan200': {   'ipv4': {   u'10.63.176.57': {   'prefix-length': 29}}}}
+        {   u'FastEthernet8': {   'ipv4': {   u'10.66.43.169': {   'prefix_length': 22}}},
+            u'Loopback555': {   'ipv4': {   u'192.168.1.1': {   'prefix_length': 24}},
+                                'ipv6': {   u'1::1': {   'prefix_length': 64},
+                                            u'2001:DB8:1::1': {   'prefix_length': 64},
+                                            u'2::': {   'prefix_length': 64},
+                                            u'FE80::3': {   'prefix_length': u'N/A'}}},
+            u'Tunnel0': {   'ipv4': {   u'10.63.100.9': {   'prefix_length': 24}}},
+            u'Tunnel1': {   'ipv4': {   u'10.63.101.9': {   'prefix_length': 24}}},
+            u'Vlan100': {   'ipv4': {   u'10.40.0.1': {   'prefix_length': 24},
+                                        u'10.41.0.1': {   'prefix_length': 24},
+                                        u'10.65.0.1': {   'prefix_length': 24}}},
+            u'Vlan200': {   'ipv4': {   u'10.63.176.57': {   'prefix_length': 29}}}}
         '''
 
         interfaces = {}
@@ -572,9 +572,9 @@ class IOSDriver(NetworkDriver):
                             ip_address, subnet = int_fields[3].split(r'/')
                             interfaces[interface]['ipv4'] = {ip_address: {}}
                             try:
-                                interfaces[interface]['ipv4'][ip_address] = {'prefix-length': int(subnet)}
+                                interfaces[interface]['ipv4'][ip_address] = {'prefix_length': int(subnet)}
                             except ValueError:
-                                interfaces[interface]['ipv4'][ip_address] = {'prefix-length': u'N/A'}
+                                interfaces[interface]['ipv4'][ip_address] = {'prefix_length': u'N/A'}
                     elif len(fields) in [4, 5]:
                         # Check for 'ip address 10.10.10.1 255.255.255.0'
                         # Check for 'ip address 10.10.11.1 255.255.255.0 secondary'
@@ -587,7 +587,7 @@ class IOSDriver(NetworkDriver):
                         except ValueError:
                             subnet = u'N/A'
 
-                        ip_dict = {'prefix-length': subnet}
+                        ip_dict = {'prefix_length': subnet}
                         interfaces[interface]['ipv4'].update({ip_address: {}})
                         interfaces[interface]['ipv4'][ip_address].update(ip_dict)
                     else:
@@ -605,11 +605,11 @@ class IOSDriver(NetworkDriver):
                             # check for 'ipv6 address 1::1/64'
                             ip_address, subnet = ip_address.split(r'/')
                             interfaces[interface]['ipv6'].update({ip_address: {}})
-                            ip_dict = {'prefix-length': int(subnet)}
+                            ip_dict = {'prefix_length': int(subnet)}
                         else:
                             # check for 'ipv6 address FE80::3 link-local'
                             interfaces[interface]['ipv6'].update({ip_address: {}})
-                            ip_dict = {'prefix-length': u'N/A'}
+                            ip_dict = {'prefix_length': u'N/A'}
 
                         interfaces[interface]['ipv6'][ip_address].update(ip_dict)
                     except AttributeError:
