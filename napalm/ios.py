@@ -831,7 +831,7 @@ class IOSDriver(NetworkDriver):
 
         Example Output:
 
-        {   'chassis-id': u'Asset Tag 54670',
+        {   'chassis_id': u'Asset Tag 54670',
         'community': {   u'private': {   'acl': u'12', 'mode': u'rw'},
                          u'public': {   'acl': u'11', 'mode': u'ro'},
                          u'public_named_acl': {   'acl': u'ALLOW-SNMP-ACL',
@@ -870,7 +870,7 @@ class IOSDriver(NetworkDriver):
             elif 'snmp-server contact' in line:
                 snmp_dict['contact'] = ' '.join(fields[2:])
             elif 'snmp-server chassis-id' in line:
-                snmp_dict['chassis-id'] = ' '.join(fields[2:])
+                snmp_dict['chassis_id'] = ' '.join(fields[2:])
             else:
                 raise ValueError("Unexpected Response from the device")
 
