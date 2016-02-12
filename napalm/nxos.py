@@ -198,3 +198,81 @@ class NXOSDriver(NetworkDriver):
 
     def get_checkpoint_file(self):
         return install_config.get_checkpoint(self.device)
+
+    def get_lldp_neighbors_detail(self, interface = ''):
+
+        lldp_neighbors = dict()
+
+        filter = ''
+        if interface:
+            filter = 'interface {name} '.format(
+                name = interface
+            )
+
+        command = 'show lldp neighbors {filter}detail'.format(
+            filter = filter
+        ) # seems that show LLDP neighbors detail does not return JSON output...
+
+        lldp_neighbors_table_str = self.cli(command)
+        # thus we need to take the raw text output
+
+        lldp_neighbors_list = lldp_neighbors_table_str.splitlines()
+
+        if not lldp_neighbors_list:
+            return lldp_neighbors # empty dict
+
+        CHASSIS_REGEX       = '^(Chassis id:)\s+([a-z0-9\.]+)$'
+        PORT_REGEX          = '^(Port id:)\s+([0-9]+)$'
+        LOCAL_PORT_ID_REGEX = '^(Local Port id:)\s+(.*)$'
+        PORT_DESCR_REGEX    = '^(Port Description:)\s+(.*)$'
+        SYSTEM_NAME_REGEX   = '^(System Name:)\s+(.*)$'
+        SYSTEM_DESCR_REGEX  = '^(System Description:)\s+(.*)$'
+        SYST_CAPAB_REEGX    = '^(System Capabilities:)\s+(.*)$'
+        ENABL_CAPAB_REGEX   = '^(Enabled Capabilities:)\s+(.*)$'
+        VLAN_ID_REGEX       = '^(Vlan ID:)\s+(.*)$'
+
+        lldp_neighbor = {}
+        interface_name = None
+        for line in lldp_neighbors_list:
+            chassis_rgx = re.search(CHASSIS_REGEX, line, re.I)
+            if chassis_rgx:
+                lldp_neighbor = {
+                    'remote_chassis_id': unicode(chassis_rgx.groups()[1])
+                }
+                continue
+            port_rgx = re.search(PORT_REGEX, line, re.I)
+            if port_rgx:
+                lldp_neighbor['parent_interface'] = unicode(port_rgx.groups()[1])
+                continue # jump to next line
+            local_port_rgx = re.search(LOCAL_PORT_ID_REGEX, line, re.I)
+            if local_port_rgx:
+                interface_name = local_port_rgx.groups()[1]
+                continue
+            port_descr_rgx = re.search(PORT_DESCR_REGEX, line, re.I)
+            if port_descr_rgx:
+                lldp_neighbor['interface_description'] = unicode(port_descr_rgx.groups()[1])
+                continue
+            syst_name_rgx = re.search(SYSTEM_NAME_REGEX, line, re.I)
+            if syst_name_rgx:
+                lldp_neighbor['remote_system_name'] = unicode(syst_name_rgx.groups()[1])
+                continue
+            syst_descr_rgx = re.search(SYSTEM_DESCR_REGEX, line, re.I)
+            if syst_descr_rgx:
+                lldp_neighbor['remote_system_description'] = unicode(syst_descr_rgx.groups()[1])
+                continue
+            syst_capab_rgx = re.search(SYST_CAPAB_REEGX, line, re.I)
+            if syst_capab_rgx:
+                lldp_neighbor['remote_system_capab'] = unicode(syst_capab_rgx.groups()[1])
+                continue
+            syst_enabled_rgx = re.search(ENABL_CAPAB_REGEX, line, re.I)
+            if syst_enabled_rgx:
+                lldp_neighbor['remote_system_enable_capab'] = unicode(syst_enabled_rgx.groups()[1])
+                continue
+            vlan_rgx = re.search(VLAN_ID_REGEX, line, re.I)
+            if vlan_rgx:
+                # at the end of the loop
+                if interface_name not in lldp_neighbors.keys():
+                    lldp_neighbors[interface_name] = list()
+                lldp_neighbors[interface_name].append(lldp_neighbor)
+
+        return lldp_neighbors
