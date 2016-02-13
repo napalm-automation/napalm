@@ -749,3 +749,28 @@ class JunOSDriver(NetworkDriver):
                 continue
 
         return interfaces_ip
+
+    def get_mac_address_table(self):
+
+        mac_address_table = dict()
+
+        mac_table = junos_views.junos_mac_address_table(self.device)
+        mac_table.get()
+        mac_table_items = mac_table.items()
+
+        default_values = {
+            'static'    : False,
+            'active'    : True,
+            'moves'     : 0,
+            'last_move' : 0.0
+        }
+
+        for mac_table_entry in mac_table_items:
+            vlan = int(mac_table_entry[0])
+            if vlan not in mac_address_table.keys():
+                mac_address_table[vlan] = list()
+            mac_entry = {elem[0]: elem[1] for elem in mac_table_entry[1]}
+            mac_entry.update(default_values)
+            mac_address_table[vlan].append(mac_entry)
+
+        return mac_address_table

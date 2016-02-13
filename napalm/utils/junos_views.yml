@@ -377,3 +377,23 @@ junos_ip_interfaces_view:
   fields:
     family: ../address-family-name
     interface: ../../name
+
+###
+### MAC Address table
+###
+
+junos_mac_address_table:
+  rpc: get-bridge-mac-table
+  item: l2ald-mac-entry
+  args:
+    extensive: True
+  args_key:
+    - interface
+    - vlan_id
+  key: l2-bridge-vlan
+  view: junos_mac_address_view
+
+junos_mac_address_view:
+  fields:
+    interface: l2-mac-logical-interface
+    mac: l2-mac-address
