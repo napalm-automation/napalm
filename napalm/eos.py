@@ -868,3 +868,39 @@ class EOSDriver(NetworkDriver):
                     }
 
         return interfaces_ip
+
+    def get_mac_address_table(self):
+
+        mac_table = dict()
+
+        commands = ['show mac address-table']
+
+        mac_entries = []
+        try:
+            mac_entries = self.device.run_commands(commands)[0].get('unicastTable', {}).get('tableEntries', [])
+        except Exception:
+            return {}
+
+        for mac_entry in mac_entries:
+            vlan        = mac_entry.get('vlanId')
+            interface   = mac_entry.get('interface')
+            mac_raw     = mac_entry.get('macAddress')
+            mac_str     = mac_raw.replace('.', '').replace(':', '')
+            mac_format  = ':'.join([ mac_str[i:i+2] for i in range(12)[::2] ])
+            static      = (mac_entry.get('entryType') == 'static')
+            last_move   = mac_entry.get('lastMove')
+            moves       = mac_entry.get('moves')
+            if vlan not in mac_table.keys():
+                mac_table[vlan] = list()
+            mac_table[vlan].append(
+                {
+                    'mac'       : mac_format,
+                    'interface' : interface,
+                    'active'    : True,
+                    'static'    : static,
+                    'moves'     : moves,
+                    'last_move' : last_move
+                }
+            )
+
+        return mac_table
