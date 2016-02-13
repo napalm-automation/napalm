@@ -822,3 +822,58 @@ class IOSDriver(NetworkDriver):
         environment.setdefault('temperature', {})
         environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0,}
         return environment
+
+    def get_arp_table(self):
+        """
+        Returns a dictionary whose values are lists of dictionaries.
+        Each key of the main dict represents the interface name.
+        Inner dictionaries have the following set of keys:
+            * mac (string),
+            * ip (string)
+            * age (float)
+        Example:
+            {
+                'MgmtEth0/RSP0/CPU0/0': [
+                    {
+                        'mac'   : '5c5e.abda.3cf0',
+                        'ip'    : '172.17.17.1',
+                        'age'   : 1454496274.84
+                    },
+                    {
+                        'mac'   : '660e.9496.e0ff',
+                        'ip'    : '172.17.17.2',
+                        'age'   : 1435641582.49
+                    }
+                ]
+            }
+        """
+
+        arp_table = {}
+
+        command = 'show arp'
+        output = self.device.send_command(command)
+        output = output.split('\n')
+
+        # Skip the first line which is a header
+        output = output[1:-1]
+
+        for line in output:
+            if len(line) == 0:
+                return {}
+            if len(line.split()) == 6:
+                protocol, address, age, mac, type, interface = line.split()
+                try:
+                    age = float(age)
+                except ValueError:
+                    print("Unable to convert age value to float: {}".format(age))
+                entry = {
+                    'mac': mac,
+                    'ip': address,
+                    'age': age
+                }
+                arp_table.setdefault(interface, [])
+                arp_table[interface].append(entry)
+            else:
+                raise ValueError("Unexpected output from: {}".format(line.split()))
+
+        return arp_table
