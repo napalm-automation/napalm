@@ -823,8 +823,7 @@ class IOSDriver(NetworkDriver):
         environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0,}
         return environment
 
-    def get_arp_table(self, interface='', host='', ip='', mac=''):
-
+    def get_arp_table(self):
         """
         Returns a dictionary whose values are lists of dictionaries.
         Each key of the main dict represents the interface name.
@@ -847,45 +846,26 @@ class IOSDriver(NetworkDriver):
                     }
                 ]
             }
-        The output can be reduced using the follwoing filters:
-            * interface : Name of the interface
-            * host      : Not implemented (not sure if possible??)
-            * ip        : Will return one single entry corresponding to the IP Address
-            * mac       : Returns the entry corresponding to the MAC Address
         """
 
         arp_table = {}
 
-        if interface:
-            command = 'show arp {}'.format(interface)
-        elif host:
-            raise ValueError("Host filter is not supported: {}".format(host))
-        elif ip:
-            command = 'show arp {}'.format(ip)
-        elif mac:
-            regex = re.compile('[^a-fA-F0-9]')
-            clean_mac = regex.sub('', mac)
-            if len(clean_mac) == 12:
-                clean_mac = '{}.{}.{}'.format(clean_mac[:4], clean_mac[4:8], clean_mac[8:])
-                command = 'show arp | in {}'.format(clean_mac)
-            else:
-                raise ValueError("Unexpected value for MAC Address: {}".format(mac))
-        else:
-            command = 'show arp'
-
+        command = 'show arp'
         output = self.device.send_command(command)
-
         output = output.split('\n')
 
-        for line in output:
-            # Skip first line
-            if 'Protocol' in line:
-                continue
+        # Skip the first line which is a header
+        output = output[1:-1]
 
+        for line in output:
             if len(line) == 0:
                 return {}
             if len(line.split()) == 6:
                 protocol, address, age, mac, type, interface = line.split()
+                try:
+                    age = float(age)
+                except ValueError:
+                    print("Unable to convert age value to float: {}".format(age))
                 entry = {
                     'mac': mac,
                     'ip': address,
