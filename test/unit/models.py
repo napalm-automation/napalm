@@ -176,3 +176,12 @@ ntp_peer = {
 interfaces_ip = {
     'prefix_length': int
 }
+
+mac_address_table = {
+    'mac'       : unicode,
+    'interface' : unicode,
+    'static'    : bool,
+    'active'    : bool,
+    'moves'     : int,
+    'last_move' : float
+}
