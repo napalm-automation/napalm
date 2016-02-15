@@ -518,6 +518,7 @@ class NetworkDriver:
                                                 Top Front Fan             OK       3810    Spinning at intermediate-speed
                                                 Bottom Front Fan          OK       3840    Spinning at intermediate-speed
                                             '''
+            }
         """
         raise NotImplementedError
 
