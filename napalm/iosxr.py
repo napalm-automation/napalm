@@ -984,7 +984,6 @@ class IOSXRDriver(NetworkDriver):
         for interface in ipv4_tree.findall('.//InterfaceTable/Interface'):
             try:
                 interface_name = unicode(interface.find('Naming/InterfaceName').text)
-                print interface_name
                 primary_ip     = unicode(interface.find('VRFTable/VRF/Detail/PrimaryAddress').text)
                 primary_prefix = int(interface.find('VRFTable/VRF/Detail/PrefixLength').text)
                 if interface_name not in interfaces_ip.keys():
