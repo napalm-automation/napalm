@@ -1,0 +1,63 @@
+{
+    "interfaces": {
+        "Vlan100": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [
+                    {
+                        "maskLen": 24,
+                        "address": "192.168.234.1"
+                    },
+                    {
+                        "maskLen": 24,
+                        "address": "192.168.235.1"
+                    }
+                ],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 24,
+                    "address": "192.168.233.1"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Vlan100",
+            "urpf": "disable",
+            "interfaceStatus": "connected",
+            "enabled": true,
+            "mtu": 1500,
+            "vrf": "default",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "up",
+            "description": ""
+        },
+        "Ethernet36": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 25,
+                    "address": "172.17.17.66"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Ethernet36",
+            "urpf": "disable",
+            "interfaceStatus": "connected",
+            "enabled": true,
+            "mtu": 1500,
+            "vrf": "default",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "up",
+            "description": "BNIX [T=pxEU]"
+        }
+    }
+}
