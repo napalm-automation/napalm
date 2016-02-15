@@ -23,6 +23,7 @@ from datetime import datetime
 import time
 from napalm.utils import string_parsers
 from collections import defaultdict
+import ipaddress
 
 
 class EOSDriver(NetworkDriver):
@@ -914,3 +915,94 @@ class EOSDriver(NetworkDriver):
             )
 
         return mac_table
+
+    def get_route_to(self, destination = ''):
+
+        routes = dict()
+
+        try:
+            ipv = ''
+            if type(ipaddress.ip_interface(unicode(destination))) is ipaddress.IPv6Interface:
+                ipv = 'v6'
+        except ValueError:
+            return 'Please specify a valid destination!'
+
+        command = 'show ip{ipv} route {destination} detail'.format(
+            ipv         = ipv,
+            destination = destination
+        )
+
+        command_output = self.device.run_commands([command])[0]
+        if ipv == 'v6':
+            routes_out = command_output.get('routes', {})
+        else:
+            routes_out = command_output.get('vrfs', {}).get('default', {}).get('routes', {})
+
+        for prefix, route_details in routes_out.iteritems():
+            if prefix not in routes.keys():
+                routes[prefix] = list()
+            protocol    = route_details.get('routeType').upper()
+            preference  = route_details.get('preference')
+            metric      = route_details.get('metric')
+            route = {
+                'current_active'    : False,
+                'last_active'       : False,
+                'age'               : 0,
+                'as_path'           : u'',
+                'local_preference'  : 0,
+                'next_hop'          : u'',
+                'protocol'          : protocol,
+                'outgoing_interface': u'',
+                'local_as'          : 0,
+                'remote_as'         : 0,
+                'preference'        : preference,
+                'preference2'       : metric,
+                'communities'       : [],
+                'inactive_reason'   : u'',
+                'selected_next_hop' : False
+            }
+            if 'BGP' in protocol:
+                command = 'show ip{ipv} bgp {destination} detail'.format(
+                    ipv         = ipv,
+                    destination = prefix # should be prefix of destination
+                    # should revisit this TODO
+                )
+                default_vrf_details = self.device.run_commands([command])[0].get('vrfs', {}).get('default', {})
+                local_as   = default_vrf_details.get('asn')
+                bgp_routes = default_vrf_details.get('bgpRouteEntries', {}).get(prefix, {}).get('bgpRoutePaths', [])
+                for bgp_route_details in bgp_routes:
+                    bgp_route = route.copy()
+                    as_path = bgp_route_details.get('asPathEntry', {}).get('asPath', u'')
+                    remote_as = int(as_path.split()[-1])
+                    local_preference = bgp_route_details.get('localPreference')
+                    next_hop = bgp_route_details.get('nextHop')
+                    active_route = bgp_route_details.get('routeType', {}).get('active', False)
+                    last_active = active_route # should find smth better
+                    communities = bgp_route_details.get('routeDetail', {}).get('communityList', [])
+                    preference2 = bgp_route_details.get('weight')
+                    selected_next_hop = active_route
+                    bgp_route.update({
+                        'current_active'    : active_route,
+                        'last_active'       : last_active,
+                        'as_path'           : as_path,
+                        'local_preference'  : local_preference,
+                        'next_hop'          : next_hop,
+                        'selected_next_hop' : active_route,
+                        'local_as'          : local_as,
+                        'remote_as'         : remote_as,
+                        'preference2'       : preference2,
+                        'communities'       : communities
+                    })
+                    routes[prefix].append(bgp_route)
+            else:
+                for next_hop in route_details.get('vias'):
+                    route_next_hop = route.copy()
+                    route_next_hop.update(
+                        {
+                            'next_hop'          : next_hop.get('nexthopAddr'),
+                            'outgoing_interface': next_hop.get('interface')
+                        }
+                    )
+                    routes[prefix].append(route_next_hop)
+
+        return routes
