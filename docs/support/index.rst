@@ -57,7 +57,6 @@ Getters support matrix
 .. |yes|   unicode:: U+02705 .. Yes
 .. |no|    unicode:: U+0274C .. No
 
-
 ============================== =====  =====   ======  =======  ======  ======  =====  =========
 _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus
 ============================== =====  =====   ======  =======  ======  ======  =====  =========
@@ -76,7 +75,6 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_ntp_peers**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|
 **get_interfaces_ip**          |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========
-
 
 Caveats
 -------
