@@ -1,0 +1,66 @@
+<route-information xmlns="http://xml.juniper.net/junos/13.3R6/junos-routing">
+    <route-table>
+        <table-name>inet.0</table-name>
+        <destination-count>591971</destination-count>
+        <total-route-count>4001470</total-route-count>
+        <active-route-count>591761</active-route-count>
+        <holddown-route-count>4</holddown-route-count>
+        <hidden-route-count>989</hidden-route-count>
+        <rt junos_style="brief">
+            <rt-destination>1.0.4.0/24</rt-destination>
+            <rt-entry>
+                <active-tag>*</active-tag>
+                <current-active/>
+                <last-active/>
+                <protocol-name>BGP</protocol-name>
+                <preference>170</preference>
+                <age junos_seconds="874796">1w3d 02:59:56</age>
+                <local-preference>200</local-preference>
+                <as-path>4826 38803 56203 I
+                </as-path>
+                <validation-state>unverified</validation-state>
+                <nh>
+                    <selected-next-hop/>
+                    <to>172.17.116.227</to>
+                    <via>ae10.0</via>
+                </nh>
+            </rt-entry>
+            <rt-entry>
+                <active-tag> </active-tag>
+                <protocol-name>BGP</protocol-name>
+                <preference>170</preference>
+                <age junos_seconds="1619768">2w4d 17:56:08</age>
+                <local-preference>200</local-preference>
+                <learned-from>172.17.116.251</learned-from>
+                <as-path>4826 38803 56203 I
+                </as-path>
+                <validation-state>unverified</validation-state>
+                <nh>
+                    <selected-next-hop/>
+                    <to>172.17.116.227</to>
+                    <via>ae10.0</via>
+                </nh>
+            </rt-entry>
+        </rt>
+        <rt junos_style="brief">
+            <rt-destination>1.0.5.0/24</rt-destination>
+            <rt-entry>
+                <active-tag>*</active-tag>
+                <current-active/>
+                <last-active/>
+                <protocol-name>BGP</protocol-name>
+                <preference>170</preference>
+                <age junos_seconds="874877">1w3d 03:01:17</age>
+                <local-preference>200</local-preference>
+                <as-path>4826 38803 56203 I
+                </as-path>
+                <validation-state>unverified</validation-state>
+                <nh>
+                    <selected-next-hop/>
+                    <to>172.17.116.227</to>
+                    <via>ae10.0</via>
+                </nh>
+            </rt-entry>
+        </rt>
+    </route-table>
+</route-information>
