@@ -485,17 +485,28 @@ class EOSDriver(NetworkDriver):
 
         return lldp_neighbors_out
 
-    def cli(self, command = None):
+    def cli(self, commands = None):
 
-        if type(command) is not str:
-            return 'Please enter a valid command!'
+        cli_output = dict()
 
-        commands = list()
-        commands.append(command)
+        if type(commands) is not list:
+            return 'Please enter a valid list of commands!'
 
-        try:
-            return self.device.run_commands(commands, encoding = 'text')[0].get('output')
-        except pyeapi.eapilib.CommandError:
-            return 'Unrecognized command: "{0}"'.format(command)
-        except Exception as e:
-            return 'Unable to execute command: "{0}"'.format(e)
+        for command in commands:
+            try:
+                cli_output[unicode(command)] = self.device.run_commands([command], encoding = 'text')[0].get('output')
+                # not quite fair to not exploit rum_commands
+                # but at least can have better control to point to wrong command in case of failure
+            except pyeapi.eapilib.CommandError:
+                # for sure this command failed
+                cli_output[unicode(command)] = 'Invalid command: "{cmd}"'.format(
+                    cmd = command
+                )
+            except Exception as e:
+                # something bad happened
+                cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
+                    cmd = command,
+                    err = e
+                )
+
+        return cli_output

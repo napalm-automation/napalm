@@ -632,16 +632,24 @@ class IOSXRDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def cli(self, command = None):
+    def cli(self, commands = None):
 
-        if type(command) is not str:
-            return 'Please enter a valid command!'
+        cli_output = dict()
 
-        try:
-            return __execute_show__(self.device.device, command, self.timeout)
-        except TimeoutError:
-            return 'Execution of command "{command}" took too long! Please adjust your params!'.format(
-                command = command
-            )
-        except Exception as e:
-            return 'Unable to execute command: "{0}"'.format(e)
+        if type(commands) is not list:
+            return 'Please enter a valid list of commands!'
+
+        for command in commands:
+            try:
+                cli_output[unicode(command)] = unicode(__execute_show__(self.device.device, command, self.timeout))
+            except TimeoutError:
+                cli_output[unicode(command)] = 'Execution of command "{command}" took too long! Please adjust your params!'.format(
+                    command = command
+                )
+            except Exception as e:
+                cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
+                    cmd = command,
+                    err = e
+                )
+
+        return cli_output

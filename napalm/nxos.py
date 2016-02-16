@@ -241,7 +241,7 @@ class NXOSDriver(NetworkDriver):
             filter = filter
         ) # seems that show LLDP neighbors detail does not return JSON output...
 
-        lldp_neighbors_table_str = self.cli(command)
+        lldp_neighbors_table_str = self.cli([command]).get(command)
         # thus we need to take the raw text output
 
         lldp_neighbors_list = lldp_neighbors_table_str.splitlines()
@@ -305,14 +305,22 @@ class NXOSDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def cli(self, command = None):
+    def cli(self, commands = None):
 
-        if type(command) is not str:
-            return 'Please enter a valid command!'
+        cli_output = dict()
 
-        try:
-            string_output = self.device.show(command, fmat = 'json', text = True)[1]
-            dict_output   = eval(string_output)
-            return self._get_reply_body(dict_output)
-        except Exception as e:
-            return 'Unable to execute command: "{0}"'.format(e)
+        if type(commands) is not list:
+            return 'Please enter a valid list of commands!'
+
+        for command in commands:
+            try:
+                string_output = self.device.show(command, fmat = 'json', text = True)[1]
+                dict_output   = eval(string_output)
+                cli_output[unicode(command)] = self._get_reply_body(dict_output)
+            except Exception as e:
+                cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
+                    cmd = command,
+                    err = e
+                )
+
+        return cli_output
