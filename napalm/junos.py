@@ -20,7 +20,7 @@ from base import NetworkDriver
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError
-from exceptions import ReplaceConfigException, MergeConfigException
+from exceptions import ReplaceConfigException, MergeConfigException, CommandErrorException
 
 from lxml import etree as ET
 
@@ -357,5 +357,6 @@ class JunOSDriver(NetworkDriver):
                     cmd = command,
                     err = e
                 )
+                raise CommandErrorException(str(cli_output))
 
         return cli_output
