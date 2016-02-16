@@ -15,7 +15,7 @@
 import pyeapi
 import re
 from base import NetworkDriver
-from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException
+from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException, CommandErrorException
 from datetime import datetime
 import time
 from napalm.utils import string_parsers
@@ -502,11 +502,13 @@ class EOSDriver(NetworkDriver):
                 cli_output[unicode(command)] = 'Invalid command: "{cmd}"'.format(
                     cmd = command
                 )
+                raise CommandErrorException(str(cli_output))
             except Exception as e:
                 # something bad happened
                 cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
                     cmd = command,
                     err = e
                 )
+                raise CommandErrorException(str(cli_output))
 
         return cli_output
