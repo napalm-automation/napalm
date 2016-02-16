@@ -20,21 +20,20 @@ from nxos import NXOSDriver
 from ibm import IBMDriver
 from ios import IOSDriver
 
+
 def get_network_driver(vendor):
-    driver_mapping = {
-        'EOS': EOSDriver,
-        'ARISTA': EOSDriver,
-        'IOS-XR': IOSXRDriver,
-        'IOSXR': IOSXRDriver,
-        'JUNOS': JunOSDriver,
-        'JUNIPER': JunOSDriver,
-        'FORTIOS': FortiOSDriver,
-        'NXOS': NXOSDriver,
-        'IBM': IBMDriver,
-        'IOS' : IOSDriver,
-    }
     try:
-        return driver_mapping[vendor.upper()]
+        return {
+            'EOS': EOSDriver,
+            'ARISTA': EOSDriver,
+            'IOS-XR': IOSXRDriver,
+            'IOSXR': IOSXRDriver,
+            'JUNOS': JunOSDriver,
+            'JUNIPER': JunOSDriver,
+            'FORTIOS': FortiOSDriver,
+            'NXOS': NXOSDriver,
+            'IBM': IBMDriver,
+            'IOS': IOSDriver,
+        }[vendor.upper()]
     except KeyError:
         raise Exception('Vendor/OS not supported: %s' % vendor)
-
