@@ -28,7 +28,7 @@ from pycsco.nxos.utils import install_config
 from pycsco.nxos.utils import nxapi_lib
 from pycsco.nxos.error import DiffError, FileTransferError, CLIError
 
-from exceptions import MergeConfigException, ReplaceConfigException
+from exceptions import MergeConfigException, ReplaceConfigException, CommandErrorException
 
 def strip_trailing(string):
     lines = list(x.rstrip(' ') for x in string.splitlines())
@@ -322,5 +322,6 @@ class NXOSDriver(NetworkDriver):
                     cmd = command,
                     err = e
                 )
+                raise CommandErrorException(str(cli_output))
 
         return cli_output
