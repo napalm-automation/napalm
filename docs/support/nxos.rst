@@ -17,6 +17,7 @@ _____________
 
 Your device must be running NXOS 6.1. The features ``nxapi`` server ``scp-server`` must be enabled.
 On the device and any checkpoint file you push, you must have the lines::
+
   feature scp-server
   feature nxapi
 
@@ -31,7 +32,7 @@ function in the ``napalm.nxos`` driver.
 Known gotchas
 _____________
 
-- Leaving out a ``shutdown`` or ``no shutdown`` line will cause the switch to toggle the up/down state of an interface, depending on it's current state. 
+- Leaving out a ``shutdown`` or ``no shutdown`` line will cause the switch to toggle the up/down state of an interface, depending on it's current state.
 
 - ``!#switchport trunk allowed vlan 1-4094`` is required even if the switchport is in ``switchport mode access``. However if ``!#switchport trunk allowed vlan 1-4094`` is included with ``no switchport``, the configuration replacement will fail.
 

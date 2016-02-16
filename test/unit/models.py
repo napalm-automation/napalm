@@ -78,3 +78,15 @@ af = {
     'accepted_prefixes': int,
     'received_prefixes': int
 }
+
+lldp_neighbors_detail = {
+    'parent_interface'          : unicode,
+    'remote_port'               : unicode,
+    'remote_chassis_id'         : unicode,
+    'remote_port'               : unicode,
+    'remote_port_description'   : unicode,
+    'remote_system_name'        : unicode,
+    'remote_system_description' : unicode,
+    'remote_system_capab'       : unicode,
+    'remote_system_enable_capab': unicode
+}

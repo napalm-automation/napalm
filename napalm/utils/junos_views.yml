@@ -86,8 +86,6 @@ junos_lldp_view:
     hostname: lldp-remote-system-name
     port: lldp-remote-port-description | lldp-remote-port-id
 
-
-
 ####
 #### Interface counters
 ####
@@ -172,3 +170,26 @@ junos_temperature_thresholds_view:
     red-alarm: { red-alarm: int }
     tx_discards: { output-drops: int }
 
+###
+### LLDP Neighbors
+###
+
+junos_lldp_neighbors_detail_table:
+  rpc: get-lldp-neighbors-information
+  item: lldp-neighbor-information
+  key: lldp-local-port-id
+  view: junos_lldp_neighbors_detail_view
+
+junos_lldp_neighbors_detail_view:
+  fields:
+    interface: {lldp-local-port-id: unicode}
+    interface_description: {lldp-local-port-id: unicode}
+    parent_interface: {lldp-local-parent-interface-name: unicode}
+    remote_port: {lldp-remote-port-id: unicode}
+    remote_chassis_id: {lldp-remote-chassis-id: unicode}
+    remote_port: {lldp-remote-port-id: unicode}
+    remote_port_description: {lldp-remote-port-id: unicode}
+    remote_system_name: {lldp-remote-system-name: unicode}
+    remote_system_description: {lldp-system-description/lldp-remote-system-description: unicode}
+    remote_system_capab: {lldp-remote-system-capabilities-supported: unicode}
+    remote_system_enable_capab: {lldp-remote-system-capabilities-enabled: unicode}
