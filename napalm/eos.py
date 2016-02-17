@@ -15,7 +15,7 @@
 import pyeapi
 import re
 from base import NetworkDriver
-from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException
+from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException, CommandErrorException
 from datetime import datetime
 import time
 from napalm.utils import string_parsers
@@ -484,3 +484,31 @@ class EOSDriver(NetworkDriver):
                 )
 
         return lldp_neighbors_out
+
+    def cli(self, commands = None):
+
+        cli_output = dict()
+
+        if type(commands) is not list:
+            raise TypeError('Please enter a valid list of commands!')
+
+        for command in commands:
+            try:
+                cli_output[unicode(command)] = self.device.run_commands([command], encoding = 'text')[0].get('output')
+                # not quite fair to not exploit rum_commands
+                # but at least can have better control to point to wrong command in case of failure
+            except pyeapi.eapilib.CommandError:
+                # for sure this command failed
+                cli_output[unicode(command)] = 'Invalid command: "{cmd}"'.format(
+                    cmd = command
+                )
+                raise CommandErrorException(str(cli_output))
+            except Exception as e:
+                # something bad happened
+                cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
+                    cmd = command,
+                    err = e
+                )
+                raise CommandErrorException(str(cli_output))
+
+        return cli_output
