@@ -59,13 +59,15 @@ Getters support matrix
 ============================== =====  =====   ======  =======  ======  ======  =====
 _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS
 ============================== =====  =====   ======  =======  ======  ======  =====
+**cli**                        |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|
 **get_facts**                  |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|
 **get_interfaces**             |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|
 **get_lldp_neighbors**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|
 **get_lldp_neighbors_detail**  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|
 **get_bgp_neighbors**          |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|
+**get_bgp_neighbors_detail**   |no|   |yes|   |yes|   |no|     |no|    |no|    |no|
 **get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|
-**cli**                        |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|
+**get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|
 ============================== =====  =====   ======  =======  ======  ======  =====
 
 Caveats
