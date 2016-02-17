@@ -16,6 +16,7 @@ import pyeapi
 import re
 from base import NetworkDriver
 from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException, CommandErrorException
+from netaddr import IPAddress
 from datetime import datetime
 import time
 from napalm.utils import string_parsers
@@ -512,3 +513,210 @@ class EOSDriver(NetworkDriver):
                 raise CommandErrorException(str(cli_output))
 
         return cli_output
+
+    def get_bgp_config(self, group = '', neighbor = ''):
+
+        _GROUP_FIELD_MAP_ = {
+            'type'                  : 'type',
+            'multipath'             : 'multipath',
+            'apply-groups'          : 'apply_groups',
+            'remove-private-as'     : 'remove_private',
+            'ebgp-multihop'         : 'multihop_ttl',
+            'remote-as'             : 'peer_as',
+            'local-v4-addr'         : 'local_address',
+            'local-v6-addr'         : 'local_address',
+            'local-as'              : 'local_as',
+            'description'           : 'description',
+            'import-policy'         : 'import_policy',
+            'export-policy'         : 'export_policy'
+        }
+
+        _PEER_FIELD_MAP_ = {
+            'description'           : 'description',
+            'remote-as'             : 'peer_as',
+            'local-v4-addr'         : 'local_address',
+            'local-v6-addr'         : 'local_address',
+            'local-as'              : 'local_as',
+            'next-hop-self'         : 'nhs',
+            'route-reflector-client': 'route_reflector',
+            'description'           : 'description',
+            'import-policy'         : 'import_policy',
+            'export-policy'         : 'export_policy',
+            'passwd'                : 'authentication_key'
+        }
+
+        _PROPERTY_FIELD_MAP_ = _GROUP_FIELD_MAP_.copy()
+        _PROPERTY_FIELD_MAP_.update(_PEER_FIELD_MAP_)
+
+        _PROPERTY_TYPE_MAP_ = {
+            # used to determine the default value
+            # and cast the values
+            'remote-as'             : int,
+            'ebgp-multihop'         : int,
+            'local-v4-addr'         : unicode,
+            'local-v6-addr'         : unicode,
+            'local-as'              : int,
+            'remove-private-as'     : bool,
+            'next-hop-self'         : bool,
+            'description'           : unicode,
+            'route-reflector-client': bool,
+            'password'              : unicode,
+            'route-map'             : unicode,
+            'apply-groups'          : list,
+            'type'                  : unicode,
+            'import-policy'         : unicode,
+            'export-policy'         : unicode,
+            'multipath'             : bool
+        }
+
+        _DATATYPE_DEFAULT_ = {
+            unicode     : u'',
+            int         : 0,
+            bool        : False,
+            list        : []
+        }
+
+        def parse_options(options, default_value = False):
+
+            if not options:
+                return dict()
+
+            config_property = options[0]
+            field_name  = _PROPERTY_FIELD_MAP_.get(config_property)
+            field_type  = _PROPERTY_TYPE_MAP_.get(config_property)
+            field_value = _DATATYPE_DEFAULT_.get(field_type) # to get the default value
+
+            if not field_type:
+                # no type specified at all => return empty dictionary
+                return dict()
+
+            if not default_value:
+                if len(options) > 1:
+                    field_value = field_type(options[1])
+                else:
+                    if field_type is bool:
+                        field_value = True
+            if field_name is not None:
+                return {field_name: field_value}
+            elif config_property in ['route-map', 'password']:
+                # do not respect the pattern neighbor [IP_ADDRESS] [PROPERTY] [VALUE]
+                # or need special output (e.g.: maximum-routes)
+                if config_property == 'password':
+                    return {'authentication_key': unicode(options[2])}
+                    # returns the MD5 password
+                if config_property == 'route-map':
+                    direction = None
+                    if len(options) == 3:
+                        direction = options[2]
+                        field_value = field_type(options[1]) # the name of the policy
+                    elif len(options) == 2:
+                        direction = options[1]
+                    if direction == 'in':
+                        field_name = 'import_policy'
+                    else:
+                        field_name = 'export_policy'
+                    return {field_name: field_value}
+
+            return dict()
+
+        bgp_config = dict()
+
+        commands = list()
+        commands.append('show running-config | begin router bgp')
+        bgp_conf = self.device.run_commands(commands, encoding = 'text')[0].get('output', '\n\n')
+        bgp_conf_lines = bgp_conf.splitlines()[2:]
+
+        bgp_neighbors = dict()
+
+        if not group:
+            neighbor = ''
+
+        last_peer_group = ''
+        local_as = 0
+        for bgp_conf_line in bgp_conf_lines:
+            raw_line = bgp_conf_line
+            default_value = False
+            bgp_conf_line = bgp_conf_line.strip()
+            if bgp_conf_line.startswith('router bgp'):
+                local_as = int(bgp_conf_line.replace('router bgp', '').strip())
+                continue
+            if not (bgp_conf_line.startswith('neighbor') or bgp_conf_line.startswith('no neighbor')):
+                continue
+            if bgp_conf_line.startswith('no'):
+                default_value = True
+            bgp_conf_line = bgp_conf_line.replace('no neighbor ', '').replace('neighbor ', '')
+            bgp_conf_line_details = bgp_conf_line.split()
+            group_or_neighbor = unicode(bgp_conf_line_details[0])
+            options = bgp_conf_line_details[1:]
+            try:
+                # will try to parse the neighbor name
+                # which sometimes is the IP Address of the neigbor
+                # or the name of the BGP group
+                IPAddress(group_or_neighbor)
+                # if passes the test => it is an IP Address, thus a Neighbor!
+                peer_address = group_or_neighbor
+
+                if options[0] == 'peer-group':
+                    last_peer_group = options[1]
+
+                # if looking for a specific group
+                if group and last_peer_group != group:
+                    continue
+
+                # or even more. a specific neighbor within a group
+                if neighbor and peer_address != neighbor:
+                    continue
+                # skip all other except the target
+
+                # in the config, neighbor details are lister after
+                # the group is specified for the neighbor:
+                #
+                # neighbor 192.168.172.36 peer-group 4-public-anycast-peers
+                # neighbor 192.168.172.36 remote-as 12392
+                # neighbor 192.168.172.36 maximum-routes 200
+                #
+                # because the lines are parsed sequentially
+                # can use the last group detected
+                # that way we avoid one more loop to match the neighbors with the group they belong to
+                # directly will apend the neighbor in the neighbor list of the group at the end
+                if last_peer_group not in bgp_neighbors.keys():
+                    bgp_neighbors[last_peer_group] = dict()
+                if peer_address not in bgp_neighbors[last_peer_group]:
+                    bgp_neighbors[last_peer_group][peer_address] = dict()
+                    bgp_neighbors[last_peer_group][peer_address].update({
+                        key:_DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop)) for prop, key in _PEER_FIELD_MAP_.iteritems()
+                    }) # populating with default values
+                    bgp_neighbors[last_peer_group][peer_address].update({
+                        'prefix_limit': {},
+                        'local_as'    : local_as,
+                        'authentication_key': u''
+                    }) # few more default values
+                bgp_neighbors[last_peer_group][peer_address].update(
+                    parse_options(options, default_value)
+                )
+            except:
+                # exception trying to parse group name
+                # group_or_neighbor represents the name of the group
+                group_name = group_or_neighbor
+                if group and group_name != group:
+                    continue
+                if group_name not in bgp_config.keys():
+                    bgp_config[group_name] = dict()
+                    bgp_config[group_name].update({
+                        key:_DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop)) for prop, key in _GROUP_FIELD_MAP_.iteritems()
+                    })
+                    bgp_config[group_name].update({
+                        'prefix_limit'   : {},
+                        'neighbors'      : {},
+                        'local_as'       : local_as
+                    }) # few more default values
+                bgp_config[group_name].update(
+                    parse_options(options, default_value)
+                )
+
+        for group, peers in bgp_neighbors.iteritems():
+            if group not in bgp_config.keys():
+                continue
+            bgp_config[group]['neighbors'] = peers
+
+        return bgp_config
