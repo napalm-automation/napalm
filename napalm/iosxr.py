@@ -637,7 +637,7 @@ class IOSXRDriver(NetworkDriver):
         cli_output = dict()
 
         if type(commands) is not list:
-            return 'Please enter a valid list of commands!'
+            raise TypeError('Please enter a valid list of commands!')
 
         for command in commands:
             try:
