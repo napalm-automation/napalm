@@ -107,10 +107,14 @@ class FakeRPCObject:
         # get_cmd is an XML tree that requests a specific part of the config
         # E.g.: <configuration><protocols><bgp><group/></bgp></protocols></configuration>
 
-        # there's one single RPC for the config file: get-configuration
-        # I think we should have on single text file where to add different config parts
-        # probably it would be less messy?
-        with open('junos/mock_data/get-configuration.txt') as config_file:
-            return lxml.etree.fromstring(config_file.read())
+        get_cmd_str = lxml.etree.tostring(get_cmd)
+        filename = get_cmd_str.replace('<', '_').replace('>', '_').replace('/', '_').replace('\n', '').replace(' ', '')
+
+        xml_string = self.read_txt_file(
+            'junos/mock_data/{filename}.txt'.format(
+                filename = filename[0:150]
+            )
+        )
+        return lxml.etree.fromstring(xml_string)
 
     __call__ = response
