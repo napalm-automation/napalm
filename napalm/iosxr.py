@@ -655,3 +655,140 @@ class IOSXRDriver(NetworkDriver):
                 raise CommandErrorException(str(cli_output))
 
         return cli_output
+
+    @staticmethod
+    def _find_txt(xml_tree, path, default = ''):
+
+        try:
+            return xml_tree.find(path).text
+        except Exception:
+            return default
+
+    def get_bgp_config(self, group = '', neighbor = ''):
+
+        bgp_config = {}
+
+        # a helper
+        def build_prefix_limit(af_table, limit, prefix_percent, prefix_timeout):
+            prefix_limit = dict()
+            inet  = False
+            inet6 = False
+            preifx_type = 'inet'
+            if 'IPV4' in af_table:
+                inet = True
+            if 'IPv6' in af_table:
+                inet6 = True
+                preifx_type = 'inet6'
+            if inet or inet6:
+                prefix_limit = {
+                    preifx_type: {
+                        af_table[4:].lower(): {
+                            'limit': limit,
+                            'teardown': {
+                                'threshold': prefix_percent,
+                                'timeout'  : prefix_timeout
+                            }
+                        }
+                    }
+                }
+            return prefix_limit
+
+        # here begins actual method...
+
+        rpc_command = '''
+                <Get>
+                    <Configuration>
+                        <BGP>
+                            <Instance>
+                                <Naming>
+                                    <InstanceName>
+                                        default
+                                    </InstanceName>
+                                </Naming>
+                            </Instance>
+                        </BGP>
+                    </Configuration>
+                </Get>
+        '''
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        group    = group.lower()
+        neighbor = neighbor.lower()
+
+        if not group:
+            neighbor = ''
+
+        bgp_group_neighbors = {}
+        for bgp_neighbor in result_tree.iter('Neighbor'):
+            group_name     = self._find_txt(bgp_neighbor, 'NeighborGroupAddMember')
+            peer           = self._find_txt(bgp_neighbor, 'Naming/NeighborAddress/IPV4Address') or self._find_txt(bgp_neighbor, 'Naming/NeighborAddress/IPV6Address')
+            if neighbor and peer != neighbor:
+                continue
+            description    = unicode(self._find_txt(bgp_neighbor, 'Description'))
+            peer_as        = int(self._find_txt(bgp_neighbor, 'RemoteAS/AS_YY', 0))
+            local_as       = int(self._find_txt(bgp_neighbor, 'LocalAS/AS_YY', 0))
+            af_table       = self._find_txt(bgp_neighbor, 'NeighborAFTable/NeighborAF/Naming/AFName')
+            prefix_limit   = int(self._find_txt(bgp_neighbor, 'NeighborAFTable/NeighborAF/MaximumPrefixes/PrefixLimit', 0))
+            prefix_percent = int(self._find_txt(bgp_neighbor, 'NeighborAFTable/NeighborAF/MaximumPrefixes/WarningPercentage', 0))
+            prefix_timeout = int(self._find_txt(bgp_neighbor, 'NeighborAFTable/NeighborAF/MaximumPrefixes/RestartTime', 0))
+            import_policy  = unicode(self._find_txt(bgp_neighbor, 'NeighborAFTable/NeighborAF/RoutePolicyIn'))
+            export_policy  = unicode(self._find_txt(bgp_neighbor, 'NeighborAFTable/NeighborAF/RoutePolicyOut'))
+            local_address  = unicode(self._find_txt(bgp_neighbor, 'LocalAddress/LocalIPAddress/IPV4Address') or self._find_txt(bgp_neighbor, 'LocalAddress/LocalIPAddress/IPV6Address'))
+            password       = unicode(self._find_txt(bgp_neighbor, 'Password/Password/Password'))
+            nhs            = False
+            route_reflector= False
+            if group_name not in bgp_group_neighbors.keys():
+                bgp_group_neighbors[group_name] = dict()
+            bgp_group_neighbors[group_name][peer] = {
+                'description'       : description,
+                'peer_as'           : peer_as,
+                'prefix_limit'      : build_prefix_limit(af_table, prefix_limit, prefix_percent, prefix_timeout),
+                'export_policy'     : export_policy,
+                'import_policy'     : import_policy,
+                'local_address'     : local_address,
+                'local_as'          : local_as,
+                'authentication_key': password,
+                'nhs'               : nhs,
+                'route_reflector'   : route_reflector
+            }
+            if neighbor and peer == neighbor:
+                break
+
+        for bgp_group in result_tree.iter('NeighborGroup'):
+            group_name    = self._find_txt(bgp_group, 'Naming/NeighborGroupName')
+            if group and group != group_name:
+                continue
+            bgp_type = 'external' # by default external
+            # must check
+            description   = unicode(self._find_txt(bgp_group, 'Description'))
+            import_policy = unicode(self._find_txt(bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/RoutePolicyIn'))
+            export_policy = unicode(self._find_txt(bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/RoutePolicyOut'))
+            multipath     = eval(self._find_txt(bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/Multipath', 'false').title())
+            peer_as       = int(self._find_txt(bgp_group, 'RemoteAS/AS_YY', 0))
+            local_as      = int(self._find_txt(bgp_group, 'LocalAS/AS_YY', 0))
+            multihop_ttl  = int(self._find_txt(bgp_group, 'EBGPMultihop/MaxHopCount', 0))
+            local_address = unicode(self._find_txt(bgp_group, 'LocalAddress/LocalIPAddress/IPV4Address') or self._find_txt(bgp_group, 'LocalAddress/LocalIPAddress/IPV6Address'))
+            af_table      = self._find_txt(bgp_group, 'NeighborAFTable/NeighborAF/Naming/AFName')
+            prefix_limit  = int(self._find_txt(bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/MaximumPrefixes/PrefixLimit', 0))
+            prefix_percent= int(self._find_txt(bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/MaximumPrefixes/WarningPercentage', 0))
+            prefix_timeout= int(self._find_txt(bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/MaximumPrefixes/RestartTime', 0))
+            remove_private= True # is it specified in the XML?
+            bgp_config[group_name] = {
+                'apply_groups'  : [], # on IOS-XR will always be empty list!
+                'description'   : description,
+                'local_as'      : local_as,
+                'type'          : unicode(bgp_type),
+                'import_policy' : import_policy,
+                'export_policy' : export_policy,
+                'local_address' : local_address,
+                'multipath'     : multipath,
+                'multihop_ttl'  : multihop_ttl,
+                'peer_as'       : peer_as,
+                'remove_private': remove_private,
+                'prefix_limit'  : build_prefix_limit(af_table, prefix_limit, prefix_percent, prefix_timeout),
+                'neighbors'     : bgp_group_neighbors.get(group_name, {})
+            }
+            if group and group == group_name:
+                break
+
+        return bgp_config
