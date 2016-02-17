@@ -14,9 +14,9 @@
 
 import pyeapi
 import re
-import ipaddress
 from base import NetworkDriver
 from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException, CommandErrorException
+from netaddr import IPAddress
 from datetime import datetime
 import time
 from napalm.utils import string_parsers
@@ -652,7 +652,7 @@ class EOSDriver(NetworkDriver):
                 # will try to parse the neighbor name
                 # which sometimes is the IP Address of the neigbor
                 # or the name of the BGP group
-                ipaddress.ip_address(group_or_neighbor)
+                IPAddress(group_or_neighbor)
                 # if passes the test => it is an IP Address, thus a Neighbor!
                 peer_address = group_or_neighbor
 
