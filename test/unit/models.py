@@ -118,6 +118,7 @@ bgp_config_neighbor = {
     'local_as'          : int,
     'peer_as'           : int,
     'prefix_limit'      : dict
+}
 
 peer_details = {
     'up'                        : bool,
