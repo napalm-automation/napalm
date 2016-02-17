@@ -13,6 +13,7 @@
 # the License.
 
 import re
+import collections
 
 from napalm.utils import junos_views
 from base import NetworkDriver
@@ -24,6 +25,7 @@ from exceptions import ReplaceConfigException, MergeConfigException, CommandErro
 
 from lxml import etree as ET
 
+from exceptions import ReplaceConfigException, MergeConfigException
 
 from utils import string_parsers
 
@@ -360,3 +362,192 @@ class JunOSDriver(NetworkDriver):
                 raise CommandErrorException(str(cli_output))
 
         return cli_output
+
+    @staticmethod
+    def _convert(to, who, default = u''):
+        try:
+            return to(who)
+        except:
+            return default
+
+    def get_bgp_config(self, group = '', neighbor = ''):
+
+        def update_dict(d, u): # for deep dictionary update
+            for k, v in u.iteritems():
+                if isinstance(d, collections.Mapping):
+                    if isinstance(v, collections.Mapping):
+                        r = update_dict(d.get(k, {}), v)
+                        d[k] = r
+                    else:
+                        d[k] = u[k]
+                else:
+                    d = {k: u[k]}
+            return d
+
+        def build_prefix_limit(**args):
+
+            """
+            This helper will transform the lements of a dictionary into nested dictionaries:
+            Example:
+
+                {
+                    'inet_unicast_limit': 500,
+                    'inet_unicast_teardown_threshold': 95,
+                    'inet_unicast_teardown_timeout': 5
+                }
+
+                becomes:
+
+                {
+                    'inet': {
+                        'unicast': {
+                            'limit': 500,
+                            'teardown': {
+                                'threshold': 95,
+                                'timeout': 5
+                            }
+                        }
+                    }
+                }
+
+            """
+
+            prefix_limit = dict()
+
+            for key, value in args.iteritems():
+                key_levels = key.split('_')
+                length     = len(key_levels)-1
+                temp_dict = {
+                    key_levels[length]: value
+                }
+                for index in reversed(range(length)):
+                    level = key_levels[index]
+                    temp_dict = {level: temp_dict}
+                update_dict(prefix_limit, temp_dict)
+
+            return prefix_limit
+
+        _COMMON_FIELDS_DATATYPE_ = {
+            'description'                                   : unicode,
+            'local_address'                                 : unicode,
+            'local_as'                                      : int,
+            'peer_as'                                       : int,
+            'import_policy'                                 : unicode,
+            'export_policy'                                 : unicode,
+            'inet_unicast_limit_prefix_limit'               : int,
+            'inet_unicast_teardown_threshold_prefix_limit'  : int,
+            'inet_unicast_teardown_timeout_prefix_limit'    : int,
+            'inet_unicast_novalidate_prefix_limit'          : int,
+            'inet_flow_limit_prefix_limit'                  : int,
+            'inet_flow_teardown_threshold_prefix_limit'     : int,
+            'inet_flow_teardown_timeout_prefix_limit'       : int,
+            'inet_flow_novalidate_prefix_limit'             : unicode,
+            'inet6_unicast_limit_prefix_limit'              : int,
+            'inet6_unicast_teardown_threshold_prefix_limit' : int,
+            'inet6_unicast_teardown_timeout_prefix_limit'   : int,
+            'inet6_unicast_novalidate_prefix_limit'         : int,
+            'inet6_flow_limit_prefix_limit'                 : int,
+            'inet6_flow_teardown_threshold_prefix_limit'    : int,
+            'inet6_flow_teardown_timeout_prefix_limit'      : int,
+            'inet6_flow_novalidate_prefix_limit'            : unicode,
+        }
+
+        _PEER_FIELDS_DATATYPE_MAP_ = {
+            'group'             : unicode,
+            'authentication_key': unicode,
+            'route_reflector'   : bool,
+            'nhs'               : bool
+        }
+        _PEER_FIELDS_DATATYPE_MAP_.update(
+            _COMMON_FIELDS_DATATYPE_
+        )
+
+        _GROUP_FIELDS_DATATYPE_MAP_ = {
+            'type'              : unicode,
+            'apply_groups'      : list,
+            'remove_private'    : bool,
+            'multipath'         : bool,
+            'multihop_ttl'      : int
+        }
+        _GROUP_FIELDS_DATATYPE_MAP_.update(
+            _COMMON_FIELDS_DATATYPE_
+        )
+
+        _DATATYPE_DEFAULT_ = {
+            unicode     : u'',
+            int         : 0,
+            bool        : False,
+            list        : []
+        }
+
+        bgp_config = dict()
+
+        if group:
+            bgp = junos_views.junos_bgp_config_group_table(self.device)
+            bgp.get(group = group)
+        else:
+            bgp = junos_views.junos_bgp_config_table(self.device)
+            bgp.get()
+            neighbor = '' # if no group is set, no neighbor should be set either
+        bgp_items = bgp.items()
+
+        peers = junos_views.junos_bgp_config_peers_table(self.device)
+        peers.get() # unfortunately cannot add filters for group name of neighbor address
+        peers_items = peers.items()
+
+        bgp_neighbors = dict()
+
+        for bgp_group_neighbor in peers_items:
+            bgp_peer_address  = bgp_group_neighbor[0]
+            if neighbor and bgp_peer_address != neighbor:
+                continue # if filters applied, jump over all other neighbors
+            bgp_group_details = bgp_group_neighbor[1]
+            bgp_peer_details  = {field: _DATATYPE_DEFAULT_.get(datatype) for field, datatype in _PEER_FIELDS_DATATYPE_MAP_.iteritems() if '_prefix_limit' not in field}
+            for elem in bgp_group_details:
+                if '_prefix_limit' not in elem[0] and elem[1] is not None:
+                    datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
+                    default  = _DATATYPE_DEFAULT_.get(datatype)
+                    bgp_peer_details.update({
+                        elem[0]: self._convert(datatype, elem[1], default)
+                    })
+            prefix_limit_fields = dict()
+            for elem in bgp_group_details:
+                if '_prefix_limit' in elem[0] and elem[1] is not None:
+                    datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
+                    default  = _DATATYPE_DEFAULT_.get(datatype)
+                    prefix_limit_fields.update({
+                        elem[0].replace('_prefix_limit', ''): self._convert(datatype, elem[1], default)
+                    })
+            bgp_peer_details['prefix_limit'] = build_prefix_limit(**prefix_limit_fields)
+            # and all these things only because PyEZ cannto convert to a specifc datatype when retrieving config...
+            group = bgp_peer_details.pop('group')
+            if group not in bgp_neighbors.keys():
+                bgp_neighbors[group] = dict()
+            bgp_neighbors[group][bgp_peer_address] = bgp_peer_details
+            if neighbor and bgp_peer_address == neighbor:
+                break # found the desired neighbor
+
+        for bgp_group in bgp_items:
+            bgp_group_name    = bgp_group[0]
+            bgp_group_details = bgp_group[1]
+            bgp_config[bgp_group_name] = {field: _DATATYPE_DEFAULT_.get(datatype) for field, datatype in _GROUP_FIELDS_DATATYPE_MAP_.iteritems() if '_prefix_limit' not in field}
+            for elem in bgp_group_details:
+                if '_prefix_limit' not in elem[0] and elem[1] is not None:
+                    datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
+                    default  = _DATATYPE_DEFAULT_.get(datatype)
+                    bgp_config[bgp_group_name].update({
+                        elem[0]: self._convert(datatype, elem[1], default)
+                    })
+            prefix_limit_fields = dict()
+            for elem in bgp_group_details:
+                if '_prefix_limit' in elem[0] and elem[1] is not None:
+                    datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
+                    default  = _DATATYPE_DEFAULT_.get(datatype)
+                    prefix_limit_fields.update({
+                        elem[0].replace('_prefix_limit', ''): self._convert(datatype, elem[1], default)
+                    })
+            print prefix_limit_fields
+            bgp_config[bgp_group_name]['prefix_limit'] = build_prefix_limit(**prefix_limit_fields)
+            bgp_config[bgp_group_name]['neighbors'] = bgp_neighbors.get(bgp_group_name, {})
+
+        return bgp_config

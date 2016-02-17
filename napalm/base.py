@@ -402,7 +402,93 @@ class NetworkDriver:
                     }
                 ]
             }
+        """
+        raise NotImplementedError
 
+    def get_bgp_config(self, group = '', neighbor = ''):
+        """
+        Returns a dictionary containing the BGP configuration.
+        Can return either the whole config, either the config only for a group or neighbor.
+        Main dictionary keys represent the group name and the values represent a dictionary having the following keys:
+            * type (str)
+            * description (str)
+            * apply_groups (str list)
+            * multihop_ttl (int)
+            * multipath (boolean)
+            * local_address (str)
+            * local_as (int)
+            * peer_as (int)
+            * import_policy (str)
+            * export_policy (str)
+            * remove_private (boolean)
+            * prefix_limit (dict)
+            * neighbors (dict)
+        Neighbors is a dictionary of dictionaries with the following keys:
+            * description (str)
+            * import_policy (str)
+            * export_policy (str)
+            * local_address (str)
+            * local_as (int)
+            * peer_as (int)
+            * authentication_key (str)
+            * prefix_limit (dict)
+            * route_reflector (bool)
+            * nhs (bool)
+        The inner dictionary prefix_limit has the same structure for both layers:
+            {
+                [FAMILY_NAME]: {
+                    [FAMILY_TYPE]: {
+                        'limit': [LIMIT],
+                        ... other options
+                    }
+                }
+
+        Example:
+            {
+                'PEERS-GROUP-NAME':{
+                    'type'          : u'external',
+                    'description'   : u'Here we should have a nice description',
+                    'apply_groups'  : [u'BGP-PREFIX-LIMIT'],
+                    'import_policy' : u'PUBLIC-PEER-IN',
+                    'export_policy' : u'PUBLIC-PEER-OUT',
+                    'remove_private': True,
+                    'multipath'     : True,
+                    'multihop_ttl'  : 30,
+                    'neighbors'     : {
+                        '192.168.0.1': {
+                            'description'   : 'Facebook [CDN]',
+                            'prefix_limit'  : {
+                                'inet': {
+                                    'unicast': {
+                                        'limit': 100,
+                                        'teardown': {
+                                            'threshold' : 95,
+                                            'timeout'   : 5
+                                        }
+                                    }
+                                }
+                            }
+                            'peer-as'        : 32934,
+                            'route_reflector': False,
+                            'nhs'            : True
+                        },
+                        '172.17.17.1': {
+                            'description'   : 'Twitter [CDN]',
+                            'prefix_limit'  : {
+                                'inet': {
+                                    'unicast': {
+                                        'limit': 500,
+                                        'no-validate': 'IMPORT-FLOW-ROUTES'
+                                    }
+                                }
+                            }
+                            'peer_as'        : 13414
+                            'route_reflector': False,
+                            'nhs'            : False
+                        }
+                    }
+                }
+            }
         """
         raise NotImplementedError
 
