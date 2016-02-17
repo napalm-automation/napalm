@@ -20,7 +20,7 @@ from base import NetworkDriver
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError
-from exceptions import ReplaceConfigException, MergeConfigException
+from exceptions import ReplaceConfigException, MergeConfigException, CommandErrorException
 
 from lxml import etree as ET
 
@@ -341,3 +341,22 @@ class JunOSDriver(NetworkDriver):
             )
 
         return lldp_neighbors
+
+    def cli(self, commands = None):
+
+        cli_output = dict()
+
+        if type(commands) is not list:
+            raise TypeError('Please enter a valid list of commands!')
+
+        for command in commands:
+            try:
+                cli_output[unicode(command)] = unicode(self.device.cli(command))
+            except Exception as e:
+                cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
+                    cmd = command,
+                    err = e
+                )
+                raise CommandErrorException(str(cli_output))
+
+        return cli_output
