@@ -16,9 +16,10 @@ from base import NetworkDriver
 from napalm.utils import string_parsers
 
 from pyIOSXR import IOSXR
-from pyIOSXR.exceptions import InvalidInputError, XMLCLIError
+from pyIOSXR.iosxr import __execute_show__
+from pyIOSXR.exceptions import InvalidInputError, XMLCLIError, TimeoutError
 
-from exceptions import MergeConfigException, ReplaceConfigException
+from exceptions import MergeConfigException, ReplaceConfigException, CommandErrorException, CommandTimeoutException
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 import re
@@ -630,3 +631,27 @@ class IOSXRDriver(NetworkDriver):
                 continue # jump to next neighbor
 
         return lldp_neighbors
+
+    def cli(self, commands = None):
+
+        cli_output = dict()
+
+        if type(commands) is not list:
+            raise TypeError('Please enter a valid list of commands!')
+
+        for command in commands:
+            try:
+                cli_output[unicode(command)] = unicode(__execute_show__(self.device.device, command, self.timeout))
+            except TimeoutError:
+                cli_output[unicode(command)] = 'Execution of command "{command}" took too long! Please adjust your params!'.format(
+                    command = command
+                )
+                raise CommandTimeoutException(str(cli_output))
+            except Exception as e:
+                cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
+                    cmd = command,
+                    err = e
+                )
+                raise CommandErrorException(str(cli_output))
+
+        return cli_output

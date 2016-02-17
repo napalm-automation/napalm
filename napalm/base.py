@@ -405,3 +405,29 @@ class NetworkDriver:
 
         """
         raise NotImplementedError
+
+    def cli(self, *commands):
+
+        """
+        Will execute a list of commands and return the output in a dictionary format.
+        Example:
+            {
+                u'show version and haiku':  u'''Hostname: re0.edge01.arn01
+                                                Model: mx480
+                                                Junos: 13.3R6.5
+
+                                                        Help me, Obi-Wan
+                                                        I just saw Episode Two
+                                                        You're my only hope
+                                            ''',
+                u'show chassis fan'     :   u'''Item                      Status   RPM     Measurement
+                                                Top Rear Fan              OK       3840    Spinning at intermediate-speed
+                                                Bottom Rear Fan           OK       3840    Spinning at intermediate-speed
+                                                Top Middle Fan            OK       3900    Spinning at intermediate-speed
+                                                Bottom Middle Fan         OK       3840    Spinning at intermediate-speed
+                                                Top Front Fan             OK       3810    Spinning at intermediate-speed
+                                                Bottom Front Fan          OK       3840    Spinning at intermediate-speed
+                                            '''
+            }
+        """
+        raise NotImplementedError
