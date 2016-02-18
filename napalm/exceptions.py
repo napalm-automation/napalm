@@ -20,3 +20,9 @@ class MergeConfigException(Exception):
 
 class SessionLockedException(Exception):
     pass
+
+class CommandTimeoutException(Exception):
+    pass
+
+class CommandErrorException(Exception):
+    pass
