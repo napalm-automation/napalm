@@ -268,3 +268,74 @@ junos_bgp_config_peers_view:
     inet6_flow_teardown_threshold_prefix_limit: family/inet6/flow/prefix-limit/teardown/limit-threshold
     inet6_flow_teardown_timeout_prefix_limit: family/inet6/flow/prefix-limit/teardown/idle-timeout/timeout
     inet6_flow_novalidate_prefix_limit: family/inet6/flow/prefix-limit/no-validate
+
+####
+#### BGP Neighbors and Routing Tables Stats
+####
+
+junos_bgp_tables_summary_table:
+  rpc: get-bgp-summary-information
+  args:
+    instance: ''
+    group: ''
+  item: bgp-rib
+  key: name
+  view: junos_bgp_tables_summary_view
+
+junos_bgp_tables_summary_view:
+  fields:
+    routing_table: name
+    total_prefix_count: {total-prefix-count: int}
+    received_prefix_count: {received-prefix-countL: int}
+    active_prefix_count: {active-prefix-count: int}
+    suppressed_prefix_count: {suppressed-prefix-count: int}
+    history_prefix_count: {history-prefix-count: int}
+    damped_prefix_count: {damped-prefix-count: int}
+    total_external_prefix_count: {total-external-prefix-count: int}
+    active_external_prefix_count: {active-external-prefix-count: int}
+    accepted_external_prefix_count: {accepted-external-prefix-count: int}
+    suppressed_external_prefix_count: {suppressed-external-prefix-count: int}
+    total_internal_prefix_count: {total-internal-prefix-count: int}
+    active_internal_prefix_count: {active-internal-prefix-count: int}
+    accepted_internal_prefix_count: {accepted-internal-prefix-count: int}
+    suppressed_internal_prefix_count: {suppressed-internal-prefix-count: int}
+    pending_prefix_count: {pending-prefix-count: int}
+    bgp_rib_state: bgp-rib-state
+
+junos_bgp_neighbors_table:
+  rpc: get-bgp-neighbor-information
+  args_key: neighbor_address
+  item: bgp-peer
+  key: peer-as
+  view: junos_bgp_neighbors_view
+
+junos_bgp_neighbors_view:
+  fields:
+    up: {peer-state: True=Established}
+    local_as: {local-as: int}
+    remote_as: {peer-as: int}
+    local_address: local-address
+    peer_address: peer-address
+    options: bgp-option-information/bgp-options
+    import_policy: {bgp-option-information/import-policy: unicode}
+    export_policy: {bgp-option-information/export_policy: unicode}
+    input_messages: {input-messages: int}
+    output_messages: {output-messages: int}
+    input_updates: {input-updates: int}
+    output_updates: {output-updates: int}
+    messages_queued_out: {bgp-output-queue/count: int}
+    connection_state: {peer-state: unicode}
+    previous_connection_state: {last-state: unicode}
+    last_event: {last-event: unicode}
+    4byte_as: peer-4byte-as-capability-advertised
+    local_as_prepend: {peer-addpath-not-supported: False=None}
+    holdtime: {active-holdtime: int}
+    configured_holdtime: {bgp-option-information/holdtime: int}
+    keepalive: {keepalive-interval: int}
+    configured_keepalive: {keepalive-interval: int}
+    active_prefix_count: {bgp-rib/active-prefix-count: int}
+    received_prefix_count: {bgp-rib/received-prefix-count: int}
+    accepted_prefix_count: {bgp-rib/accepted-prefix-count: int}
+    suppressed_prefix_count: {bgp-rib/suppressed-prefix-count: int}
+    advertise_prefix_count: {bgp-rib/advertised-prefix-count: int}
+    flap_count: {flap-count: int}

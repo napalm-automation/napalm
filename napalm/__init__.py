@@ -31,7 +31,7 @@ def get_network_driver(vendor):
         'FORTIOS': FortiOSDriver,
         'NXOS': NXOSDriver,
         'IBM': IBMDriver,
-        'IOS' : IOSDriver,
+        'IOS' : IOSDriver
     }
     try:
         return driver_mapping[vendor.upper()]

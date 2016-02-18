@@ -17,6 +17,7 @@ import re
 from base import NetworkDriver
 from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException, CommandErrorException
 from netaddr import IPAddress
+from netaddr.core import AddrFormatError
 from datetime import datetime
 import time
 from napalm.utils import string_parsers
@@ -694,7 +695,7 @@ class EOSDriver(NetworkDriver):
                 bgp_neighbors[last_peer_group][peer_address].update(
                     parse_options(options, default_value)
                 )
-            except:
+            except AddrFormatError:
                 # exception trying to parse group name
                 # group_or_neighbor represents the name of the group
                 group_name = group_or_neighbor
@@ -713,6 +714,9 @@ class EOSDriver(NetworkDriver):
                 bgp_config[group_name].update(
                     parse_options(options, default_value)
                 )
+            except Exception:
+                # for other kind of exception pass to next line
+                continue
 
         for group, peers in bgp_neighbors.iteritems():
             if group not in bgp_config.keys():

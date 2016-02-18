@@ -240,3 +240,15 @@ class TestGettersNetworkDriver:
                 result = result and self._test_model(models.bgp_config_neighbor, bgp_neighbor)
 
         self.assertTrue(result)
+
+    def test_bgp_neighbors_detail(self):
+
+        get_bgp_neighbors_detail = self.device.get_bgp_neighbors_detail()
+
+        result = len(get_bgp_neighbors_detail) > 0
+
+        for remote_as, neighbor_list in get_bgp_neighbors_detail.iteritems():
+            for neighbor in neighbor_list:
+                result = result and self._test_model(models.peer_details, neighbor)
+
+        self.assertTrue(result)

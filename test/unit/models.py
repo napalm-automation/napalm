@@ -119,3 +119,37 @@ bgp_config_neighbor = {
     'peer_as'           : int,
     'prefix_limit'      : dict
 }
+
+peer_details = {
+    'up'                        : bool,
+    'local_as'                  : int,
+    'remote_as'                 : int,
+    'local_address'             : unicode,
+    'local_address_configured'  : bool,
+    'local_port'                : int,
+    'remote_address'            : unicode,
+    'remote_port'               : int,
+    'multihop'                  : bool,
+    'import_policy'             : unicode,
+    'export_policy'             : unicode,
+    'input_messages'            : int,
+    'output_messages'           : int,
+    'input_updates'             : int,
+    'output_updates'            : int,
+    'messages_queued_out'       : int,
+    'connection_state'          : unicode,
+    'previous_connection_state' : unicode,
+    'last_event'                : unicode,
+    'suppress_4byte_as'         : bool,
+    'local_as_prepend'          : bool,
+    'holdtime'                  : int,
+    'configured_holdtime'       : int,
+    'keepalive'                 : int,
+    'configured_keepalive'      : int,
+    'active_prefix_count'       : int,
+    'received_prefix_count'     : int,
+    'accepted_prefix_count'     : int,
+    'suppressed_prefix_count'   : int,
+    'advertise_prefix_count'    : int,
+    'flap_count'                : int
+}
