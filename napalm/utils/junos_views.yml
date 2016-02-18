@@ -86,8 +86,6 @@ junos_lldp_view:
     hostname: lldp-remote-system-name
     port: lldp-remote-port-description | lldp-remote-port-id
 
-
-
 ####
 #### Interface counters
 ####
@@ -172,3 +170,172 @@ junos_temperature_thresholds_view:
     red-alarm: { red-alarm: int }
     tx_discards: { output-drops: int }
 
+###
+### LLDP Neighbors
+###
+
+junos_lldp_neighbors_detail_table:
+  rpc: get-lldp-neighbors-information
+  item: lldp-neighbor-information
+  key: lldp-local-port-id
+  view: junos_lldp_neighbors_detail_view
+
+junos_lldp_neighbors_detail_view:
+  fields:
+    interface: {lldp-local-port-id: unicode}
+    interface_description: {lldp-local-port-id: unicode}
+    parent_interface: {lldp-local-parent-interface-name: unicode}
+    remote_port: {lldp-remote-port-id: unicode}
+    remote_chassis_id: {lldp-remote-chassis-id: unicode}
+    remote_port: {lldp-remote-port-id: unicode}
+    remote_port_description: {lldp-remote-port-id: unicode}
+    remote_system_name: {lldp-remote-system-name: unicode}
+    remote_system_description: {lldp-system-description/lldp-remote-system-description: unicode}
+    remote_system_capab: {lldp-remote-system-capabilities-supported: unicode}
+    remote_system_enable_capab: {lldp-remote-system-capabilities-enabled: unicode}
+
+###
+### BGP config
+###
+
+junos_bgp_config_table:
+  get: protocols/bgp/group
+  view: junos_bgp_config_view
+
+junos_bgp_config_group_table:
+  get: protocols/bgp/group
+  view: junos_bgp_config_view
+  required_keys:
+    group: name
+
+junos_bgp_config_view:
+  fields:
+    type: type
+    description: description
+    apply_groups: apply-groups
+    local_address: local-address
+    multihop_ttl: multihop/ttl
+    local_as: local-as/as-number
+    peer_as: peer-as
+    multipath: multipath
+    remove_private: remove-private
+    import_policy: import
+    export_policy: export
+    inet_unicast_limit_prefix_limit: family/inet/unicast/prefix-limit/maximum
+    inet_unicast_teardown_threshold_prefix_limit: family/inet/unicast/prefix-limit/teardown/limit-threshold
+    inet_unicast_teardown_timeout_prefix_limit: family/inet/unicast/prefix-limit/teardown/idle-timeout/timeout
+    inet_unicast_novalidate_prefix_limit: family/inet/unicast/prefix-limit/no-validate
+    inet_flow_limit_prefix_limit: family/inet/flow/prefix-limit/maximum
+    inet_flow_teardown_threshold_prefix_limit: family/inet/flow/prefix-limit/teardown/limit-threshold
+    inet_flow_teardown_timeout_prefix_limit: family/inet/flow/prefix-limit/teardown/idle-timeout/timeout
+    inet_flow_novalidate_prefix_limit: family/inet/flow/prefix-limit/no-validate
+    inet6_unicast_limit_prefix_limit: family/inet6/unicast/prefix-limit/maximum
+    inet6_unicast_teardown_threshold_prefix_limit: family/inet6/unicast/prefix-limit/teardown/limit-threshold
+    inet6_unicast_teardown_timeout_prefix_limit: family/inet6/unicast/prefix-limit/teardown/idle-timeout/timeout
+    inet6_unicast_novalidate_prefix_limit: family/inet6/unicast/prefix-limit/no-validate
+    inet6_flow_limit_prefix_limit: family/inet6/flow/prefix-limit/maximum
+    inet6_flow_teardown_threshold_prefix_limit: family/inet6/flow/prefix-limit/teardown/limit-threshold
+    inet6_flow_teardown_timeout_prefix_limit: family/inet6/flow/prefix-limit/teardown/idle-timeout/timeout
+    inet6_flow_novalidate_prefix_limit: family/inet6/flow/prefix-limit/no-validate
+
+junos_bgp_config_peers_table:
+  get: protocols/bgp/group/neighbor
+  view: junos_bgp_config_peers_view
+
+junos_bgp_config_peers_view:
+  fields:
+    group: ../name
+    description: description
+    import_policy: import
+    export_policy: export
+    local_address: neighbor/local-address
+    local_as: local-as
+    peer_as: peer-as
+    authentication_key: authentication_key
+    inet_unicast_limit_prefix_limit: family/inet/unicast/prefix-limit/maximum
+    inet_unicast_teardown_threshold_prefix_limit: family/inet/unicast/prefix-limit/teardown/limit-threshold
+    inet_unicast_teardown_timeout_prefix_limit: family/inet/unicast/prefix-limit/teardown/idle-timeout/timeout
+    inet_unicast_novalidate_prefix_limit: family/inet/unicast/prefix-limit/no-validate
+    inet_flow_limit_prefix_limit: family/inet/flow/prefix-limit/maximum
+    inet_flow_teardown_threshold_prefix_limit: family/inet/flow/prefix-limit/teardown/limit-threshold
+    inet_flow_teardown_timeout_prefix_limit: family/inet/flow/prefix-limit/teardown/idle-timeout/timeout
+    inet_flow_novalidate_prefix_limit: family/inet/flow/prefix-limit/no-validate
+    inet6_unicast_limit_prefix_limit: family/inet6/unicast/prefix-limit/maximum
+    inet6_unicast_teardown_threshold_prefix_limit: family/inet6/unicast/prefix-limit/teardown/limit-threshold
+    inet6_unicast_teardown_timeout_prefix_limit: family/inet6/unicast/prefix-limit/teardown/idle-timeout/timeout
+    inet6_unicast_novalidate_prefix_limit: family/inet6/unicast/prefix-limit/no-validate
+    inet6_flow_limit_prefix_limit: family/inet6/flow/prefix-limit/maximum
+    inet6_flow_teardown_threshold_prefix_limit: family/inet6/flow/prefix-limit/teardown/limit-threshold
+    inet6_flow_teardown_timeout_prefix_limit: family/inet6/flow/prefix-limit/teardown/idle-timeout/timeout
+    inet6_flow_novalidate_prefix_limit: family/inet6/flow/prefix-limit/no-validate
+
+####
+#### BGP Neighbors and Routing Tables Stats
+####
+
+junos_bgp_tables_summary_table:
+  rpc: get-bgp-summary-information
+  args:
+    instance: ''
+    group: ''
+  item: bgp-rib
+  key: name
+  view: junos_bgp_tables_summary_view
+
+junos_bgp_tables_summary_view:
+  fields:
+    routing_table: name
+    total_prefix_count: {total-prefix-count: int}
+    received_prefix_count: {received-prefix-countL: int}
+    active_prefix_count: {active-prefix-count: int}
+    suppressed_prefix_count: {suppressed-prefix-count: int}
+    history_prefix_count: {history-prefix-count: int}
+    damped_prefix_count: {damped-prefix-count: int}
+    total_external_prefix_count: {total-external-prefix-count: int}
+    active_external_prefix_count: {active-external-prefix-count: int}
+    accepted_external_prefix_count: {accepted-external-prefix-count: int}
+    suppressed_external_prefix_count: {suppressed-external-prefix-count: int}
+    total_internal_prefix_count: {total-internal-prefix-count: int}
+    active_internal_prefix_count: {active-internal-prefix-count: int}
+    accepted_internal_prefix_count: {accepted-internal-prefix-count: int}
+    suppressed_internal_prefix_count: {suppressed-internal-prefix-count: int}
+    pending_prefix_count: {pending-prefix-count: int}
+    bgp_rib_state: bgp-rib-state
+
+junos_bgp_neighbors_table:
+  rpc: get-bgp-neighbor-information
+  args_key: neighbor_address
+  item: bgp-peer
+  key: peer-as
+  view: junos_bgp_neighbors_view
+
+junos_bgp_neighbors_view:
+  fields:
+    up: {peer-state: True=Established}
+    local_as: {local-as: int}
+    remote_as: {peer-as: int}
+    local_address: local-address
+    peer_address: peer-address
+    options: bgp-option-information/bgp-options
+    import_policy: {bgp-option-information/import-policy: unicode}
+    export_policy: {bgp-option-information/export_policy: unicode}
+    input_messages: {input-messages: int}
+    output_messages: {output-messages: int}
+    input_updates: {input-updates: int}
+    output_updates: {output-updates: int}
+    messages_queued_out: {bgp-output-queue/count: int}
+    connection_state: {peer-state: unicode}
+    previous_connection_state: {last-state: unicode}
+    last_event: {last-event: unicode}
+    4byte_as: peer-4byte-as-capability-advertised
+    local_as_prepend: {peer-addpath-not-supported: False=None}
+    holdtime: {active-holdtime: int}
+    configured_holdtime: {bgp-option-information/holdtime: int}
+    keepalive: {keepalive-interval: int}
+    configured_keepalive: {keepalive-interval: int}
+    active_prefix_count: {bgp-rib/active-prefix-count: int}
+    received_prefix_count: {bgp-rib/received-prefix-count: int}
+    accepted_prefix_count: {bgp-rib/accepted-prefix-count: int}
+    suppressed_prefix_count: {bgp-rib/suppressed-prefix-count: int}
+    advertise_prefix_count: {bgp-rib/advertised-prefix-count: int}
+    flap_count: {flap-count: int}
