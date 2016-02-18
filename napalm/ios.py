@@ -823,14 +823,19 @@ class IOSDriver(NetworkDriver):
         environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0,}
         return environment
 
-    def cli(self, command=''):
+    def cli(self, commands=None):
         """
         Will execute a desired command an the CLI and return the output
         """
 
-        if not command:
-            return "Please enter a valid command"
+        cli_output = dict()
 
-        output = self.device.send_command(command)
+        if type(commands) is not list:
+            raise TypeError('Please enter a valid list of commands!')
 
-        return output
+        for command in commands:
+            output = self.device.send_command(command)
+            cli_output.setdefault(command, {})
+            cli_output[command] = output
+
+        return cli_output
