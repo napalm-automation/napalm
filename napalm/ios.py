@@ -819,3 +819,77 @@ class IOSDriver(NetworkDriver):
         environment.setdefault('temperature', {})
         environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0,}
         return environment
+
+    def get_mac_address_table(self):
+
+        """
+        Returns a dictionary with lists of dictionaries. The keys of the main dictionary represents VLAN ID.
+        Inner dictionaries contain details for the MAC addresses in the VLAN:
+            * mac (string)
+            * interface (string)
+            * active (boolean)
+            * static (boolean)
+        Example:
+            {
+                100: [
+                    {
+                        'mac'       : '00:1c:58:29:4a:71',
+                        'interface' : 'Ethernet47',
+                        'static'    : False,
+                        'active'    : True
+                    },
+                    {
+                        'mac'       : '8c:60:4f:58:e1:c1',
+                        'interface' : 'xe-1/0/1',
+                        'static'    : False,
+                        'active'    : True
+                    }
+                ],
+                900: [
+                    {
+                        'mac'       : 'f4:b5:2f:56:72:01',
+                        'interface' : 'ae7.900',
+                        'static'    : False,
+                        'active'    : True
+                    }
+                ]
+            }
+        """
+
+        mac_address_table = {}
+        command = 'show mac-address-table'
+        output = self.device.send_command(command)
+        output = output.strip().split('\n')
+
+        # Skip the first two lines which are headers
+        output = output[2:-1]
+
+        for line in output:
+            if len(line) == 0:
+                return mac_address_table
+            elif len(line.split()) == 4:
+                mac, mac_type, vlan, interface = line.split()
+
+                if mac_type.lower() in ['self', 'static']:
+                    static = True
+                else:
+                    static = False
+
+                if mac_type.lower() in ['dynamic']:
+                    active = True
+                else:
+                    active = False
+
+                entry = {
+                    'mac': mac,
+                    'interface': interface,
+                    'static': static,
+                    'active': active
+                }
+
+                mac_address_table.setdefault(vlan, [])
+                mac_address_table[vlan].append(entry)
+            else:
+                raise ValueError("Unexpected output from: {}".format(line.split()))
+
+        return mac_address_table
