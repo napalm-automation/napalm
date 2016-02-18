@@ -1,0 +1,24 @@
+router bgp 13335
+   maximum-paths 32
+   neighbor IPv4-PEERS-GROUP-NAME peer-group
+   neighbor IPv4-PEERS-GROUP-NAME remove-private-as
+   neighbor IPv4-PEERS-GROUP-NAME route-map reject-all in
+   neighbor IPv4-PEERS-GROUP-NAME route-map 4-public-peer-anycast-out out
+   neighbor IPv4-PEERS-GROUP-NAME maximum-routes 500
+   neighbor IPv6-PEERS-GROUP-NAME peer-group
+   neighbor IPv6-PEERS-GROUP-NAME remove-private-as
+   neighbor IPv6-PEERS-GROUP-NAME route-map reject-all in
+   neighbor IPv6-PEERS-GROUP-NAME route-map reject-all out
+   neighbor IPv6-PEERS-GROUP-NAME maximum-routes 100
+   neighbor 192.168.0.1 peer-group IPv4-PEERS-GROUP-NAME
+   neighbor 192.168.0.1 remote-as 32934
+   neighbor 192.168.0.1 maximum-routes 100
+   neighbor 172.17.17.1 peer-group IPv4-PEERS-GROUP-NAME
+   neighbor 172.17.17.1 remote-as 13414
+   neighbor 172.17.17.1 maximum-routes 500
+   neighbor 2001:db8::0:1 peer-group IPv6-PEERS-GROUP-NAME
+   neighbor 2001:db8::0:1 remote-as 8403
+   neighbor 2001:db8::0:1 maximum-routes 500
+   neighbor 2001:db8::0:2 peer-group IPv6-PEERS-GROUP-NAME
+   neighbor 2001:db8::0:2 remote-as 54113
+!
