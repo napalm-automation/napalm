@@ -57,6 +57,7 @@ class FakeJunOSDevice:
 
     def __init__(self):
         self.rpc = FakeRPCObject()
+        self.ON_JUNOS = True # necessary for fake devices
         self.facts = {
             'domain': None,
             'hostname': 'vsrx',
@@ -99,6 +100,21 @@ class FakeRPCObject:
         instance = rpc_args.pop('instance', '')
 
         xml_string = self.read_txt_file('junos/mock_data/{}{}.txt'.format(self.item, instance))
+        return lxml.etree.fromstring(xml_string)
+
+    def get_config(self, get_cmd = '', options = {}):
+
+        # get_cmd is an XML tree that requests a specific part of the config
+        # E.g.: <configuration><protocols><bgp><group/></bgp></protocols></configuration>
+
+        get_cmd_str = lxml.etree.tostring(get_cmd)
+        filename = get_cmd_str.replace('<', '_').replace('>', '_').replace('/', '_').replace('\n', '').replace(' ', '')
+
+        xml_string = self.read_txt_file(
+            'junos/mock_data/{filename}.txt'.format(
+                filename = filename[0:150]
+            )
+        )
         return lxml.etree.fromstring(xml_string)
 
     __call__ = response

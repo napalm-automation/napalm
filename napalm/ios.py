@@ -379,8 +379,6 @@ class IOSDriver(NetworkDriver):
 
     def get_facts(self):
         """This function returns a set of facts from the devices."""
-        # creating the parsing regex.
-        model_regex = r".*Cisco\s(?P<model>\d+).*"
 
         # default values.
         vendor = u'Cisco'
@@ -421,9 +419,8 @@ class IOSDriver(NetworkDriver):
 
         # model filter
         try:
-            match_model = re.match(model_regex, show_ver, re.DOTALL)
-            group_model = match_model.groupdict()
-            model = group_model["model"]
+            match_model = re.search(r"Cisco (.+?) .+bytes of", show_ver, re.IGNORECASE)
+            model = match_model.group(1)
         except AttributeError:
             model = u'Unknown'
 

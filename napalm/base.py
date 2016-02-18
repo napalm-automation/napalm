@@ -367,3 +367,237 @@ class NetworkDriver:
             }
         """
         raise NotImplementedError
+
+    def get_lldp_neighbors_detail(self, interface = ''):
+        """
+        Returns a detailed view of the LLDP neighbors as a dictionary
+        containing lists of dictionaries for each interface.
+
+        Inner dictionaries contain fields:
+            * parent_interface (string)
+            * interface_description (string)
+            * remote_port (string)
+            * remote_port_description (string)
+            * remote_chassis_id (string)
+            * remote_system_name (string)
+            * remote_system_description (string)
+            * remote_system_capab (string)
+            * remote_system_enabled_capab (string)
+
+        For example::
+
+            {
+                'TenGigE0/0/0/8': [
+                    {
+                        'parent_interface': u'Bundle-Ether8',
+                        'interface_description': u'TenGigE0/0/0/8',
+                        'remote_chassis_id': u'8c60.4f69.e96c',
+                        'remote_system_name': u'switch',
+                        'remote_port': u'Eth2/2/1',
+                        'remote_port_description': u'Ethernet2/2/1',
+                        'remote_system_description': u'''Cisco Nexus Operating System (NX-OS) Software 7.1(0)N1(1a)
+                              TAC support: http://www.cisco.com/tac
+                              Copyright (c) 2002-2015, Cisco Systems, Inc. All rights reserved.''',
+                        'remote_system_capab': u'B, R',
+                        'remote_system_enable_capab': u'B'
+                    }
+                ]
+            }
+        """
+        raise NotImplementedError
+
+    def get_bgp_config(self, group = '', neighbor = ''):
+        """
+        Returns a dictionary containing the BGP configuration.
+        Can return either the whole config, either the config only for a group or neighbor.
+        Main dictionary keys represent the group name and the values represent a dictionary having the following keys:
+            * type (str)
+            * description (str)
+            * apply_groups (str list)
+            * multihop_ttl (int)
+            * multipath (boolean)
+            * local_address (str)
+            * local_as (int)
+            * peer_as (int)
+            * import_policy (str)
+            * export_policy (str)
+            * remove_private (boolean)
+            * prefix_limit (dict)
+            * neighbors (dict)
+        Neighbors is a dictionary of dictionaries with the following keys:
+            * description (str)
+            * import_policy (str)
+            * export_policy (str)
+            * local_address (str)
+            * local_as (int)
+            * peer_as (int)
+            * authentication_key (str)
+            * prefix_limit (dict)
+            * route_reflector (bool)
+            * nhs (bool)
+        The inner dictionary prefix_limit has the same structure for both layers:
+            {
+                [FAMILY_NAME]: {
+                    [FAMILY_TYPE]: {
+                        'limit': [LIMIT],
+                        ... other options
+                    }
+                }
+
+        For example::
+
+            {
+                'PEERS-GROUP-NAME':{
+                    'type'          : u'external',
+                    'description'   : u'Here we should have a nice description',
+                    'apply_groups'  : [u'BGP-PREFIX-LIMIT'],
+                    'import_policy' : u'PUBLIC-PEER-IN',
+                    'export_policy' : u'PUBLIC-PEER-OUT',
+                    'remove_private': True,
+                    'multipath'     : True,
+                    'multihop_ttl'  : 30,
+                    'neighbors'     : {
+                        '192.168.0.1': {
+                            'description'   : 'Facebook [CDN]',
+                            'prefix_limit'  : {
+                                'inet': {
+                                    'unicast': {
+                                        'limit': 100,
+                                        'teardown': {
+                                            'threshold' : 95,
+                                            'timeout'   : 5
+                                        }
+                                    }
+                                }
+                            }
+                            'peer-as'        : 32934,
+                            'route_reflector': False,
+                            'nhs'            : True
+                        },
+                        '172.17.17.1': {
+                            'description'   : 'Twitter [CDN]',
+                            'prefix_limit'  : {
+                                'inet': {
+                                    'unicast': {
+                                        'limit': 500,
+                                        'no-validate': 'IMPORT-FLOW-ROUTES'
+                                    }
+                                }
+                            }
+                            'peer_as'        : 13414
+                            'route_reflector': False,
+                            'nhs'            : False
+                        }
+                    }
+                }
+            }
+        """
+        raise NotImplementedError
+
+    def cli(self, *commands):
+
+        """
+        Will execute a list of commands and return the output in a dictionary format.
+
+        For example::
+
+            {
+                u'show version and haiku':  u'''Hostname: re0.edge01.arn01
+                                                Model: mx480
+                                                Junos: 13.3R6.5
+
+                                                        Help me, Obi-Wan
+                                                        I just saw Episode Two
+                                                        You're my only hope
+                                            ''',
+                u'show chassis fan'     :   u'''Item                      Status   RPM     Measurement
+                                                Top Rear Fan              OK       3840    Spinning at intermediate-speed
+                                                Bottom Rear Fan           OK       3840    Spinning at intermediate-speed
+                                                Top Middle Fan            OK       3900    Spinning at intermediate-speed
+                                                Bottom Middle Fan         OK       3840    Spinning at intermediate-speed
+                                                Top Front Fan             OK       3810    Spinning at intermediate-speed
+                                                Bottom Front Fan          OK       3840    Spinning at intermediate-speed
+                                            '''
+            }
+        """
+        raise NotImplementedError
+
+    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+
+        """
+        Returns a detailed view of the BGP neighbors as a dictionary of lists.
+        The keys of the dictionary represent the AS number of the neighbors.
+        Inner dictionaries contain the following fields:
+            * up (boolean)
+            * local_as (int)
+            * remote_as (int)
+            * local_address (unicode)
+            * local_address_configured (boolean)
+            * local_port (int)
+            * remote_address (unicode)
+            * remote_port (int)
+            * multihop (boolean)
+            * import_policy (unicode)
+            * export_policy (unicode)
+            * input_messages (int)
+            * output_messages (int)
+            * input_updates (int)
+            * output_updates (int)
+            * messages_queued_out (int)
+            * connection_state (unicode)
+            * previous_connection_state (unicode)
+            * last_event (unicode)
+            * suppress_4byte_as (boolean)
+            * local_as_prepend (boolean)
+            * holdtime (int)
+            * configured_holdtime (int)
+            * keepalive (int)
+            * configured_keepalive (int)
+            * active_prefix_count (int)
+            * received-prefix-count (int)
+            * accepted-prefix-count (int)
+            * suppressed-prefix-count (int)
+            * advertised-prefix-count (int)
+            * flap_count (int)
+
+        For example::
+
+            {
+                8121: [
+                    {
+                        'up'                        : True,
+                        'local_as'                  : 13335,
+                        'remote_as'                 : 8121,
+                        'local_address'             : u'172.101.76.1',
+                        'local_address_configured'  : True,
+                        'local_port'                : 179,
+                        'remote_address'            : u'192.247.78.0',
+                        'remote_port'               : 58380,
+                        'multihop'                  : False,
+                        'import_policy'             : u'4-NTT-TRANSIT-IN',
+                        'export_policy'             : u'4-NTT-TRANSIT-OUT',
+                        'input_messages'            : 123,
+                        'output_messages'           : 13,
+                        'input_updates'             : 123,
+                        'output_updates'            : 5,
+                        'messages_queued_out'       : 23,
+                        'connection_state'          : u'Established',
+                        'previous_connection_state' : u'EstabSync',
+                        'last_event'                : u'RecvKeepAlive',
+                        'suppress_4byte_as'         : False,
+                        'local_as_prepend'          : False,
+                        'holdtime'                  : 90,
+                        'configured_holdtime'       : 90,
+                        'keepalive'                 : 30,
+                        'configured_keepalive'      : 30,
+                        'active_prefix_count'       : 132808,
+                        'received_prefix_count'     : 566739,
+                        'accepted_prefix_count'     : 566479,
+                        'suppressed_prefix_count'   : 0,
+                        'advertise_prefix_count'    : 0,
+                        'flap_count'                : 27
+                    }
+                ]
+            }
+        """
+        raise NotImplementedError

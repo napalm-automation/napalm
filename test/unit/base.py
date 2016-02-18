@@ -218,3 +218,37 @@ class TestGettersNetworkDriver:
                         result = result and self._test_model(models.af, af_data)
 
             self.assertTrue(result)
+
+    def test_get_lldp_neighbors_detail(self):
+
+        get_lldp_neighbors_detail = self.device.get_lldp_neighbors_detail()
+
+        result = len(get_lldp_neighbors_detail) > 0
+
+        for interface, neighbor_list in get_lldp_neighbors_detail.iteritems():
+            for neighbor in neighbor_list:
+                result = result and self._test_model(models.lldp_neighbors_detail, neighbor)
+
+    def test_get_bgp_config(self):
+
+        get_bgp_config = self.device.get_bgp_config()
+        result = len(get_bgp_config) > 0
+
+        for bgp_group in get_bgp_config.values():
+            result = result and self._test_model(models.bgp_config_group, bgp_group)
+            for bgp_neighbor in bgp_group.get('neighbors', {}).values():
+                result = result and self._test_model(models.bgp_config_neighbor, bgp_neighbor)
+
+        self.assertTrue(result)
+
+    def test_bgp_neighbors_detail(self):
+
+        get_bgp_neighbors_detail = self.device.get_bgp_neighbors_detail()
+
+        result = len(get_bgp_neighbors_detail) > 0
+
+        for remote_as, neighbor_list in get_bgp_neighbors_detail.iteritems():
+            for neighbor in neighbor_list:
+                result = result and self._test_model(models.peer_details, neighbor)
+
+        self.assertTrue(result)
