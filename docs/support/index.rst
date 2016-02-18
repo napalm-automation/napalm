@@ -59,7 +59,7 @@ Getters support matrix
 ============================== =====  =====   ======  =======  ======  ======  =====
 _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS
 ============================== =====  =====   ======  =======  ======  ======  =====
-**cli**                        |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|
+**cli**                        |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|
 **get_facts**                  |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|
 **get_interfaces**             |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|
 **get_lldp_neighbors**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|
