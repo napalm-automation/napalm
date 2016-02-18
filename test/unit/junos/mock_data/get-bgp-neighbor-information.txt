@@ -1,4 +1,4 @@
-<bgp-information xmlns="http://xml.juniper.net/junos/13.3R6/junos-routing">
+<bgp-information>
     <bgp-peer junos_specific="detail">
         <peer-address>192.168.100.1+50877</peer-address>
         <peer-as>4436</peer-as>

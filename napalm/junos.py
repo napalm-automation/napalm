@@ -563,16 +563,54 @@ class JunOSDriver(NetworkDriver):
         )
         bgp_neighbors_items = bgp_neighbors_table.items()
 
+        default_neighbor_details = {
+            'up'                        : False,
+            'local_as'                  : 0,
+            'remote_as'                 : 0,
+            'local_address'             : u'',
+            'local_address_configured'  : False,
+            'local_port'                : 0,
+            'remote_address'            : u'',
+            'remote_port'               : 0,
+            'multihop'                  : False,
+            'import_policy'             : u'',
+            'export_policy'             : u'',
+            'input_messages'            : -1,
+            'output_messages'           : -1,
+            'input_updates'             : -1,
+            'output_updates'            : -1,
+            'messages_queued_out'       : -1,
+            'connection_state'          : u'',
+            'previous_connection_state' : u'',
+            'last_event'                : u'',
+            'suppress_4byte_as'         : False,
+            'local_as_prepend'          : False,
+            'holdtime'                  : -1,
+            'configured_holdtime'       : -1,
+            'keepalive'                 : -1,
+            'configured_keepalive'      : -1,
+            'active_prefix_count'       : -1,
+            'received_prefix_count'     : -1,
+            'accepted_prefix_count'     : -1,
+            'suppressed_prefix_count'   : -1,
+            'advertise_prefix_count'    : -1,
+            'flap_count'                : -1
+        }
+
         for bgp_neighbor in bgp_neighbors_items:
             peer_as = bgp_neighbor[0]
             if peer_as not in bgp_neighbors.keys():
                 bgp_neighbors[peer_as] = list()
-            neighbor_details = {elem[0]: elem[1] for elem in bgp_neighbor[1]}
+            neighbor_details = default_neighbor_details.copy()
+            neighbor_details.update(
+                {elem[0]: elem[1] for elem in bgp_neighbor[1] if elem[1] is not None}
+            )
             options = neighbor_details.pop('options', '')
-            if 'Multihop' in options:
-                neighbor_details['multihop'] = True
-            if 'LocalAddress' in options:
-                neighbor_details['local_address_configured'] = True
+            if options is not None:
+                if 'Multihop' in options:
+                    neighbor_details['multihop'] = True
+                if 'LocalAddress' in options:
+                    neighbor_details['local_address_configured'] = True
             four_byte_as = neighbor_details.pop('4byte_as', 0)
             local_address = neighbor_details.pop('local_address', '')
             local_details = local_address.split('+')
