@@ -384,7 +384,8 @@ class NetworkDriver:
             * remote_system_capab (string)
             * remote_system_enabled_capab (string)
 
-        Example:
+        For example::
+
             {
                 'TenGigE0/0/0/8': [
                     {
@@ -443,7 +444,8 @@ class NetworkDriver:
                     }
                 }
 
-        Example:
+        For example::
+
             {
                 'PEERS-GROUP-NAME':{
                     'type'          : u'external',
@@ -496,7 +498,9 @@ class NetworkDriver:
 
         """
         Will execute a list of commands and return the output in a dictionary format.
-        Example:
+
+        For example::
+
             {
                 u'show version and haiku':  u'''Hostname: re0.edge01.arn01
                                                 Model: mx480
@@ -556,7 +560,8 @@ class NetworkDriver:
             * advertised-prefix-count (int)
             * flap_count (int)
 
-        Example:
+        For example::
+
             {
                 8121: [
                     {
