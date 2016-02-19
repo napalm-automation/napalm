@@ -60,7 +60,9 @@ class PluribusDriver(NetworkDriver):
         uptime_str = system_stats.split(';')[9].strip()
         uptime_days_split = uptime_str.split('d')
         uptime_days = int(uptime_days_split[0])
-        uptime_minutes_split = uptime_days_split[-1].split('m')
+        uptime_hours_split = uptime_days_split[-1].split('h')
+        uptime_hours = int(uptime_hours_split[0])
+        uptime_minutes_split = uptime_hours_split[-1].split('m')
         uptime_minutes = int(uptime_minutes_split[0])
         uptime_seconds = int(uptime_minutes_split[-1].replace('s', ''))
         uptime = 24*3600*uptime_days + 60*uptime_minutes + uptime_seconds
@@ -110,12 +112,12 @@ class PluribusDriver(NetworkDriver):
             interface_name  = unicode(interface_details[1])
             up              = (interface_details[4] != 'disable')
             enabled         = (interface_details[8] == 'on')
-            speeed          = 0
+            speed          = 0
             if up and interface_details[4].replace('g', '').isdigit():
-                speed = 1e3 * int(interface_details[4].replace('g', ''))
+                speed = int(1e3 * int(interface_details[4].replace('g', '')))
                 # > 1G interfaces
             last_flap       = 0.0
-            description     = unicode(interface_details[16])
+            description     = unicode(interface_details[17])
             mac_address     = unicode(interface_details[28])
             interfaces[interface_name] = {
                 'is_up'         : up,
@@ -195,13 +197,16 @@ class PluribusDriver(NetworkDriver):
             system_name         = unicode(neighbor_details[6].strip())
             if port not in lldp_neighbors.keys():
                 lldp_neighbors[port] = list()
-            lldp_neighbors[port] = {
-                'parent_interface'          : None,
+            lldp_neighbors[port].append({
+                'parent_interface'          : u'',
                 'remote_port'               : port_id,
-                'remote_port_name'          : port_descr,
-                'remote_system_chassis_id'  : chassis,
-                'remote_system_name'        : system_name
-            }
+                'remote_port_description'   : port_descr,
+                'remote_chassis_id'         : chassis,
+                'remote_system_name'        : system_name,
+                'remote_system_description' : u'',
+                'remote_system_capab'       : u'',
+                'remote_system_enable_capab': u''
+            })
 
         return lldp_neighbors
 
