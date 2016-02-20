@@ -153,7 +153,7 @@ junos_routing_engine_table:
 junos_routing_engine_view:
   fields:
     cpu-idle: { cpu-idle: int }
-    memory-dram-size: { memory-dram-size: int }
+    memory-dram-size: memory-dram-size
     memory-buffer-utilization : { memory-buffer-utilization: int }
 
 junos_temperature_thresholds:
