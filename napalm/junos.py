@@ -42,6 +42,7 @@ class JunOSDriver(NetworkDriver):
         if optional_args is None:
             optional_args = {}
         self.port = optional_args.get('port', 22)
+        self.config_lock = optional_args.get('config_lock', True)
 
         self.device = Device(hostname, user=username, password=password, port=self.port)
 
@@ -49,10 +50,12 @@ class JunOSDriver(NetworkDriver):
         self.device.open()
         self.device.timeout = self.timeout
         self.device.bind(cu=Config)
-        self.device.cu.lock()
+        if self.config_lock:
+            self.device.cu.lock()
 
     def close(self):
-        self.device.cu.unlock()
+        if self.config_lock:
+            self.device.cu.unlock()
         self.device.close()
 
     def _load_candidate(self, filename, config, overwrite):

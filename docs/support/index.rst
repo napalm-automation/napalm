@@ -99,6 +99,7 @@ ____________________________________
 
   * :code:`fortios_vdom` (fortios) - VDOM to connect to.
   * :code:`port` (eos, iosxr, junos, ios) - Allows you to specify a port other than the default.
+  * :code:`config_lock` (junos) - Lock the config during open() (default: True).
 
 Adding optional arguments to NAPALM drivers
 ___________________________________________
