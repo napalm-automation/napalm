@@ -225,7 +225,6 @@ class JunOSDriver(NetworkDriver):
             structured_routing_engine_data = {k: v for k, v in routing_engine_data}
             # Create dicts for 'cpu' and 'memory'.
             try:
-                environment_data['cpu'] = dict()
                 environment_data['cpu'][routing_engine_object] = dict()
                 environment_data['memory'] = dict()
             except KeyError:
@@ -546,7 +545,6 @@ class JunOSDriver(NetworkDriver):
                     prefix_limit_fields.update({
                         elem[0].replace('_prefix_limit', ''): self._convert(datatype, elem[1], default)
                     })
-            print prefix_limit_fields
             bgp_config[bgp_group_name]['prefix_limit'] = build_prefix_limit(**prefix_limit_fields)
             bgp_config[bgp_group_name]['neighbors'] = bgp_neighbors.get(bgp_group_name, {})
 
