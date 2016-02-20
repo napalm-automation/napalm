@@ -233,10 +233,13 @@ class JunOSDriver(NetworkDriver):
                 environment_data['memory'] = dict()
             # Calculate the CPU usage by using the CPU idle value.
             environment_data['cpu'][routing_engine_object]['%usage'] = 100.0 - structured_routing_engine_data['cpu-idle']
-            environment_data['memory']['available_ram'] = structured_routing_engine_data['memory-dram-size']
+            try:
+                environment_data['memory']['available_ram'] = int(structured_routing_engine_data['memory-dram-size'])
+            except ValueError:
+                environment_data['memory']['available_ram'] = int(''.join(i for i in structured_routing_engine_data['memory-dram-size'] if i.isdigit()))
             # Junos gives us RAM in %, so calculation has to be made.
             # Sadly, bacause of this, results are not 100% accurate to the truth.
-            environment_data['memory']['used_ram'] = (structured_routing_engine_data['memory-dram-size'] / 100 * structured_routing_engine_data['memory-buffer-utilization'])
+            environment_data['memory']['used_ram'] = (environment_data['memory']['available_ram'] / 100 * structured_routing_engine_data['memory-buffer-utilization'])
 
         return environment_data
 
