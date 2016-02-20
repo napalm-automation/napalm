@@ -33,11 +33,11 @@ class IOSXRDriver(NetworkDriver):
         self.timeout = timeout
         self.pending_changes = False
         self.replace = False
-
         if optional_args is None:
             optional_args = {}
         self.port = optional_args.get('port', 22)
-        self.device = IOSXR(hostname, username, password, timeout=timeout, port=self.port)
+        self.config_lock = optional_args.get('config_lock', True)
+        self.device = IOSXR(hostname, username, password, timeout=timeout, port=self.port, lock=self.config_lock)
 
     def open(self):
         self.device.open()
