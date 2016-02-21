@@ -754,3 +754,47 @@ class EOSDriver(NetworkDriver):
             )
 
         return arp_table
+
+    def get_ntp_peers(self):
+
+        ntp_peers = dict()
+
+        REGEX = (
+            '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
+            '\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
+            '\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
+            '\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
+            '\s+([0-9\.]+)\s?$'
+        )
+
+        commands = list()
+        commands.append('show ntp associations')
+
+        # output = self.device.run_commands(commands)
+        # pyeapi.eapilib.CommandError: CLI command 2 of 2 'show ntp associations' failed: unconverted command
+        # JSON output not yet implemented...
+
+        ntp_assoc = self.device.run_commands(commands, encoding = 'text')[0].get('output', '\n\n')
+        ntp_assoc_lines = ntp_assoc.splitlines()[2:]
+
+        for ntp_assoc in ntp_assoc_lines:
+            line_search = re.search(REGEX, ntp_assoc, re.I)
+            if not line_search:
+                continue # pattern not found
+            line_groups = line_search.groups()
+            try:
+                ntp_peers[unicode(line_groups[1])] = {
+                    'referenceid'   : unicode(line_groups[2]),
+                    'stratum'       : int(line_groups[3]),
+                    'type'          : unicode(line_groups[4]),
+                    'when'          : unicode(line_groups[5]),
+                    'hostpoll'      : int(line_groups[6]),
+                    'reachability'  : int(line_groups[7]),
+                    'delay'         : float(line_groups[8]),
+                    'offset'        : float(line_groups[9]),
+                    'jitter'        : float(line_groups[10])
+                }
+            except Exception:
+                continue # jump to next line
+
+        return ntp_peers
