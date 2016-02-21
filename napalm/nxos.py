@@ -325,3 +325,34 @@ class NXOSDriver(NetworkDriver):
                 raise CommandErrorException(str(cli_output))
 
         return cli_output
+
+    def get_arp_table(self):
+
+        arp_table = list()
+
+        command = 'show ip arp'
+
+        arp_table_raw = self._get_command_table(command, 'TABLE_vrf', 'ROW_vrf').get('TABLE_adj', {}).get('ROW_adj', [])
+
+        if type(arp_table_raw) is dict:
+            arp_table_raw = [arp_table_raw]
+
+        for arp_table_entry in arp_table_raw:
+            ip          = unicode(arp_table_entry.get('ip-addr-out'))
+            mac_raw     = arp_table_entry.get('mac')
+            mac_all     = mac_raw.replace('.', '').replace(':', '')
+            mac_format  = unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
+            age         = arp_table_entry.get('time-stamp')
+            age_time    = ''.join(age.split(':'))
+            age_sec     = 3600 * int(age_time[:2]) + 60 * int(age_time[2:4]) + int(age_time[4:])
+            interface   = unicode(arp_table_entry.get('intf-out'))
+            arp_table.append(
+                {
+                    'interface' : interface,
+                    'mac'       : mac_format,
+                    'ip'        : ip,
+                    'age'       : age_sec
+                }
+            )
+
+        return arp_table
