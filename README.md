@@ -1,3 +1,8 @@
+[![PyPI](https://img.shields.io/pypi/v/napalm.svg)](https://pypi.python.org/pypi/napalm)
+[![PyPI](https://img.shields.io/pypi/dm/napalm.svg)](https://pypi.python.org/pypi/napalm)
+[![Build Status](https://travis-ci.org/napalm-automation/napalm.svg?branch=master)](https://travis-ci.org/napalm-automation/napalm)
+
+
 NAPALM
 ======
 NAPALM (Network Automation and Programmability Abstraction Layer with Multivendor support) is a Python library that implements a set of functions to interact with different router vendor devices using a unified API.
