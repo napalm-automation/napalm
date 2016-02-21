@@ -662,3 +662,44 @@ class JunOSDriver(NetworkDriver):
             arp_table.append(arp_entry)
 
         return arp_table
+
+    def get_ntp_peers(self):
+
+        # NTP Peers does not have XML RPC defined
+        # thus we need to retrieve raw text and parse...
+        # :(
+
+        ntp_peers = dict()
+
+        REGEX = (
+            '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
+            '\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
+            '\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
+            '\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
+            '\s+([0-9\.]+)\s?$'
+        )
+
+        ntp_assoc_output = self.device.cli('show ntp associations no-resolve')
+        ntp_assoc_output_lines = ntp_assoc_output.splitlines()
+
+        for ntp_assoc_output_line in ntp_assoc_output_lines[3:-1]: #except last line
+            line_search = re.search(REGEX, ntp_assoc_output_line, re.I)
+            if not line_search:
+                continue # pattern not found
+            line_groups = line_search.groups()
+            try:
+                ntp_peers[unicode(line_groups[1])] = {
+                    'referenceid'   : unicode(line_groups[2]),
+                    'stratum'       : int(line_groups[3]),
+                    'type'          : unicode(line_groups[4]),
+                    'when'          : unicode(line_groups[5]),
+                    'hostpoll'      : int(line_groups[6]),
+                    'reachability'  : int(line_groups[7]),
+                    'delay'         : float(line_groups[8]),
+                    'offset'        : float(line_groups[9]),
+                    'jitter'        : float(line_groups[10])
+                }
+            except Exception:
+                continue # jump to next line
+
+        return ntp_peers
