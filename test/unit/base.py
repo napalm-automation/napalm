@@ -261,3 +261,14 @@ class TestGettersNetworkDriver:
 
         for arp_entry in get_arp_table:
             result = result and self._test_model(models.arp_table, arp_entry)
+
+    def test_get_ntp_peers(self):
+
+        get_ntp_peers = self.device.get_ntp_peers()
+
+        result = len(get_ntp_peers) > 0
+
+        for ntp_peer_ip, ntp_peer_details in get_ntp_peers.iteritems():
+            result = result and self._test_model(models.ntp_peer, ntp_peer_details)
+
+        self.assertTrue(result)
