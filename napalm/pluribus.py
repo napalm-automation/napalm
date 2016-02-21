@@ -160,7 +160,7 @@ class PluribusDriver(NetworkDriver):
 
         return mac_table
 
-    def get_lldp_neighobrs(self):
+    def get_lldp_neighbors(self):
 
         lldp_neighbors = dict()
 
