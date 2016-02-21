@@ -356,3 +356,34 @@ class NXOSDriver(NetworkDriver):
             )
 
         return arp_table
+
+    def get_ntp_peers(self):
+
+        ntp_peers = dict()
+
+        command = 'show ntp peer-status'
+
+        ntp_peers_table = self._get_command_table(command, 'TABLE_peersstatus', 'ROW_peersstatus')
+
+        if type(ntp_peers_table) is dict:
+            ntp_peers_table = [ntp_peers_table]
+
+        for ntp_peer in ntp_peers_table:
+            peer_address = unicode(ntp_peer.get('remote'))
+            stratum      = int(ntp_peer.get('st'))
+            hostpoll     = int(ntp_peer.get('poll'))
+            reachability = int(ntp_peer.get('reach'))
+            delay        = float(ntp_peer.get('delay'))
+            ntp_peers[peer_address] = {
+                'referenceid'   : peer_address,
+                'stratum'       : stratum,
+                'type'          : u'',
+                'when'          : u'',
+                'hostpoll'      : hostpoll,
+                'reachability'  : reachability,
+                'delay'         : delay,
+                'offset'        : 0.0,
+                'jitter'        : 0.0
+            }
+
+        return ntp_peers
