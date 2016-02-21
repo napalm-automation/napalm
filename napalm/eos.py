@@ -724,3 +724,33 @@ class EOSDriver(NetworkDriver):
             bgp_config[group]['neighbors'] = peers
 
         return bgp_config
+
+    def get_arp_table(self):
+
+        arp_table = list()
+
+        commands = ['show arp']
+
+        ipv4_neighbors = []
+        try:
+            ipv4_neighbors = self.device.run_commands(commands)[0].get('ipV4Neighbors', [])
+        except pyeapi.eapilib.CommandError:
+            return []
+
+        for neighbor in ipv4_neighbors:
+            interface   = unicode(neighbor.get('interface'))
+            mac_raw     = neighbor.get('hwAddress')
+            mac_all     = mac_raw.replace('.', '').replace(':', '')
+            mac_format  = unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
+            ip          = unicode(neighbor.get('address'))
+            age         = neighbor.get('age')
+            arp_table.append(
+                {
+                    'interface' : interface,
+                    'mac'       : mac_format,
+                    'ip'        : ip,
+                    'age'       : age
+                }
+            )
+
+        return arp_table

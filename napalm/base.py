@@ -522,6 +522,7 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
+
     def get_bgp_neighbors_detail(self, neighbor_address = ''):
 
         """
@@ -599,5 +600,33 @@ class NetworkDriver:
                     }
                 ]
             }
+        """
+        raise NotImplementedError
+
+    def get_arp_table(self):
+
+        """
+        Returns a list of dictionaries having the following set of keys:
+            * interface (string)
+            * mac (string)
+            * ip (string)
+            * age (float)
+
+        For example::
+
+            [
+                {
+                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '5c:5e:ab:da:3c:f0',
+                    'ip'        : '172.17.17.1',
+                    'age'       : 1454496274.84
+                },
+                {
+                    'interface': 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '66:0e:94:96:e0:ff',
+                    'ip'        : '172.17.17.2',
+                    'age'       : 1435641582.49
+                }
+            ]
         """
         raise NotImplementedError
