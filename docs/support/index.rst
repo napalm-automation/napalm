@@ -72,7 +72,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|
 **get_mac_address_table**      |no|   |no|    |no|    |no|     |no|    |no|    |no|   |yes|
 **get_snmp_information**       |no|   |no|    |no|    |no|     |no|    |no|    |no|   |yes|
-**get_ntp_peers**              |no|   |no|    |no|    |no|     |no|    |no|    |no|   |yes|
+**get_ntp_peers**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========
 
 
