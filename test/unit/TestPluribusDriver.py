@@ -32,7 +32,7 @@ class TestConfigPluribusriver(unittest.TestCase, TestConfigNetworkDriver):
         cls.device.open()
 
 
-class TestGetterPluribusriver(unittest.TestCase, TestGettersNetworkDriver):
+class TestGetterPluribusDriver(unittest.TestCase, TestGettersNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
