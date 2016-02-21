@@ -337,6 +337,9 @@ class JunOSDriver(NetworkDriver):
         lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
         lldp_table.get()
 
+        # TODO rebuild from scratch this crap!!!!!!
+        # TODO
+
         lldp_items = lldp_table.items()
 
         for lldp_item in lldp_items:
@@ -656,7 +659,7 @@ class JunOSDriver(NetworkDriver):
             arp_entry = {
                 elem[0]: elem[1] for elem in arp_table_entry[1]
             }
-            tte = arp_entry.pop('tte', 0.0)
+            tte = arp_entry.pop('tte')
             arp_entry['age'] = tte
             # must compute age based on TTE
             arp_table.append(arp_entry)
