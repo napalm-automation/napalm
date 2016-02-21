@@ -6,3 +6,4 @@ pyFG
 pycsco
 bnclient
 netmiko
+pyPluribus
