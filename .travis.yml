@@ -50,3 +50,4 @@ script:
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_facts
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_interfaces
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_lldp_neighbors_detail
+  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_ntp_peers
