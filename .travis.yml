@@ -1,0 +1,42 @@
+language: python
+
+python:
+    - 2.7
+
+install:
+  - pip install -r requirements.txt
+  - pip install .
+
+script:
+  - cd test/unit
+  # testing junos getters
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_bgp_config
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_bgp_neighbors
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_bgp_neighbors_detail
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_environment
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_facts
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_interfaces
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_interfaces_counters
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_lldp_neighbors
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_lldp_neighbors_detail
+  # testing eos getters
+  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_config
+  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors
+  # not implemented on eos
+  # - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_bgp_neighbors_detail
+  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_environment
+  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_facts
+  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces
+  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces_counters
+  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors
+  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors_detail
+  # testing iosxr getters
+  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_config
+  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_neighbors
+  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_bgp_neighbors_detail
+  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_environment
+  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_facts
+  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_interfaces
+  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_interfaces_counters
+  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_lldp_neighbors
+  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_lldp_neighbors_detail
