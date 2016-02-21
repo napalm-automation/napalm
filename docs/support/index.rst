@@ -57,7 +57,6 @@ Getters support matrix
 .. |yes|   unicode:: U+02705 .. Yes
 .. |no|    unicode:: U+0274C .. No
 
-
 ============================== =====  =====   ======  =======  ======  ======  =====  =========
 _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus
 ============================== =====  =====   ======  =======  ======  ======  =====  =========
@@ -71,10 +70,10 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|
 **get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|
 **get_mac_address_table**      |no|   |no|    |no|    |no|     |no|    |no|    |no|   |yes|
+**get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |no|
 **get_snmp_information**       |no|   |no|    |no|    |no|     |no|    |no|    |no|   |yes|
 **get_ntp_peers**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========
-
 
 Caveats
 -------
