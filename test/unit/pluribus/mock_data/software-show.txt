@@ -1,0 +1,5 @@
+version;2.2.4-202046923
+track;2.2-release
+upgrade-status;available
+version-available;2.2.4-202046923 -> 2.2.8-202087399
+use-proxy;no
