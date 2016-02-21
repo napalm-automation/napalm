@@ -228,8 +228,6 @@ class TestGettersNetworkDriver:
             for neighbor in neighbor_list:
                 result = result and self._test_model(models.lldp_neighbors_detail, neighbor)
 
-        self.assertTrue(result)
-
     def test_get_bgp_config(self):
 
         get_bgp_config = self.device.get_bgp_config()
