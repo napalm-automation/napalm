@@ -431,7 +431,7 @@ class NXOSDriver(NetworkDriver):
                     'prefix_length': secondary_address_prefix
                 })
 
-        command_ipv6 = 'show ip6 interface'
+        command_ipv6 = 'show ipv6 interface'
 
         ipv6_interf_table_vrf = self._get_command_table(command_ipv6, 'TABLE_intf', 'ROW_intf')
 
