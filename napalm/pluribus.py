@@ -174,10 +174,10 @@ class PluribusDriver(NetworkDriver):
             system_name         = unicode(neighbor_details[6].strip())
             if port_id not in lldp_neighbors.keys():
                 lldp_neighbors[port_id] = list()
-            lldp_neighbors[port_id] = {
+            lldp_neighbors[port_id].append({
                 'port'      : port,
                 'hostname'  : system_name
-            }
+            })
 
         return lldp_neighbors
 
