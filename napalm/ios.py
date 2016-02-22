@@ -903,7 +903,7 @@ class IOSDriver(NetworkDriver):
 
         output = self.device.send_command(mem_cmd)
         output = output.strip()
-        print(output)
+
         for line in output.splitlines():
             if 'Processor' in line:
                 _, _, _, proc_used_mem, proc_free_mem = line.split()[:5]
