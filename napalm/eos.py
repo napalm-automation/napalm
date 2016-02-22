@@ -888,8 +888,8 @@ class EOSDriver(NetworkDriver):
             mac_str     = mac_raw.replace('.', '').replace(':', '')
             mac_format  = ':'.join([ mac_str[i:i+2] for i in range(12)[::2] ])
             static      = (mac_entry.get('entryType') == 'static')
-            last_move   = mac_entry.get('lastMove')
-            moves       = mac_entry.get('moves')
+            last_move   = mac_entry.get('lastMove', 0.0)
+            moves       = mac_entry.get('moves', 0)
             if vlan not in mac_table.keys():
                 mac_table[vlan] = list()
             mac_table[vlan].append(

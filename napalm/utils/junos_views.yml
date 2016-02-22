@@ -395,5 +395,5 @@ junos_mac_address_table:
 
 junos_mac_address_view:
   fields:
-    interface: l2-mac-logical-interface
-    mac: l2-mac-address
+    interface: {l2-mac-logical-interface: unicode}
+    mac: {l2-mac-address: unicode}
