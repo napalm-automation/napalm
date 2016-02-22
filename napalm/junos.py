@@ -42,6 +42,7 @@ class JunOSDriver(NetworkDriver):
         if optional_args is None:
             optional_args = {}
         self.port = optional_args.get('port', 22)
+        self.config_lock = optional_args.get('config_lock', True)
 
         self.device = Device(hostname, user=username, password=password, port=self.port)
 
@@ -49,10 +50,12 @@ class JunOSDriver(NetworkDriver):
         self.device.open()
         self.device.timeout = self.timeout
         self.device.bind(cu=Config)
-        self.device.cu.lock()
+        if self.config_lock:
+            self.device.cu.lock()
 
     def close(self):
-        self.device.cu.unlock()
+        if self.config_lock:
+            self.device.cu.unlock()
         self.device.close()
 
     def _load_candidate(self, filename, config, overwrite):
@@ -333,16 +336,26 @@ class JunOSDriver(NetworkDriver):
 
         lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
         lldp_table.get()
+        interfaces = lldp_table.get().keys()
 
-        lldp_items = lldp_table.items()
+        lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
 
-        for lldp_item in lldp_items:
-            interface = lldp_item[0]
-            if interface not in lldp_neighbors.keys():
-                lldp_neighbors[interface] = list()
-            lldp_neighbors[interface].append(
-                {elem[0]: elem[1] for elem in lldp_item[1]}
-            )
+        for interface in interfaces:
+            lldp_table.get(interface)
+            for item in lldp_table:
+                if interface not in lldp_neighbors.keys():
+                    lldp_neighbors[interface] = list()
+                lldp_neighbors[interface].append({
+                    'parent_interface'          : item.parent_interface,
+                    'remote_port'               : item.remote_port,
+                    'remote_chassis_id'         : item.remote_chassis_id,
+                    'remote_port'               : item.remote_port,
+                    'remote_port_description'   : item.remote_port_description,
+                    'remote_system_name'        : item.remote_system_name,
+                    'remote_system_description' : item.remote_system_description,
+                    'remote_system_capab'       : item.remote_system_capab,
+                    'remote_system_enable_capab': item.remote_system_enable_capab
+                })
 
         return lldp_neighbors
 
@@ -631,3 +644,108 @@ class JunOSDriver(NetworkDriver):
             bgp_neighbors[peer_as].append(neighbor_details)
 
         return bgp_neighbors
+
+    def get_arp_table(self):
+
+        # could use ArpTable
+        # from jnpr.junos.op.phyport import ArpTable
+        # and simply use it
+        # but
+        # we need:
+        #   - filters
+        #   - group by VLAN ID
+        #   - hostname & TTE fields as well
+
+        arp_table = list()
+
+        arp_table_raw = junos_views.junos_arp_table(self.device)
+        arp_table_raw.get()
+        arp_table_items = arp_table_raw.items()
+
+        for arp_table_entry in arp_table_items:
+            arp_entry = {
+                elem[0]: elem[1] for elem in arp_table_entry[1]
+            }
+            tte = arp_entry.pop('tte')
+            arp_entry['age'] = tte
+            # must compute age based on TTE
+            arp_table.append(arp_entry)
+
+        return arp_table
+
+    def get_ntp_peers(self):
+
+        # NTP Peers does not have XML RPC defined
+        # thus we need to retrieve raw text and parse...
+        # :(
+
+        ntp_peers = dict()
+
+        REGEX = (
+            '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
+            '\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
+            '\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
+            '\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
+            '\s+([0-9\.]+)\s?$'
+        )
+
+        ntp_assoc_output = self.device.cli('show ntp associations no-resolve')
+        ntp_assoc_output_lines = ntp_assoc_output.splitlines()
+
+        for ntp_assoc_output_line in ntp_assoc_output_lines[3:-1]: #except last line
+            line_search = re.search(REGEX, ntp_assoc_output_line, re.I)
+            if not line_search:
+                continue # pattern not found
+            line_groups = line_search.groups()
+            try:
+                ntp_peers[unicode(line_groups[1])] = {
+                    'referenceid'   : unicode(line_groups[2]),
+                    'stratum'       : int(line_groups[3]),
+                    'type'          : unicode(line_groups[4]),
+                    'when'          : unicode(line_groups[5]),
+                    'hostpoll'      : int(line_groups[6]),
+                    'reachability'  : int(line_groups[7]),
+                    'delay'         : float(line_groups[8]),
+                    'offset'        : float(line_groups[9]),
+                    'jitter'        : float(line_groups[10])
+                }
+            except Exception:
+                continue # jump to next line
+
+        return ntp_peers
+
+    def get_interfaces_ip(self):
+
+        interfaces_ip = dict()
+
+        interface_table = junos_views.junos_ip_interfaces_table(self.device)
+        interface_table.get()
+        interface_table_items = interface_table.items()
+
+        _FAMILY_VMAP_ = {
+            'inet'  : u'ipv4',
+            'inet6' : u'ipv6'
+            # can add more mappings
+        }
+
+        for interface_details in interface_table_items:
+            try:
+                ip_address = interface_details[0]
+                address    = unicode(ip_address.split('/')[0])
+                prefix     = self._convert(int, ip_address.split('/')[-1], 0)
+                interface  = unicode(interface_details[1][0][1])
+                family_raw = interface_details[1][1][1]
+                family     = _FAMILY_VMAP_.get(family_raw)
+                if not family:
+                    continue
+                if interface not in interfaces_ip.keys():
+                    interfaces_ip[interface] = dict()
+                if family not in interfaces_ip[interface].keys():
+                    interfaces_ip[interface][family] = dict()
+                if address not in interfaces_ip[interface][family].keys():
+                    interfaces_ip[interface][family][address] = dict()
+                interfaces_ip[interface][family][address][u'prefix_length'] = prefix
+            except Exception:
+                continue
+
+        return interfaces_ip

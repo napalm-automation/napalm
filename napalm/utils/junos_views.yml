@@ -176,6 +176,8 @@ junos_temperature_thresholds_view:
 
 junos_lldp_neighbors_detail_table:
   rpc: get-lldp-neighbors-information
+  args:
+    interface_name: '[afgx]e*'
   item: lldp-neighbor-information
   key: lldp-local-port-id
   view: junos_lldp_neighbors_detail_view
@@ -339,3 +341,39 @@ junos_bgp_neighbors_view:
     suppressed_prefix_count: {bgp-rib/suppressed-prefix-count: int}
     advertise_prefix_count: {bgp-rib/advertised-prefix-count: int}
     flap_count: {flap-count: int}
+
+###
+### ARP Table
+###
+
+junos_arp_table:
+  rpc: get-arp-table-information
+  args:
+    expiration-time: true
+  item: arp-table-entry
+  key: interface-name
+  view: junos_arp_view
+
+junos_arp_view:
+  fields:
+    interface: {interface-name: unicode}
+    mac: {mac-address: unicode}
+    ip: {ip-address: unicode}
+    tte: {time-to-expire: float}
+
+###
+### Interfaces IPs
+###
+
+junos_ip_interfaces_table:
+  rpc: get-interface-information
+  item: physical-interface/logical-interface/address-family/interface-address
+  args:
+    terse: True
+  key: ifa-local
+  view: junos_ip_interfaces_view
+
+junos_ip_interfaces_view:
+  fields:
+    family: ../address-family-name
+    interface: ../../name
