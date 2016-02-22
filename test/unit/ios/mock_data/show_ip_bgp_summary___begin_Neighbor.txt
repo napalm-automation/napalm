@@ -1,0 +1,2 @@
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+192.168.0.2     4        65001       0       0        1    0    0 never    Idle
