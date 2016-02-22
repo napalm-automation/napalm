@@ -172,3 +172,7 @@ ntp_peer = {
     'offset'        : float,
     'jitter'        : float
 }
+
+interfaces_ip = {
+    'prefix_length': int
+}
