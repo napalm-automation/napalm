@@ -17,7 +17,7 @@
 import unittest
 from napalm import get_network_driver
 from base import TestConfigNetworkDriver, TestGettersNetworkDriver
-from getpass import getpass
+import re
 
 
 class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
@@ -128,17 +128,22 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
     @classmethod
     def setUpClass(cls):
         """Executed when the class is instantiated."""
-        username = 'pyclass'
-        ip_addr = raw_input("Enter device ip or hostname: ")
-        ip_addr = ip_addr.strip()
-        password = getpass()
+        cls.mock = True
+
+        username = 'vagrant'
+        ip_addr = '192.168.0.234'
+        password = 'vagrant'
         cls.vendor = 'ios'
         driver = get_network_driver(cls.vendor)
         optional_args = {}
         optional_args['dest_file_system'] = 'flash:'
 
         cls.device = driver(ip_addr, username, password, optional_args=optional_args)
-        cls.device.open()
+
+        if cls.mock:
+            cls.device.device = FakeIOSDevice()
+        else:
+            cls.device.open()
 
     def test_ios_only_bgp_time_conversion(self):
         """Verify time conversion static method."""
@@ -158,3 +163,22 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
 
         for bgp_time, result in test_cases.iteritems():
             self.assertEqual(self.device.bgp_time_conversion(bgp_time), result)
+
+
+class FakeIOSDevice:
+    """Class to fake a IOS Device."""
+
+    @staticmethod
+    def read_txt_file(filename):
+        """Read a txt file and return its content."""
+        with open(filename) as data_file:
+            return data_file.read()
+
+    def send_command_expect(self, command):
+        """Fake execute a command in the device by just returning the content of a file."""
+        cmd = re.sub(r'[\[\]\*\^\+\s\|]', '_', command)
+        return self.read_txt_file('ios/mock_data/{}.txt'.format(cmd))
+
+    def send_command(self, command):
+        """Fake execute a command in the device by just returning the content of a file."""
+        return self.send_command_expect(command)
