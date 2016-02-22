@@ -481,8 +481,8 @@ class NXOSDriver(NetworkDriver):
         for mac_entry in mac_table_raw:
             mac_raw     = mac_entry.get('disp_mac_addr')
             mac_str     = mac_raw.replace('.', '').replace(':', '')
-            mac_format  = ':'.join([ mac_str[i:i+2] for i in range(12)[::2] ])
-            interface   = mac_entry.get('disp_port')
+            mac_format  = unicode(':'.join([ mac_str[i:i+2] for i in range(12)[::2] ]))
+            interface   = unicode(mac_entry.get('disp_port'))
             age         = mac_entry.get('disp_age')
             vlan        = int(mac_entry.get('disp_vlan'))
             active      = True

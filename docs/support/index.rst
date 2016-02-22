@@ -69,11 +69,11 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_bgp_neighbors_detail**   |yes|  |yes|   |no|    |no|     |no|    |no|    |no|   |no|
 **get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|
 **get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|
-**get_mac_address_table**      |no|   |no|    |no|    |no|     |no|    |no|    |no|   |yes|
+**get_mac_address_table**      |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|
 **get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |no|
 **get_snmp_information**       |no|   |no|    |no|    |no|     |no|    |no|    |no|   |yes|
 **get_ntp_peers**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|
-**get_interfaces_ip**          |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |no|
+**get_interfaces_ip**          |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========
 
 Caveats
