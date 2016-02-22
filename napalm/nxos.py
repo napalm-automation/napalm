@@ -261,6 +261,7 @@ class NXOSDriver(NetworkDriver):
 
         lldp_neighbor = {}
         interface_name = None
+
         for line in lldp_neighbors_list:
             chassis_rgx = re.search(CHASSIS_REGEX, line, re.I)
             if chassis_rgx:
@@ -278,7 +279,8 @@ class NXOSDriver(NetworkDriver):
                 continue
             port_descr_rgx = re.search(PORT_DESCR_REGEX, line, re.I)
             if port_descr_rgx:
-                lldp_neighbor['interface_description'] = unicode(port_descr_rgx.groups()[1])
+                lldp_neighbor['remote_port'] = unicode(port_descr_rgx.groups()[1])
+                lldp_neighbor['remote_port_description'] = unicode(port_descr_rgx.groups()[1])
                 continue
             syst_name_rgx = re.search(SYSTEM_NAME_REGEX, line, re.I)
             if syst_name_rgx:
@@ -344,7 +346,7 @@ class NXOSDriver(NetworkDriver):
             mac_format  = unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
             age         = arp_table_entry.get('time-stamp')
             age_time    = ''.join(age.split(':'))
-            age_sec     = 3600 * int(age_time[:2]) + 60 * int(age_time[2:4]) + int(age_time[4:])
+            age_sec     = float(3600 * int(age_time[:2]) + 60 * int(age_time[2:4]) + int(age_time[4:]))
             interface   = unicode(arp_table_entry.get('intf-out'))
             arp_table.append(
                 {
