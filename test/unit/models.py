@@ -153,3 +153,26 @@ peer_details = {
     'advertise_prefix_count'    : int,
     'flap_count'                : int
 }
+
+arp_table = {
+    'interface' : unicode,
+    'mac'       : unicode,
+    'ip'        : unicode,
+    'age'       : float
+}
+
+ntp_peer = {
+    'referenceid'   : unicode,
+    'stratum'       : int,
+    'type'          : unicode,
+    'when'          : unicode,
+    'hostpoll'      : int,
+    'reachability'  : int,
+    'delay'         : float,
+    'offset'        : float,
+    'jitter'        : float
+}
+
+interfaces_ip = {
+    'prefix_length': int
+}

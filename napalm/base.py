@@ -522,6 +522,7 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
+
     def get_bgp_neighbors_detail(self, neighbor_address = ''):
 
         """
@@ -598,6 +599,122 @@ class NetworkDriver:
                         'flap_count'                : 27
                     }
                 ]
+            }
+        """
+        raise NotImplementedError
+
+    def get_arp_table(self):
+
+        """
+        Returns a list of dictionaries having the following set of keys:
+            * interface (string)
+            * mac (string)
+            * ip (string)
+            * age (float)
+
+        For example::
+
+            [
+                {
+                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '5c:5e:ab:da:3c:f0',
+                    'ip'        : '172.17.17.1',
+                    'age'       : 1454496274.84
+                },
+                {
+                    'interface': 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '66:0e:94:96:e0:ff',
+                    'ip'        : '172.17.17.2',
+                    'age'       : 1435641582.49
+                }
+            ]
+        }
+        """
+        raise NotImplementedError
+
+    def get_ntp_peers(self):
+
+        """
+        Returns a dictionary of dictionaries with the details of each NTP peer.
+        Each key of the dictionary is the IP Address of the NTP peer.
+        Details of the peer are represented by the following fields:
+
+            * referenceid (string)
+            * stratum (int)
+            * type (string)
+            * when (string)
+            * hostpoll (int)
+            * reachability (int)
+            * delay (float)
+            * offset (float)
+            * jitter (float)
+
+        For example::
+
+            {
+                u'188.114.101.4': {
+                    'referenceid'   : u'188.114.100.1',
+                    'stratum'       : 4,
+                    'type'          : u'-',
+                    'when'          : u'107',
+                    'hostpoll'      : 256,
+                    'reachability'  : 377,
+                    'delay'         : 164.228,
+                    'offset'        : -13.866,
+                    'jitter'        : 2.695
+                }
+            }
+        """
+        raise NotImplementedError
+
+    def get_interfaces_ip(self):
+
+        """
+        Returns all configured IP addresses on all interfaces as a dictionary of dictionaries.
+        Keys of the main dictionary represent the name of the interface.
+        Values of the main dictionary represent are dictionaries that may consist of two keys
+        'ipv4' and 'ipv6' (one, both or none) which are themselvs dictionaries witht the IP addresses as keys.
+        Each IP Address dictionary has the following keys:
+            * prefix_length (int)
+
+        For example::
+
+            {
+                u'FastEthernet8': {
+                    u'ipv4': {
+                        u'10.66.43.169': {
+                            'prefix_length': 22
+                        }
+                    }
+                },
+                u'Loopback555': {
+                    u'ipv4': {
+                        u'192.168.1.1': {
+                            'prefix_length': 24
+                        }
+                    },
+                    u'ipv6': {
+                        u'1::1': {
+                            'prefix_length': 64
+                        },
+                        u'2001:DB8:1::1': {
+                            'prefix_length': 64
+                        },
+                        u'2::': {
+                            'prefix_length': 64
+                        },
+                        u'FE80::3': {
+                            'prefix_length': u'N/A'
+                        }
+                    }
+                },
+                u'Tunnel0': {
+                    u'ipv4': {
+                        u'10.63.100.9': {
+                            'prefix_length': 24
+                        }
+                    }
+                }
             }
         """
         raise NotImplementedError
