@@ -21,6 +21,7 @@ script:
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_lldp_neighbors_detail
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_arp_table
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_ntp_peers
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_interfaces_ip
   # testing eos getters
   - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_config
   - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors
@@ -34,6 +35,7 @@ script:
   - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors_detail
   - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_arp_table
   - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_ntp_peers
+  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces_ip
   # testing iosxr getters
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_config
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_neighbors
@@ -46,12 +48,15 @@ script:
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_lldp_neighbors_detail
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_arp_table
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_ntp_peers
+  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_interfaces_ip
 # testing nxos getters
   - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_facts
   - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_interfaces
   - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_lldp_neighbors
   - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_lldp_neighbors_detail
+  - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_arp_table
   - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_ntp_peers
+  - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_interfaces_ip
 # testing pluribus getters
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_facts
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_interfaces

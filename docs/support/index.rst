@@ -73,6 +73,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |no|
 **get_snmp_information**       |no|   |no|    |no|    |no|     |no|    |no|    |no|   |yes|
 **get_ntp_peers**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|
+**get_interfaces_ip**          |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========
 
 Caveats

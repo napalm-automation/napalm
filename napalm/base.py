@@ -666,3 +666,55 @@ class NetworkDriver:
             }
         """
         raise NotImplementedError
+
+    def get_interfaces_ip(self):
+
+        """
+        Returns all configured IP addresses on all interfaces as a dictionary of dictionaries.
+        Keys of the main dictionary represent the name of the interface.
+        Values of the main dictionary represent are dictionaries that may consist of two keys
+        'ipv4' and 'ipv6' (one, both or none) which are themselvs dictionaries witht the IP addresses as keys.
+        Each IP Address dictionary has the following keys:
+            * prefix_length (int)
+
+        For example::
+
+            {
+                u'FastEthernet8': {
+                    u'ipv4': {
+                        u'10.66.43.169': {
+                            'prefix_length': 22
+                        }
+                    }
+                },
+                u'Loopback555': {
+                    u'ipv4': {
+                        u'192.168.1.1': {
+                            'prefix_length': 24
+                        }
+                    },
+                    u'ipv6': {
+                        u'1::1': {
+                            'prefix_length': 64
+                        },
+                        u'2001:DB8:1::1': {
+                            'prefix_length': 64
+                        },
+                        u'2::': {
+                            'prefix_length': 64
+                        },
+                        u'FE80::3': {
+                            'prefix_length': u'N/A'
+                        }
+                    }
+                },
+                u'Tunnel0': {
+                    u'ipv4': {
+                        u'10.63.100.9': {
+                            'prefix_length': 24
+                        }
+                    }
+                }
+            }
+        """
+        raise NotImplementedError

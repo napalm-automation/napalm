@@ -798,3 +798,73 @@ class EOSDriver(NetworkDriver):
                 continue # jump to next line
 
         return ntp_peers
+
+    def get_interfaces_ip(self):
+
+        interfaces_ip = dict()
+
+        commands = list()
+        commands.append('show ip interface')
+        commands.append('show ipv6 interface')
+
+        interfaces_ip_out   = self.device.run_commands(commands)
+        interfaces_ipv4_out = interfaces_ip_out[0].get('interfaces', {})
+        interfaces_ipv6_out = interfaces_ip_out[1].get('interfaces', {})
+
+        for interface_name, interface_details in interfaces_ipv4_out.iteritems():
+            ipv4_list = list()
+            if interface_name not in interfaces_ip.keys():
+                interfaces_ip[interface_name] = dict()
+            if u'ipv4' not in interfaces_ip.get(interface_name):
+                interfaces_ip[interface_name][u'ipv4'] = dict()
+            ipv4_list.append(
+                {
+                    'address'   : interface_details.get('interfaceAddress', {}).get('primaryIp', {}).get('address'),
+                    'masklen'   : interface_details.get('interfaceAddress', {}).get('primaryIp', {}).get('maskLen')
+                }
+            )
+            for secondary_ip in interface_details.get('interfaceAddress', {}).get('secondaryIpsOrderedList', []):
+                ipv4_list.append(
+                    {
+                        'address'   : secondary_ip.get('address'),
+                        'masklen'   : secondary_ip.get('maskLen')
+                    }
+                )
+
+            for ip in ipv4_list:
+                if not ip.get('address'):
+                    continue
+                if ip.get('address') not in interfaces_ip.get(interface_name).get(u'ipv4'):
+                    interfaces_ip[interface_name][u'ipv4'][ip.get('address')] = {
+                        u'prefix_length': ip.get('masklen')
+                    }
+
+        for interface_name, interface_details in interfaces_ipv6_out.iteritems():
+            ipv6_list = list()
+            if interface_name not in interfaces_ip.keys():
+                interfaces_ip[interface_name] = dict()
+            if u'ipv6' not in interfaces_ip.get(interface_name):
+                interfaces_ip[interface_name][u'ipv6'] = dict()
+            ipv6_list.append(
+                {
+                    'address'   : interface_details.get('linkLocal', {}).get('address'),
+                    'masklen'   : int(interface_details.get('linkLocal', {}).get('subnet', '::/0').split('/')[-1])
+                    # when no link-local set, address will be None and maslken 0
+                }
+            )
+            for address in interface_details.get('addresses'):
+                ipv6_list.append(
+                    {
+                        'address'   : address.get('address'),
+                        'masklen'   : int(address.get('subnet').split('/')[-1])
+                    }
+                )
+            for ip in ipv6_list:
+                if not ip.get('address'):
+                    continue
+                if ip.get('address') not in interfaces_ip.get(interface_name).get(u'ipv6'):
+                    interfaces_ip[interface_name][u'ipv6'][ip.get('address')] = {
+                        u'prefix_length': ip.get('masklen')
+                    }
+
+        return interfaces_ip

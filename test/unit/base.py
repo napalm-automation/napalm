@@ -273,3 +273,19 @@ class TestGettersNetworkDriver:
             result = result and self._test_model(models.ntp_peer, ntp_peer_details)
 
         self.assertTrue(result)
+
+    def test_get_interfaces_ip(self):
+
+        get_interfaces_ip = self.device.get_interfaces_ip()
+
+        result = len(get_interfaces_ip) > 0
+
+        for interface, interface_details in get_interfaces_ip.iteritems():
+            ipv4 = interface_details.get('ipv4', {})
+            ipv6 = interface_details.get('ipv6', {})
+            for ip, ip_details in ipv4.iteritems():
+                result = result and self._test_model(models.interfaces_ip, ip_details)
+            for ip, ip_details in ipv6.iteritems():
+                result = result and self._test_model(models.interfaces_ip, ip_details)
+
+        self.assertTrue(result)

@@ -1,0 +1,64 @@
+{
+  "ins_api":  {
+    "type": "cli_show",
+    "version":  "1.2",
+    "sid":  "eoc",
+    "outputs":  {
+      "output": {
+        "input":  "show ipv6 interface",
+        "msg":  "Success",
+        "code": "200",
+        "body": {
+          "TABLE_vrf":  {
+            "ROW_vrf":  {
+              "vrf-name-out": "default"
+            }
+          },
+          "TABLE_intf": {
+            "ROW_intf": {
+              "intf-name":  "Vlan777",
+              "proto-state":  "down",
+              "link-state": "down",
+              "admin-state":  "down",
+              "addr": "2001:db8:85a3:8d3:1319:8a2e:370:7349/64",
+              "prefix": "2001:db8:85a3:8d3::/64",
+              "linklocal-addr": "fe80::8e60:4fff:fe75:b9c1",
+              "linklocal-configured": "FALSE",
+              "mrouting-enabled": "disabled",
+              "mgroup-locally-joined":  "TRUE",
+              "mtu":  1500,
+              "urpf-mode":  "none",
+              "ipv6-lstype":  "none",
+              "stats-last-reset": "never",
+              "upkt-fwd": 0,
+              "upkt-orig":  0,
+              "upkt-consumed":  0,
+              "ubyte-fwd":  0,
+              "ubyte-orig": 0,
+              "ubyte-consumed": 0,
+              "mpkt-fwd": 0,
+              "mpkt-orig":  0,
+              "mpkt-consumed":  0,
+              "mbyte-fwd":  0,
+              "mbyte-orig": 0,
+              "mbyte-consumed": 0,
+              "TABLE_maddr":  {
+                "ROW_maddr":  [{
+                    "m-addr": "ff02::2"
+                  }, {
+                    "m-addr": "ff02::1"
+                  }, {
+                    "m-addr": "ff02::1:ff70:7349"
+                  }, {
+                    "m-addr": "ff02::1:ff75:b9c1"
+                  }, {
+                    "m-addr": "ff02::1:ff00:0"
+                  }]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
