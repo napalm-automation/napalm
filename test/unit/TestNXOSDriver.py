@@ -15,23 +15,80 @@
 import unittest
 
 from napalm.nxos import NXOSDriver
-from base import TestNetworkDriver
+from base import TestConfigNetworkDriver, TestGettersNetworkDriver
+import re
+
+# class TestConfigNXOSDriver(unittest.TestCase, TestConfigNetworkDriver):
+
+#     @classmethod
+#     def setUpClass(cls):
+#         hostname = 'n9k1'
+#         username = 'user'
+#         password = 'pass'
+#         cls.vendor = 'nxos'
+
+#         cls.device = NXOSDriver(hostname, username, password, timeout=60)
+#         cls.device.open()
+
+#     def test_replacing_config_with_typo(self)
 
 
-class TestNXOSDriver(unittest.TestCase, TestNetworkDriver):
+class TestGetterNXOSDriver(unittest.TestCase, TestGettersNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = 'n9k1'
-        username = 'user'
-        password = 'pass'
+        cls.mock = True
+
+        hostname = '172.17.17.1'
+        username = 'mircea'
+        password = 'mircea'
         cls.vendor = 'nxos'
 
         cls.device = NXOSDriver(hostname, username, password, timeout=60)
-        cls.device.open()
-        cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
-        cls.device.commit_config()
 
+        if cls.mock:
+            cls.device.device = FakeNXOSDevice()
+        else:
+            cls.device.open()
 
-if __name__ == '__main__':
-    unittest.main()
+    @staticmethod
+    def read_txt_file(filename):
+        with open(filename) as data_file:
+            return data_file.read()
+
+class FakeNXOSDevice(object):
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def read_txt_file(filename):
+        with open(filename) as data_file:
+            return data_file.read()
+
+    def show(self, command, fmat = 'xml', text = False):
+
+        extension = fmat
+        if text:
+            extension = 'txt'
+
+        filename = re.sub(r'[\[\]\*\^\+\s\|\/]', '_', command)
+        mock_file = 'nxos/mock_data/{filename}.{extension}'.format(
+            filename  = filename[0:150],
+            extension = extension
+        )
+        mock_data = self.read_txt_file(mock_file)
+        if text:
+            mock_data = {
+                'ins_api':{
+                    'outputs': {
+                        'output': {
+                            'msg'   : 'Success',
+                            'code'  : 200,
+                            'input' : command,
+                            'body'  : mock_data
+                        }
+                    }
+                }
+            }
+        return (self, str(mock_data))

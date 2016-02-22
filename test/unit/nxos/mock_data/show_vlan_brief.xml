@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<ins_api>
+  <type>cli_show</type>
+  <version>1.2</version>
+  <sid>eoc</sid>
+  <outputs>
+    <output>
+      <body>
+       <TABLE_vlanbriefxbrief>
+        <ROW_vlanbriefxbrief>
+         <vlanshowbr-vlanid>1</vlanshowbr-vlanid>
+         <vlanshowbr-vlanid-utf>1</vlanshowbr-vlanid-utf>
+         <vlanshowbr-vlanname>default</vlanshowbr-vlanname>
+         <vlanshowbr-vlanstate>active</vlanshowbr-vlanstate>
+         <vlanshowbr-shutstate>noshutdown</vlanshowbr-shutstate>
+         <vlanshowplist-ifidx>Ethernet1/33-46,Ethernet1/48,Ethernet2/1/3-4,Ethernet2/2/3-4,Ethernet2/3/1-4,Ethernet2/4/1-4,Ethernet2/5/1-4,Ethernet2/6/1-4</vlanshowplist-ifidx>
+        </ROW_vlanbriefxbrief>
+       </TABLE_vlanbriefxbrief>
+      </body>
+      <input>show vlan brief</input>
+      <msg>Success</msg>
+      <code>200</code>
+    </output>
+  </outputs>
+</ins_api>

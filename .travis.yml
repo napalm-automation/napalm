@@ -46,8 +46,15 @@ script:
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_lldp_neighbors_detail
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_arp_table
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_ntp_peers
+# testing nxos getters
+  - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_facts
+  - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_interfaces
+  - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_lldp_neighbors
+  - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_lldp_neighbors_detail
+  - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_ntp_peers
 # testing pluribus getters
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_facts
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_interfaces
+  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_lldp_neighbors
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_lldp_neighbors_detail
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_ntp_peers

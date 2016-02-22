@@ -176,6 +176,8 @@ junos_temperature_thresholds_view:
 
 junos_lldp_neighbors_detail_table:
   rpc: get-lldp-neighbors-information
+  args:
+    interface_name: '[afgx]e*'
   item: lldp-neighbor-information
   key: lldp-local-port-id
   view: junos_lldp_neighbors_detail_view
