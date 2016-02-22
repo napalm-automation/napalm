@@ -33,11 +33,11 @@ class IOSXRDriver(NetworkDriver):
         self.timeout = timeout
         self.pending_changes = False
         self.replace = False
-
         if optional_args is None:
             optional_args = {}
         self.port = optional_args.get('port', 22)
-        self.device = IOSXR(hostname, username, password, timeout=timeout, port=self.port)
+        self.lock_on_connect = optional_args.get('config_lock', True)
+        self.device = IOSXR(hostname, username, password, timeout=timeout, port=self.port, lock=self.lock_on_connect)
 
     def open(self):
         self.device.open()
@@ -48,6 +48,8 @@ class IOSXRDriver(NetworkDriver):
     def load_replace_candidate(self, filename=None, config=None):
         self.pending_changes = True
         self.replace = True
+        if not self.lock_on_connect:
+            self.device.lock()
 
         try:
             self.device.load_candidate_config(filename=filename, config=config)
@@ -59,6 +61,8 @@ class IOSXRDriver(NetworkDriver):
     def load_merge_candidate(self, filename=None, config=None):
         self.pending_changes = True
         self.replace = False
+        if not self.lock_on_connect:
+            self.device.lock()
 
         try:
             self.device.load_candidate_config(filename=filename, config=config)
@@ -81,10 +85,14 @@ class IOSXRDriver(NetworkDriver):
         else:
             self.device.commit_config()
         self.pending_changes = False
+        if not self.lock_on_connect:
+            self.device.unlock()
 
     def discard_config(self):
         self.device.discard_config()
         self.pending_changes = False
+        if not self.lock_on_connect:
+            self.device.unlock()
 
     def rollback(self):
         self.device.rollback()
