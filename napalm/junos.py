@@ -732,17 +732,17 @@ class JunOSDriver(NetworkDriver):
             try:
                 ip_address = interface_details[0]
                 address    = unicode(ip_address.split('/')[0])
-                prefix     = int(ip_address.split('/')[1])
+                prefix     = self._convert(int, ip_address.split('/')[-1], 0)
                 interface  = unicode(interface_details[1][0][1])
                 family_raw = interface_details[1][1][1]
                 family     = _FAMILY_VMAP_.get(family_raw)
                 if not family:
                     continue
-                if interface not in interfaces_ip:
+                if interface not in interfaces_ip.keys():
                     interfaces_ip[interface] = dict()
-                if family not in interfaces_ip[interface]:
+                if family not in interfaces_ip[interface].keys():
                     interfaces_ip[interface][family] = dict()
-                if address not in interfaces_ip[interface][family]:
+                if address not in interfaces_ip[interface][family].keys():
                     interfaces_ip[interface][family][address] = dict()
                 interfaces_ip[interface][family][address][u'prefix_length'] = prefix
             except Exception:
