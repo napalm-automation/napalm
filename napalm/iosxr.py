@@ -22,7 +22,6 @@ from pyIOSXR.exceptions import InvalidInputError, XMLCLIError, TimeoutError
 from exceptions import MergeConfigException, ReplaceConfigException, CommandErrorException, CommandTimeoutException
 import xml.etree.ElementTree as ET
 from collections import defaultdict
-from time import time
 import re
 
 
@@ -916,13 +915,12 @@ class IOSXRDriver(NetworkDriver):
 
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
-        for arp_entry in result_tree.findall('.//ResolutionHistoryDynamic/Entry/Entry'):
+        for arp_entry in result_tree.findall('.//EntryTable/Entry'):
             try:
-                age_nsec  = float(arp_entry.find('NsecTimestamp').text)
-                age_sec   = time() - age_nsec * 1e-9
-                interface = unicode(arp_entry.find('IDBInterfaceName').text)
-                ip        = unicode(arp_entry.find('IPv4Address').text)
-                mac_raw   = arp_entry.find('MACAddress').text
+                interface = unicode(arp_entry.find('.//InterfaceName').text)
+                ip        = unicode(arp_entry.find('.//Address').text)
+                age       = float(arp_entry.find('.//Age').text)
+                mac_raw   = arp_entry.find('.//HardwareAddress').text
                 mac_all   = mac_raw.replace('.', '').replace(':', '')
                 mac_format= unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
 
@@ -931,7 +929,7 @@ class IOSXRDriver(NetworkDriver):
                         'interface' : interface,
                         'mac'       : mac_format,
                         'ip'        : ip,
-                        'age'       : age_sec
+                        'age'       : age
                     }
                 )
             except Exception:
