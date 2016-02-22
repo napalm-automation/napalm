@@ -222,12 +222,13 @@ class TestGettersNetworkDriver:
     def test_get_lldp_neighbors_detail(self):
 
         get_lldp_neighbors_detail = self.device.get_lldp_neighbors_detail()
-
         result = len(get_lldp_neighbors_detail) > 0
 
         for interface, neighbor_list in get_lldp_neighbors_detail.iteritems():
             for neighbor in neighbor_list:
                 result = result and self._test_model(models.lldp_neighbors_detail, neighbor)
+
+        self.assertTrue(result)
 
     def test_get_bgp_config(self):
 
@@ -256,16 +257,16 @@ class TestGettersNetworkDriver:
     def test_get_arp_table(self):
 
         get_arp_table = self.device.get_arp_table()
-
         result = len(get_arp_table) > 0
 
         for arp_entry in get_arp_table:
             result = result and self._test_model(models.arp_table, arp_entry)
 
+        self.assertTrue(result)
+
     def test_get_ntp_peers(self):
 
         get_ntp_peers = self.device.get_ntp_peers()
-
         result = len(get_ntp_peers) > 0
 
         for ntp_peer_ip, ntp_peer_details in get_ntp_peers.iteritems():
