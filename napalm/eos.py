@@ -743,7 +743,7 @@ class EOSDriver(NetworkDriver):
             mac_all     = mac_raw.replace('.', '').replace(':', '')
             mac_format  = unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
             ip          = unicode(neighbor.get('address'))
-            age         = neighbor.get('age')
+            age         = float(neighbor.get('age'))
             arp_table.append(
                 {
                     'interface' : interface,
