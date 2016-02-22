@@ -724,3 +724,147 @@ class EOSDriver(NetworkDriver):
             bgp_config[group]['neighbors'] = peers
 
         return bgp_config
+
+    def get_arp_table(self):
+
+        arp_table = list()
+
+        commands = ['show arp']
+
+        ipv4_neighbors = []
+        try:
+            ipv4_neighbors = self.device.run_commands(commands)[0].get('ipV4Neighbors', [])
+        except pyeapi.eapilib.CommandError:
+            return []
+
+        for neighbor in ipv4_neighbors:
+            interface   = unicode(neighbor.get('interface'))
+            mac_raw     = neighbor.get('hwAddress')
+            mac_all     = mac_raw.replace('.', '').replace(':', '')
+            mac_format  = unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
+            ip          = unicode(neighbor.get('address'))
+            age         = float(neighbor.get('age'))
+            arp_table.append(
+                {
+                    'interface' : interface,
+                    'mac'       : mac_format,
+                    'ip'        : ip,
+                    'age'       : age
+                }
+            )
+
+        return arp_table
+
+    def get_ntp_peers(self):
+
+        ntp_peers = dict()
+
+        REGEX = (
+            '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
+            '\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
+            '\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
+            '\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
+            '\s+([0-9\.]+)\s?$'
+        )
+
+        commands = list()
+        commands.append('show ntp associations')
+
+        # output = self.device.run_commands(commands)
+        # pyeapi.eapilib.CommandError: CLI command 2 of 2 'show ntp associations' failed: unconverted command
+        # JSON output not yet implemented...
+
+        ntp_assoc = self.device.run_commands(commands, encoding = 'text')[0].get('output', '\n\n')
+        ntp_assoc_lines = ntp_assoc.splitlines()[2:]
+
+        for ntp_assoc in ntp_assoc_lines:
+            line_search = re.search(REGEX, ntp_assoc, re.I)
+            if not line_search:
+                continue # pattern not found
+            line_groups = line_search.groups()
+            try:
+                ntp_peers[unicode(line_groups[1])] = {
+                    'referenceid'   : unicode(line_groups[2]),
+                    'stratum'       : int(line_groups[3]),
+                    'type'          : unicode(line_groups[4]),
+                    'when'          : unicode(line_groups[5]),
+                    'hostpoll'      : int(line_groups[6]),
+                    'reachability'  : int(line_groups[7]),
+                    'delay'         : float(line_groups[8]),
+                    'offset'        : float(line_groups[9]),
+                    'jitter'        : float(line_groups[10])
+                }
+            except Exception:
+                continue # jump to next line
+
+        return ntp_peers
+
+    def get_interfaces_ip(self):
+
+        interfaces_ip = dict()
+
+        commands = list()
+        commands.append('show ip interface')
+        commands.append('show ipv6 interface')
+
+        interfaces_ip_out   = self.device.run_commands(commands)
+        interfaces_ipv4_out = interfaces_ip_out[0].get('interfaces', {})
+        interfaces_ipv6_out = interfaces_ip_out[1].get('interfaces', {})
+
+        for interface_name, interface_details in interfaces_ipv4_out.iteritems():
+            ipv4_list = list()
+            if interface_name not in interfaces_ip.keys():
+                interfaces_ip[interface_name] = dict()
+            if u'ipv4' not in interfaces_ip.get(interface_name):
+                interfaces_ip[interface_name][u'ipv4'] = dict()
+            ipv4_list.append(
+                {
+                    'address'   : interface_details.get('interfaceAddress', {}).get('primaryIp', {}).get('address'),
+                    'masklen'   : interface_details.get('interfaceAddress', {}).get('primaryIp', {}).get('maskLen')
+                }
+            )
+            for secondary_ip in interface_details.get('interfaceAddress', {}).get('secondaryIpsOrderedList', []):
+                ipv4_list.append(
+                    {
+                        'address'   : secondary_ip.get('address'),
+                        'masklen'   : secondary_ip.get('maskLen')
+                    }
+                )
+
+            for ip in ipv4_list:
+                if not ip.get('address'):
+                    continue
+                if ip.get('address') not in interfaces_ip.get(interface_name).get(u'ipv4'):
+                    interfaces_ip[interface_name][u'ipv4'][ip.get('address')] = {
+                        u'prefix_length': ip.get('masklen')
+                    }
+
+        for interface_name, interface_details in interfaces_ipv6_out.iteritems():
+            ipv6_list = list()
+            if interface_name not in interfaces_ip.keys():
+                interfaces_ip[interface_name] = dict()
+            if u'ipv6' not in interfaces_ip.get(interface_name):
+                interfaces_ip[interface_name][u'ipv6'] = dict()
+            ipv6_list.append(
+                {
+                    'address'   : interface_details.get('linkLocal', {}).get('address'),
+                    'masklen'   : int(interface_details.get('linkLocal', {}).get('subnet', '::/0').split('/')[-1])
+                    # when no link-local set, address will be None and maslken 0
+                }
+            )
+            for address in interface_details.get('addresses'):
+                ipv6_list.append(
+                    {
+                        'address'   : address.get('address'),
+                        'masklen'   : int(address.get('subnet').split('/')[-1])
+                    }
+                )
+            for ip in ipv6_list:
+                if not ip.get('address'):
+                    continue
+                if ip.get('address') not in interfaces_ip.get(interface_name).get(u'ipv6'):
+                    interfaces_ip[interface_name][u'ipv6'][ip.get('address')] = {
+                        u'prefix_length': ip.get('masklen')
+                    }
+
+        return interfaces_ip

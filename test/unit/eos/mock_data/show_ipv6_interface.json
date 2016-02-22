@@ -1,0 +1,85 @@
+{
+    "interfaces": {
+        "Vlan100": {
+            "linkLocal": {
+                "subnet": "fe80::/64",
+                "dadfailed": false,
+                "active": true,
+                "address": "fe80::1"
+            },
+            "dadStatus": "enabled",
+            "vrf": "default",
+            "name": "Vlan100",
+            "ndReachableTime": 2147483000,
+            "interfaceStatus": "connected",
+            "autoConfigStatus": "stateless",
+            "multicastGroupAddresses": [
+                "ff02::1"
+            ],
+            "urpf": "disable",
+            "urpfV4V6Mismatch": false,
+            "state": "enabled",
+            "lineProtocolStatus": "up",
+            "neighborDiscoverDetails": {
+                "ndAdvertisedReachableTime": 1,
+                "ndRouterAdvRetransmitInterval": 0,
+                "ndRouterAdvInterval": 200000,
+                "routerAdvHopLimit": 64,
+                "routerAdvLifetime": 1800,
+                "ndRouterAdvSuppressed": true,
+                "routerPreference": "Medium"
+            },
+            "dadAttempts": 1,
+            "ndRetransmitInterval": 1000,
+            "addresses": [
+                {
+                    "subnet": "2001:db8:85a3:8d3:1319:8a2e:370:7348/64",
+                    "dadfailed": false,
+                    "active": true,
+                    "address": "2001:db8:85a3:8d3:1319:8a2e:370:7348"
+                }
+            ]
+        },
+        "Ethernet36": {
+            "linkLocal": {
+                "subnet": "fe80::/64",
+                "dadfailed": false,
+                "active": true,
+                "address": "fe80::2"
+            },
+            "dadStatus": "enabled",
+            "vrf": "default",
+            "name": "Ethernet36",
+            "ndReachableTime": 2147483000,
+            "interfaceStatus": "connected",
+            "autoConfigStatus": "stateless",
+            "multicastGroupAddresses": [
+                "ff02::1",
+                "ff02::2"
+            ],
+            "urpf": "disable",
+            "urpfV4V6Mismatch": false,
+            "state": "enabled",
+            "lineProtocolStatus": "up",
+            "neighborDiscoverDetails": {
+                "ndAdvertisedReachableTime": 2147483000,
+                "ndRouterAdvRetransmitInterval": 0,
+                "ndRouterAdvInterval": 200000,
+                "routerAdvHopLimit": 64,
+                "routerAdvLifetime": 1800,
+                "ndRouterAdvSuppressed": false,
+                "routerPreference": "Medium"
+            },
+            "dadAttempts": 1,
+            "ndRetransmitInterval": 1000,
+            "addresses": [
+                {
+                    "subnet": "2001:db8:85a3:8d3:1319:8a2e:370:7349/64",
+                    "dadfailed": false,
+                    "active": true,
+                    "address": "2001:db8:85a3:8d3:1319:8a2e:370:7349"
+                }
+            ]
+        }
+    }
+}
