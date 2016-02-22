@@ -12,14 +12,17 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+"""Tests for IOSDriver."""
+
 import unittest
 from napalm import get_network_driver
 from base import TestConfigNetworkDriver, TestGettersNetworkDriver
-from getpass import getpass
+import re
 
 
 class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
-    '''
+    """Configuration Tests for IOSDriver.
+
     Core file operations:
     load_replace_candidate  Tested
     load_merge_candidate    Tested
@@ -40,10 +43,11 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
     normalize_compare_config    Tested (indirectly)
     scp_file                    Tested
     gen_full_path               Tested
-    '''
+    """
 
     @classmethod
     def setUpClass(cls):
+        """Executed when the class is instantiated."""
         ip_addr = '127.0.0.1'
         username = 'vagrant'
         password = 'vagrant'
@@ -59,12 +63,11 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         cls.device.commit_config()
 
     def test_ios_only_confirm(self):
-        '''
-        Test _disable_confirm() and _enable_confirm()
+        """Test _disable_confirm() and _enable_confirm().
 
         _disable_confirm() changes router config so it doesn't prompt for confirmation
         _enable_confirm() reenables this
-        '''
+        """
         # Set initial device configuration
         self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
         self.device.commit_config()
@@ -87,7 +90,7 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         self.assertEqual(output, '')
 
     def test_ios_only_gen_full_path(self):
-        '''Test gen_full_path() method'''
+        """Test gen_full_path() method."""
         output = self.device.gen_full_path(self.device.candidate_cfg)
         self.assertEqual(output, self.device.dest_file_system + '/candidate_config.txt')
 
@@ -101,7 +104,7 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         self.assertEqual(output, 'system:/running-config')
 
     def test_ios_only_check_file_exists(self):
-        '''Test _check_file_exists() method'''
+        """Test _check_file_exists() method."""
         self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
 
         valid_file = self.device._check_file_exists(self.device.dest_file_system + '/candidate_config.txt')
@@ -112,31 +115,38 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
 
 class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
-    '''
+    """Getters Tests for IOSDriver.
+
     Get operations:
     get_lldp_neighbors
     get_facts
     get_interfaces
     get_bgp_neighbors
     get_interfaces_counters
-    '''
+    """
 
     @classmethod
     def setUpClass(cls):
-        username = 'pyclass'
-        ip_addr = raw_input("Enter device ip or hostname: ")
-        ip_addr = ip_addr.strip()
-        password = getpass()
+        """Executed when the class is instantiated."""
+        cls.mock = True
+
+        username = 'vagrant'
+        ip_addr = '192.168.0.234'
+        password = 'vagrant'
         cls.vendor = 'ios'
         driver = get_network_driver(cls.vendor)
         optional_args = {}
         optional_args['dest_file_system'] = 'flash:'
 
         cls.device = driver(ip_addr, username, password, optional_args=optional_args)
-        cls.device.open()
+
+        if cls.mock:
+            cls.device.device = FakeIOSDevice()
+        else:
+            cls.device.open()
 
     def test_ios_only_bgp_time_conversion(self):
-        '''Verify time conversion static method'''
+        """Verify time conversion static method."""
         test_cases = {
             "1w0d": 604800,
             "00:14:23": 863,
@@ -155,7 +165,20 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
             self.assertEqual(self.device.bgp_time_conversion(bgp_time), result)
 
 
-if __name__ == '__main__':
-    print
-    print "Starting tests: "
-    unittest.main()
+class FakeIOSDevice:
+    """Class to fake a IOS Device."""
+
+    @staticmethod
+    def read_txt_file(filename):
+        """Read a txt file and return its content."""
+        with open(filename) as data_file:
+            return data_file.read()
+
+    def send_command_expect(self, command):
+        """Fake execute a command in the device by just returning the content of a file."""
+        cmd = re.sub(r'[\[\]\*\^\+\s\|]', '_', command)
+        return self.read_txt_file('ios/mock_data/{}.txt'.format(cmd))
+
+    def send_command(self, command):
+        """Fake execute a command in the device by just returning the content of a file."""
+        return self.send_command_expect(command)

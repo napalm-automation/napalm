@@ -346,7 +346,7 @@ class IOSDriver(NetworkDriver):
                 continue
             device_id, local_port, _, _, remote_port = line.split()
             lldp.setdefault(local_port, [])
-            lldp[local_port].append({'hostname': device_id, 'port': remote_port,})
+            lldp[local_port].append({'hostname': unicode(device_id), 'port': unicode(remote_port), })
         return lldp
 
     @staticmethod
@@ -388,7 +388,7 @@ class IOSDriver(NetworkDriver):
         # obtain output from device
         show_ver = self.device.send_command('show version')
         show_hosts = self.device.send_command('show hosts')
-        show_ip_int_br = self.device.send_command('show ip int brief')
+        show_ip_int_br = self.device.send_command('show ip interface brief')
 
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
@@ -436,10 +436,10 @@ class IOSDriver(NetworkDriver):
         return {
             'uptime': uptime,
             'vendor': vendor,
-            'os_version': os_version,
-            'serial_number': serial_number,
-            'model': model,
-            'hostname': hostname,
+            'os_version': unicode(os_version),
+            'serial_number': unicode(serial_number),
+            'model': unicode(model),
+            'hostname': unicode(hostname),
             'fqdn': fqdn,
             'interface_list': interface_list
         }
@@ -496,7 +496,7 @@ class IOSDriver(NetworkDriver):
                 match_mac = re.match(mac_regex, interface_output, re.DOTALL)
                 group_mac = match_mac.groupdict()
                 mac_address = group_mac["mac_address"]
-                interface_list[interface]['mac_address'] = mac_address
+                interface_list[interface]['mac_address'] = unicode(mac_address)
             except AttributeError:
                 interface_list[interface]['mac_address'] = u'N/A'
             try:
@@ -710,7 +710,7 @@ class IOSDriver(NetworkDriver):
                 router_id = match.group(1)
                 local_as = int(match.group(2))
                 break
-        bgp_neighbor_data['global']['router_id'] = router_id
+        bgp_neighbor_data['global']['router_id'] = unicode(router_id)
         bgp_neighbor_data['global']['peers'] = {}
 
         cmd_neighbor_table = 'show ip bgp summary | begin Neighbor'
@@ -753,7 +753,7 @@ class IOSDriver(NetworkDriver):
             peer_dict['local_as'] = local_as
             peer_dict['is_enabled'] = is_enabled
             peer_dict['is_up'] = is_up
-            peer_dict['remote_id'] = remote_rid
+            peer_dict['remote_id'] = unicode(remote_rid)
 
             cmd_current_prefixes = 'show ip bgp neighbors {} | inc Prefixes Current'.format(peer_id)
             # output: Prefixes Current:               0          0
@@ -903,10 +903,11 @@ class IOSDriver(NetworkDriver):
 
         output = self.device.send_command(mem_cmd)
         output = output.strip()
+
         for line in output.splitlines():
             if 'Processor' in line:
                 _, _, _, proc_used_mem, proc_free_mem = line.split()[:5]
-            elif 'I/O' in line:
+            elif 'I/O' in line or 'io' in line:
                 _, _, _, io_used_mem, io_free_mem = line.split()[:5]
         used_mem = int(proc_used_mem) + int(io_used_mem)
         free_mem = int(proc_free_mem) + int(io_free_mem)
