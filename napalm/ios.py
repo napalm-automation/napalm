@@ -388,7 +388,7 @@ class IOSDriver(NetworkDriver):
         # obtain output from device
         show_ver = self.device.send_command('show version')
         show_hosts = self.device.send_command('show hosts')
-        show_ip_int_br = self.device.send_command('show ip int brief')
+        show_ip_int_br = self.device.send_command('show ip interface brief')
 
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
