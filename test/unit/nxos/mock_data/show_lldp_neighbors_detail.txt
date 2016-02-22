@@ -1,0 +1,63 @@
+Chassis id: 40a6.775a.4e40
+Port id: 597
+Local Port id: Eth1/47
+Port Description: To core
+System Name: ms01.mnl01
+System Description: Juniper Networks, Inc. ex2200-48t-4g , version 12.3R6.6 Build date: 2014-03-13 07:02:54 UTC
+Time remaining: 111 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: not advertised
+Vlan ID: not advertised
+
+
+Chassis id: 5c5e.abdb.49c0
+Port id: 514
+Local Port id: Eth2/1/1
+Port Description: ae0 - sw01.mnl01:Eth2/1/1
+System Name: edge01.mnl01
+System Description: Juniper Networks, Inc. mx80 , version 13.3R6.5 Build date: 2015-03-26 20:31:28 UTC
+Time remaining: 97 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: not advertised
+Vlan ID: not advertised
+
+
+Chassis id: 5c5e.abdb.49c0
+Port id: 515
+Local Port id: Eth2/1/2
+Port Description: ae0 - sw01.mnl01:Eth2/1/2
+System Name: edge01.mnl01
+System Description: Juniper Networks, Inc. mx80 , version 13.3R6.5 Build date: 2015-03-26 20:31:28 UTC
+Time remaining: 108 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: not advertised
+Vlan ID: not advertised
+
+
+Chassis id: 5c5e.abdb.49c0
+Port id: 520
+Local Port id: Eth2/2/1
+Port Description: ae0 - sw01.mnl01:Eth2/1/3
+System Name: edge01.mnl01
+System Description: Juniper Networks, Inc. mx80 , version 13.3R6.5 Build date: 2015-03-26 20:31:28 UTC
+Time remaining: 116 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: not advertised
+Vlan ID: not advertised
+
+
+Chassis id: 5c5e.abdb.49c0
+Port id: 521
+Local Port id: Eth2/2/2
+Port Description: ae0 - sw01.mnl01:Eth2/1/4
+System Name: edge01.mnl01
+System Description: Juniper Networks, Inc. mx80 , version 13.3R6.5 Build date: 2015-03-26 20:31:28 UTC
+Time remaining: 110 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: not advertised
+Vlan ID: not advertised

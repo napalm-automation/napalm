@@ -222,12 +222,13 @@ class TestGettersNetworkDriver:
     def test_get_lldp_neighbors_detail(self):
 
         get_lldp_neighbors_detail = self.device.get_lldp_neighbors_detail()
-
         result = len(get_lldp_neighbors_detail) > 0
 
         for interface, neighbor_list in get_lldp_neighbors_detail.iteritems():
             for neighbor in neighbor_list:
                 result = result and self._test_model(models.lldp_neighbors_detail, neighbor)
+
+        self.assertTrue(result)
 
     def test_get_bgp_config(self):
 
@@ -250,5 +251,41 @@ class TestGettersNetworkDriver:
         for remote_as, neighbor_list in get_bgp_neighbors_detail.iteritems():
             for neighbor in neighbor_list:
                 result = result and self._test_model(models.peer_details, neighbor)
+
+        self.assertTrue(result)
+
+    def test_get_arp_table(self):
+
+        get_arp_table = self.device.get_arp_table()
+        result = len(get_arp_table) > 0
+
+        for arp_entry in get_arp_table:
+            result = result and self._test_model(models.arp_table, arp_entry)
+
+        self.assertTrue(result)
+
+    def test_get_ntp_peers(self):
+
+        get_ntp_peers = self.device.get_ntp_peers()
+        result = len(get_ntp_peers) > 0
+
+        for ntp_peer_ip, ntp_peer_details in get_ntp_peers.iteritems():
+            result = result and self._test_model(models.ntp_peer, ntp_peer_details)
+
+        self.assertTrue(result)
+
+    def test_get_interfaces_ip(self):
+
+        get_interfaces_ip = self.device.get_interfaces_ip()
+
+        result = len(get_interfaces_ip) > 0
+
+        for interface, interface_details in get_interfaces_ip.iteritems():
+            ipv4 = interface_details.get('ipv4', {})
+            ipv6 = interface_details.get('ipv6', {})
+            for ip, ip_details in ipv4.iteritems():
+                result = result and self._test_model(models.interfaces_ip, ip_details)
+            for ip, ip_details in ipv6.iteritems():
+                result = result and self._test_model(models.interfaces_ip, ip_details)
 
         self.assertTrue(result)

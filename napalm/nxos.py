@@ -261,6 +261,7 @@ class NXOSDriver(NetworkDriver):
 
         lldp_neighbor = {}
         interface_name = None
+
         for line in lldp_neighbors_list:
             chassis_rgx = re.search(CHASSIS_REGEX, line, re.I)
             if chassis_rgx:
@@ -278,7 +279,8 @@ class NXOSDriver(NetworkDriver):
                 continue
             port_descr_rgx = re.search(PORT_DESCR_REGEX, line, re.I)
             if port_descr_rgx:
-                lldp_neighbor['interface_description'] = unicode(port_descr_rgx.groups()[1])
+                lldp_neighbor['remote_port'] = unicode(port_descr_rgx.groups()[1])
+                lldp_neighbor['remote_port_description'] = unicode(port_descr_rgx.groups()[1])
                 continue
             syst_name_rgx = re.search(SYSTEM_NAME_REGEX, line, re.I)
             if syst_name_rgx:
@@ -325,3 +327,143 @@ class NXOSDriver(NetworkDriver):
                 raise CommandErrorException(str(cli_output))
 
         return cli_output
+
+    def get_arp_table(self):
+
+        arp_table = list()
+
+        command = 'show ip arp'
+
+        arp_table_raw = self._get_command_table(command, 'TABLE_vrf', 'ROW_vrf').get('TABLE_adj', {}).get('ROW_adj', [])
+
+        if type(arp_table_raw) is dict:
+            arp_table_raw = [arp_table_raw]
+
+        for arp_table_entry in arp_table_raw:
+            ip          = unicode(arp_table_entry.get('ip-addr-out'))
+            mac_raw     = arp_table_entry.get('mac')
+            mac_all     = mac_raw.replace('.', '').replace(':', '')
+            mac_format  = unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
+            age         = arp_table_entry.get('time-stamp')
+            age_time    = ''.join(age.split(':'))
+            age_sec     = float(3600 * int(age_time[:2]) + 60 * int(age_time[2:4]) + int(age_time[4:]))
+            interface   = unicode(arp_table_entry.get('intf-out'))
+            arp_table.append(
+                {
+                    'interface' : interface,
+                    'mac'       : mac_format,
+                    'ip'        : ip,
+                    'age'       : age_sec
+                }
+            )
+
+        return arp_table
+
+    def get_ntp_peers(self):
+
+        ntp_peers = dict()
+
+        command = 'show ntp peer-status'
+
+        ntp_peers_table = self._get_command_table(command, 'TABLE_peersstatus', 'ROW_peersstatus')
+
+        if type(ntp_peers_table) is dict:
+            ntp_peers_table = [ntp_peers_table]
+
+        for ntp_peer in ntp_peers_table:
+            peer_address = unicode(ntp_peer.get('remote'))
+            stratum      = int(ntp_peer.get('st'))
+            hostpoll     = int(ntp_peer.get('poll'))
+            reachability = int(ntp_peer.get('reach'))
+            delay        = float(ntp_peer.get('delay'))
+            ntp_peers[peer_address] = {
+                'referenceid'   : peer_address,
+                'stratum'       : stratum,
+                'type'          : u'',
+                'when'          : u'',
+                'hostpoll'      : hostpoll,
+                'reachability'  : reachability,
+                'delay'         : delay,
+                'offset'        : 0.0,
+                'jitter'        : 0.0
+            }
+
+        return ntp_peers
+
+    def get_interfaces_ip(self):
+
+        interfaces_ip = dict()
+
+        command_ipv4 = 'show ip interface'
+
+        ipv4_interf_table_vrf = self._get_command_table(command_ipv4, 'TABLE_intf', 'ROW_intf')
+
+        if type(ipv4_interf_table_vrf) is dict:
+            # when there's one single entry, it is not returned as a list
+            # with one single element
+            # but as a simple dict
+            ipv4_interf_table_vrf = [ipv4_interf_table_vrf]
+
+        for interface in ipv4_interf_table_vrf:
+            interface_name = unicode(interface.get('intf-name', ''))
+            address = unicode(interface.get('prefix', ''))
+            prefix  = int(interface.get('masklen', ''))
+            if interface_name not in interfaces_ip.keys():
+                interfaces_ip[interface_name] = dict()
+            if u'ipv4' not in interfaces_ip[interface_name].keys():
+                interfaces_ip[interface_name][u'ipv4'] = dict()
+            if address not in interfaces_ip[interface_name].get(u'ipv4'):
+                interfaces_ip[interface_name][u'ipv4'][address] = dict()
+            interfaces_ip[interface_name][u'ipv4'][address].update({
+                'prefix_length': prefix
+            })
+            secondary_addresses = interface.get('TABLE_secondary_address', {}).get('ROW_secondary_address', [])
+            if type(secondary_addresses) is dict:
+                secondary_addresses = [secondary_addresses]
+            for secondary_address in secondary_addresses:
+                secondary_address_ip        = unicode(secondary_address.get('prefix1', ''))
+                secondary_address_prefix    = int(secondary_address.get('masklen1', ''))
+                if u'ipv4' not in interfaces_ip[interface_name].keys():
+                    interfaces_ip[interface_name][u'ipv4'] = dict()
+                if secondary_address_ip not in interfaces_ip[interface_name].get(u'ipv4'):
+                    interfaces_ip[interface_name][u'ipv4'][secondary_address_ip] = dict()
+                interfaces_ip[interface_name][u'ipv4'][secondary_address_ip].update({
+                    'prefix_length': secondary_address_prefix
+                })
+
+        command_ipv6 = 'show ipv6 interface'
+
+        ipv6_interf_table_vrf = self._get_command_table(command_ipv6, 'TABLE_intf', 'ROW_intf')
+
+        if type(ipv6_interf_table_vrf) is dict:
+            ipv6_interf_table_vrf = [ipv6_interf_table_vrf]
+
+        for interface in ipv6_interf_table_vrf:
+            interface_name = unicode(interface.get('intf-name', ''))
+            address = unicode(interface.get('addr', ''))
+            prefix  = int(interface.get('prefix', '').split('/')[-1])
+            if interface_name not in interfaces_ip.keys():
+                interfaces_ip[interface_name] = dict()
+            if u'ipv6' not in interfaces_ip[interface_name].keys():
+                interfaces_ip[interface_name][u'ipv6'] = dict()
+            if address not in interfaces_ip[interface_name].get('ipv6'):
+                interfaces_ip[interface_name][u'ipv6'][address] = dict()
+            interfaces_ip[interface_name][u'ipv6'][address].update({
+                u'prefix_length': prefix
+            })
+            secondary_addresses = interface.get('TABLE_sec_addr', {}).get('ROW_sec_addr', [])
+            if type(secondary_addresses) is dict:
+                secondary_addresses = [secondary_addresses]
+            for secondary_address in secondary_addresses:
+                sec_prefix = secondary_address.get('sec-prefix', '').split('/')
+                secondary_address_ip        = unicode(sec_prefix[0])
+                secondary_address_prefix    = int(sec_prefix[-1])
+                if u'ipv6' not in interfaces_ip[interface_name].keys():
+                    interfaces_ip[interface_name][u'ipv6'] = dict()
+                if secondary_address_ip not in interfaces_ip[interface_name].get(u'ipv6'):
+                    interfaces_ip[interface_name][u'ipv6'][secondary_address_ip] = dict()
+                interfaces_ip[interface_name][u'ipv6'][secondary_address_ip].update({
+                    u'prefix_length': secondary_address_prefix
+                })
+
+        return interfaces_ip

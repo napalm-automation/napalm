@@ -1,0 +1,90 @@
+{
+  "ins_api":  {
+    "type": "cli_show",
+    "version":  "1.2",
+    "sid":  "eoc",
+    "outputs":  {
+      "output": {
+        "input":  "show ip interface",
+        "msg":  "Success",
+        "code": "200",
+        "body": {
+          "TABLE_vrf":  {
+            "ROW_vrf":  {
+              "vrf-name-out": "default"
+            }
+          },
+          "TABLE_intf": {
+            "ROW_intf": {
+              "intf-name":  "Vlan900",
+              "proto-state":  "up",
+              "link-state": "up",
+              "admin-state":  "up",
+              "iod":  2,
+              "prefix": "192.168.0.1",
+              "subnet": "192.168.0.0",
+              "masklen":  24,
+              "num-addr": 1,
+              "ip-disabled":  "FALSE",
+              "bcast-addr": "255.255.255.255",
+              "num-maddr":  0,
+              "mtu":  1500,
+              "pref": 0,
+              "tag":  0,
+              "proxy-arp":  "disabled",
+              "lcl-proxy-arp":  "disabled",
+              "mrouting": "disabled",
+              "icmp-redirect":  "enabled",
+              "dir-bcast":  "disabled",
+              "ip-unreach": 0,
+              "port-unreach": "enabled",
+              "urpf-mode":  "none",
+              "ip-ls-type": "none",
+              "stats-last-reset": "never",
+              "upkt-sent":  3000862,
+              "upkt-recv":  2840428,
+              "upkt-fwd": 0,
+              "upkt-orig":  3000862,
+              "upkt-consumed":  5680856,
+              "ubyte-sent": 787921488,
+              "ubyte-recv": 219240452,
+              "ubyte-fwd":  0,
+              "ubyte-orig": 787921488,
+              "ubyte-consumed": 438095838,
+              "mpkt-sent":  0,
+              "mpkt-recv":  0,
+              "mpkt-fwd": 0,
+              "mpkt-orig":  0,
+              "mpkt-consumed":  0,
+              "mbyte-sent": 0,
+              "mbyte-recv": 0,
+              "mbyte-fwd":  0,
+              "mbyte-orig": 0,
+              "mbyte-consumed": 0,
+              "bpkt-sent":  0,
+              "bpkt-recv":  0,
+              "bpkt-fwd": 0,
+              "bpkt-orig":  0,
+              "bpkt-consumed":  0,
+              "bbyte-sent": 0,
+              "bbyte-recv": 0,
+              "bbyte-fwd":  0,
+              "bbyte-orig": 0,
+              "bbyte-consumed": 0,
+              "lpkt-sent":  0,
+              "lpkt-recv":  0,
+              "lpkt-fwd": 0,
+              "lpkt-orig":  0,
+              "lpkt-consumed":  0,
+              "lbyte-sent": 0,
+              "lbyte-recv": 0,
+              "lbyte-fwd":  0,
+              "lbyte-orig": 0,
+              "lbyte-consumed": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}

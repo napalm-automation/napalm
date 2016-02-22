@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<ins_api>
+  <type>cli_show</type>
+  <version>1.2</version>
+  <sid>eoc</sid>
+  <outputs>
+    <output>
+      <body>
+        <TABLE_interface>
+          <ROW_interface>
+          <interface>Ethernet1/1</interface>
+          <state>connected</state>
+          <vlan>10</vlan>
+          <duplex>full</duplex>
+          <speed>10G</speed>
+          <type>SFP-H10GB-CU2M</type>
+          </ROW_interface>
+          <ROW_interface>
+          <interface>Ethernet1/2</interface>
+          <state>connected</state>
+          <vlan>100</vlan>
+          <duplex>full</duplex>
+          <speed>10G</speed>
+          <type>SFP-H10GB-CU2M</type>
+          </ROW_interface>
+          <ROW_interface>
+          <interface>mgmt0</interface>
+          <state>notconnect</state>
+          <vlan>routed</vlan>
+          <duplex>auto</duplex>
+          <speed>auto</speed>
+          <type>--</type>
+          </ROW_interface>
+          <ROW_interface>
+          <interface>loopback0</interface>
+          <state>connected</state>
+          <vlan>routed</vlan>
+          <duplex>auto</duplex>
+          <speed>unknown enum:&lt;3&gt;</speed>
+          <type>--</type>
+          </ROW_interface>
+      </TABLE_interface>
+     </body>
+      <input>show interface status</input>
+      <msg>Success</msg>
+      <code>200</code>
+    </output>
+  </outputs>
+</ins_api>
