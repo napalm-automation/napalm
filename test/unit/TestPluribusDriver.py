@@ -19,7 +19,7 @@ from base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import re
 
 
-class TestConfigPluribusriver(unittest.TestCase, TestConfigNetworkDriver):
+class TestConfigPluribusDriver(unittest.TestCase, TestConfigNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
