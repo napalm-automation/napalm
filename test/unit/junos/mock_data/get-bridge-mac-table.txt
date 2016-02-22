@@ -1,5 +1,5 @@
 <l2ald-rtb-macdb>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:96:2d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -12,7 +12,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:96:8d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -25,7 +25,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:96:d5</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -38,7 +38,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:97:0d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -51,7 +51,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:97:21</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -64,7 +64,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:97:25</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -77,7 +77,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0d:f5:11</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -90,7 +90,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0d:f5:65</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -103,7 +103,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0d:f5:71</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -116,7 +116,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0d:f6:31</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -129,7 +129,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0d:f7:89</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -142,7 +142,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5e:6d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -155,7 +155,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5e:7d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -168,7 +168,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5e:91</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -181,7 +181,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5e:a5</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -194,7 +194,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5e:b1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -207,7 +207,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:2d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -220,7 +220,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:31</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -233,7 +233,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:3d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -246,7 +246,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:69</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -259,7 +259,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:7d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -272,7 +272,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:91</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -285,7 +285,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:60:11</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -298,7 +298,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:60:39</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -311,7 +311,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:60:79</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -324,7 +324,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:fe:15</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -337,7 +337,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:fe:d9</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -350,7 +350,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:fe:e1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -363,7 +363,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:fe:ed</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -376,7 +376,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:ff:21</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -389,7 +389,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:ff:dd</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -402,7 +402,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:00:85</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -415,7 +415,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:00:c5</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -428,7 +428,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:02:f5</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -441,7 +441,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:03:1d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -454,7 +454,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:04:f5</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -467,7 +467,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:04:fd</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -480,7 +480,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:05:55</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -493,7 +493,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:05:6d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -506,7 +506,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:05:71</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -519,7 +519,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:05:79</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -532,7 +532,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:05:e9</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -545,7 +545,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c4:21</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -558,7 +558,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c4:e1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -571,7 +571,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c5:41</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -584,7 +584,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c5:e1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -597,7 +597,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c7:21</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -610,7 +610,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c7:c1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -623,7 +623,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:de:21</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -636,7 +636,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:df:21</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -649,7 +649,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:e5:f1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -662,7 +662,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:e7:91</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -675,7 +675,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:05:e1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -688,7 +688,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:06:e1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -701,7 +701,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:07:11</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -714,7 +714,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:14:b1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -727,7 +727,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:15:11</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -740,7 +740,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:15:21</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -753,7 +753,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:15:e1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -766,7 +766,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:17:51</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -779,7 +779,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:1b:c1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -792,7 +792,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:1c:51</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -805,7 +805,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:1c:d1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -818,7 +818,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:1f:b1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -831,7 +831,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:20:c1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -844,7 +844,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:21:61</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -857,7 +857,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:21:a1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -870,7 +870,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:22:71</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -883,7 +883,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:2b:a1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -896,7 +896,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:cd:f1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -909,7 +909,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d0:51</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -922,7 +922,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d1:b1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -935,7 +935,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d2:e1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -948,7 +948,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d3:91</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -961,7 +961,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d5:51</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -974,7 +974,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d5:c1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -987,7 +987,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d6:51</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1000,7 +1000,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d8:71</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1013,7 +1013,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d8:b1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1026,7 +1026,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:dc:81</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1039,7 +1039,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:e1:91</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1052,7 +1052,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:e9:11</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1065,7 +1065,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:df:f1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1078,7 +1078,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e4:71</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1091,7 +1091,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e4:a1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1104,7 +1104,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e4:e1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1117,7 +1117,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e5:91</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1130,7 +1130,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e5:b1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1143,7 +1143,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e6:f1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1156,7 +1156,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e8:41</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1169,7 +1169,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:ea:f1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1182,7 +1182,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:ed:01</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1195,7 +1195,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:ef:c1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1208,7 +1208,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:f0:c1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1221,7 +1221,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:f0:f1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1234,7 +1234,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:fc:81</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1247,7 +1247,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:fc:91</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1260,7 +1260,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:fd:51</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1273,7 +1273,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>8c:60:4f:13:35:38</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1286,7 +1286,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>98:4b:e1:72:f2:e3</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1299,7 +1299,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>98:4b:e1:73:e2:cd</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1312,7 +1312,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>9c:8e:99:24:4a:bf</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1325,7 +1325,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>9c:8e:99:24:c9:47</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1338,7 +1338,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>9c:8e:99:24:c9:4b</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1351,7 +1351,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>b4:99:ba:fd:df:ed</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1364,7 +1364,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>b4:99:ba:fe:00:b1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-10</l2-mac-bridging-domain>
@@ -1377,7 +1377,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:96:2c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1390,7 +1390,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:96:8c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1403,7 +1403,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:96:d4</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1416,7 +1416,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:97:0c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1429,7 +1429,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:97:20</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1442,7 +1442,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000005</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0c:97:24</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1455,7 +1455,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0d:f5:10</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1468,7 +1468,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0d:f5:64</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1481,7 +1481,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0d:f5:70</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1494,7 +1494,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0d:f6:30</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1507,7 +1507,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:0d:f7:88</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1520,7 +1520,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5e:6c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1533,7 +1533,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5e:7c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1546,7 +1546,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5e:90</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1559,7 +1559,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5e:99</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1572,7 +1572,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5e:a4</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1585,7 +1585,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5e:b0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1598,7 +1598,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:2c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1611,7 +1611,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:30</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1624,7 +1624,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:3c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1637,7 +1637,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:68</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1650,7 +1650,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:7c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1663,7 +1663,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:5f:90</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1676,7 +1676,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:60:10</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1689,7 +1689,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:60:38</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1702,7 +1702,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:60:58</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1715,7 +1715,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:20:60:78</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1728,7 +1728,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:fe:14</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1741,7 +1741,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:fe:d8</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1754,7 +1754,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:fe:e0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1767,7 +1767,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:fe:ec</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1780,7 +1780,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:ff:20</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1793,7 +1793,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:21:ff:dc</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1806,7 +1806,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:00:84</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1819,7 +1819,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:00:c4</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1832,7 +1832,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:02:f4</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1845,7 +1845,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:03:1c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1858,7 +1858,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:04:f4</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1871,7 +1871,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:04:fc</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1884,7 +1884,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:05:54</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1897,7 +1897,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:05:6c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1910,7 +1910,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:05:70</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1923,7 +1923,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:05:78</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1936,7 +1936,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:22:05:e8</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1949,7 +1949,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c4:20</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1962,7 +1962,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c4:e0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1975,7 +1975,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c5:40</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -1988,7 +1988,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c5:e0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2001,7 +2001,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c7:20</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2014,7 +2014,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:c7:c0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2027,7 +2027,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:de:20</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2040,7 +2040,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:df:20</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2053,7 +2053,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:e5:f0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2066,7 +2066,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2b:e7:90</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2079,7 +2079,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:05:e0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2092,7 +2092,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:06:e0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2105,7 +2105,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:07:10</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2118,7 +2118,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:14:b0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2131,7 +2131,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:15:10</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2144,7 +2144,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000011</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:15:20</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2157,7 +2157,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:15:e0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2170,7 +2170,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:17:50</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2183,7 +2183,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:1b:c0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2196,7 +2196,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:1c:50</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2209,7 +2209,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:1c:d0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2222,7 +2222,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:1f:b0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2235,7 +2235,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:20:c0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2248,7 +2248,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:21:60</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2261,7 +2261,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:21:a0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2274,7 +2274,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:22:70</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2287,7 +2287,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2c:2b:a0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2300,7 +2300,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:cd:f0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2313,7 +2313,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:cf:a0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2326,7 +2326,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d0:50</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2339,7 +2339,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d1:b0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2352,7 +2352,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d1:c0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2365,7 +2365,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d2:20</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2378,7 +2378,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d2:e0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2391,7 +2391,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d3:10</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2404,7 +2404,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d3:90</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2417,7 +2417,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d4:10</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2430,7 +2430,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d5:50</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2443,7 +2443,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d5:c0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2456,7 +2456,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d6:50</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2469,7 +2469,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d8:70</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2482,7 +2482,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d8:a0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2495,7 +2495,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:d8:b0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2508,7 +2508,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:dc:80</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2521,7 +2521,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:e1:90</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2534,7 +2534,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:2e:e9:10</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2547,7 +2547,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000011</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:df:f0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2560,7 +2560,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e4:70</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2573,7 +2573,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e4:a0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2586,7 +2586,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e4:e0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2599,7 +2599,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e5:90</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2612,7 +2612,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e5:b0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2625,7 +2625,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e6:f0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2638,7 +2638,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:e8:40</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2651,7 +2651,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:ea:f0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2664,7 +2664,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:ed:00</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2677,7 +2677,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:ef:c0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2690,7 +2690,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:f0:c0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2703,7 +2703,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:f0:f0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2716,7 +2716,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:f1:c0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2729,7 +2729,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:fc:80</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2742,7 +2742,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:fc:90</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2755,7 +2755,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:fd:50</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2768,7 +2768,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0f:53:30:ff:20</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2781,7 +2781,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>8c:60:4f:13:35:38</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2794,7 +2794,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>98:4b:e1:72:f2:e2</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2807,7 +2807,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>98:4b:e1:73:e2:cc</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2820,7 +2820,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>9c:8e:99:24:4a:be</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2833,7 +2833,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>9c:8e:99:24:c9:46</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2846,7 +2846,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>9c:8e:99:24:c9:4a</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2859,7 +2859,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>b4:99:ba:fd:df:ec</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2872,7 +2872,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>b4:99:ba:fe:00:b0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-100</l2-mac-bridging-domain>
@@ -2885,7 +2885,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000015</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:26:99:24:63:c6</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-400</l2-mac-bridging-domain>
@@ -2898,7 +2898,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:02:99:14:45:94</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -2911,7 +2911,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:02:99:14:53:b4</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -2924,7 +2924,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:02:99:14:71:40</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -2937,7 +2937,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0a:9c:53:83:0e</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -2950,7 +2950,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0a:9c:53:83:0f</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -2963,7 +2963,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0a:9c:53:83:16</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -2976,7 +2976,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:0a:9c:53:9f:09</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -2989,7 +2989,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>04:7d:7b:a5:6c:2c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3002,7 +3002,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>04:7d:7b:a5:6c:7c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3015,7 +3015,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>04:7d:7b:a5:6d:36</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3028,7 +3028,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>04:7d:7b:ad:c7:77</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3041,7 +3041,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>04:7d:7b:ad:c7:7b</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3054,7 +3054,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>04:7d:7b:ad:c7:e8</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3067,7 +3067,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>04:7d:7b:ae:35:50</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3080,7 +3080,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>04:7d:7b:ae:35:5d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3093,7 +3093,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>04:7d:7b:ae:35:96</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3106,7 +3106,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>04:7d:7b:ae:36:3d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3119,7 +3119,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>04:7d:7b:ae:36:42</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3132,7 +3132,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:6e:f9:30</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3145,7 +3145,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:6e:f9:5f</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3158,7 +3158,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:6e:f9:60</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3171,7 +3171,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:6e:fa:03</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3184,7 +3184,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:14:89</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3197,7 +3197,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:14:9a</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3210,7 +3210,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:15:3b</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3223,7 +3223,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:15:54</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3236,7 +3236,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:15:7b</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3249,7 +3249,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:16:1b</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3262,7 +3262,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:16:2d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3275,7 +3275,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:16:5d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3288,7 +3288,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:16:8e</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3301,7 +3301,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:16:95</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3314,7 +3314,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:16:ab</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3327,7 +3327,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:16:f9</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3340,7 +3340,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:27:3e</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3353,7 +3353,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:27:52</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3366,7 +3366,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:27:5c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3379,7 +3379,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:27:88</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3392,7 +3392,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:27:bb</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3405,7 +3405,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:27:ea</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3418,7 +3418,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:28:20</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3431,7 +3431,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:28:2c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3444,7 +3444,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:28:65</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3457,7 +3457,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:28:d0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3470,7 +3470,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:3d:5b</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3483,7 +3483,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:3d:a7</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3496,7 +3496,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:3d:e3</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3509,7 +3509,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:3d:ff</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3522,7 +3522,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:7c:c4</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3535,7 +3535,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:7c:cd</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3548,7 +3548,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:7c:d5</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3561,7 +3561,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:7d:20</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3574,7 +3574,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:7d:96</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3587,7 +3587,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:7e:00</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3600,7 +3600,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:7e:36</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3613,7 +3613,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:7e:40</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3626,7 +3626,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:7e:63</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3639,7 +3639,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:7e:6b</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3652,7 +3652,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:73:7e:6c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3665,7 +3665,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7a:41:45</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3678,7 +3678,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7a:41:7c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3691,7 +3691,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7a:42:13</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3704,7 +3704,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7a:42:b3</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3717,7 +3717,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7a:7d:e2</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3730,7 +3730,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7a:7d:ec</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3743,7 +3743,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7a:7e:1f</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3756,7 +3756,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7a:7e:a5</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3769,7 +3769,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7a:7e:d8</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3782,7 +3782,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7a:7f:d0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3795,7 +3795,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7b:5c:4f</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3808,7 +3808,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7b:5c:5e</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3821,7 +3821,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7b:5c:c0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3834,7 +3834,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7b:90:a6</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3847,7 +3847,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7b:90:fe</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3860,7 +3860,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000011</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7b:91:c3</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3873,7 +3873,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7b:91:e0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3886,7 +3886,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7b:9b:fd</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3899,7 +3899,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7b:9c:0f</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3912,7 +3912,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7b:9c:16</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3925,7 +3925,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:7b:9c:5c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3938,7 +3938,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:8c:53:f7</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3951,7 +3951,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:8c:54:6b</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3964,7 +3964,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:8c:54:77</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3977,7 +3977,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>2c:60:0c:8c:55:3c</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -3990,7 +3990,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>8c:60:4f:13:35:38</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4003,7 +4003,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>98:4b:e1:72:5b:ca</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4016,7 +4016,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>98:4b:e1:72:cb:5b</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4029,7 +4029,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>98:4b:e1:79:e5:14</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4042,7 +4042,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>98:4b:e1:79:e5:94</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4055,7 +4055,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>9c:8e:99:22:35:6a</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4068,7 +4068,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>9c:8e:99:22:35:c6</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4081,7 +4081,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>9c:8e:99:22:35:d2</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4094,7 +4094,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:44:df:12</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4107,7 +4107,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:25:79</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4120,7 +4120,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:25:81</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4133,7 +4133,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5b:e0</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4146,7 +4146,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5b:e2</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4159,7 +4159,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5b:eb</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4172,7 +4172,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5b:f4</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4185,7 +4185,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5b:f9</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4198,7 +4198,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5b:fa</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4211,7 +4211,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5b:ff</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4224,7 +4224,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5c:01</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4237,7 +4237,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5c:02</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4250,7 +4250,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5c:06</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4263,7 +4263,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5c:57</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4276,7 +4276,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5c:73</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4289,7 +4289,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5c:77</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4302,7 +4302,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5c:bf</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4315,7 +4315,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:00</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4328,7 +4328,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:0f</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4341,7 +4341,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:21</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4354,7 +4354,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:40</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4367,7 +4367,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:60</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4380,7 +4380,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:65</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4393,7 +4393,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:6d</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4406,7 +4406,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:73</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4419,7 +4419,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:79</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4432,7 +4432,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:81</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4445,7 +4445,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:83</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4458,7 +4458,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:5d:ae</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4471,7 +4471,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:5d:81:b8</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4484,7 +4484,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:72:c4:44</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4497,7 +4497,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:72:c4:47</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4510,7 +4510,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:72:c4:49</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4523,7 +4523,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>c4:54:44:72:c8:38</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-637</l2-mac-bridging-domain>
@@ -4536,7 +4536,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:1c:73:ee:c0:46</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4549,7 +4549,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:22:55:8d:38:61</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4562,7 +4562,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>00:26:0b:a7:a7:f6</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4575,7 +4575,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>44:f4:77:71:df:c1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4588,7 +4588,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>44:f4:77:71:fc:81</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4601,7 +4601,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000001</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>66:0e:94:9a:71:06</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4614,7 +4614,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>66:0e:94:a9:fe:3e</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4627,7 +4627,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000014</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>78:fe:3d:ed:02:81</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4640,7 +4640,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>8c:60:4f:13:35:38</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4653,7 +4653,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>8c:60:4f:13:35:41</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4666,7 +4666,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>8c:60:4f:4d:dd:bc</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4679,7 +4679,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>8c:60:4f:58:db:81</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4692,7 +4692,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>8c:60:4f:58:e1:c1</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4705,7 +4705,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>cc:e1:7f:25:b4:41</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4718,7 +4718,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>dc:38:e1:9d:26:41</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4731,7 +4731,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000004</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>f4:b5:2f:56:72:01</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
@@ -4744,7 +4744,7 @@
         <l2-mac-sequence-number>2</l2-mac-sequence-number>
         <l2-mac-learn-mask>0x00000010</l2-mac-learn-mask>
     </l2ald-mac-entry>
-    <l2ald-mac-entry junos:style="extensive">
+    <l2ald-mac-entry junos_style="extensive">
         <l2-mac-address>f4:b5:2f:5e:22:41</l2-mac-address>
         <l2-mac-routing-instance>default-switch</l2-mac-routing-instance>
         <l2-mac-bridging-domain>vlan-900</l2-mac-bridging-domain>
