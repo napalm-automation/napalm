@@ -1,0 +1,9 @@
+Building configuration...
+
+Current configuration : 77 bytes
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+end
