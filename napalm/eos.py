@@ -871,7 +871,7 @@ class EOSDriver(NetworkDriver):
 
     def get_mac_address_table(self):
 
-        mac_table = dict()
+        mac_table = list()
 
         commands = ['show mac address-table']
 
@@ -890,12 +890,11 @@ class EOSDriver(NetworkDriver):
             static      = (mac_entry.get('entryType') == 'static')
             last_move   = mac_entry.get('lastMove', 0.0)
             moves       = mac_entry.get('moves', 0)
-            if vlan not in mac_table.keys():
-                mac_table[vlan] = list()
-            mac_table[vlan].append(
+            mac_table.append(
                 {
                     'mac'       : mac_format,
                     'interface' : interface,
+                    'vlan'      : vlan,
                     'active'    : True,
                     'static'    : static,
                     'moves'     : moves,
