@@ -1034,7 +1034,7 @@ class IOSXRDriver(NetworkDriver):
 
     def get_mac_address_table(self):
 
-        mac_table = dict()
+        mac_table = list()
 
         rpc_command = '<Get><Operational><L2VPNForwarding></L2VPNForwarding></Operational></Get>'
 
@@ -1043,17 +1043,18 @@ class IOSXRDriver(NetworkDriver):
         for mac_entry in result_tree.findall('.//L2FIBMACDetailTable/L2FIBMACDetail'):
             try:
                 mac_raw     = mac_entry.find('Naming/Address').text
+                # will throw error in case not found
+                # and jump to next entry
                 mac_str     = mac_raw.replace('.', '').replace(':', '')
                 mac_format  = unicode(':'.join([ mac_str[i:i+2] for i in range(12)[::2] ]))
-                vlan        = int(mac_entry.find('Naming/Name').text.replace('vlan', ''))
-                interface   = unicode(mac_entry.find('Segment/AC/InterfaceHandle').text)
+                vlan        = int(self._find_txt(mac_entry, 'Naming/Name', '').replace('vlan', ''))
+                interface   = unicode(self._find_txt(mac_entry, 'Segment/AC/InterfaceHandle', u''))
 
-                if vlan not in mac_table.keys():
-                    mac_table[vlan] = list()
-                mac_table[vlan].append(
+                mac_table.append(
                     {
                         'mac'       : mac_format,
                         'interface' : interface,
+                        'vlan'      : vlan,
                         'active'    : True,
                         'static'    : False,
                         'moves'     : 0,
