@@ -38,6 +38,7 @@ class JunOSDriver(NetworkDriver):
         self.password = password
         self.timeout = timeout
         self.config_replace = False
+        self.locked = False
 
         if optional_args is None:
             optional_args = {}
@@ -51,12 +52,22 @@ class JunOSDriver(NetworkDriver):
         self.device.timeout = self.timeout
         self.device.bind(cu=Config)
         if self.config_lock:
-            self.device.cu.lock()
+            self.lock()
 
     def close(self):
         if self.config_lock:
-            self.device.cu.unlock()
+            self.unlock()
         self.device.close()
+
+    def lock(self):
+        if not self.locked:
+            self.device.cu.lock()
+            self.locked = True
+
+    def unlock(self):
+        if self.locked:
+            self.device.cu.unlock()
+            self.locked = False
 
     def _load_candidate(self, filename, config, overwrite):
         if filename is None:
@@ -64,6 +75,12 @@ class JunOSDriver(NetworkDriver):
         else:
             with open(filename) as f:
                 configuration = f.read()
+
+        if not self.config_lock:
+            # if not locked during connection time
+            # will try to lock it if not already aquired
+            self.lock()
+            # and the device will be locked till first commit/rollback
 
         try:
             self.device.cu.load(configuration, format='text', overwrite=overwrite)
@@ -91,9 +108,13 @@ class JunOSDriver(NetworkDriver):
 
     def commit_config(self):
         self.device.cu.commit()
+        if not self.config_lock:
+            self.unlock()
 
     def discard_config(self):
         self.device.cu.rollback(rb_id=0)
+        if not self.config_lock:
+            self.unlock()
 
     def rollback(self):
         self.device.cu.rollback(rb_id=1)
