@@ -180,6 +180,7 @@ interfaces_ip = {
 mac_address_table = {
     'mac'       : unicode,
     'interface' : unicode,
+    'vlan'      : int,
     'static'    : bool,
     'active'    : bool,
     'moves'     : int,

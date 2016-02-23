@@ -470,7 +470,7 @@ class NXOSDriver(NetworkDriver):
 
     def get_mac_address_table(self):
 
-        mac_table = dict()
+        mac_table = list()
 
         command = 'show mac address-table'
         mac_table_raw = self._get_command_table(command, 'TABLE_mac_address', 'ROW_mac_address')
@@ -489,12 +489,11 @@ class NXOSDriver(NetworkDriver):
             static      = (mac_entry.get('disp_is_static') != '0')
             moves       = 0
             last_move   = 0.0
-            if vlan not in mac_table.keys():
-                mac_table[vlan] = list()
-            mac_table[vlan].append(
+            mac_table.append(
                 {
                     'mac'       : mac_format,
                     'interface' : interface,
+                    'vlan'      : vlan,
                     'active'    : active,
                     'static'    : static,
                     'moves'     : moves,

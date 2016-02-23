@@ -721,45 +721,46 @@ class NetworkDriver:
     def get_mac_address_table(self):
 
         """
-        Returns a dictionary with lists of dictionaries. The keys of the main dictionary represents VLAN ID.
-        Inner dictionaries contain details for the MAC addresses in the VLAN:
+        Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address Table,
+        having the following keys
             * mac (string)
             * interface (string)
+            * vlan (int)
             * active (boolean)
             * static (boolean)
             * moves (int)
             * last_move (float)
-        Example:
-            {
-                100: [
-                    {
-                        'mac'       : '00:1c:58:29:4a:71',
-                        'interface' : 'Ethernet47',
-                        'static'    : False,
-                        'active'    : True,
-                        'moves'     : 1,
-                        'last_move' : 1454417742.58
-                    },
-                    {
-                        'mac'       : '8c:60:4f:58:e1:c1',
-                        'interface' : 'xe-1/0/1',
-                        'static'    : False,
-                        'active'    : True,
-                        'moves'     : 2,
-                        'last_move' : 1453191948.11
-                    }
-                ],
-                900: [
-                    {
-                        'mac'       : 'f4:b5:2f:56:72:01',
-                        'interface' : 'ae7.900',
-                        'static'    : False,
-                        'active'    : True,
-                        'moves'     : None,
-                        'last_move' : None
-                    }
-                ]
-            }
+
+        For example::
+            [
+                {
+                    'mac'       : '00:1c:58:29:4a:71',
+                    'interface' : 'Ethernet47',
+                    'vlan'      : 100,
+                    'static'    : False,
+                    'active'    : True,
+                    'moves'     : 1,
+                    'last_move' : 1454417742.58
+                },
+                {
+                    'mac'       : '8c:60:4f:58:e1:c1',
+                    'interface' : 'xe-1/0/1',
+                    'vlan'       : 100,
+                    'static'    : False,
+                    'active'    : True,
+                    'moves'     : 2,
+                    'last_move' : 1453191948.11
+                },
+                {
+                    'mac'       : 'f4:b5:2f:56:72:01',
+                    'interface' : 'ae7.900',
+                    'vlan'      : 900,
+                    'static'    : False,
+                    'active'    : True,
+                    'moves'     : None,
+                    'last_move' : None
+                }
+            ]
             However, please note that not all vendors provide all these informations.
             E.g.: field last_move is not available on JUNOS devices etc.
         """
