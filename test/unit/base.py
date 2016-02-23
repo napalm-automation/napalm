@@ -295,8 +295,7 @@ class TestGettersNetworkDriver:
 
         result = len(get_mac_address_table) > 0
 
-        for vlan, addresses_for_vlan in get_mac_address_table.iteritems():
-            for address_details in addresses_for_vlan:
-                result = result and self._test_model(models.mac_address_table, address_details)
+        for mac_table_entry in get_mac_address_table:
+            result = result and self._test_model(models.mac_address_table, mac_table_entry)
 
         self.assertTrue(result)
