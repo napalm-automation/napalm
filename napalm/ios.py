@@ -1,4 +1,4 @@
-'''NAPALM Cisco IOS Handler'''
+"""NAPALM Cisco IOS Handler."""
 
 # Copyright 2015 Spotify AB. All rights reserved.
 #
@@ -31,9 +31,10 @@ YEAR_SECONDS = 365 * DAY_SECONDS
 
 
 class IOSDriver(NetworkDriver):
-    '''NAPALM Cisco IOS Handler'''
+    """NAPALM Cisco IOS Handler."""
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        """NAPALM Cisco IOS Handler."""
         if optional_args is None:
             optional_args = {}
         self.hostname = hostname
@@ -51,7 +52,7 @@ class IOSDriver(NetworkDriver):
         self.config_replace = False
 
     def open(self):
-        """Opens a connection to the device."""
+        """Open a connection to the device."""
         self.device = ConnectHandler(device_type='cisco_ios',
                                      ip=self.hostname,
                                      port=self.port,
@@ -61,15 +62,15 @@ class IOSDriver(NetworkDriver):
                                      verbose=False)
 
     def close(self):
-        """Closes the connection to the device."""
+        """Close the connection to the device."""
         self.device.disconnect()
 
     def load_replace_candidate(self, filename=None, config=None):
-        '''
-        SCP file to device filesystem, defaults to candidate_config
+        """
+        SCP file to device filesystem, defaults to candidate_config.
 
         Return None or raise exception
-        '''
+        """
         self.config_replace = True
         if config:
             raise NotImplementedError
@@ -83,11 +84,11 @@ class IOSDriver(NetworkDriver):
                 raise ReplaceConfigException(msg)
 
     def load_merge_candidate(self, filename=None, config=None):
-        '''
-        SCP file to remote device
+        """
+        SCP file to remote device.
 
         Merge configuration in: copy <file> running-config
-        '''
+        """
         self.config_replace = False
         if config:
             raise NotImplementedError
@@ -102,7 +103,7 @@ class IOSDriver(NetworkDriver):
 
     @staticmethod
     def normalize_compare_config(diff):
-        '''Filter out strings that should not show up in the diff'''
+        """Filter out strings that should not show up in the diff."""
         ignore_strings = ['Contextual Config Diffs', 'No changes were found', 'file prompt quiet', 'ntp clock-period']
 
         new_list = []
@@ -119,11 +120,11 @@ class IOSDriver(NetworkDriver):
                        new_file=None,
                        base_file_system='system:',
                        new_file_system=None):
-        '''
-        show archive config differences <base_file> <new_file>
+        """
+        show archive config differences <base_file> <new_file>.
 
         Default operation is to compare system:running-config to self.candidate_cfg
-        '''
+        """
         # Set defaults if not passed as arguments
         if new_file is None:
             new_file = self.candidate_cfg
@@ -138,11 +139,11 @@ class IOSDriver(NetworkDriver):
         return diff.strip()
 
     def commit_config(self, filename=None):
-        '''
+        """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
-        '''
+        """
         debug = False
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
@@ -171,7 +172,7 @@ class IOSDriver(NetworkDriver):
                 print("Time delta: {}".format(datetime.now() - base_time))
                 base_time = datetime.now()
             if ('Failed to apply command' in output) or \
-                ('original configuration has been successfully restored' in output):
+               ('original configuration has been successfully restored' in output):
                 raise ReplaceConfigException("Candidate config could not be applied")
         # Merge operation
         else:
@@ -190,7 +191,7 @@ class IOSDriver(NetworkDriver):
                 raise MergeConfigException(merge_error)
 
     def discard_config(self):
-        '''Set candidate_cfg to current running-config. Erase the merge_cfg file'''
+        """Set candidate_cfg to current running-config. Erase the merge_cfg file."""
         discard_candidate = 'copy running-config {}'.format(self.gen_full_path(self.candidate_cfg))
         discard_merge = 'copy null: {}'.format(self.gen_full_path(self.merge_cfg))
         self._disable_confirm()
@@ -199,7 +200,7 @@ class IOSDriver(NetworkDriver):
         self._enable_confirm()
 
     def rollback(self, filename=None):
-        '''Rollback configuration to filename or to self.rollback_cfg file'''
+        """Rollback configuration to filename or to self.rollback_cfg file."""
         if filename is None:
             filename = self.rollback_cfg
         cfg_file = self.gen_full_path(filename)
@@ -209,13 +210,13 @@ class IOSDriver(NetworkDriver):
         self.device.send_command_expect(cmd)
 
     def scp_file(self, source_file, dest_file, file_system):
-        '''
-        SCP file to remote device
+        """
+        SCP file to remote device.
 
         Return (status, msg)
         status = boolean
         msg = details on what happened
-        '''
+        """
         # Will automaticall enable SCP on remote device
         enable_scp = True
         debug = False
@@ -270,17 +271,17 @@ class IOSDriver(NetworkDriver):
             return (False, '')
 
     def _enable_confirm(self):
-        '''Enable IOS confirmations on file operations (global config command)'''
+        """Enable IOS confirmations on file operations (global config command)."""
         cmd = 'no file prompt quiet'
         self.device.send_config_set([cmd])
 
     def _disable_confirm(self):
-        '''Disable IOS confirmations on file operations (global config command)'''
+        """Disable IOS confirmations on file operations (global config command)."""
         cmd = 'file prompt quiet'
         self.device.send_config_set([cmd])
 
     def gen_full_path(self, filename, file_system=None):
-        '''Generate full file path on remote device'''
+        """Generate full file path on remote device."""
         if file_system is None:
             return '{}/{}'.format(self.dest_file_system, filename)
         else:
@@ -289,9 +290,7 @@ class IOSDriver(NetworkDriver):
             return '{}/{}'.format(file_system, filename)
 
     def _gen_rollback_cfg(self):
-        '''
-        Save a configuration that can be used for rollback
-        '''
+        """Save a configuration that can be used for rollback."""
         cfg_file = self.gen_full_path(self.rollback_cfg)
         cmd = 'copy running-config {}'.format(cfg_file)
         self._disable_confirm()
@@ -299,8 +298,8 @@ class IOSDriver(NetworkDriver):
         self._enable_confirm()
 
     def _check_file_exists(self, cfg_file):
-        '''
-        Check that the file exists on remote device using full path
+        """
+        Check that the file exists on remote device using full path.
 
         cfg_file is full path i.e. flash:/file_name
 
@@ -311,7 +310,7 @@ class IOSDriver(NetworkDriver):
         33  -rw-        5592  Dec 18 2015 10:50:22 -08:00  candidate_config.txt
 
         return boolean
-        '''
+        """
         cmd = 'dir {}'.format(cfg_file)
         success_pattern = 'Directory of {}'.format(cfg_file)
         output = self.device.send_command_expect(cmd)
@@ -322,7 +321,9 @@ class IOSDriver(NetworkDriver):
         return False
 
     def get_lldp_neighbors(self):
-        '''
+        """
+        Get lldp information (brief).
+
         Output command format:
         Device ID           Local Intf     Hold-time  Capability      Port ID
         twb-sf-hpsw1        Fa4            120        B               17
@@ -333,7 +334,7 @@ class IOSDriver(NetworkDriver):
         {u'Fa4': [{'hostname': u'twb-sf-hpsw1', 'port': u'17'}]}
 
         and value is a list where each entry in the list is a dict
-        '''
+        """
         lldp = {}
 
         command = 'show lldp neighbors | begin Device ID'
@@ -351,11 +352,11 @@ class IOSDriver(NetworkDriver):
 
     @staticmethod
     def parse_uptime(uptime_str):
-        '''
+        """
         Extract the uptime string from the given Cisco IOS Device.
 
         Return the uptime in seconds as an integer
-        '''
+        """
         # Initialize to zero
         (years, weeks, days, hours, minutes) = (0, 0, 0, 0, 0)
 
@@ -378,8 +379,7 @@ class IOSDriver(NetworkDriver):
         return uptime_sec
 
     def get_facts(self):
-        """This function returns a set of facts from the devices."""
-
+        """Return a set of facts from the devices."""
         # default values.
         vendor = u'Cisco'
         uptime = -1
@@ -445,11 +445,11 @@ class IOSDriver(NetworkDriver):
         }
 
     def get_interfaces(self):
-        '''
-        Get interface details
+        """
+        Get interface details.
 
         last_flapped is not implemented
-        '''
+        """
         interface_list = {}
 
         # default values.
@@ -517,10 +517,10 @@ class IOSDriver(NetworkDriver):
 
         return interface_list
 
-
     def get_interfaces_ip(self):
-        '''
-        Get interface ip details
+        """
+        Get interface ip details.
+
         Returns a dict of dicts
 
         Example Output:
@@ -537,8 +537,7 @@ class IOSDriver(NetworkDriver):
                                         u'10.41.0.1': {   'prefix_length': 24},
                                         u'10.65.0.1': {   'prefix_length': 24}}},
             u'Vlan200': {   'ipv4': {   u'10.63.176.57': {   'prefix_length': 29}}}}
-        '''
-
+        """
         interfaces = {}
 
         command = 'show ip interface brief'
@@ -619,11 +618,10 @@ class IOSDriver(NetworkDriver):
 
         return interfaces
 
-
     @staticmethod
     def bgp_time_conversion(bgp_uptime):
-        '''
-        Convert string time to seconds
+        """
+        Convert string time to seconds.
 
         Examples
         00:14:23
@@ -637,7 +635,7 @@ class IOSDriver(NetworkDriver):
         8w5d
         1y28w
         never
-        '''
+        """
         bgp_uptime = bgp_uptime.strip()
         uptime_letters = set(['w', 'h', 'd'])
 
@@ -671,8 +669,8 @@ class IOSDriver(NetworkDriver):
         raise ValueError("Unexpected value for BGP uptime string: {}".format(bgp_uptime))
 
     def get_bgp_neighbors(self):
-        '''
-        BGP neighbor information
+        """
+        BGP neighbor information.
 
         Currently, no VRF support
         Not tested with IPv6
@@ -694,7 +692,7 @@ class IOSDriver(NetworkDriver):
         10.1.4.46       4  3979   95244   98874   267067    0    0 8w5d     254
         10.1.4.58       4  3979    2715    3045   267067    0    0 1d21h    2
         10.1.1.85       4 65417 8344303 8343570      235    0    0 1y28w    2
-        '''
+        """
         cmd_bgp_summary = 'show ip bgp summary'
         bgp_neighbor_data = {}
         bgp_neighbor_data['global'] = {}
@@ -721,7 +719,7 @@ class IOSDriver(NetworkDriver):
                 continue
             fields = line.split()[:10]
             peer_id, bgp_version, remote_as, msg_rcvd, msg_sent, table_version, in_queue, \
-            out_queue, up_time, state_prefix = fields
+                out_queue, up_time, state_prefix = fields
 
             if '(Admin)' in state_prefix:
                 is_enabled = False
@@ -795,8 +793,9 @@ class IOSDriver(NetworkDriver):
         return bgp_neighbor_data
 
     def get_interfaces_counters(self):
-        '''
-        Return
+        """
+        Return interface counters and errors.
+
         'tx_errors': int,
         'rx_errors': int,
         'tx_discards': int,
@@ -812,7 +811,7 @@ class IOSDriver(NetworkDriver):
 
         Currently doesn't determine output broadcasts, multicasts
         Doesn't determine tx_discards or rx_discards
-        '''
+        """
         counters = {}
         command = 'show interfaces'
         output = self.device.send_command(command)
@@ -880,11 +879,13 @@ class IOSDriver(NetworkDriver):
         return counters
 
     def get_environment(self):
-        '''
+        """
+        Get environment facts.
+
         power, fan, temperature are currently not implemented
         cpu is using 1-minute average
         cpu hard-coded to cpu0 (i.e. only a single CPU)
-        '''
+        """
         environment = {}
         cpu_cmd = 'show proc cpu'
         mem_cmd = 'show memory statistics'
@@ -917,16 +918,16 @@ class IOSDriver(NetworkDriver):
 
         # Initialize 'power', 'fan', and 'temperature' to default values (not implemented)
         environment.setdefault('power', {})
-        environment['power']['invalid'] = {'status': True, 'output': -1.0, 'capacity': -1.0,}
+        environment['power']['invalid'] = {'status': True, 'output': -1.0, 'capacity': -1.0}
         environment.setdefault('fans', {})
-        environment['fans']['invalid'] = {'status': True,}
+        environment['fans']['invalid'] = {'status': True}
         environment.setdefault('temperature', {})
-        environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0,}
+        environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0}
         return environment
 
     def cli(self, commands=None):
         """
-        Will execute a list of commands and return the output in a dictionary format using the command as the key
+        Execute a list of commands and return the output in a dictionary format using the command as the key.
 
         Example input:
         ['show clock', 'show calendar']
@@ -936,7 +937,6 @@ class IOSDriver(NetworkDriver):
             'show clock': u'*22:01:51.165 UTC Thu Feb 18 2016'}
 
         """
-
         cli_output = dict()
 
         if type(commands) is not list:
