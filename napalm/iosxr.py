@@ -17,9 +17,9 @@ from napalm.utils import string_parsers
 
 from pyIOSXR import IOSXR
 from pyIOSXR.iosxr import __execute_show__
-from pyIOSXR.exceptions import InvalidInputError, XMLCLIError, TimeoutError
+from pyIOSXR.exceptions import InvalidInputError, XMLCLIError, TimeoutError, EOFError
 
-from exceptions import MergeConfigException, ReplaceConfigException, CommandErrorException, CommandTimeoutException
+from exceptions import ConnectionException, MergeConfigException, ReplaceConfigException, CommandErrorException, CommandTimeoutException
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 import re
@@ -40,7 +40,10 @@ class IOSXRDriver(NetworkDriver):
         self.device = IOSXR(hostname, username, password, timeout=timeout, port=self.port, lock=self.lock_on_connect)
 
     def open(self):
-        self.device.open()
+        try:
+            self.device.open()
+        except EOFError as ee:
+            raise ConnectionException(ee.message)
 
     def close(self):
         self.device.close()
