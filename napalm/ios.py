@@ -321,6 +321,85 @@ class IOSDriver(NetworkDriver):
             return True
         return False
 
+    def get_lldp_neighbors(self):
+        """
+        Returns a dictionary where the keys are local ports and the value is a list of dictionaries with the following \
+        information:
+            * hostname
+            * port
+        For example::
+            {
+            u'Ethernet2':
+                [
+                    {
+                    'hostname': u'junos-unittest',
+                    'port': u'520',
+                    }
+                ],
+            u'Ethernet3':
+                [
+                    {
+                    'hostname': u'junos-unittest',
+                    'port': u'522',
+                    }
+                ]
+            }
+        """
+
+        lldp = {}
+        counter = 0
+
+        command = 'show lldp neighbors detail'
+        output = self.device.send_command(command)
+
+        # Check if router supports the command
+        if '% Invalid input' in output:
+            return {}
+
+        split_output = output.split('------------------------------------------------')
+
+        for line in split_output:
+            # Skip the first line
+            if line == '':
+                continue
+            local_interface = re.search(r"Local Intf: (.+)", line)
+            if local_interface:
+                # Query router for full interface name using abbreviated name
+                command = 'show int {}'.format(local_interface.group(1))
+                output = self.device.send_command(command)
+
+                if 'line protocol' in output:
+                    split_output = output.split()
+                    local_port = split_output[0]
+                else:
+                    # If unable to return local populate unknown_x
+                    local_port = u'unknown_{}'.format(counter)
+                    counter += 1
+            else:
+                # If unable to return local populate unknown_x
+                local_port = u'unknown_{}'.format(counter)
+                counter += 1
+
+            system_name = re.search(r"System Name: (.+)", line)
+            if system_name:
+                remote_system_name = system_name.group(1)
+            else:
+                remote_system_name = u'N/A'
+
+            port_id = re.search(r"Port id: (.+)", line)
+            if port_id:
+                remote_port = port_id.group(1)
+            else:
+                remote_port = u'N/A'
+
+            lldp.setdefault(local_port, [])
+            lldp[local_port].append(
+                {'port': remote_port,
+                 'hostname': remote_system_name,
+                 })
+
+        return lldp
+
     def get_lldp_neighbors_detail(self):
         """
         Returns a detailed view of the LLDP neighbors as a dictionary
