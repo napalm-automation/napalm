@@ -825,30 +825,29 @@ class IOSDriver(NetworkDriver):
 
     def get_arp_table(self):
         """
-        Returns a dictionary whose values are lists of dictionaries.
-        Each key of the main dict represents the interface name.
-        Inner dictionaries have the following set of keys:
-            * mac (string),
+        Returns a list of dictionaries having the following set of keys:
+            * interface (string)
+            * mac (string)
             * ip (string)
             * age (float)
-        Example:
-            {
-                'MgmtEth0/RSP0/CPU0/0': [
-                    {
-                        'mac'   : '5c5e.abda.3cf0',
-                        'ip'    : '172.17.17.1',
-                        'age'   : 1454496274.84
-                    },
-                    {
-                        'mac'   : '660e.9496.e0ff',
-                        'ip'    : '172.17.17.2',
-                        'age'   : 1435641582.49
-                    }
-                ]
-            }
+        For example::
+            [
+                {
+                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '5c:5e:ab:da:3c:f0',
+                    'ip'        : '172.17.17.1',
+                    'age'       : 1454496274.84
+                },
+                {
+                    'interface': 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '66:0e:94:96:e0:ff',
+                    'ip'        : '172.17.17.2',
+                    'age'       : 1435641582.49
+                }
+            ]
         """
 
-        arp_table = {}
+        arp_table = []
 
         command = 'show arp'
         output = self.device.send_command(command)
@@ -861,18 +860,20 @@ class IOSDriver(NetworkDriver):
             if len(line) == 0:
                 return {}
             if len(line.split()) == 6:
-                protocol, address, age, mac, type, interface = line.split()
+                protocol, address, age, mac, eth_type, interface = line.split()
                 try:
+                    if age == '-':
+                        age = 0
                     age = float(age)
                 except ValueError:
                     print("Unable to convert age value to float: {}".format(age))
                 entry = {
+                    'interface': interface,
                     'mac': mac,
                     'ip': address,
                     'age': age
                 }
-                arp_table.setdefault(interface, [])
-                arp_table[interface].append(entry)
+                arp_table.append(entry)
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
 
