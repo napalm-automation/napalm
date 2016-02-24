@@ -20,8 +20,8 @@ from base import NetworkDriver
 
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
-from jnpr.junos.exception import ConfigLoadError
-from exceptions import ReplaceConfigException, MergeConfigException, CommandErrorException
+from jnpr.junos.exception import ConfigLoadError, ConnectTimeoutError
+from exceptions import ConnectionException, ReplaceConfigException, MergeConfigException, CommandErrorException
 
 from lxml import etree as ET
 
@@ -47,7 +47,10 @@ class JunOSDriver(NetworkDriver):
         self.device = Device(hostname, user=username, password=password, port=self.port)
 
     def open(self):
-        self.device.open()
+        try:
+            self.device.open()
+        except ConnectTimeoutError as cte:
+            raise ConnectionException(cte.message)
         self.device.timeout = self.timeout
         self.device.bind(cu=Config)
         if self.config_lock:
