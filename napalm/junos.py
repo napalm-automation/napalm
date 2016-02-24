@@ -612,7 +612,7 @@ class JunOSDriver(NetworkDriver):
         }
 
         for bgp_neighbor in bgp_neighbors_items:
-            peer_as = bgp_neighbor[0]
+            peer_as = int(bgp_neighbor[0])
             if peer_as not in bgp_neighbors.keys():
                 bgp_neighbors[peer_as] = list()
             neighbor_details = default_neighbor_details.copy()
