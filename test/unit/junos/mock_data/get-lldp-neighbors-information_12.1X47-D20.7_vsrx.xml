@@ -1,6 +1,6 @@
 <lldp-neighbors-information style="brief">
   <lldp-neighbor-information>
-    <lldp-local-port-id>xe-4/3/6</lldp-local-port-id>
+    <lldp-local-interface>xe-4/3/6</lldp-local-interface>
     <lldp-local-parent-interface-name>-</lldp-local-parent-interface-name>
     <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
     <lldp-remote-chassis-id>00:1c:73:8f:0a:ed</lldp-remote-chassis-id>
