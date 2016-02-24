@@ -179,13 +179,13 @@ junos_lldp_neighbors_detail_table:
   args:
     interface_name: '[afgx]e*'
   item: lldp-neighbor-information
-  key: lldp-local-port-id
+  key: lldp-local-interface | lldp-local-port-id
   view: junos_lldp_neighbors_detail_view
 
 junos_lldp_neighbors_detail_view:
   fields:
-    interface: {lldp-local-port-id: unicode}
-    interface_description: {lldp-local-port-id: unicode}
+    # interface: {lldp-local-port-id: unicode}
+    interface_description: {lldp-local-interface: unicode}
     parent_interface: {lldp-local-parent-interface-name: unicode}
     remote_port: {lldp-remote-port-id: unicode}
     remote_chassis_id: {lldp-remote-chassis-id: unicode}
