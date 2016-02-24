@@ -1,0 +1,29 @@
+<lldp-neighbors-information style="brief">
+    <lldp-neighbor-information>
+        <lldp-local-port-id>xe-0/1/1</lldp-local-port-id>
+        <lldp-local-parent-interface-name>ae7</lldp-local-parent-interface-name>
+        <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
+        <lldp-remote-chassis-id>00:1c:73:ee:c0:46</lldp-remote-chassis-id>
+        <lldp-remote-port-id-subtype>Interface name</lldp-remote-port-id-subtype>
+        <lldp-remote-port-id>Ethernet3/29/1</lldp-remote-port-id>
+        <lldp-remote-system-name>core01.sjc01</lldp-remote-system-name>
+    </lldp-neighbor-information>
+    <lldp-neighbor-information>
+        <lldp-local-port-id>xe-0/3/3</lldp-local-port-id>
+        <lldp-local-parent-interface-name>ae7</lldp-local-parent-interface-name>
+        <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
+        <lldp-remote-chassis-id>00:1c:73:ee:c0:46</lldp-remote-chassis-id>
+        <lldp-remote-port-id-subtype>Interface name</lldp-remote-port-id-subtype>
+        <lldp-remote-port-id>Ethernet3/29/2</lldp-remote-port-id>
+        <lldp-remote-system-name>core01.sjc01</lldp-remote-system-name>
+    </lldp-neighbor-information>
+    <lldp-neighbor-information>
+        <lldp-local-port-id>xe-2/0/5</lldp-local-port-id>
+        <lldp-local-parent-interface-name>ae7</lldp-local-parent-interface-name>
+        <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
+        <lldp-remote-chassis-id>00:1c:73:ee:c0:46</lldp-remote-chassis-id>
+        <lldp-remote-port-id-subtype>Interface name</lldp-remote-port-id-subtype>
+        <lldp-remote-port-id>Ethernet3/29/3</lldp-remote-port-id>
+        <lldp-remote-system-name>core01.sjc01</lldp-remote-system-name>
+    </lldp-neighbor-information>
+</lldp-neighbors-information>

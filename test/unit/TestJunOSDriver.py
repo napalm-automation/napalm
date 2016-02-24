@@ -56,7 +56,6 @@ class TestGetterJunOSDriver(unittest.TestCase, TestGettersNetworkDriver):
 class FakeJunOSDevice:
 
     def __init__(self):
-        self.rpc = FakeRPCObject()
         self.ON_JUNOS = True # necessary for fake devices
         self.facts = {
             'domain': None,
@@ -80,6 +79,7 @@ class FakeJunOSDevice:
             'vc_capable': False,
             'personality': 'SRX_BRANCH'
         }
+        self.rpc = FakeRPCObject(self.facts)
 
     @staticmethod
     def read_txt_file(filename):
@@ -88,16 +88,19 @@ class FakeJunOSDevice:
 
     def cli(self, command = ''):
         return self.read_txt_file(
-            'junos/mock_data/{parsed_command}.txt'.format(
-                parsed_command = command.replace(' ', '_')
+            'junos/mock_data/{parsed_command}_{version}_{fqdn}.txt'.format(
+                parsed_command = command.replace(' ', '_'),
+                version=self.facts.get('version'),
+                fqdn=self.facts.get('fqdn')
             )
         )
+        # no platform-related tests needed here
 
 
 class FakeRPCObject:
 
-    def __init__(self):
-        pass
+    def __init__(self, facts):
+        self._facts = facts
 
     @staticmethod
     def read_txt_file(filename):
@@ -111,7 +114,14 @@ class FakeRPCObject:
     def response(self, **rpc_args):
         instance = rpc_args.pop('instance', '')
 
-        xml_string = self.read_txt_file('junos/mock_data/{}{}.txt'.format(self.item, instance))
+        xml_string = self.read_txt_file(
+            'junos/mock_data/{}{}_{}_{}.xml'.format(
+                self.item,
+                instance,
+                self._facts.get('version'),
+                self._facts.get('fqdn')
+            )
+        )
         return lxml.etree.fromstring(xml_string)
 
     def get_config(self, get_cmd = '', options = {}):
@@ -123,8 +133,10 @@ class FakeRPCObject:
         filename = get_cmd_str.replace('<', '_').replace('>', '_').replace('/', '_').replace('\n', '').replace(' ', '')
 
         xml_string = self.read_txt_file(
-            'junos/mock_data/{filename}.txt'.format(
-                filename = filename[0:150]
+            'junos/mock_data/{filename}_{version}_{fqdn}.xml'.format(
+                filename=filename[0:150],
+                version=self._facts.get('version'),
+                fqdn=self._facts.get('fqdn')
             )
         )
         return lxml.etree.fromstring(xml_string)
