@@ -748,16 +748,16 @@ class IOSXRDriver(NetworkDriver):
             if group_name not in bgp_group_neighbors.keys():
                 bgp_group_neighbors[group_name] = dict()
             bgp_group_neighbors[group_name][peer] = {
-                'description'       : description,
-                'peer_as'           : peer_as,
-                'prefix_limit'      : build_prefix_limit(af_table, prefix_limit, prefix_percent, prefix_timeout),
-                'export_policy'     : export_policy,
-                'import_policy'     : import_policy,
-                'local_address'     : local_address,
-                'local_as'          : local_as,
-                'authentication_key': password,
-                'nhs'               : nhs,
-                'route_reflector'   : route_reflector
+                'description'           : description,
+                'remote_as'               : peer_as,
+                'prefix_limit'          : build_prefix_limit(af_table, prefix_limit, prefix_percent, prefix_timeout),
+                'export_policy'         : export_policy,
+                'import_policy'         : import_policy,
+                'local_address'         : local_address,
+                'local_as'              : local_as,
+                'authentication_key'    : password,
+                'nhs'                   : nhs,
+                'route_reflector_client': route_reflector
             }
             if neighbor and peer == neighbor:
                 break
@@ -772,6 +772,7 @@ class IOSXRDriver(NetworkDriver):
             import_policy = unicode(self._find_txt(bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/RoutePolicyIn'))
             export_policy = unicode(self._find_txt(bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/RoutePolicyOut'))
             multipath     = eval(self._find_txt(bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/Multipath', 'false').title())
+
             peer_as       = int(self._find_txt(bgp_group, 'RemoteAS/AS_YY', 0))
             local_as      = int(self._find_txt(bgp_group, 'LocalAS/AS_YY', 0))
             multihop_ttl  = int(self._find_txt(bgp_group, 'EBGPMultihop/MaxHopCount', 0))
@@ -782,19 +783,19 @@ class IOSXRDriver(NetworkDriver):
             prefix_timeout= int(self._find_txt(bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/MaximumPrefixes/RestartTime', 0))
             remove_private= True # is it specified in the XML?
             bgp_config[group_name] = {
-                'apply_groups'  : [], # on IOS-XR will always be empty list!
-                'description'   : description,
-                'local_as'      : local_as,
-                'type'          : unicode(bgp_type),
-                'import_policy' : import_policy,
-                'export_policy' : export_policy,
-                'local_address' : local_address,
-                'multipath'     : multipath,
-                'multihop_ttl'  : multihop_ttl,
-                'peer_as'       : peer_as,
-                'remove_private': remove_private,
-                'prefix_limit'  : build_prefix_limit(af_table, prefix_limit, prefix_percent, prefix_timeout),
-                'neighbors'     : bgp_group_neighbors.get(group_name, {})
+                'apply_groups'      : [], # on IOS-XR will always be empty list!
+                'description'       : description,
+                'local_as'          : local_as,
+                'type'              : unicode(bgp_type),
+                'import_policy'     : import_policy,
+                'export_policy'     : export_policy,
+                'local_address'     : local_address,
+                'multipath'         : multipath,
+                'multihop_ttl'      : multihop_ttl,
+                'remote_as'         : peer_as,
+                'remove_private_as' : remove_private,
+                'prefix_limit'      : build_prefix_limit(af_table, prefix_limit, prefix_percent, prefix_timeout),
+                'neighbors'         : bgp_group_neighbors.get(group_name, {})
             }
             if group and group == group_name:
                 break
@@ -840,18 +841,22 @@ class IOSXRDriver(NetworkDriver):
         # field ConnectionState presents information as string
         # while in PreviousConnectionState we can find an integer...
 
+        routing_table = unicode(self._find_txt(result_tree, 'InstanceTable/Instance/Naming/InstanceName', 'default'))
+        # if multi-VRF needed, create a loop through all instances
         for neighbor in result_tree.iter('Neighbor'):
             try:
                 up                          = (self._find_txt(neighbor, 'ConnectionState') == 'BGP_ST_ESTAB')
                 local_as                    = int(self._find_txt(neighbor, 'LocalAS', 0))
                 remote_as                   = int(self._find_txt(neighbor, 'RemoteAS', 0))
                 remote_address              = unicode(self._find_txt(neighbor, 'Naming/NeighborAddress/IPV4Address') or self._find_txt(neighbor, 'Naming/NeighborAddress/IPV6Address'))
-                local_address_configured    = eval(self._find_txt(neighbor, 'IsLocalAddressConfigured').title())
+                local_address_configured    = eval(self._find_txt(neighbor, 'IsLocalAddressConfigured', 'false').title())
                 local_address               = unicode(self._find_txt(neighbor, 'ConnectionLocalAddress/IPV4Address') or self._find_txt(neighbor, 'ConnectionLocalAddress/IPV6Address'))
                 local_port                  = int(self._find_txt(neighbor, 'ConnectionLocalPort'))
                 remote_address              = unicode(self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV4Address') or self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV6Address'))
                 remote_port                 = int(self._find_txt(neighbor, 'ConnectionRemotePort'))
-                multihop                    = eval(self._find_txt(neighbor, 'IsExternalNeighborNotDirectlyConnected').title())
+                multihop                    = eval(self._find_txt(neighbor, 'IsExternalNeighborNotDirectlyConnected', 'false').title())
+                remove_private_as           = eval(self._find_txt(neighbor, 'AFData/Entry/RemovePrivateASFromUpdates', 'false').title())
+                multipath                   = eval(self._find_txt(neighbor, 'AFData/Entry/SelectiveMultipathEligible', 'false').title())
                 import_policy               = unicode(self._find_txt(neighbor, 'AFData/Entry/RoutePolicyIn'))
                 export_policy               = unicode(self._find_txt(neighbor, 'AFData/Entry/RoutePolicyOut'))
                 input_messages              = int(self._find_txt(neighbor, 'MessgesReceived', 0))
@@ -882,11 +887,13 @@ class IOSXRDriver(NetworkDriver):
                     'local_as'                  : local_as,
                     'remote_as'                 : remote_as,
                     'local_address'             : local_address,
+                    'routing_table'             : routing_table,
                     'local_address_configured'  : local_address_configured,
                     'local_port'                : local_port,
                     'remote_address'            : remote_address,
                     'remote_port'               : remote_port,
                     'multihop'                  : multihop,
+                    'multipath'                 : multipath,
                     'import_policy'             : import_policy,
                     'export_policy'             : export_policy,
                     'input_messages'            : input_messages,
@@ -897,6 +904,7 @@ class IOSXRDriver(NetworkDriver):
                     'connection_state'          : connection_state,
                     'previous_connection_state' : previous_connection_state,
                     'last_event'                : u'',
+                    'remove_private_as'         : remove_private_as,
                     'suppress_4byte_as'         : suppress_4byte_as,
                     'local_as_prepend'          : local_as_prepend,
                     'holdtime'                  : holdtime,
