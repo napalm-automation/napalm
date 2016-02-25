@@ -245,6 +245,7 @@ class TestGettersNetworkDriver:
     def test_bgp_neighbors_detail(self):
 
         get_bgp_neighbors_detail = self.device.get_bgp_neighbors_detail()
+        print(get_bgp_neighbors_detail)
 
         result = len(get_bgp_neighbors_detail) > 0
 
