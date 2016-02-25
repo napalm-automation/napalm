@@ -834,12 +834,15 @@ class IOSXRDriver(NetworkDriver):
 
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
-        _CISCO_STATE_FUN_ = {
-            'BGP_ST_ESTAB': 'Established',
-            3: 'EstabSync'
+        _BGP_STATE_ = {
+            '0': 'Unknown',
+            '1': 'Idle',
+            '2': 'Connect',
+            '3': 'OpenSent',
+            '4': 'OpenConfirm',
+            '5': 'Active',
+            '6': 'Established'
         }
-        # field ConnectionState presents information as string
-        # while in PreviousConnectionState we can find an integer...
 
         routing_table = unicode(self._find_txt(result_tree, 'InstanceTable/Instance/Naming/InstanceName', 'default'))
         # if multi-VRF needed, create a loop through all instances
@@ -864,8 +867,10 @@ class IOSXRDriver(NetworkDriver):
                 connection_up_count         = int(self._find_txt(neighbor, 'ConnectionUpCount', 0))
                 connection_down_count       = int(self._find_txt(neighbor, 'ConnectionDownCount', 0))
                 messages_queued_out         = int(self._find_txt(neighbor, 'MessagesQueuedOut', 0))
-                connection_state            = unicode(_CISCO_STATE_FUN_.get(self._find_txt(neighbor, 'ConnectionState')))
-                previous_connection_state   = unicode(_CISCO_STATE_FUN_.get(self._find_txt(neighbor, 'PreviousConnectionState')))
+                connection_state            = unicode(self._find_txt(neighbor, 'ConnectionState').replace('BGP_ST_', '').title())
+                if connection_state == u'Estab':
+                    connection_state = u'Established'
+                previous_connection_state   = unicode(_BGP_STATE_.get(self._find_txt(neighbor, 'PreviousConnectionState', '0')))
                 active_prefix_count         = int(self._find_txt(neighbor, 'AFData/Entry/NumberOfBestpaths', 0))
                 accepted_prefix_count       = int(self._find_txt(neighbor, 'AFData/Entry/PrefixesAccepted', 0))
                 suppressed_prefix_count     = int(self._find_txt(neighbor, 'AFData/Entry/PrefixesDenied', 0))
