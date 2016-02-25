@@ -92,32 +92,32 @@ lldp_neighbors_detail = {
 }
 
 bgp_config_group = {
-    'type'           : unicode,
-    'description'    : unicode,
-    'apply_groups'   : list,
-    'multihop_ttl'   : int,
-    'multipath'      : bool,
-    'local_address'  : unicode,
-    'local_as'       : int,
-    'peer_as'        : int,
-    'import_policy'  : unicode,
-    'export_policy'  : unicode,
-    'remove_private' : bool,
-    'prefix_limit'   : dict,
-    'neighbors'      : dict
+    'type'              : unicode,
+    'description'       : unicode,
+    'apply_groups'      : list,
+    'multihop_ttl'      : int,
+    'multipath'         : bool,
+    'local_address'     : unicode,
+    'local_as'          : int,
+    'remote_as'         : int,
+    'import_policy'     : unicode,
+    'export_policy'     : unicode,
+    'remove_private_as' : bool,
+    'prefix_limit'      : dict,
+    'neighbors'         : dict
 }
 
 bgp_config_neighbor = {
-    'description'       : unicode,
-    'import_policy'     : unicode,
-    'export_policy'     : unicode,
-    'local_address'     : unicode,
-    'authentication_key': unicode,
-    'nhs'               : bool,
-    'route_reflector'   : bool,
-    'local_as'          : int,
-    'peer_as'           : int,
-    'prefix_limit'      : dict
+    'description'           : unicode,
+    'import_policy'         : unicode,
+    'export_policy'         : unicode,
+    'local_address'         : unicode,
+    'authentication_key'    : unicode,
+    'nhs'                   : bool,
+    'route_reflector_client': bool,
+    'local_as'              : int,
+    'remote_as'             : int,
+    'prefix_limit'          : dict
 }
 
 peer_details = {
@@ -125,11 +125,14 @@ peer_details = {
     'local_as'                  : int,
     'remote_as'                 : int,
     'local_address'             : unicode,
+    'routing_table'             : unicode,
     'local_address_configured'  : bool,
     'local_port'                : int,
     'remote_address'            : unicode,
     'remote_port'               : int,
     'multihop'                  : bool,
+    'multipath'                 : bool,
+    'remove_private_as'         : bool,
     'import_policy'             : unicode,
     'export_policy'             : unicode,
     'input_messages'            : int,
