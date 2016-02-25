@@ -218,9 +218,9 @@ junos_bgp_config_view:
     local_address: local-address
     multihop_ttl: multihop/ttl
     local_as: local-as/as-number
-    peer_as: peer-as
+    remote_as: peer-as
     multipath: multipath
-    remove_private: remove-private
+    remove_private_as: remove-private
     import_policy: import
     export_policy: export
     inet_unicast_limit_prefix_limit: family/inet/unicast/prefix-limit/maximum
@@ -252,7 +252,7 @@ junos_bgp_config_peers_view:
     export_policy: export
     local_address: neighbor/local-address
     local_as: local-as
-    peer_as: peer-as
+    remote_as: peer-as
     authentication_key: authentication_key
     inet_unicast_limit_prefix_limit: family/inet/unicast/prefix-limit/maximum
     inet_unicast_teardown_threshold_prefix_limit: family/inet/unicast/prefix-limit/teardown/limit-threshold
@@ -329,12 +329,13 @@ junos_bgp_neighbors_view:
     connection_state: {peer-state: unicode}
     previous_connection_state: {last-state: unicode}
     last_event: {last-event: unicode}
-    4byte_as: peer-4byte-as-capability-advertised
+    4byte_as: {peer-4byte-as-capability-advertised: int}
     local_as_prepend: {peer-addpath-not-supported: False=None}
     holdtime: {active-holdtime: int}
     configured_holdtime: {bgp-option-information/holdtime: int}
     keepalive: {keepalive-interval: int}
     configured_keepalive: {keepalive-interval: int}
+    routing_table: {bgp-rib/name: unicode}
     active_prefix_count: {bgp-rib/active-prefix-count: int}
     received_prefix_count: {bgp-rib/received-prefix-count: int}
     accepted_prefix_count: {bgp-rib/accepted-prefix-count: int}
