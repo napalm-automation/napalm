@@ -66,7 +66,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_lldp_neighbors**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |yes|
 **get_lldp_neighbors_detail**  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|
 **get_bgp_neighbors**          |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|
-**get_bgp_neighbors_detail**   |yes|  |yes|   |no|    |no|     |no|    |no|    |no|   |no|
+**get_bgp_neighbors_detail**   |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|
 **get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|
 **get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|
 **get_mac_address_table**      |no|   |no|    |no|    |no|     |no|    |no|    |no|   |yes|
