@@ -15,6 +15,9 @@
 from base import NetworkDriver
 
 from pyPluribus import PluribusDevice
+from pyPluribus.exceptions import ConnectionError
+
+from exceptions import ConnectionException
 
 
 class PluribusDriver(NetworkDriver):
@@ -33,8 +36,10 @@ class PluribusDriver(NetworkDriver):
         self.device = PluribusDevice(hostname, username, password, self.port, timeout)
 
     def open(self):
-
-        self.device.open()
+        try:
+            self.device.open()
+        except ConnectionError as ce:
+            raise ConnectionException(ce.message)
 
     def close(self):
 
