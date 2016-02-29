@@ -15,7 +15,8 @@
 import pyeapi
 import re
 from base import NetworkDriver
-from exceptions import MergeConfigException, ReplaceConfigException, SessionLockedException, CommandErrorException
+from pyeapi.eapilib import ConnectionError
+from exceptions import ConnectionException, MergeConfigException, ReplaceConfigException, SessionLockedException, CommandErrorException
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from datetime import datetime
@@ -38,15 +39,25 @@ class EOSDriver(NetworkDriver):
         self.port = optional_args.get('port', 443)
 
     def open(self):
-        connection = pyeapi.client.connect(
-            transport='https',
-            host=self.hostname,
-            username=self.username,
-            password=self.password,
-            port=self.port,
-            timeout=self.timeout
-        )
-        self.device = pyeapi.client.Node(connection)
+        try:
+            connection = pyeapi.client.connect(
+                transport='https',
+                host=self.hostname,
+                username=self.username,
+                password=self.password,
+                port=self.port,
+                timeout=self.timeout
+            )
+            self.device = pyeapi.client.Node(connection)
+            # does not raise an Exception if unusable
+
+            # let's try to run a very simple command
+            self.device.run_commands(['show clock'], encoding='text')
+        except ConnectionError as ce:
+            # and this is raised either if device not avaiable
+            # either if HTTP(S) agent is not enabled
+            # show management api http-commands
+            raise ConnectionException(ce.message)
 
     def close(self):
         self.discard_config()
