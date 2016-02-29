@@ -289,3 +289,13 @@ class TestGettersNetworkDriver:
                 result = result and self._test_model(models.interfaces_ip, ip_details)
 
         self.assertTrue(result)
+
+    def test_get_mac_address_table(self):
+        get_mac_address_table = self.device.get_mac_address_table()
+
+        result = len(get_mac_address_table) > 0
+
+        for mac_table_entry in get_mac_address_table:
+            result = result and self._test_model(models.mac_address_table, mac_table_entry)
+
+        self.assertTrue(result)
