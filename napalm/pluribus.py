@@ -132,7 +132,7 @@ class PluribusDriver(NetworkDriver):
 
     def get_mac_address_table(self):
 
-        mac_table = dict()
+        mac_table = list()
 
         mac_show = self.device.execute_show('l2-table-show')
         lines = mac_show.splitlines()[1:-1]
@@ -145,12 +145,11 @@ class PluribusDriver(NetworkDriver):
             vlan        = int(mac_details[3].strip())
             ports       = unicode(mac_details[8].strip())
             active      = (mac_details[9].strip == 'active')
-            if vlan not in mac_table.keys():
-                mac_table[vlan] = list()
-            mac_table[vlan].append(
+            mac_table.append(
                 {
                     'mac'       : mac_format,
                     'interface' : ports,
+                    'vlan'      : vlan,
                     'active'    : active,
                     'static'    : False,
                     'moves'     : 0,

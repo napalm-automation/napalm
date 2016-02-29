@@ -22,6 +22,7 @@ script:
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_arp_table
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_ntp_peers
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_interfaces_ip
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_mac_address_table
   # testing eos getters
   - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_config
   - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors
@@ -36,6 +37,7 @@ script:
   - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_arp_table
   - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_ntp_peers
   - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces_ip
+  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_mac_address_table
   # testing iosxr getters
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_config
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_neighbors
@@ -49,6 +51,7 @@ script:
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_arp_table
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_ntp_peers
   - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_interfaces_ip
+  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_mac_address_table
 # testing nxos getters
   - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_facts
   - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_interfaces
@@ -57,12 +60,14 @@ script:
   - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_arp_table
   - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_ntp_peers
   - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_interfaces_ip
+  - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_mac_address_table
 # testing pluribus getters
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_facts
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_interfaces
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_lldp_neighbors
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_lldp_neighbors_detail
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_ntp_peers
+  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_mac_address_table
 # testing ios getters
   - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_bgp_neighbors
   - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_environment

@@ -467,3 +467,38 @@ class NXOSDriver(NetworkDriver):
                 })
 
         return interfaces_ip
+
+    def get_mac_address_table(self):
+
+        mac_table = list()
+
+        command = 'show mac address-table'
+        mac_table_raw = self._get_command_table(command, 'TABLE_mac_address', 'ROW_mac_address')
+
+        if type(mac_table_raw) is dict:
+            mac_table_raw = [mac_table_raw]
+
+        for mac_entry in mac_table_raw:
+            mac_raw     = mac_entry.get('disp_mac_addr')
+            mac_str     = mac_raw.replace('.', '').replace(':', '')
+            mac_format  = unicode(':'.join([ mac_str[i:i+2] for i in range(12)[::2] ]))
+            interface   = unicode(mac_entry.get('disp_port'))
+            age         = mac_entry.get('disp_age')
+            vlan        = int(mac_entry.get('disp_vlan'))
+            active      = True
+            static      = (mac_entry.get('disp_is_static') != '0')
+            moves       = 0
+            last_move   = 0.0
+            mac_table.append(
+                {
+                    'mac'       : mac_format,
+                    'interface' : interface,
+                    'vlan'      : vlan,
+                    'active'    : active,
+                    'static'    : static,
+                    'moves'     : moves,
+                    'last_move' : last_move
+                }
+            )
+
+        return mac_table
