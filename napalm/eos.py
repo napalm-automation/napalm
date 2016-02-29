@@ -521,9 +521,9 @@ class EOSDriver(NetworkDriver):
             'type'                  : 'type',
             'multipath'             : 'multipath',
             'apply-groups'          : 'apply_groups',
-            'remove-private-as'     : 'remove_private',
+            'remove-private-as'     : 'remove_private_as',
             'ebgp-multihop'         : 'multihop_ttl',
-            'remote-as'             : 'peer_as',
+            'remote-as'             : 'remote_as',
             'local-v4-addr'         : 'local_address',
             'local-v6-addr'         : 'local_address',
             'local-as'              : 'local_as',
@@ -534,12 +534,12 @@ class EOSDriver(NetworkDriver):
 
         _PEER_FIELD_MAP_ = {
             'description'           : 'description',
-            'remote-as'             : 'peer_as',
+            'remote-as'             : 'remote_as',
             'local-v4-addr'         : 'local_address',
             'local-v6-addr'         : 'local_address',
             'local-as'              : 'local_as',
             'next-hop-self'         : 'nhs',
-            'route-reflector-client': 'route_reflector',
+            'route-reflector-client': 'route_reflector_client',
             'description'           : 'description',
             'import-policy'         : 'import_policy',
             'export-policy'         : 'export_policy',
@@ -623,7 +623,7 @@ class EOSDriver(NetworkDriver):
         bgp_config = dict()
 
         commands = list()
-        commands.append('show running-config | begin router bgp')
+        commands.append('show running-config | section router bgp')
         bgp_conf = self.device.run_commands(commands, encoding = 'text')[0].get('output', '\n\n')
         bgp_conf_lines = bgp_conf.splitlines()[2:]
 
