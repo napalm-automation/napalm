@@ -467,7 +467,7 @@ class JunOSDriver(NetworkDriver):
             'description'                                   : unicode,
             'local_address'                                 : unicode,
             'local_as'                                      : int,
-            'peer_as'                                       : int,
+            'remote_as'                                     : int,
             'import_policy'                                 : unicode,
             'export_policy'                                 : unicode,
             'inet_unicast_limit_prefix_limit'               : int,
@@ -489,10 +489,10 @@ class JunOSDriver(NetworkDriver):
         }
 
         _PEER_FIELDS_DATATYPE_MAP_ = {
-            'group'             : unicode,
-            'authentication_key': unicode,
-            'route_reflector'   : bool,
-            'nhs'               : bool
+            'group'                 : unicode,
+            'authentication_key'    : unicode,
+            'route_reflector_client': bool,
+            'nhs'                   : bool
         }
         _PEER_FIELDS_DATATYPE_MAP_.update(
             _COMMON_FIELDS_DATATYPE_
@@ -501,7 +501,7 @@ class JunOSDriver(NetworkDriver):
         _GROUP_FIELDS_DATATYPE_MAP_ = {
             'type'              : unicode,
             'apply_groups'      : list,
-            'remove_private'    : bool,
+            'remove_private_as' : bool,
             'multipath'         : bool,
             'multihop_ttl'      : int
         }
@@ -603,49 +603,65 @@ class JunOSDriver(NetworkDriver):
             'local_as'                  : 0,
             'remote_as'                 : 0,
             'local_address'             : u'',
+            'routing_table'             : u'',
             'local_address_configured'  : False,
             'local_port'                : 0,
             'remote_address'            : u'',
             'remote_port'               : 0,
             'multihop'                  : False,
+            'multipath'                 : False,
+            'remove_private_as'         : False,
             'import_policy'             : u'',
             'export_policy'             : u'',
-            'input_messages'            : -1,
-            'output_messages'           : -1,
-            'input_updates'             : -1,
-            'output_updates'            : -1,
-            'messages_queued_out'       : -1,
+            'input_messages'            : 0,
+            'output_messages'           : 0,
+            'input_updates'             : 0,
+            'output_updates'            : 0,
+            'messages_queued_out'       : 0,
             'connection_state'          : u'',
             'previous_connection_state' : u'',
             'last_event'                : u'',
             'suppress_4byte_as'         : False,
             'local_as_prepend'          : False,
-            'holdtime'                  : -1,
-            'configured_holdtime'       : -1,
-            'keepalive'                 : -1,
-            'configured_keepalive'      : -1,
-            'active_prefix_count'       : -1,
-            'received_prefix_count'     : -1,
-            'accepted_prefix_count'     : -1,
-            'suppressed_prefix_count'   : -1,
-            'advertise_prefix_count'    : -1,
-            'flap_count'                : -1
+            'holdtime'                  : 0,
+            'configured_holdtime'       : 0,
+            'keepalive'                 : 0,
+            'configured_keepalive'      : 0,
+            'active_prefix_count'       : 0,
+            'received_prefix_count'     : 0,
+            'accepted_prefix_count'     : 0,
+            'suppressed_prefix_count'   : 0,
+            'advertise_prefix_count'    : 0,
+            'flap_count'                : 0
+        }
+
+        _OPTION_KEY_MAP_ = {
+            'RemovePrivateAS': 'remove_private_as',
+            'Multipath'      : 'multipath',
+            'Multihop'       : 'multihop',
+            'AddressFamily'  : 'local_address_configured'
+            # 'AuthKey'        : 'authentication_key_set'
+            # but other vendors do not specify if auth key is set
+            # other options:
+            # Preference, HoldTime, Ttl, LogUpDown, Refresh
         }
 
         for bgp_neighbor in bgp_neighbors_items:
-            peer_as = bgp_neighbor[0]
-            if peer_as not in bgp_neighbors.keys():
-                bgp_neighbors[peer_as] = list()
+            remote_as = int(bgp_neighbor[0])
+            if remote_as not in bgp_neighbors.keys():
+                bgp_neighbors[remote_as] = list()
             neighbor_details = default_neighbor_details.copy()
             neighbor_details.update(
                 {elem[0]: elem[1] for elem in bgp_neighbor[1] if elem[1] is not None}
             )
             options = neighbor_details.pop('options', '')
-            if options is not None:
-                if 'Multihop' in options:
-                    neighbor_details['multihop'] = True
-                if 'LocalAddress' in options:
-                    neighbor_details['local_address_configured'] = True
+            if isinstance(options, str):
+                options_list = options.split()
+                for option in options_list:
+                    key = _OPTION_KEY_MAP_.get(option)
+                    if key is None:
+                        continue
+                    neighbor_details[key] = True
             four_byte_as = neighbor_details.pop('4byte_as', 0)
             local_address = neighbor_details.pop('local_address', '')
             local_details = local_address.split('+')
@@ -654,7 +670,7 @@ class JunOSDriver(NetworkDriver):
                 neighbor_details['local_port']= int(local_details[1])
             else:
                 neighbor_details['local_port']=179
-            neighbor_details['suppress_4byte_as'] = (peer_as != four_byte_as)
+            neighbor_details['suppress_4byte_as'] = (remote_as != four_byte_as)
             peer_address = neighbor_details.pop('peer_address', '')
             remote_details = peer_address.split('+')
             neighbor_details['remote_address'] = unicode(remote_details[0])
@@ -662,7 +678,7 @@ class JunOSDriver(NetworkDriver):
                 neighbor_details['remote_port']    = int(remote_details[1])
             else:
                 neighbor_details['remote_port'] = 179
-            bgp_neighbors[peer_as].append(neighbor_details)
+            bgp_neighbors[remote_as].append(neighbor_details)
 
         return bgp_neighbors
 
