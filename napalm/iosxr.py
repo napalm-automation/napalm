@@ -1031,3 +1031,38 @@ class IOSXRDriver(NetworkDriver):
                     }
 
         return interfaces_ip
+
+    def get_mac_address_table(self):
+
+        mac_table = list()
+
+        rpc_command = '<Get><Operational><L2VPNForwarding></L2VPNForwarding></Operational></Get>'
+
+        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for mac_entry in result_tree.findall('.//L2FIBMACDetailTable/L2FIBMACDetail'):
+            try:
+                mac_raw     = mac_entry.find('Naming/Address').text
+                # will throw error in case not found
+                # and jump to next entry
+                mac_str     = mac_raw.replace('.', '').replace(':', '')
+                mac_format  = unicode(':'.join([ mac_str[i:i+2] for i in range(12)[::2] ]))
+                vlan        = int(self._find_txt(mac_entry, 'Naming/Name', '').replace('vlan', ''))
+                interface   = unicode(self._find_txt(mac_entry, 'Segment/AC/InterfaceHandle', u''))
+
+                mac_table.append(
+                    {
+                        'mac'       : mac_format,
+                        'interface' : interface,
+                        'vlan'      : vlan,
+                        'active'    : True,
+                        'static'    : False,
+                        'moves'     : 0,
+                        'last_move' : 0.0
+                    }
+                )
+
+            except Exception:
+                continue
+
+        return mac_table
