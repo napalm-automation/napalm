@@ -12,6 +12,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+class ConnectionException(Exception):
+    pass
+
 class ReplaceConfigException(Exception):
     pass
 
