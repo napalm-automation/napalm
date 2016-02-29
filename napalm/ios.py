@@ -419,7 +419,7 @@ class IOSDriver(NetworkDriver):
 
         # model filter
         try:
-            match_model = re.search(r"Cisco (.+?) .+bytes of", show_ver, re.IGNORECASE)
+            match_model = re.search(r"Cisco (.+?) .+bytes of", show_ver, flags=re.IGNORECASE)
             model = match_model.group(1)
         except AttributeError:
             model = u'Unknown'
@@ -493,7 +493,7 @@ class IOSDriver(NetworkDriver):
             interface_output = self.device.send_command(show_command)
             try:
                 # mac_address filter.
-                match_mac = re.match(mac_regex, interface_output, re.DOTALL)
+                match_mac = re.match(mac_regex, interface_output, flags=re.DOTALL)
                 group_mac = match_mac.groupdict()
                 mac_address = group_mac["mac_address"]
                 interface_list[interface]['mac_address'] = unicode(mac_address)
@@ -501,7 +501,7 @@ class IOSDriver(NetworkDriver):
                 interface_list[interface]['mac_address'] = u'N/A'
             try:
                 # BW filter.
-                match_speed = re.match(speed_regex, interface_output, re.DOTALL)
+                match_speed = re.match(speed_regex, interface_output, flags=re.DOTALL)
                 group_speed = match_speed.groupdict()
                 speed = group_speed["speed"]
                 speed_format = group_speed["speed_format"]
@@ -818,8 +818,8 @@ class IOSDriver(NetworkDriver):
         output = output.strip()
 
         # Break output into per-interface sections
-        interface_strings = re.split(r'.* line protocol is .*', output, re.M)
-        header_strings = re.findall(r'.* line protocol is .*', output, re.M)
+        interface_strings = re.split(r'.* line protocol is .*', output, flags=re.M)
+        header_strings = re.findall(r'.* line protocol is .*', output, flags=re.M)
 
         empty = interface_strings.pop(0).strip()
         if empty:
