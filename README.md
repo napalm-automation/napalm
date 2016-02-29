@@ -38,7 +38,7 @@ To install, execute:
 
 Ansible
 =======
-There are some ansible modules provided by this API. Make sure you read the documentation and you understand how it works before trying to use it.
+Please ckeck [napalm-ansible](https://github.com/napalm-automation/napalm-ansible) for existing Ansible modules leveraging the NAPALM API. Make sure you read the documentation and you understand how it works before trying to use it.
 
 Mailing List
 =======
