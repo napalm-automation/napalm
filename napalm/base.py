@@ -284,13 +284,13 @@ class NetworkDriver:
         Returns a dictionary where:
 
             * fans is a dictionary of dictionaries where the key is the location and the values:
-                 * status (boolean) - True if it's ok, false if it's broken
+                 * status (True/False) - True if it's ok, false if it's broken
             * temperature is a dictionary of dictionaries where the key is the location and the values:
                  * temperature (float) - Temperature in celsius the sensor is reporting.
-                 * is_alert (boolean) - True if the temperature is above the alert threshold
-                 * is_critical (boolean) - True if the temperature is above the critical threshold
+                 * is_alert (True/False) - True if the temperature is above the alert threshold
+                 * is_critical (True/False) - True if the temperature is above the critical threshold
             * power is a dictionary of dictionaries where the key is the PSU id and the values:
-                 * status (boolean) - True if it's ok, false if it's broken
+                 * status (True/False) - True if it's ok, false if it's broken
                  * capacity (float) - Capacity in W that the power supply can support
                  * output (float) - Watts drawn by the system
             * cpu is a dictionary of dictionaries where the key is the ID and the values
@@ -411,30 +411,30 @@ class NetworkDriver:
         Returns a dictionary containing the BGP configuration.
         Can return either the whole config, either the config only for a group or neighbor.
         Main dictionary keys represent the group name and the values represent a dictionary having the following keys:
-            * type (str)
-            * description (str)
-            * apply_groups (str list)
+            * type (string)
+            * description (string)
+            * apply_groups (string list)
             * multihop_ttl (int)
-            * multipath (boolean)
-            * local_address (str)
+            * multipath (True/False)
+            * local_address (string)
             * local_as (int)
-            * peer_as (int)
-            * import_policy (str)
-            * export_policy (str)
-            * remove_private (boolean)
-            * prefix_limit (dict)
-            * neighbors (dict)
+            * remote_as (int)
+            * import_policy (string)
+            * export_policy (string)
+            * remove_private_as (True/False)
+            * prefix_limit (dictionary)
+            * neighbors (dictionary)
         Neighbors is a dictionary of dictionaries with the following keys:
-            * description (str)
-            * import_policy (str)
-            * export_policy (str)
-            * local_address (str)
+            * description (string)
+            * import_policy (string)
+            * export_policy (string)
+            * local_address (string)
             * local_as (int)
-            * peer_as (int)
-            * authentication_key (str)
-            * prefix_limit (dict)
-            * route_reflector (bool)
-            * nhs (bool)
+            * remote_as (int)
+            * authentication_key (string)
+            * prefix_limit (dictionary)
+            * route_reflector_client (True/False)
+            * nhs (True/False)
         The inner dictionary prefix_limit has the same structure for both layers:
             {
                 [FAMILY_NAME]: {
@@ -448,15 +448,15 @@ class NetworkDriver:
 
             {
                 'PEERS-GROUP-NAME':{
-                    'type'          : u'external',
-                    'description'   : u'Here we should have a nice description',
-                    'apply_groups'  : [u'BGP-PREFIX-LIMIT'],
-                    'import_policy' : u'PUBLIC-PEER-IN',
-                    'export_policy' : u'PUBLIC-PEER-OUT',
-                    'remove_private': True,
-                    'multipath'     : True,
-                    'multihop_ttl'  : 30,
-                    'neighbors'     : {
+                    'type'              : u'external',
+                    'description'       : u'Here we should have a nice description',
+                    'apply_groups'      : [u'BGP-PREFIX-LIMIT'],
+                    'import_policy'     : u'PUBLIC-PEER-IN',
+                    'export_policy'     : u'PUBLIC-PEER-OUT',
+                    'remove_private_as' : True,
+                    'multipath'         : True,
+                    'multihop_ttl'      : 30,
+                    'neighbors'         : {
                         '192.168.0.1': {
                             'description'   : 'Facebook [CDN]',
                             'prefix_limit'  : {
@@ -470,9 +470,9 @@ class NetworkDriver:
                                     }
                                 }
                             }
-                            'peer-as'        : 32934,
-                            'route_reflector': False,
-                            'nhs'            : True
+                            'remote_as'             : 32934,
+                            'route_reflector_client': False,
+                            'nhs'                   : True
                         },
                         '172.17.17.1': {
                             'description'   : 'Twitter [CDN]',
@@ -484,9 +484,9 @@ class NetworkDriver:
                                     }
                                 }
                             }
-                            'peer_as'        : 13414
-                            'route_reflector': False,
-                            'nhs'            : False
+                            'remote_as'               : 13414
+                            'route_reflector_client': False,
+                            'nhs'                   : False
                         }
                     }
                 }
@@ -528,36 +528,39 @@ class NetworkDriver:
         Returns a detailed view of the BGP neighbors as a dictionary of lists.
         The keys of the dictionary represent the AS number of the neighbors.
         Inner dictionaries contain the following fields:
-            * up (boolean)
+            * up (True/False)
             * local_as (int)
             * remote_as (int)
-            * local_address (unicode)
-            * local_address_configured (boolean)
+            * local_address (string)
+            * routing_table (string)
+            * local_address_configured (True/False)
             * local_port (int)
-            * remote_address (unicode)
+            * remote_address (string)
             * remote_port (int)
-            * multihop (boolean)
-            * import_policy (unicode)
-            * export_policy (unicode)
+            * multihop (True/False)
+            * multipath (True/False)
+            * remove_private_as (True/False)
+            * import_policy (string)
+            * export_policy (string)
             * input_messages (int)
             * output_messages (int)
             * input_updates (int)
             * output_updates (int)
             * messages_queued_out (int)
-            * connection_state (unicode)
-            * previous_connection_state (unicode)
-            * last_event (unicode)
-            * suppress_4byte_as (boolean)
-            * local_as_prepend (boolean)
+            * connection_state (string)
+            * previous_connection_state (string)
+            * last_event (string)
+            * suppress_4byte_as (True/False)
+            * local_as_prepend (True/False)
             * holdtime (int)
             * configured_holdtime (int)
             * keepalive (int)
             * configured_keepalive (int)
             * active_prefix_count (int)
-            * received-prefix-count (int)
-            * accepted-prefix-count (int)
-            * suppressed-prefix-count (int)
-            * advertised-prefix-count (int)
+            * received_prefix_count (int)
+            * accepted_prefix_count (int)
+            * suppressed_prefix_count (int)
+            * advertised_prefix_count (int)
             * flap_count (int)
 
         For example::
@@ -571,9 +574,12 @@ class NetworkDriver:
                         'local_address'             : u'172.101.76.1',
                         'local_address_configured'  : True,
                         'local_port'                : 179,
+                        'routing_table'             : u'inet.0',
                         'remote_address'            : u'192.247.78.0',
                         'remote_port'               : 58380,
                         'multihop'                  : False,
+                        'multipath'                 : True,
+                        'remove_private_as'         : True,
                         'import_policy'             : u'4-NTT-TRANSIT-IN',
                         'export_policy'             : u'4-NTT-TRANSIT-OUT',
                         'input_messages'            : 123,
@@ -621,7 +627,7 @@ class NetworkDriver:
                     'age'       : 1454496274.84
                 },
                 {
-                    'interface': 'MgmtEth0/RSP0/CPU0/0',
+                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
                     'mac'       : '66:0e:94:96:e0:ff',
                     'ip'        : '172.17.17.2',
                     'age'       : 1435641582.49
