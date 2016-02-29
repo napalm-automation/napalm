@@ -1,2 +1,3 @@
 include requirements.txt
 include napalm/utils/*.yml
+include napalm/templates/*/*.j2
