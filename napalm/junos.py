@@ -821,13 +821,13 @@ class JunOSDriver(NetworkDriver):
 
         routes = {}
 
-        if not destination:
+        if not isinstance(destination, str):
             raise TypeError('Please specify a valid destination!')
 
-        # if protocol not in ['static', 'bgp', 'isis']:
-        #     raise TypeError("Protocol not supported: {protocol}. But you can ".format(
-        #         protocol = protocol
-        #     ))
+        if not isinstance(protocol, str) or protocol not in ['static', 'bgp', 'isis']:
+            raise TypeError("Protocol not supported: {protocol}.".format(
+                protocol = protocol
+            ))
 
         _COMMON_PROTOCOL_FIELDS_ = [
             'destination',
@@ -849,6 +849,25 @@ class JunOSDriver(NetworkDriver):
             'selected_next_hop',
             'last_active'
         ] # fields expected to have boolean values
+
+        _PROTOCOL_SPECIFIC_FIELDS_ = {
+            'bgp': [
+                'local_as',
+                'remote_as',
+                'as_path',
+                'communities',
+                'local_preference',
+                'preference2',
+                'remote_address',
+                'metric',
+                'metric2'
+            ],
+            'isis': [
+                'level',
+                'metric',
+                'local_as'
+            ]
+        }
 
         routes_table = junos_views.junos_protocol_route_table(self.device)
 
@@ -891,7 +910,11 @@ class JunOSDriver(NetworkDriver):
             d['next_hop'] = unicode(next_hop)
             d_keys = d.keys()
             # fields that are not in _COMMON_PROTOCOL_FIELDS_ are supposed to be protocol specific
-            protocol_attributes = {key: d.pop(key) for key in d_keys if key not in _COMMON_PROTOCOL_FIELDS_}
+            all_protocol_attributes = {key: d.pop(key) for key in d_keys if key not in _COMMON_PROTOCOL_FIELDS_}
+            protocol_attributes = {
+                key: value for key, value in all_protocol_attributes.iteritems() \
+                if key in _PROTOCOL_SPECIFIC_FIELDS_.get(protocol)
+            }
             d['protocol_attributes'] = protocol_attributes
             if destination not in routes.keys():
                 routes[destination] = list()

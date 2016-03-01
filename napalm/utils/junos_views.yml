@@ -451,10 +451,10 @@ junos_route_table_view:
     local_preference: {../local-preference: int}
     communities: {../communities/community: unicode}
     preference2: {../preference2: int}
-    peer_id: {../peer-id: unicode}
+    remote_address: {../peer-id: unicode}
+    metric: {../metric: int}
     metric2: {../metric2: int}
     ###
     ### ISIS Specific fields
     ###
     level: {../rt-isis-level: int}
-    metric: {../metric: int}
