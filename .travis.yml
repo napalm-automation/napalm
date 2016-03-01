@@ -76,4 +76,5 @@ script:
   - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_interfaces_counters
   - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_interfaces_ip
   - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_lldp_neighbors
+  - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_arp_table
   - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_ios_only_bgp_time_conversion #IOS only test
