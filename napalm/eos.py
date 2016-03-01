@@ -23,7 +23,6 @@ from datetime import datetime
 import time
 from napalm.utils import string_parsers
 from collections import defaultdict
-import ipaddress
 
 
 class EOSDriver(NetworkDriver):
