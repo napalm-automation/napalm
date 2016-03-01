@@ -671,7 +671,7 @@ class IOSXRDriver(NetworkDriver):
     def _find_txt(xml_tree, path, default = ''):
 
         try:
-            return xml_tree.find(path).text
+            return xml_tree.find(path).text.strip()
         except Exception:
             return default
 
@@ -854,11 +854,14 @@ class IOSXRDriver(NetworkDriver):
                 up                          = (self._find_txt(neighbor, 'ConnectionState') == 'BGP_ST_ESTAB')
                 local_as                    = int(self._find_txt(neighbor, 'LocalAS', 0))
                 remote_as                   = int(self._find_txt(neighbor, 'RemoteAS', 0))
-                remote_address              = unicode(self._find_txt(neighbor, 'Naming/NeighborAddress/IPV4Address') or self._find_txt(neighbor, 'Naming/NeighborAddress/IPV6Address'))
+                remote_address              = unicode(self._find_txt(neighbor, 'Naming/NeighborAddress/IPV4Address') \
+                    or self._find_txt(neighbor, 'Naming/NeighborAddress/IPV6Address'))
                 local_address_configured    = eval(self._find_txt(neighbor, 'IsLocalAddressConfigured', 'false').title())
-                local_address               = unicode(self._find_txt(neighbor, 'ConnectionLocalAddress/IPV4Address') or self._find_txt(neighbor, 'ConnectionLocalAddress/IPV6Address'))
+                local_address               = unicode(self._find_txt(neighbor, 'ConnectionLocalAddress/IPV4Address') \
+                    or self._find_txt(neighbor, 'ConnectionLocalAddress/IPV6Address'))
                 local_port                  = int(self._find_txt(neighbor, 'ConnectionLocalPort'))
-                remote_address              = unicode(self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV4Address') or self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV6Address'))
+                remote_address              = unicode(self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV4Address') \
+                    or self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV6Address'))
                 remote_port                 = int(self._find_txt(neighbor, 'ConnectionRemotePort'))
                 multihop                    = eval(self._find_txt(neighbor, 'IsExternalNeighborNotDirectlyConnected', 'false').title())
                 remove_private_as           = eval(self._find_txt(neighbor, 'AFData/Entry/RemovePrivateASFromUpdates', 'false').title())
@@ -1083,13 +1086,19 @@ class IOSXRDriver(NetworkDriver):
 
         return mac_table
 
-    def get_route_to(self, destination = ''):
+    def get_route_to(self, destination = '', protocol = ''):
 
         routes = {}
 
-        if not destination:
+        if not isinstance(destination, str):
             raise TypeError('Please specify a valid destination!')
 
+        if not isinstance(protocol, str) or protocol.lower() not in ['static', 'bgp', 'isis']:
+            raise TypeError("Protocol not supported: {protocol}.".format(
+                protocol = protocol
+            ))
+
+        protocol = protocol.lower()
         dest_split = destination.split('/')
         network = dest_split[0]
         prefix_tag = ''
@@ -1182,25 +1191,19 @@ class IOSXRDriver(NetworkDriver):
                 'current_active'    : False,
                 'last_active'       : False,
                 'age'               : age,
-                'as_path'           : u'',
-                'local_preference'  : 0,
                 'next_hop'          : u'',
                 'protocol'          : protocol,
                 'outgoing_interface': u'',
-                'local_as'          : 0,
-                'remote_as'         : 0,
                 'preference'        : priority,
-                'preference2'       : distance,
-                'communities'       : [],
                 'selected_next_hop' : False,
-                'inactive_reason'   : u''
+                'inactive_reason'   : u'',
+                'routing_table'     : u'default',
+                'protocol_attributes': {}
             }
 
             # from BGP will try to get some more information
-            if protocol == 'BGP' and False:
-                # TODO
+            if protocol.lower() == 'bgp':
                 # looks like IOS-XR does not filter correctly
-                # got to check that otherwise will never provide correct info...
                 # !IMPORTANT
                 bgp_route_info_rpc_command = '''
                     <Get>
@@ -1243,31 +1246,38 @@ class IOSXRDriver(NetworkDriver):
                 bgp_route_tree = ET.fromstring(self.device.make_rpc_call(bgp_route_info_rpc_command))
                 for bgp_path in bgp_route_tree.iter('Path'):
                     try:
-                        best_path       = eval(
-                            bgp_path.find('PathInformation/IsBestPath').text.title()
+                        best_path = eval(self._find_txt(bgp_path,'PathInformation/IsBestPath', 'false').title())
+                        backup    = eval(self._find_txt(bgp_path,'PathInformation/IsPathBackup', 'false').title())
+                        local_preference = int(
+                            self._find_txt(bgp_path, 'AttributesAfterPolicyIn/CommonAttributes/LocalPreference', '0')
                         )
-                        backup          = eval(
-                            bgp_path.find('PathInformation/IsPathBackup').text.title()
+                        local_preference = int(
+                            self._find_txt(bgp_path, 'AttributesAfterPolicyIn/CommonAttributes/LocalPreference', '0')
                         )
-                        local_preference= int(
-                            bgp_path.find('AttributesAfterPolicyIn/CommonAttributes/LocalPreference').text
+                        metric = int(
+                            self._find_txt(bgp_path, 'AttributesAfterPolicyIn/CommonAttributes/Metric', '0')
                         )
                         remote_as       = int(
-                            bgp_path.find('AttributesAfterPolicyIn/CommonAttributes/NeighborAS').text
+                           self._find_txt(bgp_path, 'AttributesAfterPolicyIn/CommonAttributes/NeighborAS', '0')
                         )
+                        remote_address  = unicode(self._find_txt(bgp_path, 'PathInformation/NeighborAddress/IPV4Address') \
+                            or self._find_txt(bgp_path, 'PathInformation/NeighborAddress/IPV6Address'))
                         as_path         = ' '.join(
-                        [bgp_as.text in bgp_path.findall('AttributesAfterPolicyIn/CommonAttributes/NeighborAS/Entry')]
+                        [bgp_as.text for bgp_as in bgp_path.findall('AttributesAfterPolicyIn/CommonAttributes/NeighborAS/Entry')]
                         )
-                        # TODO not quite correct
+                        next_hop = unicode(self._find_txt(bgp_path, 'PathInformation/NextHop/IPV4Address') \
+                            or self._find_txt(bgp_path, 'PathInformation/NextHop/IPV6Address') )
                     except Exception:
                         continue
                     single_route_details = route_details.copy()
-                    single_route_details.update({
-                        'current_active'    : best_path,
+                    single_route_details['current_active'] = best_path
+                    single_route_details['next_hop'] = next_hop
+                    single_route_details['protocol_attributes'] = {
                         'local_preference'  : local_preference,
                         'as_path'           : as_path,
-                        'remote_as'         : remote_as
-                    })
+                        'remote_as'         : remote_as,
+                        'remote_address'    : remote_address
+                    }
                     routes[destination].append(single_route_details)
 
             else:

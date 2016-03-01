@@ -824,10 +824,12 @@ class JunOSDriver(NetworkDriver):
         if not isinstance(destination, str):
             raise TypeError('Please specify a valid destination!')
 
-        if not isinstance(protocol, str) or protocol not in ['static', 'bgp', 'isis']:
+        if not isinstance(protocol, str) or protocol.lower() not in ['static', 'bgp', 'isis']:
             raise TypeError("Protocol not supported: {protocol}.".format(
                 protocol = protocol
             ))
+
+        protocol = protocol.lower()
 
         _COMMON_PROTOCOL_FIELDS_ = [
             'destination',
