@@ -177,8 +177,13 @@ class FakeIOSDevice:
     def send_command_expect(self, command):
         """Fake execute a command in the device by just returning the content of a file."""
         cmd = re.sub(r'[\[\]\*\^\+\s\|]', '_', command)
-        return self.read_txt_file('ios/mock_data/{}.txt'.format(cmd))
+        output = self.read_txt_file('ios/mock_data/{}.txt'.format(cmd))
+        return unicode(output)
 
     def send_command(self, command):
         """Fake execute a command in the device by just returning the content of a file."""
         return self.send_command_expect(command)
+
+
+if __name__ == "__main__":
+    unittest.main()
