@@ -414,21 +414,47 @@ junos_route_table:
   key: to
   view: junos_route_table_view
 
+junos_protocol_route_table:
+  rpc: get-route-information
+  args:
+    extensive: True
+  args_key:
+    destination
+    protocol
+  item: route-table/rt/rt-entry/nh
+  key: to
+  view: junos_route_table_view
+
 junos_route_table_view:
   fields:
+    ###
+    ### Common fields
+    ###
     destination: {../../rt-destination: unicode}
+    prefix_length: {../../rt-prefix-length: int}
     protocol: {../protocol-name: unicode}
     current_active: {../current-active: True=current-active}
     last_active: {../last-active: True=last-active}
     age: {../age/@seconds: int}
-    as_path: {../as-path: unicode}
     next_hop: {to: unicode}
-    outgoing_interface: via
+    outgoing_interface: {via: unicode}
+    selected_next_hop: {selected-next-hop: True=selected-next-hop}
+    preference: {../preference: int}
+    inactive_reason: {../inactive-reason: unicode}
+    routing_table: {../../../table-name: unicode}
+    ###
+    ### BGP Specific fields
+    ###
+    as_path: {../as-path: unicode}
     local_as: {../local-as: int}
     remote_as: {../peer-as: int}
-    selected_next_hop: {selected-next-hop: True=selected-next-hop}
     local_preference: {../local-preference: int}
-    preference: {../preference: int}
-    preference2: {../preference2: int}
-    inactive_reason: {../inactive-reason: unicode}
     communities: {../communities/community: unicode}
+    preference2: {../preference2: int}
+    peer_id: {../peer-id: unicode}
+    metric2: {../metric2: int}
+    ###
+    ### ISIS Specific fields
+    ###
+    level: {../rt-isis-level: int}
+    metric: {../metric: int}

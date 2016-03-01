@@ -522,72 +522,6 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
-    def get_route_to(self, destination = ''):
-        """
-        Returns a dictionary of dictionaries containing details of all available routes to a destination.
-        Each inner dictionary contains the following fields:
-            * current_active (boolean)
-            * last_active (boolean)
-            * age (int),
-            * as_path (string)
-            * local_preference (int)
-            * next_hop (str)
-            * outgoing_interface (str)
-            * preference (int)
-            * preference2 (int)
-            * protocol (int)
-            * local_as (int)
-            * remote_as (int)
-            * inactive_reason (str)
-            * communities (list)
-            * selected_next_hop (bool)
-        Example:
-            {
-                "1.0.0.0/24": [
-                    {
-                        "protocol"          : u"BGP",
-                        "inactive_reason"   : u"Local Preference",
-                        "last_active"       : False,
-                        "age"               : 105219,
-                        "local_as"          : 13335,
-                        "as_path"           : u"2914 8403 54113 I",
-                        "next_hop"          : u"172.17.17.17",
-                        "selected_next_hop" : True,
-                        "preference"        : 170,
-                        "current_active"    : False,
-                        "communities"       : [
-                            u"2914:1234",
-                            u"2914:5678",
-                            u"8403:1717",
-                            u"54113:9999"
-                        ],
-                        "preference2"       : -101,
-                        "remote_as"         : 2914,
-                        "local_preference"  : 100,
-                        "outgoing_interface": u"ae9.0"
-                    },
-                    {
-                        "protocol"          : u"BGP",
-                        "inactive_reason"   : u"",
-                        "last_active"       : True,
-                        "age"               : 50875,
-                        "local_as"          : 13335,
-                        "as_path"           : u"6939 15169 15169 15169 43515 36040 I",
-                        "next_hop"          : u"192.168.1.1",
-                        "selected_next_hop" : True,
-                        "preference"        : 170,
-                        "current_active"    : True,
-                        "communities"       : [],
-                        "preference2"       : -201,
-                        "remote_as"         : 6939,
-                        "local_preference"  : 200,
-                        "outgoing_interface": u"xe-2/3/2.0"
-                    }
-                ]
-            }
-        """
-        raise NotImplementedError
-
     def get_bgp_neighbors_detail(self, neighbor_address = ''):
 
         """
@@ -835,5 +769,57 @@ class NetworkDriver:
             ]
             However, please note that not all vendors provide all these informations.
             E.g.: field last_move is not available on JUNOS devices etc.
+        """
+        raise NotImplementedError
+
+    def get_route_to(self, destination = '', protocol = ''):
+
+        """
+        Returns a dictionary of dictionaries containing details of all available routes to a destination.
+        Each inner dictionary contains the following fields:
+
+            * protocol (string)
+            * current_active (True/False)
+            * last_active (True/False)
+            * age (int)
+            * next_hop (string)
+            * outgoing_interface (string)
+            * selected_next_hop (True/False)
+            * preference (int)
+            * inactive_reason (string)
+            * routing_table (string)
+            * protocol_attributes (dictionary)
+
+        For example::
+
+            {
+                "1.0.0.0/24": [
+                    {
+                        "protocol"          : u"BGP",
+                        "inactive_reason"   : u"Local Preference",
+                        "last_active"       : False,
+                        "age"               : 105219,
+                        "next_hop"          : u"172.17.17.17",
+                        "selected_next_hop" : True,
+                        "preference"        : 170,
+                        "current_active"    : False,
+                        "outgoing_interface": u"ae9.0",
+                        "routing_table"     : "inet.0",
+                        "protocol_attributes": {
+                            "local_as"          : 13335,
+                            "as_path"           : u"2914 8403 54113 I",
+                            "communities"       : [
+                                u"2914:1234",
+                                u"2914:5678",
+                                u"8403:1717",
+                                u"54113:9999"
+                            ],
+                            "preference2"       : -101,
+                            "remote_as"         : 2914,
+                            "local_preference"  : 100
+                        }
+                    }
+                ]
+            }
         """
         raise NotImplementedError
