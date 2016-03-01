@@ -790,6 +790,21 @@ class NetworkDriver:
             * routing_table (string)
             * protocol_attributes (dictionary)
 
+        protocol_attributes is a dictionary with protocol-specific information, as follows:
+
+        - BGP
+            * local_as (int)
+            * remote_as (int)
+            * peer_id (string)
+            * as_path (string)
+            * communities (list)
+            * local_preference (int)
+            * preference2 (int)
+            * metric (int)
+            * metric2 (int)
+        - ISIS:
+            * level (int)
+
         For example::
 
             {
