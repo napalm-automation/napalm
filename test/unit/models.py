@@ -191,19 +191,15 @@ mac_address_table = {
 }
 
 route = {
-    'age'                   : int,
-    'as_path'               : unicode,
-    'local_preference'      : int,
-    'next_hop'              : unicode,
-    'outgoing_interface'    : unicode,
-    'preference'            : int,
-    'preference2'           : int,
-    'protocol'              : unicode,
-    'selected_next_hop'     : bool,
-    'inactive_reason'       : unicode,
-    'current_active'        : bool,
-    'last_active'           : bool,
-    'local_as'              : int,
-    'remote_as'             : int,
-    'communities'           : list
+    'protocol'           : unicode,
+    'current_active'     : bool,
+    'last_active'        : bool,
+    'age'                : int,
+    'next_hop'           : unicode,
+    'outgoing_interface' : unicode,
+    'selected_next_hop'  : bool,
+    'preference'         : int,
+    'inactive_reason'    : unicode,
+    'routing_table'      : unicode,
+    'protocol_attributes': dict
 }

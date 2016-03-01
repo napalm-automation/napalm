@@ -303,7 +303,7 @@ class TestGettersNetworkDriver:
     def test_get_route_to(self):
 
         destination  = '1.0.4.0/24'
-        get_route_to = self.device.get_route_to(destination)
+        get_route_to = self.device.get_route_to(destination=destination)
 
         result = len(get_route_to) > 0
 
