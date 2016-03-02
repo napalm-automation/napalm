@@ -925,6 +925,64 @@ class IOSDriver(NetworkDriver):
         environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0}
         return environment
 
+    def get_arp_table(self):
+        """
+        Get arp table information.
+
+        Return a list of dictionaries having the following set of keys:
+            * interface (string)
+            * mac (string)
+            * ip (string)
+            * age (float)
+
+        For example::
+            [
+                {
+                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '5c:5e:ab:da:3c:f0',
+                    'ip'        : '172.17.17.1',
+                    'age'       : 1454496274.84
+                },
+                {
+                    'interface': 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '66:0e:94:96:e0:ff',
+                    'ip'        : '172.17.17.2',
+                    'age'       : 1435641582.49
+                }
+            ]
+        """
+        arp_table = []
+
+        command = 'show arp'
+        output = self.device.send_command(command)
+        output = output.split('\n')
+
+        # Skip the first line which is a header
+        output = output[1:-1]
+
+        for line in output:
+            if len(line) == 0:
+                return {}
+            if len(line.split()) == 6:
+                protocol, address, age, mac, eth_type, interface = line.split()
+                try:
+                    if age == '-':
+                        age = 0
+                    age = float(age)
+                except ValueError:
+                    print("Unable to convert age value to float: {}".format(age))
+                entry = {
+                    'interface': interface,
+                    'mac': mac,
+                    'ip': address,
+                    'age': age
+                }
+                arp_table.append(entry)
+            else:
+                raise ValueError("Unexpected output from: {}".format(line.split()))
+
+        return arp_table
+
     def cli(self, commands=None):
         """
         Execute a list of commands and return the output in a dictionary format using the command as the key.
