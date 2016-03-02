@@ -1215,7 +1215,7 @@ class IOSDriver(NetworkDriver):
             }
         """
 
-        mac_address_table = {}
+        mac_address_table = []
         command = 'show mac-address-table'
         output = self.device.send_command(command)
         output = output.strip().split('\n')
@@ -1242,12 +1242,14 @@ class IOSDriver(NetworkDriver):
                 entry = {
                     'mac': mac,
                     'interface': interface,
+                    'vlan': int(vlan),
                     'static': static,
-                    'active': active
+                    'active': active,
+                    'moves': None,
+                    'last_move': None
                 }
 
-                mac_address_table.setdefault(vlan, [])
-                mac_address_table[vlan].append(entry)
+                mac_address_table.append(entry)
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
 
