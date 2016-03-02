@@ -1182,37 +1182,15 @@ class IOSDriver(NetworkDriver):
     def get_mac_address_table(self):
 
         """
-        Returns a dictionary with lists of dictionaries. The keys of the main dictionary represents VLAN ID.
-        Inner dictionaries contain details for the MAC addresses in the VLAN:
+        Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address Table,
+        having the following keys
             * mac (string)
             * interface (string)
+            * vlan (int)
             * active (boolean)
             * static (boolean)
-        Example:
-            {
-                100: [
-                    {
-                        'mac'       : '00:1c:58:29:4a:71',
-                        'interface' : 'Ethernet47',
-                        'static'    : False,
-                        'active'    : True
-                    },
-                    {
-                        'mac'       : '8c:60:4f:58:e1:c1',
-                        'interface' : 'xe-1/0/1',
-                        'static'    : False,
-                        'active'    : True
-                    }
-                ],
-                900: [
-                    {
-                        'mac'       : 'f4:b5:2f:56:72:01',
-                        'interface' : 'ae7.900',
-                        'static'    : False,
-                        'active'    : True
-                    }
-                ]
-            }
+            * moves (int)
+            * last_move (float)
         """
 
         mac_address_table = []
