@@ -1223,8 +1223,8 @@ class IOSDriver(NetworkDriver):
                     'vlan': int(vlan),
                     'static': static,
                     'active': active,
-                    'moves': None,
-                    'last_move': None
+                    'moves': -1,
+                    'last_move': -1.0
                 }
 
                 mac_address_table.append(entry)
