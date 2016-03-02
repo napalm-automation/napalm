@@ -37,7 +37,7 @@ _                       EOS         JunOS   IOS-XR      FortiOS         IBM     
 **Config. replace**     Yes         Yes     Yes         Yes             Yes [#c3]_     Yes             Yes             No
 **Config. merge**       Yes         Yes     Yes         Yes             Yes            Yes             Yes             No
 **Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c1]_     Yes [#c4]_      Yes             No
-**Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   Yes/No [#c5]_   Yes
+**Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   Yes             Yes
 **Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes [#c2]_     Yes/No [#c5]_   Yes             No
 =====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============
 
