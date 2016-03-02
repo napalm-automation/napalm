@@ -12,7 +12,7 @@ _                       EOS         JunOS           IOS-XR      FortiOS         
 **Structured data**     Yes         Yes             No          No              Yes            Yes           No            No
 **Minimum version**     4.15.0F     12.1            5.1.0       5.2.0           ???            6.1           12.4(20)T           N/A
 **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_        `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_
-**Caveats**             :doc:`eos`                              :doc:`fortios`  :doc:`ibm`     :doc:`nxos`   [Foo](#foo)
+**Caveats**             :doc:`eos`                              :doc:`fortios`  :doc:`ibm`     :doc:`nxos`   :doc:`ios`
 =====================   ==========  =============   =========== ==============  =============  ============  ============  =============
 
 .. _pyeapi: https://github.com/arista-eosplus/pyeapi
@@ -120,4 +120,3 @@ argument :code:`fortios_vdom` is used only by the FortiOS driver to select a par
 :code:`$driver_name-$usage`. For example the :code:`port` optional argument.
 
 
-# Foo
