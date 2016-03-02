@@ -106,9 +106,9 @@ ____________________________________
   * :code:`fortios_vdom` (fortios) - VDOM to connect to.
   * :code:`port` (eos, iosxr, junos, ios) - Allows you to specify a port other than the default.
   * :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: True).
-  * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: 'flash:')
-  * :code:`auto_rollback_on_error' (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: True)
-  * :code:`global_delay_factor' (ios) - Allow for additional delay in command execution (default: .5)
+  * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: 'flash:').
+  * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: True).
+  * :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: .5).
 
 
 Adding optional arguments to NAPALM drivers
