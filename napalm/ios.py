@@ -463,15 +463,15 @@ class IOSDriver(NetworkDriver):
             lldp.setdefault(local_port, [])
             lldp[local_port].append(
                 {'parent_interface': u'N/A',
-                 'interface_description': local_port,
+                 # 'interface_description': local_port,
                  'remote_port': remote_port,
                  'remote_port_description': remote_port_description,
                  'remote_chassis_id': remote_chassis_id,
                  'remote_system_name': remote_system_name,
-                 'remote_system_name_description': remote_system_description,
+                 'remote_system_description': remote_system_description,
                  'remote_system_capab': remote_system_capab,
-                 'remote_system_enabled_capab': remote_system_enabled_capab,
-                 'remote_management_address': remote_management_address
+                 'remote_system_enable_capab': remote_system_enabled_capab,
+                 # 'remote_management_address': remote_management_address
                  })
 
         return lldp
