@@ -1,0 +1,81 @@
+------------------------------------------------
+Chassis id: 4c96.148c.7680
+Port id: 524
+Port Description: ge-0/0/1.0
+System Name: vsrx
+
+System Description:
+Juniper Networks, Inc. firefly-perimeter , version 12.1X47-D20.7 Build date: 2015-03-03 22:23:52 UTC
+
+Time remaining: 99 seconds
+System Capabilities: B,R
+Enabled Capabilities: R
+Management Addresses - not advertised
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    1000baseT(FD)
+    1000baseX(FD)
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 4c96.148c.7680
+Port id: 525
+Port Description: ge-0/0/2.0
+System Name: vsrx
+
+System Description:
+Juniper Networks, Inc. firefly-perimeter , version 12.1X47-D20.7 Build date: 2015-03-03 22:23:52 UTC
+
+Time remaining: 99 seconds
+System Capabilities: B,R
+Enabled Capabilities: R
+Management Addresses - not advertised
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    1000baseT(FD)
+    1000baseX(FD)
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 0800.275f.fe8f
+Port id: Ethernet2
+Port Description - not advertised
+System Name: switch1
+
+System Description:
+Arista Networks EOS version 4.15.2.1F running on an Arista Networks vEOS
+
+Time remaining: 107 seconds
+System Capabilities: B,R
+Enabled Capabilities: B
+Management Addresses:
+    IP: 10.0.2.15
+Auto Negotiation - not supported
+Physical media capabilities - not advertised
+Media Attachment Unit type - not advertised
+Vlan ID: 1
+
+------------------------------------------------
+Chassis id: 0800.275f.fe8f
+Port id: Ethernet1
+Port Description - not advertised
+System Name: switch1
+
+System Description:
+Arista Networks EOS version 4.15.2.1F running on an Arista Networks vEOS
+
+Time remaining: 107 seconds
+System Capabilities: B,R
+Enabled Capabilities: B
+Management Addresses:
+    IP: 10.0.2.15
+Auto Negotiation - not supported
+Physical media capabilities - not advertised
+Media Attachment Unit type - not advertised
+Vlan ID: 1
+
+
+Total entries displayed: 4
+
