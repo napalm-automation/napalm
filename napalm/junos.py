@@ -816,3 +816,110 @@ class JunOSDriver(NetworkDriver):
             mac_address_table.append(mac_entry)
 
         return mac_address_table
+
+    def get_route_to(self, destination = '', protocol = ''):
+
+        routes = {}
+
+        if not isinstance(destination, str):
+            raise TypeError('Please specify a valid destination!')
+
+        if not isinstance(protocol, str) or protocol.lower() not in ['static', 'bgp', 'isis']:
+            raise TypeError("Protocol not supported: {protocol}.".format(
+                protocol = protocol
+            ))
+
+        protocol = protocol.lower()
+
+        _COMMON_PROTOCOL_FIELDS_ = [
+            'destination',
+            'prefix_length',
+            'protocol',
+            'current_active',
+            'last_active',
+            'age',
+            'next_hop',
+            'outgoing_interface',
+            'selected_next_hop',
+            'preference',
+            'inactive_reason',
+            'routing_table'
+        ] # identifies the list of fileds common for all protocols
+
+        _BOOLEAN_FIELDS_ = [
+            'current_active',
+            'selected_next_hop',
+            'last_active'
+        ] # fields expected to have boolean values
+
+        _PROTOCOL_SPECIFIC_FIELDS_ = {
+            'bgp': [
+                'local_as',
+                'remote_as',
+                'as_path',
+                'communities',
+                'local_preference',
+                'preference2',
+                'remote_address',
+                'metric',
+                'metric2'
+            ],
+            'isis': [
+                'level',
+                'metric',
+                'local_as'
+            ]
+        }
+
+        routes_table = junos_views.junos_protocol_route_table(self.device)
+
+        try:
+            routes_table.get(
+                destination=destination,
+                protocol=protocol
+            )
+        except RpcTimeoutError:
+            # on devices with milions of routes
+            # in case the destination is too generic (e.g.: 10/8)
+            # will take very very long to determine all routes and
+            # moreover will return a huge list
+            raise CommandTimeoutException('Too many routes returned! Please try with a longer prefix!')
+        except Exception as e:
+            raise CommandErrorException('Cannot retrieve routes! Reason: {err}'.format(err = e))
+
+        routes_items = routes_table.items()
+
+        for route in routes_items:
+            d = dict()
+            next_hop = route[0]
+            d = {elem[0]: elem[1] for elem in route[1]}
+            destination = d.pop('destination', '')
+            prefix_length = d.pop('prefix_length', 32)
+            destination = '{d}/{p}'.format(
+                d=destination,
+                p=prefix_length
+            )
+            d.update({key: False for key in _BOOLEAN_FIELDS_ if d.get(key) is None})
+            as_path = d.get('as_path')
+            if as_path is not None:
+                d['as_path'] = as_path.split(' I ')[0].replace('AS path:', '').replace('I', '').strip()
+                # to be sure that contains only AS Numbers
+            if d.get('inactive_reason') is None:
+                d['inactive_reason'] = u''
+            communities = d.get('communities')
+            if communities is not None and type(communities) is not list:
+                d['communities'] = [communities]
+            d['next_hop'] = unicode(next_hop)
+            d_keys = d.keys()
+            # fields that are not in _COMMON_PROTOCOL_FIELDS_ are supposed to be protocol specific
+            all_protocol_attributes = {key: d.pop(key) for key in d_keys if key not in _COMMON_PROTOCOL_FIELDS_}
+            protocol_attributes = {
+                key: value for key, value in all_protocol_attributes.iteritems() \
+                if key in _PROTOCOL_SPECIFIC_FIELDS_.get(protocol)
+            }
+            d['protocol_attributes'] = protocol_attributes
+            if destination not in routes.keys():
+                routes[destination] = list()
+            routes[destination].append(d)
+
+        return routes

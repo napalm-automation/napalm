@@ -399,3 +399,62 @@ junos_mac_address_view:
     interface: {l2-mac-logical-interface: unicode}
     mac: {l2-mac-address: unicode}
     vlan: {l2-bridge-vlan: int}
+
+###
+### Route Information
+###
+
+junos_route_table:
+  rpc: get-route-information
+  args:
+    extensive: True
+  args_key:
+    destination
+  item: route-table/rt/rt-entry/nh
+  key: to
+  view: junos_route_table_view
+
+junos_protocol_route_table:
+  rpc: get-route-information
+  args:
+    extensive: True
+  args_key:
+    destination
+    protocol
+  item: route-table/rt/rt-entry/nh
+  key: to
+  view: junos_route_table_view
+
+junos_route_table_view:
+  fields:
+    ###
+    ### Common fields
+    ###
+    destination: {../../rt-destination: unicode}
+    prefix_length: {../../rt-prefix-length: int}
+    protocol: {../protocol-name: unicode}
+    current_active: {../current-active: True=current-active}
+    last_active: {../last-active: True=last-active}
+    age: {../age/@seconds: int}
+    next_hop: {to: unicode}
+    outgoing_interface: {via: unicode}
+    selected_next_hop: {selected-next-hop: True=selected-next-hop}
+    preference: {../preference: int}
+    inactive_reason: {../inactive-reason: unicode}
+    routing_table: {../../../table-name: unicode}
+    ###
+    ### BGP Specific fields
+    ###
+    as_path: {../as-path: unicode}
+    local_as: {../local-as: int}
+    remote_as: {../peer-as: int}
+    local_preference: {../local-preference: int}
+    communities: {../communities/community: unicode}
+    preference2: {../preference2: int}
+    remote_address: {../peer-id: unicode}
+    metric: {../metric: int}
+    metric2: {../metric2: int}
+    ###
+    ### ISIS Specific fields
+    ###
+    level: {../rt-isis-level: int}
