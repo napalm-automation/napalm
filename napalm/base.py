@@ -771,3 +771,70 @@ class NetworkDriver:
             E.g.: field last_move is not available on JUNOS devices etc.
         """
         raise NotImplementedError
+
+    def get_route_to(self, destination = '', protocol = ''):
+
+        """
+        Returns a dictionary of dictionaries containing details of all available routes to a destination.
+        Each inner dictionary contains the following fields:
+
+            * protocol (string)
+            * current_active (True/False)
+            * last_active (True/False)
+            * age (int)
+            * next_hop (string)
+            * outgoing_interface (string)
+            * selected_next_hop (True/False)
+            * preference (int)
+            * inactive_reason (string)
+            * routing_table (string)
+            * protocol_attributes (dictionary)
+
+        protocol_attributes is a dictionary with protocol-specific information, as follows:
+
+        - BGP
+            * local_as (int)
+            * remote_as (int)
+            * peer_id (string)
+            * as_path (string)
+            * communities (list)
+            * local_preference (int)
+            * preference2 (int)
+            * metric (int)
+            * metric2 (int)
+        - ISIS:
+            * level (int)
+
+        For example::
+
+            {
+                "1.0.0.0/24": [
+                    {
+                        "protocol"          : u"BGP",
+                        "inactive_reason"   : u"Local Preference",
+                        "last_active"       : False,
+                        "age"               : 105219,
+                        "next_hop"          : u"172.17.17.17",
+                        "selected_next_hop" : True,
+                        "preference"        : 170,
+                        "current_active"    : False,
+                        "outgoing_interface": u"ae9.0",
+                        "routing_table"     : "inet.0",
+                        "protocol_attributes": {
+                            "local_as"          : 13335,
+                            "as_path"           : u"2914 8403 54113 I",
+                            "communities"       : [
+                                u"2914:1234",
+                                u"2914:5678",
+                                u"8403:1717",
+                                u"54113:9999"
+                            ],
+                            "preference2"       : -101,
+                            "remote_as"         : 2914,
+                            "local_preference"  : 100
+                        }
+                    }
+                ]
+            }
+        """
+        raise NotImplementedError

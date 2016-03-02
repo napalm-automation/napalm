@@ -299,3 +299,17 @@ class TestGettersNetworkDriver:
             result = result and self._test_model(models.mac_address_table, mac_table_entry)
 
         self.assertTrue(result)
+
+    def test_get_route_to(self):
+
+        destination  = '1.0.4.0/24'
+        protocol = 'bgp'
+        get_route_to = self.device.get_route_to(destination=destination, protocol=protocol)
+
+        result = len(get_route_to) > 0
+
+        for prefix, routes in get_route_to.iteritems():
+            for route in routes:
+                result = result and self._test_model(models.route, route)
+
+        self.assertTrue(result)

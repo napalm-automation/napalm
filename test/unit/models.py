@@ -189,3 +189,17 @@ mac_address_table = {
     'moves'     : int,
     'last_move' : float
 }
+
+route = {
+    'protocol'           : unicode,
+    'current_active'     : bool,
+    'last_active'        : bool,
+    'age'                : int,
+    'next_hop'           : unicode,
+    'outgoing_interface' : unicode,
+    'selected_next_hop'  : bool,
+    'preference'         : int,
+    'inactive_reason'    : unicode,
+    'routing_table'      : unicode,
+    'protocol_attributes': dict
+}

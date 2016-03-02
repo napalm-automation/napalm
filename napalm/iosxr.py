@@ -671,7 +671,7 @@ class IOSXRDriver(NetworkDriver):
     def _find_txt(xml_tree, path, default = ''):
 
         try:
-            return xml_tree.find(path).text
+            return xml_tree.find(path).text.strip()
         except Exception:
             return default
 
@@ -854,11 +854,14 @@ class IOSXRDriver(NetworkDriver):
                 up                          = (self._find_txt(neighbor, 'ConnectionState') == 'BGP_ST_ESTAB')
                 local_as                    = int(self._find_txt(neighbor, 'LocalAS', 0))
                 remote_as                   = int(self._find_txt(neighbor, 'RemoteAS', 0))
-                remote_address              = unicode(self._find_txt(neighbor, 'Naming/NeighborAddress/IPV4Address') or self._find_txt(neighbor, 'Naming/NeighborAddress/IPV6Address'))
+                remote_address              = unicode(self._find_txt(neighbor, 'Naming/NeighborAddress/IPV4Address') \
+                    or self._find_txt(neighbor, 'Naming/NeighborAddress/IPV6Address'))
                 local_address_configured    = eval(self._find_txt(neighbor, 'IsLocalAddressConfigured', 'false').title())
-                local_address               = unicode(self._find_txt(neighbor, 'ConnectionLocalAddress/IPV4Address') or self._find_txt(neighbor, 'ConnectionLocalAddress/IPV6Address'))
+                local_address               = unicode(self._find_txt(neighbor, 'ConnectionLocalAddress/IPV4Address') \
+                    or self._find_txt(neighbor, 'ConnectionLocalAddress/IPV6Address'))
                 local_port                  = int(self._find_txt(neighbor, 'ConnectionLocalPort'))
-                remote_address              = unicode(self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV4Address') or self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV6Address'))
+                remote_address              = unicode(self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV4Address') \
+                    or self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV6Address'))
                 remote_port                 = int(self._find_txt(neighbor, 'ConnectionRemotePort'))
                 multihop                    = eval(self._find_txt(neighbor, 'IsExternalNeighborNotDirectlyConnected', 'false').title())
                 remove_private_as           = eval(self._find_txt(neighbor, 'AFData/Entry/RemovePrivateASFromUpdates', 'false').title())
@@ -1082,3 +1085,215 @@ class IOSXRDriver(NetworkDriver):
                 continue
 
         return mac_table
+
+    def get_route_to(self, destination = '', protocol = ''):
+
+        routes = {}
+
+        if not isinstance(destination, str):
+            raise TypeError('Please specify a valid destination!')
+
+        if not isinstance(protocol, str) or protocol.lower() not in ['static', 'bgp', 'isis']:
+            raise TypeError("Protocol not supported: {protocol}.".format(
+                protocol = protocol
+            ))
+
+        protocol = protocol.lower()
+        dest_split = destination.split('/')
+        network = dest_split[0]
+        prefix_tag = ''
+        if len(dest_split) == 2:
+            prefix_tag = '''
+                <PrefixLength>
+                    {prefix_length}
+                </PrefixLength>
+            '''.format(prefix_length = dest_split[1])
+
+        route_info_rpc_command = '''
+            <Get>
+                <Operational>
+                    <RIB>
+                        <VRFTable>
+                            <VRF>
+                                <Naming>
+                                    <VRFName>
+                                        default
+                                    </VRFName>
+                                </Naming>
+                                <AFTable>
+                                    <AF>
+                                        <Naming>
+                                            <AFName>
+                                                IPv4
+                                            </AFName>
+                                        </Naming>
+                                        <SAFTable>
+                                            <SAF>
+                                                <Naming>
+                                                    <SAFName>
+                                                        Unicast
+                                                    </SAFName>
+                                                </Naming>
+                                                <IP_RIBRouteTable>
+                                                    <IP_RIBRoute>
+                                                        <Naming>
+                                                            <RouteTableName>
+                                                                default
+                                                            </RouteTableName>
+                                                        </Naming>
+                                                        <RouteTable>
+                                                            <Route>
+                                                                <Naming>
+                                                                    <Address>
+                                                                        {network}
+                                                                    </Address>
+                                                                    {prefix}
+                                                                </Naming>
+                                                            </Route>
+                                                        </RouteTable>
+                                                    </IP_RIBRoute>
+                                                </IP_RIBRouteTable>
+                                          </SAF>
+                                        </SAFTable>
+                                    </AF>
+                                </AFTable>
+                            </VRF>
+                        </VRFTable>
+                    </RIB>
+                </Operational>
+            </Get>
+        '''.format(
+            network = network,
+            prefix  = prefix_tag
+        )
+
+        routes_tree = ET.fromstring(self.device.make_rpc_call(route_info_rpc_command))
+
+        for route in routes_tree.iter('Route'):
+            route_details = dict()
+            try:
+                address  = route.find('Prefix').text
+                length   = route.find('PrefixLength').text
+                distance = int(route.find('Distance').text)
+                protocol = unicode(route.find('ProtocolName').text.upper())
+                priority = int(route.find('Priority').text)
+                age      = int(route.find('RouteAge').text)
+                destination = unicode('{prefix}/{length}'.format(
+                    prefix = address,
+                    length = length
+                ))
+                if destination not in routes.keys():
+                    routes[destination] = list()
+            except Exception:
+                continue
+
+            route_details = {
+                'current_active'    : False,
+                'last_active'       : False,
+                'age'               : age,
+                'next_hop'          : u'',
+                'protocol'          : protocol,
+                'outgoing_interface': u'',
+                'preference'        : priority,
+                'selected_next_hop' : False,
+                'inactive_reason'   : u'',
+                'routing_table'     : u'default',
+                'protocol_attributes': {}
+            }
+
+            # from BGP will try to get some more information
+            if protocol.lower() == 'bgp':
+                # looks like IOS-XR does not filter correctly
+                # !IMPORTANT
+                bgp_route_info_rpc_command = '''
+                    <Get>
+                        <Operational>
+                            <BGP>
+                                <Active>
+                                    <DefaultVRF>
+                                        <AFTable>
+                                            <AF>
+                                                <Naming>
+                                                    <AFName>
+                                                        IPv4Unicast
+                                                    </AFName>
+                                                </Naming>
+                                                <PathTable>
+                                                    <Path>
+                                                        <Naming>
+                                                            <Network>
+                                                                <IPV4Address>
+                                                                    {network}
+                                                                </IPV4Address>
+                                                                <IPV4PrefixLength>
+                                                                    {prefix_len}
+                                                                </IPV4PrefixLength>
+                                                            </Network>
+                                                        </Naming>
+                                                    </Path>
+                                                </PathTable>
+                                            </AF>
+                                        </AFTable>
+                                    </DefaultVRF>
+                                </Active>
+                            </BGP>
+                        </Operational>
+                    </Get>
+                '''.format(
+                    network     = network,
+                    prefix_len  = dest_split[-1]
+                )
+                bgp_route_tree = ET.fromstring(self.device.make_rpc_call(bgp_route_info_rpc_command))
+                for bgp_path in bgp_route_tree.iter('Path'):
+                    try:
+                        best_path = eval(self._find_txt(bgp_path,'PathInformation/IsBestPath', 'false').title())
+                        backup    = eval(self._find_txt(bgp_path,'PathInformation/IsPathBackup', 'false').title())
+                        local_preference = int(
+                            self._find_txt(bgp_path, 'AttributesAfterPolicyIn/CommonAttributes/LocalPreference', '0')
+                        )
+                        local_preference = int(
+                            self._find_txt(bgp_path, 'AttributesAfterPolicyIn/CommonAttributes/LocalPreference', '0')
+                        )
+                        metric = int(
+                            self._find_txt(bgp_path, 'AttributesAfterPolicyIn/CommonAttributes/Metric', '0')
+                        )
+                        remote_as       = int(
+                           self._find_txt(bgp_path, 'AttributesAfterPolicyIn/CommonAttributes/NeighborAS', '0')
+                        )
+                        remote_address  = unicode(self._find_txt(bgp_path, 'PathInformation/NeighborAddress/IPV4Address') \
+                            or self._find_txt(bgp_path, 'PathInformation/NeighborAddress/IPV6Address'))
+                        as_path         = ' '.join(
+                        [bgp_as.text for bgp_as in bgp_path.findall('AttributesAfterPolicyIn/CommonAttributes/NeighborAS/Entry')]
+                        )
+                        next_hop = unicode(self._find_txt(bgp_path, 'PathInformation/NextHop/IPV4Address') \
+                            or self._find_txt(bgp_path, 'PathInformation/NextHop/IPV6Address') )
+                    except Exception:
+                        continue
+                    single_route_details = route_details.copy()
+                    single_route_details['current_active'] = best_path
+                    single_route_details['next_hop'] = next_hop
+                    single_route_details['protocol_attributes'] = {
+                        'local_preference'  : local_preference,
+                        'as_path'           : as_path,
+                        'remote_as'         : remote_as,
+                        'remote_address'    : remote_address
+                    }
+                    routes[destination].append(single_route_details)
+
+            else:
+                first_route = True
+                for route_entry in route.findall('RoutePath/Entry'):
+                    # get all possible entries
+                    try:
+                        next_hop  = unicode(route_entry.find('Address').text)
+                    except Exception:
+                        continue
+                    single_route_details = route_details.copy()
+                    single_route_details.update({
+                        'current_active': first_route,
+                        'next_hop'      : next_hop
+                    })
+                    routes[destination].append(single_route_details)
+                    first_route = False
+
+        return routes
