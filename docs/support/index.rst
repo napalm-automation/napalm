@@ -106,7 +106,7 @@ ____________________________________
   * :code:`fortios_vdom` (fortios) - VDOM to connect to.
   * :code:`port` (eos, iosxr, junos, ios) - Allows you to specify a port other than the default.
   * :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: True).
-  * :code:`dest_file_system` (ios) - = Destination file system for SCP transfers (default: flash:)
+  * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: 'flash:')
 
 Adding optional arguments to NAPALM drivers
 ___________________________________________
