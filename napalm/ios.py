@@ -321,33 +321,159 @@ class IOSDriver(NetworkDriver):
         return False
 
     def get_lldp_neighbors(self):
-        """
-        Get lldp information (brief).
-
-        Output command format:
-        Device ID           Local Intf     Hold-time  Capability      Port ID
-        twb-sf-hpsw1        Fa4            120        B               17
-
-        Total entries displayed: 1
-
-        return data structure is a dictionary, key is local_port
-        {u'Fa4': [{'hostname': u'twb-sf-hpsw1', 'port': u'17'}]}
-
-        and value is a list where each entry in the list is a dict
-        """
+        """IOS implementation of get_lldp_neighbors."""
         lldp = {}
+        counter = 0
 
-        command = 'show lldp neighbors | begin Device ID'
+        command = 'show lldp neighbors detail'
         output = self.device.send_command(command)
+
+        # Check if router supports the command
         if '% Invalid input' in output:
             return {}
-        for line in output.splitlines():
-            line = line.strip()
-            if 'Device ID' in line or 'entries' in line or line == '':
+
+        split_output = output.split('------------------------------------------------')
+
+        for line in split_output:
+            # Skip the first line
+            if line == '':
                 continue
-            device_id, local_port, _, _, remote_port = line.split()
+            local_interface = re.search(r"Local Intf: (.+)", line)
+            if local_interface:
+                # Query router for full interface name using abbreviated name
+                command = 'show int {}'.format(local_interface.group(1))
+                output = self.device.send_command(command)
+
+                if 'line protocol' in output:
+                    split_output = output.split()
+                    local_port = split_output[0]
+                else:
+                    # If unable to return local populate unknown_x
+                    local_port = u'unknown_{}'.format(counter)
+                    counter += 1
+            else:
+                # If unable to return local populate unknown_x
+                local_port = u'unknown_{}'.format(counter)
+                counter += 1
+
+            system_name = re.search(r"System Name: (.+)", line)
+            if system_name:
+                remote_system_name = system_name.group(1)
+            else:
+                remote_system_name = u'N/A'
+
+            port_id = re.search(r"Port id: (.+)", line)
+            if port_id:
+                remote_port = port_id.group(1)
+            else:
+                remote_port = u'N/A'
+
             lldp.setdefault(local_port, [])
-            lldp[local_port].append({'hostname': unicode(device_id), 'port': unicode(remote_port), })
+            lldp[local_port].append(
+                {'port': remote_port,
+                 'hostname': remote_system_name,
+                 })
+
+        return lldp
+
+    def get_lldp_neighbors_detail(self):
+        """IOS implementation of get_lldp_neighbors_detail."""
+        lldp = {}
+        counter = 0
+
+        command = 'show lldp neighbors detail'
+        output = self.device.send_command(command)
+
+        # Check if router supports the command
+        if '% Invalid input' in output:
+            return {}
+
+        split_output = output.split('------------------------------------------------')
+
+        for line in split_output:
+            # Skip the first line
+            if line == '':
+                continue
+            local_interface = re.search(r"Local Intf: (.+)", line)
+            if local_interface:
+                # Query router for full interface name using abbreviated name
+                command = 'show int {}'.format(local_interface.group(1))
+                output = self.device.send_command(command)
+
+                if 'line protocol' in output:
+                    split_output = output.split()
+                    local_port = split_output[0]
+                else:
+                    # If unable to return local populate unknown_x
+                    local_port = 'unknown_{}'.format(counter)
+                    counter += 1
+            else:
+                # If unable to return local populate unknown_x
+                local_port = 'unknown_{}'.format(counter)
+                counter += 1
+
+            port_id = re.search(r"Port id: (.+)", line)
+            if port_id:
+                remote_port = port_id.group(1)
+            else:
+                remote_port = u'N/A'
+
+            port_description = re.search(r"Port Description: (.+)", line)
+            if port_description:
+                remote_port_description = port_description.group(1)
+            else:
+                remote_port_description = u'N/A'
+
+            chassis_id = re.search(r"Chassis id: (.+)", line)
+            if chassis_id:
+                remote_chassis_id = chassis_id.group(1)
+            else:
+                remote_chassis_id = u'N/A'
+
+            system_name = re.search(r"System Name: (.+)", line)
+            if system_name:
+                remote_system_name = system_name.group(1)
+            else:
+                remote_system_name = u'N/A'
+
+            system_description = re.search(r"System Description: \n(.+)", line)
+            if system_description:
+                remote_system_description = system_description.group(1)
+            else:
+                remote_system_description = u'N/A'
+
+            system_capabilities = re.search(r"System Capabilities: (.+)", line)
+            if system_capabilities:
+                remote_system_capab = system_capabilities.group(1)
+            else:
+                remote_system_capab = u'N/A'
+
+            enabled_capabilities = re.search(r"Enabled Capabilities: (.+)", line)
+            if enabled_capabilities:
+                remote_system_enabled_capab = enabled_capabilities.group(1)
+            else:
+                remote_system_enabled_capab = u'N/A'
+
+            remote_address = re.search(r"Management Addresses:\n    IP: (.+)", line)
+            if remote_address:
+                remote_management_address = remote_address.group(1)
+            else:
+                remote_management_address = u'N/A'
+
+            lldp.setdefault(local_port, [])
+            lldp[local_port].append(
+                {'parent_interface': u'N/A',
+                 # 'interface_description': local_port,
+                 'remote_port': remote_port,
+                 'remote_port_description': remote_port_description,
+                 'remote_chassis_id': remote_chassis_id,
+                 'remote_system_name': remote_system_name,
+                 'remote_system_description': remote_system_description,
+                 'remote_system_capab': remote_system_capab,
+                 'remote_system_enable_capab': remote_system_enabled_capab,
+                 # 'remote_management_address': remote_management_address
+                 })
+
         return lldp
 
     @staticmethod
@@ -449,6 +575,27 @@ class IOSDriver(NetworkDriver):
         Get interface details.
 
         last_flapped is not implemented
+
+        Example Output:
+
+        {   u'Vlan1': {   'description': u'N/A',
+                      'is_enabled': True,
+                      'is_up': True,
+                      'last_flapped': -1.0,
+                      'mac_address': u'a493.4cc1.67a7',
+                      'speed': 100},
+        u'Vlan100': {   'description': u'Data Network',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'last_flapped': -1.0,
+                        'mac_address': u'a493.4cc1.67a7',
+                        'speed': 100},
+        u'Vlan200': {   'description': u'Voice Network',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'last_flapped': -1.0,
+                        'mac_address': u'a493.4cc1.67a7',
+                        'speed': 100}}
         """
         interface_list = {}
 
@@ -459,20 +606,37 @@ class IOSDriver(NetworkDriver):
         mac_regex = r".*,\saddress\sis\s(?P<mac_address>\S+).*"
         speed_regex = r".*BW\s(?P<speed>\d+)\s(?P<speed_format>\S+).*"
 
-        command = 'show interfaces description'
+        command = 'show ip interface brief'
         output = self.device.send_command(command)
         for line in output.splitlines():
             if 'Interface' in line and 'Status' in line:
                 continue
             fields = line.split()
-            if len(fields) == 3:
-                interface, status, protocol = fields
-                description = u''
-            elif fields > 3:
-                interface, status, protocol = fields[:3]
-                description = u" ".join(fields[3:])
+            """
+            router#sh ip interface brief
+            Interface                  IP-Address      OK? Method Status                Protocol
+            FastEthernet8              10.65.43.169    YES DHCP   up                    up
+            GigabitEthernet0           unassigned      YES NVRAM  administratively down down
+            Loopback234                unassigned      YES unset  up                    up
+            Loopback555                unassigned      YES unset  up                    up
+            NVI0                       unassigned      YES unset  administratively down down
+            Tunnel0                    10.63.100.9     YES NVRAM  up                    up
+            Tunnel1                    10.63.101.9     YES NVRAM  up                    up
+            Vlan1                      unassigned      YES unset  up                    up
+            Vlan100                    10.40.0.1       YES NVRAM  up                    up
+            Vlan200                    10.63.176.57    YES NVRAM  up                    up
+            Wlan-GigabitEthernet0      unassigned      YES unset  up                    up
+            wlan-ap0                   10.40.0.1       YES unset  up                    up
+            """
+
+            # Check for administratively down
+            if len(fields) == 6:
+                interface, ip_address, ok, method, status, protocol = fields
+            elif len(fields) == 7:
+                # Administratively down is two fields in the output for status
+                interface, ip_address, ok, method, status, status2, protocol = fields
             else:
-                raise ValueError("Unexpected response from the router")
+                raise ValueError(u"Unexpected Response from the device")
 
             status = status.lower()
             protocol = protocol.lower()
@@ -484,13 +648,19 @@ class IOSDriver(NetworkDriver):
             interface_list[interface] = {
                 'is_up': is_up,
                 'is_enabled': is_enabled,
-                'description': description,
                 'last_flapped': last_flapped,
             }
 
         for interface in interface_list:
             show_command = "show interface {0}".format(interface)
             interface_output = self.device.send_command(show_command)
+            try:
+                # description filter
+                description = re.search(r"  Description: (.+)", interface_output)
+                interface_list[interface]['description'] = description.group(1).strip('\r')
+            except AttributeError:
+                interface_list[interface]['description'] = u'N/A'
+
             try:
                 # mac_address filter.
                 match_mac = re.match(mac_regex, interface_output, flags=re.DOTALL)
