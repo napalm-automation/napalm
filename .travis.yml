@@ -83,3 +83,4 @@ script:
   - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_arp_table
   - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_mac_address_table
   - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_ios_only_bgp_time_conversion #IOS only test
+  - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_snmp_information
