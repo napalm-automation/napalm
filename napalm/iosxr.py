@@ -1297,3 +1297,34 @@ class IOSXRDriver(NetworkDriver):
                     first_route = False
 
         return routes
+
+    def get_snmp_information(self):
+
+        snmp_information = dict()
+
+        snmp_rpc_command = '<Get><Configuration><SNMP></SNMP></Configuration></Get>'
+
+        snmp_result_tree = ET.fromstring(self.device.make_rpc_call(snmp_rpc_command))
+
+        _PRIVILEGE_MODE_MAP_ = {
+            'ReadOnly': u'ro',
+            'ReadWrite': u'rw'
+        }
+
+        snmp_information = {
+            'chassis_id': unicode(self._find_txt(snmp_result_tree, './/ChassisID')),
+            'contact': unicode(self._find_txt(snmp_result_tree, './/Contact')),
+            'location': unicode(self._find_txt(snmp_result_tree, './/Location')),
+            'community': {}
+        }
+
+        for community in snmp_result_tree.iter('DefaultCommunity'):
+            name = unicode(self._find_txt(community, 'Naming/CommunityName'))
+            privilege = self._find_txt(community, 'Priviledge')
+            acl = unicode(self._find_txt(community, 'AccessList'))
+            snmp_information['community'][name] = {
+                'mode': _PRIVILEGE_MODE_MAP_.get(privilege, u''),
+                'acl' : acl
+            }
+
+        return snmp_information
