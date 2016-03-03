@@ -11,8 +11,12 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-import napalm.exceptions
+
+import os
 import sys
+import jinja2
+
+import napalm.exceptions
 
 
 class NetworkDriver:
@@ -128,6 +132,51 @@ class NetworkDriver:
         If changes were made, revert changes to the original state.
         """
         raise NotImplementedError
+
+    def load_template(self, template_name, template_vars):
+        """
+        Will load a templated configuration on the device.
+
+        :param template_name (str) identifies the template name
+        :param template_vars (obj) represents the object to be used by the Jinja template to create the configuration
+        Can be any object type but must respect the constraints defined in the template file.
+
+        :raise DriverTemplateNotImplemented if no template defined for the device type
+        :raise TemplateNotImplemented if the template specified in template_name is not defined
+        :raise TemplateRenderException if the user passed wrong arguments to the template
+        """
+        try:
+            driver_name = self.__class__.__name__.replace('Driver', '')
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            template_dir_path = '{current_dir}/templates/{driver}'.format(
+                current_dir=current_dir,
+                driver=driver_name.lower()
+            )
+            if not os.path.isdir(template_dir_path):
+                raise napalm.exceptions.DriverTemplateNotImplemented(
+                    "There's no config template defined for {driver_name}.".format(
+                        driver_name=driver_name
+                    )
+                )
+            loader = jinja2.FileSystemLoader(template_dir_path)
+            environment = jinja2.Environment(loader=loader)
+            template = environment.get_template('{template_name}.j2'.format(
+                template_name=template_name
+            ))
+            configuration = template.render(template_vars=template_vars)
+        except jinja2.exceptions.TemplateNotFound:
+            raise napalm.exceptions.TemplateNotImplemented(
+                "Template {template_name}.j2 not defined under {path}".format(
+                    template_name=template_name,
+                    path=template_dir_path
+                )
+            )
+        except jinja2.exceptions.UndefinedError as ue:
+            raise napalm.exceptions.TemplateRenderException(
+                "Unable to render the template: {}".format(ue.message)
+            )
+
+        self.load_merge_candidate(config=configuration)
 
     def get_facts(self):
         """
@@ -633,7 +682,7 @@ class NetworkDriver:
                     'age'       : 1435641582.49
                 }
             ]
-        }
+
         """
         raise NotImplementedError
 
@@ -738,6 +787,7 @@ class NetworkDriver:
             * last_move (float)
 
         For example::
+
             [
                 {
                     'mac'       : '00:1c:58:29:4a:71',
@@ -767,6 +817,7 @@ class NetworkDriver:
                     'last_move' : None
                 }
             ]
+
             However, please note that not all vendors provide all these informations.
             E.g.: field last_move is not available on JUNOS devices etc.
         """
