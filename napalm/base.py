@@ -889,3 +889,33 @@ class NetworkDriver:
             }
         """
         raise NotImplementedError
+
+    def get_snmp_information(self):
+
+        """
+        Returns a dict of dicts containing SNMP configuration
+        Each inner dictionary contains these fields
+
+            * chassis_id (string)
+            * community (dictionary)
+            * contact (string)
+            * location (string)
+
+        'community' is a dictionary with community string specific information, as follows:
+
+            * acl (string) # acl number or name
+            * mode (string) # read-write (rw), read-only (ro)
+
+        Example Output:
+
+        {   'chassis_id': u'Asset Tag 54670',
+        'community': {   u'private': {   'acl': u'12', 'mode': u'rw'},
+                         u'public': {   'acl': u'11', 'mode': u'ro'},
+                         u'public_named_acl': {   'acl': u'ALLOW-SNMP-ACL',
+                                                  'mode': u'ro'},
+                         u'public_no_acl': {   'acl': u'N/A', 'mode': u'ro'}},
+        'contact': u'Joe Smith',
+        'location': u'123 Anytown USA Rack 404'}
+
+        """
+        raise NotImplementedError
