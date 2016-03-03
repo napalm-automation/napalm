@@ -1,4 +1,0 @@
-Device ID           Local Intf     Hold-time  Capability      Port ID
-localhost           Gi2            120        B               Ethernet1
-
-Total entries displayed: 1
