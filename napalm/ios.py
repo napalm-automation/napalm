@@ -1178,3 +1178,57 @@ class IOSDriver(NetworkDriver):
             cli_output[command] = output
 
         return cli_output
+
+    def get_mac_address_table(self):
+
+        """
+        Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address Table,
+        having the following keys
+            * mac (string)
+            * interface (string)
+            * vlan (int)
+            * active (boolean)
+            * static (boolean)
+            * moves (int)
+            * last_move (float)
+        """
+
+        mac_address_table = []
+        command = 'show mac-address-table'
+        output = self.device.send_command(command)
+        output = output.strip().split('\n')
+
+        # Skip the first two lines which are headers
+        output = output[2:-1]
+
+        for line in output:
+            if len(line) == 0:
+                return mac_address_table
+            elif len(line.split()) == 4:
+                mac, mac_type, vlan, interface = line.split()
+
+                if mac_type.lower() in ['self', 'static']:
+                    static = True
+                else:
+                    static = False
+
+                if mac_type.lower() in ['dynamic']:
+                    active = True
+                else:
+                    active = False
+
+                entry = {
+                    'mac': mac,
+                    'interface': interface,
+                    'vlan': int(vlan),
+                    'static': static,
+                    'active': active,
+                    'moves': -1,
+                    'last_move': -1.0
+                }
+
+                mac_address_table.append(entry)
+            else:
+                raise ValueError("Unexpected output from: {}".format(line.split()))
+
+        return mac_address_table
