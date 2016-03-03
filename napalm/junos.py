@@ -404,6 +404,8 @@ class JunOSDriver(NetworkDriver):
 
     @staticmethod
     def _convert(to, who, default = u''):
+        if who is None:
+            return default
         try:
             return to(who)
         except:
@@ -923,3 +925,44 @@ class JunOSDriver(NetworkDriver):
             routes[destination].append(d)
 
         return routes
+
+    def get_snmp_information(self):
+
+        snmp_information = dict()
+
+        _AUTHORIZATION_MODE_MAP_ = {
+            'read-only': u'ro',
+            'read-write': u'rw'
+        }
+
+        snmp_config = junos_views.junos_snmp_config_table(self.device)
+        snmp_config.get()
+        snmp_items = snmp_config.items()
+
+        if not snmp_items:
+            return snmp_information
+
+        communities = list()
+        for snmp_config_out in snmp_items:
+            community_name = snmp_config_out[0]
+            community_details = snmp_config_out[1]
+            communities.append({
+                c[0]: c[1] for c in community_details
+            })
+
+        snmp_information = {
+            'contact': self._convert(unicode, communities[0].get('contact')),
+            'location': self._convert(unicode, communities[0].get('location')),
+            'chassis_id': self._convert(unicode, communities[0].get('chassis')),
+            'community': {}
+        }
+
+        for snmp_entry in communities:
+            name = self._convert(unicode, snmp_entry.get('name'))
+            authorization = self._convert(unicode, snmp_entry.get('authorization'))
+            snmp_information['community'][name] = {
+                'mode': _AUTHORIZATION_MODE_MAP_.get(authorization, u''),
+                'acl': u''
+            }
+
+        return snmp_information

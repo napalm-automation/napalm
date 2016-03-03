@@ -458,3 +458,19 @@ junos_route_table_view:
     ### ISIS Specific fields
     ###
     level: {../rt-isis-level: int}
+
+###
+### SNMP Config
+###
+
+junos_snmp_config_table:
+  get: snmp/community
+  view: junos_snmp_config_view
+
+junos_snmp_config_view:
+  fields:
+    name: name
+    authorization: authorization
+    location: ../location
+    contact: ../contact
+    chassis: ../system-name
