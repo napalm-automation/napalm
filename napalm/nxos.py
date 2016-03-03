@@ -521,7 +521,7 @@ class NXOSDriver(NetworkDriver):
 
         snmp_command = 'show running-config | section snmp-server'
 
-        snmp_raw_output = self.cli(snmp_command).get(snmp_command, '')
+        snmp_raw_output = self.cli([snmp_command]).get(snmp_command, '')
 
         fsmtemplate_relative_path = 'nxos/snmp_config.tpl'
 
@@ -543,7 +543,7 @@ class NXOSDriver(NetworkDriver):
                 continue
             snmp_information['community'][community_name] = {
                 'acl': unicode(snmp_entry.get('acl', '')),
-                'mode': unicode(snmp_entry.get('mode', ''))
+                'mode': unicode(snmp_entry.get('mode', '').lower())
             }
 
         return snmp_information
