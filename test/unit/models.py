@@ -204,11 +204,14 @@ route = {
     'protocol_attributes': dict
 }
 
-snmp_information = {
+snmp = {
     'chassis_id'        : unicode,
     'community'         : dict,
-    'acl'               : unicode,
-    'mode'              : unicode,
     'contact'           : unicode,
     'location'          : unicode
+}
+
+snmp_community = {
+    'acl'               : unicode,
+    'mode'              : unicode,
 }
