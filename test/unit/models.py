@@ -203,3 +203,12 @@ route = {
     'routing_table'      : unicode,
     'protocol_attributes': dict
 }
+
+snmp_information = {
+    'chassis_id'        : unicode,
+    'community'         : dict,
+    'acl'               : unicode,
+    'mode'              : unicode,
+    'contact'           : unicode,
+    'location'          : unicode
+}
