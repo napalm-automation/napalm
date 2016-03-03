@@ -184,7 +184,7 @@ class NetworkDriver:
     def _textfsm_extractor(template_relative_path, raw_text):
 
         """
-        Will apply a TextFSM template over a raw text and return the mathing table
+        Will apply a TextFSM template over a raw text and return the matching table
         """
 
         textfsm_data = list()
