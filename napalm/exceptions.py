@@ -29,3 +29,12 @@ class CommandTimeoutException(Exception):
 
 class CommandErrorException(Exception):
     pass
+
+class DriverTemplateNotImplemented(Exception):
+    pass
+
+class TemplateNotImplemented(Exception):
+    pass
+
+class TemplateRenderException(Exception):
+    pass

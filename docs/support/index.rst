@@ -10,7 +10,7 @@ _                       EOS         JunOS           IOS-XR      FortiOS         
 =====================   ==========  =============   =========== ==============  =============  ============  ============  =============
 **Driver Name**         eos         junos           iosxr       fortios         ibm            nxos          ios           pluribus
 **Structured data**     Yes         Yes             No          No              Yes            Yes           No            No
-**Minimum version**     4.15.0F     12.1            5.1.0       5.2.0           ???            6.1           ???           N/A
+**Minimum version**     4.15.0F     12.1            5.1.0       5.2.0           ???            6.1           12.4(20)T           N/A
 **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_        `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_
 **Caveats**             :doc:`eos`                              :doc:`fortios`  :doc:`ibm`     :doc:`nxos`   :doc:`ios`
 =====================   ==========  =============   =========== ==============  =============  ============  ============  =============
@@ -69,8 +69,10 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_bgp_neighbors_detail**   |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|
 **get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|
 **get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|
+**get_mac_address_table**      |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|
+**get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|   |no|
 **get_mac_address_table**      |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|
-**get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |no|
+**get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|
 **get_snmp_information**       |no|   |no|    |no|    |no|     |no|    |no|    |no|   |yes|
 **get_ntp_peers**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|
 **get_interfaces_ip**          |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|
@@ -106,6 +108,10 @@ ____________________________________
   * :code:`fortios_vdom` (fortios) - VDOM to connect to.
   * :code:`port` (eos, iosxr, junos, ios) - Allows you to specify a port other than the default.
   * :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: True).
+  * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: 'flash:').
+  * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: True).
+  * :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: .5).
+
 
 Adding optional arguments to NAPALM drivers
 ___________________________________________
@@ -114,3 +120,5 @@ If you are a developer and want to add an optional argument to a driver, please,
 argument; :code:`$driver_name-$usage` if the argument applies only to a particular driver. For example, the optional
 argument :code:`fortios_vdom` is used only by the FortiOS driver to select a particular vdom. Otherwise, just name it
 :code:`$driver_name-$usage`. For example the :code:`port` optional argument.
+
+
