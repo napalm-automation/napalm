@@ -1037,7 +1037,7 @@ class EOSDriver(NetworkDriver):
                 continue
             snmp_information['community'][community_name] = {
                 'acl': unicode(snmp_entry.get('acl', '')),
-                'mode': unicode(snmp_entry.get('mode', ''))
+                'mode': unicode(snmp_entry.get('mode', '').lower())
             }
 
         return snmp_information
