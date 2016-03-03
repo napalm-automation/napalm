@@ -11,14 +11,12 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-import napalm.exceptions
-import sys
+
 import os
+import sys
+import jinja2
 
-from napalm.exceptions import DriverTemplateNotImplemented, TemplateNotImplemented, TemplateRenderException
-
-from jinja2 import Environment, FileSystemLoader
-from jinja2.exceptions import TemplateNotFound, UndefinedError
+import napalm.exceptions
 
 
 class NetworkDriver:
@@ -155,26 +153,26 @@ class NetworkDriver:
                 driver=driver_name.lower()
             )
             if not os.path.isdir(template_dir_path):
-                raise DriverTemplateNotImplemented(
+                raise napalm.exceptions.DriverTemplateNotImplemented(
                     "There's no config template defined for {driver_name}.".format(
                         driver_name=driver_name
                     )
                 )
-            loader = FileSystemLoader(template_dir_path)
-            environment = Environment(loader=loader)
+            loader = jinja2.FileSystemLoader(template_dir_path)
+            environment = jinja2.Environment(loader=loader)
             template = environment.get_template('{template_name}.j2'.format(
                 template_name=template_name
             ))
             configuration = template.render(template_vars=template_vars)
-        except TemplateNotFound:
-            raise TemplateNotImplemented(
+        except jinja2.exceptions.TemplateNotFound:
+            raise napalm.exceptions.TemplateNotImplemented(
                 "Template {template_name}.j2 not defined under {path}".format(
                     template_name=template_name,
                     path=template_dir_path
                 )
             )
-        except UndefinedError as ue:
-            raise TemplateRenderException(
+        except jinja2.exceptions.UndefinedError as ue:
+            raise napalm.exceptions.TemplateRenderException(
                 "Unable to render the template: {}".format(ue.message)
             )
 
