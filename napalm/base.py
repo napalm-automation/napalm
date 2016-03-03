@@ -16,6 +16,8 @@ import os
 import sys
 import jinja2
 
+import textfsm
+
 import napalm.exceptions
 
 
@@ -177,6 +179,33 @@ class NetworkDriver:
             )
 
         self.load_merge_candidate(config=configuration)
+
+    @staticmethod
+    def _textfsm_extractor(template_relative_path, raw_text):
+
+        """
+        Will apply a TextFSM template over a raw text and return the mathing table
+        """
+
+        textfsm_data = list()
+
+        template_path = '{current_dir}/utils/textfsm_templates/{rel_path}'.format(
+            current_dir=os.path.dirname(os.path.abspath(__file__)),
+            rel_path=template_relative_path
+        )
+
+        fsm_handler = textfsm.TextFSM(open(template_path))
+        objects = fsm_handler.ParseText(raw_text)
+
+        for obj in objects:
+            index = 0
+            entry = {}
+            for entry_value in obj:
+                entry[fsm_handler.header[index].lower()] = str(entry_value)
+                index += 1
+            textfsm_data.append(entry)
+
+        return textfsm_data
 
     def get_facts(self):
         """
