@@ -1224,20 +1224,23 @@ class IOSDriver(NetworkDriver):
                 return {}
             elif len(line.split()) == 9:
                 address, ref_clock, st, when, poll, reach, delay, offset, disp = line.split()
-                peer = {
-                    'referenceid': ref_clock,
-                    'stratum': st,
-                    'type': u'-',
-                    'when': when,
-                    'hostpoll': poll,
-                    'reachability': reach,
-                    'delay': delay,
-                    'offset': offset,
-                    'jitter': disp
-                }
+                try:
+                    peer = {
+                        'referenceid': ref_clock,
+                        'stratum': int(st),
+                        'type': u'-',
+                        'when': when,
+                        'hostpoll': int(poll),
+                        'reachability': int(reach),
+                        'delay': float(delay),
+                        'offset': float(offset),
+                        'jitter': float(disp)
+                        }
 
-                ntp_peers.setdefault(address, {})
-                ntp_peers[address].update(peer)
+                    ntp_peers.setdefault(address, {})
+                    ntp_peers[address].update(peer)
+                except ValueError:
+                    print("Casting NTP variable failed")
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
 
