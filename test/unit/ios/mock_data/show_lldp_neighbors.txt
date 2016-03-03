@@ -1,0 +1,10 @@
+Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+
+Device ID           Local Intf     Hold-time  Capability      Port ID
+twb-sf-hpsw1        Gi1            120        B               17
+twb-sf-hpsw2        Gi2            120        B               18
+
+Total entries displayed: 2
+
