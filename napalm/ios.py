@@ -320,59 +320,44 @@ class IOSDriver(NetworkDriver):
             return True
         return False
 
+    def _expand_interface_name(self, interface_brief):
+        """Obtain the full interface name from the abbreviated name."""
+        command = 'show int {}'.format(interface_brief)
+        output = self.device.send_command(command)
+        output = output.strip()
+        first_line = output.splitlines()[0]
+        if 'line protocol' in first_line:
+            return first_line.split()[0]
+        else:
+            return interface_brief
+
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
         lldp = {}
-        counter = 0
-
-        command = 'show lldp neighbors detail'
+        command = 'show lldp neighbors'
         output = self.device.send_command(command)
 
         # Check if router supports the command
         if '% Invalid input' in output:
             return {}
 
-        split_output = output.split('------------------------------------------------')
+        # Process the output to obtain just the LLDP entries
+        try:
+            split_output = re.split(r'^Device ID.*$', output, flags=re.M)[1]
+            split_output = re.split(r'^Total entries displayed.*$', split_output, flags=re.M)[0]
+        except IndexError:
+            return {}
 
-        for line in split_output:
-            # Skip the first line
-            if line == '':
-                continue
-            local_interface = re.search(r"Local Intf: (.+)", line)
-            if local_interface:
-                # Query router for full interface name using abbreviated name
-                command = 'show int {}'.format(local_interface.group(1))
-                output = self.device.send_command(command)
+        split_output = split_output.strip()
 
-                if 'line protocol' in output:
-                    split_output = output.split()
-                    local_port = split_output[0]
-                else:
-                    # If unable to return local populate unknown_x
-                    local_port = u'unknown_{}'.format(counter)
-                    counter += 1
-            else:
-                # If unable to return local populate unknown_x
-                local_port = u'unknown_{}'.format(counter)
-                counter += 1
+        for lldp_entry in split_output.splitlines():
+            # Example, twb-sf-hpsw1    Fa4   120   B   17
+            device_id, local_int_brief, hold_time, capability, remote_port = lldp_entry.split()
+            local_port = self._expand_interface_name(local_int_brief)
 
-            system_name = re.search(r"System Name: (.+)", line)
-            if system_name:
-                remote_system_name = system_name.group(1)
-            else:
-                remote_system_name = u'N/A'
-
-            port_id = re.search(r"Port id: (.+)", line)
-            if port_id:
-                remote_port = port_id.group(1)
-            else:
-                remote_port = u'N/A'
-
+            entry = {'port': remote_port, 'hostname': device_id}
             lldp.setdefault(local_port, [])
-            lldp[local_port].append(
-                {'port': remote_port,
-                 'hostname': remote_system_name,
-                 })
+            lldp[local_port].append(entry)
 
         return lldp
 
