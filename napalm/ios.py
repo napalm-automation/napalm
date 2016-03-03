@@ -50,6 +50,7 @@ class IOSDriver(NetworkDriver):
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
         self.device = None
         self.config_replace = False
+        self.interface_map = {}
 
     def open(self):
         """Open a connection to the device."""
@@ -321,13 +322,21 @@ class IOSDriver(NetworkDriver):
         return False
 
     def _expand_interface_name(self, interface_brief):
-        """Obtain the full interface name from the abbreviated name."""
+        """
+        Obtain the full interface name from the abbreviated name.
+
+        Cache mappings in self.interface_map.
+        """
+        if self.interface_map.get(interface_brief):
+            return self.interface_map.get(interface_brief)
         command = 'show int {}'.format(interface_brief)
         output = self.device.send_command(command)
         output = output.strip()
         first_line = output.splitlines()[0]
         if 'line protocol' in first_line:
-            return first_line.split()[0]
+            full_int_name = first_line.split()[0]
+            self.interface_map[interface_brief] = full_int_name
+            return self.interface_map.get(interface_brief)
         else:
             return interface_brief
 
