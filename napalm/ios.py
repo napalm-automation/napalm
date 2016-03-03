@@ -1224,6 +1224,12 @@ class IOSDriver(NetworkDriver):
                 return {}
             elif len(line.split()) == 9:
                 address, ref_clock, st, when, poll, reach, delay, offset, disp = line.split()
+
+                # remove all characters from ip address other than period or numbers
+                # examples of input that needs cleaning +~129.6.15.28
+                regex = re.compile('[^0-9.]')
+                address = regex.sub('', address)
+
                 try:
                     peer = {
                         'referenceid': ref_clock,
