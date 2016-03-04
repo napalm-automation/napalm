@@ -50,6 +50,7 @@ class IOSDriver(NetworkDriver):
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
         self.device = None
         self.config_replace = False
+        self.interface_map = {}
 
     def open(self):
         """Open a connection to the device."""
@@ -320,159 +321,124 @@ class IOSDriver(NetworkDriver):
             return True
         return False
 
+    def _expand_interface_name(self, interface_brief):
+        """
+        Obtain the full interface name from the abbreviated name.
+
+        Cache mappings in self.interface_map.
+        """
+        if self.interface_map.get(interface_brief):
+            return self.interface_map.get(interface_brief)
+        command = 'show int {}'.format(interface_brief)
+        output = self.device.send_command(command)
+        output = output.strip()
+        first_line = output.splitlines()[0]
+        if 'line protocol' in first_line:
+            full_int_name = first_line.split()[0]
+            self.interface_map[interface_brief] = full_int_name
+            return self.interface_map.get(interface_brief)
+        else:
+            return interface_brief
+
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
         lldp = {}
-        counter = 0
-
-        command = 'show lldp neighbors detail'
+        command = 'show lldp neighbors'
         output = self.device.send_command(command)
 
         # Check if router supports the command
         if '% Invalid input' in output:
             return {}
 
-        split_output = output.split('------------------------------------------------')
+        # Process the output to obtain just the LLDP entries
+        try:
+            split_output = re.split(r'^Device ID.*$', output, flags=re.M)[1]
+            split_output = re.split(r'^Total entries displayed.*$', split_output, flags=re.M)[0]
+        except IndexError:
+            return {}
 
-        for line in split_output:
-            # Skip the first line
-            if line == '':
-                continue
-            local_interface = re.search(r"Local Intf: (.+)", line)
-            if local_interface:
-                # Query router for full interface name using abbreviated name
-                command = 'show int {}'.format(local_interface.group(1))
-                output = self.device.send_command(command)
+        split_output = split_output.strip()
 
-                if 'line protocol' in output:
-                    split_output = output.split()
-                    local_port = split_output[0]
-                else:
-                    # If unable to return local populate unknown_x
-                    local_port = u'unknown_{}'.format(counter)
-                    counter += 1
-            else:
-                # If unable to return local populate unknown_x
-                local_port = u'unknown_{}'.format(counter)
-                counter += 1
+        for lldp_entry in split_output.splitlines():
+            # Example, twb-sf-hpsw1    Fa4   120   B   17
+            device_id, local_int_brief, hold_time, capability, remote_port = lldp_entry.split()
+            local_port = self._expand_interface_name(local_int_brief)
 
-            system_name = re.search(r"System Name: (.+)", line)
-            if system_name:
-                remote_system_name = system_name.group(1)
-            else:
-                remote_system_name = u'N/A'
-
-            port_id = re.search(r"Port id: (.+)", line)
-            if port_id:
-                remote_port = port_id.group(1)
-            else:
-                remote_port = u'N/A'
-
+            entry = {'port': remote_port, 'hostname': device_id}
             lldp.setdefault(local_port, [])
-            lldp[local_port].append(
-                {'port': remote_port,
-                 'hostname': remote_system_name,
-                 })
+            lldp[local_port].append(entry)
 
         return lldp
 
     def get_lldp_neighbors_detail(self):
-        """IOS implementation of get_lldp_neighbors_detail."""
+        """
+        IOS implementation of get_lldp_neighbors_detail.
+
+        Calls get_lldp_neighbors.
+        """
+        def pad_list_entries(my_list, list_length):
+            """Normalize the length of all the LLDP fields."""
+            if len(my_list) < list_length:
+                for i in range(list_length):
+                    try:
+                        my_list[i]
+                    except IndexError:
+                        my_list[i] = u"N/A"
+            return my_list
+
         lldp = {}
-        counter = 0
+        lldp_neighbors = self.get_lldp_neighbors()
 
-        command = 'show lldp neighbors detail'
-        output = self.device.send_command(command)
+        for interface in lldp_neighbors:
+            command = "show lldp neighbors {} detail".format(interface)
+            output = self.device.send_command(command)
 
-        # Check if router supports the command
-        if '% Invalid input' in output:
-            return {}
+            # Check if router supports the command
+            if '% Invalid input' in output:
+                return {}
 
-        split_output = output.split('------------------------------------------------')
+            local_port = interface
+            port_id = re.findall(r"Port id: (.+)", output)
+            port_description = re.findall(r"Port Description: (.+)", output)
+            chassis_id = re.findall(r"Chassis id: (.+)", output)
+            system_name = re.findall(r"System Name: (.+)", output)
+            system_description = re.findall(r"System Description: \n(.+)", output)
+            system_capabilities = re.findall(r"System Capabilities: (.+)", output)
+            enabled_capabilities = re.findall(r"Enabled Capabilities: (.+)", output)
+            remote_address = re.findall(r"Management Addresses:\n    IP: (.+)", output)
 
-        for line in split_output:
-            # Skip the first line
-            if line == '':
-                continue
-            local_interface = re.search(r"Local Intf: (.+)", line)
-            if local_interface:
-                # Query router for full interface name using abbreviated name
-                command = 'show int {}'.format(local_interface.group(1))
-                output = self.device.send_command(command)
+            number_entries = len(port_id)
+            lldp_fields = [port_id, port_description, chassis_id, system_name, system_description,
+                           system_capabilities, enabled_capabilities, remote_address]
+            # Check length of each list
+            for test_list in lldp_fields:
+                if len(test_list) > number_entries:
+                    raise ValueError("Failure processing show lldp neighbors detail")
 
-                if 'line protocol' in output:
-                    split_output = output.split()
-                    local_port = split_output[0]
-                else:
-                    # If unable to return local populate unknown_x
-                    local_port = 'unknown_{}'.format(counter)
-                    counter += 1
-            else:
-                # If unable to return local populate unknown_x
-                local_port = 'unknown_{}'.format(counter)
-                counter += 1
+            # Pad any missing entries with "N/A"
+            lldp_fields = [pad_list_entries(field, number_entries) for field in lldp_fields]
 
-            port_id = re.search(r"Port id: (.+)", line)
-            if port_id:
-                remote_port = port_id.group(1)
-            else:
-                remote_port = u'N/A'
-
-            port_description = re.search(r"Port Description: (.+)", line)
-            if port_description:
-                remote_port_description = port_description.group(1)
-            else:
-                remote_port_description = u'N/A'
-
-            chassis_id = re.search(r"Chassis id: (.+)", line)
-            if chassis_id:
-                remote_chassis_id = chassis_id.group(1)
-            else:
-                remote_chassis_id = u'N/A'
-
-            system_name = re.search(r"System Name: (.+)", line)
-            if system_name:
-                remote_system_name = system_name.group(1)
-            else:
-                remote_system_name = u'N/A'
-
-            system_description = re.search(r"System Description: \n(.+)", line)
-            if system_description:
-                remote_system_description = system_description.group(1)
-            else:
-                remote_system_description = u'N/A'
-
-            system_capabilities = re.search(r"System Capabilities: (.+)", line)
-            if system_capabilities:
-                remote_system_capab = system_capabilities.group(1)
-            else:
-                remote_system_capab = u'N/A'
-
-            enabled_capabilities = re.search(r"Enabled Capabilities: (.+)", line)
-            if enabled_capabilities:
-                remote_system_enabled_capab = enabled_capabilities.group(1)
-            else:
-                remote_system_enabled_capab = u'N/A'
-
-            remote_address = re.search(r"Management Addresses:\n    IP: (.+)", line)
-            if remote_address:
-                remote_management_address = remote_address.group(1)
-            else:
-                remote_management_address = u'N/A'
+            # Standardize the fields
+            port_id, port_description, chassis_id, system_name, system_description, \
+                system_capabilities, enabled_capabilities, remote_address = lldp_fields
+            standardized_fields = zip(port_id, port_description, chassis_id, system_name, system_description,
+                                      system_capabilities, enabled_capabilities, remote_address)
 
             lldp.setdefault(local_port, [])
-            lldp[local_port].append(
-                {'parent_interface': u'N/A',
-                 # 'interface_description': local_port,
-                 'remote_port': remote_port,
-                 'remote_port_description': remote_port_description,
-                 'remote_chassis_id': remote_chassis_id,
-                 'remote_system_name': remote_system_name,
-                 'remote_system_description': remote_system_description,
-                 'remote_system_capab': remote_system_capab,
-                 'remote_system_enable_capab': remote_system_enabled_capab,
-                 # 'remote_management_address': remote_management_address
-                 })
+            for entry in standardized_fields:
+                remote_port_id, remote_port_description, remote_chassis_id, remote_system_name, \
+                    remote_system_description, remote_system_capab, remote_enabled_capab, \
+                    remote_mgmt_address = entry
+
+                lldp[local_port].append({
+                    'parent_interface': u'N/A',
+                    'remote_port': remote_port_id,
+                    'remote_port_description': remote_port_description,
+                    'remote_chassis_id': remote_chassis_id,
+                    'remote_system_name': remote_system_name,
+                    'remote_system_description': remote_system_description,
+                    'remote_system_capab': remote_system_capab,
+                    'remote_system_enable_capab': remote_enabled_capab})
 
         return lldp
 
