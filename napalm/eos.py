@@ -486,7 +486,6 @@ class EOSDriver(NetworkDriver):
                 lldp_neighbors_out[interface].append(
                     {
                         'parent_interface'              : interface, # no parent interfaces
-                        # 'interface_description'         : neighbor.get('neighborInterfaceInfo', {}).get('interfaceDescription', u''),
                         'remote_port'                   : neighbor.get('neighborInterfaceInfo', {}).get('interfaceId', u''),
                         'remote_port_description'       : u'',
                         'remote_system_name'            : neighbor.get('systemName', u''),
