@@ -1017,9 +1017,7 @@ class EOSDriver(NetworkDriver):
         commands.append('show running-config | section snmp-server')
         raw_snmp_config = self.device.run_commands(commands, encoding = 'text')[0].get('output', '')
 
-        fsmtemplate_relative_path = 'eos/snmp_config.tpl'
-
-        snmp_config = self._textfsm_extractor(fsmtemplate_relative_path, raw_snmp_config)
+        snmp_config = self._textfsm_extractor('snmp_config', raw_snmp_config)
 
         if not snmp_config:
             return snmp_information
