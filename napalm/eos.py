@@ -1008,3 +1008,34 @@ class EOSDriver(NetworkDriver):
                     routes[prefix].append(route_next_hop)
 
         return routes
+
+    def get_snmp_information(self):
+
+        snmp_information = dict()
+
+        commands = list()
+        commands.append('show running-config | section snmp-server')
+        raw_snmp_config = self.device.run_commands(commands, encoding = 'text')[0].get('output', '')
+
+        snmp_config = self._textfsm_extractor('snmp_config', raw_snmp_config)
+
+        if not snmp_config:
+            return snmp_information
+
+        snmp_information = {
+            'contact'   : unicode(snmp_config[0].get('contact', '')),
+            'location'  : unicode(snmp_config[0].get('location', '')),
+            'chassis_id': unicode(snmp_config[0].get('chassis_id', '')),
+            'community' : {}
+        }
+
+        for snmp_entry in snmp_config:
+            community_name = unicode(snmp_entry.get('community', ''))
+            if not community_name:
+                continue
+            snmp_information['community'][community_name] = {
+                'acl': unicode(snmp_entry.get('acl', '')),
+                'mode': unicode(snmp_entry.get('mode', 'ro').lower())
+            }
+
+        return snmp_information
