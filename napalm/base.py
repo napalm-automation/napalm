@@ -375,7 +375,6 @@ class NetworkDriver:
 
         Inner dictionaries contain fields:
             * parent_interface (string)
-            * interface_description (string)
             * remote_port (string)
             * remote_port_description (string)
             * remote_chassis_id (string)
@@ -390,7 +389,6 @@ class NetworkDriver:
                 'TenGigE0/0/0/8': [
                     {
                         'parent_interface': u'Bundle-Ether8',
-                        'interface_description': u'TenGigE0/0/0/8',
                         'remote_chassis_id': u'8c60.4f69.e96c',
                         'remote_system_name': u'switch',
                         'remote_port': u'Eth2/2/1',
