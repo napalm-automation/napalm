@@ -1271,3 +1271,54 @@ class IOSDriver(NetworkDriver):
                 raise ValueError("Unexpected output from: {}".format(line.split()))
 
         return mac_address_table
+
+    def get_snmp_information(self):
+        """
+        Returns a dict of dicts
+
+        Example Output:
+
+        {   'chassis_id': u'Asset Tag 54670',
+        'community': {   u'private': {   'acl': u'12', 'mode': u'rw'},
+                         u'public': {   'acl': u'11', 'mode': u'ro'},
+                         u'public_named_acl': {   'acl': u'ALLOW-SNMP-ACL',
+                                                  'mode': u'ro'},
+                         u'public_no_acl': {   'acl': u'N/A', 'mode': u'ro'}},
+        'contact': u'Joe Smith',
+        'location': u'123 Anytown USA Rack 404'}
+
+        """
+
+        # default values
+
+        snmp_dict = {}
+        command = 'show run | include snmp-server'
+        output = self.device.send_command(command)
+        for line in output.splitlines():
+            fields = line.split()
+            if 'snmp-server community' in line:
+                name = fields[2]
+                if 'community' not in snmp_dict.keys():
+                    snmp_dict.update({'community': {}})
+                snmp_dict['community'].update({name: {}})
+
+                try:
+                    snmp_dict['community'][name].update({'mode': fields[3].lower()})
+                except IndexError:
+                    snmp_dict['community'][name].update({'mode': u'N/A'})
+
+                try:
+                    snmp_dict['community'][name].update({'acl': fields[4]})
+                except IndexError:
+                    snmp_dict['community'][name].update({'acl': u'N/A'})
+
+            elif 'snmp-server location' in line:
+                snmp_dict['location'] = ' '.join(fields[2:])
+            elif 'snmp-server contact' in line:
+                snmp_dict['contact'] = ' '.join(fields[2:])
+            elif 'snmp-server chassis-id' in line:
+                snmp_dict['chassis_id'] = ' '.join(fields[2:])
+            else:
+                raise ValueError("Unexpected Response from the device")
+
+        return snmp_dict
