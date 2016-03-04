@@ -523,9 +523,7 @@ class NXOSDriver(NetworkDriver):
 
         snmp_raw_output = self.cli([snmp_command]).get(snmp_command, '')
 
-        fsmtemplate_relative_path = 'nxos/snmp_config.tpl'
-
-        snmp_config = self._textfsm_extractor(fsmtemplate_relative_path, snmp_raw_output)
+        snmp_config = self._textfsm_extractor('snmp_config', snmp_raw_output)
 
         if not snmp_config:
             return snmp_information

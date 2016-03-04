@@ -180,21 +180,42 @@ class NetworkDriver:
 
         self.load_merge_candidate(config=configuration)
 
-    @staticmethod
-    def _textfsm_extractor(template_relative_path, raw_text):
+    def _textfsm_extractor(self, template_name, raw_text):
 
         """
-        Will apply a TextFSM template over a raw text and return the matching table
+        Will apply a TextFSM template over a raw text and return the matching table.
+        Main usage of this method will be to extract data form a non-structured output
+        from a network device and return the values in a table format.
+
+        :param template_name: Specifies the name of the template to be used
+        :param raw_text: Text output as the devices prompts on the CLI
         """
 
         textfsm_data = list()
 
-        template_path = '{current_dir}/utils/textfsm_templates/{rel_path}'.format(
-            current_dir=os.path.dirname(os.path.abspath(__file__)),
-            rel_path=template_relative_path
+        driver_name = self.__class__.__name__.replace('Driver', '')
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        template_path = '{current_dir}/utils/textfsm_templates/{driver_name}/{template_name}.tpl'.format(
+            current_dir=current_dir,
+            driver_name=driver_name.lower(),
+            template_name=template_name
         )
 
-        fsm_handler = textfsm.TextFSM(open(template_path))
+        try:
+             fsm_handler = textfsm.TextFSM(open(template_path))
+        except IOError:
+            raise napalm.exceptions.TemplateNotImplemented(
+                "TextFSM template {template_name} not defined!".format(
+                    template_name=template_name
+                )
+            )
+        except textfsm.textfsm.TextFSMTemplateError:
+            raise napalm.exceptions.TemplateRenderException(
+                "Wrong format of template {template_name}".format(
+                    template_name=template_name
+                )
+            )
+
         objects = fsm_handler.ParseText(raw_text)
 
         for obj in objects:
