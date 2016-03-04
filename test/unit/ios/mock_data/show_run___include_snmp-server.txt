@@ -1,0 +1,7 @@
+snmp-server community public RO 11
+snmp-server community private RW 12
+snmp-server community public_no_acl RO
+snmp-server community public_named_acl RO ALLOW-SNMP-ACL
+snmp-server location 123 Anytown USA Rack 404
+snmp-server contact Config rev 028
+snmp-server chassis-id Asset Tag 54670
