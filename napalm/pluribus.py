@@ -260,7 +260,7 @@ class PluribusDriver(NetworkDriver):
         for snmp_line in snmp_lines:
             snmp_line_details = snmp_line.split(';')
             snmp_community = unicode(snmp_line_details[1])
-            snmp_mode      = _SNMP_MODE_MAP_.get(snmp_line_details[1])
+            snmp_mode      = _SNMP_MODE_MAP_.get(snmp_line_details[2], u'ro')
             snmp_acl       = u''
             snmp_information['community'][snmp_community] = {
                 'acl' : snmp_acl,
