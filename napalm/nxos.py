@@ -531,9 +531,9 @@ class NXOSDriver(NetworkDriver):
             return snmp_information
 
         snmp_information = {
-            'contact'   : unicode(snmp_config[-1].get('contact', '')),
-            'location'  : unicode(snmp_config[-1].get('location', '')),
-            'chassis_id': unicode(snmp_config[-1].get('chassis_id', '')),
+            'contact'   : unicode(snmp_config[0].get('contact', '')),
+            'location'  : unicode(snmp_config[0].get('location', '')),
+            'chassis_id': unicode(snmp_config[0].get('chassis_id', '')),
             'community' : {}
         }
 
