@@ -514,3 +514,34 @@ class NXOSDriver(NetworkDriver):
             )
 
         return mac_table
+
+    def get_snmp_information(self):
+
+        snmp_information = dict()
+
+        snmp_command = 'show running-config | section snmp-server'
+
+        snmp_raw_output = self.cli([snmp_command]).get(snmp_command, '')
+
+        snmp_config = self._textfsm_extractor('snmp_config', snmp_raw_output)
+
+        if not snmp_config:
+            return snmp_information
+
+        snmp_information = {
+            'contact'   : unicode(snmp_config[0].get('contact', '')),
+            'location'  : unicode(snmp_config[0].get('location', '')),
+            'chassis_id': unicode(snmp_config[0].get('chassis_id', '')),
+            'community' : {}
+        }
+
+        for snmp_entry in snmp_config:
+            community_name = unicode(snmp_entry.get('community', ''))
+            if not community_name:
+                continue
+            snmp_information['community'][community_name] = {
+                'acl': unicode(snmp_entry.get('acl', '')),
+                'mode': unicode(snmp_entry.get('mode', '').lower())
+            }
+
+        return snmp_information

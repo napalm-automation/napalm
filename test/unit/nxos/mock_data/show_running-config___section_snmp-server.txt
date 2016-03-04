@@ -1,0 +1,5 @@
+snmp-server contact noc@cloudflare.com
+snmp-server location Manila, Philippines
+snmp-server chassis-id sw20.mnl01
+snmp-server community hackme ro ifyoucan
+snmp-server community tryagain group not-enough
