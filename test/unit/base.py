@@ -313,3 +313,16 @@ class TestGettersNetworkDriver:
                 result = result and self._test_model(models.route, route)
 
         self.assertTrue(result)
+
+    def test_get_snmp_information(self):
+
+        get_snmp_information = self.device.get_snmp_information()
+        result = len(get_snmp_information) > 0
+
+        for snmp_entry in get_snmp_information:
+            result = result and self._test_model(models.snmp, get_snmp_information)
+
+        for community, community_data in get_snmp_information['community'].iteritems():
+            result = result and self._test_model(models.snmp_community, community_data)
+
+        self.assertTrue(result)
