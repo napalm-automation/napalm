@@ -12,6 +12,12 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+"""
+Napalm driver for Arista EOS.
+
+Read napalm.readthedocs.org for more information.
+"""
+
 import pyeapi
 import re
 from napalm_base.base import NetworkDriver
@@ -28,7 +34,10 @@ from collections import defaultdict
 
 
 class EOSDriver(NetworkDriver):
+    """Napalm driver for Arista EOS."""
+
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        """Constructor."""
         self.device = None
         self.hostname = hostname
         self.username = username
@@ -41,6 +50,7 @@ class EOSDriver(NetworkDriver):
         self.port = optional_args.get('port', 443)
 
     def open(self):
+        """Implemantation of NAPALM method open."""
         try:
             connection = pyeapi.client.connect(
                 transport='https',
@@ -62,6 +72,7 @@ class EOSDriver(NetworkDriver):
             raise ConnectionException(ce.message)
 
     def close(self):
+        """Implemantation of NAPALM method close."""
         self.discard_config()
 
     def _load_config(self, filename=None, config=None, replace=True):
@@ -104,12 +115,15 @@ class EOSDriver(NetworkDriver):
                 raise MergeConfigException(e.message)
 
     def load_replace_candidate(self, filename=None, config=None):
+        """Implemantation of NAPALM method load_replace_candidate."""
         self._load_config(filename, config, True)
 
     def load_merge_candidate(self, filename=None, config=None):
+        """Implemantation of NAPALM method load_merge_candidate."""
         self._load_config(filename, config, False)
 
     def compare_config(self):
+        """Implemantation of NAPALM method compare_config."""
         if self.config_session is None:
             return ''
         else:
@@ -121,6 +135,7 @@ class EOSDriver(NetworkDriver):
             return result.strip()
 
     def commit_config(self):
+        """Implemantation of NAPALM method commit_config."""
         commands = list()
         commands.append('copy startup-config flash:rollback-0')
         commands.append('configure session {}'.format(self.config_session))
@@ -131,6 +146,7 @@ class EOSDriver(NetworkDriver):
         self.config_session = None
 
     def discard_config(self):
+        """Implemantation of NAPALM method discard_config."""
         if self.config_session is not None:
             commands = list()
             commands.append('configure session {}'.format(self.config_session))
@@ -139,12 +155,14 @@ class EOSDriver(NetworkDriver):
             self.config_session = None
 
     def rollback(self):
+        """Implemantation of NAPALM method rollback."""
         commands = list()
         commands.append('configure replace flash:rollback-0')
         commands.append('write memory')
         self.device.run_commands(commands)
 
     def get_facts(self):
+        """Implemantation of NAPALM method get_facts."""
         commands = list()
         commands.append('show version')
         commands.append('show hostname')
@@ -508,54 +526,54 @@ class EOSDriver(NetworkDriver):
 
         for command in commands:
             try:
-                cli_output[unicode(command)] = self.device.run_commands([command], encoding = 'text')[0].get('output')
+                cli_output[unicode(command)] = self.device.run_commands([command], encoding='text')[0].get('output')
                 # not quite fair to not exploit rum_commands
                 # but at least can have better control to point to wrong command in case of failure
             except pyeapi.eapilib.CommandError:
                 # for sure this command failed
                 cli_output[unicode(command)] = 'Invalid command: "{cmd}"'.format(
-                    cmd = command
+                    cmd=command
                 )
                 raise CommandErrorException(str(cli_output))
             except Exception as e:
                 # something bad happened
                 cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
-                    cmd = command,
-                    err = e
+                    cmd=command,
+                    err=e
                 )
                 raise CommandErrorException(str(cli_output))
 
         return cli_output
 
-    def get_bgp_config(self, group = '', neighbor = ''):
-
+    def get_bgp_config(self, group='', neighbor=''):
+        """Implemantation of NAPALM method get_bgp_config."""
         _GROUP_FIELD_MAP_ = {
-            'type'                  : 'type',
-            'multipath'             : 'multipath',
-            'apply-groups'          : 'apply_groups',
-            'remove-private-as'     : 'remove_private_as',
-            'ebgp-multihop'         : 'multihop_ttl',
-            'remote-as'             : 'remote_as',
-            'local-v4-addr'         : 'local_address',
-            'local-v6-addr'         : 'local_address',
-            'local-as'              : 'local_as',
-            'description'           : 'description',
-            'import-policy'         : 'import_policy',
-            'export-policy'         : 'export_policy'
+            'type': 'type',
+            'multipath': 'multipath',
+            'apply-groups': 'apply_groups',
+            'remove-private-as': 'remove_private_as',
+            'ebgp-multihop': 'multihop_ttl',
+            'remote-as': 'remote_as',
+            'local-v4-addr': 'local_address',
+            'local-v6-addr': 'local_address',
+            'local-as': 'local_as',
+            'description': 'description',
+            'import-policy': 'import_policy',
+            'export-policy': 'export_policy'
         }
 
         _PEER_FIELD_MAP_ = {
-            'description'           : 'description',
-            'remote-as'             : 'remote_as',
-            'local-v4-addr'         : 'local_address',
-            'local-v6-addr'         : 'local_address',
-            'local-as'              : 'local_as',
-            'next-hop-self'         : 'nhs',
+            'description': 'description',
+            'remote-as': 'remote_as',
+            'local-v4-addr': 'local_address',
+            'local-v6-addr': 'local_address',
+            'local-as': 'local_as',
+            'next-hop-self': 'nhs',
             'route-reflector-client': 'route_reflector_client',
-            'description'           : 'description',
-            'import-policy'         : 'import_policy',
-            'export-policy'         : 'export_policy',
-            'passwd'                : 'authentication_key'
+            'description': 'description',
+            'import-policy': 'import_policy',
+            'export-policy': 'export_policy',
+            'passwd': 'authentication_key'
         }
 
         _PROPERTY_FIELD_MAP_ = _GROUP_FIELD_MAP_.copy()
