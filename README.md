@@ -23,10 +23,22 @@ Before using the library, please read the documentation at: [Read the Docs](http
 
 You can also watch a [live demo](https://youtu.be/93q-dHC0u0I) of NAPALM to see what it is and what it can do for you.
 
-Blog Posts
+News
 ----------
 
-* [Adding Cisco IOS support to NAPALM (Network Automation and Programmability Abstraction Layer with Multivendor support)](https://projectme10.wordpress.com/2015/12/07/adding-cisco-ios-support-to-napalm-network-automation-and-programmability-abstraction-layer-with-multivendor-support/)
+### Blog Posts
+* [NAPALM, Ansible, and Cisco IOS](https://pynet.twb-tech.com/blog/automation/napalm-ios.html) by Kirk Byers
+* [Adding Cisco IOS support to NAPALM (Network Automation and Programmability Abstraction Layer with Multivendor support)](https://projectme10.wordpress.com/2015/12/07/adding-cisco-ios-support-to-napalm-network-automation-and-programmability-abstraction-layer-with-multivendor-support/) by Gabriele Gerbino
+
+### Presentations
+* [NANOG 64 Presentation & Demo](https://youtu.be/93q-dHC0u0I) by David Barroso and Elisa Jasinska
+* [Netnod Autumn Meeting 2015 Presentation](https://www.netnod.se/sites/default/files/NAPALM-david_barroso-Netnodautumnmeeting2015.pdf) by David Barroso
+* [Automating IXP Device Configurations with Ansible at the Euro-IX Forum](https://www.euro-ix.net/m/uploads/2015/10/26/euroix-berlin-v2.pdf) by Elisa Jasinska
+
+### Podcasts
+* [NAPALM: Integrating Ansible with Network Devices on Software Gone Wild](http://blog.ipspace.net/2015/06/napalm-integrating-ansible-with-network.html) with David Barroso and Elisa Jasinska
+
+
 
 Install
 =======
