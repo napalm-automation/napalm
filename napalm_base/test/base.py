@@ -14,7 +14,7 @@
 
 from __future__ import print_function
 
-from napalm import exceptions
+from napalm_base import exceptions
 import difflib
 import models
 

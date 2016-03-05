@@ -12,31 +12,21 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from eos import EOSDriver
-from iosxr import IOSXRDriver
-from junos import JunOSDriver
-from fortios import FortiOSDriver
-from nxos import NXOSDriver
-from ibm import IBMDriver
-from ios import IOSDriver
-from pluribus import PluribusDriver
+"""napalm_base package."""
+
+
+def _get_eos_driver():
+    from napalm_eos.eos import EOSDriver
+    return EOSDriver
+
 
 def get_network_driver(vendor):
+    """Given a vendor name returns the network driver."""
     driver_mapping = {
-        'EOS': EOSDriver,
-        'ARISTA': EOSDriver,
-        'IOS-XR': IOSXRDriver,
-        'IOSXR': IOSXRDriver,
-        'JUNOS': JunOSDriver,
-        'JUNIPER': JunOSDriver,
-        'FORTIOS': FortiOSDriver,
-        'NXOS': NXOSDriver,
-        'IBM': IBMDriver,
-        'IOS' : IOSDriver,
-        'PLURIBUS': PluribusDriver
+        'EOS': _get_eos_driver,
+        'ARISTA': _get_eos_driver,
     }
     try:
-        return driver_mapping[vendor.upper()]
+        return driver_mapping[vendor.upper()]()
     except KeyError:
         raise Exception('Vendor/OS not supported: %s' % vendor)
-

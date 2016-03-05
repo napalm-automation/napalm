@@ -18,7 +18,7 @@ import jinja2
 
 import textfsm
 
-import napalm.exceptions
+import napalm_base.exceptions
 
 
 class NetworkDriver:
@@ -62,7 +62,7 @@ class NetworkDriver:
         :param exc_value: Exception object.
         :param exc_traceback: Traceback.
         """
-        if exc_type.__name__ not in dir(napalm.exceptions) and \
+        if exc_type.__name__ not in dir(napalm_base.exceptions) and \
                         exc_type.__name__ not in __builtins__.keys():
             epilog = ("NAPALM didn't catch this exception. Please, fill a bugfix on "
                       "https://github.com/napalm-automation/napalm/issues\n"
@@ -155,7 +155,7 @@ class NetworkDriver:
                 driver=driver_name.lower()
             )
             if not os.path.isdir(template_dir_path):
-                raise napalm.exceptions.DriverTemplateNotImplemented(
+                raise napalm_base.exceptions.DriverTemplateNotImplemented(
                     "There's no config template defined for {driver_name}.".format(
                         driver_name=driver_name
                     )
@@ -167,50 +167,49 @@ class NetworkDriver:
             ))
             configuration = template.render(template_vars=template_vars)
         except jinja2.exceptions.TemplateNotFound:
-            raise napalm.exceptions.TemplateNotImplemented(
+            raise napalm_base.exceptions.TemplateNotImplemented(
                 "Template {template_name}.j2 not defined under {path}".format(
                     template_name=template_name,
                     path=template_dir_path
                 )
             )
         except jinja2.exceptions.UndefinedError as ue:
-            raise napalm.exceptions.TemplateRenderException(
+            raise napalm_base.exceptions.TemplateRenderException(
                 "Unable to render the template: {}".format(ue.message)
             )
 
         self.load_merge_candidate(config=configuration)
 
     def _textfsm_extractor(self, template_name, raw_text):
-
         """
         Will apply a TextFSM template over a raw text and return the matching table.
+
         Main usage of this method will be to extract data form a non-structured output
         from a network device and return the values in a table format.
 
         :param template_name: Specifies the name of the template to be used
         :param raw_text: Text output as the devices prompts on the CLI
         """
-
         textfsm_data = list()
 
         driver_name = self.__class__.__name__.replace('Driver', '')
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        template_path = '{current_dir}/utils/textfsm_templates/{driver_name}/{template_name}.tpl'.format(
+        current_dir = os.path.dirname(os.path.abspath(sys.modules[self.__module__].__file__))
+        template_path = '{current_dir}/utils/textfsm_templates/{template_name}.tpl'.format(
             current_dir=current_dir,
             driver_name=driver_name.lower(),
             template_name=template_name
         )
 
         try:
-             fsm_handler = textfsm.TextFSM(open(template_path))
+            fsm_handler = textfsm.TextFSM(open(template_path))
         except IOError:
-            raise napalm.exceptions.TemplateNotImplemented(
+            raise napalm_base.exceptions.TemplateNotImplemented(
                 "TextFSM template {template_name} not defined!".format(
                     template_name=template_name
                 )
             )
         except textfsm.textfsm.TextFSMTemplateError:
-            raise napalm.exceptions.TemplateRenderException(
+            raise napalm_base.exceptions.TemplateRenderException(
                 "Wrong format of template {template_name}".format(
                     template_name=template_name
                 )
