@@ -242,7 +242,7 @@ class TestGettersNetworkDriver:
 
         self.assertTrue(result)
 
-    def test_bgp_neighbors_detail(self):
+    def test_get_bgp_neighbors_detail(self):
 
         get_bgp_neighbors_detail = self.device.get_bgp_neighbors_detail()
 
