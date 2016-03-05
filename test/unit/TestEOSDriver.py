@@ -14,8 +14,8 @@
 
 import unittest
 
-from napalm import eos
-from base import TestConfigNetworkDriver, TestGettersNetworkDriver
+from napalm_eos import eos
+from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import json
 import re
 

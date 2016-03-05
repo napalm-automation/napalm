@@ -14,15 +14,16 @@
 
 import pyeapi
 import re
-from base import NetworkDriver
+from napalm_base.base import NetworkDriver
 from pyeapi.eapilib import ConnectionError
-from exceptions import ConnectionException, MergeConfigException, ReplaceConfigException, SessionLockedException, CommandErrorException
+from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,\
+                                   SessionLockedException, CommandErrorException
 from netaddr import IPAddress
 from netaddr import IPNetwork
 from netaddr.core import AddrFormatError
 from datetime import datetime
 import time
-from napalm.utils import string_parsers
+from napalm_base.utils import string_parsers
 from collections import defaultdict
 
 
