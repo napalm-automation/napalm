@@ -20,11 +20,25 @@ def _get_eos_driver():
     return EOSDriver
 
 
+def _get_junos_driver():
+    from napalm_junos.junos import JunOSDriver
+    return JunOSDriver
+
+
 def get_network_driver(vendor):
     """Given a vendor name returns the network driver."""
     driver_mapping = {
         'EOS': _get_eos_driver,
         'ARISTA': _get_eos_driver,
+        'JUNOS': _get_junos_driver,
+        'JUNIPER': _get_junos_driver,
+        # 'IOS-XR': IOSXRDriver,
+        # 'IOSXR': IOSXRDriver,
+        # 'FORTIOS': FortiOSDriver,
+        # 'NXOS': NXOSDriver,
+        # 'IBM': IBMDriver,
+        # 'IOS' : IOSDriver,
+        # 'PLURIBUS': PluribusDriver
     }
     try:
         return driver_mapping[vendor.upper()]()
