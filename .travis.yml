@@ -20,7 +20,7 @@ script:
   - cd test/unit
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_bgp_config
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_bgp_neighbors
-  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_bgp_neighbors_detail
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_bgp_neighbors_detail
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_environment
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_facts
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_interfaces
