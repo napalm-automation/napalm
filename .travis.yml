@@ -1,0 +1,35 @@
+language: python
+
+python:
+  - 2.7
+
+install:
+  - pip install -r requirements.txt
+  - pip install .
+
+deploy:
+  provider: pypi
+  user: dbarroso
+  password:
+    secure: FWTA4L2e08mMpD8BbCNWTZN1XFCQKSlYUfPqT0aXDz/GgEK2KfZqbzj1V8Xwx4pXuBHSy8JunlpLGdc18dqtfMKpryz7elWbIsvyPNvcVFxYatG1RdDZB3qiN0MWTCVOCTUyOeglbOsaahKlV66RGBRbQpx107woZ/I+hg43jeNdi6fUer5Ip2DXLMFkR7yb5vbI+tc9KM1Z3/isSzmpkYWQm1MUGxnFonye46r6MoSOANTDpzNIAQKOKwUvGwdovZCAhdqn8JQp8EsKB9Tl0QK56k2//TWmOlglvwL3vVHOeP0V12fc8viKvYRGXKSCwzcz+bi5RSGo0Afurc7lVrmHgJbJIfXxilucE0OBOn58487wynn3k+30D39V9PnddYJ6iNU1ji7/qYpCbyE9ydSKFu4rFgwDbFTU1kJ+JlmNmoJYET/rZITQNUjtFC9grtjSdpouurzNS4eSg7CD8EfzVV6i3IS+1p9n4xosUxdCRl8/jhm9pNMW2OaM00r4GwW2Xt4kDP9J8OWDhlErDLE5lR4EjuGPCLmCYTWcl3DtvUlDCqBs5JZutHV+6raHBw7qFUcI2MxacjQys/3etjIUb9UilbBP1cnqec5Q/FfcTvD0QXCT56f1eM87eh4ysxmHFIDrW+ZwaDW/DicOExfeq264bYOge01poQEkdGM=
+  on:
+    tags: true
+    branch: master
+
+script:
+  - cd test/unit
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_bgp_config
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_bgp_neighbors
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_bgp_neighbors_detail
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_environment
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_facts
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_interfaces
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_interfaces_counters
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_lldp_neighbors
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_lldp_neighbors_detail
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_arp_table
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_ntp_peers
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_interfaces_ip
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_mac_address_table
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_route_to
+  - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_snmp_information

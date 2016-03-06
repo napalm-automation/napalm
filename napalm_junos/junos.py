@@ -15,19 +15,16 @@
 import re
 import collections
 
-from napalm.utils import junos_views
-from base import NetworkDriver
+from napalm_junos.utils import junos_views
+from napalm_base.base import NetworkDriver
 
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError, ConnectTimeoutError
-from exceptions import ConnectionException, ReplaceConfigException, MergeConfigException, CommandErrorException
+from napalm_base.exceptions import ConnectionException, ReplaceConfigException, MergeConfigException,\
+                                   CommandErrorException
 
-from lxml import etree as ET
-
-from exceptions import ReplaceConfigException, MergeConfigException
-
-from utils import string_parsers
+from napalm_base.utils import string_parsers
 
 
 class JunOSDriver(NetworkDriver):

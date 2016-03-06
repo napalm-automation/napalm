@@ -14,8 +14,8 @@
 
 import unittest
 
-from napalm.junos import JunOSDriver
-from base import TestConfigNetworkDriver, TestGettersNetworkDriver
+from napalm_junos.junos import JunOSDriver
+from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 
 import lxml
 
