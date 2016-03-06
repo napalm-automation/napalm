@@ -1,0 +1,17 @@
+language: python
+
+python:
+  - 2.7
+
+install:
+  - pip install -r requirements.txt
+  - pip install .
+
+deploy:
+  provider: pypi
+  user: dbarroso
+  password:
+    secure: NTf8bsJY5iOJWUOErl7pdRc9HDkddk61y63N/605zOw2V78A28Kug5Q2dxFRKrpoyBDkICeRDr/C4Sakex18Ad7ntAQ6jTlzhBHo6DkVVAZqUCwJ0Xs27uH/vHQP2NG5UlnWv959LvLoDnwjcwT6bisj4TBx7gL77XJZl0rVZ2w2CAypxyNqBbPssah4F/xnwhPTmuCO1mDxfVLDy7FwGoZFAn/0v9Zq/1RGeUuykeZyQDfyt4pNyN8wJDyA56REn925OrdRh9PesjyPTRjA/gyXl/y0BL+RiqCjHI9ogeEWX9kt0RKSw+UzAYsiGoK7ejtIcOlydl+c18ySk06Uh7ysXRmfEubD8i5qMx8B9KEi6bPaREtJtq/t9EopPPUYVjiaJAjK9MledbgCib/gPgoHDNLLRiy+ayhv0zRAOH9v9rf0pak2pLswE/sLhBO3Qdz9s04SwUYU78zY+AECdvyQZWXojq3qZ5bHsLGwQd6yatAWGnSdx+1+HIKU6Zwjeax+A404LGaXtLCGyN+IRSYxLwE8B4MXmBFBqtCsvTvtHNWyLxpSZE7fBdGLl61qXkSyhEyir8xeV9VwP7diQuz7E33SQzV6AXcQgar5hNwtaGDW+zTkoNSq0BtgVqSVLA7J/XErZnyuiKPE90sCnZqujDe3FJAWx2pp7ajdOLw=
+  on:
+    tags: true
+    branch: master
