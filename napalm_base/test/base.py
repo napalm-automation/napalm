@@ -126,6 +126,12 @@ class TestConfigNetworkDriver:
 
         self.assertTrue(result)
 
+    def test_load_template(self):
+        """Test load_template method."""
+        self.device.load_template('set_hostname', hostname='my-hostname')
+        diff = self.device.compare_config()
+        self.device.discard_config()
+        self.assertTrue(diff is not '')
 
 class TestGettersNetworkDriver:
 

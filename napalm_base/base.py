@@ -135,7 +135,7 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
-    def load_template(self, template_name, template_vars):
+    def load_template(self, template_name, **template_vars):
         """
         Will load a templated configuration on the device.
 
@@ -148,24 +148,18 @@ class NetworkDriver:
         :raise TemplateRenderException if the user passed wrong arguments to the template
         """
         try:
-            driver_name = self.__class__.__name__.replace('Driver', '')
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            template_dir_path = '{current_dir}/templates/{driver}'.format(
-                current_dir=current_dir,
-                driver=driver_name.lower()
-            )
+            current_dir = os.path.dirname(os.path.abspath(sys.modules[self.__module__].__file__))
+            template_dir_path = '{current_dir}/templates'.format(current_dir=current_dir)
+
             if not os.path.isdir(template_dir_path):
-                raise napalm_base.exceptions.DriverTemplateNotImplemented(
-                    "There's no config template defined for {driver_name}.".format(
-                        driver_name=driver_name
-                    )
-                )
+                raise napalm_base.exceptions.DriverTemplateNotImplemented("There's no config template defined.")
+
             loader = jinja2.FileSystemLoader(template_dir_path)
             environment = jinja2.Environment(loader=loader)
             template = environment.get_template('{template_name}.j2'.format(
                 template_name=template_name
             ))
-            configuration = template.render(template_vars=template_vars)
+            configuration = template.render(**template_vars)
         except jinja2.exceptions.TemplateNotFound:
             raise napalm_base.exceptions.TemplateNotImplemented(
                 "Template {template_name}.j2 not defined under {path}".format(
@@ -177,7 +171,6 @@ class NetworkDriver:
             raise napalm_base.exceptions.TemplateRenderException(
                 "Unable to render the template: {}".format(ue.message)
             )
-
         self.load_merge_candidate(config=configuration)
 
     def _textfsm_extractor(self, template_name, raw_text):
