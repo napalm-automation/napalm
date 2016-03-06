@@ -5,6 +5,7 @@ python:
 
 install:
   - pip install -r requirements.txt
+  - pip install -r test/unit/requirements.txt
   - pip install .
 
 deploy:
@@ -15,3 +16,7 @@ deploy:
   on:
     tags: true
     branch: master
+
+script:
+  - cd test/unit
+  - nosetests
