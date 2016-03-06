@@ -33,3 +33,4 @@ script:
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_mac_address_table
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_route_to
   - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_snmp_information
+  - cd ../..
