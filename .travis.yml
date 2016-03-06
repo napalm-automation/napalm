@@ -18,5 +18,4 @@ deploy:
     branch: master
 
 script:
-  - cd test/unit
-  - nosetests
+  - nosetests ./test/unit/TestGetNetworkDriver.py
