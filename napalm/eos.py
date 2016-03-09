@@ -1038,3 +1038,6 @@ class EOSDriver(NetworkDriver):
             }
 
         return snmp_information
+
+def load_driver():
+    return EOSDriver
