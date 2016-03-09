@@ -15,8 +15,8 @@
 """Tests for IOSDriver."""
 
 import unittest
-from napalm import get_network_driver
-from base import TestConfigNetworkDriver, TestGettersNetworkDriver
+from napalm_ios import ios
+from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import re
 
 
@@ -52,10 +52,9 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         username = 'vagrant'
         password = 'vagrant'
         cls.vendor = 'ios'
-        driver = get_network_driver(cls.vendor)
         optional_args = {'port': 12204, 'dest_file_system': 'bootflash:'}
 
-        cls.device = driver(ip_addr, username, password, optional_args=optional_args)
+        cls.device = ios.IOSDriver(ip_addr, username, password, optional_args=optional_args)
         cls.device.open()
 
         # Setup initial state
@@ -134,11 +133,10 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
         ip_addr = '192.168.0.234'
         password = 'vagrant'
         cls.vendor = 'ios'
-        driver = get_network_driver(cls.vendor)
         optional_args = {}
         optional_args['dest_file_system'] = 'flash:'
 
-        cls.device = driver(ip_addr, username, password, optional_args=optional_args)
+        cls.device = ios.IOSDriver(ip_addr, username, password, optional_args=optional_args)
 
         if cls.mock:
             cls.device.device = FakeIOSDevice()

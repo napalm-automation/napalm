@@ -20,8 +20,8 @@ import re
 from datetime import datetime
 
 from netmiko import ConnectHandler, FileTransfer
-from napalm.base import NetworkDriver
-from napalm.exceptions import ReplaceConfigException, MergeConfigException
+from napalm_base.base import NetworkDriver
+from napalm_base.exceptions import ReplaceConfigException, MergeConfigException
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
