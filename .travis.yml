@@ -1,36 +1,32 @@
 language: python
-
 python:
-  - 2.7
-
+- 2.7
 install:
-  - pip install -r requirements.txt
-  - pip install .
-
+- pip install -r requirements.txt
+- pip install .
 deploy:
   provider: pypi
   user: dbarroso
   password:
-    secure: FWTA4L2e08mMpD8BbCNWTZN1XFCQKSlYUfPqT0aXDz/GgEK2KfZqbzj1V8Xwx4pXuBHSy8JunlpLGdc18dqtfMKpryz7elWbIsvyPNvcVFxYatG1RdDZB3qiN0MWTCVOCTUyOeglbOsaahKlV66RGBRbQpx107woZ/I+hg43jeNdi6fUer5Ip2DXLMFkR7yb5vbI+tc9KM1Z3/isSzmpkYWQm1MUGxnFonye46r6MoSOANTDpzNIAQKOKwUvGwdovZCAhdqn8JQp8EsKB9Tl0QK56k2//TWmOlglvwL3vVHOeP0V12fc8viKvYRGXKSCwzcz+bi5RSGo0Afurc7lVrmHgJbJIfXxilucE0OBOn58487wynn3k+30D39V9PnddYJ6iNU1ji7/qYpCbyE9ydSKFu4rFgwDbFTU1kJ+JlmNmoJYET/rZITQNUjtFC9grtjSdpouurzNS4eSg7CD8EfzVV6i3IS+1p9n4xosUxdCRl8/jhm9pNMW2OaM00r4GwW2Xt4kDP9J8OWDhlErDLE5lR4EjuGPCLmCYTWcl3DtvUlDCqBs5JZutHV+6raHBw7qFUcI2MxacjQys/3etjIUb9UilbBP1cnqec5Q/FfcTvD0QXCT56f1eM87eh4ysxmHFIDrW+ZwaDW/DicOExfeq264bYOge01poQEkdGM=
+    secure: ozv9Lic7tX6Qm0R2zlUGtn/jgydKhOt3GEBnVD+x2CbtNfTsI2WPwkRABa8kcuuZvZYUVePYVnsB1qZ1UO2US8Bly80eaCw4+vOtLVZO3PNLynU9yrtN5yYfQEAkUep+FYsBaBKqfoap6qoSdl7uK/InqfVLkaP44UmOpqm4xktqcf6Gj93Qefpht781LPl9FF00hWY/XisNB7XdwEOysez2VvRxIAJ80jZAn5EK/iZq9rO3UgRlljn1bQYLd8ZTL+VdmPkQ0sfZTWpH8fhKXiUqZx9Xy/kgaXqtjEMeOkOrvyevisrBwEVa1Zo/TK1j4SjpKEqxIPEV5V2M6oTsVMsWyKQrTFYvabmGM9CS09c64kdHArP0DTdR853C7tAIUzWXuHCtNm9GYNjlYIHyjjpZ+HjtO3btiBMW22bTb2l6vlc6o0eSmSyMwc2pQIC390fL4cKfKgVJHLRfecjjovvakTMlPfJCkLeKSYXodpTOyDME7p0ZpEEqI/neLv96qBmWvY+KssA1VMCKOI9y53vmu2BQ4Nb9yxzsQT/fD534MpxHaiydyY8FCW9b/gcfZ5dEikaWTNQtDlWzQQ5HwKHwrk+IPZBpYAptnDn0CFUOw+hU+v7gXOp1+vHmq1XMYihcVQzA5dSUnyFBcMw1wf4JUsifnNQAdpqPbxOvjWw=
   on:
     tags: true
     branch: master
-
 script:
-  - cd test/unit
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_arp_table
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_config
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_neighbors
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_neighbors_detail
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_environment
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_facts
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_interfaces
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_interfaces_counters
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_interfaces_ip
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_lldp_neighbors
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_lldp_neighbors_detail
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_mac_address_table
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_ntp_peers
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_route_to
-  - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_snmp_information
-  - cd ../..
+- cd test/unit
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_arp_table
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_config
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_neighbors
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_bgp_neighbors_detail
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_environment
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_facts
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_interfaces
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_interfaces_counters
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_interfaces_ip
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_lldp_neighbors
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_lldp_neighbors_detail
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_mac_address_table
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_ntp_peers
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_route_to
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_snmp_information
+- cd ../..
