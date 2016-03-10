@@ -14,8 +14,8 @@
 
 import unittest
 
-from napalm.iosxr import IOSXRDriver
-from base import TestConfigNetworkDriver, TestGettersNetworkDriver
+from napalm_iosxr.iosxr import IOSXRDriver
+from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 
 
 class TestConfigIOSXRDriver(unittest.TestCase, TestConfigNetworkDriver):
@@ -27,7 +27,7 @@ class TestConfigIOSXRDriver(unittest.TestCase, TestConfigNetworkDriver):
         password = 'vagrant'
         cls.vendor = 'iosxr'
 
-        optional_args = {'port': 12202,}
+        optional_args = {'port': 12202}
         cls.device = IOSXRDriver(hostname, username, password, timeout=60, optional_args=optional_args)
         cls.device.open()
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)

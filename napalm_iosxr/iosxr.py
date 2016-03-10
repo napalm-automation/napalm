@@ -12,14 +12,15 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from base import NetworkDriver
-from napalm.utils import string_parsers
+from napalm_base.base import NetworkDriver
+from napalm_base.utils import string_parsers
 
 from pyIOSXR import IOSXR
 from pyIOSXR.iosxr import __execute_show__
-from pyIOSXR.exceptions import InvalidInputError, XMLCLIError, TimeoutError, EOFError
+from pyIOSXR.exceptions import InvalidInputError, TimeoutError, EOFError
 
-from exceptions import ConnectionException, MergeConfigException, ReplaceConfigException, CommandErrorException, CommandTimeoutException
+from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,\
+                                   CommandErrorException, CommandTimeoutException
 import xml.etree.ElementTree as ET
 from collections import defaultdict
 import re
