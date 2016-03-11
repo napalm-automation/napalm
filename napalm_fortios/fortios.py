@@ -14,9 +14,9 @@
 import re
 from pyFG.fortios import FortiOS, FortiConfig, logger
 from pyFG.exceptions import FailedCommit, CommandExecutionException
-from base import NetworkDriver
-from exceptions import ReplaceConfigException, MergeConfigException
-from napalm.utils.string_parsers import colon_separated_string_to_dict, convert_uptime_string_seconds
+from napalm_base.base import NetworkDriver
+from napalm_base.exceptions import ReplaceConfigException, MergeConfigException
+from napalm_base.utils.string_parsers import colon_separated_string_to_dict, convert_uptime_string_seconds
 
 
 class FortiOSDriver(NetworkDriver):
@@ -410,4 +410,3 @@ class FortiOSDriver(NetworkDriver):
         out['power'] = {t: {'status': True, 'capacity': -1.0, 'output': -1.0} for t in psus}
 
         return out
-
