@@ -55,7 +55,7 @@ class FakeFortiOSDevice:
 
     @staticmethod
     def read_txt_file(filename):
-        with open(filename) as data_file:
+        with open(filename.lower()) as data_file:
             return data_file.read().splitlines()
 
     def execute_command(self, command):
