@@ -215,3 +215,29 @@ snmp_community = {
     'acl'               : unicode,
     'mode'              : unicode,
 }
+
+probe_test = {
+    'probe_type'    : unicode,
+    'target'        : unicode,
+    'source'        : unicode,
+    'probe_count'   : int,
+    'test_interval' : int
+}
+
+probe_test_results = {
+    'target'                : unicode,
+    'probe_type'            : unicode,
+    'probe_count'           : int,
+    'rtt'                   : float,
+    'round_trip_jitter'     : float,
+    'current_test_loss'     : float,
+    'current_test_min_delay': float,
+    'current_test_max_delay': float,
+    'current_test_avg_delay': float,
+    'last_test_min_delay'   : float,
+    'last_test_max_delay'   : float,
+    'last_test_avg_delay'   : float,
+    'global_test_min_delay' : float,
+    'global_test_max_delay' : float,
+    'global_test_avg_delay' : float
+}
