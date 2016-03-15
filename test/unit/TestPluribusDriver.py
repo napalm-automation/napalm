@@ -14,8 +14,8 @@
 
 import unittest
 
-from napalm import pluribus
-from base import TestConfigNetworkDriver, TestGettersNetworkDriver
+from napalm_pluribus import pluribus
+from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import re
 
 

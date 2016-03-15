@@ -1,0 +1,19 @@
+language: python
+python:
+- 2.7
+install:
+- pip install -r requirements.txt
+- pip install .
+script:
+- cd test/unit
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_facts
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_interfaces
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_lldp_neighbors
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_lldp_neighbors_detail
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_mac_address_table
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_ntp_peers
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_snmp_information
+- cd ../..
+deploy:
+  password:
+    secure: vcYpfm7ZrIB95A9IxH2OV8W7BnFhBd3xZYYS4JECniIBhwopcfzycP2lvJBoer+Nghfu/KvfXipkOlDhc1lywEFDUBJg6PKDHFGFFZ/KsJPd2uJO5XkUPvQihxYqDbrb0FqsWG4YxQmjoiADyMxWjRKvQH3YKjV6tpPy2iOGNffPgxh/t/Te8RJcpTLR52BuizFkKk4/6xsu2LE2x/zP/Zsvj6gc5ANErO2ubitdUt0gyyNVCGLo3wRBKK3H/Euy8JzB2AviFnVy5u7OmXktbG2NM5EIsxpvSUe4UPrv9H176axd2AJeroZUJ9r1HjnquA/5bLZuNdrdzuiYd9JpJBI7lTwQBiIck2/cQse38+NYlh3gdFInif9pAzBw/0HMoLQdz77QlVHjE2EXhzo7V8tQtS47ogxl8t4s65CrE5KVkuZUh4G6C/lMkc9It4h1OlegEZotMm0HcOQGT7DWEsCPgVvj2TFIpxrJXvhHc8TZym9ruhVNr4pGIjuj5UCmDXBaq1y2bF/Q32xBnPduQrDDR+Vtk27U9KjiYu396loq96zHZfPn380Nttkd5FfBm0XRluwZtPy3xan7AoaTiOrD8GlOvoLRhqBbZUs+pRAONh9jkHWowu5lbd6AHdDzliASZ4G05lKLYehyRWlJP6DYb7Vkmry5gQv4PUUv500=
