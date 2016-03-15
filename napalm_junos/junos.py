@@ -974,3 +974,57 @@ class JunOSDriver(NetworkDriver):
             }
 
         return snmp_information
+
+    def get_probes_config(self):
+
+        probes = dict()
+
+        probes_table = junos_views.junos_rpm_probes_config_table(self.device)
+        probes_table.get()
+        probes_table_items = probes_table.items()
+
+        for probe_test in probes_table_items:
+            test_name = unicode(probe_test[0])
+            test_details = {
+                p[0]: p[1] for p in probe_test[1]
+            }
+            probe_name = self._convert(unicode, test_details.pop('probe_name'))
+            target = self._convert(unicode, test_details.pop('target', ''))
+            test_interval = self._convert(int, test_details.pop('test_interval', '0'))
+            probe_count = self._convert(int, test_details.pop('probe_count', '0'))
+            probe_type = self._convert(unicode, test_details.pop('probe_type', ''))
+            source = self._convert(unicode, test_details.pop('source_address', ''))
+            if probe_name not in probes.keys():
+                probes[probe_name] = dict()
+            probes[probe_name][test_name] = {
+                'probe_type'    : probe_type,
+                'target'        : target,
+                'source'        : source,
+                'probe_count'   : probe_count,
+                'test_interval' : test_interval
+            }
+
+        return probes
+
+    def get_probes_results(self):
+
+        probes_results = dict()
+
+        probes_results_table = junos_views.junos_rpm_probes_results_table(self.device)
+        probes_results_table.get()
+        probes_results_items = probes_results_table.items()
+
+        for probe_result in probes_results_items:
+            probe_name = unicode(probe_result[0])
+            test_results = {
+                p[0]: p[1] for p in probe_result[1]
+            }
+            for test_param_name, test_param_value in test_results.iteritems():
+                if isinstance(test_param_value, float):
+                    test_results[test_param_name] = test_param_value * 1e-3 # convert from useconds to mseconds
+            test_name = test_results.pop('test_name', '')
+            if probe_name not in probes_results.keys():
+                probes_results[probe_name] = dict()
+            probes_results[probe_name][test_name] = test_results
+
+        return probes_results
