@@ -14,15 +14,15 @@
 
 from napalm_base.base import NetworkDriver
 
+import pyPluribus.exceptions
 from pyPluribus import PluribusDevice
-from pyPluribus.exceptions import ConnectionError
 
-from napalm_base.exceptions import ConnectionException
+import napalm_base.exceptions
 
 
 class PluribusDriver(NetworkDriver):
 
-    def __init__(self, hostname, username, password, timeout = 60, optional_args = None):
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
 
         self.hostname = hostname
         self.username = username
@@ -38,12 +38,32 @@ class PluribusDriver(NetworkDriver):
     def open(self):
         try:
             self.device.open()
-        except ConnectionError as ce:
-            raise ConnectionException(ce.message)
+        except pyPluribus.exceptions.ConnectionError as connerr:
+            raise napalm_base.exceptions.ConnectionException(connerr.message)
 
     def close(self):
 
         self.device.close()
+
+    def load_merge_candidate(self, filename=None, config=None):
+
+        return self.device.config.load_candidate(filename=filename, config=config)
+
+    def config_compare(self):
+
+        return self.device.config.compare()
+
+    def commit_config(self):
+
+        return self.device.config.commit()
+
+    def discard_config(self):
+
+        return self.device.config.discard()
+
+    def rollback(self):
+
+        return self.device.config.rollback(number=1)
 
     def get_facts(self):
 
