@@ -83,6 +83,7 @@ def load_module(name):
     :raises ImportError:
         If the module could not be loaded
     """
+
     try:
         mod = None
         mod = sys.modules[name]
@@ -155,4 +156,3 @@ def get_network_driver(module, loader='load_driver', *args, **kwargs):
         raise Exception('Missing {} function'.format(loader))
     func = getattr(mod, loader)
     return func(*args, **kwargs)
-
