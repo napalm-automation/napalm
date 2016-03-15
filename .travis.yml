@@ -6,6 +6,10 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install .
+  - git clone git@github.com:napalm-automation/napalm-base.git
+  - cd napalm_base/
+  - python setup.py install
+  - cd ..
 
 deploy:
   provider: pypi
