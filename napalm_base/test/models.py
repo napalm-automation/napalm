@@ -226,11 +226,12 @@ probe_test = {
 
 probe_test_results = {
     'target'                : unicode,
+    'source'                : unicode,
     'probe_type'            : unicode,
     'probe_count'           : int,
     'rtt'                   : float,
     'round_trip_jitter'     : float,
-    'current_test_loss'     : float,
+    'current_test_loss'     : int,
     'current_test_min_delay': float,
     'current_test_max_delay': float,
     'current_test_avg_delay': float,

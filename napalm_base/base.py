@@ -1019,6 +1019,7 @@ class NetworkDriver:
         A test has the following keys:
 
             * target (str)
+            * source (str)
             * probe_type (str)
             * probe_count (int)
             * rtt (float)
@@ -1039,38 +1040,40 @@ class NetworkDriver:
             {
                 'probe1':  {
                     'test1': {
-                        'last_test_min_delay': 63120.0,
-                        'global_test_min_delay': 62912.0,
-                        'current_test_avg_delay': 63190.0,
-                        'global_test_max_delay': 177349.0,
-                        'current_test_max_delay': 63302.0,
-                        'global_test_avg_delay': 63802.0,
-                        'last_test_avg_delay': 63438.0,
-                        'last_test_max_delay': 65356.0,
-                        'probe_type': 'icmp-ping',
-                        'rtt': 63138.0,
-                        'current_test_loss': 0.0,
-                        'round_trip_jitter': -59.0,
-                        'target': '192.168.0.1',
-                        'probe_count': 15,
-                        'current_test_min_delay': 63138.0
+                        'last_test_min_delay'   : 63.120,
+                        'global_test_min_delay' : 62.912,
+                        'current_test_avg_delay': 63.190,
+                        'global_test_max_delay' : 177.349,
+                        'current_test_max_delay': 63.302,
+                        'global_test_avg_delay' : 63.802,
+                        'last_test_avg_delay'   : 63.438,
+                        'last_test_max_delay'   : 65.356,
+                        'probe_type'            : 'icmp-ping',
+                        'rtt'                   : 63.138,
+                        'current_test_loss'     : 0,
+                        'round_trip_jitter'     : -59.0,
+                        'target'                : '192.168.0.1',
+                        'source'                : '192.168.0.2'
+                        'probe_count'           : 15,
+                        'current_test_min_delay': 63.138
                     },
                     'test2': {
-                        'last_test_min_delay': 176384.0,
-                        'global_test_min_delay': 169226.0,
-                        'current_test_avg_delay': 177098.0,
-                        'global_test_max_delay': 292628.0,
-                        'current_test_max_delay': 180055.0,
-                        'global_test_avg_delay': 177959.0,
-                        'last_test_avg_delay': 177178.0,
-                        'last_test_max_delay': 184671.0,
-                        'probe_type': 'icmp-ping',
-                        'rtt': 176449.0,
-                        'current_test_loss': 0.0,
-                        'round_trip_jitter': -34.0,
-                        'target': '172.17.17',
-                        'probe_count': 15,
-                        'current_test_min_delay': 176402.0
+                        'last_test_min_delay'   : 176.384,
+                        'global_test_min_delay' : 169.226,
+                        'current_test_avg_delay': 177.098,
+                        'global_test_max_delay' : 292.628,
+                        'current_test_max_delay': 180.055,
+                        'global_test_avg_delay' : 177.959,
+                        'last_test_avg_delay'   : 177.178,
+                        'last_test_max_delay'   : 184.671,
+                        'probe_type'            : 'icmp-ping',
+                        'rtt'                   : 176.449,
+                        'current_test_loss'     : 0,
+                        'round_trip_jitter'     : -34.0,
+                        'target'                : '172.17.17.1',
+                        'source'                : '172.17.17.2'
+                        'probe_count'           : 15,
+                        'current_test_min_delay': 176.402
                     }
                 }
             }
