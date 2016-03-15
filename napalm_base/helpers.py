@@ -16,10 +16,9 @@ def load_template(cls, template_name, **template_vars):
     """
     Will load a templated configuration on the device.
 
-    :param cls (object) instance of the driver class
-    :param template_name (str) identifies the template name
-    :param template_vars (obj) represents the object to be used by the Jinja template to create the configuration
-    Can be any object type but must respect the constraints defined in the template file.
+    :param cls: instance of the driver class
+    :param template_name: identifies the template name
+    :param template_vars: dictionary with the
 
     :raise DriverTemplateNotImplemented if no template defined for the device type
     :raise TemplateNotImplemented if the template specified in template_name is not defined

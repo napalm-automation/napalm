@@ -34,7 +34,7 @@ class NetworkDriver(object):
         :param optional_args: (dict) Pass additional arguments to underlying driver
         :return:
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def __enter__(self):
         try:
@@ -72,13 +72,13 @@ class NetworkDriver(object):
         """
         Opens a connection to the device.
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def close(self):
         """
         Closes the connection to the device.
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def load_replace_candidate(self, filename=None, config=None):
         """
@@ -92,7 +92,7 @@ class NetworkDriver(object):
         :param config: String containing the desired configuration.
         :raise ReplaceConfigException: If there is an error on the configuration sent.
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def load_merge_candidate(self, filename=None, config=None):
         """
@@ -106,32 +106,32 @@ class NetworkDriver(object):
         :param config: String containing the desired configuration.
         :raise MergeConfigException: If there is an error on the configuration sent.
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def compare_config(self):
         """
         :return: A string showing the difference between the running configuration and the candidate configuration. The\
         running_config is loaded automatically just before doing the comparison so there is no need for you to do it.
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def commit_config(self):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def discard_config(self):
         """
         Discards the configuration loaded into the candidate.
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def rollback(self):
         """
         If changes were made, revert changes to the original state.
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_facts(self):
         """
@@ -159,7 +159,7 @@ class NetworkDriver(object):
             }
 
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_interfaces(self):
         """
@@ -213,7 +213,7 @@ class NetworkDriver(object):
                 }
             }
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_lldp_neighbors(self):
         """
@@ -259,7 +259,7 @@ class NetworkDriver(object):
                 ]
             }
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_bgp_neighbors(self):
         """
@@ -281,7 +281,7 @@ class NetworkDriver(object):
                 * accepted_prefixes (int)
                 * sent_prefixes (int)
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_environment(self):
         """
@@ -303,7 +303,7 @@ class NetworkDriver(object):
                  * available_ram (int) - Total amount of RAM installed in the device
                  * used_ram (int) - RAM in use in the device
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_interfaces_counters(self):
         """
@@ -370,7 +370,7 @@ class NetworkDriver(object):
                 }
             }
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_lldp_neighbors_detail(self, interface = ''):
         """
@@ -406,7 +406,7 @@ class NetworkDriver(object):
                 ]
             }
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_bgp_config(self, group = '', neighbor = ''):
         """
@@ -494,7 +494,7 @@ class NetworkDriver(object):
                 }
             }
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def cli(self, *commands):
 
@@ -522,7 +522,7 @@ class NetworkDriver(object):
                                             '''
             }
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_bgp_neighbors_detail(self, neighbor_address = ''):
 
@@ -608,7 +608,7 @@ class NetworkDriver(object):
                 ]
             }
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_arp_table(self):
 
@@ -637,7 +637,7 @@ class NetworkDriver(object):
             ]
 
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_ntp_peers(self):
 
@@ -672,7 +672,7 @@ class NetworkDriver(object):
                 }
             }
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_interfaces_ip(self):
 
@@ -724,7 +724,7 @@ class NetworkDriver(object):
                 }
             }
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_mac_address_table(self):
 
@@ -774,7 +774,7 @@ class NetworkDriver(object):
             However, please note that not all vendors provide all these informations.
             E.g.: field last_move is not available on JUNOS devices etc.
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_route_to(self, destination = '', protocol = ''):
 
@@ -841,7 +841,7 @@ class NetworkDriver(object):
                 ]
             }
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
 
     def get_snmp_information(self):
 
@@ -991,4 +991,4 @@ class NetworkDriver(object):
                 }
             }
         """
-        raise napalm_base.exceptions.NotImplementedError
+        raise NotImplementedError
