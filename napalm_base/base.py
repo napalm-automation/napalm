@@ -17,6 +17,7 @@ import sys
 
 # local modules
 import napalm_base.exceptions
+import napalm_base.helpers
 
 
 class NetworkDriver(object):
@@ -79,6 +80,20 @@ class NetworkDriver(object):
         Closes the connection to the device.
         """
         raise NotImplementedError
+
+    def load_template(self, template_name, **template_vars):
+        """
+        Will load a templated configuration on the device.
+
+        :param cls: instance of the driver class
+        :param template_name: identifies the template name
+        :param template_vars: dictionary with the
+
+        :raise DriverTemplateNotImplemented if no template defined for the device type
+        :raise TemplateNotImplemented if the template specified in template_name is not defined
+        :raise TemplateRenderException if the user passed wrong arguments to the template
+        """
+        return napalm_base.helpers.load_template(self, template_name, **template_vars)
 
     def load_replace_candidate(self, filename=None, config=None):
         """

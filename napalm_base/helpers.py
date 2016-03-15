@@ -13,17 +13,6 @@ import napalm_base.exceptions
 
 
 def load_template(cls, template_name, **template_vars):
-    """
-    Will load a templated configuration on the device.
-
-    :param cls: instance of the driver class
-    :param template_name: identifies the template name
-    :param template_vars: dictionary with the
-
-    :raise DriverTemplateNotImplemented if no template defined for the device type
-    :raise TemplateNotImplemented if the template specified in template_name is not defined
-    :raise TemplateRenderException if the user passed wrong arguments to the template
-    """
     try:
         current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
         template_dir_path = '{current_dir}/templates'.format(current_dir=current_dir)
