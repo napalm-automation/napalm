@@ -11,8 +11,8 @@ install_reqs = parse_requirements('requirements.txt', session=uuid.uuid1())
 reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
-    name="napalm-ios",
-    version="0.1.0",
+    name="napalm-nxos",
+    version="0.1.1",
     packages=find_packages(),
     author="David Barroso",
     author_email="dbarrosop@dravetech.com",
@@ -23,7 +23,7 @@ setup(
         'Operating System :: POSIX :: Linux',
         'Operating System :: MacOS',
     ],
-    url="https://github.com/napalm-automation/napalm-ios",
+    url="https://github.com/napalm-automation/napalm-nxos",
     include_package_data=True,
     install_requires=reqs,
 )
