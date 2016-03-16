@@ -946,16 +946,136 @@ class NetworkDriver:
             * acl (string) # acl number or name
             * mode (string) # read-write (rw), read-only (ro)
 
-        Example Output:
+        Example Output::
 
-        {   'chassis_id': u'Asset Tag 54670',
-        'community': {   u'private': {   'acl': u'12', 'mode': u'rw'},
-                         u'public': {   'acl': u'11', 'mode': u'ro'},
-                         u'public_named_acl': {   'acl': u'ALLOW-SNMP-ACL',
-                                                  'mode': u'ro'},
-                         u'public_no_acl': {   'acl': u'N/A', 'mode': u'ro'}},
-        'contact': u'Joe Smith',
-        'location': u'123 Anytown USA Rack 404'}
+            {
+                'chassis_id': u'Asset Tag 54670',
+                'community': {
+                    u'private': {
+                        'acl': u'12',
+                        'mode': u'rw'
+                    },
+                    u'public': {
+                        'acl': u'11',
+                        'mode': u'ro'
+                    },
+                    u'public_named_acl': {
+                        'acl': u'ALLOW-SNMP-ACL',
+                        'mode': u'ro'
+                    },
+                    u'public_no_acl': {
+                        'acl': u'N/A',
+                        'mode': u'ro'
+                    }
+                },
+                'contact' : u'Joe Smith',
+                'location': u'123 Anytown USA Rack 404'
+            }
+        """
+        raise NotImplementedError
 
+    def get_probes_config(self):
+        """
+        Returns a dictionary with the probes configured on the device.
+        Probes can be either RPM on JunOS devices, either SLA on IOS-XR. Other vendors do not support probes.
+        The keys of the main dictionary represent the name of the probes.
+        Each probe consists on multiple tests, each test name being a key in the probe dictionary.
+        A test has the following keys:
+
+            * probe_type (str)
+            * target (str)
+            * source (str)
+            * probe_count (int)
+            * test_interval (int)
+
+        Example output::
+
+            {
+                'probe1':{
+                    'test1': {
+                        'probe_type'   : 'icmp-ping',
+                        'target'       : '192.168.0.1',
+                        'source'       : '192.168.0.2',
+                        'probe_count'  : 13,
+                        'test_interval': 3
+                    },
+                    'test2': {
+                        'probe_type'   : 'http-ping',
+                        'target'       : '172.17.17.1',
+                        'source'       : '192.17.17.2',
+                        'probe_count'  : 5,
+                        'test_interval': 60
+                    }
+                }
+            }
+        """
+        raise NotImplementedError
+
+    def get_probes_results(self):
+        """
+        Returns a dictionary with the results of the probes.
+        The keys of the main dictionary represent the name of the probes.
+        Each probe consists on multiple tests, each test name being a key in the probe dictionary.
+        A test has the following keys:
+
+            * target (str)
+            * source (str)
+            * probe_type (str)
+            * probe_count (int)
+            * rtt (float)
+            * round_trip_jitter (float)
+            * current_test_loss (float)
+            * current_test_min_delay (float)
+            * current_test_max_delay (float)
+            * current_test_avg_delay (float)
+            * last_test_min_delay (float)
+            * last_test_max_delay (float)
+            * last_test_avg_delay (float)
+            * global_test_min_delay (float)
+            * global_test_max_delay (float)
+            * global_test_avg_delay (float)
+
+        Example output::
+
+            {
+                'probe1':  {
+                    'test1': {
+                        'last_test_min_delay'   : 63.120,
+                        'global_test_min_delay' : 62.912,
+                        'current_test_avg_delay': 63.190,
+                        'global_test_max_delay' : 177.349,
+                        'current_test_max_delay': 63.302,
+                        'global_test_avg_delay' : 63.802,
+                        'last_test_avg_delay'   : 63.438,
+                        'last_test_max_delay'   : 65.356,
+                        'probe_type'            : 'icmp-ping',
+                        'rtt'                   : 63.138,
+                        'current_test_loss'     : 0,
+                        'round_trip_jitter'     : -59.0,
+                        'target'                : '192.168.0.1',
+                        'source'                : '192.168.0.2'
+                        'probe_count'           : 15,
+                        'current_test_min_delay': 63.138
+                    },
+                    'test2': {
+                        'last_test_min_delay'   : 176.384,
+                        'global_test_min_delay' : 169.226,
+                        'current_test_avg_delay': 177.098,
+                        'global_test_max_delay' : 292.628,
+                        'current_test_max_delay': 180.055,
+                        'global_test_avg_delay' : 177.959,
+                        'last_test_avg_delay'   : 177.178,
+                        'last_test_max_delay'   : 184.671,
+                        'probe_type'            : 'icmp-ping',
+                        'rtt'                   : 176.449,
+                        'current_test_loss'     : 0,
+                        'round_trip_jitter'     : -34.0,
+                        'target'                : '172.17.17.1',
+                        'source'                : '172.17.17.2'
+                        'probe_count'           : 15,
+                        'current_test_min_delay': 176.402
+                    }
+                }
+            }
         """
         raise NotImplementedError

@@ -332,3 +332,25 @@ class TestGettersNetworkDriver:
             result = result and self._test_model(models.snmp_community, community_data)
 
         self.assertTrue(result)
+
+    def test_get_probes_config(self):
+
+        get_probes_config = self.device.get_probes_config()
+        result = len(get_probes_config) > 0
+
+        for probe_name, probe_tests in get_probes_config.iteritems():
+            for test_name, test_config in probe_tests.iteritems():
+                result = result and self._test_model(models.probe_test, test_config)
+
+        self.assertTrue(result)
+
+    def test_get_probes_results(self):
+
+        get_probes_results = self.device.get_probes_results()
+        result = len(get_probes_results) > 0
+
+        for probe_name, probe_tests in get_probes_results.iteritems():
+            for test_name, test_results in probe_tests.iteritems():
+                result = result and self._test_model(models.probe_test_results, test_results)
+
+        self.assertTrue(result)
