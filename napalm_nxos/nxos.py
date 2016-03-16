@@ -20,7 +20,7 @@ import re
 from datetime import datetime
 
 
-from base import NetworkDriver
+from napalm_base.base import NetworkDriver
 
 from pycsco.nxos.device import Device as NXOSDevice
 from pycsco.nxos.utils.file_copy import FileCopy
@@ -30,7 +30,8 @@ from pycsco.nxos.error import DiffError, FileTransferError, CLIError
 
 from urllib2 import URLError
 
-from exceptions import ConnectionException, MergeConfigException, ReplaceConfigException, CommandErrorException
+from napalm_base.exceptions import ConnectionException, MergeConfigException,\
+                                   ReplaceConfigException, CommandErrorException
 
 def strip_trailing(string):
     lines = list(x.rstrip(' ') for x in string.splitlines())

@@ -14,8 +14,8 @@
 
 import unittest
 
-from napalm.nxos import NXOSDriver
-from base import TestConfigNetworkDriver, TestGettersNetworkDriver
+from napalm_nxos.nxos import NXOSDriver
+from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import re
 
 # class TestConfigNXOSDriver(unittest.TestCase, TestConfigNetworkDriver):
