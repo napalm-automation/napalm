@@ -1,2 +1,2 @@
 include requirements.txt
-include napalm_ios/templates/*.j2
+include napalm_nxos/templates/*.j2
