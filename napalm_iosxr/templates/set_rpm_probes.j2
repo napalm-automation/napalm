@@ -1,0 +1,36 @@
+ipsla
+  {% for probe_name, probe_test in template_vars.iteritems() %}
+  no schedule operation {{loop.index}}
+  {# to be able to update a probe, need to cancel its scheduling #}
+  {% endfor %}
+  {% for probe_name, probe_test in probes.iteritems() %}
+  operation {{loop.index}}
+    {% for test_name, test_details in probe_test.iteritems() %}
+    {% if test_details.probe_type is defined %}
+    type {{test_details.probe_type|replace('ping', 'echo')|replace('-', ' ')}}
+    {% else %}
+    type icmp echo
+    {% endif %}
+      tag {{test_name}}
+      history
+        lives 1
+        filter all
+        buckets 20
+      !
+      {% if test_details.source is defined %}
+      source address {{test_details.source}}
+      {% endif %}
+      destination address {{test_details.target}}
+      {% if test_details.test_interval is defined %}
+      timeout {{(test_details.test_interval - 1) * 1000}}
+      frequency {{test_details.test_interval}}
+      {% endif %}
+    !
+    {% endfor %}
+  !
+  {% endfor %}
+  {% for probe_name, probe_test in probes.iteritems() %}
+  schedule operation {{loop.index}}
+    start-time now
+    life forever
+  {% endfor %}
