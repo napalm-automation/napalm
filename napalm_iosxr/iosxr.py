@@ -1356,7 +1356,7 @@ class IOSXRDriver(NetworkDriver):
             test_name =  unicode(self._find_txt(operation, 'Tag'))
             source = unicode(self._find_txt(operation, 'SourceAddress'))
             target = unicode(self._find_txt(operation, 'DestAddress'))
-            test_interval = int(self._find_txt(operation, 'Frequency'))
+            test_interval = int(self._find_txt(operation, 'Frequency'))  # defined in seconds
             probe_count = 60 / (test_interval + 1)  # one second between tests
             if probe_name not in sla_config.keys():
                 sla_config[probe_name] = dict()
@@ -1371,3 +1371,66 @@ class IOSXRDriver(NetworkDriver):
             }
 
         return sla_config
+
+    def get_probes_results(self):
+
+        sla_results = dict()
+
+        _PROBE_TYPE_XML_TAG_MAP_ = {
+            'ICMPEcho': u'icmp-ping',
+            'UDPEcho': u'udp-ping',
+            'ICMPJitter': u'icmp-ping-timestamp',
+            'UDPJitter': u'udp-ping-timestamp'
+        }
+
+        sla_results_rpc_command = '<Get><Operational><IPSLA></IPSLA></Operational></Get>'
+
+        sla_results_tree = ET.fromstring(self.device.make_rpc_call(sla_results_rpc_command))
+
+        for probe in sla_results_tree.findall('.//Operation'):
+            probe_name = unicode(self._find_txt(probe, 'Naming/OperationID'))
+            target = unicode(self._find_txt(probe, 'History/Target/LifeTable/Life/BucketTable/Bucket[0]/TargetAddress/IPv4AddressTarget'))
+            source = u''  # source is not provided. thanks cisco!
+            test_name = probe_name  # why would you need it, right?
+            probe_type = _PROBE_TYPE_XML_TAG_MAP_.get(self._find_txt(probe, 'Statistics/Latest/Target/SpecificStats/op_type'))
+            test_interval = int(self._find_txt(probe, 'Common/OperationalState/Frequency')) * 1e-3  # here f is defined in miliseconds
+            probe_count = 60 / (test_interval + 1)  # one second between tests
+            rtt = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/ResponseTime'))
+            rms = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/Sum2ResponseTime'))
+            global_test_updates = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/UpdateCount'))
+            jitter = rtt-(rms/global_test_updates)**0.5
+            current_test_loss = 0
+            current_test_min_delay = 0.0  # no stats for undergoing test :(
+            current_test_max_delay = 0.0
+            current_test_avg_delay = 0.0
+            last_test_min_delay = float(self._find_txt(probe, 'Statistics/Latest/Target/CommonStats/MinResponseTime'))
+            last_test_max_delay = float(self._find_txt(probe, 'Statistics/Latest/Target/CommonStats/MaxResponseTime'))
+            last_test_sum_delay = float(self._find_txt(probe, 'Statistics/Latest/Target/CommonStats/SumResponseTime'))
+            last_test_updates = float(self._find_txt(probe, 'Statistics/Latest/Target/CommonStats/UpdateCount'))
+            last_test_avg_delay = last_test_sum_delay/last_test_updates
+            global_test_min_delay = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/MinResponseTime'))
+            global_test_max_delay = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/MaxResponseTime'))
+            global_test_sum_delay = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/SumResponseTime'))
+            global_test_avg_delay = global_test_sum_delay/global_test_updates
+            if probe_name not in sla_results.keys():
+                sla_results[probe_name] = dict()
+            sla_results[probe_name][test_name] = {
+                'target': target,
+                'source': source,
+                'probe_type': probe_type,
+                'probe_count': probe_count,
+                'rtt': rtt,
+                'round_trip_jitter': jitter,
+                'current_test_loss': current_test_loss,
+                'current_test_min_delay': current_test_min_delay,
+                'current_test_max_delay': current_test_max_delay,
+                'current_test_avg_delay': current_test_avg_delay,
+                'last_test_min_delay': last_test_min_delay,
+                'last_test_max_delay': last_test_max_delay,
+                'last_test_avg_delay': last_test_avg_delay,
+                'global_test_min_delay': global_test_min_delay,
+                'global_test_max_delay': global_test_max_delay,
+                'global_test_avg_delay': global_test_avg_delay
+            }
+
+        return sla_results
