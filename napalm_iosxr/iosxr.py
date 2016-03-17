@@ -1356,8 +1356,8 @@ class IOSXRDriver(NetworkDriver):
             test_name =  unicode(self._find_txt(operation, 'Tag'))
             source = unicode(self._find_txt(operation, 'SourceAddress'))
             target = unicode(self._find_txt(operation, 'DestAddress'))
-            test_interval = int(self._find_txt(operation, 'Frequency'))  # defined in seconds
-            probe_count = 60 / (test_interval + 1)  # one second between tests
+            test_interval = int(self._find_txt(operation, 'Frequency', '0'))  # defined in seconds
+            probe_count = int(60 / (test_interval + 1))  # one second between tests
             if probe_name not in sla_config.keys():
                 sla_config[probe_name] = dict()
             if test_name not in sla_config[probe_name]:
@@ -1387,14 +1387,17 @@ class IOSXRDriver(NetworkDriver):
 
         sla_results_tree = ET.fromstring(self.device.make_rpc_call(sla_results_rpc_command))
 
+        probes_config = self.get_probes_config()  # need to retrieve also the configuration
+        # source and tag/test_name not provided
+
         for probe in sla_results_tree.findall('.//Operation'):
             probe_name = unicode(self._find_txt(probe, 'Naming/OperationID'))
+            test_name = probes_config.get(probe_name).keys()[0]
             target = unicode(self._find_txt(probe, 'History/Target/LifeTable/Life/BucketTable/Bucket[0]/TargetAddress/IPv4AddressTarget'))
-            source = u''  # source is not provided. thanks cisco!
-            test_name = probe_name  # why would you need it, right?
+            source = probes_config.get(probe_name).get(test_name, {}).get('source', '')
             probe_type = _PROBE_TYPE_XML_TAG_MAP_.get(self._find_txt(probe, 'Statistics/Latest/Target/SpecificStats/op_type'))
             test_interval = int(self._find_txt(probe, 'Common/OperationalState/Frequency')) * 1e-3  # here f is defined in miliseconds
-            probe_count = 60 / (test_interval + 1)  # one second between tests
+            probe_count = int(60 / (test_interval + 1))  # one second between tests
             rtt = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/ResponseTime'))
             rms = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/Sum2ResponseTime'))
             global_test_updates = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/UpdateCount'))
