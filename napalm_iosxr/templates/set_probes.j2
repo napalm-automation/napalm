@@ -1,9 +1,9 @@
 ipsla
-  {% for probe_name, probe_test in template_vars.iteritems() %}
+  {% for probe_name, probe_test in probes.iteritems() %}
   no schedule operation {{loop.index}}
   {# to be able to update a probe, need to cancel its scheduling #}
   {% endfor %}
-  {% for probe_name, probe_test in template_vars.iteritems() %}
+  {% for probe_name, probe_test in probes.iteritems() %}
   operation {{loop.index}}
     {% for test_name, test_details in probe_test.iteritems() %}
     {% if test_details.probe_type is defined %}
