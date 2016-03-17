@@ -1348,12 +1348,12 @@ class IOSXRDriver(NetworkDriver):
 
         sla_config_result_tree = ET.fromstring(self.device.make_rpc_call(sla_config_rpc_command))
 
-        for probe in sla_config_rpc_command.iter('.//Definition'):
+        for probe in sla_config_result_tree.findall('.//Definition'):
             probe_name = unicode(self._find_txt(probe, 'Naming/OperationID'))
             operation_type = probe.find('OperationType').getchildren()[0].tag
             probe_type = _PROBE_TYPE_XML_TAG_MAP_.get(operation_type, u'')
             operation = probe.find('OperationType').find(operation_type)
-            test_name =  unicode(self.find_txt(operation, 'Tag'))
+            test_name =  unicode(self._find_txt(operation, 'Tag'))
             source = unicode(self._find_txt(operation, 'SourceAddress'))
             target = unicode(self._find_txt(operation, 'DestAddress'))
             test_interval = int(self._find_txt(operation, 'Frequency'))
