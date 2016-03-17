@@ -1338,7 +1338,10 @@ class IOSXRDriver(NetworkDriver):
         sla_config = dict()
 
         _PROBE_TYPE_XML_TAG_MAP_ = {
-            'ICMPEcho': u'icmp-echo'
+            'ICMPEcho': u'icmp-ping',
+            'UDPEcho': u'udp-ping',
+            'ICMPJitter': u'icmp-ping-timestamp',
+            'UDPJitter': u'udp-ping-timestamp'
         }
 
         sla_config_rpc_command = '<Get><Configuration><IPSLA></IPSLA></Configuration></Get>'
