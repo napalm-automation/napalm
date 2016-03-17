@@ -35,4 +35,5 @@ script:
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_route_to
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_snmp_information
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_probes_config
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_probes_results
 - cd ../..
