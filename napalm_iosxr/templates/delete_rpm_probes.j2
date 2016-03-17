@@ -1,5 +1,5 @@
 ipsla
-  {% for probe_name, probe_test in template_vars.iteritems() %}
+  {% for probe_name, probe_test in probes.iteritems() %}
   no schedule operation {{loop.index}}
   {% endfor %}
   {% for probe_name, probe_test in probes.iteritems() %}
