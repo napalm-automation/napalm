@@ -83,7 +83,6 @@ def load_module(name):
     :raises ImportError:
         If the module could not be loaded
     """
-
     try:
         mod = None
         mod = sys.modules[name]
