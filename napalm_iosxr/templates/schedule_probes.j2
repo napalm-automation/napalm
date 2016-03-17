@@ -1,0 +1,8 @@
+ipsla
+  {% for probe_name, probe_test in template_vars.iteritems() %}
+  schedule operation {{loop.index}}
+    start-time now
+    life forever
+  !
+  {% endfor %}
+!
