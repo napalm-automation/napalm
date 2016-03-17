@@ -1023,7 +1023,7 @@ class JunOSDriver(NetworkDriver):
                 if isinstance(test_param_value, float):
                     test_results[test_param_name] = test_param_value * 1e-3 # convert from useconds to mseconds
             test_name = test_results.pop('test_name', '')
-            source = test_results.pop('source', u'')
+            source = test_results.get('source', u'')
             if source is None:
                 test_results['source'] = u''
             if probe_name not in probes_results.keys():
