@@ -13,3 +13,4 @@
 # the License.
 
 """napalm_fortios package."""
+from fortios import FortiOSDriver
