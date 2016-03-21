@@ -13,3 +13,4 @@
 # the License.
 
 """napalm_iosxr package."""
+from iosxr import IOSXRDriver
