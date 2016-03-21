@@ -1357,7 +1357,7 @@ class IOSXRDriver(NetworkDriver):
             source = unicode(self._find_txt(operation, 'SourceAddress'))
             target = unicode(self._find_txt(operation, 'DestAddress'))
             test_interval = int(self._find_txt(operation, 'Frequency', '0'))  # defined in seconds
-            probe_count = int(60 / (test_interval + 1))  # one second between tests
+            probe_count = int(self._find_txt(operation, 'History/Buckets', '0'))
             if probe_name not in sla_config.keys():
                 sla_config[probe_name] = dict()
             if test_name not in sla_config[probe_name]:
