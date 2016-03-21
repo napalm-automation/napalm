@@ -17,7 +17,7 @@ ipsla
       history
         lives 1
         filter all
-        buckets 20
+        buckets {{test_details.probe_count}}
       !
       {% if test_details.source is defined %}
       source address {{test_details.source}}
