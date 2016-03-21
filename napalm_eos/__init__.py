@@ -13,3 +13,4 @@
 # the License.
 
 """napalm_eos package."""
+from eos import EOSDriver
