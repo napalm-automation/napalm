@@ -1,40 +1,35 @@
 language: python
-
 python:
-  - 2.7
-
+- 2.7
 install:
-  - pip install -r requirements.txt
-  - pip install .
-  - git clone https://github.com/napalm-automation/napalm-base.git napalm-automation/napalm-base
-  - cd napalm-automation/napalm-base
-  - python setup.py install
-  - cd ../..
-
+- pip install -r requirements.txt
+- pip install .
+- git clone https://github.com/napalm-automation/napalm-base.git napalm-automation/napalm-base
+- cd napalm-automation/napalm-base
+- python setup.py install
+- cd ../..
 deploy:
   provider: pypi
   user: dbarroso
   password:
-    secure: FWTA4L2e08mMpD8BbCNWTZN1XFCQKSlYUfPqT0aXDz/GgEK2KfZqbzj1V8Xwx4pXuBHSy8JunlpLGdc18dqtfMKpryz7elWbIsvyPNvcVFxYatG1RdDZB3qiN0MWTCVOCTUyOeglbOsaahKlV66RGBRbQpx107woZ/I+hg43jeNdi6fUer5Ip2DXLMFkR7yb5vbI+tc9KM1Z3/isSzmpkYWQm1MUGxnFonye46r6MoSOANTDpzNIAQKOKwUvGwdovZCAhdqn8JQp8EsKB9Tl0QK56k2//TWmOlglvwL3vVHOeP0V12fc8viKvYRGXKSCwzcz+bi5RSGo0Afurc7lVrmHgJbJIfXxilucE0OBOn58487wynn3k+30D39V9PnddYJ6iNU1ji7/qYpCbyE9ydSKFu4rFgwDbFTU1kJ+JlmNmoJYET/rZITQNUjtFC9grtjSdpouurzNS4eSg7CD8EfzVV6i3IS+1p9n4xosUxdCRl8/jhm9pNMW2OaM00r4GwW2Xt4kDP9J8OWDhlErDLE5lR4EjuGPCLmCYTWcl3DtvUlDCqBs5JZutHV+6raHBw7qFUcI2MxacjQys/3etjIUb9UilbBP1cnqec5Q/FfcTvD0QXCT56f1eM87eh4ysxmHFIDrW+ZwaDW/DicOExfeq264bYOge01poQEkdGM=
+    secure: IIifRr9K771snku+qI7yz8T/cJC4ZO/fUYUNILhMB5eQtF2/MAEU7W1owGfcIqE9SW7fhPAXqVrnb7AcdFyjjbkZn6uoYYlh5LrQaCXgbfol5Yg+OSsRKFwhEOBcKFrtqz3W6UPunN6CX4v2gn2UCmWSyQ3XERgqKxobBVSOMb1G9PTy/Zk0ZUvGJc05bxWj3xuVQKg904VpnhQJ6q1h4d9SV+dQClP4eDRbEwe+ICKX3S2JPa/PiJfWrIsCL12yT+iZ/aiDwfSBjh+o3HMdt98cB3FkHAibEZnvpLOpUCmjX1rMyqyJEqVgDM1mQ4vyoYO5DNFv94ZufGJnJP+TIbkkSaFy9ZpeC2V+7K03TM+g1rZD3BKK50u3kL86KsHao14SZHV58l7/b3023IUr4MwrQgoLlHMhw9IFFC8bYmP/6aylae5fR/+5inGloSByzWLAKKQ0FLPPkCoeukmldyphjZ8HnGdhEu566kO9R5gxJ4edsbeimsRAO3oZ/EByQcgOytJjVKjMpn7fhiSblJO8KB4+M5d5fXUn5RZ31P3g8RFfG1Jqx2l9eOd4i8u9l3NkRd9WO8q5wyF/hvC/u4RcIMnRYl5hPWMBNY6uGGj7aq7o+XETTLVFirCwHBKre6OLdaVpW1ZciJP07Xb9qhyPLCeP3E9VM/OAz9rs5KI=
   on:
     tags: true
     branch: master
-
 script:
-  - cd test/unit
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_arp_table
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_config
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors
-  # - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors_detail
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_environment
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_facts
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces_counters
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces_ip
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors_detail
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_mac_address_table
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_ntp_peers
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_route_to
-  - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_snmp_information
-  - cd ../..
+- cd test/unit
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_arp_table
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_config
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_environment
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_facts
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces_counters
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces_ip
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors_detail
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_mac_address_table
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_ntp_peers
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_route_to
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_snmp_information
+- cd ../..
