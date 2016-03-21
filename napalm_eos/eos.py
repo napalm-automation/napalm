@@ -1082,7 +1082,6 @@ class EOSDriver(NetworkDriver):
 
         return snmp_information
 
-
     def get_users(self):
 
         def _sshkey_type(sshkey):
@@ -1109,3 +1108,46 @@ class EOSDriver(NetworkDriver):
             users[user] = user_details
 
         return users
+
+    def traceroute(self, destination, source='', ttl=0, timeout=0):
+
+        traceroute_result = dict()
+
+        source_opt = ''
+        ttl_opt = ''
+        timeout_opt = ''
+
+        if not ttl:
+            ttl = 20
+
+        if source:
+            source_opt = '-s {source}'.format(source=source)
+        if ttl:
+            ttl_opt = '-m {ttl}'.format(ttl=ttl)
+        if timeout:
+            timeout_opt = '-w {timeout}'.format(timeout=timeout)
+
+        command = 'bash traceroute {destination} {source_opt} {ttl_opt} {timeout_opt}'.format(
+            destination=destination,
+            source_opt=source_opt,
+            ttl_opt=ttl_opt,
+            timeout_opt=timeout_opt
+        )
+
+        try:
+            traceroute_raw_output = self.cli([command]).get(command)
+        except CommandErrorException:
+            return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
+
+        traceroute_tabled_output = self._textfsm_extractor('traceroute', traceroute_raw_output)
+
+        traceroute_result['success'] = dict()
+        for entry in traceroute_tabled_output:
+            hop_index = int(entry.get('hopindex'))
+            traceroute_result['success'][hop_index] = {
+                'ip_address': unicode(entry.get('hostip', '')),
+                'host_name': unicode(entry.get('hostname', '')),
+                'rtt': float(entry.get('rtt', '0.0'))
+            }
+
+        return traceroute_result
