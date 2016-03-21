@@ -13,3 +13,4 @@
 # the License.
 
 """napalm_pluribus package."""
+from pluribus import PluribusDriver
