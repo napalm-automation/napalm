@@ -1333,6 +1333,7 @@ class IOSXRDriver(NetworkDriver):
 
         return snmp_information
 
+
     def get_probes_config(self):
 
         sla_config = dict()
@@ -1371,6 +1372,7 @@ class IOSXRDriver(NetworkDriver):
             }
 
         return sla_config
+
 
     def get_probes_results(self):
 
@@ -1451,3 +1453,98 @@ class IOSXRDriver(NetworkDriver):
             }
 
         return sla_results
+
+
+    def traceroute(self, destination, source='', ttl=0, timeout=0):
+
+        def build_arrays(array, datatype, length, default):
+            temp_array = []
+            for elem in array:
+                temp_array.append(self._convert(datatype, elem.text.strip(), default))
+            if len(temp_array) >= length:
+                return temp_array
+            remaining_elems = length - len(temp_array)
+            temp_array += [default] * remaining_elems
+            return temp_array
+
+        traceroute_result = dict()
+
+        ipv = 4
+        try:
+            ipv = IPAddress(destination).version
+        except AddrFormatError:
+            pass
+            # does not seem to be a valid IP, thus let's assume is a hostname
+
+        source_tag = ''
+        ttl_tag = ''
+        timeout_tag = ''
+        if source:
+            source_tag = '<Source>{source}</Source>'.format(source = source)
+        if ttl:
+            ttl_tag = '<MaxTTL>{maxttl}</MaxTTL>'.format(maxttl = ttl)
+        if timeout:
+            timout_tag = '<Timeout>{timeout}</Timeout>'.format(timeout = timeout)
+
+        traceroute_rpc_command = '''
+            <Set>
+                <Action>
+                    <TraceRoute>
+                        <IPV{version}>
+                            <Destination>
+                                {destination}
+                            </Destination>
+                            <Probe>
+                                1
+                            </Probe>
+                            {source_tag}
+                            {ttl_tag}
+                            {timeout_tag}
+                        </IPV{version}>
+                    </TraceRoute>
+                </Action>
+            </Set>
+        '''.format(
+            version=ipv,
+            destination=destination,
+            source_tag=source_tag,
+            ttl_tag=ttl_tag,
+            timeout_tag=timeout_tag
+        )
+
+        traceroute_tree = ET.fromstring(self.device.make_rpc_call(traceroute_rpc_command))
+
+        results_tree = traceroute_tree.find('.//Results')
+        results_error = self._find_txt(results_tree, 'Error')
+
+        if results_error:
+            return {'error': results_error}
+
+        traceroute_result['success'] = dict()
+
+        hop_indexes = results_tree.findall('HopIndex')
+        hop_ip_objs = results_tree.findall('HopAddress')
+        hop_hosts = results_tree.findall('HopHostName') # not necessary the same length
+        response_time = results_tree.findall('DeltaTime')
+        max_elems = max(len(hop_indexes), len(hop_ip_objs), len(hop_hosts), len(response_time))
+        hop_indexes = build_arrays(hop_indexes, int, max_elems, 1)
+        hop_ips = build_arrays(hop_ip_objs, unicode, max_elems, u'')
+        hop_hosts = build_arrays(hop_hosts, unicode, max_elems, u'')
+        hop_rtt = build_arrays(response_time, float, max_elems, 0.0)
+
+        non_responsive_hops = set(range(1, hop_indexes[-1]+1)) - set(hop_indexes)
+
+        for hop_index in hop_indexes:
+            traceroute_result['success'][hop_index] = {
+                'ip_address': hop_ips[hop_index-len(non_responsive_hops)-1],
+                'host_name': hop_hosts[hop_index-len(non_responsive_hops)-1],
+                'rtt': hop_rtt[hop_index-len(non_responsive_hops)-1]
+            }
+        for non_responsive_hop_index in non_responsive_hops:
+            traceroute_result['success'][non_responsive_hop_index] = {
+                'ip_address': u'*',
+                'host_name': u'*',
+                'rtt': 0.0
+            }
+
+        return traceroute_result
