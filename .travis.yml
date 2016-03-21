@@ -1,9 +1,16 @@
 language: python
+
 python:
-- 2.7
+  - 2.7
+
 install:
-- pip install -r requirements.txt
-- pip install .
+  - pip install -r requirements.txt
+  - pip install .
+  - git clone https://github.com/napalm-automation/napalm-base.git napalm-automation/napalm-base
+  - cd napalm-automation/napalm-base
+  - python setup.py install
+  - cd ../..
+
 deploy:
   provider: pypi
   user: dbarroso
@@ -12,6 +19,7 @@ deploy:
   on:
     tags: true
     branch: master
+
 script:
 - cd test/unit
 - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_arp_table
