@@ -13,3 +13,4 @@
 # the License.
 
 """napalm_ios package."""
+from ios import IOSDriver
