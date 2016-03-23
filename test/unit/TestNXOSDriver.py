@@ -43,12 +43,14 @@ class TestGetterNXOSDriver(unittest.TestCase, TestGettersNetworkDriver):
         username = 'mircea'
         password = 'mircea'
         cls.vendor = 'nxos'
-
+        print(1)
         cls.device = NXOSDriver(hostname, username, password, timeout=60)
-
+        print(2)
         if cls.mock:
+            print('asd')
             cls.device.device = FakeNXOSDevice()
         else:
+            print('qwe')
             cls.device.open()
 
     @staticmethod
