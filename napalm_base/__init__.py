@@ -124,7 +124,7 @@ def _napalm_namespace(module):
     """
     if '.' in module:
         return module
-    return 'napalm_{}'.format(module, module)
+    return 'napalm_{}'.format(module)
 
 
 def _discover_driver_from_module(module):
