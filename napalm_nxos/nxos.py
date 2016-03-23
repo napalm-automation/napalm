@@ -20,6 +20,7 @@ import re
 from datetime import datetime
 
 
+import napalm_base.helpers
 from napalm_base.base import NetworkDriver
 
 from pycsco.nxos.device import Device as NXOSDevice
@@ -48,25 +49,23 @@ class NXOSDriver(NetworkDriver):
         self.password = password
         self.timeout = timeout
         self.up = False
-        try:
-            self.device = NXOSDevice(username=username,
-                                 password=password,
-                                 ip=hostname,
-                                 timeout=timeout)
-            self.device.show('show version', fmat = 'json')
-            # execute something easy
-            # something easier with XML format?
-            self.up = True
-        except URLError:
-            # unable to open connection
-            pass
         self.replace = True
         self.loaded = False
         self.fc = None
         self.changed = False
 
     def open(self):
-        if not self.up:
+        try:
+            self.device = NXOSDevice(username=self.username,
+                                     password=self.password,
+                                     ip=self.hostname,
+                                     timeout=self.timeout)
+            self.device.show('show version', fmat='json')
+            # execute something easy
+            # something easier with XML format?
+            self.up = True
+        except URLError:
+            # unable to open connection
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
 
     def close(self):
@@ -524,7 +523,7 @@ class NXOSDriver(NetworkDriver):
 
         snmp_raw_output = self.cli([snmp_command]).get(snmp_command, '')
 
-        snmp_config = self._textfsm_extractor('snmp_config', snmp_raw_output)
+        snmp_config = napalm_base.helpers.textfsm_extractor(self, 'snmp_config', snmp_raw_output)
 
         if not snmp_config:
             return snmp_information
