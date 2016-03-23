@@ -18,19 +18,29 @@ Napalm driver for Arista EOS.
 Read napalm.readthedocs.org for more information.
 """
 
-import pyeapi
+# std libs
 import re
-from napalm_base.base import NetworkDriver
-from pyeapi.eapilib import ConnectionError
-from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,\
-                                   SessionLockedException, CommandErrorException
+import time
+from datetime import datetime
 from netaddr import IPAddress
 from netaddr import IPNetwork
-from netaddr.core import AddrFormatError
-from datetime import datetime
-import time
-from napalm_base.utils import string_parsers
 from collections import defaultdict
+from netaddr.core import AddrFormatError
+
+# third party libs
+import pyeapi
+from pyeapi.eapilib import ConnectionError
+
+# NAPALM base
+import napalm_base.helpers
+from napalm_base.base import NetworkDriver
+from napalm_base.utils import string_parsers
+from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,\
+                                   SessionLockedException, CommandErrorException
+
+# local modules
+# here add local imports
+# e.g. import napalm_eos.helpers etc.
 
 
 class EOSDriver(NetworkDriver):
@@ -1035,7 +1045,7 @@ class EOSDriver(NetworkDriver):
         commands.append('show running-config | section snmp-server')
         raw_snmp_config = self.device.run_commands(commands, encoding = 'text')[0].get('output', '')
 
-        snmp_config = self._textfsm_extractor('snmp_config', raw_snmp_config)
+        snmp_config = napalm_base.helpers.textfsm_extractor(self, 'snmp_config', raw_snmp_config)
 
         if not snmp_config:
             return snmp_information
