@@ -16,10 +16,13 @@
 
 import sys
 import imp
+import inspect
+
+from base import NetworkDriver
 
 
-def import_module(name):
-    """Imports a module into the current runtime environment
+def _import_module(name):
+    """Import a module into the current runtime environment.
 
     This function will take a full path module name and break it into
     its parts iteratively attempting to import each one.  The function
@@ -27,7 +30,7 @@ def import_module(name):
 
     .. doctest::
 
-        >>> import_module('os') #doctest: +ELLIPSIS
+        >>> _import_module('os') #doctest: +ELLIPSIS
         <module 'os' from '...'>
 
     :param str name:
@@ -61,8 +64,8 @@ def import_module(name):
     return mod
 
 
-def load_module(name):
-    """Attempts to load a module into the current environment
+def _load_module(name):
+    """Attempt to load a module into the current environment.
 
     This function will load a module from the Python sys.path.  It will
     check to be sure the module wasn't already loaded.  If the module
@@ -71,7 +74,7 @@ def load_module(name):
 
     .. doctest::
 
-        >>> load_module('sys')
+        >>> _load_module('sys')
         <module 'sys' (built-in)>
 
     :param str name:
@@ -88,7 +91,7 @@ def load_module(name):
         mod = sys.modules[name]
     except KeyError:
         try:
-            mod = import_module(name)
+            mod = _import_module(name)
         except ImportError:
             raise
     finally:
@@ -97,8 +100,8 @@ def load_module(name):
         return mod
 
 
-def napalm_namespace(module):
-    """ Prepends the default namespace onto the module name
+def _napalm_namespace(module):
+    """Prepend the default namespace onto the module name.
 
     The function is only applicable in cases where a module
     name is provided without a full path namespace.  In this
@@ -108,9 +111,9 @@ def napalm_namespace(module):
 
     .. doctest::
 
-        >>> napalm_namespace('test')
+        >>> _napalm_namespace('test')
         'napalm_test.test'
-        >>> napalm_namespace('napalm.test')
+        >>> _napalm_namespace('napalm.test')
         'napalm.test'
 
     :param str module:
@@ -121,11 +124,22 @@ def napalm_namespace(module):
     """
     if '.' in module:
         return module
-    return 'napalm_{}.{}'.format(module, module)
+    return 'napalm_{}'.format(module)
+
+
+def _discover_driver_from_module(module):
+    """Return the first subclass of ``NetworkDriver`` found in ``module``."""
+    driver = None
+    for member in inspect.getmembers(module):
+        if inspect.isclass(member[1]):
+            if issubclass(member[1], NetworkDriver) and member[1] is not NetworkDriver:
+                driver = member[1]
+                break
+    return driver
 
 
 def get_network_driver(module, loader='load_driver', *args, **kwargs):
-    """Attempts to load a class instance from the module
+    """Attempt to load a class instance from the module.
 
     The function will load the specified module and create
     an instance.  The loader works by looking for a function in
@@ -150,9 +164,15 @@ def get_network_driver(module, loader='load_driver', *args, **kwargs):
         Instantiates a Python object an returns it
     """
     loader = loader or 'load_driver'
-    mod = load_module(napalm_namespace(module))
-    if not hasattr(mod, loader):
-        raise Exception('Missing {} function'.format(loader))
-    func = getattr(mod, loader)
-    return func(*args, **kwargs)
+    mod = _load_module(_napalm_namespace(module))
 
+    if hasattr(mod, loader):
+        func = getattr(mod, loader)
+        return func(*args, **kwargs)
+    else:
+        discovered_driver = _discover_driver_from_module(mod)
+        if discovered_driver is None:
+            raise Exception("Failed finding load_driver method and discovering driver in "
+                            "module {}".format(mod))
+        else:
+            return discovered_driver
