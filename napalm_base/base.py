@@ -12,16 +12,15 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-import os
+# std libs
 import sys
-import jinja2
 
-import textfsm
-
+# local modules
 import napalm_base.exceptions
+import napalm_base.helpers
 
 
-class NetworkDriver:
+class NetworkDriver(object):
 
     def __init__(self, hostname, username, password, timeout, optional_args):
         """
@@ -82,6 +81,20 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
+    def load_template(self, template_name, **template_vars):
+        """
+        Will load a templated configuration on the device.
+
+        :param cls: instance of the driver class
+        :param template_name: identifies the template name
+        :param template_vars: dictionary with the
+
+        :raise DriverTemplateNotImplemented if no template defined for the device type
+        :raise TemplateNotImplemented if the template specified in template_name is not defined
+        :raise TemplateRenderException if the user passed wrong arguments to the template
+        """
+        return napalm_base.helpers.load_template(self, template_name, **template_vars)
+
     def load_replace_candidate(self, filename=None, config=None):
         """
         Populates the candidate configuration. You can populate it from a file or from a string. If you send both a
@@ -134,91 +147,6 @@ class NetworkDriver:
         If changes were made, revert changes to the original state.
         """
         raise NotImplementedError
-
-    def load_template(self, template_name, **template_vars):
-        """
-        Will load a templated configuration on the device.
-
-        :param template_name (str) identifies the template name
-        :param template_vars (obj) represents the object to be used by the Jinja template to create the configuration
-        Can be any object type but must respect the constraints defined in the template file.
-
-        :raise DriverTemplateNotImplemented if no template defined for the device type
-        :raise TemplateNotImplemented if the template specified in template_name is not defined
-        :raise TemplateRenderException if the user passed wrong arguments to the template
-        """
-        try:
-            current_dir = os.path.dirname(os.path.abspath(sys.modules[self.__module__].__file__))
-            template_dir_path = '{current_dir}/templates'.format(current_dir=current_dir)
-
-            if not os.path.isdir(template_dir_path):
-                raise napalm_base.exceptions.DriverTemplateNotImplemented("There's no config template defined.")
-
-            loader = jinja2.FileSystemLoader(template_dir_path)
-            environment = jinja2.Environment(loader=loader)
-            template = environment.get_template('{template_name}.j2'.format(
-                template_name=template_name
-            ))
-            configuration = template.render(**template_vars)
-        except jinja2.exceptions.TemplateNotFound:
-            raise napalm_base.exceptions.TemplateNotImplemented(
-                "Template {template_name}.j2 not defined under {path}".format(
-                    template_name=template_name,
-                    path=template_dir_path
-                )
-            )
-        except jinja2.exceptions.UndefinedError as ue:
-            raise napalm_base.exceptions.TemplateRenderException(
-                "Unable to render the template: {}".format(ue.message)
-            )
-        self.load_merge_candidate(config=configuration)
-
-    def _textfsm_extractor(self, template_name, raw_text):
-        """
-        Will apply a TextFSM template over a raw text and return the matching table.
-
-        Main usage of this method will be to extract data form a non-structured output
-        from a network device and return the values in a table format.
-
-        :param template_name: Specifies the name of the template to be used
-        :param raw_text: Text output as the devices prompts on the CLI
-        """
-        textfsm_data = list()
-
-        driver_name = self.__class__.__name__.replace('Driver', '')
-        current_dir = os.path.dirname(os.path.abspath(sys.modules[self.__module__].__file__))
-        template_path = '{current_dir}/utils/textfsm_templates/{template_name}.tpl'.format(
-            current_dir=current_dir,
-            driver_name=driver_name.lower(),
-            template_name=template_name
-        )
-
-        try:
-            fsm_handler = textfsm.TextFSM(open(template_path))
-        except IOError:
-            raise napalm_base.exceptions.TemplateNotImplemented(
-                "TextFSM template {template_name} not defined!".format(
-                    template_name=template_name
-                )
-            )
-        except textfsm.textfsm.TextFSMTemplateError:
-            raise napalm_base.exceptions.TemplateRenderException(
-                "Wrong format of template {template_name}".format(
-                    template_name=template_name
-                )
-            )
-
-        objects = fsm_handler.ParseText(raw_text)
-
-        for obj in objects:
-            index = 0
-            entry = {}
-            for entry_value in obj:
-                entry[fsm_handler.header[index].lower()] = str(entry_value)
-                index += 1
-            textfsm_data.append(entry)
-
-        return textfsm_data
 
     def get_facts(self):
         """
