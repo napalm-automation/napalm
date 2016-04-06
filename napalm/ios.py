@@ -896,7 +896,7 @@ class IOSDriver(NetworkDriver):
             match = re.search(pattern, current_prefixes_out)
             if match:
                 sent_prefixes = int(match.group(1))
-                accepted_prefixes = int(match.group(1))
+                accepted_prefixes = int(match.group(2))
             else:
                 sent_prefixes = accepted_prefixes = -1
 
@@ -906,7 +906,6 @@ class IOSDriver(NetworkDriver):
             # prefix-list                           0          2
             # Total:                                0          2
             filtered_prefixes_out = self.device.send_command(cmd_filtered_prefix).strip()
-            accepted_prefixes = int(accepted_prefixes)
             sent_prefixes = int(sent_prefixes)
             pattern = r'Total:\s+\d+\s+(\d+).*'  # Total:     0          2
             match = re.search(pattern, filtered_prefixes_out)
