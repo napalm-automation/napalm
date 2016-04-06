@@ -22,9 +22,9 @@ Full ios driver support requires configuration rollback on error::
 Downgraded ios driver support (i.e. no auto rollback on configuration error for replace operation)::
 
     Cisco IOS requirements for 'Configuration Replace and Configuration Rollback' feature.
-    12.3(7)T 
-    12.2(25)S 
-    12.3(14)T 
+    12.3(7)T
+    12.2(25)S
+    12.3(14)T
     12.2(27)SBC
     12.2(31)SB2
     12.2(33)SRA
@@ -32,18 +32,24 @@ Downgraded ios driver support (i.e. no auto rollback on configuration error for 
     12.2(33)SB
 
 
-Note, to disable auto rollback you must add the 'auto_rollback_on_error=False' optional argument.
+Note, to disable auto rollback you must add the `auto_rollback_on_error=False` optional argument.
 
 
 
 Archive
 _______
 
-IOSDriver requires that the 'archive' functionality be enabled to perform auto-rollback on error, make sure it's enabled::
+IOSDriver requires that the `archive` functionality be enabled to perform auto-rollback on error. Make sure it's enabled and set to local on device flash/hdd::
 
     archive
       path bootflash:archive
       write-memory
+
+
+Configuration file
+------------------
+
+IOS requires config file to begin with a `version` eg. `15.0` and `end` marker ath the end of the file. Otherwise IOS will reject `configure replace` operation.
 
 
 Notes
@@ -51,7 +57,7 @@ _______
 
 * Will automatically enable secure copy ('ip scp server enable') on the network device. This is a configuration change.
 
-* During various operations, NAPALM ios driver will turn off the prompting for confirmations ('file prompt quiet'). It should re-enable prompting before exiting the device ('no file prompt quiet').
+* During various operations, NAPALM ios driver will turn off the prompting for confirmations (`file prompt quiet`). It should re-enable prompting before exiting the device (`no file prompt quiet`).
 
-* 'write mem' is not peformed on the device. Consequently, commit() commits the config to running-config, but does not save it to start-config.
+* `write mem` is not peformed on the device. Consequently, commit() commits the config to running-config, but does not save it to start-config.
 
