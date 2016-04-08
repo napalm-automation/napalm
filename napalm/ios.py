@@ -44,7 +44,9 @@ class IOSDriver(NetworkDriver):
         self.candidate_cfg = optional_args.get('candidate_cfg', 'candidate_config.txt')
         self.merge_cfg = optional_args.get('merge_cfg', 'merge_config.txt')
         self.rollback_cfg = optional_args.get('rollback_cfg', 'rollback_config.txt')
-        self.dest_file_system = optional_args.get('dest_file_system', 'flash:')
+
+        # None will cause autodetection of dest_file_system
+        self.dest_file_system = optional_args.get('dest_file_system', None)
         self.global_delay_factor = optional_args.get('global_delay_factor', .5)
         self.port = optional_args.get('port', 22)
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
@@ -61,6 +63,21 @@ class IOSDriver(NetworkDriver):
                                      password=self.password,
                                      global_delay_factor=self.global_delay_factor,
                                      verbose=False)
+        if not self.dest_file_system:
+            self._autodetect_fs()
+
+    def _autodetect_fs(self):
+        """Autodetect the file system on the remote device."""
+        check_file_systems = ['flashx:', 'bootflash:']
+        for test_fs in check_file_systems:
+            cmd = "dir {}".format(test_fs)
+            output = self.device.send_command_expect(cmd)
+            if '% Invalid' not in output:
+                self.dest_file_system = test_fs
+                break
+        else:
+            raise ValueError("dest_file_system not found on remote device for SCP. " \
+                             "Please specify dest_file_system in optional_args.")
 
     def close(self):
         """Close the connection to the device."""
