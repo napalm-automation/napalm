@@ -68,7 +68,7 @@ class IOSDriver(NetworkDriver):
 
     def _autodetect_fs(self):
         """Autodetect the file system on the remote device."""
-        check_file_systems = ['flashx:', 'bootflash:']
+        check_file_systems = ['flash:', 'bootflash:']
         for test_fs in check_file_systems:
             cmd = "dir {}".format(test_fs)
             output = self.device.send_command_expect(cmd)
