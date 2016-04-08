@@ -64,24 +64,15 @@ class IOSDriver(NetworkDriver):
                                      global_delay_factor=self.global_delay_factor,
                                      verbose=False)
         if not self.dest_file_system:
-            self._autodetect_fs()
+            try:
+                self.device._autodetect_fs()
+            except AttributeError:
+                raise AttributeError("Netmiko _autodetect_fs not found please upgrade Netmiko or "
+                                     "specify dest_file_system in optional_args.")
 
     def close(self):
         """Close the connection to the device."""
         self.device.disconnect()
-
-    def _autodetect_fs(self):
-        """Autodetect the file system on the remote device."""
-        check_file_systems = ['flash:', 'bootflash:']
-        for test_fs in check_file_systems:
-            cmd = "dir {}".format(test_fs)
-            output = self.device.send_command_expect(cmd)
-            if '% Invalid' not in output:
-                self.dest_file_system = test_fs
-                break
-        else:
-            raise ValueError("dest_file_system not found on remote device for SCP. " \
-                             "Please specify dest_file_system in optional_args.")
 
     def load_replace_candidate(self, filename=None, config=None):
         """
