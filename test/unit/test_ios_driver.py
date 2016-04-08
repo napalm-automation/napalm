@@ -18,7 +18,8 @@ import unittest
 from napalm import get_network_driver
 from base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import re
-
+import inspect
+import os
 
 class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
     """Configuration Tests for IOSDriver.
@@ -171,7 +172,9 @@ class FakeIOSDevice:
     @staticmethod
     def read_txt_file(filename):
         """Read a txt file and return its content."""
-        with open(filename) as data_file:
+        curr_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+        full_path = os.path.join(curr_dir, filename)
+        with open(full_path) as data_file:
             return data_file.read()
 
     def send_command_expect(self, command):
