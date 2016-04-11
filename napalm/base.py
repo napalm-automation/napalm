@@ -310,6 +310,40 @@ class NetworkDriver:
         """
         raise NotImplementedError
 
+    def get_interface_optics_levels(self):
+        """
+        Returns a dictionary where the keys are interface names and the values are a dict with the following keys
+
+        * tx power (dbm)
+        * rx power (dbm)
+        * rx_critical boolean
+        * tx_critical boolean
+        * rx_warning boolean
+        * tx_warning boolean
+
+        For example::
+
+            {
+                u'xe-0/0/0': {
+                    tx_power: -1.20
+                    rx_power: +2.0
+                    tx_warning: False
+                    rx_warning: False
+                    tx_critical: False
+                    rx_critical: False
+                },
+                u'xe-0/0/1': {
+                    tx_power: -1.3
+                    rx_power: +3.4
+                    tx_warning: False
+                    rx_warning: False
+                    tx_critical: False
+                    rx_critical: False
+                }
+            }
+        """
+        raise NotImplementedError
+
     def get_lldp_neighbors(self):
         """
         Returns a dictionary where the keys are local ports and the value is a list of dictionaries with the following \
