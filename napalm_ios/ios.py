@@ -65,7 +65,7 @@ class IOSDriver(NetworkDriver):
                                      verbose=False)
         if not self.dest_file_system:
             try:
-                self.device._autodetect_fs()
+                self.dest_file_system = self.device._autodetect_fs()
             except AttributeError:
                 raise AttributeError("Netmiko _autodetect_fs not found please upgrade Netmiko or "
                                      "specify dest_file_system in optional_args.")
