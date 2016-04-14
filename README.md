@@ -56,6 +56,23 @@ pip install napalm-ios
 
 Check the ['Supported Network Operating Systems'](#supported-network-operating-systems) section for more information about supported modules.
 
+Upgrading
+=========
+
+We plan to upgrade napalm as fast as possible. Adding new methods and bugfixes. To upgrade napalm it's a simple as repeating the steps you performed while installing but adding the `-U` flag. For example:
+
+```
+pip install napalm -U
+```
+
+or:
+
+```
+pip install napalm-eos napalm-junos -U
+```
+
+We will be posting news on our slack channel and on Twitter (more details soon).
+
 Ansible
 =======
 Please ckeck [napalm-ansible](https://github.com/napalm-automation/napalm-ansible) for existing Ansible modules leveraging the NAPALM API. Make sure you read the documentation and you understand how it works before trying to use it.
