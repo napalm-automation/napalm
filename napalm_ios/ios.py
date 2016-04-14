@@ -44,7 +44,9 @@ class IOSDriver(NetworkDriver):
         self.candidate_cfg = optional_args.get('candidate_cfg', 'candidate_config.txt')
         self.merge_cfg = optional_args.get('merge_cfg', 'merge_config.txt')
         self.rollback_cfg = optional_args.get('rollback_cfg', 'rollback_config.txt')
-        self.dest_file_system = optional_args.get('dest_file_system', 'flash:')
+
+        # None will cause autodetection of dest_file_system
+        self.dest_file_system = optional_args.get('dest_file_system', None)
         self.global_delay_factor = optional_args.get('global_delay_factor', .5)
         self.port = optional_args.get('port', 22)
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
@@ -61,6 +63,12 @@ class IOSDriver(NetworkDriver):
                                      password=self.password,
                                      global_delay_factor=self.global_delay_factor,
                                      verbose=False)
+        if not self.dest_file_system:
+            try:
+                self.dest_file_system = self.device._autodetect_fs()
+            except AttributeError:
+                raise AttributeError("Netmiko _autodetect_fs not found please upgrade Netmiko or "
+                                     "specify dest_file_system in optional_args.")
 
     def close(self):
         """Close the connection to the device."""
@@ -190,6 +198,9 @@ class IOSDriver(NetworkDriver):
                 self.rollback()
                 merge_error = "Configuration merge failed; automatic rollback attempted"
                 raise MergeConfigException(merge_error)
+
+        # Save config to startup (both replace and merge)
+        output += self.device.send_command_expect("write mem")
 
     def discard_config(self):
         """Set candidate_cfg to current running-config. Erase the merge_cfg file."""
@@ -896,7 +907,7 @@ class IOSDriver(NetworkDriver):
             match = re.search(pattern, current_prefixes_out)
             if match:
                 sent_prefixes = int(match.group(1))
-                accepted_prefixes = int(match.group(1))
+                accepted_prefixes = int(match.group(2))
             else:
                 sent_prefixes = accepted_prefixes = -1
 
@@ -906,7 +917,6 @@ class IOSDriver(NetworkDriver):
             # prefix-list                           0          2
             # Total:                                0          2
             filtered_prefixes_out = self.device.send_command(cmd_filtered_prefix).strip()
-            accepted_prefixes = int(accepted_prefixes)
             sent_prefixes = int(sent_prefixes)
             pattern = r'Total:\s+\d+\s+(\d+).*'  # Total:     0          2
             match = re.search(pattern, filtered_prefixes_out)
