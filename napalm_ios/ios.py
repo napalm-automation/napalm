@@ -1099,7 +1099,7 @@ class IOSDriver(NetworkDriver):
         """
         arp_table = []
 
-        command = 'show arp'
+        command = 'show arp | exclude Incomplete'
         output = self.device.send_command(command)
         output = output.split('\n')
 
