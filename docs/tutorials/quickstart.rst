@@ -33,9 +33,9 @@ Create an account at https://www.arista.com/en/user-registration, and go to http
 
 Download the latest "vEOS-lab-<version>-virtualbox.box" listed in the vEOS folder at the bottom of the page.
 
-Add it to your vagrant box list as "vEOS-lab-quickstart"::
+Add it to your vagrant box list, changing the `<version>`::
 
-    $ vagrant box add --name vEOS-lab-quickstart ~/Downloads/vEOS-lab-<version>-virtualbox.box
+    $ vagrant box add --name vEOS-lab-<version>-virtualbox ~/Downloads/vEOS-lab-<version>-virtualbox.box
     $ vagrant box list
     vEOS-lab-quickstart (virtualbox, 0)
 
