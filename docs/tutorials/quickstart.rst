@@ -44,11 +44,17 @@ You can delete the downloaded .box file once you have added it, as ``vagrant box
 Starting Vagrant
 ----------------
 
-The Vagrantfile (in this directory) creates a base box and a vEOS box when you call "vagrant up"::
+Create a Vagrantfile on your machine with the following content:
 
-    $ cd docs/tutorials
+.. literalinclude:: Vagrantfile
+   :language: ruby
+
+The above content is also available on `GitHub <https://raw.githubusercontent.com/napalm-automation/napalm/master/docs/tutorials/Vagrantfile>`_.
+
+This Vagrantfile creates a base box and a vEOS box when you call "vagrant up"::
+
     $ vagrant up
-    ... [omitted] ...
+    ... [output omitted] ...
 
     $ vagrant status
     Current machine states:
@@ -61,9 +67,10 @@ You may see some errors when the eos box is getting created [#f2]_.
 Using the NAPALM command-line client
 ------------------------------------
 
-You can now try the example commands at http://napalm.readthedocs.org/en/latest/cli.html.  Cd to the ``test/unit/eos`` directory which contains the .conf files::
+You can now try the example commands at http://napalm.readthedocs.org/en/latest/cli.html, using the test data files at https://github.com/napalm-automation/napalm-eos/tree/master/test/unit/eos::
 
-    $ cd PROJECT_ROOT/test/unit/eos
+    # Get a sample test file (or copy/paste it from GitHub to new_good.conf):
+    $ wget https://raw.githubusercontent.com/napalm-automation/napalm-eos/master/test/unit/eos/new_good.conf
 
     # dry run.
     # (When prompted, the password is "vagrant")
