@@ -1,5 +1,0 @@
-snmp-server contact noc@cloudflare.com
-snmp-server location Marseille, France
-snmp-server chassis-id edge02.mrs01
-snmp-server community hackme ro ifyoucan
-snmp-server community tryagain group not-enough

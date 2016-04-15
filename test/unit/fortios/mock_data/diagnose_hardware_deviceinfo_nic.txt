@@ -1,3 +1,0 @@
-The following NICs are available:
-	mgmt2
-	port1

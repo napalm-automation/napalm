@@ -1,4 +1,1 @@
 include requirements.txt
-include napalm/utils/*.yml
-include napalm/templates/*/*.j2
-include napalm/utils/textfsm_templates/*/*.tpl
