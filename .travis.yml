@@ -13,3 +13,5 @@ deploy:
   on:
     tags: true
     branch: master
+script:
+  - nosetests ./test/unit/TestGetNetworkDriver.py
