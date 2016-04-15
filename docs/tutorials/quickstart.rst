@@ -12,7 +12,6 @@ You'll need a few tools:
 
 * Python
 * `pip <https://pip.pypa.io/en/stable/installing/>`_: The PyPA recommended tool for installing Python packages
-* `virtualenv <http://docs.python-guide.org/en/latest/dev/virtualenvs/>`_: a tool to create isolated Python environments
 * `VirtualBox <https://www.virtualbox.org/>`_: a software virtualization tool
 * `Vagrant <https://www.vagrantup.com/downloads.html>`_: a command line utility for managing the lifecycle of virtual machines
 
@@ -21,12 +20,9 @@ As the focus of this tutorial is NAPALM, we don't even scratch the surface of th
 Installation
 ------------
 
-If you haven't already installed NAPALM, you can run the code from a virtual environment in the root directory::
+Install NAPALM with pip::
 
-    $ virtualenv venv                        # create environment
-    $ source venv/bin/activate               # start environment
-    $ sudo pip install -r requirements.txt   # install dependencies
-    $ python setup.py install                # install NAPALM
+    pip install napalm
 
 Arista vEOS
 -----------
