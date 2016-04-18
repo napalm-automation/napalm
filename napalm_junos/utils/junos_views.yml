@@ -171,13 +171,12 @@ junos_temperature_thresholds_view:
     tx_discards: { output-drops: int }
 
 ###
-### LLDP Neighbors
+### LLDP Neighbors Detail
 ###
 
 junos_lldp_neighbors_detail_table:
   rpc: get-lldp-neighbors-information
   args:
-    interface_name: '[afgx]e*'
   item: lldp-neighbor-information
   key: lldp-local-interface | lldp-local-port-id
   view: junos_lldp_neighbors_detail_view

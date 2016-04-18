@@ -351,7 +351,8 @@ class JunOSDriver(NetworkDriver):
 
         return neighbors
 
-    def get_lldp_neighbors_detail(self, interface = ''):
+
+    def get_lldp_neighbors_detail(self, interface=''):
 
         lldp_neighbors = dict()
 
@@ -359,10 +360,17 @@ class JunOSDriver(NetworkDriver):
         lldp_table.get()
         interfaces = lldp_table.get().keys()
 
+        old_junos = self._convert(int, self.device.facts.get('version', '0.0').split('.')[0], '0') < 13
+
         lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
+        if old_junos:
+            lldp_table.GET_RPC = 'get-lldp-interface-neighbors-information'
 
         for interface in interfaces:
-            lldp_table.get(interface)
+            if old_junos:
+                lldp_table.get(interface_name=interface)
+            else:
+                lldp_table.get(interface_device=interface)
             for item in lldp_table:
                 if interface not in lldp_neighbors.keys():
                     lldp_neighbors[interface] = list()
@@ -379,6 +387,7 @@ class JunOSDriver(NetworkDriver):
                 })
 
         return lldp_neighbors
+
 
     def cli(self, commands = None):
 
