@@ -165,6 +165,7 @@ arp_table = {
 }
 
 ntp_stats = {
+    'remote'        : unicode,
     'referenceid'   : unicode,
     'synchronized'  : bool,
     'stratum'       : int,
