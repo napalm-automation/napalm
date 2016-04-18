@@ -795,9 +795,9 @@ class EOSDriver(NetworkDriver):
 
         return arp_table
 
-    def get_ntp_peers(self):
+    def get_ntp_stats(self):
 
-        ntp_peers = dict()
+        ntp_stats = list()
 
         REGEX = (
             '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
@@ -823,7 +823,9 @@ class EOSDriver(NetworkDriver):
                 continue # pattern not found
             line_groups = line_search.groups()
             try:
-                ntp_peers[unicode(line_groups[1])] = {
+                ntp_stats.append({
+                    'remote'        : unicode(line_groups[1]),
+                    'synchronized'  : (line_groups[0] == '*'),
                     'referenceid'   : unicode(line_groups[2]),
                     'stratum'       : int(line_groups[3]),
                     'type'          : unicode(line_groups[4]),
@@ -833,11 +835,11 @@ class EOSDriver(NetworkDriver):
                     'delay'         : float(line_groups[8]),
                     'offset'        : float(line_groups[9]),
                     'jitter'        : float(line_groups[10])
-                }
+                })
             except Exception:
                 continue # jump to next line
 
-        return ntp_peers
+        return ntp_stats
 
     def get_interfaces_ip(self):
 
