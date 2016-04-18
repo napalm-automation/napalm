@@ -654,14 +654,15 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_ntp_peers(self):
+    def get_ntp_stats(self):
 
         """
-        Returns a dictionary of dictionaries with the details of each NTP peer.
+        Returns a dictionary of NTP synchronization statistics.
         Each key of the dictionary is the IP Address of the NTP peer.
         Details of the peer are represented by the following fields:
 
             * referenceid (string)
+            * synchronized (True/False)
             * stratum (int)
             * type (string)
             * when (string)
@@ -676,6 +677,7 @@ class NetworkDriver(object):
             {
                 u'188.114.101.4': {
                     'referenceid'   : u'188.114.100.1',
+                    'synchronized'  : True,
                     'stratum'       : 4,
                     'type'          : u'-',
                     'when'          : u'107',

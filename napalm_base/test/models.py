@@ -164,8 +164,9 @@ arp_table = {
     'age'       : float
 }
 
-ntp_peer = {
+ntp_stats = {
     'referenceid'   : unicode,
+    'synchronized'  : bool,
     'stratum'       : int,
     'type'          : unicode,
     'when'          : unicode,
