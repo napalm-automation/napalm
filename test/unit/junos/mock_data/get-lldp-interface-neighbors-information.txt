@@ -1,4 +1,4 @@
-<lldp-neighbors-information junos:style="detail">
+<lldp-neighbors-information style="detail">
     <lldp-neighbor-information>
         <lldp-index>23</lldp-index>
         <lldp-ttl>120</lldp-ttl>
