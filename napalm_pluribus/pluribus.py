@@ -234,18 +234,20 @@ class PluribusDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def get_ntp_peers(self):
+    def get_ntp_stats(self):
 
-        ntp_peers = dict()
+        ntp_stats = list()
 
-        ntp_show    = self.device.execute_show('switch-setup-show')
-        ntp_server  = unicode(ntp_show.splitlines()[10].split(';')[-1])
+        sw_setup_show = self.device.execute_show('switch-setup-show')
+        ntp_server = unicode(sw_setup_show.splitlines()[8].split(';')[-1])
         # there's only one NTP peers, without providing any stats...
         # still better than nothing?
 
-        ntp_peers[ntp_server] = {
+        ntp_stats.append({
+            'remote'        : ntp_server,
             'referenceid'   : ntp_server,
-            'stratum'       : 0,
+            'synchronized'  : True,
+            'stratum'       : 1,
             'type'          : u'',
             'when'          : u'',
             'hostpoll'      : 0,
@@ -253,9 +255,9 @@ class PluribusDriver(NetworkDriver):
             'delay'         : 0.0,
             'offset'        : 0.0,
             'jitter'        : 0.0
-        }
+        })
 
-        return ntp_peers
+        return ntp_stats
 
     def get_snmp_information(self):
 
