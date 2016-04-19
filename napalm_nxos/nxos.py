@@ -372,6 +372,12 @@ class NXOSDriver(NetworkDriver):
         return arp_table
 
 
+    def get_ntp_peers(self):
+
+        ntp_stats = self.get_ntp_stats()
+        return [ntp_peer.get('remote') for ntp_peer in ntp_stats if ntp_peer.get('remote', '')]
+
+
     def get_ntp_stats(self):
 
         ntp_stats = list()
