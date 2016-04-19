@@ -355,6 +355,7 @@ class TestGettersNetworkDriver:
 
         self.assertTrue(result)
 
+
     def test_ping(self):
 
         destination = '8.8.8.8'
@@ -369,6 +370,7 @@ class TestGettersNetworkDriver:
 
         self.assertTrue(result)
 
+
     def test_traceroute(self):
 
         destination = '8.8.8.8'
@@ -379,5 +381,17 @@ class TestGettersNetworkDriver:
         for hope_id, hop_result in traceroute_results.iteritems():
             for probe_id, probe_result in hop_result.get('probes', {}).iteritems():
                 result = result and self._test_model(models.traceroute, probe_result)
+
+        self.assertTrue(result)
+
+
+    def test_get_users(self):
+
+        get_users = self.device.get_users()
+        result = len(get_users)
+
+        for user, user_details in get_users.iteritems():
+            result = result and self._test_model(models.users, user_details)
+            result = result and (0 <= user_details.get('level') <= 15)
 
         self.assertTrue(result)

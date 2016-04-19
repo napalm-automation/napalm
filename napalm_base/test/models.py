@@ -265,3 +265,9 @@ traceroute = {
     'ip_address': unicode,
     'host_name': unicode
 }
+
+users = {
+    'level': int,
+    'password': str,
+    'sshkeys': list
+}

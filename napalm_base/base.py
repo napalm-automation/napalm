@@ -1074,6 +1074,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
+
     def traceroute(self, destination, source='', ttl=0, timeout=0):
         """
         Executes traceroute on the device and returns a dictionary with the result.
@@ -1177,6 +1178,33 @@ class NetworkDriver(object):
 
             {
                 'error': 'unknown host 8.8.8.8.8'
+            }
+            """
+        raise NotImplementedError
+
+
+    def get_users(self):
+        """
+        Returns a dictionary with the configured users.
+        The keys of the main dictionary represents the username. The values represent the details of the user,
+        represented by the following keys:
+
+            * level (int)
+            * password (str)
+            * sshkey (list)
+
+        The level is an integer between 0 and 15, where 0 is the lowest access and 15 represents full access to the device.
+
+        Example::
+
+            {
+                'mircea': {
+                    'level': 15,
+                    'password': '$1$0P70xKPa$z46fewjo/10cBTckk6I/w/',
+                    'sshkeys': [
+                        'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4pFn+shPwTb2yELO4L7NtQrKOJXNeCl1jel9STXVaGnRAnuc2PXl35vnWmcUq6YbUEcgUTRzzXfmelJKuVJTJIlMXii7h2xkbQp0YZIEs4P8ipwnRBAxFfk/ZcDsN3mjep4/yjN56eorF5xs7zP9HbqbJ1dsqk1p3A/9LIL7l6YewLBCwJj6D+fWSJ0/YW+7oH17Fk2HH+tw0L5PcWLHkwA4t60iXn16qDbIk/ze6jv2hDGdCdz7oYQeCE55CCHOHMJWYfN3jcL4s0qv8/u6Ka1FVkV7iMmro7ChThoV/5snI4Ljf2wKqgHH7TfNaCfpU0WvHAnTs8zhOrGScSrtb mircea@master-roshi'
+                    ]
+                }
             }
         """
         raise NotImplementedError
