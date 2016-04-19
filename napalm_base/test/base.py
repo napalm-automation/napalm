@@ -270,6 +270,14 @@ class TestGettersNetworkDriver:
 
         self.assertTrue(result)
 
+    def test_get_ntp_peers(self):
+
+        get_ntp_peers = self.device.get_ntp_peers()
+        result = isinstance(get_ntp_peers, list)
+        result = result and len(get_ntp_peers) > 0
+
+        self.assertTrue(result)
+
     def test_get_ntp_stats(self):
 
         get_ntp_stats = self.device.get_ntp_stats()
