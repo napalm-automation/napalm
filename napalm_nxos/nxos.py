@@ -371,24 +371,28 @@ class NXOSDriver(NetworkDriver):
 
         return arp_table
 
-    def get_ntp_peers(self):
 
-        ntp_peers = dict()
+    def get_ntp_stats(self):
+
+        ntp_stats = list()
 
         command = 'show ntp peer-status'
 
-        ntp_peers_table = self._get_command_table(command, 'TABLE_peersstatus', 'ROW_peersstatus')
+        ntp_stats_table = self._get_command_table(command, 'TABLE_peersstatus', 'ROW_peersstatus')
 
-        if type(ntp_peers_table) is dict:
-            ntp_peers_table = [ntp_peers_table]
+        if type(ntp_stats_table) is dict:
+            ntp_stats_table = [ntp_stats_table]
 
-        for ntp_peer in ntp_peers_table:
+        for ntp_peer in ntp_stats_table:
             peer_address = unicode(ntp_peer.get('remote'))
+            syncmode     = ntp_peer.get('syncmode')
             stratum      = int(ntp_peer.get('st'))
             hostpoll     = int(ntp_peer.get('poll'))
             reachability = int(ntp_peer.get('reach'))
             delay        = float(ntp_peer.get('delay'))
-            ntp_peers[peer_address] = {
+            ntp_stats.append({
+                'remote'        : peer_address,
+                'synchronized'  : (syncmode == '*'),
                 'referenceid'   : peer_address,
                 'stratum'       : stratum,
                 'type'          : u'',
@@ -398,9 +402,10 @@ class NXOSDriver(NetworkDriver):
                 'delay'         : delay,
                 'offset'        : 0.0,
                 'jitter'        : 0.0
-            }
+            })
 
-        return ntp_peers
+        return ntp_stats
+
 
     def get_interfaces_ip(self):
 
