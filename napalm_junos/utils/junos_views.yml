@@ -319,7 +319,7 @@ junos_bgp_neighbors_view:
     peer_address: peer-address
     options: bgp-option-information/bgp-options
     import_policy: {bgp-option-information/import-policy: unicode}
-    export_policy: {bgp-option-information/export_policy: unicode}
+    export_policy: {bgp-option-information/export-policy: unicode}
     input_messages: {input-messages: int}
     output_messages: {output-messages: int}
     input_updates: {input-updates: int}
