@@ -664,7 +664,7 @@ class EOSDriver(NetworkDriver):
 
         commands = list()
         commands.append('show running-config | section router bgp')
-        bgp_conf = self.device.run_commands(commands, encoding = 'text')[0].get('output', '\n\n')
+        bgp_conf = self.device.run_commands(commands, encoding='text')[0].get('output', '\n\n')
         bgp_conf_lines = bgp_conf.splitlines()[2:]
 
         bgp_neighbors = dict()
@@ -794,6 +794,18 @@ class EOSDriver(NetworkDriver):
             )
 
         return arp_table
+
+
+    def get_ntp_peers(self):
+
+        commands = ['show running-config | section ntp']
+
+        raw_ntp_config = self.device.run_commands(commands, encoding='text')[0].get('output', '')
+
+        ntp_config = napalm_base.helpers.textfsm_extractor(self, 'ntp_peers', raw_ntp_config)
+
+        return [ntp_peer.get('ntppeer') for ntp_peer in ntp_config if ntp_peer.get('ntppeer', '')]
+
 
     def get_ntp_stats(self):
 
@@ -1045,7 +1057,7 @@ class EOSDriver(NetworkDriver):
 
         commands = list()
         commands.append('show running-config | section snmp-server')
-        raw_snmp_config = self.device.run_commands(commands, encoding = 'text')[0].get('output', '')
+        raw_snmp_config = self.device.run_commands(commands, encoding='text')[0].get('output', '')
 
         snmp_config = napalm_base.helpers.textfsm_extractor(self, 'snmp_config', raw_snmp_config)
 
