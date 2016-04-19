@@ -510,13 +510,13 @@ junos_rpm_probes_results_view:
     probe_count: {test-size: int}
     rtt: {probe-single-results/rtt: float}
     round_trip_jitter: {probe-single-results/round-trip-jitter: float}
-    current_test_loss: {probe-test-current-results/probe-test-generic-results/loss-percentage: int}
     current_test_min_delay: {probe-test-current-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
     current_test_max_delay: {probe-test-current-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
     current_test_avg_delay: {probe-test-current-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
     last_test_min_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
     last_test_max_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
     last_test_avg_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
+    last_test_loss: {probe-last-test-results/probe-test-generic-results/loss-percentage: int}
     global_test_min_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
     global_test_max_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
     global_test_avg_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
