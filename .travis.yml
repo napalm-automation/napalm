@@ -31,7 +31,7 @@ script:
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_lldp_neighbors
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_lldp_neighbors_detail
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_mac_address_table
-- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_ntp_peers
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_ntp_stats
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_route_to
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_snmp_information
 - cd ../..

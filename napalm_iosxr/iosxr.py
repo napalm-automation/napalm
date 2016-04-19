@@ -965,27 +965,30 @@ class IOSXRDriver(NetworkDriver):
 
         return arp_table
 
-    def get_ntp_peers(self):
+    def get_ntp_stats(self):
 
-        ntp_peers = dict()
+        ntp_stats = list()
 
         rpc_command = '<Get><Operational><NTP><NodeTable></NodeTable></NTP></Operational></Get>'
 
         result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
 
-        for node in result_tree.iter('PeerInfoCommon'):
-            if node is None:
-                continue
+        for node in result_tree.findall('.//NodeTable/Node/Associations/PeerSummaryInfo/Entry/PeerInfoCommon'):
             try:
-                address         = unicode(node.find('Address').text)
-                referenceid     = unicode(node.find('ReferenceID').text)
-                hostpoll        = int(node.find('HostPoll').text)
-                reachability    = int(node.find('Reachability').text)
-                stratum         = int(node.find('Stratum').text)
-                delay           = float(node.find('Delay').text)
-                offset          = float(node.find('Offset').text)
-                jitter          = float(node.find('Dispersion').text)
-                ntp_peers[address] = {
+                synchronized    = eval(self._find_txt(node, 'IsSysPeer', 'false').title())
+                address         = unicode(self._find_txt(node, 'Address'))
+                if address == 'DLRSC node':
+                    continue
+                referenceid     = unicode(self._find_txt(node, 'ReferenceID'))
+                hostpoll        = int(self._find_txt(node, 'HostPoll', '0'))
+                reachability    = int(self._find_txt(node, 'Reachability', '0'))
+                stratum         = int(self._find_txt(node, 'Stratum', '0'))
+                delay           = float(self._find_txt(node, 'Delay', '0.0'))
+                offset          = float(self._find_txt(node, 'Offset', '0.0'))
+                jitter          = float(self._find_txt(node, 'Dispersion', '0.0'))
+                ntp_stats.append({
+                    'remote'        : address,
+                    'synchronized'  : synchronized,
                     'referenceid'   : referenceid,
                     'stratum'       : stratum,
                     'type'          : u'',
@@ -995,11 +998,11 @@ class IOSXRDriver(NetworkDriver):
                     'delay'         : delay,
                     'offset'        : offset,
                     'jitter'        : jitter
-                }
+                })
             except Exception:
                 continue
 
-        return ntp_peers
+        return ntp_stats
 
     def get_interfaces_ip(self):
 
