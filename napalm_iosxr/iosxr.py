@@ -1397,14 +1397,18 @@ class IOSXRDriver(NetworkDriver):
             source = probes_config.get(probe_name).get(test_name, {}).get('source', '')
             probe_type = _PROBE_TYPE_XML_TAG_MAP_.get(self._find_txt(probe, 'Statistics/Latest/Target/SpecificStats/op_type'))
             test_interval = int(self._find_txt(probe, 'Common/OperationalState/Frequency')) * 1e-3  # here f is defined in miliseconds
-            probe_count = int(60 / (test_interval + 1))  # one second between tests
+            probe_count = probes_config.get(probe_name).get(test_name, {}).get('probe_count', 0)
             # rtt = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/ResponseTime'))
-            response_times = probe.findall('History/Target/LifeTable/Life/BucketTable/Bucket/ResponseTime')
+            response_times = probe.findall('History/Target/LifeTable/Life[last()]/BucketTable/Bucket/ResponseTime')
             response_times = [int(self._find_txt(response_time, '.', '0')) for response_time in response_times]
-            rtt = sum(response_times, 0.0)/len(response_times)
-            return_codes = probe.findall('History/Target/LifeTable/Life/BucketTable/Bucket/ReturnCode')
+            rtt = 0.0
+            if len(response_times):
+                rtt = sum(response_times, 0.0)/len(response_times)
+            return_codes = probe.findall('History/Target/LifeTable/Life[last()]/BucketTable/Bucket/ReturnCode')
             return_codes = [self._find_txt(return_code, '.') for return_code in return_codes]
-            current_test_loss = int(100*(1-return_codes.count('ipslaRetCodeOK')/float(len(return_codes))))
+            last_test_loss = 0.0
+            if len(return_codes):
+                last_test_loss = int(100*(1-return_codes.count('ipslaRetCodeOK')/float(len(return_codes))))
             rms = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/Sum2ResponseTime'))
             global_test_updates = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/UpdateCount'))
             jitter = rtt-(rms/global_test_updates)**0.5
@@ -1416,11 +1420,15 @@ class IOSXRDriver(NetworkDriver):
             last_test_max_delay = float(self._find_txt(probe, 'Statistics/Latest/Target/CommonStats/MaxResponseTime'))
             last_test_sum_delay = float(self._find_txt(probe, 'Statistics/Latest/Target/CommonStats/SumResponseTime'))
             last_test_updates = float(self._find_txt(probe, 'Statistics/Latest/Target/CommonStats/UpdateCount'))
-            last_test_avg_delay = last_test_sum_delay/last_test_updates
+            last_test_avg_delay = 0.0
+            if last_test_updates:
+                last_test_avg_delay = last_test_sum_delay/last_test_updates
             global_test_min_delay = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/MinResponseTime'))
             global_test_max_delay = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/MaxResponseTime'))
             global_test_sum_delay = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/SumResponseTime'))
-            global_test_avg_delay = global_test_sum_delay/global_test_updates
+            global_test_avg_delay = 0.0
+            if global_test_updates:
+                global_test_avg_delay = global_test_sum_delay/global_test_updates
             if probe_name not in sla_results.keys():
                 sla_results[probe_name] = dict()
             sla_results[probe_name][test_name] = {
@@ -1430,7 +1438,7 @@ class IOSXRDriver(NetworkDriver):
                 'probe_count': probe_count,
                 'rtt': rtt,
                 'round_trip_jitter': jitter,
-                'current_test_loss': current_test_loss,
+                'last_test_loss': last_test_loss,
                 'current_test_min_delay': current_test_min_delay,
                 'current_test_max_delay': current_test_max_delay,
                 'current_test_avg_delay': current_test_avg_delay,
