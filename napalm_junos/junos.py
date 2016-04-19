@@ -14,6 +14,7 @@
 
 import re
 import collections
+from lxml.builder import E
 
 from napalm_junos.utils import junos_views
 from napalm_base.base import NetworkDriver
@@ -1015,6 +1016,7 @@ class JunOSDriver(NetworkDriver):
 
         return snmp_information
 
+
     def get_probes_config(self):
 
         probes = dict()
@@ -1046,6 +1048,7 @@ class JunOSDriver(NetworkDriver):
 
         return probes
 
+
     def get_probes_results(self):
 
         probes_results = dict()
@@ -1071,3 +1074,64 @@ class JunOSDriver(NetworkDriver):
             probes_results[probe_name][test_name] = test_results
 
         return probes_results
+
+
+    def traceroute(self, destination, source='', ttl=0, timeout=0):
+
+        traceroute_result = dict()
+
+        source_str = ''
+        maxttl_str = ''
+        wait_str = ''
+
+        if source:
+            source_str = 'source {source}'.format(source=source)
+        if ttl:
+            maxttl_str = 'ttl {ttl}'.format(ttl=ttl)
+        if timeout:
+            wait_str = 'wait {timeout}'.format(timeout=timeout)
+
+        traceroute_command = 'traceroute {destination} {source} {maxttl} {wait}'.format(
+            destination=destination,
+            source=source_str,
+            maxttl=maxttl_str,
+            wait=wait_str
+        )
+
+        traceroute_rpc = E('command', traceroute_command)
+        rpc_reply = self.device._conn.rpc(traceroute_rpc)._NCElement__doc # make direct RPC call via NETCONF
+        traceroute_results = rpc_reply.find('.//traceroute-results')
+
+        traceroute_success = traceroute_results.find('traceroute-success')
+        traceroute_failure = traceroute_results.find('traceroute-failure')
+
+        error = ''
+
+        if traceroute_results is None:
+            if traceroute_failure is not None:
+                error = traceroute_failure
+            else:
+                error = 'Something went wrong.'
+            return {'error': error}
+
+        traceroute_result['success'] = dict()
+        for hop in traceroute_results.findall('hop'):
+            ttl_value = self._convert(int, self._find_txt(hop, 'ttl-value'), 1)
+            for probe in hop.findall('probe-result'):
+                probe_index = self._convert(int, self._find_txt(probe, 'probe_index'), 0)
+                ip_address = unicode(self._find_txt(probe, 'ip-address', u'*'))
+                host_name = unicode(self._find_txt(probe, 'host-name', u'*'))
+                rtt = self._convert(float, self._find_txt(probe, 'rtt'), 0) * 1e-3 # ms
+                probe_success = probe.find('probe-success')
+                traceroute_result['success'][ttl_value] = {
+                    'ip_address': ip_address,
+                    'host_name': host_name,
+                    'rtt': rtt
+                }
+                if probe_success is not None:
+                    continue # if probe succeeded, jump to next
+
+        if not traceroute_result.get('success', {}):
+            return {'error': error}
+
+        return traceroute_result
