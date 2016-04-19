@@ -1155,78 +1155,42 @@ class IOSDriver(NetworkDriver):
 
         return cli_output
 
-    def get_ntp_peers(self):
-        """
-        Returns a dictionary of dictionaries with the details of each NTP peer.
-        Each key of the dictionary is the IP Address of the NTP peer.
-        Details of the peer are represented by the following fields:
-            * referenceid (string)
-            * stratum (int)
-            * type (string)
-            * when (string)
-            * hostpoll (int)
-            * reachability (int)
-            * delay (float)
-            * offset (float)
-            * jitter (float)
-        Example:
-            {
-                '188.114.101.4': {
-                    'referenceid'   : '188.114.100.1',
-                    'stratum'       : 4,
-                    'type'          : '-',
-                    'when'          : 107,
-                    'hostpoll'      : 256,
-                    'reachability'  : 377,
-                    'delay'         : 164.228,
-                    'offset'        : -13.866,
-                    'jitter'        : 2.695
-                }
-            }
-        """
+    def get_ntp_stats(self):
+        """Implementation of get_ntp_stats for IOS."""
+        ntp_stats = []
 
-        ntp_peers = {}
         command = 'show ntp associations'
         output = self.device.send_command(command)
 
-        output = output.split('\n')
-
-        for line in output:
+        for line in output.splitlines():
             # Skip first two lines and last line of command output
             if line == "" or 'address' in line or 'sys.peer' in line:
                 continue
 
             if '%NTP is not enabled' in line:
-                return {}
+                return []
+
             elif len(line.split()) == 9:
                 address, ref_clock, st, when, poll, reach, delay, offset, disp = line.split()
+                address_regex = re.match('(\W*)([0-9.*]*)', address)
+            try:
+                ntp_stats.append({
+                    'remote': unicode(address_regex.group(2)),
+                    'synchronized': ('*' in address_regex.group(1)),
+                    'referenceid': unicode(ref_clock),
+                    'stratum': int(st),
+                    'type': u'-',
+                    'when': unicode(when),
+                    'hostpoll': int(poll),
+                    'reachability': int(reach),
+                    'delay': float(delay),
+                    'offset': float(offset),
+                    'jitter': float(disp)
+                })
+            except Exception:
+                continue
 
-                # remove all characters from ip address other than period or numbers
-                # examples of input that needs cleaning +~129.6.15.28
-                regex = re.compile('[^0-9.]')
-                address = regex.sub('', address)
-
-                try:
-                    peer = {
-                        'referenceid': ref_clock,
-                        'stratum': int(st),
-                        'type': u'-',
-                        'when': when,
-                        'hostpoll': int(poll),
-                        'reachability': int(reach),
-                        'delay': float(delay),
-                        'offset': float(offset),
-                        'jitter': float(disp)
-                        }
-
-                    ntp_peers.setdefault(address, {})
-                    ntp_peers[address].update(peer)
-                except ValueError:
-                    print("Casting NTP variable failed")
-            else:
-                raise ValueError("Unexpected output from: {}".format(line.split()))
-
-        return ntp_peers
+        return ntp_stats
 
     def get_mac_address_table(self):
 
