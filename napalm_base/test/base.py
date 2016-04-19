@@ -354,3 +354,29 @@ class TestGettersNetworkDriver:
                 result = result and self._test_model(models.probe_test_results, test_results)
 
         self.assertTrue(result)
+
+    def test_ping(self):
+
+        destination = '8.8.8.8'
+        get_ping = self.device.ping(destination)
+        result = isinstance(get_ping.get('success'), dict)
+        ping_results = get_ping.get('success', {})
+
+        result = result and self._test_model(models.ping, ping_results)
+
+        for ping_result in ping_results.get('results', []):
+            result = result and self._test_model(models.ping_result, ping_result)
+
+        self.assertTrue(result)
+
+    def test_traceroute(self):
+
+        destination = '8.8.8.8'
+        get_traceroute = self.device.traceroute(destination)
+        result = isinstance(get_ping.get('success'), dict)
+        traceroute_results = get_traceroute.get('success', {})
+
+        for hope_id, hop_result in traceroute_results.iteritems():
+            result = result and self._test_model(models.traceroute, hop_result)
+
+        self.assertTrue(result)
