@@ -1,7 +1,7 @@
 Setting up the lab
 ==================
 
-We'll set up a lab using VirtualBox and Vagrant, with a virtual Arista device.
+We'll set up a lab using VirtualBox and Vagrant, with a virtual Arista device, and get some sample files for the following steps.
 
 Working directory
 -----------------
@@ -47,6 +47,16 @@ This Vagrantfile creates a base box and a vEOS box when you call "vagrant up"::
 
 You may see some errors when the eos box is getting created [#f1]_.
 
+Sample files
+------------
+
+There are some sample Arista vEOS configuration files on `GitHub <https://github.com/napalm-automation/napalm/blob/master/docs/tutorials/sample_configs>`_.  You can download them to your machine by copying them from GitHub, or using the commands below::
+
+    $ for f in new_good.conf merge_good.conf merge_typo.conf; do
+    $   wget https://raw.githubusercontent.com/napalm-automation/napalm/master/docs/tutorials/sample_configs/$f
+    $ done
+
+(Note: please open a GitHub issue if these URLs are invalid.)
 
 Shutting down
 -------------
