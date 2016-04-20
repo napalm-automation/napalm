@@ -7,6 +7,6 @@ Tutorials
    outline
    installation
    lab
-   quickstart
+   ../cli.rst
    first_steps_config
    context_manager
