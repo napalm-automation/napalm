@@ -12,12 +12,12 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from base import NetworkDriver
+from napalm_base.base import NetworkDriver
 
+import pyPluribus.exceptions
 from pyPluribus import PluribusDevice
-from pyPluribus.exceptions import ConnectionError
 
-from exceptions import ConnectionException
+import napalm_base.exceptions
 
 
 class PluribusDriver(NetworkDriver):
@@ -40,8 +40,8 @@ class PluribusDriver(NetworkDriver):
     def open(self):
         try:
             self.device.open()
-        except ConnectionError as ce:
-            raise ConnectionException(ce.message)
+        except pyPluribus.exceptions.ConnectionError as connerr:
+            raise napalm_base.exceptions.ConnectionException(connerr.message)
 
 
     def close(self):
