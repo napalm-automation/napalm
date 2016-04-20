@@ -1191,7 +1191,7 @@ class NetworkDriver(object):
 
             * level (int)
             * password (str)
-            * sshkey (list)
+            * sshkeys (list)
 
         The level is an integer between 0 and 15, where 0 is the lowest access and 15 represents full access to the device.
 

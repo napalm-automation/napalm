@@ -355,7 +355,6 @@ class TestGettersNetworkDriver:
 
         self.assertTrue(result)
 
-
     def test_ping(self):
 
         destination = '8.8.8.8'
@@ -370,7 +369,6 @@ class TestGettersNetworkDriver:
 
         self.assertTrue(result)
 
-
     def test_traceroute(self):
 
         destination = '8.8.8.8'
@@ -383,7 +381,6 @@ class TestGettersNetworkDriver:
                 result = result and self._test_model(models.traceroute, probe_result)
 
         self.assertTrue(result)
-
 
     def test_get_users(self):
 
