@@ -58,13 +58,6 @@ There are some sample Arista vEOS configuration files on `GitHub <https://github
 
 (Note: please open a GitHub issue if these URLs are invalid.)
 
-Shutting down
--------------
-
-When you're done with this tutorial, you can shut down Vagrant as follows::
-
-    $ vagrant destroy -f
-
 
 .. [#f1] Currently, ``vagrant up`` with the eos box prints some warnings: "No guest additions were detected on the base box for this VM! Guest additions are required for forwarded ports, shared folders, host only networking, and more. If SSH fails on this machine, please install the guest additions and repackage the box to continue. This is not an error message; everything may continue to work properly, in which case you may ignore this message."  This is not a reassuring message, but everything still seems to work correctly.
 
