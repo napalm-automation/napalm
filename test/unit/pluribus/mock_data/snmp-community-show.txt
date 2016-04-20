@@ -1,1 +1,1 @@
-name.location;communityname;read-write
+name.location@$@communityname@$@read-write
