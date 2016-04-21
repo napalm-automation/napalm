@@ -1,15 +1,15 @@
-switch;name.location
-model;F64-L
-chassis-serial;1414LS9000098
-cpu1-type;Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz
-cpu2-type;Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz
-system-mem;64.0G
-switch-device;ok
-polaris-device;ok
-gandalf-version;caff0044
-fan1-status;ok
-fan2-status;ok
-fan3-status;ok
-fan4-status;ok
-ps1-status;ok
-ps2-status;ok
+switch@$@name.location
+model@$@F64-L
+chassis-serial@$@1414LS9000098
+cpu1-type@$@Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz
+cpu2-type@$@Intel(R) Xeon(R) CPU E5-2620 0 @ 2.00GHz
+system-mem@$@64.0G
+switch-device@$@ok
+polaris-device@$@ok
+gandalf-version@$@caff0044
+fan1-status@$@ok
+fan2-status@$@ok
+fan3-status@$@ok
+fan4-status@$@ok
+ps1-status@$@ok
+ps2-status@$@ok

@@ -62,3 +62,11 @@ class FakePluribusDevice:
 
         cmd = re.sub(r'[\[\]\*\^\+\s\|]', '_', command)
         return self.read_txt_file('pluribus/mock_data/{}.txt'.format(cmd))
+
+    def show(self, command, delim=';'):
+
+        if not command.endswith('-show'):
+            command += '-show'
+        command = command.replace(' ', '-')
+
+        return self.execute_show(command)
