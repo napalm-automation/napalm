@@ -14,13 +14,14 @@
 
 # python std lib
 import re
+import copy
 from collections import defaultdict
-
-from netaddr import IPAddress
-from netaddr.core import AddrFormatError
 
 # third party libs
 import xml.etree.ElementTree as ET
+
+from netaddr import IPAddress
+from netaddr.core import AddrFormatError
 
 from pyIOSXR import IOSXR
 from pyIOSXR.iosxr import __execute_show__
@@ -107,6 +108,26 @@ class IOSXRDriver(NetworkDriver):
 
     def rollback(self):
         self.device.rollback()
+
+
+    # perhaps both should be moved in napalm_base.helpers at some point
+    @staticmethod
+    def _find_txt(xml_tree, path, default = ''):
+        try:
+            return xml_tree.find(path).text.strip()
+        except Exception:
+            return default
+
+
+    @staticmethod
+    def _convert(to, who, default = u''):
+        if who is None:
+            return default
+        try:
+            return to(who)
+        except:
+            return default
+
 
     def get_facts(self):
 
@@ -675,13 +696,6 @@ class IOSXRDriver(NetworkDriver):
 
         return cli_output
 
-    @staticmethod
-    def _find_txt(xml_tree, path, default = ''):
-
-        try:
-            return xml_tree.find(path).text.strip()
-        except Exception:
-            return default
 
     def get_bgp_config(self, group = '', neighbor = ''):
 
@@ -1514,7 +1528,7 @@ class IOSXRDriver(NetworkDriver):
         if results_error:
             return {'error': results_error}
 
-        if not len(results_tree):
+        if results_tree is None or not len(results_tree):
             return {'error': 'Device returned empty results.'}
 
         traceroute_result['success'] = {}
@@ -1532,7 +1546,7 @@ class IOSXRDriver(NetworkDriver):
             if tag_name == 'HopIndex':
                 new_hop_index = int(self._find_txt(thanks_cisco, '.', '-1'))
                 if last_hop_index and last_hop_index != new_hop_index:
-                    traceroute_result['success'][last_hop_index] = deepcopy(last_hop_dict)
+                    traceroute_result['success'][last_hop_index] = copy.deepcopy(last_hop_dict)
                     last_hop_dict = {'probes': {}}
                     last_probe_ip_address = '*'
                     last_probe_host_name = ''
