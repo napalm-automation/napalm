@@ -1,0 +1,37 @@
+ipsla
+  {% set probe_id = 0 %}
+  {% for probe_name, probe_test in probes.iteritems() %}
+  {% for test_name, test_details in probe_test.iteritems() %}
+  no schedule operation {{probe_id + loop.index}}
+  {% endfor %}
+  {% set probe_id = probe_id + probe_test.keys()|length %}
+  {% endfor %}
+  {% set probe_id = 0 %}
+  {% for probe_name, probe_test in probes.iteritems() %}
+  {% for test_name, test_details in probe_test.iteritems() %}
+  operation {{probe_id + loop.index}}
+    {% if test_details.probe_type is defined %}
+    type {{test_details.probe_type|replace('ping', 'echo')|replace('-', ' ')}}
+    {% else %}
+    type icmp echo
+    {% endif %}
+      tag {{test_name}}
+      history
+        lives 1
+        filter all
+        buckets {{test_details.probe_count}}
+      !
+      {% if test_details.source is defined %}
+      source address {{test_details.source}}
+      {% endif %}
+      destination address {{test_details.target}}
+      {% if test_details.test_interval is defined %}
+      timeout {{(test_details.test_interval - 1) * 1000}}
+      frequency {{test_details.test_interval}}
+      {% endif %}
+    !
+  {% endfor %}
+  {% set probe_id = probe_id + probe_test.keys()|length %}
+  !
+  {% endfor %}
+!
