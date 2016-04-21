@@ -1080,6 +1080,9 @@ class JunOSDriver(NetworkDriver):
 
         traceroute_result = dict()
 
+        # calling form RPC does not work properly :(
+        # but defined junos_route_instance_table just in case
+
         source_str = ''
         maxttl_str = ''
         wait_str = ''
@@ -1103,35 +1106,28 @@ class JunOSDriver(NetworkDriver):
         traceroute_results = rpc_reply.find('.//traceroute-results')
 
         traceroute_success = traceroute_results.find('traceroute-success')
-        traceroute_failure = traceroute_results.find('traceroute-failure')
+        traceroute_failure = self._find_txt(traceroute_results, 'traceroute-failure', '')
+        error_message = self._find_txt(traceroute_results, 'rpc-error/error-message', '')
 
         error = ''
 
-        if traceroute_results is None:
-            if traceroute_failure is not None:
-                error = traceroute_failure
-            else:
-                error = 'Something went wrong.'
-            return {'error': error}
+        if traceroute_failure and error_message:
+            return {'error': '{}: {}'.format(traceroute_failure, error_message)}
 
         traceroute_result['success'] = dict()
         for hop in traceroute_results.findall('hop'):
             ttl_value = self._convert(int, self._find_txt(hop, 'ttl-value'), 1)
+            if ttl_value not in traceroute_result['success']:
+                traceroute_result['success'][ttl_value] = {'probes': {}}
             for probe in hop.findall('probe-result'):
-                probe_index = self._convert(int, self._find_txt(probe, 'probe_index'), 0)
+                probe_index = self._convert(int, self._find_txt(probe, 'probe-index'), 0)
                 ip_address = unicode(self._find_txt(probe, 'ip-address', u'*'))
                 host_name = unicode(self._find_txt(probe, 'host-name', u'*'))
                 rtt = self._convert(float, self._find_txt(probe, 'rtt'), 0) * 1e-3 # ms
-                probe_success = probe.find('probe-success')
-                traceroute_result['success'][ttl_value] = {
+                traceroute_result['success'][ttl_value]['probes'][probe_index] = {
                     'ip_address': ip_address,
                     'host_name': host_name,
                     'rtt': rtt
                 }
-                if probe_success is not None:
-                    continue # if probe succeeded, jump to next
-
-        if not traceroute_result.get('success', {}):
-            return {'error': error}
 
         return traceroute_result
