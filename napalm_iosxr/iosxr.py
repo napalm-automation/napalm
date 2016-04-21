@@ -12,18 +12,25 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from napalm_base.base import NetworkDriver
-from napalm_base.utils import string_parsers
+# python std lib
+import re
+from collections import defaultdict
+
+from netaddr import IPAddress
+from netaddr.core import AddrFormatError
+
+# third party libs
+import xml.etree.ElementTree as ET
 
 from pyIOSXR import IOSXR
 from pyIOSXR.iosxr import __execute_show__
 from pyIOSXR.exceptions import InvalidInputError, TimeoutError, EOFError
 
+# napalm_base
+from napalm_base.base import NetworkDriver
+from napalm_base.utils import string_parsers
 from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,\
                                    CommandErrorException, CommandTimeoutException
-import xml.etree.ElementTree as ET
-from collections import defaultdict
-import re
 
 
 class IOSXRDriver(NetworkDriver):
@@ -1457,24 +1464,13 @@ class IOSXRDriver(NetworkDriver):
 
     def traceroute(self, destination, source='', ttl=0, timeout=0):
 
-        def build_arrays(array, datatype, length, default):
-            temp_array = []
-            for elem in array:
-                temp_array.append(self._convert(datatype, elem.text.strip(), default))
-            if len(temp_array) >= length:
-                return temp_array
-            remaining_elems = length - len(temp_array)
-            temp_array += [default] * remaining_elems
-            return temp_array
-
         traceroute_result = dict()
 
         ipv = 4
         try:
             ipv = IPAddress(destination).version
         except AddrFormatError:
-            pass
-            # does not seem to be a valid IP, thus let's assume is a hostname
+            return {'error': 'Wrong destination IP Address!'}
 
         source_tag = ''
         ttl_tag = ''
@@ -1494,9 +1490,6 @@ class IOSXRDriver(NetworkDriver):
                             <Destination>
                                 {destination}
                             </Destination>
-                            <Probe>
-                                1
-                            </Probe>
                             {source_tag}
                             {ttl_tag}
                             {timeout_tag}
@@ -1512,7 +1505,8 @@ class IOSXRDriver(NetworkDriver):
             timeout_tag=timeout_tag
         )
 
-        traceroute_tree = ET.fromstring(self.device.make_rpc_call(traceroute_rpc_command))
+        xml_tree_txt = self.device.make_rpc_call(traceroute_rpc_command)
+        traceroute_tree = ET.fromstring(xml_tree_txt)
 
         results_tree = traceroute_tree.find('.//Results')
         results_error = self._find_txt(results_tree, 'Error')
@@ -1520,31 +1514,53 @@ class IOSXRDriver(NetworkDriver):
         if results_error:
             return {'error': results_error}
 
-        traceroute_result['success'] = dict()
+        if not len(results_tree):
+            return {'error': 'Device returned empty results.'}
 
-        hop_indexes = results_tree.findall('HopIndex')
-        hop_ip_objs = results_tree.findall('HopAddress')
-        hop_hosts = results_tree.findall('HopHostName') # not necessary the same length
-        response_time = results_tree.findall('DeltaTime')
-        max_elems = max(len(hop_indexes), len(hop_ip_objs), len(hop_hosts), len(response_time))
-        hop_indexes = build_arrays(hop_indexes, int, max_elems, 1)
-        hop_ips = build_arrays(hop_ip_objs, unicode, max_elems, u'')
-        hop_hosts = build_arrays(hop_hosts, unicode, max_elems, u'')
-        hop_rtt = build_arrays(response_time, float, max_elems, 0.0)
+        traceroute_result['success'] = {}
 
-        non_responsive_hops = set(range(1, hop_indexes[-1]+1)) - set(hop_indexes)
+        last_hop_index = 1
+        last_probe_index = 1
+        last_probe_ip_address = '*'
+        last_probe_host_name = ''
+        last_probe_rtt = 0.0
+        last_hop_dict = {'probes': {}}
 
-        for hop_index in hop_indexes:
-            traceroute_result['success'][hop_index] = {
-                'ip_address': hop_ips[hop_index-len(non_responsive_hops)-1],
-                'host_name': hop_hosts[hop_index-len(non_responsive_hops)-1],
-                'rtt': hop_rtt[hop_index-len(non_responsive_hops)-1]
-            }
-        for non_responsive_hop_index in non_responsive_hops:
-            traceroute_result['success'][non_responsive_hop_index] = {
-                'ip_address': u'*',
-                'host_name': u'*',
-                'rtt': 0.0
-            }
+        for thanks_cisco in results_tree.getchildren():
+            tag_name = thanks_cisco.tag
+            tag_value = thanks_cisco.text
+            if tag_name == 'HopIndex':
+                new_hop_index = int(self._find_txt(thanks_cisco, '.', '-1'))
+                if last_hop_index and last_hop_index != new_hop_index:
+                    traceroute_result['success'][last_hop_index] = deepcopy(last_hop_dict)
+                    last_hop_dict = {'probes': {}}
+                    last_probe_ip_address = '*'
+                    last_probe_host_name = ''
+                last_hop_index = new_hop_index
+                continue
+            tag_value = unicode(self._find_txt(thanks_cisco, '.', ''))
+            if tag_name == 'ProbeIndex':
+                last_probe_index = self._convert(int, tag_value, 0) + 1
+                if last_probe_index not in last_hop_dict.get('probes').keys():
+                    last_hop_dict['probes'][last_probe_index] = {}
+                if not last_probe_host_name:
+                    last_probe_host_name = last_probe_ip_address
+                last_hop_dict['probes'][last_probe_index] = {
+                    'ip_address': last_probe_ip_address,
+                    'host_name': last_probe_host_name
+                }
+                continue
+            if tag_name == 'HopAddress':
+                last_probe_ip_address = tag_value
+                continue
+            if tag_name == 'HopHostName':
+                last_probe_host_name = tag_value
+                continue
+            if tag_name == 'DeltaTime':
+                last_hop_dict['probes'][last_probe_index]['rtt'] = self._convert(float, tag_value, 0.0)
+                continue
+
+        if last_hop_index:
+            traceroute_result['success'][last_hop_index] = last_hop_dict
 
         return traceroute_result
