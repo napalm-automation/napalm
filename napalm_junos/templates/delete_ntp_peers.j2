@@ -1,8 +1,7 @@
 system {
   ntp {
-    {# template_vars is passed as a list of IP Addresses/ Hosts representing the NTP peers #}
     {% for peer in peers %}
-      delete: peer {{peer}}
+      delete: peer {{peer}};
     {% endfor %}
   }
 }
