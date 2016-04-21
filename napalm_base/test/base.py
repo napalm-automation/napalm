@@ -377,6 +377,7 @@ class TestGettersNetworkDriver:
         traceroute_results = get_traceroute.get('success', {})
 
         for hope_id, hop_result in traceroute_results.iteritems():
-            result = result and self._test_model(models.traceroute, hop_result)
+            for probe_id, probe_result in hop_result.get('probes'):
+                result = result and self._test_model(models.traceroute, probe_result)
 
         self.assertTrue(result)

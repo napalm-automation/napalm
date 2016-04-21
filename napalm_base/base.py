@@ -1089,7 +1089,7 @@ class NetworkDriver(object):
             * error
 
         In case of success, the keys of the dictionary represent the hop ID, while values are dictionaries
-        with the following structure:
+        containing the probes results:
 
             * rtt (float)
             * ip_address (str)
@@ -1100,27 +1100,78 @@ class NetworkDriver(object):
             {
                 'success': {
                     1: {
-                        'rtt': 12.803,
-                        'ip_address': u'1.1.1.1',
-                        'host_name': u'ix-26-0.tcore5.SQN-San-Jose.as6453.net'
-                    },
-                    2: {
-                        'rtt': 133.04,
-                        'ip_address': u'2.2.2.2',
-                        'host_name': u'if-12-2.tcore16.NTO-New-York.as6453.net'
-                    },
-                    3: {
-                        'rtt': 133.52,
-                        'ip_address': u'3.3.3.3',
-                        'host_name': u'if-5-2.thar3.NJY-Newark.as6453.net'
+                        'probes': {
+                            1: {
+                                'rtt': 1.123,
+                                'ip_address': u'206.223.116.21',
+                                'host_name': u'eqixsj-google-gige.google.com'
+                            },
+                            2: {
+                                'rtt': 1.9100000000000001,
+                                'ip_address': u'206.223.116.21',
+                                'host_name': u'eqixsj-google-gige.google.com'
+                            },
+                            3: {
+                                'rtt': 3.347,
+                                'ip_address': u'198.32.176.31',
+                                'host_name': u'core2-1-1-0.pao.net.google.com'}
+                            }
+                        },
+                        2: {
+                            'probes': {
+                                1: {
+                                    'rtt': 1.586,
+                                    'ip_address': u'209.85.241.171',
+                                    'host_name': u'209.85.241.171'
+                                    },
+                                2: {
+                                    'rtt': 1.6300000000000001,
+                                    'ip_address': u'209.85.241.171',
+                                    'host_name': u'209.85.241.171'
+                                },
+                                3: {
+                                    'rtt': 1.6480000000000001,
+                                    'ip_address': u'209.85.241.171',
+                                    'host_name': u'209.85.241.171'}
+                                }
+                            },
+                        3: {
+                            'probes': {
+                                1: {
+                                    'rtt': 2.529,
+                                    'ip_address': u'216.239.49.123',
+                                    'host_name': u'216.239.49.123'},
+                                2: {
+                                    'rtt': 2.474,
+                                    'ip_address': u'209.85.255.255',
+                                    'host_name': u'209.85.255.255'
+                                },
+                                3: {
+                                    'rtt': 7.813,
+                                    'ip_address': u'216.239.58.193',
+                                    'host_name': u'216.239.58.193'}
+                                }
+                            },
+                        4: {
+                            'probes': {
+                                1: {
+                                    'rtt': 1.361,
+                                    'ip_address': u'8.8.8.8',
+                                    'host_name': u'google-public-dns-a.google.com'
+                                },
+                                2: {
+                                    'rtt': 1.605,
+                                    'ip_address': u'8.8.8.8',
+                                    'host_name': u'google-public-dns-a.google.com'
+                                },
+                                3: {
+                                    'rtt': 0.989,
+                                    'ip_address': u'8.8.8.8',
+                                    'host_name': u'google-public-dns-a.google.com'}
+                                }
+                            }
+                        }
                     }
-                    4: {
-                        'rtt': 135.144,
-                        'ip_address': u'4.4.4.4',
-                        'host_name': u'if-8-2.tcore4.LDN-London.as6453.net'
-                    }
-                }
-            }
 
             OR
 
