@@ -233,7 +233,7 @@ probe_test_results = {
     'probe_count'           : int,
     'rtt'                   : float,
     'round_trip_jitter'     : float,
-    'current_test_loss'     : int,
+    'last_test_loss'        : int,
     'current_test_min_delay': float,
     'current_test_max_delay': float,
     'current_test_avg_delay': float,
