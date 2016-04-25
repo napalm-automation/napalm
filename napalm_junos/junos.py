@@ -417,7 +417,8 @@ class JunOSDriver(NetworkDriver):
         except:
             return default
 
-    def get_bgp_config(self, group = '', neighbor = ''):
+
+    def get_bgp_config(self, group='', neighbor=''):
 
         def update_dict(d, u): # for deep dictionary update
             for k, v in u.iteritems():
@@ -475,56 +476,56 @@ class JunOSDriver(NetworkDriver):
             return prefix_limit
 
         _COMMON_FIELDS_DATATYPE_ = {
-            'description'                                   : unicode,
-            'local_address'                                 : unicode,
-            'local_as'                                      : int,
-            'remote_as'                                     : int,
-            'import_policy'                                 : unicode,
-            'export_policy'                                 : unicode,
-            'inet_unicast_limit_prefix_limit'               : int,
-            'inet_unicast_teardown_threshold_prefix_limit'  : int,
-            'inet_unicast_teardown_timeout_prefix_limit'    : int,
-            'inet_unicast_novalidate_prefix_limit'          : int,
-            'inet_flow_limit_prefix_limit'                  : int,
-            'inet_flow_teardown_threshold_prefix_limit'     : int,
-            'inet_flow_teardown_timeout_prefix_limit'       : int,
-            'inet_flow_novalidate_prefix_limit'             : unicode,
-            'inet6_unicast_limit_prefix_limit'              : int,
-            'inet6_unicast_teardown_threshold_prefix_limit' : int,
-            'inet6_unicast_teardown_timeout_prefix_limit'   : int,
-            'inet6_unicast_novalidate_prefix_limit'         : int,
-            'inet6_flow_limit_prefix_limit'                 : int,
-            'inet6_flow_teardown_threshold_prefix_limit'    : int,
-            'inet6_flow_teardown_timeout_prefix_limit'      : int,
-            'inet6_flow_novalidate_prefix_limit'            : unicode,
+            'description': unicode,
+            'local_address': unicode,
+            'local_as': int,
+            'remote_as': int,
+            'import_policy': unicode,
+            'export_policy': unicode,
+            'inet_unicast_limit_prefix_limit': int,
+            'inet_unicast_teardown_threshold_prefix_limit': int,
+            'inet_unicast_teardown_timeout_prefix_limit': int,
+            'inet_unicast_novalidate_prefix_limit': int,
+            'inet_flow_limit_prefix_limit': int,
+            'inet_flow_teardown_threshold_prefix_limit': int,
+            'inet_flow_teardown_timeout_prefix_limit': int,
+            'inet_flow_novalidate_prefix_limit': unicode,
+            'inet6_unicast_limit_prefix_limit': int,
+            'inet6_unicast_teardown_threshold_prefix_limit': int,
+            'inet6_unicast_teardown_timeout_prefix_limit': int,
+            'inet6_unicast_novalidate_prefix_limit': int,
+            'inet6_flow_limit_prefix_limit': int,
+            'inet6_flow_teardown_threshold_prefix_limit': int,
+            'inet6_flow_teardown_timeout_prefix_limit': int,
+            'inet6_flow_novalidate_prefix_limit': unicode,
         }
 
         _PEER_FIELDS_DATATYPE_MAP_ = {
-            'group'                 : unicode,
-            'authentication_key'    : unicode,
+            'group': unicode,
+            'authentication_key': unicode,
             'route_reflector_client': bool,
-            'nhs'                   : bool
+            'nhs': bool
         }
         _PEER_FIELDS_DATATYPE_MAP_.update(
             _COMMON_FIELDS_DATATYPE_
         )
 
         _GROUP_FIELDS_DATATYPE_MAP_ = {
-            'type'              : unicode,
-            'apply_groups'      : list,
-            'remove_private_as' : bool,
-            'multipath'         : bool,
-            'multihop_ttl'      : int
+            'type': unicode,
+            'apply_groups': list,
+            'remove_private_as': bool,
+            'multipath': bool,
+            'multihop_ttl': int
         }
         _GROUP_FIELDS_DATATYPE_MAP_.update(
             _COMMON_FIELDS_DATATYPE_
         )
 
         _DATATYPE_DEFAULT_ = {
-            unicode     : u'',
-            int         : 0,
-            bool        : False,
-            list        : []
+            unicode: u'',
+            int: 0,
+            bool: False,
+            list: []
         }
 
         bgp_config = dict()
@@ -545,23 +546,33 @@ class JunOSDriver(NetworkDriver):
         bgp_neighbors = dict()
 
         for bgp_group_neighbor in peers_items:
-            bgp_peer_address  = bgp_group_neighbor[0]
+            bgp_peer_address = bgp_group_neighbor[0]
             if neighbor and bgp_peer_address != neighbor:
-                continue # if filters applied, jump over all other neighbors
+                continue  # if filters applied, jump over all other neighbors
             bgp_group_details = bgp_group_neighbor[1]
-            bgp_peer_details  = {field: _DATATYPE_DEFAULT_.get(datatype) for field, datatype in _PEER_FIELDS_DATATYPE_MAP_.iteritems() if '_prefix_limit' not in field}
+            bgp_peer_details = {
+                field: _DATATYPE_DEFAULT_.get(datatype) \
+                for field, datatype in _PEER_FIELDS_DATATYPE_MAP_.iteritems() \
+                if '_prefix_limit' not in field
+            }
             for elem in bgp_group_details:
-                if '_prefix_limit' not in elem[0] and elem[1] is not None:
-                    datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
-                    default  = _DATATYPE_DEFAULT_.get(datatype)
-                    bgp_peer_details.update({
-                        elem[0]: self._convert(datatype, elem[1], default)
-                    })
+                if not('_prefix_limit' not in elem[0] and elem[1] is not None):
+                    continue
+                datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
+                default = _DATATYPE_DEFAULT_.get(datatype)
+                key = elem[0]
+                value = elem[1]
+                if key in ['export_policy', 'import_policy']:
+                    if isinstance(value, list):
+                        value = ' '.join(value)
+                bgp_peer_details.update({
+                    key: self._convert(datatype, value, default)
+                })
             prefix_limit_fields = dict()
             for elem in bgp_group_details:
                 if '_prefix_limit' in elem[0] and elem[1] is not None:
                     datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
-                    default  = _DATATYPE_DEFAULT_.get(datatype)
+                    default = _DATATYPE_DEFAULT_.get(datatype)
                     prefix_limit_fields.update({
                         elem[0].replace('_prefix_limit', ''): self._convert(datatype, elem[1], default)
                     })
@@ -575,21 +586,31 @@ class JunOSDriver(NetworkDriver):
                 break # found the desired neighbor
 
         for bgp_group in bgp_items:
-            bgp_group_name    = bgp_group[0]
+            bgp_group_name = bgp_group[0]
             bgp_group_details = bgp_group[1]
-            bgp_config[bgp_group_name] = {field: _DATATYPE_DEFAULT_.get(datatype) for field, datatype in _GROUP_FIELDS_DATATYPE_MAP_.iteritems() if '_prefix_limit' not in field}
+            bgp_config[bgp_group_name] = {
+                field: _DATATYPE_DEFAULT_.get(datatype) \
+                for field, datatype in _GROUP_FIELDS_DATATYPE_MAP_.iteritems() \
+                if '_prefix_limit' not in field
+            }
             for elem in bgp_group_details:
-                if '_prefix_limit' not in elem[0] and elem[1] is not None:
-                    datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
-                    default  = _DATATYPE_DEFAULT_.get(datatype)
-                    bgp_config[bgp_group_name].update({
-                        elem[0]: self._convert(datatype, elem[1], default)
-                    })
+                if not('_prefix_limit' not in elem[0] and elem[1] is not None):
+                    continue
+                datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
+                default = _DATATYPE_DEFAULT_.get(datatype)
+                key = elem[0]
+                value = elem[1]
+                if key in ['export_policy', 'import_policy']:
+                    if isinstance(value, list):
+                        value = ' '.join(value)
+                bgp_config[bgp_group_name].update({
+                    key: self._convert(datatype, value, default)
+                })
             prefix_limit_fields = dict()
             for elem in bgp_group_details:
                 if '_prefix_limit' in elem[0] and elem[1] is not None:
                     datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
-                    default  = _DATATYPE_DEFAULT_.get(datatype)
+                    default = _DATATYPE_DEFAULT_.get(datatype)
                     prefix_limit_fields.update({
                         elem[0].replace('_prefix_limit', ''): self._convert(datatype, elem[1], default)
                     })
@@ -692,6 +713,7 @@ class JunOSDriver(NetworkDriver):
             bgp_neighbors[remote_as].append(neighbor_details)
 
         return bgp_neighbors
+
 
     def get_arp_table(self):
 
