@@ -121,6 +121,26 @@ class JunOSDriver(NetworkDriver):
         self.device.cu.rollback(rb_id=1)
         self.commit_config()
 
+
+    # perhaps both should be moved in napalm_base.helpers at some point
+    @staticmethod
+    def _find_txt(xml_tree, path, default = ''):
+        try:
+            return xml_tree.find(path).text.strip()
+        except Exception:
+            return default
+
+
+    @staticmethod
+    def _convert(to, who, default = u''):
+        if who is None:
+            return default
+        try:
+            return to(who)
+        except:
+            return default
+
+
     def get_facts(self):
 
         output = self.device.facts
@@ -414,15 +434,6 @@ class JunOSDriver(NetworkDriver):
                 raise CommandErrorException(str(cli_output))
 
         return cli_output
-
-    @staticmethod
-    def _convert(to, who, default = u''):
-        if who is None:
-            return default
-        try:
-            return to(who)
-        except:
-            return default
 
 
     def get_bgp_config(self, group='', neighbor=''):
