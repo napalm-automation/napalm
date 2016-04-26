@@ -1332,3 +1332,122 @@ class IOSXRDriver(NetworkDriver):
             }
 
         return snmp_information
+
+    def get_probes_config(self):
+
+        sla_config = dict()
+
+        _PROBE_TYPE_XML_TAG_MAP_ = {
+            'ICMPEcho': u'icmp-ping',
+            'UDPEcho': u'udp-ping',
+            'ICMPJitter': u'icmp-ping-timestamp',
+            'UDPJitter': u'udp-ping-timestamp'
+        }
+
+        sla_config_rpc_command = '<Get><Configuration><IPSLA></IPSLA></Configuration></Get>'
+
+        sla_config_result_tree = ET.fromstring(self.device.make_rpc_call(sla_config_rpc_command))
+
+        for probe in sla_config_result_tree.findall('.//Definition'):
+            probe_name = unicode(self._find_txt(probe, 'Naming/OperationID'))
+            operation_type = probe.find('OperationType').getchildren()[0].tag
+            probe_type = _PROBE_TYPE_XML_TAG_MAP_.get(operation_type, u'')
+            operation = probe.find('OperationType').find(operation_type)
+            test_name =  unicode(self._find_txt(operation, 'Tag'))
+            source = unicode(self._find_txt(operation, 'SourceAddress'))
+            target = unicode(self._find_txt(operation, 'DestAddress'))
+            test_interval = int(self._find_txt(operation, 'Frequency', '0'))  # defined in seconds
+            probe_count = int(self._find_txt(operation, 'History/Buckets', '0'))
+            if probe_name not in sla_config.keys():
+                sla_config[probe_name] = dict()
+            if test_name not in sla_config[probe_name]:
+                sla_config[probe_name][test_name] = dict()
+            sla_config[probe_name][test_name] = {
+                'probe_type': probe_type,
+                'source': source,
+                'target': target,
+                'probe_count': probe_count,
+                'test_interval': test_interval
+            }
+
+        return sla_config
+
+    def get_probes_results(self):
+
+        sla_results = dict()
+
+        _PROBE_TYPE_XML_TAG_MAP_ = {
+            'ICMPEcho': u'icmp-ping',
+            'UDPEcho': u'udp-ping',
+            'ICMPJitter': u'icmp-ping-timestamp',
+            'UDPJitter': u'udp-ping-timestamp'
+        }
+
+        sla_results_rpc_command = '<Get><Operational><IPSLA></IPSLA></Operational></Get>'
+
+        sla_results_tree = ET.fromstring(self.device.make_rpc_call(sla_results_rpc_command))
+
+        probes_config = self.get_probes_config()  # need to retrieve also the configuration
+        # source and tag/test_name not provided
+
+        for probe in sla_results_tree.findall('.//Operation'):
+            probe_name = unicode(self._find_txt(probe, 'Naming/OperationID'))
+            test_name = probes_config.get(probe_name).keys()[0]
+            target = unicode(self._find_txt(probe, 'History/Target/LifeTable/Life/BucketTable/Bucket[0]/TargetAddress/IPv4AddressTarget'))
+            source = probes_config.get(probe_name).get(test_name, {}).get('source', '')
+            probe_type = _PROBE_TYPE_XML_TAG_MAP_.get(self._find_txt(probe, 'Statistics/Latest/Target/SpecificStats/op_type'))
+            test_interval = int(self._find_txt(probe, 'Common/OperationalState/Frequency')) * 1e-3  # here f is defined in miliseconds
+            probe_count = probes_config.get(probe_name).get(test_name, {}).get('probe_count', 0)
+            # rtt = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/ResponseTime'))
+            response_times = probe.findall('History/Target/LifeTable/Life[last()]/BucketTable/Bucket/ResponseTime')
+            response_times = [int(self._find_txt(response_time, '.', '0')) for response_time in response_times]
+            rtt = 0.0
+            if len(response_times):
+                rtt = sum(response_times, 0.0)/len(response_times)
+            return_codes = probe.findall('History/Target/LifeTable/Life[last()]/BucketTable/Bucket/ReturnCode')
+            return_codes = [self._find_txt(return_code, '.') for return_code in return_codes]
+            last_test_loss = 0.0
+            if len(return_codes):
+                last_test_loss = int(100*(1-return_codes.count('ipslaRetCodeOK')/float(len(return_codes))))
+            rms = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/Sum2ResponseTime'))
+            global_test_updates = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/UpdateCount'))
+            jitter = rtt-(rms/global_test_updates)**0.5
+            # jitter = max(rtt - max(response_times), rtt - min(response_times))
+            current_test_min_delay = 0.0  # no stats for undergoing test :(
+            current_test_max_delay = 0.0
+            current_test_avg_delay = 0.0
+            last_test_min_delay = float(self._find_txt(probe, 'Statistics/Latest/Target/CommonStats/MinResponseTime'))
+            last_test_max_delay = float(self._find_txt(probe, 'Statistics/Latest/Target/CommonStats/MaxResponseTime'))
+            last_test_sum_delay = float(self._find_txt(probe, 'Statistics/Latest/Target/CommonStats/SumResponseTime'))
+            last_test_updates = float(self._find_txt(probe, 'Statistics/Latest/Target/CommonStats/UpdateCount'))
+            last_test_avg_delay = 0.0
+            if last_test_updates:
+                last_test_avg_delay = last_test_sum_delay/last_test_updates
+            global_test_min_delay = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/MinResponseTime'))
+            global_test_max_delay = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/MaxResponseTime'))
+            global_test_sum_delay = float(self._find_txt(probe, 'Statistics/Aggregated/HourTable/Hour/Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats/SumResponseTime'))
+            global_test_avg_delay = 0.0
+            if global_test_updates:
+                global_test_avg_delay = global_test_sum_delay/global_test_updates
+            if probe_name not in sla_results.keys():
+                sla_results[probe_name] = dict()
+            sla_results[probe_name][test_name] = {
+                'target': target,
+                'source': source,
+                'probe_type': probe_type,
+                'probe_count': probe_count,
+                'rtt': rtt,
+                'round_trip_jitter': jitter,
+                'last_test_loss': last_test_loss,
+                'current_test_min_delay': current_test_min_delay,
+                'current_test_max_delay': current_test_max_delay,
+                'current_test_avg_delay': current_test_avg_delay,
+                'last_test_min_delay': last_test_min_delay,
+                'last_test_max_delay': last_test_max_delay,
+                'last_test_avg_delay': last_test_avg_delay,
+                'global_test_min_delay': global_test_min_delay,
+                'global_test_max_delay': global_test_max_delay,
+                'global_test_avg_delay': global_test_avg_delay
+            }
+
+        return sla_results
