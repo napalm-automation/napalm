@@ -392,3 +392,14 @@ class TestGettersNetworkDriver:
                 result = result and self._test_model(models.traceroute, probe_result)
 
         self.assertTrue(result)
+
+    def test_get_users(self):
+
+        get_users = self.device.get_users()
+        result = len(get_users)
+
+        for user, user_details in get_users.iteritems():
+            result = result and self._test_model(models.users, user_details)
+            result = result and (0 <= user_details.get('level') <= 15)
+
+        self.assertTrue(result)
