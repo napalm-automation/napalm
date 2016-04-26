@@ -654,6 +654,28 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
+
+    def get_ntp_peers(self):
+
+        """
+        Returns the NTP peers configuration as dictionary.
+        The keys of the dictionary represent the IP Addresses of the peers.
+        Inner dictionaries do not have yet any available keys.
+
+        Example::
+
+            {
+                '192.168.0.1': {},
+                '17.72.148.53': {},
+                '37.187.56.220': {},
+                '162.158.20.18': {}
+            }
+
+        """
+
+        raise NotImplementedError
+
+
     def get_ntp_stats(self):
 
         """

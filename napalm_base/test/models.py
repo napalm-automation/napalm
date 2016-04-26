@@ -164,6 +164,10 @@ arp_table = {
     'age'       : float
 }
 
+ntp_peer = {
+    # will populate it in the future wit potential keys
+}
+
 ntp_stats = {
     'remote'        : unicode,
     'referenceid'   : unicode,
