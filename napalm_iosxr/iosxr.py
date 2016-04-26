@@ -968,7 +968,7 @@ class IOSXRDriver(NetworkDriver):
     def get_ntp_peers(self):
 
         ntp_stats = self.get_ntp_stats()
-        return [ntp_peer.get('remote') for ntp_peer in ntp_stats if ntp_peer.get('remote', '')]
+        return [ntp_peer.get('remote'): {} for ntp_peer in ntp_stats if ntp_peer.get('remote', '')]
 
     def get_ntp_stats(self):
 
