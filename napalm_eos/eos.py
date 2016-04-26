@@ -804,7 +804,7 @@ class EOSDriver(NetworkDriver):
 
         ntp_config = napalm_base.helpers.textfsm_extractor(self, 'ntp_peers', raw_ntp_config)
 
-        return [ntp_peer.get('ntppeer') for ntp_peer in ntp_config if ntp_peer.get('ntppeer', '')]
+        return {ntp_peer.get('ntppeer'):{} for ntp_peer in ntp_config if ntp_peer.get('ntppeer', '')}
 
 
     def get_ntp_stats(self):
