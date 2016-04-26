@@ -88,3 +88,41 @@ def textfsm_extractor(cls, template_name, raw_text):
         textfsm_data.append(entry)
 
     return textfsm_data
+
+
+def find_txt(xml_tree, path, default=''):
+
+    """
+    Extracts the text value from an XML tree, using XPath.
+    In case of error, will return a default value.
+
+    :param xml_tree: the XML Tree object.
+    :param path:     XPath to be applied, in order to extract the desired data.
+    :param default:  Value to be returned in case of error.
+    :return: a str value.
+    """
+
+    try:
+        return xml_tree.find(path).text.strip()
+    except Exception:
+        return default
+
+
+def convert(to, who, default=u''):
+
+    """
+    Converts data to a specific datatype.
+    In case of error, will return a default value.
+
+    :param to:      datatype to be casted to.
+    :param who:     value to cast.
+    :param default: value to return in case of error.
+    :return: a str value
+    """
+
+    if who is None:
+        return default
+    try:
+        return to(who)
+    except:
+        return default
