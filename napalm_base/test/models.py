@@ -251,7 +251,7 @@ ping = {
     'rtt_min': float,
     'rtt_max': float,
     'rtt_avg': float,
-    'rtt_stddev': float
+    'rtt_stddev': float,
     'results': list
 }
 
