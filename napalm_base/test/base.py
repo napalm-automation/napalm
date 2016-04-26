@@ -273,8 +273,11 @@ class TestGettersNetworkDriver:
     def test_get_ntp_peers(self):
 
         get_ntp_peers = self.device.get_ntp_peers()
-        result = isinstance(get_ntp_peers, list)
-        result = result and len(get_ntp_peers) > 0
+        result = len(get_ntp_peers) > 0
+
+        for peer, peer_details in get_ntp_peers.iteritems():
+            result = result and isinstance(peer, unicode)
+            result = result and self._test_model(models.ntp_peer, peer_details)
 
         self.assertTrue(result)
 
