@@ -1,0 +1,5 @@
+ntp server 141.101.67.17
+ntp server 192.168.0.1
+ntp server 172.17.17.1
+ntp server 172.17.17.2
+ntp server 2400:cb00:12:1024::adf5:300a
