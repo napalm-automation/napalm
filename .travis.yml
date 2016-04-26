@@ -29,6 +29,7 @@ script:
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors_detail
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_mac_address_table
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_ntp_peers
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_ntp_stats
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_route_to
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_snmp_information
