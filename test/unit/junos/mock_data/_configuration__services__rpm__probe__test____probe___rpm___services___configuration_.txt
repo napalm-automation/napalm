@@ -1,0 +1,27 @@
+<configuration commit-seconds="1456744362" commit-localtime="2016-02-29 11:12:42 UTC" commit-user="mircea">
+        <services>
+            <rpm>
+                <probe>
+                    <name>sjc-loops</name>
+                    <test>
+                        <name>edge01.lax01</name>
+                        <probe-type>icmp-ping</probe-type>
+                        <target>
+                            <address>192.168.0.1</address>
+                        </target>
+                        <probe-count>5</probe-count>
+                        <test-interval>60</test-interval>
+                    </test>
+                    <test>
+                        <name>edge01.pdx01</name>
+                        <probe-type>icmp-ping</probe-type>
+                        <target>
+                            <address>172.17.17.1</address>
+                        </target>
+                        <probe-count>10</probe-count>
+                        <test-interval>3600</test-interval>
+                    </test>
+                </probe>
+            </rpm>
+        </services>
+</configuration>

@@ -17,6 +17,7 @@ deploy:
     tags: true
     branch: master
 script:
+
 - cd test/unit
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_bgp_config
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_bgp_neighbors
@@ -33,4 +34,6 @@ script:
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_mac_address_table
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_route_to
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_snmp_information
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_probes_config
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_probes_results
 - cd ../..

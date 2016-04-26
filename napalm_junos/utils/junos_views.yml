@@ -473,3 +473,50 @@ junos_snmp_config_view:
     location: ../location
     contact: ../contact
     chassis: ../system-name
+
+###
+### RPM Probes Config
+###
+
+junos_rpm_probes_config_table:
+  get: services/rpm/probe/test
+  view: junos_rpm_probes_config_view
+
+junos_rpm_probes_config_view:
+  fields:
+    probe_name: ../name
+    probe_type: probe-type
+    target: target/address
+    probe_count: probe-count
+    test_interval: test-interval
+    source_address: source-address
+
+###
+### RPM Probes Results
+###
+
+junos_rpm_probes_results_table:
+  rpc: get-probe-results
+  item: probe-test-results
+  key: owner
+  view: junos_rpm_probes_results_view
+
+junos_rpm_probes_results_view:
+  fields:
+    test_name: {test-name: unicode}
+    target: {target-address: unicode}
+    source: {source-address: unicode}
+    probe_type: {probe-type: unicode}
+    probe_count: {test-size: int}
+    rtt: {probe-single-results/rtt: float}
+    round_trip_jitter: {probe-single-results/round-trip-jitter: float}
+    current_test_min_delay: {probe-test-current-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
+    current_test_max_delay: {probe-test-current-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
+    current_test_avg_delay: {probe-test-current-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
+    last_test_min_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
+    last_test_max_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
+    last_test_avg_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
+    last_test_loss: {probe-last-test-results/probe-test-generic-results/loss-percentage: int}
+    global_test_min_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
+    global_test_max_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
+    global_test_avg_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
