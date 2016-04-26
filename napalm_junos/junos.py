@@ -759,7 +759,7 @@ class JunOSDriver(NetworkDriver):
         if not ntp_peers:
             return {}
 
-        return {peer[0]:{} for peer in ntp_peers}
+        return {unicode(peer[0]):{} for peer in ntp_peers}
 
     def get_ntp_stats(self):
 
