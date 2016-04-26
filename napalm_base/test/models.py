@@ -244,3 +244,24 @@ probe_test_results = {
     'global_test_max_delay' : float,
     'global_test_avg_delay' : float
 }
+
+ping = {
+    'probes_sent': int,
+    'packet_loss': int,
+    'rtt_min': float,
+    'rtt_max': float,
+    'rtt_avg': float,
+    'rtt_stddev': float
+    'results': list
+}
+
+ping_result = {
+    'ip_address': unicode,
+    'rtt': float
+}
+
+traceroute = {
+    'rtt': float,
+    'ip_address', unicode,
+    'host_name': unicode
+}
