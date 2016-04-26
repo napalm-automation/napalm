@@ -171,6 +171,18 @@ junos_temperature_thresholds_view:
     tx_discards: { output-drops: int }
 
 ###
+### NTP Peers Config
+###
+
+junos_ntp_peers_config_table:
+  get: system/ntp/peer
+  view: junos_ntp_peers_config_view
+
+junos_ntp_peers_config_view:
+  fields:
+    peer: name
+
+###
 ### LLDP Neighbors Detail
 ###
 
