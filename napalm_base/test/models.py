@@ -262,6 +262,6 @@ ping_result = {
 
 traceroute = {
     'rtt': float,
-    'ip_address', unicode,
+    'ip_address': unicode,
     'host_name': unicode
 }
