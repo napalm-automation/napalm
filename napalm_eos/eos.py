@@ -1150,6 +1150,8 @@ class EOSDriver(NetworkDriver):
             ttl_opt = '-m {ttl}'.format(ttl=ttl)
         if timeout:
             timeout_opt = '-w {timeout}'.format(timeout=timeout)
+        else:
+            timeout = 5
 
         command = 'traceroute {destination} {source_opt} {ttl_opt} {timeout_opt}'.format(
             destination=destination,
@@ -1180,6 +1182,8 @@ class EOSDriver(NetworkDriver):
                 rtt = hop_details[5+probe_index*5]
                 if rtt:
                     rtt = float(rtt)
+                else:
+                    rtt = timeout * 1000.0
                 if not host_name:
                     host_name = previous_probe_host_name
                 if not ip_address:
