@@ -1081,3 +1081,31 @@ class EOSDriver(NetworkDriver):
             }
 
         return snmp_information
+
+
+    def get_users(self):
+
+        def _sshkey_type(sshkey):
+            if sshkey.startswith('ssh-rsa'):
+                return 'ssh_rsa', sshkey
+            elif sshkey.startswith('ssh-dss'):
+                return 'ssh_dsa', sshkey
+            return 'ssh_rsa', ''
+
+        users = dict()
+
+        commands = ['show user-account']
+        user_items = self.device.run_commands(commands)[0].get('users', {})
+
+        for user, user_details in user_items.iteritems():
+            user_details.pop('username', '')
+            sshkey_value = user_details.pop('sshAuthorizedKey', '')
+            sshkey_type, sshkey_value = _sshkey_type(sshkey_value)
+            user_details.update({
+                'level': user_details.pop('privLevel', 0),
+                'password': user_details.pop('secret', ''),
+                'sshkeys': [sshkey_value]
+            })
+            users[user] = user_details
+
+        return users
