@@ -556,3 +556,57 @@ class NXOSDriver(NetworkDriver):
             }
 
         return snmp_information
+
+
+    def get_users(self):
+
+        users = dict()
+
+        command = 'sh run | sec username'
+
+        _CISCO_TO_CISCO_MAP = {
+            'network-admin': 15,
+            'network-operator': 5
+        }
+
+        _DEFAULT_USER_DICT = {
+            'password': '',
+            'level': 0,
+            'sshkeys': []
+        }
+
+        section_username_raw_output = self.cli([command]).get(command, '')
+
+        section_username_tabled_output = napalm_base.helpers.textfsm_extractor('users', section_username_raw_output)
+
+        for user in section_username_tabled_output:
+            username = user.get('username', '')
+            if not username:
+                continue
+            if username not in users:
+                users[username] = _DEFAULT_USER_DICT.copy()
+
+            password = user.get('password', '')
+            if password:
+                users[username]['password'] = password.strip()
+
+            level = 0
+            role = user.get('role', '')
+            if role.startswith('priv'):
+                level = int(role.split('-')[-1])
+            else:
+                level = _CISCO_TO_CISCO_MAP.get(role, 0)
+            if level > users.get(username).get('level'):
+                # unfortunately on Cisco you can set different priv levels for the same user
+                # Good news though: the device will consider the highest level
+                users[username]['level'] = level
+
+            sshkeytype = user.get('sshkeytype', '')
+            sshkeyvalue = user.get('sshkeyvalue', '')
+            if sshkeytype and sshkeyvalue:
+                if sshkeytype not in ['ssh-rsa', 'ssh-dsa']:
+                    continue
+                key = sshkeytype.replace('-', '_')
+                users[username]['sshkeys'].append(sshkeyvalue)
+
+        return users
