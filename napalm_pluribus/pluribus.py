@@ -12,16 +12,23 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from napalm_base.base import NetworkDriver
+# python std lib
+import re
 
+# third party libs
 import pyPluribus.exceptions
 from pyPluribus import PluribusDevice
 
+# NAPALM base
 import napalm_base.exceptions
+from napalm_base.base import NetworkDriver
 
 
 class PluribusDriver(NetworkDriver):
 
+    """
+    PluribusDriver class.
+    """
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
 
@@ -393,10 +400,7 @@ class PluribusDriver(NetworkDriver):
             timeout_opt=timeout_opt
         )
 
-        try:
-            traceroute_raw_output = self.device.cli(command)
-        except CommandErrorException:
-            return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
+        traceroute_raw_output = self.device.cli(command)
 
         hop_regex = ''.join(_HOP_ENTRY + _HOP_ENTRY_PROBE * probes)
 
