@@ -33,4 +33,5 @@ script:
 - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_ntp_stats
 - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_snmp_information
 - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_users
+- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_traceroute
 - cd ../..
