@@ -532,3 +532,19 @@ junos_rpm_probes_results_view:
     global_test_min_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
     global_test_max_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
     global_test_avg_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
+
+###
+### Get Users
+###
+
+junos_users_table:
+  get: system/login/user
+  view: junos_users_table_view
+
+junos_users_table_view:
+  fields:
+    class: class
+    password: authentication/encrypted-password
+    ssh_rsa: authentication/ssh-rsa/name
+    ssh_dsa: authentication/ssh-dsa/name
+    ssh_ecdsa: authentication/ssh-ecdsa/name
