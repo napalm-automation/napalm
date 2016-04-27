@@ -32,4 +32,5 @@ script:
 - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_ntp_peers
 - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_ntp_stats
 - nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_snmp_information
+- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_users
 - cd ../..

@@ -1,0 +1,7 @@
+username dummy-test password 5 $5$l7h6EY6l$W0DQ9eMdSOxfA4vul1MBJQ.ekq.HVttZpSbPI2FKQ50  role priv-0
+username dummy-test role priv-1
+username dummy-test role priv-2
+username dummy-test role priv-3
+username dummy-test role priv-7
+username dummy-test role priv-15
+username dummy-test sshkey ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4pFn+shPwTb2yELO4L7NtQrKOJXNeCl1jel9STXVaGnRAnuc2PXl35vnWmcUq6YbUEcgUTRzzXfmelJKuVJTJIlMXii7h2xkbQp0YZIEs4P8ipwnRBAxFfk/ZcDsN3mjep4/yjN56eorF5xs7zP9HbqbJ1dsqk1p3A/9LIL7l6YewLBCwJj6D+fWSJ0/YW+7oH17Fk2HH+tw0L5PcWLHkwA4t60iXn16qDbIk/ze6jv2hDGdCdz7oYQeCE55CCHOHMJWYfN3jcL4s0qv8/u6Ka1FVkV7iMmro7ChThoV/5snI4Ljf2wKqgHH7TfNaCfpU0WvHAnTs8zhOrGScSrtb

@@ -577,7 +577,7 @@ class NXOSDriver(NetworkDriver):
 
         section_username_raw_output = self.cli([command]).get(command, '')
 
-        section_username_tabled_output = napalm_base.helpers.textfsm_extractor('users', section_username_raw_output)
+        section_username_tabled_output = napalm_base.helpers.textfsm_extractor(self, 'users', section_username_raw_output)
 
         for user in section_username_tabled_output:
             username = user.get('username', '')
