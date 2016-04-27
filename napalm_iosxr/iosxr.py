@@ -1484,7 +1484,7 @@ class IOSXRDriver(NetworkDriver):
             username = unicode(self._find_txt(user_entry, 'Naming/Name'))
             group = self._find_txt(user_entry, 'UsergroupsUnderUsername/UsergroupUnderUsername/Naming/Name', '')
             level = _CISCO_GROUP_TO_CISCO_PRIVILEGE_MAP.get(group, 0)
-            password = unicode(self._find_txt(user_entry, 'Password/Password'))
+            password = self._find_txt(user_entry, 'Password/Password')
             user_details = _DEFAULT_USER_DETAILS.copy()
             user_details.update({
                 'level': level,
