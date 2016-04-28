@@ -1,3 +1,9 @@
-napalm-eos
-napalm-junos
 ddt
+napalm-eos
+napalm-fortios
+napalm-ibm
+napalm-ios
+napalm-iosxr
+napalm-junos
+napalm-nxos
+napalm-pluribus
