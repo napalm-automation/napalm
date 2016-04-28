@@ -11,8 +11,8 @@ _                       EOS         JunOS           IOS-XR       FortiOS        
 **Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-fortios  napalm-ibm     napalm-nxos   napalm-ios    napalm-pluribus
 **Driver Name**         eos         junos           iosxr        fortios         ibm            nxos          ios           pluribus
 **Structured data**     Yes         Yes             No           No              Yes            Yes           No            No
-**Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           ???            6.1           12.4(20)T           N/A
-**Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_        `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_
+**Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           ???            6.1           12.4(20)T     N/A
+**Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_         `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_
 **Caveats**             :doc:`eos`                               :doc:`fortios`  :doc:`ibm`     :doc:`nxos`   :doc:`ios`
 =====================   ==========  =============   ============ ==============  =============  ============  ============  ===============
 
