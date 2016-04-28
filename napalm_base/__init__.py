@@ -14,165 +14,39 @@
 
 """napalm_base package."""
 
-import sys
-import imp
+# Python std lib
 import inspect
+import importlib
 
-from base import NetworkDriver
-
-
-def _import_module(name):
-    """Import a module into the current runtime environment.
-
-    This function will take a full path module name and break it into
-    its parts iteratively attempting to import each one.  The function
-    will check to be sure that the module hasn't been previously imported.
-
-    .. doctest::
-
-        >>> _import_module('os') #doctest: +ELLIPSIS
-        <module 'os' from '...'>
-
-    :param str name:
-        The name of the module to import
-
-    :returns:
-        The imported Python module
-    """
-    parts = name.split('.')
-    path = None
-    module_name = ''
-    fhandle = None
-
-    for index, part in enumerate(parts):
-        module_name = part if index == 0 else '%s.%s' % (module_name, part)
-        path = [path] if path is not None else path
-
-        try:
-            fhandle, path, descr = imp.find_module(part, path)
-            if module_name in sys.modules:
-                # since imp.load_module works like reload, need to be sure not
-                # to reload a previously loaded module
-                mod = sys.modules[module_name]
-            else:
-                mod = imp.load_module(module_name, fhandle, path, descr)
-        finally:
-            # lets be sure to clean up after ourselves
-            if fhandle:
-                fhandle.close()
-
-    return mod
+# NAPALM base
+import napalm_base
 
 
-def _load_module(name):
-    """Attempt to load a module into the current environment.
+def get_network_driver(module_name):
 
-    This function will load a module from the Python sys.path.  It will
-    check to be sure the module wasn't already loaded.  If the module
-    was prevsiouly loaded, it will simply return the loaded module and not
-    reload it
+    if not (isinstance(module_name, str) and len(module_name) > 0):
+        raise napalm_base.exceptions.ModuleImportError('Please provide a valid driver name.')
 
-    .. doctest::
-
-        >>> _load_module('sys')
-        <module 'sys' (built-in)>
-
-    :param str name:
-        The name of the module to load
-
-    :returns:
-        The named Python module
-
-    :raises ImportError:
-        If the module could not be loaded
-    """
     try:
-        mod = None
-        mod = sys.modules[name]
-    except KeyError:
-        try:
-            mod = _import_module(name)
-        except ImportError:
-            raise
-    finally:
-        if not mod:
-            raise
-        return mod
+        module_name = module_name.lower()  # only lowercase allowed
+        module_install_name = module_name
+        if 'napalm_' not in module_name:  # can also request using napalm_[SOMETHING]
+            module_install_name = 'napalm_{name}'.format(name=module_name)
+        module = importlib.import_module(module_install_name)
+    except ImportError as ierr:
+        raise napalm_base.exceptions.ModuleImportError(
+                'Cannot import "{install_name}". Is the library installed?'.format(
+                    install_name=module_install_name
+                )
+            )
 
+    for name, obj in inspect.getmembers(module):
+        if inspect.isclass(obj) and issubclass(obj, napalm_base.base.NetworkDriver):
+            return obj
 
-def _napalm_namespace(module):
-    """Prepend the default namespace onto the module name.
-
-    The function is only applicable in cases where a module
-    name is provided without a full path namespace.  In this
-    case, the module name is prepended with the device namespace.
-    If the module name is a fully qualified namespace, the
-    module name is returned.
-
-    .. doctest::
-
-        >>> _napalm_namespace('test')
-        'napalm_test.test'
-        >>> _napalm_namespace('napalm.test')
-        'napalm.test'
-
-    :param str module:
-        The name of the module to verify
-
-    :returns:
-        The fully qualified module namespace
-    """
-    if '.' in module:
-        return module
-    return 'napalm_{}'.format(module)
-
-
-def _discover_driver_from_module(module):
-    """Return the first subclass of ``NetworkDriver`` found in ``module``."""
-    driver = None
-    for member in inspect.getmembers(module):
-        if inspect.isclass(member[1]):
-            if issubclass(member[1], NetworkDriver) and member[1] is not NetworkDriver:
-                driver = member[1]
-                break
-    return driver
-
-
-def get_network_driver(module, loader='load_driver', *args, **kwargs):
-    """Attempt to load a class instance from the module.
-
-    The function will load the specified module and create
-    an instance.  The loader works by looking for a function in
-    the module and loading it.
-
-    :param str module:
-        The name of the module to dynamically load
-
-    :param str loader:
-        The name of the function to call to load the driver.  The
-        default value is 'load_driver'
-
-    :param args:
-        An ordered set of arbitrary arguments that are passed to the
-        instance function
-
-    :param kwargs:
-        An unordered set of arbitrary keyword arguments that are passed
-        to the instance function
-
-    :returns object:
-        Instantiates a Python object an returns it
-    """
-    loader = loader or 'load_driver'
-    mod = _load_module(_napalm_namespace(module))
-
-    if hasattr(mod, loader):
-        func = getattr(mod, loader)
-        return func(*args, **kwargs)
-    else:
-        discovered_driver = _discover_driver_from_module(mod)
-        if discovered_driver is None:
-            raise Exception("Failed finding load_driver method and discovering driver in "
-                            "module {}".format(mod))
-        else:
-            return discovered_driver
+    # looks like you don't have any Driver class in your module...
+    raise napalm_base.exceptions.ModuleImportError(
+            'No class inheriting "napalm_base.base.NetworkDriver" found in "{install_name}".'.format(
+                install_name=module_install_name
+            )
+        )
