@@ -34,13 +34,13 @@ def get_network_driver(module_name):
     """
     Searches for a class derived form the base NAPALM class NetworkDriver in a specific library.
     The library name must repect the following pattern: napalm_[DEVICE_OS].
-    NAPALM community supports a list of devices and provides the corresponding libraries, for full reference
+    NAPALM community supports a list of devices and provides the corresponding libraries; for full reference
     please refer to the `Supported Network Operation Systems`_ paragraph on `Read the Docs`_.
 
     .. _`Supported Network Operation Systems`: http://napalm.readthedocs.io/en/latest/#supported-network-operating-systems
     .. _`Read the Docs`: http://napalm.readthedocs.io/
 
-    :param module_name:         name of the device operating system, or the name of the library.
+    :param module_name:         the name of the device operating system, or the name of the library.
     :return:                    the first class derived from NetworkDriver, found in the library.
     :raise ModuleImportError:   when the library is not installed, or a derived class from NetworkDriver was not found.
 
@@ -50,6 +50,8 @@ def get_network_driver(module_name):
 
         >>> get_network_driver('junos')
         <class 'napalm_junos.junos.JunOSDriver'>
+        >>> get_network_driver('IOS-XR')
+        <class 'napalm_iosxr.iosxr.IOSXRDriver'>
         >>> get_network_driver('napalm_eos')
         <class 'napalm_eos.eos.EOSDriver'>
         >>> get_network_driver('wrong')
@@ -61,9 +63,9 @@ def get_network_driver(module_name):
 
     try:
         module_name = module_name.lower()  # only lowercase allowed
-        module_install_name = module_name
-        if 'napalm_' not in module_name:  # can also request using napalm_[SOMETHING]
-            module_install_name = 'napalm_{name}'.format(name=module_name)
+        module_install_name = module_name.replace('-', '')  # to not raise error when users requests IOS-XR for e.g.
+        if 'napalm_' not in module_install_name:  # can also request using napalm_[SOMETHING]
+            module_install_name = 'napalm_{name}'.format(name=module_install_name)
         module = importlib.import_module(module_install_name)
     except ImportError:
         raise ModuleImportError(
