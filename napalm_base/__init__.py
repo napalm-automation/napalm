@@ -31,6 +31,31 @@ __all__ = [
 
 def get_network_driver(module_name):
 
+    """
+    Searches for a class derived form the base NAPALM class NetworkDriver in a specific library.
+    The library name must repect the following pattern: napalm_[DEVICE_OS].
+    NAPALM community supports a list of devices and provides the corresponding libraries, for full reference
+    please refer to the `Supported Network Operation Systems`_ paragraph on `Read the Docs`_.
+
+    .. _`Supported Network Operation Systems`: http://napalm.readthedocs.io/en/latest/#supported-network-operating-systems
+    .. _`Read the Docs`: http://napalm.readthedocs.io/
+
+    :param module_name:         name of the device operating system, or the name of the library.
+    :return:                    the first class derived from NetworkDriver, found in the library.
+    :raise ModuleImportError:   when the library is not installed, or a derived class from NetworkDriver was not found.
+
+    Example::
+
+    .. code-block:: python
+
+        >>> get_network_driver('junos')
+        <class 'napalm_junos.junos.JunOSDriver'>
+        >>> get_network_driver('napalm_eos')
+        <class 'napalm_eos.eos.EOSDriver'>
+        >>> get_network_driver('wrong')
+        napalm_base.exceptions.ModuleImportError: Cannot import "napalm_wrong". Is the library installed?
+    """
+
     if not (isinstance(module_name, basestring) and len(module_name) > 0):
         raise ModuleImportError('Please provide a valid driver name.')
 
