@@ -31,7 +31,7 @@ __all__ = [
 
 def get_network_driver(module_name):
 
-    if not (isinstance(module_name, str) and len(module_name) > 0):
+    if not (isinstance(module_name, basestring) and len(module_name) > 0):
         raise ModuleImportError('Please provide a valid driver name.')
 
     try:
