@@ -12,18 +12,26 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from napalm_base.base import NetworkDriver
-from napalm_base.utils import string_parsers
+# python std lib
+import re
+import copy
+from collections import defaultdict
+
+# third party libs
+import xml.etree.ElementTree as ET
+
+from netaddr import IPAddress
+from netaddr.core import AddrFormatError
 
 from pyIOSXR import IOSXR
 from pyIOSXR.iosxr import __execute_show__
 from pyIOSXR.exceptions import InvalidInputError, TimeoutError, EOFError
 
+# napalm_base
+from napalm_base.base import NetworkDriver
+from napalm_base.utils import string_parsers
 from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,\
                                    CommandErrorException, CommandTimeoutException
-import xml.etree.ElementTree as ET
-from collections import defaultdict
-import re
 
 
 class IOSXRDriver(NetworkDriver):
@@ -100,6 +108,26 @@ class IOSXRDriver(NetworkDriver):
 
     def rollback(self):
         self.device.rollback()
+
+
+    # perhaps both should be moved in napalm_base.helpers at some point
+    @staticmethod
+    def _find_txt(xml_tree, path, default = ''):
+        try:
+            return xml_tree.find(path).text.strip()
+        except Exception:
+            return default
+
+
+    @staticmethod
+    def _convert(to, who, default = u''):
+        if who is None:
+            return default
+        try:
+            return to(who)
+        except:
+            return default
+
 
     def get_facts(self):
 
@@ -668,13 +696,6 @@ class IOSXRDriver(NetworkDriver):
 
         return cli_output
 
-    @staticmethod
-    def _find_txt(xml_tree, path, default = ''):
-
-        try:
-            return xml_tree.find(path).text.strip()
-        except Exception:
-            return default
 
     def get_bgp_config(self, group = '', neighbor = ''):
 
@@ -1338,6 +1359,7 @@ class IOSXRDriver(NetworkDriver):
 
         return snmp_information
 
+
     def get_probes_config(self):
 
         sla_config = dict()
@@ -1376,6 +1398,7 @@ class IOSXRDriver(NetworkDriver):
             }
 
         return sla_config
+
 
     def get_probes_results(self):
 
@@ -1456,3 +1479,107 @@ class IOSXRDriver(NetworkDriver):
             }
 
         return sla_results
+
+
+    def traceroute(self, destination, source='', ttl=0, timeout=0):
+
+        traceroute_result = dict()
+
+        ipv = 4
+        try:
+            ipv = IPAddress(destination).version
+        except AddrFormatError:
+            return {'error': 'Wrong destination IP Address!'}
+
+        source_tag = ''
+        ttl_tag = ''
+        timeout_tag = ''
+        if source:
+            source_tag = '<Source>{source}</Source>'.format(source = source)
+        if ttl:
+            ttl_tag = '<MaxTTL>{maxttl}</MaxTTL>'.format(maxttl = ttl)
+        if timeout:
+            timout_tag = '<Timeout>{timeout}</Timeout>'.format(timeout = timeout)
+
+        traceroute_rpc_command = '''
+            <Set>
+                <Action>
+                    <TraceRoute>
+                        <IPV{version}>
+                            <Destination>
+                                {destination}
+                            </Destination>
+                            {source_tag}
+                            {ttl_tag}
+                            {timeout_tag}
+                        </IPV{version}>
+                    </TraceRoute>
+                </Action>
+            </Set>
+        '''.format(
+            version=ipv,
+            destination=destination,
+            source_tag=source_tag,
+            ttl_tag=ttl_tag,
+            timeout_tag=timeout_tag
+        )
+
+        xml_tree_txt = self.device.make_rpc_call(traceroute_rpc_command)
+        traceroute_tree = ET.fromstring(xml_tree_txt)
+
+        results_tree = traceroute_tree.find('.//Results')
+        results_error = self._find_txt(results_tree, 'Error')
+
+        if results_error:
+            return {'error': results_error}
+
+        if results_tree is None or not len(results_tree):
+            return {'error': 'Device returned empty results.'}
+
+        traceroute_result['success'] = {}
+
+        last_hop_index = 1
+        last_probe_index = 1
+        last_probe_ip_address = '*'
+        last_probe_host_name = ''
+        last_probe_rtt = 0.0
+        last_hop_dict = {'probes': {}}
+
+        for thanks_cisco in results_tree.getchildren():
+            tag_name = thanks_cisco.tag
+            tag_value = thanks_cisco.text
+            if tag_name == 'HopIndex':
+                new_hop_index = int(self._find_txt(thanks_cisco, '.', '-1'))
+                if last_hop_index and last_hop_index != new_hop_index:
+                    traceroute_result['success'][last_hop_index] = copy.deepcopy(last_hop_dict)
+                    last_hop_dict = {'probes': {}}
+                    last_probe_ip_address = '*'
+                    last_probe_host_name = ''
+                last_hop_index = new_hop_index
+                continue
+            tag_value = unicode(self._find_txt(thanks_cisco, '.', ''))
+            if tag_name == 'ProbeIndex':
+                last_probe_index = self._convert(int, tag_value, 0) + 1
+                if last_probe_index not in last_hop_dict.get('probes').keys():
+                    last_hop_dict['probes'][last_probe_index] = {}
+                if not last_probe_host_name:
+                    last_probe_host_name = last_probe_ip_address
+                last_hop_dict['probes'][last_probe_index] = {
+                    'ip_address': last_probe_ip_address,
+                    'host_name': last_probe_host_name
+                }
+                continue
+            if tag_name == 'HopAddress':
+                last_probe_ip_address = tag_value
+                continue
+            if tag_name == 'HopHostName':
+                last_probe_host_name = tag_value
+                continue
+            if tag_name == 'DeltaTime':
+                last_hop_dict['probes'][last_probe_index]['rtt'] = self._convert(float, tag_value, 0.0)
+                continue
+
+        if last_hop_index:
+            traceroute_result['success'][last_hop_index] = last_hop_dict
+
+        return traceroute_result

@@ -1,2 +1,3 @@
 napalm_base
 pyIOSXR
+netaddr
