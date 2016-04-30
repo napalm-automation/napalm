@@ -384,7 +384,7 @@ class TestGettersNetworkDriver:
 
         destination = '8.8.8.8'
         get_traceroute = self.device.traceroute(destination)
-        result = isinstance(get_ping.get('success'), dict)
+        result = isinstance(get_traceroute.get('success'), dict)
         traceroute_results = get_traceroute.get('success', {})
 
         for hope_id, hop_result in traceroute_results.iteritems():
