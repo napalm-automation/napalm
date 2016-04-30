@@ -303,3 +303,47 @@ class PluribusDriver(NetworkDriver):
             }
 
         return snmp_information
+
+
+    def get_users(self):
+
+        users = {}
+
+        _DEFAULT_USER_DETAILS = {
+            'level': 0,
+            'password': '',
+            'sshkeys': []
+        }
+
+        role_level = {}
+        roles_config = self.device.show('role', delim='@$@')
+        for role in roles_config.splitlines():
+            role_details = role.split('@$@')
+            role_name = role_details[2]
+            level = 0
+            access = role_details[5]
+            running_config = role_details[6]
+            if access == 'read-write' and running_config == 'permit':
+                level = 15
+            if (access == 'read-write' and running_config == 'deny') or (access == 'read-only' and running_config == 'permit'):
+                level = 5
+            if access == 'read-only' and running_config == 'deny':
+                level = 1
+            role_level[role_name] = level
+        running_config = self.device.config._download_running_config()
+        for line in running_config.splitlines():
+            if not line.startswith('import-password user-create'):
+                continue
+            user_details = _DEFAULT_USER_DETAILS.copy()
+            user_config = line.split()
+            username = user_config[3]
+            password = user_config[7]
+            role = user_config[9]
+            level = role_level.get(role)
+            user_details.update({
+                'level': level,
+                'password': password,
+            })
+            users[username] = user_details
+
+        return users
