@@ -52,35 +52,7 @@ _                       EOS         JunOS   IOS-XR      FortiOS         IBM     
             what are atomic changes and which devices support it, what does replacing or merging configuration mean, etc.
             The key to success is to test your workflow and to try to break things on a lab first.
 
-Getters support matrix
-----------------------
-
-.. |yes|   unicode:: U+02705 .. Yes
-.. |no|    unicode:: U+0274C .. No
-
-============================== =====  =====   ======  =======  ======  ======  =====  =========
-_                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus
-============================== =====  =====   ======  =======  ======  ======  =====  =========
-**cli**                        |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|
-**get_facts**                  |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|
-**get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|
-**get_snmp_information**       |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|
-**get_ntp_peers**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|
-**get_ntp_stats**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|
-**get_mac_address_table**      |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|
-**get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|
-**get_interfaces**             |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|
-**get_interfaces_ip**          |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|
-**get_lldp_neighbors**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |yes|
-**get_lldp_neighbors_detail**  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|
-**get_bgp_neighbors**          |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|
-**get_bgp_neighbors_detail**   |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|
-**get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|
-**get_route_to**               |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|
-**get_probes_config**          |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|
-**get_probes_results**         |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|
-**get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|
-============================== =====  =====   ======  =======  ======  ======  =====  =========
+.. include:: _include/getters_support_table.rst
 
 Other methods
 -------------
