@@ -1480,7 +1480,6 @@ class IOSXRDriver(NetworkDriver):
 
         return sla_results
 
-
     def traceroute(self, destination, source='', ttl=0, timeout=0):
 
         traceroute_result = dict()
@@ -1583,3 +1582,39 @@ class IOSXRDriver(NetworkDriver):
             traceroute_result['success'][last_hop_index] = last_hop_dict
 
         return traceroute_result
+
+    def get_users(self):
+
+        users = dict()
+
+        _CISCO_GROUP_TO_CISCO_PRIVILEGE_MAP = {
+            'root-system': 15,
+            'operator': 5,
+            'sysadmin': 1,
+            'serviceadmin': 1,
+            'root-lr': 15
+        }
+
+        _DEFAULT_USER_DETAILS = {
+            'level': 0,
+            'password': '',
+            'sshkeys': []
+        }
+
+        users_xml_req = '<Get><Configuration><AAA></AAA></Configuration></Get>'
+
+        users_xml_reply = ET.fromstring(self.device.make_rpc_call(users_xml_req))
+
+        for user_entry in users_xml_reply.findall('.//Username'):
+            username = unicode(self._find_txt(user_entry, 'Naming/Name'))
+            group = self._find_txt(user_entry, 'UsergroupsUnderUsername/UsergroupUnderUsername/Naming/Name', '')
+            level = _CISCO_GROUP_TO_CISCO_PRIVILEGE_MAP.get(group, 0)
+            password = self._find_txt(user_entry, 'Password/Password')
+            user_details = _DEFAULT_USER_DETAILS.copy()
+            user_details.update({
+                'level': level,
+                'password': password
+            })
+            users[username] = user_details
+
+        return users
