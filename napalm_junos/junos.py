@@ -14,6 +14,7 @@
 
 import re
 import collections
+from lxml.builder import E
 
 from napalm_junos.utils import junos_views
 from napalm_base.base import NetworkDriver
@@ -119,6 +120,26 @@ class JunOSDriver(NetworkDriver):
     def rollback(self):
         self.device.cu.rollback(rb_id=1)
         self.commit_config()
+
+
+    # perhaps both should be moved in napalm_base.helpers at some point
+    @staticmethod
+    def _find_txt(xml_tree, path, default = ''):
+        try:
+            return xml_tree.find(path).text.strip()
+        except Exception:
+            return default
+
+
+    @staticmethod
+    def _convert(to, who, default = u''):
+        if who is None:
+            return default
+        try:
+            return to(who)
+        except:
+            return default
+
 
     def get_facts(self):
 
@@ -413,15 +434,6 @@ class JunOSDriver(NetworkDriver):
                 raise CommandErrorException(str(cli_output))
 
         return cli_output
-
-    @staticmethod
-    def _convert(to, who, default = u''):
-        if who is None:
-            return default
-        try:
-            return to(who)
-        except:
-            return default
 
 
     def get_bgp_config(self, group='', neighbor=''):
@@ -1015,6 +1027,7 @@ class JunOSDriver(NetworkDriver):
 
         return snmp_information
 
+
     def get_probes_config(self):
 
         probes = dict()
@@ -1046,6 +1059,7 @@ class JunOSDriver(NetworkDriver):
 
         return probes
 
+
     def get_probes_results(self):
 
         probes_results = dict()
@@ -1071,3 +1085,60 @@ class JunOSDriver(NetworkDriver):
             probes_results[probe_name][test_name] = test_results
 
         return probes_results
+
+
+    def traceroute(self, destination, source='', ttl=0, timeout=0):
+
+        traceroute_result = dict()
+
+        # calling form RPC does not work properly :(
+        # but defined junos_route_instance_table just in case
+
+        source_str = ''
+        maxttl_str = ''
+        wait_str = ''
+
+        if source:
+            source_str = 'source {source}'.format(source=source)
+        if ttl:
+            maxttl_str = 'ttl {ttl}'.format(ttl=ttl)
+        if timeout:
+            wait_str = 'wait {timeout}'.format(timeout=timeout)
+
+        traceroute_command = 'traceroute {destination} {source} {maxttl} {wait}'.format(
+            destination=destination,
+            source=source_str,
+            maxttl=maxttl_str,
+            wait=wait_str
+        )
+
+        traceroute_rpc = E('command', traceroute_command)
+        rpc_reply = self.device._conn.rpc(traceroute_rpc)._NCElement__doc # make direct RPC call via NETCONF
+        traceroute_results = rpc_reply.find('.//traceroute-results')
+
+        traceroute_success = traceroute_results.find('traceroute-success')
+        traceroute_failure = self._find_txt(traceroute_results, 'traceroute-failure', '')
+        error_message = self._find_txt(traceroute_results, 'rpc-error/error-message', '')
+
+        error = ''
+
+        if traceroute_failure and error_message:
+            return {'error': '{}: {}'.format(traceroute_failure, error_message)}
+
+        traceroute_result['success'] = dict()
+        for hop in traceroute_results.findall('hop'):
+            ttl_value = self._convert(int, self._find_txt(hop, 'ttl-value'), 1)
+            if ttl_value not in traceroute_result['success']:
+                traceroute_result['success'][ttl_value] = {'probes': {}}
+            for probe in hop.findall('probe-result'):
+                probe_index = self._convert(int, self._find_txt(probe, 'probe-index'), 0)
+                ip_address = unicode(self._find_txt(probe, 'ip-address', u'*'))
+                host_name = unicode(self._find_txt(probe, 'host-name', u'*'))
+                rtt = self._convert(float, self._find_txt(probe, 'rtt'), 0) * 1e-3 # ms
+                traceroute_result['success'][ttl_value]['probes'][probe_index] = {
+                    'ip_address': ip_address,
+                    'host_name': host_name,
+                    'rtt': rtt
+                }
+
+        return traceroute_result

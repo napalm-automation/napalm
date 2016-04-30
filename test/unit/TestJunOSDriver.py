@@ -56,8 +56,9 @@ class TestGetterJunOSDriver(unittest.TestCase, TestGettersNetworkDriver):
 class FakeJunOSDevice:
 
     def __init__(self):
-        self.rpc = FakeRPCObject()
-        self.ON_JUNOS = True # necessary for fake devices
+        self.rpc = FakeRPCObject(self)
+        self._conn = FakeConnection(self.rpc)
+        self.ON_JUNOS = True  # necessary for fake devices
         self.facts = {
             'domain': None,
             'hostname': 'vsrx',
@@ -81,12 +82,13 @@ class FakeJunOSDevice:
             'personality': 'SRX_BRANCH'
         }
 
-    @staticmethod
-    def read_txt_file(filename):
+
+    def read_txt_file(self, filename):
         with open(filename) as data_file:
             return data_file.read()
 
-    def cli(self, command = ''):
+
+    def cli(self, command=''):
         return self.read_txt_file(
             'junos/mock_data/{parsed_command}.txt'.format(
                 parsed_command = command.replace(' ', '_')
@@ -96,25 +98,27 @@ class FakeJunOSDevice:
 
 class FakeRPCObject:
 
-    def __init__(self):
-        pass
+    """
+    Fake RPC caller.
+    """
 
-    @staticmethod
-    def read_txt_file(filename):
-        with open(filename) as data_file:
-            return data_file.read()
+    def __init__(self, device):
+        self._device = device
+
 
     def __getattr__(self, item):
         self.item = item
         return self
 
+
     def response(self, **rpc_args):
         instance = rpc_args.pop('instance', '')
 
-        xml_string = self.read_txt_file('junos/mock_data/{}{}.txt'.format(self.item, instance))
+        xml_string = self._device.read_txt_file('junos/mock_data/{}{}.txt'.format(self.item, instance))
         return lxml.etree.fromstring(xml_string)
 
-    def get_config(self, get_cmd = '', options = {}):
+
+    def get_config(self, get_cmd='', options={}):
 
         # get_cmd is an XML tree that requests a specific part of the config
         # E.g.: <configuration><protocols><bgp><group/></bgp></protocols></configuration>
@@ -122,11 +126,39 @@ class FakeRPCObject:
         get_cmd_str = lxml.etree.tostring(get_cmd)
         filename = get_cmd_str.replace('<', '_').replace('>', '_').replace('/', '_').replace('\n', '').replace(' ', '')
 
-        xml_string = self.read_txt_file(
+        xml_string = self._device.read_txt_file(
             'junos/mock_data/{filename}.txt'.format(
                 filename = filename[0:150]
             )
         )
         return lxml.etree.fromstring(xml_string)
 
+
     __call__ = response
+
+
+class FakeConnectionRPCObject:
+
+    """
+    Will make fake RPC requests that usually are directly made via netconf.
+    """
+
+    def __init__(self, rpc):
+        self._rpc = rpc
+
+
+    def response(self, non_std_command=None):
+        class RPCReply:
+            def __init__(self, reply):
+                self._NCElement__doc = reply
+        rpc_reply = RPCReply(self._rpc.get_config(get_cmd=non_std_command))
+        return rpc_reply
+
+
+    __call__ = response
+
+
+class FakeConnection:
+
+    def __init__(self, rpc):
+        self.rpc = FakeConnectionRPCObject(rpc)
