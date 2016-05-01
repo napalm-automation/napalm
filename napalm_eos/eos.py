@@ -1161,12 +1161,13 @@ class EOSDriver(NetworkDriver):
         )
 
         try:
-            traceroute_raw_output = self.cli([command]).get(command)
+            traceroute_raw_output = self.device.run_commands([command], encoding='text')[0].get('output')
         except CommandErrorException:
             return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
 
         hop_regex = ''.join(_HOP_ENTRY + _HOP_ENTRY_PROBE * probes)
 
+        traceroute_result['success'] = {}
         for line in traceroute_raw_output.splitlines():
             hop_search = re.search(hop_regex, line)
             if not hop_search:
@@ -1175,7 +1176,7 @@ class EOSDriver(NetworkDriver):
             hop_index = int(hop_details[0])
             previous_probe_host_name = '*'
             previous_probe_ip_address = '*'
-            traceroute_result[hop_index] = {'probes':{}}
+            traceroute_result['success'][hop_index] = {'probes':{}}
             for probe_index in range(probes):
                 host_name = hop_details[3+probe_index*5]
                 ip_address = hop_details[4+probe_index*5]
@@ -1191,9 +1192,9 @@ class EOSDriver(NetworkDriver):
                 if hop_details[1+probe_index*5] == '*':
                     host_name = '*'
                     ip_address = '*'
-                traceroute_result[hop_index]['probes'][probe_index+1] = {
-                    'host_name': host_name,
-                    'ip_address': ip_address,
+                traceroute_result['success'][hop_index]['probes'][probe_index+1] = {
+                    'host_name': unicode(host_name),
+                    'ip_address': unicode(ip_address),
                     'rtt': rtt
                 }
                 previous_probe_host_name = host_name
