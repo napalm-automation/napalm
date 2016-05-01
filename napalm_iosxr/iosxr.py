@@ -1499,6 +1499,8 @@ class IOSXRDriver(NetworkDriver):
             ttl_tag = '<MaxTTL>{maxttl}</MaxTTL>'.format(maxttl = ttl)
         if timeout:
             timout_tag = '<Timeout>{timeout}</Timeout>'.format(timeout = timeout)
+        else:
+            timeout = 5  # seconds
 
         traceroute_rpc_command = '''
             <Set>
@@ -1541,7 +1543,6 @@ class IOSXRDriver(NetworkDriver):
         last_probe_index = 1
         last_probe_ip_address = '*'
         last_probe_host_name = ''
-        last_probe_rtt = 0.0
         last_hop_dict = {'probes': {}}
 
         for thanks_cisco in results_tree.getchildren():
@@ -1564,8 +1565,9 @@ class IOSXRDriver(NetworkDriver):
                 if not last_probe_host_name:
                     last_probe_host_name = last_probe_ip_address
                 last_hop_dict['probes'][last_probe_index] = {
-                    'ip_address': last_probe_ip_address,
-                    'host_name': last_probe_host_name
+                    'ip_address': unicode(last_probe_ip_address),
+                    'host_name': unicode(last_probe_host_name),
+                    'rtt': timeout * 1000.0
                 }
                 continue
             if tag_name == 'HopAddress':
