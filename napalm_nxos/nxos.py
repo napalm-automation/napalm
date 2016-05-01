@@ -690,8 +690,8 @@ class NXOSDriver(NetworkDriver):
                     host_name = '*'
                     ip_address = '*'
                 traceroute_result['success'][hop_index]['probes'][probe_index+1] = {
-                    'host_name': host_name,
-                    'ip_address': ip_address,
+                    'host_name': unicode(host_name),
+                    'ip_address': unicode(ip_address),
                     'rtt': rtt
                 }
                 previous_probe_host_name = host_name
