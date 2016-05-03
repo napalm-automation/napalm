@@ -19,7 +19,12 @@ def load_template(cls, template_name, **template_vars):
         template_dir_path = '{current_dir}/templates'.format(current_dir=current_dir)
 
         if not os.path.isdir(template_dir_path):
-            raise napalm_base.exceptions.DriverTemplateNotImplemented(template_dir_path)
+            raise napalm_base.exceptions.DriverTemplateNotImplemented(
+                    '''Config template dir does not exist: {path}.
+                    Please create it and add driver-specific templates.'''.format(
+                        path=template_dir_path
+                    )
+                )
 
         loader = jinja2.FileSystemLoader(template_dir_path)
         environment = jinja2.Environment(loader=loader)
@@ -29,14 +34,17 @@ def load_template(cls, template_name, **template_vars):
         configuration = template.render(**template_vars)
     except jinja2.exceptions.TemplateNotFound:
         raise napalm_base.exceptions.TemplateNotImplemented(
-            "Template {template_name}.j2 is not defined under {path}".format(
+            "Config template {template_name}.j2 is not defined under {path}".format(
                 template_name=template_name,
                 path=template_dir_path
             )
         )
     except (jinja2.exceptions.UndefinedError, jinja2.exceptions.TemplateSyntaxError) as jinjaerr:
         raise napalm_base.exceptions.TemplateRenderException(
-            "Unable to render the template: {error}".format(error=jinjaerr.message)
+            "Unable to render the Jinja config template {template_name}: {error}".format(
+                template_name=template_name,
+                error=jinjaerr.message
+            )
         )
     return cls.load_merge_candidate(config=configuration)
 
@@ -78,7 +86,7 @@ def textfsm_extractor(cls, template_name, raw_text):
         )
     except textfsm.textfsm.TextFSMTemplateError as tfte:
         raise napalm_base.exceptions.TemplateRenderException(
-            "Wrong format of template {template_name}: {error}".format(
+            "Wrong format of TextFSM template {template_name}: {error}".format(
                 template_name=template_name,
                 error=tfte.message
             )
