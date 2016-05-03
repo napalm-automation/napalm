@@ -1,3 +1,4 @@
 napalm-base
 pycsco
 PyYAML # this is a requirement for pycsco but seems to be missing
+netaddr
