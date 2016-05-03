@@ -19,3 +19,4 @@ deploy:
 
 script:
   - nosetests ./test/unit/TestGetNetworkDriver.py
+  - nosetests ./test/unit/TestHelpers.py
