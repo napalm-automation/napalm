@@ -1,0 +1,6 @@
+traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 40 byte packets
+ 1  * * *
+ 2  * * *
+ 3  * * *
+ 4  * * *
+ 5  google-public-dns-a.google.com (8.8.8.8)  1.452 ms  1.436 ms  1.444 ms
