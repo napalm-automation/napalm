@@ -1082,7 +1082,6 @@ class EOSDriver(NetworkDriver):
 
         return snmp_information
 
-
     def get_users(self):
 
         def _sshkey_type(sshkey):
@@ -1109,3 +1108,96 @@ class EOSDriver(NetworkDriver):
             users[user] = user_details
 
         return users
+
+    def traceroute(self, destination, source='', ttl=0, timeout=0):
+
+        _HOP_ENTRY_PROBE = [
+            '\s+',
+            '(',  # beginning of host_name (ip_address) RTT group
+            '(',  # beginning of host_name (ip_address) group only
+            '([a-zA-Z0-9\.:-]*)',  # hostname
+            '\s+',
+            '\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
+            ')?',  # end of host_name (ip_address) group only
+            # also hostname/ip are optional -- they can or cannot be specified
+            # if not specified, means the current probe followed the same path as the previous
+            '\s+',
+            '(\d+\.\d+)\s+ms',  # RTT
+            '|\*',  # OR *, when non responsive hop
+            ')'  # end of host_name (ip_address) RTT group
+        ]
+
+        _HOP_ENTRY = [
+            '\s?',  # space before hop index?
+            '(\d+)',  # hop index
+        ]
+
+        traceroute_result = {}
+
+        source_opt = ''
+        ttl_opt = ''
+        timeout_opt = ''
+
+        # if not ttl:
+        #     ttl = 20
+
+        probes = 3
+        # in case will be added one further param to adjust the number of probes/hop
+
+        if source:
+            source_opt = '-s {source}'.format(source=source)
+        if ttl:
+            ttl_opt = '-m {ttl}'.format(ttl=ttl)
+        if timeout:
+            timeout_opt = '-w {timeout}'.format(timeout=timeout)
+        else:
+            timeout = 5
+
+        command = 'traceroute {destination} {source_opt} {ttl_opt} {timeout_opt}'.format(
+            destination=destination,
+            source_opt=source_opt,
+            ttl_opt=ttl_opt,
+            timeout_opt=timeout_opt
+        )
+
+        try:
+            traceroute_raw_output = self.device.run_commands([command], encoding='text')[0].get('output')
+        except CommandErrorException:
+            return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
+
+        hop_regex = ''.join(_HOP_ENTRY + _HOP_ENTRY_PROBE * probes)
+
+        traceroute_result['success'] = {}
+        for line in traceroute_raw_output.splitlines():
+            hop_search = re.search(hop_regex, line)
+            if not hop_search:
+                continue
+            hop_details = hop_search.groups()
+            hop_index = int(hop_details[0])
+            previous_probe_host_name = '*'
+            previous_probe_ip_address = '*'
+            traceroute_result['success'][hop_index] = {'probes':{}}
+            for probe_index in range(probes):
+                host_name = hop_details[3+probe_index*5]
+                ip_address = hop_details[4+probe_index*5]
+                rtt = hop_details[5+probe_index*5]
+                if rtt:
+                    rtt = float(rtt)
+                else:
+                    rtt = timeout * 1000.0
+                if not host_name:
+                    host_name = previous_probe_host_name
+                if not ip_address:
+                    ip_address = previous_probe_ip_address
+                if hop_details[1+probe_index*5] == '*':
+                    host_name = '*'
+                    ip_address = '*'
+                traceroute_result['success'][hop_index]['probes'][probe_index+1] = {
+                    'host_name': unicode(host_name),
+                    'ip_address': unicode(ip_address),
+                    'rtt': rtt
+                }
+                previous_probe_host_name = host_name
+                previous_probe_ip_address = ip_address
+
+        return traceroute_result

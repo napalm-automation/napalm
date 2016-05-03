@@ -34,4 +34,5 @@ script:
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_route_to
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_snmp_information
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_users
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_traceroute
 - cd ../..
