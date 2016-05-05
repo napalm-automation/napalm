@@ -47,6 +47,7 @@ class TestBaseHelpers(unittest.TestCase):
             * check if can load empty template
             * check if raises TemplateRenderException when template is not correctly formatted
             * check if can load correct template
+            * check if can load correct template even if wrong custom path specified
         """
 
         self.assertTrue(HAS_JINJA)  # firstly check if jinja2 is installed
@@ -77,6 +78,11 @@ class TestBaseHelpers(unittest.TestCase):
 
         self.assertTrue(napalm_base.helpers.load_template(self.network_driver,
                                                           '__a_very_nice_template__',
+                                                          **_TEMPLATE_VARS))
+
+        self.assertTrue(napalm_base.helpers.load_template(self.network_driver,
+                                                          '__a_very_nice_template__',
+                                                          template_path='/this/path/does/not/exist',
                                                           **_TEMPLATE_VARS))
 
     def test_textfsm_extractor(self):

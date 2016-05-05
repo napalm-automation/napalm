@@ -81,19 +81,20 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def load_template(self, template_name, **template_vars):
+    def load_template(self, template_name, custom_path=None, **template_vars):
         """
         Will load a templated configuration on the device.
 
         :param cls: instance of the driver class
         :param template_name: identifies the template name
+        :param template_path: specifies the absolute path to a different directory for the configuration templates
         :param template_vars: dictionary with the
 
         :raise DriverTemplateNotImplemented if no template defined for the device type
         :raise TemplateNotImplemented if the template specified in template_name is not defined
         :raise TemplateRenderException if the user passed wrong arguments to the template
         """
-        return napalm_base.helpers.load_template(self, template_name, **template_vars)
+        return napalm_base.helpers.load_template(self, template_name, template_path=template_path, **template_vars)
 
     def load_replace_candidate(self, filename=None, config=None):
         """
