@@ -3,6 +3,8 @@ Test base helpers.
 """
 
 # Python std lib
+import os
+import sys
 import unittest
 
 # third party libs
@@ -83,6 +85,14 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertTrue(napalm_base.helpers.load_template(self.network_driver,
                                                           '__a_very_nice_template__',
                                                           template_path='/this/path/does/not/exist',
+                                                          **_TEMPLATE_VARS))
+
+        install_dir = os.path.dirname(os.path.abspath(sys.modules[self.network_driver.__module__].__file__))
+        custom_path = os.path.join(install_dir, 'custom/path/base')
+
+        self.assertTrue(napalm_base.helpers.load_template(self.network_driver,
+                                                          '__a_very_nice_template__',
+                                                          template_path=custom_path,
                                                           **_TEMPLATE_VARS))
 
     def test_textfsm_extractor(self):
