@@ -45,7 +45,7 @@ You can select the driver you need by doing the following:
    <class napalm_pluribus.pluribus.PluribusDriver at 0x80103e530>
 
 
-Check the tutorials to see how to use the library in more detail, Suppoerted Devices will provide you with detailed support information and caveats and the NetworkDriver section explains which methods are available for you to use.
+Check the tutorials to see how to use the library in more detail, Supported Devices will provide you with detailed support information and caveats and the NetworkDriver section explains which methods are available for you to use.
 
 Documentation
 =============
