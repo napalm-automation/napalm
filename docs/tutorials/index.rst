@@ -4,6 +4,10 @@ Tutorials
 .. toctree::
    :maxdepth: 1
 
-   quickstart
+   outline
+   installation
+   lab
+   ../cli.rst
    first_steps_config
    context_manager
+   wrapup
