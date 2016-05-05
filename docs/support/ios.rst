@@ -49,7 +49,7 @@ IOSDriver requires that the `archive` functionality be enabled to perform auto-r
 Configuration file
 ------------------
 
-IOS requires config file to begin with a `version` eg. `15.0` and `end` marker ath the end of the file. Otherwise IOS will reject `configure replace` operation.
+IOS requires config file to begin with a `version` eg. `15.0` and `end` marker at the end of the file. Otherwise IOS will reject `configure replace` operation.
 
 
 Notes
