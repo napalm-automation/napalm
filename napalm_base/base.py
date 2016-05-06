@@ -85,15 +85,17 @@ class NetworkDriver(object):
         """
         Will load a templated configuration on the device.
 
-        :param cls: instance of the driver class
-        :param template_name: identifies the template name
-        :param template_source: (optional) a custom config template to be rendered and loaded on the device
-        :param template_path: (optional) specifies the absolute path to a different directory for the configuration templates
-        :param template_vars: dictionary with the arguments to be rendered
-
-        :raise DriverTemplateNotImplemented if no template defined for the device type
-        :raise TemplateNotImplemented if the template specified in template_name is not defined
-        :raise TemplateRenderException if the user passed wrong arguments to the template
+        :param cls: Instance of the driver class.
+        :param template_name: Identifies the template name.
+        :param template_source (optional): A custom config template to be rendered and loaded on the device
+        :param template_path (optional): Specifies the absolute path to a different directory for the configuration \
+        templates
+        :param template_vars: Dictionary with the arguments  to be used when the template is rendered.
+        :raise DriverTemplateNotImplemented: No template defined for the device type
+        :raise TemplateNotImplemented: The template specified in template_name does not exist in the default path or \
+        in the custom path if any specified using parameter `template_path`
+        :raise TemplateRenderException: The template could not be rendered. Either the template source does not have \
+        the right format, either the arguments in `template_vars` are not properly specified.
         """
         return napalm_base.helpers.load_template(self,
                                                  template_name,
@@ -166,7 +168,7 @@ class NetworkDriver(object):
          * serial_number - Serial number of the device
          * interface_list - List of the interfaces of the device
 
-        For example::
+        Example::
 
             {
             'uptime': 151005.57332897186,
@@ -193,7 +195,7 @@ class NetworkDriver(object):
          * speed (int in Mbit)
          * mac_address (string)
 
-        For example::
+        Example::
 
             {
             u'Management1':
@@ -243,7 +245,7 @@ class NetworkDriver(object):
             * hostname
             * port
 
-        For example::
+        Example::
 
             {
             u'Ethernet2':
@@ -408,7 +410,7 @@ class NetworkDriver(object):
             * remote_system_capab (string)
             * remote_system_enabled_capab (string)
 
-        For example::
+        Example::
 
             {
                 'TenGigE0/0/0/8': [
@@ -429,10 +431,14 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_bgp_config(self, group = '', neighbor = ''):
+    def get_bgp_config(self, group='', neighbor=''):
         """
         Returns a dictionary containing the BGP configuration.
         Can return either the whole config, either the config only for a group or neighbor.
+
+        :param group: Returns the configuration of a specific BGP group.
+        :param neighbor: Returns the configuration of a specific BGP neighbor.
+
         Main dictionary keys represent the group name and the values represent a dictionary having the following keys:
             * type (string)
             * description (string)
@@ -458,7 +464,8 @@ class NetworkDriver(object):
             * prefix_limit (dictionary)
             * route_reflector_client (True/False)
             * nhs (True/False)
-        The inner dictionary prefix_limit has the same structure for both layers:
+        The inner dictionary prefix_limit has the same structure for both layers::
+
             {
                 [FAMILY_NAME]: {
                     [FAMILY_TYPE]: {
@@ -466,8 +473,9 @@ class NetworkDriver(object):
                         ... other options
                     }
                 }
+            }
 
-        For example::
+        Example::
 
             {
                 'PEERS-GROUP-NAME':{
@@ -522,7 +530,7 @@ class NetworkDriver(object):
         """
         Will execute a list of commands and return the output in a dictionary format.
 
-        For example::
+        Example::
 
             {
                 u'show version and haiku':  u'''Hostname: re0.edge01.arn01
@@ -545,10 +553,13 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+    def get_bgp_neighbors_detail(self, neighbor_address=''):
 
         """
         Returns a detailed view of the BGP neighbors as a dictionary of lists.
+
+        :param neighbor_address: Retuns the statistics for a spcific BGP neighbor.
+
         The keys of the dictionary represent the AS number of the neighbors.
         Inner dictionaries contain the following fields:
             * up (True/False)
@@ -586,7 +597,7 @@ class NetworkDriver(object):
             * advertised_prefix_count (int)
             * flap_count (int)
 
-        For example::
+        Example::
 
             {
                 8121: [
@@ -640,7 +651,7 @@ class NetworkDriver(object):
             * ip (string)
             * age (float)
 
-        For example::
+        Example::
 
             [
                 {
@@ -699,7 +710,7 @@ class NetworkDriver(object):
             * offset (float)
             * jitter (float)
 
-        For example::
+        Example::
 
             [
                 {
@@ -729,7 +740,7 @@ class NetworkDriver(object):
         Each IP Address dictionary has the following keys:
             * prefix_length (int)
 
-        For example::
+        Example::
 
             {
                 u'FastEthernet8': {
@@ -775,7 +786,7 @@ class NetworkDriver(object):
 
         """
         Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address Table,
-        having the following keys
+        having the following keys:
             * mac (string)
             * interface (string)
             * vlan (int)
@@ -784,7 +795,10 @@ class NetworkDriver(object):
             * moves (int)
             * last_move (float)
 
-        For example::
+        However, please note that not all vendors provide all these details.
+        E.g.: field last_move is not available on JUNOS devices etc.
+
+        Example::
 
             [
                 {
@@ -815,16 +829,17 @@ class NetworkDriver(object):
                     'last_move' : None
                 }
             ]
-
-            However, please note that not all vendors provide all these informations.
-            E.g.: field last_move is not available on JUNOS devices etc.
         """
         raise NotImplementedError
 
-    def get_route_to(self, destination = '', protocol = ''):
+    def get_route_to(self, destination='', protocol=''):
 
         """
         Returns a dictionary of dictionaries containing details of all available routes to a destination.
+
+        :param destination: The destination prefix to be used when filtering the routes.
+        :param protocol (optional): Retrieve the routes only for a specific protocol.
+
         Each inner dictionary contains the following fields:
 
             * protocol (string)
@@ -854,7 +869,7 @@ class NetworkDriver(object):
         - ISIS:
             * level (int)
 
-        For example::
+        Example::
 
             {
                 "1.0.0.0/24": [
@@ -891,7 +906,7 @@ class NetworkDriver(object):
     def get_snmp_information(self):
 
         """
-        Returns a dict of dicts containing SNMP configuration
+        Returns a dict of dicts containing SNMP configuration.
         Each inner dictionary contains these fields
 
             * chassis_id (string)
@@ -904,7 +919,7 @@ class NetworkDriver(object):
             * acl (string) # acl number or name
             * mode (string) # read-write (rw), read-only (ro)
 
-        Example Output::
+        Example::
 
             {
                 'chassis_id': u'Asset Tag 54670',
@@ -939,14 +954,13 @@ class NetworkDriver(object):
         The keys of the main dictionary represent the name of the probes.
         Each probe consists on multiple tests, each test name being a key in the probe dictionary.
         A test has the following keys:
-
             * probe_type (str)
             * target (str)
             * source (str)
             * probe_count (int)
             * test_interval (int)
 
-        Example output::
+        Example::
 
             {
                 'probe1':{
@@ -975,7 +989,6 @@ class NetworkDriver(object):
         The keys of the main dictionary represent the name of the probes.
         Each probe consists on multiple tests, each test name being a key in the probe dictionary.
         A test has the following keys:
-
             * target (str)
             * source (str)
             * probe_type (str)
@@ -993,7 +1006,7 @@ class NetworkDriver(object):
             * global_test_max_delay (float)
             * global_test_avg_delay (float)
 
-        Example output::
+        Example::
 
             {
                 'probe1':  {
@@ -1070,7 +1083,7 @@ class NetworkDriver(object):
             * ip_address (str)
             * rtt (float)
 
-        Example output::
+        Example::
 
             {
                 'success': {
@@ -1124,7 +1137,7 @@ class NetworkDriver(object):
             * ip_address (str)
             * host_name (str)
 
-        Example output::
+        Example::
 
             {
                 'success': {
