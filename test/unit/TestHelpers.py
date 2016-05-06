@@ -52,6 +52,7 @@ class TestBaseHelpers(unittest.TestCase):
             * check if can load correct template even if wrong custom path specified
             * check if raises TemplateNotImplemented when trying to use inexisting template in custom path
             * check if can load correct template from custom path
+            * check if template passed as string can be loaded
         """
 
         self.assertTrue(HAS_JINJA)  # firstly check if jinja2 is installed
@@ -102,6 +103,13 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertTrue(napalm_base.helpers.load_template(self.network_driver,
                                                           '__a_very_nice_template__',
                                                           template_path=custom_path,
+                                                          **_TEMPLATE_VARS))
+
+        template_source = '{% for peer in peers %}ntp peer {{peer}}\n{% endfor %}'
+
+        self.assertTrue(napalm_base.helpers.load_template(self.network_driver,
+                                                          '_this_still_needs_a_name',
+                                                          template_source=template_source,
                                                           **_TEMPLATE_VARS))
 
     def test_textfsm_extractor(self):
