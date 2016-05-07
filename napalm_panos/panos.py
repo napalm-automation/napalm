@@ -1,4 +1,4 @@
-# Copyright 2015 Spotify AB. All rights reserved.
+# Copyright 2016 Dravetech AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with the
@@ -19,7 +19,6 @@ import json
 import pan.xapi
 import os.path
 import xml.etree
-import os
 import requests
 import requests_toolbelt
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -29,7 +28,8 @@ import time
 # local modules
 import napalm_base.exceptions
 import napalm_base.helpers
-from napalm_base.exceptions import ReplaceConfigException, MergeConfigException
+from napalm_base.exceptions import ConnectionException, ReplaceConfigException,\
+                                   MergeConfigException
 
 from napalm_base.base import NetworkDriver
 from netmiko import ConnectHandler
@@ -45,48 +45,32 @@ class PANOSDriver(NetworkDriver):
         self.loaded = False
         self.changed = False
         self.device = None
-        self.connected = False
-
-    def __enter__(self):
-        try:
-            self.open()
-        except:
-            exc_info = sys.exc_info()
-            self.__raise_clean_exception(exc_info[0], exc_info[1], exc_info[2])
-        return self
-
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.close()
-        if exc_type is not None:
-            self.__raise_clean_exception(exc_type, exc_value, exc_traceback)
-
-    @staticmethod
-    def __raise_clean_exception(exc_type, exc_value, exc_traceback):
-        if exc_type.__name__ not in dir(napalm_base.exceptions) and \
-                        exc_type.__name__ not in __builtins__.keys():
-            epilog = ("NAPALM didn't catch this exception. Please, fill a bugfix on "
-                      "https://github.com/napalm-automation/napalm/issues\n"
-                      "Don't forget to include this traceback.")
-            print(epilog)
-        raise exc_type, exc_value, exc_traceback
+        self.ssh_device = None
+        self.ssh_connection = False
 
     def open(self):
-        self.device = pan.xapi.PanXapi(hostname=self.hostname,
-                                       api_username=self.username,
-                                       api_password=self.password)
+        try:
+            self.device = pan.xapi.PanXapi(hostname=self.hostname,
+                                           api_username=self.username,
+                                           api_password=self.password)
+        except ConnectionException, e:
+            raise ConnectionException(e.message)
 
     def _open_ssh(self):
-        self.connected = ConnectHandler(device_type='paloalto_panos',
-                                        ip=self.hostname,
-                                        username=self.username,
-                                        password=self.password)
+        try:
+            self.ssh_device = ConnectHandler(device_type='paloalto_panos',
+                                             ip=self.hostname,
+                                             username=self.username,
+                                             password=self.password)
+        except ConnectionException, e:
+            raise ConnectionException(e.message)
+
+        self.ssh_connection = True
 
     def close(self):
         self.device = None
-        self.connected.disconnect()
-
-    def load_template(self, template_name, **template_vars):
-        return napalm_base.helpers.load_template(self, template_name, **template_vars)
+        self.ssh_connection = False
+        self.ssh_device.disconnect()
 
     def _import_file(self, filename):
         key = self.device.keygen()
@@ -120,7 +104,9 @@ class PANOSDriver(NetworkDriver):
 
         response = xml.etree.ElementTree.fromstring(request.content)
         if response.attrib['status'] == 'error':
-            print "Error while trying to move the config file to the device."
+            return False
+        else:
+            return True
 
     def load_replace_candidate(self, filename=None, config=None):
         if config:
@@ -130,10 +116,12 @@ class PANOSDriver(NetworkDriver):
             if self.loaded is False:
                 if filename.endswith('.xml') is False:
                     raise MergeConfigException('File must be in XML format.')
-                elif self._save_backup() is False:
+                if self._save_backup() is False:
                     raise ReplaceConfigException('Error while storing backup config')
 
-            self._import_file(filename)
+            if self._import_file(filename) is False:
+                raise ReplaceConfigException("Error while trying to move the config file to the device.")
+
             # Let's load the config.
             cmd = '<load><config><from>{0}</from></config></load>'.format(filename)
             self.device.op(cmd=cmd)
@@ -144,7 +132,7 @@ class PANOSDriver(NetworkDriver):
                 raise ReplaceConfigException('Error while loading config from {0}').format(filename)
 
         else:
-            print ReplaceConfigException("This method requires a config file.")
+            raise ReplaceConfigException("This method requires a config file.")
 
     def load_merge_candidate(self, filename=None, config=None, from_xpath=None, to_xpath=None, mode=None):
         if filename:
@@ -160,9 +148,11 @@ class PANOSDriver(NetworkDriver):
                 if self._save_backup() is False:
                     raise MergeConfigException('Error while storing backup '
                                                'config.')
-            self._import_file(filename)
 
-            if self.connected is False:
+            if self._import_file(filename) is False:
+                raise MergeConfigException("Error while trying to move the config file to the device.")
+
+            if self.ssh_connection is False:
                 self._open_ssh()
 
             cmd = ("load config partial from {0} "
@@ -170,7 +160,7 @@ class PANOSDriver(NetworkDriver):
                                                                 from_xpath,
                                                                 to_xpath,
                                                                 mode))
-            self.connected.send_config_set([cmd])
+            self.ssh_device.send_config_set([cmd])
             self.loaded = True
 
         elif config:
@@ -179,7 +169,7 @@ class PANOSDriver(NetworkDriver):
                     raise MergeConfigException('Error while storing backup '
                                                'config.')
 
-            if self.connected is False:
+            if self.ssh_connection is False:
                 self._open_ssh()
 
             if isinstance(config, str):
@@ -191,7 +181,7 @@ class PANOSDriver(NetworkDriver):
                                                'You should use "set" commands.'
                                                )
 
-            self.connected.send_config_set(config)
+            self.ssh_device.send_config_set(config)
             self.loaded = True
 
         else:
@@ -199,11 +189,11 @@ class PANOSDriver(NetworkDriver):
                                        'or a set-format string')
 
     def compare_config(self):
-        if self.connected is False:
+        if self.ssh_connection is False:
             self._open_ssh()
 
-        output = self.connected.send_command("show config diff")
-        print output
+        diff = self.ssh_device.send_command("show config diff")
+        return diff
 
     def _save_backup(self):
         self.backup_file = 'config_{0}.xml'.format(str(datetime.now().date()).replace(' ', '_'))
@@ -236,7 +226,7 @@ class PANOSDriver(NetworkDriver):
             if self.device.status == 'success':
                 self.loaded = False
             else:
-                print "Error while loading last-saved config."
+                raise ReplaceConfigException("Error while loading backup config.")
 
     def rollback(self):
         if self.changed:
