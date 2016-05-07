@@ -190,7 +190,16 @@ class IOSDriver(NetworkDriver):
                 raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
             self._disable_confirm()
-            output = self.device.send_command_expect(cmd)
+            try:
+                current_prompt = self.device.find_prompt()
+                # Wait 12 seconds for output to come back (.2 * 60)
+                output = self.device.send_command_expect(cmd, delay_factor=.2, max_loops=60)
+            except IOError:
+                # Check if hostname change
+                if current_prompt == self.device.find_prompt():
+                    raise
+                else:
+                    output = ''
             self._enable_confirm()
             if 'Invalid input detected' in output:
                 self.rollback()
