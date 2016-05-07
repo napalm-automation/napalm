@@ -124,6 +124,21 @@ class IOSDriver(NetworkDriver):
                 new_list.append(line)
         return "\n".join(new_list)
 
+    @staticmethod
+    def _normalize_merge_diff(diff):
+        """Make compare_config() for merge look similar to replace config diff."""
+        new_diff = []
+        for line in diff.splitlines():
+            # Filter blank lines and prepend +sign
+            if line.strip():
+                new_diff.append('+' + line)
+        if new_diff:
+            new_diff.insert(0, '! Cisco IOS does not support true compare_config() for merge: '
+                            'echo merge file.')
+        else:
+            new_diff.append('! No changes specified in merge file.')
+        return "\n".join(new_diff)
+
     def compare_config(self,
                        base_file='running-config',
                        new_file=None,
@@ -136,16 +151,39 @@ class IOSDriver(NetworkDriver):
         """
         # Set defaults if not passed as arguments
         if new_file is None:
-            new_file = self.candidate_cfg
+            if self.config_replace:
+                new_file = self.candidate_cfg
+            else:
+                new_file = self.merge_cfg
         if new_file_system is None:
             new_file_system = self.dest_file_system
         base_file_full = self.gen_full_path(filename=base_file, file_system=base_file_system)
         new_file_full = self.gen_full_path(filename=new_file, file_system=new_file_system)
 
-        cmd = 'show archive config differences {} {}'.format(base_file_full, new_file_full)
-        diff = self.device.send_command_expect(cmd)
-        diff = self.normalize_compare_config(diff)
+        if self.config_replace:
+            cmd = 'show archive config differences {} {}'.format(base_file_full, new_file_full)
+            diff = self.device.send_command_expect(cmd)
+            diff = self.normalize_compare_config(diff)
+        else:
+            cmd = 'more {}'.format(new_file_full)
+            diff = self.device.send_command_expect(cmd)
+            diff = self._normalize_merge_diff(diff)
         return diff.strip()
+
+    def _commit_hostname_handler(self, cmd):
+        """Special handler for hostname change on commit operation."""
+        try:
+            current_prompt = self.device.find_prompt()
+            # Wait 12 seconds for output to come back (.2 * 60)
+            output = self.device.send_command_expect(cmd, delay_factor=.2, max_loops=60)
+        except IOError:
+            # Check if hostname change
+            if current_prompt == self.device.find_prompt():
+                raise
+            else:
+                self.device.set_base_prompt()
+                output = ''
+        return output
 
     def commit_config(self, filename=None):
         """
@@ -157,34 +195,23 @@ class IOSDriver(NetworkDriver):
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
-        # Replace operation
-        if debug:
-            base_time = datetime.now()
-            print("check1: {}".format(base_time))
         if self.config_replace:
+            # Replace operation
             if filename is None:
                 filename = self.candidate_cfg
             cfg_file = self.gen_full_path(filename)
             if not self._check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
-            if debug:
-                print("check2 (check_file_exists)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-                base_time = datetime.now()
             if self.auto_rollback_on_error:
                 cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
             else:
                 cmd = 'configure replace {} force'.format(cfg_file)
-            output = self.device.send_command_expect(cmd)
-            if debug:
-                print("check3 (configure replace)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-                base_time = datetime.now()
+            output = self._commit_hostname_handler(cmd)
             if ('Failed to apply command' in output) or \
                ('original configuration has been successfully restored' in output):
                 raise ReplaceConfigException("Candidate config could not be applied")
-        # Merge operation
         else:
+            # Merge operation
             if filename is None:
                 filename = self.merge_cfg
             cfg_file = self.gen_full_path(filename)
@@ -192,7 +219,7 @@ class IOSDriver(NetworkDriver):
                 raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
             self._disable_confirm()
-            output = self.device.send_command_expect(cmd)
+            output = self._commit_hostname_handler(cmd)
             self._enable_confirm()
             if 'Invalid input detected' in output:
                 self.rollback()
@@ -238,9 +265,6 @@ class IOSDriver(NetworkDriver):
                           dest_file=dest_file,
                           file_system=file_system) as scp_transfer:
 
-            if debug:
-                base_time = datetime.now()
-                print("check1: {}".format(base_time))
             # Check if file already exists and has correct MD5
             if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
                 msg = "File already exists and has correct MD5: no SCP needed"
@@ -249,37 +273,19 @@ class IOSDriver(NetworkDriver):
                 msg = "Insufficient space available on remote device"
                 return (False, msg)
 
-            if debug:
-                print("check2 (file already exists, correct md5, space available)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-                base_time = datetime.now()
             if enable_scp:
                 scp_transfer.enable_scp()
 
-            if debug:
-                print("check3 (enable_scp)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-                base_time = datetime.now()
             # Transfer file
             scp_transfer.transfer_file()
-            if debug:
-                print("check4 (transfer_file)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-                base_time = datetime.now()
 
             # Compares MD5 between local-remote files
             if scp_transfer.verify_file():
                 msg = "File successfully transferred to remote device"
-                if debug:
-                    print("check5: {}".format(datetime.now()))
                 return (True, msg)
             else:
                 msg = "File transfer to remote device failed"
                 return (False, msg)
-            if debug:
-                print("check5 (verify_file)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-
             return (False, '')
 
     def _enable_confirm(self):
