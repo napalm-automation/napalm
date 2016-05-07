@@ -126,10 +126,10 @@ class IOSDriver(NetworkDriver):
 
     @staticmethod
     def _normalize_merge_diff(diff):
-        """Make compare_config() for merge look similar to replace config."""
+        """Make compare_config() for merge look similar to replace config diff."""
         new_diff = []
         for line in diff.splitlines():
-            # Filter blank lines
+            # Filter blank lines and prepend +sign
             if line.strip():
                 new_diff.append('+' + line)
         if new_diff:
