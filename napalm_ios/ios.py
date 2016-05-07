@@ -175,7 +175,18 @@ class IOSDriver(NetworkDriver):
                 cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
             else:
                 cmd = 'configure replace {} force'.format(cfg_file)
-            output = self.device.send_command_expect(cmd)
+            print(datetime.now())
+            try:
+                current_prompt = self.device.find_prompt()
+                # Wait 12 seconds for output to come back (.2 * 60)
+                output = self.device.send_command_expect(cmd, delay_factor=.2, max_loops=60)
+            except IOError:
+                # Check if hostname change
+                if current_prompt == self.device.find_prompt():
+                    raise
+                else:
+                    output = ''
+            print(datetime.now())
             if debug:
                 print("check3 (configure replace)")
                 print("Time delta: {}".format(datetime.now() - base_time))
