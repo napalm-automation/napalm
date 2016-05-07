@@ -158,24 +158,16 @@ class IOSDriver(NetworkDriver):
         self._gen_rollback_cfg()
 
         # Replace operation
-        if debug:
-            base_time = datetime.now()
-            print("check1: {}".format(base_time))
         if self.config_replace:
             if filename is None:
                 filename = self.candidate_cfg
             cfg_file = self.gen_full_path(filename)
             if not self._check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
-            if debug:
-                print("check2 (check_file_exists)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-                base_time = datetime.now()
             if self.auto_rollback_on_error:
                 cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
             else:
                 cmd = 'configure replace {} force'.format(cfg_file)
-            print(datetime.now())
             try:
                 current_prompt = self.device.find_prompt()
                 # Wait 12 seconds for output to come back (.2 * 60)
@@ -186,11 +178,6 @@ class IOSDriver(NetworkDriver):
                     raise
                 else:
                     output = ''
-            print(datetime.now())
-            if debug:
-                print("check3 (configure replace)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-                base_time = datetime.now()
             if ('Failed to apply command' in output) or \
                ('original configuration has been successfully restored' in output):
                 raise ReplaceConfigException("Candidate config could not be applied")
@@ -249,9 +236,6 @@ class IOSDriver(NetworkDriver):
                           dest_file=dest_file,
                           file_system=file_system) as scp_transfer:
 
-            if debug:
-                base_time = datetime.now()
-                print("check1: {}".format(base_time))
             # Check if file already exists and has correct MD5
             if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
                 msg = "File already exists and has correct MD5: no SCP needed"
@@ -260,37 +244,19 @@ class IOSDriver(NetworkDriver):
                 msg = "Insufficient space available on remote device"
                 return (False, msg)
 
-            if debug:
-                print("check2 (file already exists, correct md5, space available)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-                base_time = datetime.now()
             if enable_scp:
                 scp_transfer.enable_scp()
 
-            if debug:
-                print("check3 (enable_scp)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-                base_time = datetime.now()
             # Transfer file
             scp_transfer.transfer_file()
-            if debug:
-                print("check4 (transfer_file)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-                base_time = datetime.now()
 
             # Compares MD5 between local-remote files
             if scp_transfer.verify_file():
                 msg = "File successfully transferred to remote device"
-                if debug:
-                    print("check5: {}".format(datetime.now()))
                 return (True, msg)
             else:
                 msg = "File transfer to remote device failed"
                 return (False, msg)
-            if debug:
-                print("check5 (verify_file)")
-                print("Time delta: {}".format(datetime.now() - base_time))
-
             return (False, '')
 
     def _enable_confirm(self):
