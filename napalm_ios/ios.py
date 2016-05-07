@@ -177,6 +177,7 @@ class IOSDriver(NetworkDriver):
                 if current_prompt == self.device.find_prompt():
                     raise
                 else:
+                    self.device.set_base_prompt()
                     output = ''
             if ('Failed to apply command' in output) or \
                ('original configuration has been successfully restored' in output):
@@ -199,6 +200,7 @@ class IOSDriver(NetworkDriver):
                 if current_prompt == self.device.find_prompt():
                     raise
                 else:
+                    self.device.set_base_prompt()
                     output = ''
             self._enable_confirm()
             if 'Invalid input detected' in output:
