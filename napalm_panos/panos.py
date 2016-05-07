@@ -114,8 +114,8 @@ class PANOSDriver(NetworkDriver):
 
         elif filename:
             if self.loaded is False:
-                if filename.endswith('.xml') is False:
-                    raise MergeConfigException('File must be in XML format.')
+                """if filename.endswith('.xml') is False:
+                    raise MergeConfigException('File must be in XML format.')"""
                 if self._save_backup() is False:
                     raise ReplaceConfigException('Error while storing backup config')
 
@@ -142,10 +142,10 @@ class PANOSDriver(NetworkDriver):
                                            'to_xpath and mode params for the '
                                            'configuration to be loaded.')
 
-            elif filename.endswith('.xml') is False:
+            if filename.endswith('.xml') is False:
                 raise MergeConfigException('File must be in XML format.')
 
-            elif self.loaded is False:
+            if self.loaded is False:
                 if self._save_backup() is False:
                     raise MergeConfigException('Error while storing backup '
                                                'config.')
@@ -158,7 +158,7 @@ class PANOSDriver(NetworkDriver):
                 self._open_ssh()
 
             cmd = ("load config partial from {0} "
-                  "from-xpath {1} to-xpath {2} mode {3}".format(path,
+                   "from-xpath {1} to-xpath {2} mode {3}".format(path,
                                                                 from_xpath,
                                                                 to_xpath,
                                                                 mode))
@@ -194,6 +194,7 @@ class PANOSDriver(NetworkDriver):
         if self.ssh_connection is False:
             self._open_ssh()
 
+        self.ssh_device.exit_config_mode()
         diff = self.ssh_device.send_command("show config diff")
         return diff
 
@@ -212,7 +213,8 @@ class PANOSDriver(NetworkDriver):
             if self.ssh_connection is False:
                 self._open_ssh()
             try:
-                self.ssh_device.commit_config()
+                self.ssh_device.commit()
+                time.sleep(2)
                 self.loaded = False
                 self.changed = True
             except:
@@ -239,7 +241,7 @@ class PANOSDriver(NetworkDriver):
             if self.ssh_connection is False:
                 self._open_ssh()
             try:
-                self.ssh_device.commit_config()
+                self.ssh_device.commit()
                 self.loaded = False
                 self.changed = False
             except:
