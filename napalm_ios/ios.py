@@ -124,6 +124,21 @@ class IOSDriver(NetworkDriver):
                 new_list.append(line)
         return "\n".join(new_list)
 
+    @staticmethod
+    def _normalize_merge_diff(diff):
+        """Make compare_config() for merge look similar to replace config."""
+        new_diff = []
+        for line in diff.splitlines():
+            # Filter blank lines
+            if line.strip():
+                new_diff.append('+' + line)
+        if new_diff:
+            new_diff.insert(0, '! Cisco IOS does not support true compare_config() for merge: '
+                            'echo merge file.')
+        else:
+            new_diff.append('! No changes specified in merge file.')
+        return "\n".join(new_diff)
+
     def compare_config(self,
                        base_file='running-config',
                        new_file=None,
@@ -136,15 +151,23 @@ class IOSDriver(NetworkDriver):
         """
         # Set defaults if not passed as arguments
         if new_file is None:
-            new_file = self.candidate_cfg
+            if self.config_replace:
+                new_file = self.candidate_cfg
+            else:
+                new_file = self.merge_cfg
         if new_file_system is None:
             new_file_system = self.dest_file_system
         base_file_full = self.gen_full_path(filename=base_file, file_system=base_file_system)
         new_file_full = self.gen_full_path(filename=new_file, file_system=new_file_system)
 
-        cmd = 'show archive config differences {} {}'.format(base_file_full, new_file_full)
-        diff = self.device.send_command_expect(cmd)
-        diff = self.normalize_compare_config(diff)
+        if self.config_replace:
+            cmd = 'show archive config differences {} {}'.format(base_file_full, new_file_full)
+            diff = self.device.send_command_expect(cmd)
+            diff = self.normalize_compare_config(diff)
+        else:
+            cmd = 'more {}'.format(new_file_full)
+            diff = self.device.send_command_expect(cmd)
+            diff = self._normalize_merge_diff(diff)
         return diff.strip()
 
     def _commit_hostname_handler(self, cmd):
