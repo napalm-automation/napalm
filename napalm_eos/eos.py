@@ -46,6 +46,8 @@ from napalm_base.exceptions import ConnectionException, MergeConfigException, Re
 class EOSDriver(NetworkDriver):
     """Napalm driver for Arista EOS."""
 
+    SUPPORTED_OC_MODELS = []
+
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         """Constructor."""
         self.device = None
