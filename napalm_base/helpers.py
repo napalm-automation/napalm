@@ -11,12 +11,17 @@ import textfsm
 # local modules
 import napalm_base.exceptions
 
+from napalm_base.utils.jinja_filters import CustomJinjaFilters
 
-def load_template(cls, template_name, **template_vars):
 
+def load_template(cls, template_name, openconfig=False, **template_vars):
     try:
         current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
-        template_dir_path = '{current_dir}/templates'.format(current_dir=current_dir)
+
+        if openconfig:
+            template_dir_path = '{current_dir}/oc_templates'.format(current_dir=current_dir)
+        else:
+            template_dir_path = '{current_dir}/templates'.format(current_dir=current_dir)
 
         if not os.path.isdir(template_dir_path):
             raise napalm_base.exceptions.DriverTemplateNotImplemented(
@@ -28,6 +33,10 @@ def load_template(cls, template_name, **template_vars):
 
         loader = jinja2.FileSystemLoader(template_dir_path)
         environment = jinja2.Environment(loader=loader)
+
+        for filter_name, filter_function in CustomJinjaFilters.filters().items():
+            environment.filters[filter_name] = filter_function
+
         template = environment.get_template('{template_name}.j2'.format(
             template_name=template_name
         ))

@@ -19,6 +19,10 @@ import sys
 import napalm_base.exceptions
 import napalm_base.helpers
 
+import pyangbind.lib.pybindJSON as pbJ
+from pyangbind.lib.xpathhelper import YANGPathHelper
+import openconfig_bindings
+
 
 class NetworkDriver(object):
 
@@ -94,6 +98,23 @@ class NetworkDriver(object):
         :raise TemplateRenderException if the user passed wrong arguments to the template
         """
         return napalm_base.helpers.load_template(self, template_name, **template_vars)
+
+    def load_openconfig(self, model, filename=None, data=None):
+        """Something."""
+        if filename is not None:
+            with open(filename, 'r') as f:
+                data = f.read()
+
+        if model not in self.SUPPORTED_OC_MODELS:
+            yph = YANGPathHelper()
+            oc_data = pbJ.loads_ietf(data, openconfig_bindings, model, path_helper=yph)
+            return napalm_base.helpers.load_template(self, model, openconfig=True, template_vars=oc_data)
+        else:
+            # Here we will have some application logic to send supported models using native
+            # mechanisms like gRPC, NETCONF or whatever the vendor supports.
+            pass
+
+
 
     def load_replace_candidate(self, filename=None, config=None):
         """
