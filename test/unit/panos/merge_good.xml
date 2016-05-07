@@ -1,0 +1,20 @@
+<config urldb="paloaltonetworks" version="7.0.0">
+  <devices>
+    <entry name="localhost.localdomain">
+      <network>
+        <vlan>
+          <entry name="test" />
+          <entry name="ntc" />
+          <entry name="10" />
+          <entry name="20" />
+          <entry name="new_vlan" />
+          <entry name="another_vlan" />
+          <entry name="new_test" />
+          <entry name="another_test" />
+          <entry name="30" />
+          <entry name="40" />
+        </vlan>
+      </network>
+    </entry>
+  </devices>
+</config>

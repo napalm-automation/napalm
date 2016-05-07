@@ -106,7 +106,7 @@ class PANOSDriver(NetworkDriver):
         if response.attrib['status'] == 'error':
             return False
         else:
-            return path
+            return True
 
     def load_replace_candidate(self, filename=None, config=None):
         if config:
@@ -119,12 +119,11 @@ class PANOSDriver(NetworkDriver):
                 if self._save_backup() is False:
                     raise ReplaceConfigException('Error while storing backup config')
 
-            path = self._import_file(filename)
-            if path is False:
+            if self._import_file(filename) is False:
                 raise ReplaceConfigException("Error while trying to move the config file to the device.")
 
             # Let's load the config.
-            cmd = '<load><config><from>{0}</from></config></load>'.format(path)
+            cmd = '<load><config><from>{0}</from></config></load>'.format(filename)
             self.device.op(cmd=cmd)
 
             if self.device.status == 'success':
@@ -150,15 +149,14 @@ class PANOSDriver(NetworkDriver):
                     raise MergeConfigException('Error while storing backup '
                                                'config.')
 
-            path = self._import_file(filename)
-            if path is False:
+            if self._import_file(filename) is False:
                 raise MergeConfigException("Error while trying to move the config file to the device.")
 
             if self.ssh_connection is False:
                 self._open_ssh()
 
             cmd = ("load config partial from {0} "
-                  "from-xpath {1} to-xpath {2} mode {3}".format(path,
+                  "from-xpath {1} to-xpath {2} mode {3}".format(filename,
                                                                 from_xpath,
                                                                 to_xpath,
                                                                 mode))
@@ -209,13 +207,13 @@ class PANOSDriver(NetworkDriver):
 
     def commit_config(self):
         if self.loaded:
-            self.device.commit(cmd="<commit></commit>")
-
-            if self.device.status == 'success':
+            if self.ssh_connection is False:
+                self._open_ssh()
+            try:
+                self.ssh_device.commit_config()
                 self.loaded = False
                 self.changed = True
-                time.sleep(15)
-            else:
+            except:
                 raise ReplaceConfigException('Error while commiting config')
         else:
             raise ReplaceConfigException('No config loaded.')
@@ -235,13 +233,14 @@ class PANOSDriver(NetworkDriver):
             rollback_cmd = '<load><config><from>{0}</from></config></load>'.format(self.backup_file)
             self.device.op(cmd=rollback_cmd)
             time.sleep(5)
-            self.device.commit(cmd="<commit></commit>")
 
-            if self.device.status == 'success':
+            if self.ssh_connection is False:
+                self._open_ssh()
+            try:
+                self.ssh_device.commit_config()
                 self.loaded = False
                 self.changed = False
-                time.sleep(15)
-            else:
+            except:
                 ReplaceConfigException("Error while loading backup config")
 
     def get_facts(self):
