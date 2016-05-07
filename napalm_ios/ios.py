@@ -147,6 +147,21 @@ class IOSDriver(NetworkDriver):
         diff = self.normalize_compare_config(diff)
         return diff.strip()
 
+    def _commit_hostname_handler(self, cmd):
+        """Special handler for hostname change on commit operation."""
+        try:
+            current_prompt = self.device.find_prompt()
+            # Wait 12 seconds for output to come back (.2 * 60)
+            output = self.device.send_command_expect(cmd, delay_factor=.2, max_loops=60)
+        except IOError:
+            # Check if hostname change
+            if current_prompt == self.device.find_prompt():
+                raise
+            else:
+                self.device.set_base_prompt()
+                output = ''
+        return output
+
     def commit_config(self, filename=None):
         """
         If replacement operation, perform 'configure replace' for the entire config.
@@ -157,8 +172,8 @@ class IOSDriver(NetworkDriver):
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
-        # Replace operation
         if self.config_replace:
+            # Replace operation
             if filename is None:
                 filename = self.candidate_cfg
             cfg_file = self.gen_full_path(filename)
@@ -168,22 +183,12 @@ class IOSDriver(NetworkDriver):
                 cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
             else:
                 cmd = 'configure replace {} force'.format(cfg_file)
-            try:
-                current_prompt = self.device.find_prompt()
-                # Wait 12 seconds for output to come back (.2 * 60)
-                output = self.device.send_command_expect(cmd, delay_factor=.2, max_loops=60)
-            except IOError:
-                # Check if hostname change
-                if current_prompt == self.device.find_prompt():
-                    raise
-                else:
-                    self.device.set_base_prompt()
-                    output = ''
+            output = self._commit_hostname_handler(cmd)
             if ('Failed to apply command' in output) or \
                ('original configuration has been successfully restored' in output):
                 raise ReplaceConfigException("Candidate config could not be applied")
-        # Merge operation
         else:
+            # Merge operation
             if filename is None:
                 filename = self.merge_cfg
             cfg_file = self.gen_full_path(filename)
@@ -191,17 +196,7 @@ class IOSDriver(NetworkDriver):
                 raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
             self._disable_confirm()
-            try:
-                current_prompt = self.device.find_prompt()
-                # Wait 12 seconds for output to come back (.2 * 60)
-                output = self.device.send_command_expect(cmd, delay_factor=.2, max_loops=60)
-            except IOError:
-                # Check if hostname change
-                if current_prompt == self.device.find_prompt():
-                    raise
-                else:
-                    self.device.set_base_prompt()
-                    output = ''
+            output = self._commit_hostname_handler(cmd)
             self._enable_confirm()
             if 'Invalid input detected' in output:
                 self.rollback()
