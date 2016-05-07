@@ -12,25 +12,31 @@ import textfsm
 import napalm_base.exceptions
 
 
-def load_template(cls, template_name, **template_vars):
+def load_template(cls, template_name, template_source=None, template_path=None, **template_vars):
 
     try:
-        current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
-        template_dir_path = '{current_dir}/templates'.format(current_dir=current_dir)
+        if isinstance(template_source, basestring):
+            template = jinja2.Template(template_source)
+        else:
+            current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
+            if isinstance(template_path, basestring) and os.path.isdir(template_path) and os.path.isabs(template_path):
+                current_dir = os.path.join(template_path, cls.__module__.split('.')[-1])
+                # append driver name at the end of the custom path
+            template_dir_path = '{current_dir}/templates'.format(current_dir=current_dir)
 
-        if not os.path.isdir(template_dir_path):
-            raise napalm_base.exceptions.DriverTemplateNotImplemented(
-                    '''Config template dir does not exist: {path}.
-                    Please create it and add driver-specific templates.'''.format(
-                        path=template_dir_path
+            if not os.path.isdir(template_dir_path):
+                raise napalm_base.exceptions.DriverTemplateNotImplemented(
+                        '''Config template dir does not exist: {path}.
+                        Please create it and add driver-specific templates.'''.format(
+                            path=template_dir_path
+                        )
                     )
-                )
 
-        loader = jinja2.FileSystemLoader(template_dir_path)
-        environment = jinja2.Environment(loader=loader)
-        template = environment.get_template('{template_name}.j2'.format(
-            template_name=template_name
-        ))
+            loader = jinja2.FileSystemLoader(template_dir_path)
+            environment = jinja2.Environment(loader=loader)
+            template = environment.get_template('{template_name}.j2'.format(
+                template_name=template_name
+            ))
         configuration = template.render(**template_vars)
     except jinja2.exceptions.TemplateNotFound:
         raise napalm_base.exceptions.TemplateNotImplemented(
