@@ -106,7 +106,7 @@ class PANOSDriver(NetworkDriver):
         if response.attrib['status'] == 'error':
             return False
         else:
-            return True
+            return path
 
     def load_replace_candidate(self, filename=None, config=None):
         if config:
@@ -119,17 +119,18 @@ class PANOSDriver(NetworkDriver):
                 if self._save_backup() is False:
                     raise ReplaceConfigException('Error while storing backup config')
 
-            if self._import_file(filename) is False:
+            path = self._import_file(filename)
+            if path is False:
                 raise ReplaceConfigException("Error while trying to move the config file to the device.")
 
             # Let's load the config.
-            cmd = '<load><config><from>{0}</from></config></load>'.format(filename)
+            cmd = '<load><config><from>{0}</from></config></load>'.format(path)
             self.device.op(cmd=cmd)
 
             if self.device.status == 'success':
                 self.loaded = True
             else:
-                raise ReplaceConfigException('Error while loading config from {0}').format(filename)
+                raise ReplaceConfigException('Error while loading config from {0}').format(path)
 
         else:
             raise ReplaceConfigException("This method requires a config file.")
@@ -149,14 +150,15 @@ class PANOSDriver(NetworkDriver):
                     raise MergeConfigException('Error while storing backup '
                                                'config.')
 
-            if self._import_file(filename) is False:
+            path = self._import_file(filename)
+            if path is False:
                 raise MergeConfigException("Error while trying to move the config file to the device.")
 
             if self.ssh_connection is False:
                 self._open_ssh()
 
             cmd = ("load config partial from {0} "
-                  "from-xpath {1} to-xpath {2} mode {3}".format(filename,
+                  "from-xpath {1} to-xpath {2} mode {3}".format(path,
                                                                 from_xpath,
                                                                 to_xpath,
                                                                 mode))
