@@ -114,8 +114,6 @@ class PANOSDriver(NetworkDriver):
 
         elif filename:
             if self.loaded is False:
-                """if filename.endswith('.xml') is False:
-                    raise MergeConfigException('File must be in XML format.')"""
                 if self._save_backup() is False:
                     raise ReplaceConfigException('Error while storing backup config')
 
@@ -141,9 +139,6 @@ class PANOSDriver(NetworkDriver):
                 raise MergeConfigException('You must provide from_xpath, '
                                            'to_xpath and mode params for the '
                                            'configuration to be loaded.')
-
-            if filename.endswith('.xml') is False:
-                raise MergeConfigException('File must be in XML format.')
 
             if self.loaded is False:
                 if self._save_backup() is False:
