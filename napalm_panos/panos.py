@@ -28,6 +28,7 @@ import time
 # local modules
 import napalm_base.exceptions
 import napalm_base.helpers
+from napalm_base.utils.string_parsers import convert_uptime_string_seconds
 from napalm_base.exceptions import ConnectionException, ReplaceConfigException,\
                                    MergeConfigException
 
@@ -246,9 +247,9 @@ class PANOSDriver(NetworkDriver):
         facts = {}
 
         try:
-            self.device.op(cmd='show system info', cmd_xml=True)
-            system_info_xml = xmltodict.parse(self.device.xml_result())
-            system_info_json = json.dumps(system_info_xml['system'])
+            self.device.op(cmd='<show><system><info></info></system></show>')
+            system_info_xml = xmltodict.parse(self.device.xml_root())
+            system_info_json = json.dumps(system_info_xml['response']['result']['system'])
             system_info = json.loads(system_info_json)
         except AttributeError:
             system_info = {}
@@ -264,7 +265,7 @@ class PANOSDriver(NetworkDriver):
         if system_info:
             facts['hostname'] = system_info['hostname']
             facts['vendor'] = unicode('Palo Alto Networks')
-            facts['uptime'] = system_info['uptime']
+            facts['uptime'] = int(convert_uptime_string_seconds(system_info['uptime']))
             facts['os_version'] = system_info['sw-version']
             facts['serial_number'] = system_info['serial']
             facts['model'] = system_info['model']
@@ -304,11 +305,13 @@ class PANOSDriver(NetworkDriver):
                 interface['is_up'] = False
                 interface['is_enabled'] = False
 
-            interface['last_flapped'] = -1
+            interface['last_flapped'] = -1.0
             interface['speed'] = interface_info.get('speed')
             # Quick fix for loopback interfaces
             if interface['speed'] == '[n/a]':
-                interface['speed'] = unicode('N/A')
+                interface['speed'] = 0
+            else:
+                interface['speed'] = int(interface['speed'])
             interface['mac_address'] = interface_info.get('mac')
             interface['description'] = unicode('N/A')
             interface_dict[name] = interface

@@ -13,11 +13,10 @@
 # the License.
 
 """Tests."""
-
 import unittest
 
 from napalm_panos import panos
-from napalm_base.test.base import TestConfigNetworkDriver
+from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 
 
 class TestConfigPANOSDriver(unittest.TestCase, TestConfigNetworkDriver):
@@ -25,9 +24,9 @@ class TestConfigPANOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '1.2.3.4'
-        username = 'test'
-        password = 'test'
+        hostname = '85.190.180.203'
+        username = 'ntc'
+        password = 'ntc123'
         cls.vendor = 'panos'
 
         cls.device = panos.PANOSDriver(hostname, username, password, timeout=60)
@@ -67,3 +66,44 @@ class TestConfigPANOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
         result = (diff.strip() == intended_diff.strip())
         self.assertTrue(result)
+
+
+class TestGetterPANOSDriver(unittest.TestCase, TestGettersNetworkDriver):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mock = True
+
+        hostname = '85.190.180.203'
+        username = 'ntc'
+        password = 'ntc123'
+        cls.vendor = 'panos'
+
+        cls.device = panos.PANOSDriver(hostname, username, password, timeout=60)
+
+        if cls.mock:
+            cls.device.device = FakePANOSDevice()
+        else:
+            cls.device.open()
+
+
+class FakePANOSDevice:
+
+    def __init__(self):
+        self.cmd = ''
+
+    @staticmethod
+    def read_txt_file(filename):
+        """Read a txt file and return its content."""
+        with open(filename) as data_file:
+            return data_file.read()
+
+    def xml_root(self):
+        filename = self.cmd.replace('<', '_').replace('>', '_').replace('/', '_').replace('\n', '').replace(' ', '')
+        xml_string = self.read_txt_file(
+            'panos/mock_data/{filename}.txt'.format(filename=filename[0:150]))
+        return xml_string
+
+    def op(self, cmd=''):
+        self.cmd = cmd
+        return True

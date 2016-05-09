@@ -1,0 +1,46 @@
+<response status="success">
+	<result>
+		<system>
+			<hostname>pa1</hostname>
+			<ip-address>10.0.0.90</ip-address>
+			<netmask>255.255.255.0</netmask>
+			<default-gateway>10.0.0.2</default-gateway>
+			<ipv6-address>unknown</ipv6-address>
+			<ipv6-link-local-address>fe80::20c:29ff:fe6d:c67e/64</ipv6-link-local-address>
+			<ipv6-default-gateway></ipv6-default-gateway>
+			<mac-address>00:0c:29:6d:c6:7e</mac-address>
+			<time>Sun May  8 02:03:23 2016</time>
+			<uptime>11 days, 22:09:01</uptime>
+			<devicename>pa1</devicename>
+			<family>vm</family>
+			<model>PA-VM</model>
+			<serial>unknown</serial>
+			<vm-mac-base>BA:DB:EE:FB:AD:00</vm-mac-base>
+			<vm-mac-count>255</vm-mac-count>
+			<vm-uuid>564D8B6D-7BDB-75AF-400F-B062016DC67E</vm-uuid>
+			<vm-cpuid>FB060000FDFB8B07</vm-cpuid>
+			<vm-license>none</vm-license>
+			<vm-mode>VMWare ESXi</vm-mode>
+			<sw-version>7.0.1</sw-version>
+			<global-protect-client-package-version>0.0.0</global-protect-client-package-version>
+			<app-version>497-2688</app-version>
+			<app-release-date>unknown</app-release-date>
+			<av-version>0</av-version>
+			<av-release-date>unknown</av-release-date>
+			<threat-version>0</threat-version>
+			<threat-release-date>unknown</threat-release-date>
+			<wf-private-version>0</wf-private-version>
+			<wf-private-release-date>unknown</wf-private-release-date>
+			<url-db>paloaltonetworks</url-db>
+			<wildfire-version>0</wildfire-version>
+			<wildfire-release-date>unknown</wildfire-release-date>
+			<url-filtering-version>0000.00.00.000</url-filtering-version>
+			<global-protect-datafile-version>0</global-protect-datafile-version>
+			<global-protect-datafile-release-date>unknown</global-protect-datafile-release-date><logdb-version>7.0.9</logdb-version>
+			<platform-family>vm</platform-family>
+			<vpn-disable-mode>off</vpn-disable-mode>
+			<multi-vsys>off</multi-vsys>
+			<operational-mode>normal</operational-mode>
+		</system>
+	</result>
+</response>

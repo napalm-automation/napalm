@@ -1,0 +1,10 @@
+language: python
+python:
+- 2.7
+install:
+- pip install -r requirements.txt
+- pip install .
+- git clone https://github.com/napalm-automation/napalm-base.git napalm-automation/napalm-base
+- cd napalm-automation/napalm-base
+- python setup.py install
+- cd ../..
