@@ -8,3 +8,8 @@ install:
 - cd napalm-automation/napalm-base
 - python setup.py install
 - cd ../..
+script:
+- cd test/unit
+- nosetests -v TestPANOSDriver:TestGetterPANOSDriver.test_get_facts
+- nosetests -v TestPANOSDriver:TestGetterPANOSDriver.test_get_interfaces
+- cd ../..
