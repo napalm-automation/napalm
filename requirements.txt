@@ -1,4 +1,4 @@
-napalm_base
+napalm-base
 pan-python
 netmiko
 requests-toolbelt
