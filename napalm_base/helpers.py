@@ -13,9 +13,7 @@ import napalm_base.exceptions
 
 from napalm_base.utils.jinja_filters import CustomJinjaFilters
 
-
-def load_template(cls, template_name, openconfig=False, **template_vars):
-    try:
+def load_template(cls, template_name, template_source=None, template_path=None, **template_vars):
         current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
 
         if openconfig:
@@ -29,8 +27,6 @@ def load_template(cls, template_name, openconfig=False, **template_vars):
                     Please create it and add driver-specific templates.'''.format(
                         path=template_dir_path
                     )
-                )
-
         loader = jinja2.FileSystemLoader(template_dir_path)
         environment = jinja2.Environment(loader=loader)
 

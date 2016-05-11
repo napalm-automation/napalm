@@ -12,6 +12,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+class ModuleImportError(Exception):
+    pass
+
 class ConnectionException(Exception):
     pass
 
