@@ -36,6 +36,10 @@ class TestConfigPANOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         cls.device.commit_config()
 
     def test_custom_replacing_config_and_diff_and_discard(self):
+        """
+        This custom method takes care of possible additional spaces
+        into diff return strings.
+        """
         intended_diff = self.read_file('%s/new_good.diff' % self.vendor)
 
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
@@ -48,14 +52,42 @@ class TestConfigPANOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         result = (commit_diff.strip() == intended_diff.strip()) and (discard_diff == '')
         self.assertTrue(result)
 
-    def test_custom_merge_configuration(self):
-        intended_diff = self.read_file('%s/merge_good.diff' % self.vendor)
+    def test_custom_merge_xml_configuration(self):
+        """
+        This method tests the napalm-panos custom merge method with XML files
+        which require additional params like 'from_xpath', 'to_xpath', 'mode'
+        and 'file_format.'
+        """
+        intended_diff = self.read_file('%s/merge_good_xml.diff' % self.vendor)
 
         xpath = '/config/devices/entry[@name="localhost.localdomain"]/network/vlan'
         mode = 'replace'
+        file_format = 'xml'
         filename = '%s/merge_good.xml' % self.vendor
         self.device.load_merge_candidate(filename=filename, from_xpath=xpath,
-                                         to_xpath=xpath, mode=mode)
+                                         to_xpath=xpath, mode=mode,
+                                         file_format=file_format)
+        self.device.commit_config()
+
+        # Reverting changes
+        self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
+        diff = self.device.compare_config()
+
+        self.device.commit_config()
+
+        result = (diff.strip() == intended_diff.strip())
+        self.assertTrue(result)
+
+    def test_custom_merge_set_configuration(self):
+        """
+        This method tests the napalm-panos custom merge method with set-format files
+        which supports additional params like 'file_format.'
+        """
+        intended_diff = self.read_file('%s/merge_good_set.diff' % self.vendor)
+
+        file_format = 'set'
+        filename = '%s/merge_good.set' % self.vendor
+        self.device.load_merge_candidate(filename=filename, file_format=file_format)
         self.device.commit_config()
 
         # Reverting changes

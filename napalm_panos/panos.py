@@ -13,7 +13,6 @@
 # the License.
 
 # std libs
-import sys
 import xmltodict
 import json
 import pan.xapi
@@ -134,56 +133,69 @@ class PANOSDriver(NetworkDriver):
         else:
             raise ReplaceConfigException("This method requires a config file.")
 
-    def load_merge_candidate(self, filename=None, config=None, from_xpath=None, to_xpath=None, mode=None):
+    def _get_file_content(self, filename):
+        try:
+            with open(filename, 'r') as f:
+                content = f.read()
+        except IOError:
+            raise MergeConfigException('Error while opening {0}. Make sure '
+                                       'filename is correct.'.format(filename))
+        return content
+
+    def _send_merge_commands(self, config):
+        if self.loaded is False:
+            if self._save_backup() is False:
+                raise MergeConfigException('Error while storing backup '
+                                           'config.')
+        if self.ssh_connection is False:
+            self._open_ssh()
+
+        if isinstance(config, str):
+            config = config.splitlines()
+
+        self.ssh_device.send_config_set(config)
+        self.loaded = True
+
+    def load_merge_candidate(self, filename=None, file_format='set', config=None, from_xpath=None, to_xpath=None, mode=None):
         if filename:
-            if not from_xpath or not to_xpath or not mode:
-                raise MergeConfigException('You must provide from_xpath, '
-                                           'to_xpath and mode params for the '
-                                           'configuration to be loaded.')
+            if file_format == 'set':
+                content = self._get_file_content(filename)
+                config = content.splitlines()
+                self._send_merge_commands(config)
 
-            if self.loaded is False:
-                if self._save_backup() is False:
-                    raise MergeConfigException('Error while storing backup '
-                                               'config.')
+            elif file_format == 'xml':
+                if not from_xpath or not to_xpath or not mode:
+                    raise MergeConfigException('You must provide from_xpath, '
+                                               'to_xpath and mode params for the '
+                                               'configuration to be loaded.')
 
-            path = self._import_file(filename)
-            if path is False:
-                raise MergeConfigException("Error while trying to move the config file to the device.")
+                if self.loaded is False:
+                    if self._save_backup() is False:
+                        raise MergeConfigException('Error while storing backup '
+                                                   'config.')
 
-            if self.ssh_connection is False:
-                self._open_ssh()
+                path = self._import_file(filename)
+                if path is False:
+                    raise MergeConfigException("Error while trying to move the config file to the device.")
 
-            cmd = ("load config partial from {0} "
-                   "from-xpath {1} to-xpath {2} mode {3}".format(path,
-                                                                from_xpath,
-                                                                to_xpath,
-                                                                mode))
-            self.ssh_device.send_config_set([cmd])
-            self.loaded = True
+                if self.ssh_connection is False:
+                    self._open_ssh()
+
+                cmd = ("load config partial from {0} "
+                       "from-xpath {1} to-xpath {2} mode {3}".format(path,
+                                                                     from_xpath,
+                                                                     to_xpath,
+                                                                     mode))
+                self.ssh_device.send_config_set([cmd])
+                self.loaded = True
+            else:
+                raise MergeConfigException("format can either be 'set' or 'xml'.")
 
         elif config:
-            if self.loaded is False:
-                if self._save_backup() is False:
-                    raise MergeConfigException('Error while storing backup '
-                                               'config.')
-
-            if self.ssh_connection is False:
-                self._open_ssh()
-
-            if isinstance(config, str):
-                config = config.splitlines()
-
-            for command in config:
-                if 'set' not in command:
-                    raise MergeConfigException('Unsupported config format. '
-                                               'You should use "set" commands.'
-                                               )
-
-            self.ssh_device.send_config_set(config)
-            self.loaded = True
+            self._send_merge_commands(config)
 
         else:
-            raise MergeConfigException('You must provide either an XML file '
+            raise MergeConfigException('You must provide either a file '
                                        'or a set-format string')
 
     def compare_config(self):
@@ -210,7 +222,7 @@ class PANOSDriver(NetworkDriver):
                 self._open_ssh()
             try:
                 self.ssh_device.commit()
-                time.sleep(2)
+                time.sleep(3)
                 self.loaded = False
                 self.changed = True
             except:
