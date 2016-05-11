@@ -138,6 +138,7 @@ ____________________________________
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: 'flash:').
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: True).
 * :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: .5).
+* :code:`nxos_protocol` (nxos) - Protocol to connect with.  Only 'https' and 'http' allowed (default: 'http').
 
 
 Adding optional arguments to NAPALM drivers
