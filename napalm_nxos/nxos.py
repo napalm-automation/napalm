@@ -56,13 +56,15 @@ class NXOSDriver(NetworkDriver):
         self.loaded = False
         self.fc = None
         self.changed = False
+        self.protocol = optional_args.get('nxos_protocol', 'http')
 
     def open(self):
         try:
             self.device = NXOSDevice(username=self.username,
                                      password=self.password,
                                      ip=self.hostname,
-                                     timeout=self.timeout)
+                                     timeout=self.timeout,
+                                     protocol=self.protocol)
             self.device.show('show version', fmat='json')
             # execute something easy
             # something easier with XML format?
