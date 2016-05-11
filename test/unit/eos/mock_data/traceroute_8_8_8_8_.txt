@@ -1,0 +1,9 @@
+1  rcr2.bru01.atlas.cogentco.com (1.1.1.1)  0.985 ms  1.278 ms  1.347 ms
+2  ccr1.par01.atlas.cogentco.com (2.2.2.2)  6.600 ms ccr00.par01.atlas.cogentco.com (2.2.2.3)  6.514 ms  6.438 ms
+3  ccr1.par04.atlas.cogentco.com (3.3.3.3)  6.477 ms ccr00.par04.atlas.cogentco.com (3.3.3.4)  6.932 ms  6.914 ms
+4  par57.atlas.cogentco.com (4.4.4.4)  6.356 ms  6.413 ms  6.406 ms
+5  5.5.5.5 (5.5.5.5)  14.402 ms  14.398 ms  14.373 ms
+6  6.6.6.6 (6.6.6.6)  15.083 ms  15.104 ms 6.6.6.7 (6.6.6.7)  14.691 ms
+7  7.7.7.7 (7.7.7.7)  14.886 ms 7.7.7.8 (7.7.7.8)  15.258 ms 7.7.7.9 (7.7.7.8)  15.323 ms
+8  * * *
+9  google-public-dns-a.google.com (8.8.8.8)  15.561 ms  14.686 ms  14.320 ms
