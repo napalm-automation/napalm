@@ -10,7 +10,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm",
-    version="1.0.1",
+    version="1.0.2",
     packages=find_packages(),
     author="David Barroso",
     author_email="dbarrosop@dravetech.com",
@@ -25,10 +25,5 @@ setup(
     ],
     url="https://github.com/napalm-automation/napalm",
     include_package_data=True,
-    install_requires=reqs,
-    entry_points={
-        'console_scripts': [
-            'cl_napalm_configure=napalm.clitools.cl_napalm_configure:main',
-        ],
-    }
+    install_requires=reqs
 )
