@@ -12,7 +12,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-base",
-    version="0.14.0",
+    version="0.14.1",
     packages=find_packages(),
     author="David Barroso",
     author_email="dbarrosop@dravetech.com",
@@ -30,7 +30,7 @@ setup(
     install_requires=reqs,
     entry_points={
         'console_scripts': [
-            'cl_napalm_configure=napalm.clitools.cl_napalm_configure:main',
+            'cl_napalm_configure=napalm_base.clitools.cl_napalm_configure:main',
         ],
     }
 )
