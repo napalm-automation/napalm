@@ -671,7 +671,6 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-
     def get_ntp_peers(self):
 
         """
@@ -692,6 +691,25 @@ class NetworkDriver(object):
 
         raise NotImplementedError
 
+    def get_ntp_servers(self):
+
+        """
+        Returns the NTP servers configuration as dictionary.
+        The keys of the dictionary represent the IP Addresses of the servers.
+        Inner dictionaries do not have yet any available keys.
+
+        Example::
+
+            {
+                '192.168.0.1': {},
+                '17.72.148.53': {},
+                '37.187.56.220': {},
+                '162.158.20.18': {}
+            }
+
+        """
+
+        raise NotImplementedError
 
     def get_ntp_stats(self):
 
@@ -1115,7 +1133,6 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-
     def traceroute(self, destination, source='', ttl=0, timeout=0):
         """
         Executes traceroute on the device and returns a dictionary with the result.
@@ -1222,7 +1239,6 @@ class NetworkDriver(object):
             }
             """
         raise NotImplementedError
-
 
     def get_users(self):
         """

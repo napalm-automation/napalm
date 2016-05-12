@@ -168,6 +168,10 @@ ntp_peer = {
     # will populate it in the future wit potential keys
 }
 
+ntp_server = {
+    # will populate it in the future wit potential keys
+}
+
 ntp_stats = {
     'remote'        : unicode,
     'referenceid'   : unicode,
