@@ -30,7 +30,7 @@ setup(
     install_requires=reqs,
     entry_points={
         'console_scripts': [
-            'cl_napalm_configure=napalm.clitools.cl_napalm_configure:main',
+            'cl_napalm_configure=napalm_base.clitools.cl_napalm_configure:main',
         ],
     }
 )
