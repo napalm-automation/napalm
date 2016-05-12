@@ -25,10 +25,5 @@ setup(
     ],
     url="https://github.com/napalm-automation/napalm",
     include_package_data=True,
-    install_requires=reqs,
-    entry_points={
-        'console_scripts': [
-            'cl_napalm_configure=napalm.clitools.cl_napalm_configure:main',
-        ],
-    }
+    install_requires=reqs
 )
