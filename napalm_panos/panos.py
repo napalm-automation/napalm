@@ -37,7 +37,7 @@ from netmiko import ConnectHandler
 
 class PANOSDriver(NetworkDriver):
 
-    def __init__(self, hostname, username, password, timeout=60):
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         self.hostname = hostname
         self.username = username
         self.password = password
@@ -47,6 +47,10 @@ class PANOSDriver(NetworkDriver):
         self.device = None
         self.ssh_device = None
         self.ssh_connection = False
+
+        if optional_args is None:
+            optional_args = {}
+        self.port = optional_args.get('port', 22)
 
     def open(self):
         try:
@@ -61,7 +65,8 @@ class PANOSDriver(NetworkDriver):
             self.ssh_device = ConnectHandler(device_type='paloalto_panos',
                                              ip=self.hostname,
                                              username=self.username,
-                                             password=self.password)
+                                             password=self.password,
+                                             port=self.port)
         except ConnectionException, e:
             raise ConnectionException(e.message)
 
@@ -143,6 +148,9 @@ class PANOSDriver(NetworkDriver):
         return content
 
     def _send_merge_commands(self, config):
+        """
+        Netmiko is being used to push set commands.
+        """
         if self.loaded is False:
             if self._save_backup() is False:
                 raise MergeConfigException('Error while storing backup '
@@ -157,6 +165,10 @@ class PANOSDriver(NetworkDriver):
         self.loaded = True
 
     def load_merge_candidate(self, filename=None, file_format='set', config=None, from_xpath=None, to_xpath=None, mode=None):
+        """
+        Netmiko is being used to push loading commands because pan-python
+        doesn't support them.
+        """
         if filename:
             if file_format == 'set':
                 content = self._get_file_content(filename)
@@ -199,6 +211,10 @@ class PANOSDriver(NetworkDriver):
                                        'or a set-format string')
 
     def compare_config(self):
+        """
+        Netmiko is being used to obtain config diffs because pan-python
+        doesn't support the needed command.
+        """
         if self.ssh_connection is False:
             self._open_ssh()
 
@@ -217,6 +233,10 @@ class PANOSDriver(NetworkDriver):
             return False
 
     def commit_config(self):
+        """
+        Netmiko is being used to commit the configuration because it takes
+        a better care of results compared to pan-python.
+        """
         if self.loaded:
             if self.ssh_connection is False:
                 self._open_ssh()
@@ -241,6 +261,10 @@ class PANOSDriver(NetworkDriver):
                 raise ReplaceConfigException("Error while loading backup config.")
 
     def rollback(self):
+        """
+        Netmiko is being used to commit the rollback configuration because
+        it takes a better care of results compared to pan-python.
+        """
         if self.changed:
             rollback_cmd = '<load><config><from>{0}</from></config></load>'.format(self.backup_file)
             self.device.op(cmd=rollback_cmd)
