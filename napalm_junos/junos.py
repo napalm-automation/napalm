@@ -792,7 +792,7 @@ class JunOSDriver(NetworkDriver):
         ntp_assoc_output = self.device.cli('show ntp associations no-resolve')
         ntp_assoc_output_lines = ntp_assoc_output.splitlines()
 
-        for ntp_assoc_output_line in ntp_assoc_output_lines[3:-1]: #except last line
+        for ntp_assoc_output_line in ntp_assoc_output_lines[3:]: #except last line
             line_search = re.search(REGEX, ntp_assoc_output_line, re.I)
             if not line_search:
                 continue # pattern not found
