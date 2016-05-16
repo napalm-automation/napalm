@@ -19,14 +19,14 @@ from napalm_panos import panos
 from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 
 
-class TestConfigPANOSDriver(unittest.TestCase, TestConfigNetworkDriver):
+class TestConfigDriver(unittest.TestCase, TestConfigNetworkDriver):
     """Group of tests that test Configuration related methods."""
 
     @classmethod
     def setUpClass(cls):
-        hostname = '1.2.3.4'
-        username = 'test'
-        password = 'test'
+        hostname = '153.92.38.7'
+        username = 'ntc'
+        password = 'ntc123'
         cls.vendor = 'panos'
 
         cls.device = panos.PANOSDriver(hostname, username, password, timeout=60)
@@ -100,7 +100,7 @@ class TestConfigPANOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         self.assertTrue(result)
 
 
-class TestGetterPANOSDriver(unittest.TestCase, TestGettersNetworkDriver):
+class TestGetterDriver(unittest.TestCase, TestGettersNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
