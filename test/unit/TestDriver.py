@@ -24,9 +24,9 @@ class TestConfigDriver(unittest.TestCase, TestConfigNetworkDriver):
 
     @classmethod
     def setUpClass(cls):
-        hostname = '153.92.38.7'
-        username = 'ntc'
-        password = 'ntc123'
+        hostname = '1.2.3.4'
+        username = 'test'
+        password = 'test'
         cls.vendor = 'panos'
 
         cls.device = panos.PANOSDriver(hostname, username, password, timeout=60)
