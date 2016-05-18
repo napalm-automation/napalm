@@ -109,7 +109,7 @@ class PANOSDriver(NetworkDriver):
         # if something goes wrong just raise an exception
         request.raise_for_status()
         response = xml.etree.ElementTree.fromstring(request.content)
-        print (response.attrib)
+
         if response.attrib['status'] == 'error':
             return False
         else:
