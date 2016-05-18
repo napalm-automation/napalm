@@ -76,6 +76,8 @@ class PANOSDriver(NetworkDriver):
         self.device = None
         if self.ssh_connection:
             self.ssh_device.disconnect()
+            self.ssh_connection = False
+            self.ssh_device = None
 
     def _import_file(self, filename):
         key = self.device.keygen()
