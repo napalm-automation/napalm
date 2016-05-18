@@ -74,8 +74,8 @@ class PANOSDriver(NetworkDriver):
 
     def close(self):
         self.device = None
-        self.ssh_connection = False
-        self.ssh_device.disconnect()
+        if self.ssh_connection:
+            self.ssh_device.disconnect()
 
     def _import_file(self, filename):
         key = self.device.keygen()
@@ -106,8 +106,8 @@ class PANOSDriver(NetworkDriver):
 
         # if something goes wrong just raise an exception
         request.raise_for_status()
-
         response = xml.etree.ElementTree.fromstring(request.content)
+        print (response.attrib)
         if response.attrib['status'] == 'error':
             return False
         else:
