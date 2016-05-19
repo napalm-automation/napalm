@@ -47,6 +47,7 @@ class PANOSDriver(NetworkDriver):
         self.device = None
         self.ssh_device = None
         self.ssh_connection = False
+        self.merge_config = False
 
         if optional_args is None:
             optional_args = {}
@@ -165,45 +166,13 @@ class PANOSDriver(NetworkDriver):
 
         self.ssh_device.send_config_set(config)
         self.loaded = True
+        self.merge_config = True
 
-    def load_merge_candidate(self, filename=None, file_format='set', config=None, from_xpath=None, to_xpath=None, mode=None):
-        """
-        Netmiko is being used to push loading commands because pan-python
-        doesn't support them.
-        """
+    def load_merge_candidate(self, filename=None, config=None):
         if filename:
-            if file_format == 'set':
-                content = self._get_file_content(filename)
-                config = content.splitlines()
-                self._send_merge_commands(config)
-
-            elif file_format == 'xml':
-                if not from_xpath or not to_xpath or not mode:
-                    raise MergeConfigException('You must provide from_xpath, '
-                                               'to_xpath and mode params for the '
-                                               'configuration to be loaded.')
-
-                if self.loaded is False:
-                    if self._save_backup() is False:
-                        raise MergeConfigException('Error while storing backup '
-                                                   'config.')
-
-                path = self._import_file(filename)
-                if path is False:
-                    raise MergeConfigException("Error while trying to move the config file to the device.")
-
-                if self.ssh_connection is False:
-                    self._open_ssh()
-
-                cmd = ("load config partial from {0} "
-                       "from-xpath {1} to-xpath {2} mode {3}".format(path,
-                                                                     from_xpath,
-                                                                     to_xpath,
-                                                                     mode))
-                self.ssh_device.send_config_set([cmd])
-                self.loaded = True
-            else:
-                raise MergeConfigException("format can either be 'set' or 'xml'.")
+            content = self._get_file_content(filename)
+            config = content.splitlines()
+            self._send_merge_commands(config)
 
         elif config:
             self._send_merge_commands(config)
@@ -248,7 +217,10 @@ class PANOSDriver(NetworkDriver):
                 self.loaded = False
                 self.changed = True
             except:
-                raise ReplaceConfigException('Error while commiting config')
+                if self.merge_config:
+                    raise MergeConfigException('Error while commiting config')
+                else:
+                    raise ReplaceConfigException('Error while commiting config')
         else:
             raise ReplaceConfigException('No config loaded.')
 
@@ -259,6 +231,7 @@ class PANOSDriver(NetworkDriver):
 
             if self.device.status == 'success':
                 self.loaded = False
+                self.merge_config = False
             else:
                 raise ReplaceConfigException("Error while loading backup config.")
 
@@ -278,6 +251,7 @@ class PANOSDriver(NetworkDriver):
                 self.ssh_device.commit()
                 self.loaded = False
                 self.changed = False
+                self.merge_config = False
             except:
                 ReplaceConfigException("Error while loading backup config")
 
