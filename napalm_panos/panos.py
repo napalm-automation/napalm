@@ -170,9 +170,6 @@ class PANOSDriver(NetworkDriver):
             elif isinstance(config, unicode):
                 config = str(config).split()
 
-        print "CONFIG ", config
-        print "TYEP ", type(config)
-
         self.ssh_device.send_config_set(config)
         self.loaded = True
         self.merge_config = True
