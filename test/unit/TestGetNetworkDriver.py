@@ -13,7 +13,7 @@ from napalm_base.exceptions import ModuleImportError
 class TestGetNetworkDriver(unittest.TestCase):
     """Test the method get_network_driver."""
 
-    @data('eos', u'eos', 'fortios', 'ibm', 'ios', 'iosxr', 'IOS-XR', 'junos', 'nxos', 'pluribus')
+    @data('eos', u'eos', 'fortios', 'ibm', 'ios', 'iosxr', 'IOS-XR', 'junos', 'nxos', 'pluribus', 'panos')
     def test_get_network_driver(self, driver):
         """Check that we can get the desired driver and is instance of NetworkDriver."""
         self.assertTrue(issubclass(get_network_driver(driver), NetworkDriver))
