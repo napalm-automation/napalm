@@ -21,6 +21,7 @@ Supported Network Operating Systems:
 * nxos
 * ios
 * pluribus
+* panos
 
 You can select the driver you need by doing the following:
 
