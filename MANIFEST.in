@@ -1,1 +1,2 @@
 include requirements.txt
+include include napalm_panos/templates/*.j2

@@ -150,7 +150,7 @@ class PANOSDriver(NetworkDriver):
                                        'filename is correct.'.format(filename))
         return content
 
-    def _send_merge_commands(self, config):
+    def _send_merge_commands(self, config, file_config):
         """
         Netmiko is being used to push set commands.
         """
@@ -161,8 +161,17 @@ class PANOSDriver(NetworkDriver):
         if self.ssh_connection is False:
             self._open_ssh()
 
-        if isinstance(config, str):
-            config = config.splitlines()
+        if file_config:
+            if isinstance(config, str):
+                config = config.splitlines()
+        else:
+            if isinstance(config, str):
+                config = config.split()
+            elif isinstance(config, unicode):
+                config = str(config).split()
+
+        print "CONFIG ", config
+        print "TYEP ", type(config)
 
         self.ssh_device.send_config_set(config)
         self.loaded = True
@@ -170,12 +179,14 @@ class PANOSDriver(NetworkDriver):
 
     def load_merge_candidate(self, filename=None, config=None):
         if filename:
+            file_config = True
             content = self._get_file_content(filename)
             config = content.splitlines()
-            self._send_merge_commands(config)
+            self._send_merge_commands(config, file_config)
 
         elif config:
-            self._send_merge_commands(config)
+            file_config = False
+            self._send_merge_commands(config, file_config)
 
         else:
             raise MergeConfigException('You must provide either a file '
@@ -191,7 +202,7 @@ class PANOSDriver(NetworkDriver):
 
         self.ssh_device.exit_config_mode()
         diff = self.ssh_device.send_command("show config diff")
-        return diff
+        return diff.strip()
 
     def _save_backup(self):
         self.backup_file = 'config_{0}.xml'.format(str(datetime.now().date()).replace(' ', '_'))
