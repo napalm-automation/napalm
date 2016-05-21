@@ -854,20 +854,22 @@ class JunOSDriver(NetworkDriver):
 
     def get_mac_address_table(self):
 
-        mac_address_table = list()
+        mac_address_table = []
 
         mac_table = junos_views.junos_mac_address_table(self.device)
+        if self.device.facts.get('personality', '') in ['SWITCH']:  # for EX, QFX devices
+            mac_table.GET_RPC = 'get-ethernet-switching-table-information'
         mac_table.get()
         mac_table_items = mac_table.items()
 
         default_values = {
-            'mac'       : u'',
-            'interface' : u'',
-            'vlan'      : 0,
-            'static'    : False,
-            'active'    : True,
-            'moves'     : 0,
-            'last_move' : 0.0
+            'mac': u'',
+            'interface': u'',
+            'vlan': 0,
+            'static': False,
+            'active': True,
+            'moves': 0,
+            'last_move': 0.0
         }
 
         for mac_table_entry in mac_table_items:
