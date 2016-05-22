@@ -269,5 +269,5 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 # Disable pdf and epub generation
-sphinx_enable_pdf_build = False
-sphinx_enable_epub_build = False
+enable_pdf_build = False
+enable_epub_build = False
