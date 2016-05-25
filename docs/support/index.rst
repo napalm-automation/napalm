@@ -11,7 +11,7 @@ _                       EOS         JunOS           IOS-XR       FortiOS        
 **Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-fortios  napalm-ibm     napalm-nxos   napalm-ios    napalm-pluribus  napalm-panos
 **Driver Name**         eos         junos           iosxr        fortios         ibm            nxos          ios           pluribus         panos
 **Structured data**     Yes         Yes             No           No              Yes            Yes           No            No               Yes
-**Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           ???            6.1           12.4(20)T     N/A              7.0
+**Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           ???            6.1 [#g1]_    12.4(20)T     N/A              7.0
 **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_         `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_    `netmiko`_, `pan-python`_
 **Caveats**             :doc:`eos`                               :doc:`fortios`  :doc:`ibm`     :doc:`nxos`   :doc:`ios`                     :doc:`panos`
 =====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  ========================
@@ -26,6 +26,7 @@ _                       EOS         JunOS           IOS-XR       FortiOS        
 .. _pyPluribus: https://github.com/mirceaulinic/pypluribus
 .. _pan-python: https://github.com/kevinsteves/pan-python
 
+.. [#g1] NX-API support on the Nexus 5k, 6k and 7k families was introduced in version 7.2
 
 .. warning:: Please, make sure you understand the caveats for your particular platforms before using the library.
 
