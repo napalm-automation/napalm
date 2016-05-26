@@ -73,9 +73,21 @@ pip install napalm-eos napalm-junos -U
 
 We will be posting news on our slack channel and on Twitter (more details soon).
 
+Automation Frameworks
+======================
+
+Due to its flexibility, NAPALM can be integrated in widely used automation frameworks.
+
 Ansible
-=======
+-------
+
 Please ckeck [napalm-ansible](https://github.com/napalm-automation/napalm-ansible) for existing Ansible modules leveraging the NAPALM API. Make sure you read the documentation and you understand how it works before trying to use it.
+
+Salt
+----
+
+NAPALM will be completely integrated in [Salt](https://saltstack.com/) beginning with the release code named `Carbon`. For usage examples, please check [naplam-salt](https://github.com/napalm-automation/napalm-salt).
+
 
 Contact
 =======
