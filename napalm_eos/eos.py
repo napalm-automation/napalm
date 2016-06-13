@@ -176,13 +176,13 @@ class EOSDriver(NetworkDriver):
         commands = list()
         commands.append('show version')
         commands.append('show hostname')
-        commands.append('show interfaces status')
+        commands.append('show interfaces')
 
         result = self.device.run_commands(commands)
 
         version = result[0]
         hostname = result[1]
-        interfaces_dict = result[2]['interfaceStatuses']
+        interfaces_dict = result[2]['interfaces']
 
         uptime = time.time() - version['bootupTimestamp']
 
