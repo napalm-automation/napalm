@@ -14,12 +14,12 @@ NAPALM supports several methods to connect to the devices, to manipulate configu
 Supported Network Operating Systems
 -----------------------------------
 
-Please check the following [link](http://napalm.readthedocs.org/en/latest/support/index.html) to see which devices are supported. Make sure you understand the [caveats](http://napalm.readthedocs.org/en/latest/support/index.html#caveats).
+Please check the following [link](https://napalm.readthedocs.io/en/latest/support/index.html) to see which devices are supported. Make sure you understand the [caveats](https://napalm.readthedocs.io/en/latest/support/index.html#caveats).
 
 Documentation
 =============
 
-Before using the library, please read the documentation at: [Read the Docs](http://napalm.readthedocs.org)
+Before using the library, please read the documentation at: [Read the Docs](https://napalm.readthedocs.io)
 
 You can also watch a [live demo](https://youtu.be/93q-dHC0u0I) of NAPALM to see what it is and what it can do for you.
 
