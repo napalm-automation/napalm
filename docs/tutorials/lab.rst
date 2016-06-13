@@ -47,6 +47,12 @@ This Vagrantfile creates a base box and a vEOS box when you call "vagrant up"::
 
 You may see some errors when the eos box is getting created [#f1]_.
 
+Troubleshooting
+^^^^^^^^^^^^^^^
+
+* After running ``vagrant up``, ensure that you can ssh to the box with ``vagrant ssh eos``.
+* If you receive the warning "eos: Warning: Remote connection disconnect.  Retrying...", see `this StackOverflow post <http://stackoverflow.com/questions/22575261/vagrant-stuck-connection-timeout-retrying>`_.
+
 Sample files
 ------------
 
