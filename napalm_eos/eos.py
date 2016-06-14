@@ -870,8 +870,11 @@ class EOSDriver(NetworkDriver):
             ipv4_list = list()
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = dict()
+                
             if u'ipv4' not in interfaces_ip.get(interface_name):
                 interfaces_ip[interface_name][u'ipv4'] = dict()
+            if u'ipv6' not in interfaces_ip.get(interface_name):
+                interfaces_ip[interface_name][u'ipv6'] = dict()
 
             iface_details = interface_details.get('interfaceAddress', {})
             if iface_details.get('primaryIp', {}).get('address') != '0.0.0.0':
@@ -901,8 +904,12 @@ class EOSDriver(NetworkDriver):
             ipv6_list = list()
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = dict()
+
+            if u'ipv4' not in interfaces_ip.get(interface_name):
+                interfaces_ip[interface_name][u'ipv4'] = dict()
             if u'ipv6' not in interfaces_ip.get(interface_name):
                 interfaces_ip[interface_name][u'ipv6'] = dict()
+
             ipv6_list.append(
                 {
                     'address'   : interface_details.get('linkLocal', {}).get('address'),
