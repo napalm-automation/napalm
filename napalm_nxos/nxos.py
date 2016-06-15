@@ -339,8 +339,8 @@ class NXOSDriver(NetworkDriver):
             try:
                 string_output = self.device.show(command, fmat = 'json', text = True)[1]
                 dict_output   = eval(string_output)
-                s = dict_output.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', '')
-                cli_output[unicode(command)] = s
+                command_output = dict_output.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', '')
+                cli_output[unicode(command)] = command_output
             except Exception as e:
                 cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
                     cmd = command,
