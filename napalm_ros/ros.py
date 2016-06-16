@@ -25,9 +25,8 @@ class ROSDriver(NetworkDriver):
 			except Exception as e:
 				raise CommandErrorException(e.messsage)
 			if len(ssh_output) == 1:
-				if ssh_output[0].startswith('bad command name switch '):
-					raise CommandErrorException(ssh_output[0])
-				elif ssh_output[0].startswith('expected end of command '):
+				re_match = re.match(r'[^\(]+\(line \d+ column \d+\)', ssh_output[0])
+				if re_match is not None:
 					raise CommandErrorException(ssh_output[0])
 			cli_output[unicode(command)] = ssh_output
 		return cli_output
@@ -543,18 +542,20 @@ class ROSDriver(NetworkDriver):
 		ret_ = {
 			'probes_sent': statistics['sent'],
 			'packet_loss': statistics['packet-loss'].rstrip('%'),
-			'rtt_min': statistics['min-rtt'].replace('ms', ''),
-			'rtt_max': statistics['max-rtt'].replace('ms', ''),
-			'rtt_avg': statistics['avg-rtt'].replace('ms', ''),
+			'rtt_min': statistics.get('min-rtt', '-1ms').replace('ms', ''),
+			'rtt_max': statistics.get('max-rtt', '-1ms').replace('ms', ''),
+			'rtt_avg': statistics.get('avg-rtt', '-1ms').replace('ms', ''),
 			'rtt_stddev': -1,
 			'results': []
 		}
 		for ping_entry in ping_output:
-			_, host, _, _, rtt = ping_entry.lstrip().rstrip().split(None, 4)
+			entry_parts = ping_entry.lstrip().rstrip().split()
+			if len(entry_parts) != 5:
+				continue
 			ret_['results'].append(
 				{
-					'ip_address': host,
-					'rtt': rtt.replace('ms', '')
+					'ip_address': entry_parts[1],
+					'rtt': entry_parts[4].replace('ms', '')
 				}
 			)
 		return ret_
@@ -563,4 +564,47 @@ class ROSDriver(NetworkDriver):
 		pass
 
 	def traceroute(self, destination, source='', ttl=0, timeout=0):
-		pass
+		num_probes = 3
+		traceroute_command = '/tool traceroute address={dest} use-dns=no protocol=icmp count={probes}'.format(dest=destination, probes=num_probes)
+		if source != '':
+			pass
+		if ttl != 0:
+			pass
+		if timeout !=0:
+			pass
+		traceroute_output = self.device.ssh_client.exec_command(traceroute_command)
+
+		last_line = traceroute_output.pop()
+		if last_line != '':
+			traceroute_output.append(last_line)
+			return {
+				'error': ' '.join([l.lstrip() for l in traceroute_output])
+				}
+
+		probe_results = {}
+		while num_probes:
+			while True:
+				try:
+					line = traceroute_output.pop()
+				except IndexError:
+					break
+				if line == '':
+					break
+				line_parts = line.split()
+				if len(line_parts) < 8:
+					print line_parts
+					continue
+				result_index = line_parts[0]
+				if not result_index in probe_results:
+					probe_results[result_index] = {
+						'probes': {}
+					}
+				probe_results[result_index]['probes'][num_probes] = {
+					'rtt': line_parts[4],
+					'ip_address': line_parts[1],
+					'host_name': ''
+				}
+			num_probes -= 1
+		return {
+			'success': probe_results
+		}

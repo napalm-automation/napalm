@@ -109,7 +109,13 @@ except NotImplementedError as e:
 
 print 'foo.ping()'
 try:
-	pprint.pprint(foo.ping('192.168.144.1', count=2))
+	pprint.pprint(foo.ping('8.8.8.23', count=2))
+except NotImplementedError as e:
+	print e.message
+
+print 'foo.traceroute()'
+try:
+	pprint.pprint(foo.traceroute('8.8.8.8'))
 except NotImplementedError as e:
 	print e.message
 
