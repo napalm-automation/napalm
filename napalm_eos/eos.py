@@ -176,13 +176,13 @@ class EOSDriver(NetworkDriver):
         commands = list()
         commands.append('show version')
         commands.append('show hostname')
-        commands.append('show interfaces status')
+        commands.append('show interfaces')
 
         result = self.device.run_commands(commands)
 
         version = result[0]
         hostname = result[1]
-        interfaces_dict = result[2]['interfaceStatuses']
+        interfaces_dict = result[2]['interfaces']
 
         uptime = time.time() - version['bootupTimestamp']
 
@@ -857,27 +857,34 @@ class EOSDriver(NetworkDriver):
 
         interfaces_ip = dict()
 
-        commands = list()
-        commands.append('show ip interface')
-        commands.append('show ipv6 interface')
-
-        interfaces_ip_out   = self.device.run_commands(commands)
-        interfaces_ipv4_out = interfaces_ip_out[0].get('interfaces', {})
-        interfaces_ipv6_out = interfaces_ip_out[1].get('interfaces', {})
+        interfaces_ipv4_out = self.device.run_commands(['show ip interface'])[0]['interfaces']
+        try:
+            interfaces_ipv6_out = self.device.run_commands(['show ipv6 interface'])[0]['interfaces']
+        except pyeapi.eapilib.CommandError as e:
+            if 'No IPv6 configured interfaces' in e.message:
+                interfaces_ipv6_out = {}
+            else:
+                raise
 
         for interface_name, interface_details in interfaces_ipv4_out.iteritems():
             ipv4_list = list()
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = dict()
+                
             if u'ipv4' not in interfaces_ip.get(interface_name):
                 interfaces_ip[interface_name][u'ipv4'] = dict()
-            ipv4_list.append(
-                {
-                    'address'   : interface_details.get('interfaceAddress', {}).get('primaryIp', {}).get('address'),
-                    'masklen'   : interface_details.get('interfaceAddress', {}).get('primaryIp', {}).get('maskLen')
-                }
-            )
-            for secondary_ip in interface_details.get('interfaceAddress', {}).get('secondaryIpsOrderedList', []):
+            if u'ipv6' not in interfaces_ip.get(interface_name):
+                interfaces_ip[interface_name][u'ipv6'] = dict()
+
+            iface_details = interface_details.get('interfaceAddress', {})
+            if iface_details.get('primaryIp', {}).get('address') != '0.0.0.0':
+                ipv4_list.append(
+                    {
+                        'address'   : iface_details.get('primaryIp', {}).get('address'),
+                        'masklen'   : iface_details.get('primaryIp', {}).get('maskLen')
+                    }
+                )
+            for secondary_ip in iface_details.get('secondaryIpsOrderedList', []):
                 ipv4_list.append(
                     {
                         'address'   : secondary_ip.get('address'),
@@ -897,8 +904,12 @@ class EOSDriver(NetworkDriver):
             ipv6_list = list()
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = dict()
+
+            if u'ipv4' not in interfaces_ip.get(interface_name):
+                interfaces_ip[interface_name][u'ipv4'] = dict()
             if u'ipv6' not in interfaces_ip.get(interface_name):
                 interfaces_ip[interface_name][u'ipv6'] = dict()
+
             ipv6_list.append(
                 {
                     'address'   : interface_details.get('linkLocal', {}).get('address'),
