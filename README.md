@@ -102,6 +102,47 @@ Slack
 
 Slack is probably the easiest way to get help with NAPALM. You can find us in the channel `napalm` on the [network.toCode()](https://networktocode.herokuapp.com/) team.
 
+FAQ
+---
+
+If you have any issues using NAPALM or encounter any errors, before submitting any questions (either directly by email, either on Slack), please go through the following checklist:
+
+- Double or triple check if you indeed are you able to access the device usign the credentials provided.
+- Does your device meet the minimum [requrirements](napalm.readthedocs.io/en/latest/support/index.html)?
+- Some operating systems have some specific [constraints](napalm.readthedocs.io/en/latest/support/index.html#caveats). (e.g. have you enabled the XML agent on IOS-XR, or the NXAPI feature on NXOS?)
+- Are you able to connect to the device using NAPALM? Execute the following Python commands in a terminal, replacing ```DEVICE_OS, HOSTNAME, USERNAME and PASSWORD``` with their accurate values:
+
+```python
+>>> from napalm_base import get_network_driver
+>>> driver = get_network_driver('DEVICE_OS')
+>>> connection = driver('HOSTNAME', 'USERNAME', 'PASSWORD', optional_args={'config_lock': False})
+>>> connection.open()
+>>> connection.get_facts()
+>>> connection.close()
+```
+
+In case you got any error after ```connection.open()```, please review the steps above -- this looks like a problem with your environment setup.
+
+In order to get help faster, when submitting a bug/error:
+
+- Very briefly descibe your scenario: what are you trying to do?
+- To avoid any ambiguity regarding the variables used, paste the code used for openning the connection (don't forget to strip sensitive data!).
+- Include the code that triggered the error together with the complete traceback.
+
+Example::
+
+```python
+>>> from napalm_base import get_network_driver
+>>> driver = get_network_driver('DEVICE_OS')
+>>> connection = driver('HOSTNAME', 'USERNAME', 'PASSWORD', optional_args={'config_lock': False})
+>>> connection.open()
+>>> connection.buggy_method()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 22, in buggy_method
+napalm_base.exceptions.CommandErrorException: I raise exceptions :(
+```
+
 News
 ====
 
