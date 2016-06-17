@@ -13,6 +13,7 @@
 # the License.
 
 import unittest
+import os
 
 from napalm_iosxr.iosxr import IOSXRDriver
 from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
@@ -57,7 +58,9 @@ class FakeIOSXRDevice:
 
     @staticmethod
     def read_txt_file(filename):
-        with open(filename) as data_file:
+        curr_dir = os.path.dirname(os.path.abspath(__file__))
+        fullpath = os.path.join(curr_dir, filename)
+        with open(fullpath) as data_file:
             return data_file.read()
 
     def show_version(self):
