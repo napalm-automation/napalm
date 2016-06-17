@@ -17,7 +17,7 @@ from __future__ import print_function
 from napalm_base import exceptions
 import difflib
 import models
-
+from unittest import SkipTest
 
 class TestConfigNetworkDriver:
 
@@ -38,8 +38,11 @@ class TestConfigNetworkDriver:
             print(line)
 
     def test_replacing_and_committing_config(self):
-        self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
-        self.device.commit_config()
+        try:
+            self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
+            self.device.commit_config()
+        except NotImplementedError:
+            raise SkipTest()
 
         # The diff should be empty as the configuration has been committed already
         diff = self.device.compare_config()
@@ -55,6 +58,8 @@ class TestConfigNetworkDriver:
         try:
             self.device.load_replace_candidate(filename='%s/new_typo.conf' % self.vendor)
             self.device.commit_config()
+        except NotImplementedError:
+            raise SkipTest()
         except exceptions.ReplaceConfigException:
             self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
             diff = self.device.compare_config()
@@ -153,12 +158,18 @@ class TestGettersNetworkDriver:
         return correct_class and same_keys
 
     def test_get_facts(self):
-        facts = self.device.get_facts()
+        try:
+            facts = self.device.get_facts()
+        except NotImplementedError:
+            raise SkipTest()
         result = self._test_model(models.facts, facts)
         self.assertTrue(result)
 
     def test_get_interfaces(self):
-        get_interfaces = self.device.get_interfaces()
+        try:
+            get_interfaces = self.device.get_interfaces()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(get_interfaces) > 0
 
         for interface, interface_data in get_interfaces.iteritems():
@@ -167,7 +178,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_lldp_neighbors(self):
-        get_lldp_neighbors = self.device.get_lldp_neighbors()
+        try:
+            get_lldp_neighbors = self.device.get_lldp_neighbors()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(get_lldp_neighbors) > 0
 
         for interface, neighbor_list in get_lldp_neighbors.iteritems():
@@ -177,7 +191,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_interfaces_counters(self):
-        get_interfaces_counters = self.device.get_interfaces_counters()
+        try:
+            get_interfaces_counters = self.device.get_interfaces_counters()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(self.device.get_interfaces_counters()) > 0
 
         for interface, interface_data in get_interfaces_counters.iteritems():
@@ -186,7 +203,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_environment(self):
-        environment = self.device.get_environment()
+        try:
+            environment = self.device.get_environment()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(environment) > 0
 
         for fan, fan_data in environment['fans'].iteritems():
@@ -206,7 +226,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_bgp_neighbors(self):
-        get_bgp_neighbors = self.device.get_bgp_neighbors()
+        try:
+            get_bgp_neighbors = self.device.get_bgp_neighbors()
+        except NotImplementedError:
+            raise SkipTest()
         result = 'global' in get_bgp_neighbors.keys()
 
         if not result:
@@ -226,8 +249,10 @@ class TestGettersNetworkDriver:
             self.assertTrue(result)
 
     def test_get_lldp_neighbors_detail(self):
-
-        get_lldp_neighbors_detail = self.device.get_lldp_neighbors_detail()
+        try:
+            get_lldp_neighbors_detail = self.device.get_lldp_neighbors_detail()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(get_lldp_neighbors_detail) > 0
 
         for interface, neighbor_list in get_lldp_neighbors_detail.iteritems():
@@ -237,8 +262,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_bgp_config(self):
-
-        get_bgp_config = self.device.get_bgp_config()
+        try:
+            get_bgp_config = self.device.get_bgp_config()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(get_bgp_config) > 0
 
         for bgp_group in get_bgp_config.values():
@@ -249,8 +276,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_bgp_neighbors_detail(self):
-
-        get_bgp_neighbors_detail = self.device.get_bgp_neighbors_detail()
+        try:
+            get_bgp_neighbors_detail = self.device.get_bgp_neighbors_detail()
+        except NotImplementedError:
+            raise SkipTest()
 
         result = len(get_bgp_neighbors_detail) > 0
 
@@ -261,8 +290,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_arp_table(self):
-
-        get_arp_table = self.device.get_arp_table()
+        try:
+            get_arp_table = self.device.get_arp_table()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(get_arp_table) > 0
 
         for arp_entry in get_arp_table:
@@ -271,8 +302,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_ntp_peers(self):
-
-        get_ntp_peers = self.device.get_ntp_peers()
+        try:
+            get_ntp_peers = self.device.get_ntp_peers()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(get_ntp_peers) > 0
 
         for peer, peer_details in get_ntp_peers.iteritems():
@@ -282,8 +315,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_ntp_stats(self):
-
-        get_ntp_stats = self.device.get_ntp_stats()
+        try:
+            get_ntp_stats = self.device.get_ntp_stats()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(get_ntp_stats) > 0
 
         for ntp_peer_details in get_ntp_stats:
@@ -292,9 +327,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_interfaces_ip(self):
-
-        get_interfaces_ip = self.device.get_interfaces_ip()
-
+        try:
+            get_interfaces_ip = self.device.get_interfaces_ip()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(get_interfaces_ip) > 0
 
         for interface, interface_details in get_interfaces_ip.iteritems():
@@ -308,8 +344,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_mac_address_table(self):
-        get_mac_address_table = self.device.get_mac_address_table()
-
+        try:
+            get_mac_address_table = self.device.get_mac_address_table()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(get_mac_address_table) > 0
 
         for mac_table_entry in get_mac_address_table:
@@ -321,7 +359,10 @@ class TestGettersNetworkDriver:
 
         destination  = '1.0.4.0/24'
         protocol = 'bgp'
-        get_route_to = self.device.get_route_to(destination=destination, protocol=protocol)
+        try:
+            get_route_to = self.device.get_route_to(destination=destination, protocol=protocol)
+        except NotImplementedError:
+            raise SkipTest()
 
         result = len(get_route_to) > 0
 
@@ -333,7 +374,11 @@ class TestGettersNetworkDriver:
 
     def test_get_snmp_information(self):
 
-        get_snmp_information = self.device.get_snmp_information()
+        try:
+            get_snmp_information = self.device.get_snmp_information()
+        except NotImplementedError:
+            raise SkipTest()
+
         result = len(get_snmp_information) > 0
 
         for snmp_entry in get_snmp_information:
@@ -345,8 +390,11 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_probes_config(self):
+        try:
+            get_probes_config = self.device.get_probes_config()
+        except NotImplementedError:
+            raise SkipTest()
 
-        get_probes_config = self.device.get_probes_config()
         result = len(get_probes_config) > 0
 
         for probe_name, probe_tests in get_probes_config.iteritems():
@@ -356,8 +404,10 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_probes_results(self):
-
-        get_probes_results = self.device.get_probes_results()
+        try:
+            get_probes_results = self.device.get_probes_results()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(get_probes_results) > 0
 
         for probe_name, probe_tests in get_probes_results.iteritems():
@@ -369,7 +419,10 @@ class TestGettersNetworkDriver:
     def test_ping(self):
 
         destination = '8.8.8.8'
-        get_ping = self.device.ping(destination)
+        try:
+            get_ping = self.device.ping(destination)
+        except NotImplementedError:
+            raise SkipTest()
         result = isinstance(get_ping.get('success'), dict)
         ping_results = get_ping.get('success', {})
 
@@ -383,7 +436,10 @@ class TestGettersNetworkDriver:
     def test_traceroute(self):
 
         destination = '8.8.8.8'
-        get_traceroute = self.device.traceroute(destination)
+        try:
+            get_traceroute = self.device.traceroute(destination)
+        except NotImplementedError:
+            raise SkipTest()
         result = isinstance(get_traceroute.get('success'), dict)
         traceroute_results = get_traceroute.get('success', {})
 
@@ -395,7 +451,10 @@ class TestGettersNetworkDriver:
 
     def test_get_users(self):
 
-        get_users = self.device.get_users()
+        try:
+            get_users = self.device.get_users()
+        except NotImplementedError:
+            raise SkipTest()
         result = len(get_users)
 
         for user, user_details in get_users.iteritems():
