@@ -1,0 +1,46 @@
+<!--- Verify first that your issue/request is not already reported in GitHub -->
+
+##### ISSUE TYPE
+<!--- Pick one below and delete the rest: -->
+ - Bug Report
+ - Feature Idea
+ - Documentation Report
+
+
+##### NAPALM VERSION
+<!--- Paste verbatim output from “pip freeze | grep napalm” between quotes below -->
+```
+
+```
+
+##### Network OS VERSION
+<!--- Paste verbatim output from “show version” or the equivalent command on your platform between quotes below -->
+```
+
+```
+
+##### SUMMARY
+<!--- Explain the problem briefly -->
+
+##### STEPS TO REPRODUCE
+<!---
+For bugs, show exactly how to reproduce the problem. If the bug is with a getter and you know how to do it, provide the structured data that the method is getting from the device.
+For new features, show how the feature would be used.
+-->
+
+```
+
+```
+
+<!--- You can also paste gist.github.com links for larger files -->
+
+##### EXPECTED RESULTS
+<!--- What did you expect to happen when running the steps above? -->
+
+##### ACTUAL RESULTS
+<!--- What actually happened? If possible run with extra verbosity (-vvvv) -->
+
+<!--- Paste verbatim command output between quotes below -->
+```
+
+```
