@@ -16,16 +16,3 @@ Please, open the issue in the correct repo to help us keep things organized : )
 -->
 
 ### Description of Issue/Question
-
-### Setup
-
-### NAPALM version
-(Paste verbatim output from “pip freeze | grep napalm” between quotes below)
-
-### Network OS version
-(Paste verbatim output from “pip freeze | grep napalm” between quotes below)
-
-### Steps to Reproduce the Issue
-
-### Error Traceback
-(Paste the complete traceback of the exception)
