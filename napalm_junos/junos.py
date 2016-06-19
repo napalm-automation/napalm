@@ -856,24 +856,10 @@ class JunOSDriver(NetworkDriver):
 
         mac_address_table = []
 
-        mac_table = junos_views.junos_mac_address_table(self.device)
-
         if self.device.facts.get('personality', '') in ['SWITCH']:  # for EX & QFX devices
-            # must redefine everything
-            mac_table.GET_RPC = 'get-ethernet-switching-table-information'
-            mac_table.ITEM_XPATH = 'ethernet-switching-table/mac-table-entry'
-            mac_table.ITEM_NAME_XPATH = 'mac-vlan-tag'
-            mac_table.GET_KEY = ['interface', 'vlan']  # anyway we don't use them
-            # but for the sake of consistency...
-            _view_fields = mac_table.VIEW.FIELDS
-            _view_fields['interface']['xpath'] = 'mac-interface'
-            _view_fields['mac']['xpath'] = 'mac-address'
-            _view_fields['vlan']['xpath'] = 'mac-vlan-tag'
-            _view_fields['static'] = {
-                'xpath': 'mac-type',
-                'astype': (lambda val: val == 'Static')
-            }
-            mac_table.VIEW.FIELDS = _view_fields
+            mac_table = junos_views.junos_mac_address_table_switch(self.device)
+        else:
+            mac_table = junos_views.junos_mac_address_table(self.device)
 
         mac_table.get()
         mac_table_items = mac_table.items()
