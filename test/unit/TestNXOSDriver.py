@@ -17,6 +17,7 @@ import unittest
 from napalm_nxos.nxos import NXOSDriver
 from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import re
+import os
 
 # class TestConfigNXOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
@@ -54,27 +55,149 @@ class TestGetterNXOSDriver(unittest.TestCase, TestGettersNetworkDriver):
         with open(filename) as data_file:
             return data_file.read()
 
+
+class TestNXOSDriver_bgp_neighbors(unittest.TestCase):
+    """Verify the mapping of Nexus data to NAPALM's expected output."""
+
+    def setUp(self):
+        self.driver = NXOSDriver('host', 'user', 'pass', timeout=60)
+        self.fake = FakeNXOSDevice()
+        self.driver.device = self.fake
+
+    def set_bgp_return_data(self, mock_file_name):
+        cmd_results = {
+            'show bgp sessions vrf all': mock_file_name
+        }
+        self.fake.set_mock_file_overrides(cmd_results)
+
+    def test_get_bgp_neighbors_mapping(self):
+        """Validate the mapping of the data to the output structure."""
+        self.set_bgp_return_data('show_bgp_sessions_vrf_all.json')
+
+        actual_data = self.driver.get_bgp_neighbors()
+        expected_data = {
+            'default': {
+                'router_id': u'10.10.10.10',
+                'peers': {
+                    u'40.40.40.40': {
+                        'address_family': {
+                            'ipv4': {
+                                'accepted_prefixes': -1,
+                                'received_prefixes': -1,
+                                'sent_prefixes': -1 }},
+                        'description': u'',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'local_as': 11111,
+                        'remote_as': 11111,
+                        'remote_id': u'40.40.40.40',
+                        'uptime': -1}}
+            }, # End default
+            'VRF_1': {
+                'router_id': u'10.10.10.10',
+                'peers': {
+                    u'20.20.20.20': {
+                        'address_family': {
+                            'ipv4': {'accepted_prefixes': -1,
+                                     'received_prefixes': -1,
+                                     'sent_prefixes': -1}},
+                        'description': u'',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'local_as': 11111,
+                        'remote_as': 22222,
+                        'remote_id': u'20.20.20.20',
+                        'uptime': -1},
+                    u'30.30.30.30': {
+                        'address_family': {
+                            'ipv4': {'accepted_prefixes': -1,
+                                     'received_prefixes': -1,
+                                     'sent_prefixes': -1}},
+                        'description': u'',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'local_as': 11111,
+                        'remote_as': 22222,
+                        'remote_id': u'30.30.30.30',
+                        'uptime': -1}}
+            } # End VRF_1
+        }
+        self.maxDiff = None
+        self.assertEqual(actual_data, expected_data)
+
+
+    def test_get_bgp_neighbors_with_no_data_works(self):
+        # TODO: verify that Nexus devices with no BGP set up return
+        # data as given in the sample file.
+        self.set_bgp_return_data('show_bgp_sessions_with_no_bgp_setup.json')
+        self.assertEqual(self.driver.get_bgp_neighbors(), {})
+
+    def test_bad_returned_data_format(self):
+        # TODO: discuss w/ team, verify that this is the expected
+        # behaviour.  I had thought that bad returned data would throw
+        # an exception, rather than silently swallowing the error.
+        self.set_bgp_return_data('show_bgp_sessions_bad_return.json')
+        self.assertEqual(self.driver.get_bgp_neighbors(), {})
+
+    def test_single_neighbor_works(self):
+        # TODO: discuss w/ team, verify that this is the expected
+        # data format and behaviour.
+        self.set_bgp_return_data('show_bgp_sessions_single_neighbor.json')
+        expected_data = {
+            'VRF_1': {
+                'router_id': u'10.10.10.10',
+                'peers': {
+                    u'20.20.20.20': {
+                        'address_family': {
+                            'ipv4': {'accepted_prefixes': -1,
+                                     'received_prefixes': -1,
+                                     'sent_prefixes': -1}},
+                        'description': u'',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'local_as': 11111,
+                        'remote_as': 22222,
+                        'remote_id': u'20.20.20.20',
+                        'uptime': -1}
+                    }
+                }
+            }
+        self.assertEqual(self.driver.get_bgp_neighbors(), expected_data)
+
+
 class FakeNXOSDevice(object):
 
     def __init__(self):
-        pass
+        self.data_overrides = {}
 
     @staticmethod
     def read_txt_file(filename):
         with open(filename) as data_file:
             return data_file.read()
 
-    def show(self, command, fmat = 'xml', text = False):
+    def set_mock_file_overrides(self, command_hash):
+        """Set the returned data for different scenarios."""
+        self.data_overrides = command_hash
 
+    def get_filename(self, command, fmat = 'xml', text = False):
+        if command in self.data_overrides:
+            return self.data_overrides[command]
+
+        # Build file from command.
         extension = fmat
         if text:
             extension = 'txt'
-
         filename = re.sub(r'[\[\]\*\^\+\s\|\/]', '_', command)
-        mock_file = 'nxos/mock_data/{filename}.{extension}'.format(
+        mock_file = '{filename}.{extension}'.format(
             filename  = filename[0:150],
             extension = extension
         )
+        return mock_file
+
+    def show(self, command, fmat = 'xml', text = False):
+        curr_dir = os.path.dirname(os.path.abspath(__file__))
+        mock_file = self.get_filename(command, fmat, text)
+        mock_file = os.path.join(curr_dir, 'nxos', 'mock_data', mock_file)
         mock_data = self.read_txt_file(mock_file)
         if text:
             mock_data = {
