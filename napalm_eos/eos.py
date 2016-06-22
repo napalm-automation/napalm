@@ -72,7 +72,8 @@ class EOSDriver(NetworkDriver):
                 port=self.port,
                 timeout=self.timeout
             )
-            self.device = pyeapi.client.Node(connection)
+            if self.device is None:
+                self.device = pyeapi.client.Node(connection)
             # does not raise an Exception if unusable
 
             # let's try to run a very simple command
@@ -872,7 +873,7 @@ class EOSDriver(NetworkDriver):
             ipv4_list = list()
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = dict()
-                
+
             if u'ipv4' not in interfaces_ip.get(interface_name):
                 interfaces_ip[interface_name][u'ipv4'] = dict()
             if u'ipv6' not in interfaces_ip.get(interface_name):
