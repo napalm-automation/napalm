@@ -79,7 +79,11 @@ class NXOSDriver(NetworkDriver):
 
     def _get_reply_body(self, result):
         # useful for debugging
-        return result.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
+        ret = result.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
+        # Original 'body' entry may have been an empty string, don't return that.
+        if not isinstance(ret, dict):
+            return {}
+        return ret
 
     def _get_reply_table(self, result, tablename, rowname):
         # still useful for debugging
@@ -335,7 +339,8 @@ class NXOSDriver(NetworkDriver):
             try:
                 string_output = self.device.show(command, fmat = 'json', text = True)[1]
                 dict_output   = eval(string_output)
-                cli_output[unicode(command)] = self._get_reply_body(dict_output)
+                command_output = dict_output.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', '')
+                cli_output[unicode(command)] = command_output
             except Exception as e:
                 cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
                     cmd = command,
