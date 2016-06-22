@@ -17,7 +17,7 @@ def set_device_parameters(request):
                                             NAPALM_PASSWORD,
                                             timeout=60,
                                             optional_args=NAPALM_OPTIONAL_ARGS)
-    if os.getenv('NAPALM_TEST_MOCK', default=True):
+    if NAPALM_TEST_MOCK:
         request.cls.device.device = request.cls.fake_driver()
         module_file = os.path.dirname(sys.modules[request.cls.__module__].__file__)
         request.cls.device.mocked_data_dir = os.path.join(module_file, 'mocked_data')
