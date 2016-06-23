@@ -1,6 +1,7 @@
-from napalm_base.base import NetworkDriver
+#from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ConnectionException, SessionLockedException, MergeConfigException, ReplaceConfigException, CommandErrorException
 import napalm_base.utils.string_parsers
+from napalm_snmp.snmp import SNMPDriver as NetworkDriver
 import yandc.mikrotik
 import json
 import re
@@ -18,7 +19,7 @@ class ROSDriver(NetworkDriver):
 			self.snmp_port = optional_args.get('snmp_port', 161)
 		
 	def cli(self, *commands):
-		cli_output = dict()
+		cli_output = {}
 		for command in commands:
 			try:
 				ssh_output = self.device.ssh_command(command)
@@ -56,7 +57,7 @@ class ROSDriver(NetworkDriver):
 	def get_arp_table(self):
 		cli_command = '/ip arp print terse without-paging'
 
-		arp_table = list()
+		arp_table = []
 		for arp_entry in self.device.print_to_values_structured(self.cli(cli_command)[cli_command]):
 			arp_table.append(
 				{
@@ -386,7 +387,7 @@ class ROSDriver(NetworkDriver):
 						'remote_system_name': v['identity'],
 						'remote_port': v['interface-name'],
 						'remote_port_description': '',
-						'remote_system_description': '{} {}'.format(v['platform'], v['board']),
+						'remote_system_description': '{} {}'.format(v['platform'], v.get('board', '')),
 						'remote_system_capab': u'',
 						'remote_system_enable_capab': u''
 					}
@@ -480,10 +481,10 @@ class ROSDriver(NetworkDriver):
 			}
 
 		return {
-			'chassis_id': unicode(snmp_values.get('engine-id', '')),
+			'chassis_id': unicode(snmp_values['engine-id']),
 			'community': snmp_communities,
-			'contact': unicode(snmp_values.get('contact', '')),
-			'location': unicode(snmp_values.get('location', ''))
+			'contact': unicode(snmp_values['contact']),
+			'location': unicode(snmp_values['location'])
 		}
 
 	def get_users(self):
