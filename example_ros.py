@@ -9,7 +9,7 @@ import pprint
 if len(sys.argv) == 5:
 	_, ros_host, ros_user, ros_pass, ros_community = sys.argv
 else:
-	sys.strderr.write('Usage: {} <hostname> <username> <password> <snmp_community>\n'.format(sys.argv[0]))
+	sys.stderr.write('Usage: {} <hostname> <username> <password> <snmp_community>\n'.format(sys.argv[0]))
 	sys.exit(0)
 
 foo = napalm_ros.ROSDriver(hostname=ros_host, username=ros_user, password=ros_pass, optional_args=dict(snmp_community=ros_community))
