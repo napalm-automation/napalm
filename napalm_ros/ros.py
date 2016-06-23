@@ -1,7 +1,6 @@
-#from napalm_base.base import NetworkDriver
+from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ConnectionException, SessionLockedException, MergeConfigException, ReplaceConfigException, CommandErrorException
 import napalm_base.utils.string_parsers
-from napalm_snmp.snmp import SNMPDriver as NetworkDriver
 import yandc.mikrotik
 import json
 import re
