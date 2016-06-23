@@ -1,3 +1,2 @@
 # napalm-ros
 
-Initial merge.
