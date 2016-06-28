@@ -1,0 +1,65 @@
+BGP neighbor is 192.168.56.2, remote AS 65002, internal link
+  Description: IBGP_peer
+  BGP version 4, remote router ID 192.168.56.2, VRF default
+  Inherits configuration from and member of peer-group IBGP-MESH
+  Negotiated BGP version 4
+  Last read 00:00:06, last write 00:00:06
+  Hold time is 180, keepalive interval is 60 seconds
+  Configured hold time is 180, keepalive interval is 60 seconds
+  Connect timer is inactive
+  Configured idle-restart time is 300 seconds
+  Idle-restart timer is inactive
+  BGP state is Established, up for   65d00h
+  Number of transitions to established: 1
+  Last state was OpenConfirm
+  Last event was RecvKeepAlive
+  Last rcvd socket-error:received unexpected EOF, Last time   65d00h
+  Neighbor Capabilities:
+    Multiprotocol IPv4 Unicast: advertised and received and negotiated
+    Four Octet ASN: advertised and received
+    Route Refresh: advertised and received and negotiated
+    Send End-of-RIB messages: advertised and received and negotiated
+    Additional-paths Receive:
+      IPv4 Unicast: advertised and received
+  Restart timer is inactive
+  End of rib timer is inactive
+  Message statistics:
+    InQ depth is 0
+    OutQ depth is 0
+                         Sent      Rcvd
+    Opens:                  2         1
+    Notifications:          0         0
+    Updates:                6        68
+    Keepalives:         93647     93647
+    Route-Refresh:          0         0
+    Total messages:     93655     93716
+  Prefix statistics:
+                         Sent      Rcvd
+    IPv4 Unicast:           2         8
+    IPv6 Unicast:           0         0
+  Inbound route map is IBGP-MESH-IN
+  Outbound route map is IBGP-MESH-OUT
+Local AS is 65001, local router ID 192.168.56.3
+TTL is 255
+Local TCP address is 192.168.56.3, local port is 179
+Remote TCP address is 192.168.56.2, remote port is 45048
+Auto-Local-Addr is disabled
+TCP Socket Information:
+  TCP state is ESTABLISHED
+  Outgoing Maximum Segment Size (MSS): 1448
+  Total Number of TCP retransmissions: 26
+  Options:
+    Timestamps enabled: yes
+    Selective Acknowledgments enabled: yes
+    Window Scale enabled: yes
+    Explicit Congestion Notification (ECN) enabled: no
+  Socket Statistics:
+    Window Scale (wscale): 7,7
+    Retransmission Timeout (rto): 336.0ms
+    Round-trip Time (rtt/rtvar): 124.0ms/3.0ms
+    Delayed Ack Timeout (ato): 40.0ms
+    Congestion Window (cwnd): 5
+    Slow-start Threshold (ssthresh): 3
+    TCP Throughput: 0.47 Mbps
+    Recv Round-trip Time (rcv_rtt): 116.0ms
+    Advertised Recv Window (rcv_space): 14480
