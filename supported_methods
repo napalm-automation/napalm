@@ -1,7 +1,7 @@
 cli(): YES
 close(): YES
-commit_config(): NO
-compare_config(): NO
+commit_config(): YES [Merge only]
+compare_config(): YES [Merge only]
 discard_config(): NO
 get_arp_table(): YES [No 'age' support]
 get_bgp_config(): NO
@@ -22,7 +22,7 @@ get_probes_results(): NO
 get_route_to(): YES
 get_snmp_information(): YES ['acl' is a prefix rather than a reference to an ACL]
 get_users(): YES [No 'password' or 'sshkeys' as these are not available via CLI]
-load_merge_candidate(): NO
+load_merge_candidate(): YES
 load_replace_candidate(): NO
 load_template(): NO
 open(): YES

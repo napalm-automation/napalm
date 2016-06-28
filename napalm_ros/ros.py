@@ -23,7 +23,7 @@ class ROSDriver(NetworkDriver):
 			try:
 				ssh_output = self.device.ssh_command(command)
 			except Exception as e:
-				raise CommandErrorException(e.messsage)
+				raise CommandErrorException(e.message)
 			if len(ssh_output) == 1:
 				re_match = re.match(r'[^\(]+\(line \d+ column \d+\)', ssh_output[0])
 				if re_match is not None:
@@ -32,17 +32,39 @@ class ROSDriver(NetworkDriver):
 		return cli_output
 
 	def close(self):
+		if hasattr(self, 'config_merge'):
+			del self.config_merge
 		self.device.disconnect()
 		del self.device
 
 	def commit_config(self):
-		return NotImplementedError('commit_config()')
+		if getattr(self, 'config_merge', False) == True:
+			cli_command = '/import file="napalm_merge_candidate.rsc"'
+			ssh_output = self.cli(cli_command)
+			if ssh_output[cli_command][-1] == 'Script file loaded and executed successfully':
+				self.discard_config()
+			else:
+				raise MergeConfigException(ssh_output[cli_command][-1])
+		else:
+			raise NotImplementedError
 
 	def compare_config(self):
-		return NotImplementedError('compare_config()')
+		if getattr(self, 'config_merge', False) == True:
+			file_command = ':put [/file get napalm_merge_candidate.rsc contents]'
+			candidate_config = self.cli(file_command)[file_command]
+			for line in candidate_config:
+				if line == '':
+					continue
+				print '+{}'.format(line)
+		else:
+			raise NotImplementedError
 
 	def discard_config(self):
-		return NotImplementedError('discard_config()')
+		if getattr(self, 'config_merge', False) == True:
+			if self.device.file_exists('napalm_merge_candidate.rsc'):
+				self.cli('/file remove napalm_merge_candidate.rsc')
+		else:
+			raise NotImplementedError
 
 	@staticmethod
 	def format_mac(mac_address):
@@ -54,7 +76,7 @@ class ROSDriver(NetworkDriver):
 		return ':'.join(list([mac_parts[:4], mac_parts[4:8], mac_parts[8:]]))
 
 	def get_arp_table(self):
-		cli_command = '/ip arp print terse without-paging'
+		cli_command = '/ip arp print without-paging terse'
 
 		arp_table = []
 		for arp_entry in self.device.print_to_values_structured(self.cli(cli_command)[cli_command]):
@@ -76,8 +98,8 @@ class ROSDriver(NetworkDriver):
 		if not self.device.system_package_enabled('routing'):
 			return bgp_neighbors
 
-		bgp_peer_print = '/routing bgp peer print status without-paging'
-		bgp_instance_print = '/routing bgp instance print terse without-paging'
+		bgp_peer_print = '/routing bgp peer print without-paging status'
+		bgp_instance_print = '/routing bgp instance print without-paging terse'
 		cli_output = self.cli(bgp_peer_print, bgp_instance_print)
 
 		peer_print_status = cli_output[bgp_peer_print]
@@ -124,10 +146,10 @@ class ROSDriver(NetworkDriver):
 		if not self.device.system_package_enabled('routing'):
 			return bgp_neighbors_detail
 
-		bgp_peer_print = '/routing bgp peer print status without-paging'
+		bgp_peer_print = '/routing bgp peer print without-paging status'
 		if neighbor_address != '':
 			bgp_peer_print += ' where name ="{}"'.format(neighbor_address)
-		bgp_instance_print = '/routing bgp instance print terse without-paging'
+		bgp_instance_print = '/routing bgp instance print without-paging terse'
 		cli_output = self.cli(bgp_peer_print, bgp_instance_print)
 
 		peer_print_status = cli_output[bgp_peer_print]
@@ -184,7 +206,7 @@ class ROSDriver(NetworkDriver):
 	def get_environment(self):
 		system_resource_print = '/system resource print without-paging'
 		system_health_print = '/system health print without-paging'
-		resource_cpu_print = '/system resource cpu print terse without-paging'
+		resource_cpu_print = '/system resource cpu print without-paging terse'
 		cli_output = self.cli(system_resource_print, system_health_print, resource_cpu_print)
 
 		resource_values = self.device.print_to_values(cli_output[system_resource_print])
@@ -241,7 +263,7 @@ class ROSDriver(NetworkDriver):
 		}
 
 	def get_interfaces(self):
-		interface_print = '/interface print terse without-paging'
+		interface_print = '/interface print without-paging terse'
 
 		interfaces = {}
 		for if_entry in self.device.print_to_values_structured(self.cli(interface_print)[interface_print]):
@@ -256,7 +278,7 @@ class ROSDriver(NetworkDriver):
 		return interfaces
 
 	def get_interfaces_counters(self):
-		interface_print_stats = 'interface print stats-detail without-paging'
+		interface_print_stats = 'interface print without-paging stats-detail'
 
 		stats_detail = self.cli(interface_print_stats)[interface_print_stats]
 		stats_detail.pop(0)
@@ -283,8 +305,8 @@ class ROSDriver(NetworkDriver):
 		return interface_counters
 
 	def get_interfaces_ip(self):
-		ip_address_print = '/ip address print terse without-paging'
-		ipv6_address_print = '/ipv6 address print terse without-paging'
+		ip_address_print = '/ip address print without-paging terse'
+		ipv6_address_print = '/ipv6 address print without-paging terse'
 		cli_output = self.cli(ip_address_print, ipv6_address_print)
 
 		ipv4_address_values = self.device.print_to_values_structured(cli_output[ip_address_print])
@@ -323,7 +345,7 @@ class ROSDriver(NetworkDriver):
 		return self.get_mndp_neighbors_detail(*args, **kwargs)
 
 	def get_mac_address_table(self):
-		switch_host_print = '/interface ethernet switch host print terse without-paging'
+		switch_host_print = '/interface ethernet switch host print without-paging terse'
 
 		mac_address_table = []
 		try:
@@ -346,7 +368,7 @@ class ROSDriver(NetworkDriver):
 		return mac_address_table
 
 	def get_mndp_neighbors(self):
-		ip_neighbor_print = '/ip neighbor print terse without-paging'
+		ip_neighbor_print = '/ip neighbor print without-paging terse'
 
 		terse_values = self.device.print_to_values_structured(self.cli(ip_neighbor_print)[ip_neighbor_print])
 
@@ -366,7 +388,7 @@ class ROSDriver(NetworkDriver):
 		return mndp_neighbors
 
 	def get_mndp_neighbors_detail(self, interface=''):
-		ip_neighbor_print = '/ip neighbor print terse without-paging'
+		ip_neighbor_print = '/ip neighbor print without-paging terse'
 		if interface != '':
 			ip_neighbor_print += ' where interface ="{}"'.format(interface)
 
@@ -413,7 +435,7 @@ class ROSDriver(NetworkDriver):
 		raise NotImplementedError('get_probes_results()')
 
 	def get_route_to(self, destination='', protocol=''):
-		ip_route_print = '/ip route print terse without-paging'
+		ip_route_print = '/ip route print without-paging terse'
 		if destination != '':
 			ip_route_print += ' where dst-address ="{}"'.format(destination)
 
@@ -466,7 +488,7 @@ class ROSDriver(NetworkDriver):
 
 	def get_snmp_information(self):
 		snmp_print = '/snmp print without-paging'
-		snmp_community_print = '/snmp community print terse without-paging'
+		snmp_community_print = '/snmp community print without-paging terse'
 		cli_output = self.cli(snmp_print, snmp_community_print)
 
 		snmp_values = self.device.print_to_values(cli_output[snmp_print])
@@ -487,8 +509,8 @@ class ROSDriver(NetworkDriver):
 		}
 
 	def get_users(self):
-		user_print = '/user print terse without-paging'
-		user_sshkeys_print = '/user ssh-keys print terse without-paging'
+		user_print = '/user print without-paging terse'
+		user_sshkeys_print = '/user ssh-keys print without-paging terse'
 		cli_output = self.cli(user_print, user_sshkeys_print)
 
 		user_sshkeys_values = self.device.print_to_values_structured(cli_output[user_sshkeys_print])
@@ -505,10 +527,19 @@ class ROSDriver(NetworkDriver):
 		return users
 
 	def load_merge_candidate(self, filename=None, config=None):
-		pass
+		if filename is not None:
+			self.config_merge = True
+			self.device.ssh_client.sftp_put(filename, 'napalm_merge_candidate.rsc')
+		elif config is not None:
+			self.config_merge = True
+			self.device.write_rsc_file('napalm_merge_candidate', config)
 
 	def load_replace_candidate(self, filename=None, config=None):
-		pass
+		raise NotImplementedError
+		if filename is not None:
+			self.config_merge = False
+		elif config is not None:
+			self.config_merge = False
 
 	def load_template(self, template_name, template_source=None, template_path=None, **template_vars):
 		pass
