@@ -245,6 +245,48 @@ class NXOSDriver(NetworkDriver):
 
         return results
 
+
+    def get_bgp_neighbors(self):
+        cmd = 'show bgp sessions vrf all'
+        vrf_list = self._get_command_table(cmd, 'TABLE_vrf', 'ROW_vrf')
+        if isinstance(vrf_list, dict):
+            vrf_list = [vrf_list]
+
+        results = {}
+        for vrf_dict in vrf_list:
+            result_vrf_dict = {}
+            result_vrf_dict['router_id'] = unicode(vrf_dict['router-id'])
+            result_vrf_dict['peers'] = {}
+
+            neighbors_list = vrf_dict.get('TABLE_neighbor', {}).get('ROW_neighbor', [])
+            if isinstance(neighbors_list, dict):
+                neighbors_list = [neighbors_list]
+            for neighbor_dict in neighbors_list:
+                neighborid = unicode(neighbor_dict['neighbor-id'])
+
+                result_peer_dict = {
+                    'local_as': int(vrf_dict['local-as']),
+                    'remote_as': int(neighbor_dict['remoteas']),
+                    'remote_id': neighborid,
+                    'is_enabled': True,
+                    'uptime': -1,
+                    'description': unicode(''),
+                    'is_up': True
+                }
+                result_peer_dict['address_family'] = {
+                    'ipv4': {
+                        'sent_prefixes': -1,
+                        'accepted_prefixes': -1,
+                        'received_prefixes': -1
+                    }
+                }
+
+                result_vrf_dict['peers'][neighborid] = result_peer_dict
+
+            results[vrf_dict['vrf-name-out']] = result_vrf_dict
+        return results
+
+
     def get_checkpoint_file(self):
         return install_config.get_checkpoint(self.device)
 
