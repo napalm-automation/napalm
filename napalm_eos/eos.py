@@ -1340,10 +1340,10 @@ class EOSDriver(NetworkDriver):
                 local_address = (
                     re.search(r'Local TCP address is (.*),'
                               r' local port is (\d+)', cli_output).group(1))
-        else:
-            local_address = (
-                re.search(r'Local TCP address is (\d+.\d+.\d+.\d+),'
-                          r' local port is (\d+)', cli_output).group(1))
+            else:
+                local_address = (
+                    re.search(r'Local TCP address is (\d+.\d+.\d+.\d+),'
+                              r' local port is (\d+)', cli_output).group(1))
         except Exception:
             local_address = 'N/A'
 
@@ -1352,10 +1352,10 @@ class EOSDriver(NetworkDriver):
                 local_port = (
                     re.search(r'Local TCP address is (.*),'
                               r' local port is (\d+)', cli_output).group(2))
-        else:
-            local_port = (
-                re.search(r'Local TCP address is (\d+.\d+.\d+.\d+),'
-                          r' local port is (\d+)', cli_output).group(2))
+            else:
+                local_port = (
+                    re.search(r'Local TCP address is (\d+.\d+.\d+.\d+),'
+                              r' local port is (\d+)', cli_output).group(2))
         except Exception:
             # Defaulting local_port to 0
             local_port = 0
@@ -1365,10 +1365,10 @@ class EOSDriver(NetworkDriver):
                 remote_address = (
                     re.search(r'Remote TCP address is (.*),'
                               r' remote port is (\d+)', cli_output).group(1))
-        else:
-            remote_address = (
-                re.search(r'Remote TCP address is (\d+.\d+.\d+.\d+),'
-                          r' remote port is (\d+)', cli_output).group(1))
+            else:
+                remote_address = (
+                    re.search(r'Remote TCP address is (\d+.\d+.\d+.\d+),'
+                              r' remote port is (\d+)', cli_output).group(1))
         except Exception:
             remote_address = 'N/A'
 
@@ -1377,10 +1377,10 @@ class EOSDriver(NetworkDriver):
                 remote_port = (
                     re.search(r'Remote TCP address is (.*),'
                               r' remote port is (\d+)', cli_output).group(2))
-        else:
-            remote_port = (
-                re.search(r'Remote TCP address is (\d+.\d+.\d+.\d+),'
-                          r' remote port is (\d+)', cli_output).group(2))
+            else:
+                remote_port = (
+                    re.search(r'Remote TCP address is (\d+.\d+.\d+.\d+),'
+                              r' remote port is (\d+)', cli_output).group(2))
         except Exception:
             # Defaulting remote_port to 0
             remote_port = 0
