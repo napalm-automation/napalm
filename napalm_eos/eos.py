@@ -1209,20 +1209,22 @@ class EOSDriver(NetworkDriver):
         about all peers. This can be controlled using the following:
 
         :params neighbor_address: Retuns the statistics for a specific
-                                  BGP neighbor.
+                                  BGP neighbor or for all BGP neighbors.
         """
 
         peer_ver = None
         is_all = True if not neighbor_address else False
 
         if is_all:
-            command = ['show ip bgp neighbors']
+            command = ['show ip bgp neighbors vrf all']
         else:
             peer_ver = IPAddress(neighbor_address).version
             if peer_ver == 4:
-                command = ['show ip bgp neighbors %s' % neighbor_address]
+                command = ['show ip bgp neighbors %s vrf all' %
+                           neighbor_address]
             else:
-                command = ['show ipv6 bgp neighbors %s' % neighbor_address]
+                command = ['show ipv6 bgp neighbors %s vrf all' %
+                           neighbor_address]
 
         raw_output = (
             self.device.run_commands(command, encoding='text')[0]['output'])
@@ -1248,14 +1250,17 @@ class EOSDriver(NetworkDriver):
             # Issuing commands per peer
             for item in parsed_peers:
                 if peer_ver == 6:
-                    command = ['show ipv6 bgp neighbors %s' % item[0]]
+                    command = ['show ipv6 bgp neighbors %s vrf all' % item[0]]
                 else:
-                    command = ['show ip bgp neighbors %s' % item[0]]
+                    command = ['show ip bgp neighbors %s vrf all' % item[0]]
                 peer_output = (
                     self.device.run_commands(
                         command, encoding='text')[0]['output'])
 
-                peer_info = self._parse_bgp_peer_info(peer_output, peer_ver)
+                # Using preset template to extract peer info
+                peer_info = (
+                    napalm_base.helpers.textfsm_extractor(
+                        self, 'bgp_detail', peer_output)[0])
 
                 # Issuing command to get number of accepted prefixes for peer
                 if peer_ver == 6:
@@ -1270,11 +1275,61 @@ class EOSDriver(NetworkDriver):
                                              encoding='text')[0]['output'])
 
                 accepted_prefix_count = accepted_prefix_output.split()[-1]
-                peer_info['accepted_prefix_count'] = accepted_prefix_count
-                bgp_detail_info[peer_info['remote_as']].append(peer_info)
+
+                # Converting certain fields into int
+                try:
+                    peer_info['accepted_prefix_count'] = (
+                        int(accepted_prefix_count))
+                except Exception:
+                    peer_info['accepted_prefix_count'] = 0
+
+                peer_info['local_as'] = int(peer_info['local_as'])
+                peer_info['remote_as'] = int(peer_info['remote_as'])
+                peer_info['local_port'] = int(peer_info['local_port'])
+                peer_info['remote_port'] = int(peer_info['remote_port'])
+                peer_info['input_messages'] = int(peer_info['input_messages'])
+                peer_info['output_messages'] = (
+                    int(peer_info['output_messages']))
+                peer_info['input_updates'] = int(peer_info['input_updates'])
+                peer_info['output_updates'] = int(peer_info['output_updates'])
+                peer_info['messages_queued_out'] = (
+                    int(peer_info['messages_queued_out']))
+                peer_info['holdtime'] = int(peer_info['holdtime'])
+                peer_info['configured_holdtime'] = (
+                    int(peer_info['configured_holdtime']))
+                peer_info['keepalive'] = int(peer_info['keepalive'])
+                peer_info['configured_keepalive'] = (
+                    int(peer_info['configured_keepalive']))
+                peer_info['advertise_prefix_count'] = (
+                    int(peer_info['advertise_prefix_count']))
+                peer_info['received_prefix_count'] = (
+                    int(peer_info['received_prefix_count']))
+
+                # Determining a few other fields in the final peer_info
+                peer_info['up'] = (
+                    True if peer_info['up_down'] == "up" else False)
+                peer_info['local_address_configured'] = (
+                    True if peer_info['local_address'] else False)
+                peer_info['multihop'] = (
+                    False if peer_info['multihop'] == 0 or
+                    peer_info['multihop'] == '' else True)
+
+                # TODO: The below fields need to be retrieved
+                # Currently defaulting their values to False or 0
+                peer_info['multipath'] = False
+                peer_info['remove_private_as'] = False
+                peer_info['suppress_4byte_as'] = False
+                peer_info['local_as_prepend'] = False
+                peer_info['flap_count'] = 0
+
+                # Appending peer_info to final data structure
+                bgp_detail_info[int(peer_info['remote_as'])].append(peer_info)
 
         else:
-            peer_info = self._parse_bgp_peer_info(raw_output, peer_ver)
+            # Using preset template to extract peer info
+            peer_info = (
+                napalm_base.helpers.textfsm_extractor(
+                    self, 'bgp_detail', raw_output)[0])
 
             # Issuing command to get number of accepted prefixes for peer
             if peer_ver == 6:
@@ -1289,232 +1344,54 @@ class EOSDriver(NetworkDriver):
                                          encoding='text')[0]['output'])
 
             accepted_prefix_count = accepted_prefix_output.split()[-1]
-            peer_info['accepted_prefix_count'] = accepted_prefix_count
-            bgp_detail_info[peer_info['remote_as']].append(peer_info)
+
+            # Converting certain fields into int
+            try:
+                peer_info['accepted_prefix_count'] = (
+                    int(accepted_prefix_count))
+            except Exception:
+                peer_info['accepted_prefix_count'] = 0
+
+            peer_info['local_as'] = int(peer_info['local_as'])
+            peer_info['remote_as'] = int(peer_info['remote_as'])
+            peer_info['local_port'] = int(peer_info['local_port'])
+            peer_info['remote_port'] = int(peer_info['remote_port'])
+            peer_info['input_messages'] = int(peer_info['input_messages'])
+            peer_info['output_messages'] = (
+                int(peer_info['output_messages']))
+            peer_info['input_updates'] = int(peer_info['input_updates'])
+            peer_info['output_updates'] = int(peer_info['output_updates'])
+            peer_info['messages_queued_out'] = (
+                int(peer_info['messages_queued_out']))
+            peer_info['holdtime'] = int(peer_info['holdtime'])
+            peer_info['configured_holdtime'] = (
+                int(peer_info['configured_holdtime']))
+            peer_info['keepalive'] = int(peer_info['keepalive'])
+            peer_info['configured_keepalive'] = (
+                int(peer_info['configured_keepalive']))
+            peer_info['advertise_prefix_count'] = (
+                int(peer_info['advertise_prefix_count']))
+            peer_info['received_prefix_count'] = (
+                int(peer_info['received_prefix_count']))
+
+            # Determining a few other fields in the final peer_info
+            peer_info['up'] = (
+                True if peer_info['up_down'] == "up" else False)
+            peer_info['local_address_configured'] = (
+                True if peer_info['local_address'] else False)
+            peer_info['multihop'] = (
+                False if peer_info['multihop'] == 0 or
+                peer_info['multihop'] == '' else True)
+
+            # TODO: The below fields need to be retrieved
+            # Currently defaulting their values to False or 0
+            peer_info['multipath'] = False
+            peer_info['remove_private_as'] = False
+            peer_info['suppress_4byte_as'] = False
+            peer_info['local_as_prepend'] = False
+            peer_info['flap_count'] = 0
+
+            # Appending peer_info to final data structure
+            bgp_detail_info[int(peer_info['remote_as'])].append(peer_info)
 
         return bgp_detail_info
-
-    def _parse_bgp_peer_info(self, cli_output, peer_ver):
-        """This function parses the raw cli output and returns a dict.
-        """
-
-        # Parsing peer specific output
-        try:
-            up_down = (
-                re.search(
-                    r'BGP state is (\w+), (\w+) (.*)',
-                    cli_output).group(2))
-        except Exception:
-            up_down = False
-
-        try:
-            connection_state = (
-                re.search(
-                    r'BGP state is (\w+), (\w+) (.*)',
-                    cli_output).group(1))
-        except Exception:
-            connection_state = 'N/A'
-
-        try:
-            previous_connection_state = (
-                re.search(r'Last state was (\w+)', cli_output).group(1))
-        except Exception:
-            previous_connection_state = 'N/A'
-
-        try:
-            remote_as = (
-                re.search(r'remote AS (\d+)', cli_output).group(1))
-        except Exception:
-            # Defaulting the remote_as to 0
-            remote_as = 0
-
-        try:
-            local_as = (
-                re.search(r'Local AS is (\d+)', cli_output).group(1))
-        except Exception:
-            # Defaulting the local_as to 0
-            local_as = 0
-
-        try:
-            if peer_ver == 6:
-                local_address = (
-                    re.search(r'Local TCP address is (.*),'
-                              r' local port is (\d+)', cli_output).group(1))
-            else:
-                local_address = (
-                    re.search(r'Local TCP address is (\d+.\d+.\d+.\d+),'
-                              r' local port is (\d+)', cli_output).group(1))
-        except Exception:
-            local_address = 'N/A'
-
-        try:
-            if peer_ver == 6:
-                local_port = (
-                    re.search(r'Local TCP address is (.*),'
-                              r' local port is (\d+)', cli_output).group(2))
-            else:
-                local_port = (
-                    re.search(r'Local TCP address is (\d+.\d+.\d+.\d+),'
-                              r' local port is (\d+)', cli_output).group(2))
-        except Exception:
-            # Defaulting local_port to 0
-            local_port = 0
-
-        try:
-            if peer_ver == 6:
-                remote_address = (
-                    re.search(r'Remote TCP address is (.*),'
-                              r' remote port is (\d+)', cli_output).group(1))
-            else:
-                remote_address = (
-                    re.search(r'Remote TCP address is (\d+.\d+.\d+.\d+),'
-                              r' remote port is (\d+)', cli_output).group(1))
-        except Exception:
-            remote_address = 'N/A'
-
-        try:
-            if peer_ver == 6:
-                remote_port = (
-                    re.search(r'Remote TCP address is (.*),'
-                              r' remote port is (\d+)', cli_output).group(2))
-            else:
-                remote_port = (
-                    re.search(r'Remote TCP address is (\d+.\d+.\d+.\d+),'
-                              r' remote port is (\d+)', cli_output).group(2))
-        except Exception:
-            # Defaulting remote_port to 0
-            remote_port = 0
-
-        try:
-            import_policy = (
-                re.search(r'Inbound route map is (.*)', cli_output).group(1))
-        except Exception:
-            import_policy = 'N/A'
-
-        try:
-            export_policy = (
-                re.search(r'Outbound route map is (.*)', cli_output).group(1))
-        except Exception:
-            export_policy = 'N/A'
-
-        try:
-            last_event = (
-                re.search(r'Last event was (\w+)', cli_output).group(1))
-        except Exception:
-            last_event = 'N/A'
-
-        try:
-            holdtime = (
-                re.search(r'Hold time is (\d+), keepalive interval'
-                          r' is (\d+) seconds', cli_output).group(1))
-        except Exception:
-            # Defaulting holdtime to 0
-            holdtime = 0
-
-        try:
-            keepalive = (
-                re.search(r'Hold time is (\d+), keepalive interval'
-                          r' is (\d+) seconds', cli_output).group(2))
-        except Exception:
-            # Defaulting keepalive to 0
-            keepalive = 0
-
-        try:
-            configured_holdtime = (
-                re.search(r'Configured hold time is (\d+), keepalive interval'
-                          r' is (\d+) seconds', cli_output).group(1))
-        except Exception:
-            # Defaulting configured_holdtime to 0
-            configured_holdtime = 0
-
-        try:
-            configured_keepalive = (
-                re.search(r'Configured hold time is (\d+), keepalive interval'
-                          r' is (\d+) seconds', cli_output).group(2))
-        except Exception:
-            # Defaulting configured_keepalive to 0
-            configured_keepalive = 0
-
-        try:
-            input_messages = (
-                re.search(r'Total messages:\s+(\d+)\s+(\d+)',
-                          cli_output).group(2))
-        except Exception:
-            # Defaulting input_messages to 0
-            input_messages = 0
-
-        try:
-            output_messages = (
-                re.search(r'Total messages:\s+(\d+)\s+(\d+)',
-                          cli_output).group(1))
-        except Exception:
-            # Defaulting output_messages to 0
-            output_messages = 0
-
-        try:
-            input_updates = (
-                re.search(r'Updates:\s+(\d+)\s+(\d+)',
-                          cli_output).group(2))
-        except Exception:
-            # Defaulting input_updates to 0
-            input_updates = 0
-
-        try:
-            output_updates = (
-                re.search(r'Updates:\s+(\d+)\s+(\d+)',
-                          cli_output).group(1))
-        except Exception:
-            # Defaulting output_updates to 0
-            output_updates = 0
-
-        try:
-            messages_queued_out = (
-                re.search(r'OutQ depth is (\d+)', cli_output).group(1))
-        except Exception:
-            # Defaulting messages_queued_out to 0
-            messages_queued_out = 0
-
-        try:
-            received_prefix_count = (
-                re.search(r'IPv4 Unicast:\s+(\d+)\s+(\d+)',
-                          cli_output).group(2))
-        except Exception:
-            # Defaulting received_prefix_count to 0
-            received_prefix_count = 0
-
-        try:
-            advertise_prefix_count = (
-                re.search(r'IPv4 Unicast:\s+(\d+)\s+(\d+)',
-                          cli_output).group(1))
-        except Exception:
-            # Defaulting advertised_prefix_count to 0
-            advertise_prefix_count = 0
-
-        peer_info = {
-            "up": True if up_down == "up" else False,
-            "connection_state": connection_state,
-            "previous_connection_state": previous_connection_state,
-            "remote_as": int(remote_as),
-            "remote_address": remote_address,
-            "remote_port": int(remote_port),
-            "local_as": int(local_as),
-            "local_address": local_address,
-            "local_port": int(local_port),
-            "local_address_configured": True if local_address else False,
-            "import_policy": import_policy,
-            "export_policy": export_policy,
-            "last_event": last_event,
-            "holdtime": int(holdtime),
-            "keepalive": int(keepalive),
-            "configured_holdtime": int(configured_holdtime),
-            "configured_keepalive": int(configured_keepalive),
-            "input_messages": int(input_messages),
-            "output_messages": int(output_messages),
-            "input_updates": int(input_updates),
-            "output_updates": int(output_updates),
-            "messages_queued_out": int(messages_queued_out),
-            "received_prefix_count": int(received_prefix_count),
-            "advertise_prefix_count": int(advertise_prefix_count)
-            }
-
-        return peer_info
