@@ -1230,6 +1230,13 @@ class EOSDriver(NetworkDriver):
             self.device.run_commands(command, encoding='text')[0]['output'])
 
         bgp_detail_info = {}
+        int_fields = ['accepted_prefix_count', 'local_as', 'remote_as',
+                      'local_port', 'remote_port', 'local_port',
+                      'input_messages', 'output_messages', 'input_updates',
+                      'output_updates', 'messages_queued_out', 'holdtime',
+                      'configured_holdtime', 'keepalive',
+                      'configured_keepalive', 'advertise_prefix_count',
+                      'received_prefix_count']
 
         # Parsing through the raw bgp output
         if peer_ver == 6:
@@ -1277,33 +1284,12 @@ class EOSDriver(NetworkDriver):
                 accepted_prefix_count = accepted_prefix_output.split()[-1]
 
                 # Converting certain fields into int
-                try:
-                    peer_info['accepted_prefix_count'] = (
-                        int(accepted_prefix_count))
-                except Exception:
-                    peer_info['accepted_prefix_count'] = 0
-
-                peer_info['local_as'] = int(peer_info['local_as'])
-                peer_info['remote_as'] = int(peer_info['remote_as'])
-                peer_info['local_port'] = int(peer_info['local_port'])
-                peer_info['remote_port'] = int(peer_info['remote_port'])
-                peer_info['input_messages'] = int(peer_info['input_messages'])
-                peer_info['output_messages'] = (
-                    int(peer_info['output_messages']))
-                peer_info['input_updates'] = int(peer_info['input_updates'])
-                peer_info['output_updates'] = int(peer_info['output_updates'])
-                peer_info['messages_queued_out'] = (
-                    int(peer_info['messages_queued_out']))
-                peer_info['holdtime'] = int(peer_info['holdtime'])
-                peer_info['configured_holdtime'] = (
-                    int(peer_info['configured_holdtime']))
-                peer_info['keepalive'] = int(peer_info['keepalive'])
-                peer_info['configured_keepalive'] = (
-                    int(peer_info['configured_keepalive']))
-                peer_info['advertise_prefix_count'] = (
-                    int(peer_info['advertise_prefix_count']))
-                peer_info['received_prefix_count'] = (
-                    int(peer_info['received_prefix_count']))
+                for key in int_fields:
+                    try:
+                        peer_info[key] = int(peer_info[key])
+                    except Exception:
+                        # Defaulting the value to 0 in case of an exception
+                        peer_info[key] = 0
 
                 # Determining a few other fields in the final peer_info
                 peer_info['up'] = (
@@ -1346,33 +1332,12 @@ class EOSDriver(NetworkDriver):
             accepted_prefix_count = accepted_prefix_output.split()[-1]
 
             # Converting certain fields into int
-            try:
-                peer_info['accepted_prefix_count'] = (
-                    int(accepted_prefix_count))
-            except Exception:
-                peer_info['accepted_prefix_count'] = 0
-
-            peer_info['local_as'] = int(peer_info['local_as'])
-            peer_info['remote_as'] = int(peer_info['remote_as'])
-            peer_info['local_port'] = int(peer_info['local_port'])
-            peer_info['remote_port'] = int(peer_info['remote_port'])
-            peer_info['input_messages'] = int(peer_info['input_messages'])
-            peer_info['output_messages'] = (
-                int(peer_info['output_messages']))
-            peer_info['input_updates'] = int(peer_info['input_updates'])
-            peer_info['output_updates'] = int(peer_info['output_updates'])
-            peer_info['messages_queued_out'] = (
-                int(peer_info['messages_queued_out']))
-            peer_info['holdtime'] = int(peer_info['holdtime'])
-            peer_info['configured_holdtime'] = (
-                int(peer_info['configured_holdtime']))
-            peer_info['keepalive'] = int(peer_info['keepalive'])
-            peer_info['configured_keepalive'] = (
-                int(peer_info['configured_keepalive']))
-            peer_info['advertise_prefix_count'] = (
-                int(peer_info['advertise_prefix_count']))
-            peer_info['received_prefix_count'] = (
-                int(peer_info['received_prefix_count']))
+            for key in int_fields:
+                try:
+                    peer_info[key] = int(peer_info[key])
+                except Exception:
+                    # Defaulting the value to 0 in case of an exception
+                    peer_info[key] = 0
 
             # Determining a few other fields in the final peer_info
             peer_info['up'] = (
