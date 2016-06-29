@@ -1307,7 +1307,7 @@ class EOSDriver(NetworkDriver):
 
                 # Determining a few other fields in the final peer_info
                 peer_info['up'] = (
-                    True if peer_info['up_down'] == "up" else False)
+                    True if peer_info['up'] == "up" else False)
                 peer_info['local_address_configured'] = (
                     True if peer_info['local_address'] else False)
                 peer_info['multihop'] = (
@@ -1376,7 +1376,7 @@ class EOSDriver(NetworkDriver):
 
             # Determining a few other fields in the final peer_info
             peer_info['up'] = (
-                True if peer_info['up_down'] == "up" else False)
+                True if peer_info['up'] == "up" else False)
             peer_info['local_address_configured'] = (
                 True if peer_info['local_address'] else False)
             peer_info['multihop'] = (
