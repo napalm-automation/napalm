@@ -1,4 +1,4 @@
-Value up_down (\S+)
+Value up (\S+)
 Value routing_table (\S+)
 Value connection_state (\S+)
 Value previous_connection_state (\S+)
@@ -25,7 +25,7 @@ Value received_prefix_count (\d+)
 Value advertise_prefix_count (\d+)
 
 Start
-  ^\s+BGP state is ${connection_state}, ${up_down} .*
+  ^\s+BGP state is ${connection_state}, ${up} .*
   ^.*, VRF ${routing_table}
   ^\s+Last state was ${previous_connection_state}
   ^\s+Nexthop matches local IP address: ${multihop}
