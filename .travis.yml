@@ -21,4 +21,5 @@ script:
 - cd test/unit
 - nosetests -v TestNXOSDriver:TestGetterNXOSDriver
 - nosetests -v TestNXOSDriver:TestNXOSDriver_bgp_neighbors
+- nosetests -v TestNXOSDriver:TestNXOSDriver_get_interfaces_ip
 - cd ../..

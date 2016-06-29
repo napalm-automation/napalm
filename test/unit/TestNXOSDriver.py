@@ -165,6 +165,62 @@ class TestNXOSDriver_bgp_neighbors(unittest.TestCase):
         self.assertEqual(self.driver.get_bgp_neighbors(), expected_data)
 
 
+class TestNXOSDriver_get_interfaces_ip(unittest.TestCase):
+    """Additional test cases for verification."""
+
+    def setUp(self):
+        self.driver = NXOSDriver('host', 'user', 'pass', timeout=60)
+        self.fake = FakeNXOSDevice()
+        self.driver.device = self.fake
+        self.baseline_command_results = {
+            'show ip interface': 'show_ip_interface.json',
+            'show ipv6 interface': 'show_ipv6_interface.json'
+        }
+        self.fake.set_mock_file_overrides(self.baseline_command_results)
+
+    def set_return_data(self, command, filename):
+        cmd_results = self.baseline_command_results
+        cmd_results[command] = filename
+        self.fake.set_mock_file_overrides(cmd_results)
+
+    def test_baseline_get_interfaces_ip(self):
+        """Validate the mapping of the data to the output structure."""
+        actual_data = self.driver.get_interfaces_ip()
+        expected_data = {
+            u'Vlan900': {
+                u'ipv4': {u'192.168.0.1': {'prefix_length': 24}}
+            },
+            u'Vlan777': {
+                u'ipv6': {u'2001:db8:85a3:8d3:1319:8a2e:370:7349/64': {u'prefix_length': 64}}
+            }}
+        self.assertEqual(actual_data, expected_data)
+
+    def test_get_interfaces_ip_multiple_interfaces(self):
+        self.set_return_data('show ip interface', 'show_ip_interface_multiple_ips.json')
+        actual_data = self.driver.get_interfaces_ip()
+        expected_data = {
+            u'Vlan123': {
+                u'ipv4': {u'10.1.2.4': {'prefix_length': 31}}
+            },
+            u'Ethernet2/1': {
+                u'ipv4': {u'10.1.2.0': {'prefix_length': 31}}
+            },
+            u'Vlan777': {
+                u'ipv6': {u'2001:db8:85a3:8d3:1319:8a2e:370:7349/64': {u'prefix_length': 64}}
+            }}
+        self.assertEqual(actual_data, expected_data)
+
+    def test_get_interfaces_ip_no_ipv6(self):
+        self.set_return_data('show ipv6 interface', 'show_ipv6_interface_no_interfaces.json')
+        actual_data = self.driver.get_interfaces_ip()
+        expected_data = {
+            u'Vlan900': {
+                u'ipv4': {u'192.168.0.1': {'prefix_length': 24}}
+            }
+        }
+        self.assertEqual(actual_data, expected_data)
+
+
 class FakeNXOSDevice(object):
 
     def __init__(self):

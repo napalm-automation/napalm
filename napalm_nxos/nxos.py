@@ -467,17 +467,27 @@ class NXOSDriver(NetworkDriver):
 
     def get_interfaces_ip(self):
 
+        def get_list_of_dicts(hsh, key):
+            # Helper, lookup key in hsh, return list.
+            result = hsh.get(key, {})
+            if type(result) is dict:
+                result = [result]
+            return result
+
+        def get_interfaces_data(command):
+            command_output = self.device.show(command, fmat = 'json')
+            json_output = eval(command_output[1])
+            body = json_output.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
+            if body == '':
+                return []
+            result = []
+            for row_intf in get_list_of_dicts(body, 'TABLE_intf'):
+                result.extend(get_list_of_dicts(row_intf, 'ROW_intf'))
+            return result
+
         interfaces_ip = dict()
 
-        command_ipv4 = 'show ip interface'
-
-        ipv4_interf_table_vrf = self._get_command_table(command_ipv4, 'TABLE_intf', 'ROW_intf')
-
-        if type(ipv4_interf_table_vrf) is dict:
-            # when there's one single entry, it is not returned as a list
-            # with one single element
-            # but as a simple dict
-            ipv4_interf_table_vrf = [ipv4_interf_table_vrf]
+        ipv4_interf_table_vrf = get_interfaces_data('show ip interface')
 
         for interface in ipv4_interf_table_vrf:
             interface_name = unicode(interface.get('intf-name', ''))
@@ -506,13 +516,7 @@ class NXOSDriver(NetworkDriver):
                     'prefix_length': secondary_address_prefix
                 })
 
-        command_ipv6 = 'show ipv6 interface'
-
-        ipv6_interf_table_vrf = self._get_command_table(command_ipv6, 'TABLE_intf', 'ROW_intf')
-
-        if type(ipv6_interf_table_vrf) is dict:
-            ipv6_interf_table_vrf = [ipv6_interf_table_vrf]
-
+        ipv6_interf_table_vrf = get_interfaces_data('show ipv6 interface')
         for interface in ipv6_interf_table_vrf:
             interface_name = unicode(interface.get('intf-name', ''))
             address = unicode(interface.get('addr', ''))
