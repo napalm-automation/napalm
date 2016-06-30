@@ -411,6 +411,26 @@ junos_mac_address_view:
     mac: {l2-mac-address: unicode}
     vlan: {l2-bridge-vlan: int}
 
+# Different table struct & view for EX & QFX series
+
+junos_mac_address_table_switch:
+  rpc: get-ethernet-switching-table-information
+  item: ethernet-switching-table/mac-table-entry
+  args:
+    extensive: True
+  args_key:
+    - interface_name
+    - vlan
+  key: mac-vlan-tag
+  view: junos_mac_address_view_switch
+
+junos_mac_address_view_switch:
+  fields:
+    interface: {mac-interface: unicode}
+    mac: {mac-address: unicode}
+    vlan: {mac-vlan-tag: int}
+    static: {mac-type: True=Static}
+
 ###
 ### Route Information
 ###
