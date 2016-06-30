@@ -19,17 +19,6 @@ deploy:
 
 script:
 - cd test/unit
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_arp_table
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_facts
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_interfaces
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_interfaces_ip
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_lldp_neighbors
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_lldp_neighbors_detail
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_mac_address_table
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_ntp_peers
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_ntp_stats
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_snmp_information
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_get_users
-- nosetests -v TestNXOSDriver:TestGetterNXOSDriver.test_traceroute
+- nosetests -v TestNXOSDriver:TestGetterNXOSDriver
 - nosetests -v TestNXOSDriver:TestNXOSDriver_bgp_neighbors
 - cd ../..
