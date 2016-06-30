@@ -81,7 +81,7 @@ Due to its flexibility, NAPALM can be integrated in widely used automation frame
 Ansible
 -------
 
-Please ckeck [napalm-ansible](https://github.com/napalm-automation/napalm-ansible) for existing Ansible modules leveraging the NAPALM API. Make sure you read the documentation and you understand how it works before trying to use it.
+Please check [napalm-ansible](https://github.com/napalm-automation/napalm-ansible) for existing Ansible modules leveraging the NAPALM API. Make sure you read the documentation and you understand how it works before trying to use it.
 
 Salt
 ----
