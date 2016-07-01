@@ -3,8 +3,9 @@
 #
 #
 import sys
-import napalm_ros
 import pprint
+#
+import napalm_ros
 
 if len(sys.argv) == 5:
 	_, ros_host, ros_user, ros_pass, ros_community = sys.argv

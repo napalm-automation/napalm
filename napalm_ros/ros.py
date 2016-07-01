@@ -1,9 +1,14 @@
+__all__ = ['ROSDriver']
+
+import datetime
+import json
+import re
+#
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ConnectionException, SessionLockedException, MergeConfigException, ReplaceConfigException, CommandErrorException
 import napalm_base.utils.string_parsers
 import yandc.mikrotik
-import json
-import re
+
 
 class ROSDriver(NetworkDriver):
 	def __init__(self, hostname, username, password, timeout=60, optional_args=None):
@@ -13,6 +18,9 @@ class ROSDriver(NetworkDriver):
 		self.password = password
 		self.timeout = timeout
 
+		self.candidate_config = []
+		self.merge_config = False
+
 		if isinstance(optional_args, dict):
 			self.snmp_community = optional_args.get('snmp_community', None)
 			self.snmp_port = optional_args.get('snmp_port', 161)
@@ -21,50 +29,96 @@ class ROSDriver(NetworkDriver):
 		cli_output = {}
 		for command in commands:
 			try:
-				ssh_output = self.device.ssh_command(command)
+				device_output = self.device.cli_command(command)
 			except Exception as e:
 				raise CommandErrorException(e.message)
-			if len(ssh_output) == 1:
-				re_match = re.match(r'[^\(]+\(line \d+ column \d+\)', ssh_output[0])
-				if re_match is not None:
-					raise CommandErrorException(ssh_output[0])
-			cli_output[unicode(command)] = ssh_output
+			if len(device_output) == 1:
+				if self.device.is_cli_error(device_output[0]):
+					raise CommandErrorException(device_output[0])
+			cli_output[unicode(command)] = device_output
 		return cli_output
 
 	def close(self):
+		if hasattr(self, 'device'):
+			self.device.disconnect()
+			del self.device
+		if hasattr(self, 'candidate_config'):
+			del self.candidate_config
 		if hasattr(self, 'config_merge'):
-			del self.config_merge
-		self.device.disconnect()
-		del self.device
+			del self.merge_config
+		if hasattr(self, 'snmp_community'):
+			del self.snmp_community
+		if hasattr(self, 'snmp_port'):
+			del self.snmp_port
 
 	def commit_config(self):
-		if getattr(self, 'config_merge', False) == True:
-			cli_command = '/import file="napalm_merge_candidate.rsc"'
-			ssh_output = self.cli(cli_command)
-			if ssh_output[cli_command][-1] == 'Script file loaded and executed successfully':
-				self.discard_config()
-			else:
-				raise MergeConfigException(ssh_output[cli_command][-1])
+		if self.merge_config:
+			self.device.configure_via_cli(self.candidate_config)
 		else:
 			raise NotImplementedError
 
 	def compare_config(self):
-		if getattr(self, 'config_merge', False) == True:
-			file_command = ':put [/file get napalm_merge_candidate.rsc contents]'
-			candidate_config = self.cli(file_command)[file_command]
-			for line in candidate_config:
-				if line == '':
+		if self.merge_config:
+			command_list = {}
+			set_commands = []
+			for config_line in self.candidate_config:
+				if config_line == '':
 					continue
-				print '+{}'.format(line)
+				re_match = re.match('(.+)\s+(add|set)\s+(.*)$', config_line)
+				if re_match is not None:
+					first_part, action, last_part = re_match.groups()
+					if action == 'add':
+						print '+{}'.format(config_line)
+					elif action == 'set':
+						last_part = last_part.lstrip().rstrip()
+						if last_part[0] == '[':
+							continue
+						set_kv = last_part.split()
+						thing = set_kv.pop(0)
+						get_command = ':put [{} get {}]'.format(first_part, thing)
+						command_list[get_command] = config_line
+						set_commands.append(
+							{
+								'set_command': config_line,
+								'get_command': get_command,
+								'to_set': set_kv,
+							}
+						)
+			cli_output = self.cli(*[d['get_command'] for d in set_commands])
+
+			for command in set_commands:
+				set_command = command['set_command']
+				get_command = command['get_command']
+				kv_parts = cli_output[get_command][0].split(';')
+				kv_parts.pop(0)
+				as_values = self.device.parse_as_key_value(kv_parts)
+
+				foo = []
+				for key, value in self.device.parse_as_key_value(command['to_set']).iteritems():
+					if value.lstrip()[0] == '"':
+						foo.append('{}="{}"'.format(key, as_values.get(key, 'UNKNOWN')))
+					else:
+						foo.append('{}={}'.format(key, as_values.get(key, 'UNKNOWN')))
+				old_set = '{} set {} {}'.format(first_part, thing, ' '.join(foo))
+				if set_command != old_set:
+					print '-{}'.format(old_set)
+					print '+{}'.format(set_command)
 		else:
 			raise NotImplementedError
 
+	def config_sanity_check(self):
+		if self.merge_config:
+			config_regexp = re.compile(r'(.+)\s+(add|set)\s+(.*)$')
+			for config_line in self.candidate_config:
+				if config_line[0] == '#':
+					continue
+				re_match = re.match(config_regexp, config_line)
+				if re_match is None:
+					return False
+		return True	
+
 	def discard_config(self):
-		if getattr(self, 'config_merge', False) == True:
-			if self.device.file_exists('napalm_merge_candidate.rsc'):
-				self.cli('/file remove napalm_merge_candidate.rsc')
-		else:
-			raise NotImplementedError
+		self.candidate_config = []
 
 	@staticmethod
 	def format_mac(mac_address):
@@ -271,14 +325,14 @@ class ROSDriver(NetworkDriver):
 				'is_up': if_entry['flags'].find('R') != -1,
 				'is_enabled': if_entry['flags'].find('X') == -1,
 				'description': if_entry.get('comment', ''),
-				'last_flapped': self.device.to_seconds_date_time(if_entry.get('last-link-up-time', -1)),
+				'last_flapped': self.device.to_seconds_date_time(if_entry.get('last-link-up-time', '')),
 				'speed': -1,
 				'mac_address': self.format_mac(if_entry.get('mac-address', ''))
 			}
 		return interfaces
 
 	def get_interfaces_counters(self):
-		interface_print_stats = 'interface print without-paging stats-detail'
+		interface_print_stats = '/interface print without-paging stats-detail'
 
 		stats_detail = self.cli(interface_print_stats)[interface_print_stats]
 		stats_detail.pop(0)
@@ -288,6 +342,12 @@ class ROSDriver(NetworkDriver):
 			if_name = unicode(if_counters['name'].replace('"', ''))
 			if if_name in if_counters:
 				raise Exception('Interface already seen')
+			stats_command = '/interface ethernet print without-paging stats where name ="{}"'.format(if_name)
+			stats_output = self.cli(stats_command)[stats_command]
+			if stats_output[0] == '':
+				ether_stats = {}
+			else:
+				ether_stats = self.device.print_to_values(stats_output)
 			interface_counters[if_name] = {
 				'tx_errors': int(if_counters['tx-error'].replace(' ', '')),
 				'rx_errors': int(if_counters['rx-error'].replace(' ', '')),
@@ -297,10 +357,10 @@ class ROSDriver(NetworkDriver):
 				'rx_octets': int(if_counters['rx-byte'].replace(' ', '')),
 				'tx_unicast_packets': -1,
 				'rx_unicast_packets': -1,
-				'tx_multicast_packets': -1,
-				'rx_multicast_packets': -1,
-				'tx_broadcast_packets': -1,
-				'rx_broadcast_packets': -1
+				'tx_multicast_packets': int(ether_stats.get('tx-multicast', '-1').replace(' ', '')),
+				'rx_multicast_packets': int(ether_stats.get('rx-multicast', '-1').replace(' ', '')),
+				'tx_broadcast_packets': int(ether_stats.get('tx-broadcast', '-1').replace(' ', '')),
+				'rx_broadcast_packets': int(ether_stats.get('rx-broadcast', '-1').replace(' ', '')),
 			}
 		return interface_counters
 
@@ -528,21 +588,26 @@ class ROSDriver(NetworkDriver):
 
 	def load_merge_candidate(self, filename=None, config=None):
 		if filename is not None:
-			self.config_merge = True
-			self.device.ssh_client.sftp_put(filename, 'napalm_merge_candidate.rsc')
+			try:
+				with open(filename, 'rb') as f:
+					self.candidate_config = f.read().splitlines()
+			except IOError as e:
+				print e.message
+				raise MergeConfigException(e.message)
 		elif config is not None:
-			self.config_merge = True
-			self.device.write_rsc_file('napalm_merge_candidate', config)
+			self.candidate_config = config.splitlines()
+		self.merge_config = True
 
 	def load_replace_candidate(self, filename=None, config=None):
 		raise NotImplementedError
 		if filename is not None:
-			self.config_merge = False
+			pass
 		elif config is not None:
-			self.config_merge = False
+			pass
+		self.merge_config = False
 
 	def load_template(self, template_name, template_source=None, template_path=None, **template_vars):
-		pass
+		raise NotImplementedError
 
 	def open(self):
 		self.device = yandc.mikrotik.ROS_Client(
@@ -579,6 +644,7 @@ class ROSDriver(NetworkDriver):
 			'rtt_stddev': -1,
 			'results': []
 		}
+	
 		for ping_entry in ping_output:
 			entry_parts = ping_entry.lstrip().rstrip().split()
 			if len(entry_parts) != 5:
@@ -623,7 +689,6 @@ class ROSDriver(NetworkDriver):
 					break
 				line_parts = line.split()
 				if len(line_parts) < 8:
-					print line_parts
 					continue
 				result_index = line_parts[0]
 				if not result_index in probe_results:
