@@ -1,6 +1,6 @@
-BGP neighbor is 10.10.10.1, remote AS 65001, internal link
+BGP neighbor is 192.168.56.2, remote AS 65002, internal link
   Description: IBGP_peer
-  BGP version 4, remote router ID 10.10.10.1, VRF default
+  BGP version 4, remote router ID 192.168.56.2, VRF default
   Inherits configuration from and member of peer-group IBGP-MESH
   Negotiated BGP version 4
   Last read 00:00:06, last write 00:00:06
@@ -39,10 +39,10 @@ BGP neighbor is 10.10.10.1, remote AS 65001, internal link
     IPv6 Unicast:           0         0
   Inbound route map is IBGP-MESH-IN
   Outbound route map is IBGP-MESH-OUT
-Local AS is 65001, local router ID 1.1.1.1
+Local AS is 65001, local router ID 192.168.56.3
 TTL is 255
-Local TCP address is 1.1.1.2, local port is 179
-Remote TCP address is 10.10.10.1, remote port is 45048
+Local TCP address is 192.168.56.3, local port is 179
+Remote TCP address is 192.168.56.2, remote port is 45048
 Auto-Local-Addr is disabled
 TCP Socket Information:
   TCP state is ESTABLISHED
