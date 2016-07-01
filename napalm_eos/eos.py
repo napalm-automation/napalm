@@ -1331,12 +1331,7 @@ class EOSDriver(NetworkDriver):
 
             # Converting certain fields into int
             for key in int_fields:
-                try:
-                    item[key] = (
-                        napalm_base.helpers.convert(int, item[key], 0))
-                except Exception:
-                    # Defaulting the value to 0 in case of an exception
-                    item[key] = 0
+                napalm_base.helpers.convert(int, item[key], 0)
 
             peer_details.append(item)
 
