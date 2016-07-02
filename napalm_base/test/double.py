@@ -25,7 +25,7 @@ class BaseTestDouble:
         if os.path.exists(full_path):
             return full_path
         else:
-            raise Exception("Couldn't find file with mocked data: {}".format(full_path))
+            raise IOError("Couldn't find file with mocked data: {}".format(full_path))
 
     @staticmethod
     def sanitize_text(text):
@@ -44,3 +44,14 @@ class BaseTestDouble:
         """Return the content of a file."""
         with open(filename) as data_file:
             return data_file.read()
+
+    @property
+    def expected_result(self):
+        """Return the expected result for the current test case."""
+        filename = self.find_file('expected_result.json')
+
+        with open(filename, mode='r') as f:
+            try:
+                return json.loads(f.read())
+            except ValueError:
+                raise ValueError("No JSON object could be decoded on filename: {}".format(filename))
