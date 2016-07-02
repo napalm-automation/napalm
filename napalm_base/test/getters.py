@@ -19,14 +19,14 @@ def wrap_test_cases(func):
 
         try:
             result = func(cls)
-            not_implented = False
+            not_implemented = False
         except NotImplementedError:
-            not_implented = True
+            not_implemented = True
 
         cls.device.device.current_test = ''
         cls.device.device.current_test_case = ''
 
-        if not_implented:
+        if not_implemented:
             pytest.skip("Method not implemented")
         else:
             return result
