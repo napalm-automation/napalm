@@ -42,18 +42,11 @@ class ROSDriver(NetworkDriver):
 		if hasattr(self, 'device'):
 			self.device.disconnect()
 			del self.device
-		if hasattr(self, 'candidate_config'):
-			del self.candidate_config
-		if hasattr(self, 'config_merge'):
-			del self.merge_config
-		if hasattr(self, 'snmp_community'):
-			del self.snmp_community
-		if hasattr(self, 'snmp_port'):
-			del self.snmp_port
 
 	def commit_config(self):
 		if self.merge_config:
 			self.device.configure_via_cli(self.candidate_config)
+			self.discard_config()
 		else:
 			raise NotImplementedError
 
@@ -124,7 +117,7 @@ class ROSDriver(NetworkDriver):
 	def format_mac(mac_address):
 		if len(mac_address) != 17:
 			return mac_address
-		if not mac_address.find(':'):
+		if mac_address.find(':') == -1:
 			return mac_address
 		mac_parts = mac_address.replace(':', '')
 		return ':'.join(list([mac_parts[:4], mac_parts[4:8], mac_parts[8:]]))
@@ -134,12 +127,14 @@ class ROSDriver(NetworkDriver):
 
 		arp_table = []
 		for arp_entry in self.device.print_to_values_structured(self.cli(cli_command)[cli_command]):
+			if arp_entry['flags'].find('C') == -1:
+				continue
 			arp_table.append(
 				{
-					unicode('interface'): arp_entry['interface'],
-					unicode('mac'): self.format_mac(arp_entry['mac-address']),
-					unicode('ip'): arp_entry['address'],
-					unicode('age'): -1,
+					u'interface': arp_entry.get('interface'),
+					u'mac': self.format_mac(arp_entry.get('mac-address')),
+					u'ip': arp_entry.get('address'),
+					u'age': -1,
 				}
 			)
 		return arp_table
@@ -175,14 +170,14 @@ class ROSDriver(NetworkDriver):
 				bgp_neighbors[routing_table][bgp_peer['remote-address']] = {
 					'local_as': bgp_instance['as'],
 					'remote_as': bgp_peer['remote-as'],
-					'remote_id': bgp_peer['remote-id'],
+					'remote_id': bgp_peer.get('remote-id', ''),
 					'is_up': bgp_peer['state'] == 'established',
 					'is_enabled': bgp_peer['flags'].find('X') == -1,
 					'description': bgp_peer['name'].replace('"', ''),
-					'uptime': self.device.to_seconds(bgp_peer['uptime']),
+					'uptime': self.device.to_seconds(bgp_peer.get('uptime', '')),
 					'address_family': {
 						'ipv4': {
-							'received_prefixes': bgp_peer['prefix-count'],
+							'received_prefixes': bgp_peer.get('prefix-count', 0),
 							'accepted_prefixes': 0,
 							'sent_prefixes': 0
 						},
@@ -221,7 +216,7 @@ class ROSDriver(NetworkDriver):
 					'up': bgp_peer['state'] == 'established',
 					'local_as': bgp_instance['as'],
 					'remote_as': bgp_peer['remote-as'],
-					'local_address': bgp_peer['local-address'],
+					'local_address': bgp_peer.get('local-address'),
 					'routing_table': bgp_instance['routing-table'].replace('"', ''),
 					'local_address_configured': '',
 					'local_port': -1,
@@ -240,11 +235,11 @@ class ROSDriver(NetworkDriver):
 					'connection_state': bgp_peer['state'],
 					'previous_connection_state': '',
 					'last_event': '',
-					'suppress_4byte_as': bgp_peer['as4-capability'] == 'no',
+					'suppress_4byte_as': bgp_peer.get('as4-capability', '') == 'no',
 					'local_as_prepend': False,
-					'holdtime': self.device.to_seconds(bgp_peer['used-hold-time']),
+					'holdtime': self.device.to_seconds(bgp_peer.get('used-hold-time', '')),
 					'configured_holdtime': self.device.to_seconds(bgp_peer['hold-time']),
-					'keepalive': self.device.to_seconds(bgp_peer['used-keepalive-time']),
+					'keepalive': self.device.to_seconds(bgp_peer.get('used-keepalive-time', '')),
 					'configured_keepalive': -1,
 					'active_prefix_count': -1,
 					'received_prefix_count': -1,
@@ -252,7 +247,7 @@ class ROSDriver(NetworkDriver):
 					'suppressed_prefix_count': -1,
 					'advertised_prefix_count': -1,
 					'flap_count': -1,
-					'_remote_id': bgp_peer['remote-id'],
+					'_remote_id': bgp_peer.get('remote-id', ''),
 				}
 			)
 		return bgp_neighbors_detail
@@ -321,7 +316,8 @@ class ROSDriver(NetworkDriver):
 
 		interfaces = {}
 		for if_entry in self.device.print_to_values_structured(self.cli(interface_print)[interface_print]):
-			interfaces[unicode(if_entry['name'])] = {
+			if_name = unicode(if_entry['name'])
+			interfaces[if_name] = {
 				'is_up': if_entry['flags'].find('R') != -1,
 				'is_enabled': if_entry['flags'].find('X') == -1,
 				'description': if_entry.get('comment', ''),
@@ -366,10 +362,7 @@ class ROSDriver(NetworkDriver):
 
 	def get_interfaces_ip(self):
 		ip_address_print = '/ip address print without-paging terse'
-		ipv6_address_print = '/ipv6 address print without-paging terse'
-		cli_output = self.cli(ip_address_print, ipv6_address_print)
-
-		ipv4_address_values = self.device.print_to_values_structured(cli_output[ip_address_print])
+		ipv4_address_values = self.device.print_to_values_structured(self.cli(ip_address_print)[ip_address_print])
 
 		interfaces_ip = {}
 		for key, value in self.device.index_values(ipv4_address_values, 'interface').iteritems():
@@ -382,19 +375,21 @@ class ROSDriver(NetworkDriver):
 				ipv4_address, prefix_length = v['address'].split('/', 1)
 				interfaces_ip[if_name][u'ipv4'][unicode(ipv4_address)] = dict(prefix_length=int(prefix_length))
 
-		ipv6_address_values = self.device.print_to_values_structured(cli_output[ipv6_address_print])
+		if self.device.system_package_enabled('ipv6'):
+			ipv6_address_print = '/ipv6 address print without-paging terse'
+			ipv6_address_values = self.device.print_to_values_structured(self.cli(ipv6_address_print)[ipv6_address_print])
 
-		for key, value in self.device.index_values(ipv6_address_values, 'interface').iteritems():
-			if_name = unicode(key)
-			if not if_name in interfaces_ip:
-				interfaces_ip[if_name] = {
-					u'ipv6': {}
-				}
-			for v in value:
-				ipv6_address, prefix_length = v['address'].split('/', 1)
-				if not u'ipv6' in interfaces_ip[if_name]:
-					interfaces_ip[if_name][u'ipv6'] = {}
-				interfaces_ip[if_name][u'ipv6'][unicode(ipv6_address)] = dict(prefix_length=int(prefix_length))
+			for key, value in self.device.index_values(ipv6_address_values, 'interface').iteritems():
+				if_name = unicode(key)
+				if not if_name in interfaces_ip:
+					interfaces_ip[if_name] = {
+						u'ipv6': {}
+					}
+				for v in value:
+					ipv6_address, prefix_length = v['address'].split('/', 1)
+					if not u'ipv6' in interfaces_ip[if_name]:
+						interfaces_ip[if_name][u'ipv6'] = {}
+					interfaces_ip[if_name][u'ipv6'][unicode(ipv6_address)] = dict(prefix_length=int(prefix_length))
 
 		return interfaces_ip
 
@@ -497,7 +492,7 @@ class ROSDriver(NetworkDriver):
 	def get_route_to(self, destination='', protocol=''):
 		ip_route_print = '/ip route print without-paging terse'
 		if destination != '':
-			ip_route_print += ' where dst-address ="{}"'.format(destination)
+			ip_route_print += ' where {} in dst-address'.format(destination)
 
 		route_to = {}
 		for ipv4_route in self.device.print_to_values_structured(self.cli(ip_route_print)[ip_route_print]):
@@ -658,7 +653,7 @@ class ROSDriver(NetworkDriver):
 		return ret_
 
 	def rollback(self):
-		pass
+		raise NotImplementedError
 
 	def traceroute(self, destination, source='', ttl=0, timeout=0):
 		num_probes = 3
