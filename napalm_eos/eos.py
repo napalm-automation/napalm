@@ -1337,9 +1337,9 @@ class EOSDriver(NetworkDriver):
                 item[key] = napalm_base.helpers.convert(int, item[key], 0)
 
             # Conforming with the datatypes defined by the base class
-            item['export-policy'] = (
+            item['export_policy'] = (
                 napalm_base.helpers.convert(
-                    unicode, item['export-policy'], ''))
+                    unicode, item['export_policy'], ''))
             item['last_event'] = (
                 napalm_base.helpers.convert(
                     unicode, item['last_event'], ''))
