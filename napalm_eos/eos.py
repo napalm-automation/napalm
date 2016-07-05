@@ -1285,6 +1285,12 @@ class EOSDriver(NetworkDriver):
 
         peer_details = []
 
+        v4_summary = self.device.run_commands(
+            'show ip bgp summary vrf all', encoding='json')
+
+        v6_summary = self.device.run_commands(
+            'show ipv6 bgp summary vrf all', encoding='json')
+
         # Using preset template to extract peer info
         peer_info = (
             napalm_base.helpers.textfsm_extractor(
@@ -1298,19 +1304,15 @@ class EOSDriver(NetworkDriver):
                 continue
 
             if peer_ver == 4:
-                acc_prefix_command = (
-                    'show ip bgp summary | include %s' %
-                    item['remote_address'])
+                accepted_prefix_count = (
+                    v4_summary[0]['vrfs']['default']['peers']
+                              [item['remote_address']]['prefixAccepted'])
             elif peer_ver == 6:
-                acc_prefix_command = (
-                    'show ipv6 bgp summary | include %s' %
-                    item['remote_address'])
+                accepted_prefix_count = (
+                    v6_summary[0]['vrfs']['default']['peers']
+                              [item['remote_address']]['prefixAccepted'])
 
-            accepted_prefix_output = (
-                self.device.run_commands([acc_prefix_command],
-                                         encoding='text')[0]['output'])
-
-            accepted_prefix_count = accepted_prefix_output.split()[-1]
+            item['accepted_prefix_count'] = accepted_prefix_count
 
             # Determining a few other fields in the final peer_info
             item['up'] = (
