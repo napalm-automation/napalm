@@ -105,9 +105,9 @@ Slack is probably the easiest way to get help with NAPALM. You can find us in th
 FAQ
 ---
 
-If you have any issues using NAPALM or encounter any errors, before submitting any questions (either directly by email, either on Slack), please go through the following checklist:
+If you have any issues using NAPALM or encounter any errors, before submitting any questions (directly by email or on Slack), please go through the following checklist:
 
-- Double or triple check if you indeed are you able to access the device usign the credentials provided.
+- Double or triple check if you indeed are able to access the device using the credentials provided.
 - Does your device meet the minimum [requrirements](napalm.readthedocs.io/en/latest/support/index.html)?
 - Some operating systems have some specific [constraints](napalm.readthedocs.io/en/latest/support/index.html#caveats). (e.g. have you enabled the XML agent on IOS-XR, or the NXAPI feature on NXOS?)
 - Are you able to connect to the device using NAPALM? Check using the CLI test tool:
@@ -124,7 +124,7 @@ Example:
 $ cl_napalm_test --vendor junos --user napalm --password dbejmujz --optional_args 'port=12202, config_lock=False' edge01.bjm01
 ```
 
-In case you have any error, please review the steps above - this looks like a problem with your environment setup.
+In case you have any errors, please review the steps above - this looks like a problem with your environment setup.
 
 In order to get help faster, when submitting a bug/error make sure to include all the details requested.
 
