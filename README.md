@@ -110,38 +110,23 @@ If you have any issues using NAPALM or encounter any errors, before submitting a
 - Double or triple check if you indeed are you able to access the device usign the credentials provided.
 - Does your device meet the minimum [requrirements](napalm.readthedocs.io/en/latest/support/index.html)?
 - Some operating systems have some specific [constraints](napalm.readthedocs.io/en/latest/support/index.html#caveats). (e.g. have you enabled the XML agent on IOS-XR, or the NXAPI feature on NXOS?)
-- Are you able to connect to the device using NAPALM? Execute the following Python commands in a terminal, replacing ```DEVICE_OS, HOSTNAME, USERNAME and PASSWORD``` with their accurate values:
+- Are you able to connect to the device using NAPALM? Check using the CLI test tool:
 
-```python
->>> from napalm_base import get_network_driver
->>> driver = get_network_driver('DEVICE_OS')
->>> connection = driver('HOSTNAME', 'USERNAME', 'PASSWORD', optional_args={'config_lock': False})
->>> connection.open()
->>> connection.get_facts()
->>> connection.close()
+```bash
+$ cl_napalm_test --vendor VENDOR --user USERNAME --password PASSWORD --optional_args OPTIONAL_ARGS HOSTNAME
 ```
 
-In case you got any error after ```connection.open()```, please review the steps above -- this looks like a problem with your environment setup.
+Where vendor, username, password and hostname are mandatory. [Optional arguments](http://napalm.readthedocs.io/en/latest/support/index.html#optional-arguments) are specified as comma separated values.
 
-In order to get help faster, when submitting a bug/error:
+Example:
 
-- Very briefly descibe your scenario: what are you trying to do?
-- To avoid any ambiguity regarding the variables used, paste the code used for openning the connection (don't forget to strip sensitive data!).
-- Include the code that triggered the error together with the complete traceback.
-
-Example::
-
-```python
->>> from napalm_base import get_network_driver
->>> driver = get_network_driver('DEVICE_OS')
->>> connection = driver('HOSTNAME', 'USERNAME', 'PASSWORD', optional_args={'config_lock': False})
->>> connection.open()
->>> connection.buggy_method()
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-  File "<stdin>", line 22, in buggy_method
-napalm_base.exceptions.CommandErrorException: I raise exceptions :(
+```bash
+$ cl_napalm_test --vendor junos --user napalm --password dbejmujz --optional_args 'port=12202, config_lock=False' edge01.bjm01
 ```
+
+In case you have any error, please review the steps above - this looks like a problem with your environment setup.
+
+In order to get help faster, when submitting a bug/error make sure to include all the details requested.
 
 News
 ====
