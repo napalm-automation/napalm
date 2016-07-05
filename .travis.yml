@@ -4,10 +4,7 @@ python:
 install:
 - pip install -r requirements.txt
 - pip install .
-- git clone https://github.com/napalm-automation/napalm-base.git napalm-automation/napalm-base
-- cd napalm-automation/napalm-base
-- python setup.py install
-- cd ../..
+- pip install -e git+https://github.com/napalm-automation/napalm-base.git@develop#egg=napalm-base
 deploy:
   provider: pypi
   user: dbarroso
@@ -35,4 +32,5 @@ script:
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_snmp_information
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_users
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_traceroute
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors_detail
 - cd ../..
