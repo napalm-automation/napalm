@@ -1213,9 +1213,12 @@ class EOSDriver(NetworkDriver):
         """
 
         commands = []
+        summary_commands = []
         if not neighbor_address:
             commands.append('show ip bgp neighbors vrf all')
             commands.append('show ipv6 bgp neighbors vrf all')
+            summary_commands.append('show ip bgp summary vrf all')
+            summary_commands.append('show ipv6 bgp summary vrf all')
         else:
             try:
                 peer_ver = IPAddress(neighbor_address).version
@@ -1226,18 +1229,26 @@ class EOSDriver(NetworkDriver):
             if peer_ver == 4:
                 commands.append('show ip bgp neighbors %s vrf all' %
                                 neighbor_address)
+                summary_commands.append('show ip bgp summary vrf all')
             elif peer_ver == 6:
                 commands.append('show ipv6 bgp neighbors %s vrf all' %
                                 neighbor_address)
+                summary_commands.append('show ipv6 bgp summary vrf all')
 
         raw_output = (
             self.device.run_commands(commands, encoding='text'))
+        bgp_summary = (
+            self.device.run_commands(summary_commands, encoding='json'))
 
         bgp_detail_info = {}
 
         if neighbor_address:
             peer_info = self._parse_per_peer_bgp_detail(
                 raw_output[0]['output'])
+
+            peer_info[0]['accepted_prefix_count'] = (
+                bgp_summary[0]['vrfs']['default']['peers']
+                           [neighbor_address]['prefixAccepted'])
 
             # Appending peer_info to final data structure
             if int(peer_info[0]['remote_as']) not in bgp_detail_info:
@@ -1255,6 +1266,11 @@ class EOSDriver(NetworkDriver):
                 raw_output[1]['output'])
 
             for peer_info in v4_peer_info:
+
+                peer_info['accepted_prefix_count'] = (
+                    bgp_summary[0]['vrfs']['default']['peers']
+                               [peer_info['remote_address']]['prefixAccepted'])
+
                 # Appending v4 peer_info to final data structure
                 if int(peer_info['remote_as']) not in bgp_detail_info:
                     bgp_detail_info[int(peer_info['remote_as'])] = []
@@ -1262,6 +1278,11 @@ class EOSDriver(NetworkDriver):
                 bgp_detail_info[int(peer_info['remote_as'])].append(peer_info)
 
             for peer_info in v6_peer_info:
+
+                peer_info['accepted_prefix_count'] = (
+                    bgp_summary[1]['vrfs']['default']['peers']
+                               [peer_info['remote_address']]['prefixAccepted'])
+
                 # Appending v6 peer_info to final data structure
                 if int(peer_info['remote_as']) not in bgp_detail_info:
                     bgp_detail_info[int(peer_info['remote_as'])] = []
@@ -1275,7 +1296,7 @@ class EOSDriver(NetworkDriver):
         json structure per peer.
         """
 
-        int_fields = ['accepted_prefix_count', 'local_as', 'remote_as',
+        int_fields = ['local_as', 'remote_as',
                       'local_port', 'remote_port', 'local_port',
                       'input_messages', 'output_messages', 'input_updates',
                       'output_updates', 'messages_queued_out', 'holdtime',
@@ -1285,34 +1306,12 @@ class EOSDriver(NetworkDriver):
 
         peer_details = []
 
-        v4_summary = self.device.run_commands(
-            'show ip bgp summary vrf all', encoding='json')
-
-        v6_summary = self.device.run_commands(
-            'show ipv6 bgp summary vrf all', encoding='json')
-
         # Using preset template to extract peer info
         peer_info = (
             napalm_base.helpers.textfsm_extractor(
                 self, 'bgp_detail', peer_output))
 
         for item in peer_info:
-            # Issuing command to get number of accepted prefixes for peer
-            try:
-                peer_ver = IPAddress(item['remote_address']).version
-            except Exception:
-                continue
-
-            if peer_ver == 4:
-                accepted_prefix_count = (
-                    v4_summary[0]['vrfs']['default']['peers']
-                              [item['remote_address']]['prefixAccepted'])
-            elif peer_ver == 6:
-                accepted_prefix_count = (
-                    v6_summary[0]['vrfs']['default']['peers']
-                              [item['remote_address']]['prefixAccepted'])
-
-            item['accepted_prefix_count'] = accepted_prefix_count
 
             # Determining a few other fields in the final peer_info
             item['up'] = (
