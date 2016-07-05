@@ -1336,6 +1336,32 @@ class EOSDriver(NetworkDriver):
             for key in int_fields:
                 item[key] = napalm_base.helpers.convert(int, item[key], 0)
 
+            # Conforming with the datatypes defined by the base class
+            item['export-policy'] = (
+                napalm_base.helpers.convert(
+                    unicode, item['export-policy'], ''))
+            item['last_event'] = (
+                napalm_base.helpers.convert(
+                    unicode, item['last_event'], ''))
+            item['remote_address'] = (
+                napalm_base.helpers.convert(
+                    unicode, item['remote_address'], ''))
+            item['previous_connection_state'] = (
+                napalm_base.helpers.convert(
+                    unicode, item['previous_connection_state'], ''))
+            item['import_policy'] = (
+                napalm_base.helpers.convert(
+                    unicode, item['import_policy'], ''))
+            item['connection_state'] = (
+                napalm_base.helpers.convert(
+                    unicode, item['connection_state'], ''))
+            item['routing_table'] = (
+                napalm_base.helpers.convert(
+                    unicode, item['routing_table'], ''))
+            item['local_address'] = (
+                napalm_base.helpers.convert(
+                    unicode, item['local_address'], ''))
+
             peer_details.append(item)
 
         return peer_details
