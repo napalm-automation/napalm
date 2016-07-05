@@ -15,9 +15,9 @@ import logging
 logger = logging.getLogger(__file__)
 
 # import helpers
-from helpers import build_help
-from helpers import open_connection
-from helpers import configure_logging
+from napalm_base.clitools.helpers import build_help
+from napalm_base.clitools.helpers import open_connection
+from napalm_base.clitools.helpers import configure_logging
 
 
 def main():
