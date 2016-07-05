@@ -1329,6 +1329,8 @@ class EOSDriver(NetworkDriver):
             item['suppress_4byte_as'] = False
             item['local_as_prepend'] = False
             item['flap_count'] = 0
+            item['active_prefix_count'] = 0
+            item['suppressed_prefix_count'] = 0
 
             # Converting certain fields into int
             for key in int_fields:
