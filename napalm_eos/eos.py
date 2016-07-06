@@ -1233,9 +1233,8 @@ class EOSDriver(NetworkDriver):
         else:
             try:
                 peer_ver = IPAddress(neighbor_address).version
-            except Exception:
-                LOG.error('Invalid BGP neighbor address %s' % neighbor_address)
-                return
+            except Exception as e:
+                raise e
 
             if peer_ver == 4:
                 commands.append('show ip bgp neighbors %s vrf all' %
