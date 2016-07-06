@@ -25,20 +25,21 @@ Value received_prefix_count (\d+)
 Value advertise_prefix_count (\d+)
 
 Start
-  ^\s+BGP state is ${connection_state}, ${up} .*
-  ^.*, VRF ${routing_table}
-  ^\s+Last state was ${previous_connection_state}
-  ^\s+Nexthop matches local IP address: ${multihop}
   ^BGP neighbor is ${remote_address}, remote AS ${remote_as}, .*
-  ^Local AS is ${local_as}.*
-  ^\s+Inbound route map is ${import_policy}
-  ^\s+Outbound route map is ${export_policy}
-  ^\s+Last event was ${last_event}
+  ^.*, VRF ${routing_table}
   ^\s+Hold time is ${holdtime}, keepalive interval is ${keepalive} seconds
   ^\s+Configured hold time is ${configured_holdtime}, keepalive interval is ${configured_keepalive} seconds
-  ^\s+Total messages:\s+${output_messages}\s+${input_messages}
-  ^\s+Updates:\s+${output_updates}\s+${input_updates}
+  ^\s+BGP state is ${connection_state}, ${up} .*
+  ^\s+Last state was ${previous_connection_state}
+  ^\s+Last event was ${last_event}
   ^\s+OutQ depth is ${messages_queued_out}
+  ^\s+Updates:\s+${output_updates}\s+${input_updates}
+  ^\s+Total messages:\s+${output_messages}\s+${input_messages}
   ^\s+IPv4 Unicast:\s+${advertise_prefix_count}\s+${received_prefix_count}
+  ^\s+Inbound route map is ${import_policy}
+  ^\s+Outbound route map is ${export_policy}
+  ^\s+Nexthop matches local IP address: ${multihop}
+  ^Local AS is ${local_as}.*
   ^Local TCP address is ${local_address}, local port is ${local_port}
-  ^.*, remote port is ${remote_port} -> Next.Record
+  ^.*, remote port is ${remote_port}
+  ^Auto-Local-Addr .* -> Next.Record
