@@ -15,36 +15,40 @@ logger = logging.getLogger('cl-napalm-config.py')
 
 # import helpers
 from napalm_base.clitools.helpers import build_help
-from napalm_base.clitools.helpers import open_connection
 from napalm_base.clitools.helpers import configure_logging
+from napalm_base.clitools.helpers import parse_optional_args
 
 
 def run(vendor, hostname, user, password, strategy, optional_args, config_file, dry_run):
 
-    device = open_connection(logger, vendor, hostname, user, password, optional_args)
+    logger.debug('Getting driver for OS "{driver}"'.format(driver=vendor))
+    driver = get_network_driver(vendor)
 
-    logger.debug('Strategy for loading configuration is "{strategy}"'.format(strategy=strategy))
-    if strategy == 'replace':
-        strategy_method = device.load_replace_candidate
-    elif strategy == 'merge':
-        strategy_method = device.load_merge_candidate
+    optional_args = parse_optional_args(optional_args)
 
-    logger.debug('Loading configuration file "{config}"'.format(config=config_file))
-    strategy_method(filename=config_file)
+    logger.debug('Connecting to device "{device}" with user "{user}" and optional_args={optional_args}'.format(
+                    device=hostname, user=user, optional_args=optional_args))
+    with driver(hostname, user, password, optional_args=optional_args) as device:
+        logger.debug('Strategy for loading configuration is "{strategy}"'.format(strategy=strategy))
+        if strategy == 'replace':
+            strategy_method = device.load_replace_candidate
+        elif strategy == 'merge':
+            strategy_method = device.load_merge_candidate
 
-    logger.debug('Comparing configuration')
-    diff = device.compare_config()
+        logger.debug('Loading configuration file "{config}"'.format(config=config_file))
+        strategy_method(filename=config_file)
 
-    if dry_run:
-        logger.debug('Dry-run. Discarding configuration.')
-    else:
-        logger.debug('Committing configuration')
-        device.commit_config()
-    logger.debug('Closing session')
+        logger.debug('Comparing configuration')
+        diff = device.compare_config()
 
-    device.close()
+        if dry_run:
+            logger.debug('Dry-run. Discarding configuration.')
+        else:
+            logger.debug('Committing configuration')
+            device.commit_config()
+        logger.debug('Closing session')
 
-    return diff
+        return diff
 
 
 def main():

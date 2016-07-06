@@ -105,20 +105,8 @@ def configure_logging(logger, debug):
     return logger
 
 
-def open_connection(logger, vendor, hostname, user, password, optional_args):
-
-    logger.debug('Getting driver for OS "{driver}"'.format(driver=vendor))
-    driver = get_network_driver(vendor)
+def parse_optional_args(optional_args):
 
     if optional_args is not None:
-        optional_args = {x.split('=')[0]: x.split('=')[1] for x in optional_args.replace(' ', '').split(',')}
-
-    logger.debug('Connecting to device "{device}" with user "{user}" and optional_args={optional_args}'.format(
-                    device=hostname, user=user, optional_args=optional_args))
-
-    device = driver(hostname, user, password, optional_args=optional_args)
-    device.open()
-
-    logger.debug('Connected!')
-
-    return device
+        return {x.split('=')[0]: x.split('=')[1] for x in optional_args.replace(' ', '').split(',')}
+    return {}

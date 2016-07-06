@@ -15,9 +15,10 @@ import logging
 logger = logging.getLogger(__file__)
 
 # import helpers
+from napalm_base import get_network_driver
 from napalm_base.clitools.helpers import build_help
-from napalm_base.clitools.helpers import open_connection
 from napalm_base.clitools.helpers import configure_logging
+from napalm_base.clitools.helpers import parse_optional_args
 
 
 def main():
@@ -25,20 +26,18 @@ def main():
     args = build_help(connect_test=True)
     configure_logging(logger, args.debug)
 
-    device = open_connection(logger,
-                             args.vendor,
-                             args.hostname,
-                             args.user,
-                             args.password,
-                             args.optional_args)
+    logger.debug('Getting driver for OS "{driver}"'.format(driver=args.vendor))
+    driver = get_network_driver(args.vendor)
 
-    print('Successfully connected to the device.')
+    optional_args = parse_optional_args(args.optional_args)
+    logger.debug('Connecting to device "{device}" with user "{user}" and optional_args={optional_args}'.format(
+                    device=args.hostname, user=args.user, optional_args=optional_args))
 
-    logger.debug('Closing session...')
-
-    device.close()
-
-    logger.debug('Connection closed!')
+    with driver(args.hostname,
+                args.user,
+                args.password,
+                optional_args=optional_args) as device:
+        print('Successfully connected to the device.')
 
     sys.exit(0)
 
