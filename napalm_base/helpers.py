@@ -114,7 +114,7 @@ def textfsm_extractor(cls, template_name, raw_text):
         index = 0
         entry = {}
         for entry_value in obj:
-            entry[fsm_handler.header[index].lower()] = str(entry_value)
+            entry[fsm_handler.header[index].lower()] = entry_value
             index += 1
         textfsm_data.append(entry)
 
