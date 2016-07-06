@@ -1,0 +1,18 @@
+<!--
+
+Please, open the issue in the correct repo to help us keep things organized : )
+
+* Here if it is a general issue or you just want to discuss something about the project.
+* [napalm-base](https://github.com/napalm-automation/napalm-base/issues) if it's a general issue not specific to a particular device, something regarding the data models or you don't know where it belongs.
+* [napalm-eos](https://github.com/napalm-automation/napalm-eos/issues) If it's an issue affecting `eos`
+* [napalm-fortios](https://github.com/napalm-automation/napalm-fortios/issues) If it's an issue affecting `fortios`
+* [napalm-ios](https://github.com/napalm-automation/napalm-ios/issues) If it's an issue affecting `ios`
+* [napalm-ios-xr](https://github.com/napalm-automation/napalm-ios-xr/issues) If it's an issue affecting `ios-xr`
+* [napalm-junos](https://github.com/napalm-automation/napalm-junos/issues) If it's an issue affecting `junos`
+* [napalm-nxos](https://github.com/napalm-automation/napalm-nxos/issues) If it's an issue affecting `nxos`
+* [napalm-panos](https://github.com/napalm-automation/napalm-panos/issues) If it's an issue affecting `panos`
+* [napalm-pluribus](https://github.com/napalm-automation/napalm-pluribus/issues) If it's an issue affecting `pluribus`
+
+-->
+
+### Description of Issue/Question
