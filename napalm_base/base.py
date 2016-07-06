@@ -742,11 +742,13 @@ class NetworkDriver(object):
 
         :param neighbor_address: Retuns the statistics for a spcific BGP neighbor.
 
-        The keys of the dictionary represent the AS number of the neighbors.
-        Inner dictionaries contain the following fields:
+        Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).
+        The keys of the inner dictionary represent the AS number of the neighbors.
+        Leaf dictionaries contain the following fields:
             * up (True/False)
             * local_as (int)
             * remote_as (int)
+            * router_id (string)
             * local_address (string)
             * routing_table (string)
             * local_address_configured (True/False)
@@ -782,44 +784,46 @@ class NetworkDriver(object):
         Example::
 
             {
-                8121: [
-                    {
-                        'up'                        : True,
-                        'local_as'                  : 13335,
-                        'remote_as'                 : 8121,
-                        'local_address'             : u'172.101.76.1',
-                        'local_address_configured'  : True,
-                        'local_port'                : 179,
-                        'routing_table'             : u'inet.0',
-                        'remote_address'            : u'192.247.78.0',
-                        'remote_port'               : 58380,
-                        'multihop'                  : False,
-                        'multipath'                 : True,
-                        'remove_private_as'         : True,
-                        'import_policy'             : u'4-NTT-TRANSIT-IN',
-                        'export_policy'             : u'4-NTT-TRANSIT-OUT',
-                        'input_messages'            : 123,
-                        'output_messages'           : 13,
-                        'input_updates'             : 123,
-                        'output_updates'            : 5,
-                        'messages_queued_out'       : 23,
-                        'connection_state'          : u'Established',
-                        'previous_connection_state' : u'EstabSync',
-                        'last_event'                : u'RecvKeepAlive',
-                        'suppress_4byte_as'         : False,
-                        'local_as_prepend'          : False,
-                        'holdtime'                  : 90,
-                        'configured_holdtime'       : 90,
-                        'keepalive'                 : 30,
-                        'configured_keepalive'      : 30,
-                        'active_prefix_count'       : 132808,
-                        'received_prefix_count'     : 566739,
-                        'accepted_prefix_count'     : 566479,
-                        'suppressed_prefix_count'   : 0,
-                        'advertise_prefix_count'    : 0,
-                        'flap_count'                : 27
-                    }
-                ]
+                'global': {
+                    8121: [
+                        {
+                            'up'                        : True,
+                            'local_as'                  : 13335,
+                            'remote_as'                 : 8121,
+                            'local_address'             : u'172.101.76.1',
+                            'local_address_configured'  : True,
+                            'local_port'                : 179,
+                            'routing_table'             : u'inet.0',
+                            'remote_address'            : u'192.247.78.0',
+                            'remote_port'               : 58380,
+                            'multihop'                  : False,
+                            'multipath'                 : True,
+                            'remove_private_as'         : True,
+                            'import_policy'             : u'4-NTT-TRANSIT-IN',
+                            'export_policy'             : u'4-NTT-TRANSIT-OUT',
+                            'input_messages'            : 123,
+                            'output_messages'           : 13,
+                            'input_updates'             : 123,
+                            'output_updates'            : 5,
+                            'messages_queued_out'       : 23,
+                            'connection_state'          : u'Established',
+                            'previous_connection_state' : u'EstabSync',
+                            'last_event'                : u'RecvKeepAlive',
+                            'suppress_4byte_as'         : False,
+                            'local_as_prepend'          : False,
+                            'holdtime'                  : 90,
+                            'configured_holdtime'       : 90,
+                            'keepalive'                 : 30,
+                            'configured_keepalive'      : 30,
+                            'active_prefix_count'       : 132808,
+                            'received_prefix_count'     : 566739,
+                            'accepted_prefix_count'     : 566479,
+                            'suppressed_prefix_count'   : 0,
+                            'advertise_prefix_count'    : 0,
+                            'flap_count'                : 27
+                        }
+                    ]
+                }
             }
         """
         raise NotImplementedError
