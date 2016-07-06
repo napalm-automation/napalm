@@ -29,7 +29,7 @@ Start
   ^.*, VRF ${routing_table}
   ^\s+Last state was ${previous_connection_state}
   ^\s+Nexthop matches local IP address: ${multihop}
-  ^.*, remote AS ${remote_as}, .*
+  ^BGP neighbor is ${remote_address}, remote AS ${remote_as}, .*
   ^Local AS is ${local_as}.*
   ^\s+Inbound route map is ${import_policy}
   ^\s+Outbound route map is ${export_policy}
@@ -41,4 +41,4 @@ Start
   ^\s+OutQ depth is ${messages_queued_out}
   ^\s+IPv4 Unicast:\s+${advertise_prefix_count}\s+${received_prefix_count}
   ^Local TCP address is ${local_address}, local port is ${local_port}
-  ^Remote TCP address is ${remote_address}, remote port is ${remote_port} -> Next.Record
+  ^.*, remote port is ${remote_port} -> Next.Record
