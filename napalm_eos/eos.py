@@ -870,7 +870,7 @@ class EOSDriver(NetworkDriver):
             ipv4_list = list()
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = dict()
-                
+
             if u'ipv4' not in interfaces_ip.get(interface_name):
                 interfaces_ip[interface_name][u'ipv4'] = dict()
             if u'ipv6' not in interfaces_ip.get(interface_name):
@@ -1233,9 +1233,8 @@ class EOSDriver(NetworkDriver):
         else:
             try:
                 peer_ver = IPAddress(neighbor_address).version
-            except Exception:
-                LOG.error('Invalid BGP neighbor address %s' % neighbor_address)
-                return
+            except Exception as e:
+                raise e
 
             if peer_ver == 4:
                 commands.append('show ip bgp neighbors %s vrf all' %
