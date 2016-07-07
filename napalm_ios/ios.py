@@ -1,5 +1,5 @@
 """NAPALM Cisco IOS Handler."""
-
+# ASA
 # Copyright 2015 Spotify AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
@@ -1302,3 +1302,75 @@ class IOSDriver(NetworkDriver):
                 raise ValueError("Unexpected Response from the device")
 
         return snmp_dict
+
+    def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
+        """
+        Execute ping on the device and returns a dictionary with the result.
+
+        Output dictionary has one of following keys:
+            * success
+            * error
+        In case of success, inner dictionary will have the followin keys:
+            * probes_sent (int)
+            * packet_loss (int)
+            * rtt_min (float)
+            * rtt_max (float)
+            * rtt_avg (float)
+            * rtt_stddev (float)
+            * results (list)
+        'results' is a list of dictionaries with the following keys:
+            * ip_address (str)
+            * rtt (float)
+        """
+        ping_dict = {}
+        command = 'ping {}'.format(destination)
+        command += ' timeout {}'.format(timeout)
+        command += ' size {}'.format(size)
+        command += ' repeat {}'.format(count)
+        if source != '':
+            command += ' source {}'.format(source)
+
+        print(command)
+        output = self.device.send_command(command)
+        print(output)
+        if '%' in output:
+            ping_dict['error'] = output
+        elif 'Sending' in output:
+            ping_dict['success'] = {
+                                'probes_sent': 0,
+                                'probes_sent': 0,
+                                'packet_loss': 0,
+                                'rtt_min': 0.0,
+                                'rtt_max': 0.0,
+                                'rtt_avg': 0.0,
+                                'rtt_stddev': 0.0,
+                                'results': []
+            }
+
+            for line in output.splitlines():
+                fields = line.split()
+                if 'Success rate is 0' in line:
+                    sent_and_received = re.search(r'\((\d*)/(\d*)\)', fields[5])
+                    probes_sent = int(sent_and_received.groups()[0])
+                    probes_received = int(sent_and_received.groups()[1])
+                    ping_dict['success']['probes_sent'] = probes_sent
+                    ping_dict['success']['packet_loss'] = probes_sent - probes_received
+                elif 'Success rate is' in line:
+                    sent_and_received = re.search(r'\((\d*)/(\d*)\)', fields[5])
+                    probes_sent = int(sent_and_received.groups()[0])
+                    probes_received = int(sent_and_received.groups()[1])
+                    min_avg_max = re.search(r'(\d*)/(\d*)/(\d*)', fields[9])
+                    ping_dict['success']['probes_sent'] = probes_sent
+                    ping_dict['success']['packet_loss'] = probes_sent - probes_received
+                    ping_dict['success'].update({
+                                    'rtt_min': float(min_avg_max.groups()[0]),
+                                    'rtt_avg': float(min_avg_max.groups()[1]),
+                                    'rtt_max': float(min_avg_max.groups()[2]),
+                    })
+                    results_array = []
+                    for i in range(probes_received):
+                        results_array.append({'ip_address': unicode(destination), 'rtt': 0.0})
+
+                    ping_dict['success'].update({'results': results_array})
+
+        return ping_dict
