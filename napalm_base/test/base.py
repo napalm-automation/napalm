@@ -283,9 +283,12 @@ class TestGettersNetworkDriver:
 
         result = len(get_bgp_neighbors_detail) > 0
 
-        for remote_as, neighbor_list in get_bgp_neighbors_detail.iteritems():
-            for neighbor in neighbor_list:
-                result = result and self._test_model(models.peer_details, neighbor)
+        for vrf, vrf_ases in get_bgp_neighbors_detail.iteritems():
+            result = result and isinstance(vrf, unicode)
+            for remote_as, neighbor_list in vrf_ases.iteritems():
+                result = result and isinstance(remote_as, unicode)
+                for neighbor in neighbor_list:
+                    result = result and self._test_model(models.peer_details, neighbor)
 
         self.assertTrue(result)
 

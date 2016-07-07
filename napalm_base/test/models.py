@@ -124,6 +124,7 @@ peer_details = {
     'up'                        : bool,
     'local_as'                  : int,
     'remote_as'                 : int,
+    'router_id'                 : unicode,
     'local_address'             : unicode,
     'routing_table'             : unicode,
     'local_address_configured'  : bool,
