@@ -32,4 +32,5 @@ script:
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_snmp_information
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_users
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_traceroute
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors_detail
 - cd ../..
