@@ -327,6 +327,7 @@ junos_bgp_neighbors_view:
     up: {peer-state: True=Established}
     local_as: {local-as: int}
     remote_as: {peer-as: int}
+    router_id: {peer-id: unicode}
     local_address: local-address
     peer_address: peer-address
     options: bgp-option-information/bgp-options
@@ -346,13 +347,20 @@ junos_bgp_neighbors_view:
     configured_holdtime: {bgp-option-information/holdtime: int}
     keepalive: {keepalive-interval: int}
     configured_keepalive: {keepalive-interval: int}
-    routing_table: {bgp-rib/name: unicode}
-    active_prefix_count: {bgp-rib/active-prefix-count: int}
-    received_prefix_count: {bgp-rib/received-prefix-count: int}
-    accepted_prefix_count: {bgp-rib/accepted-prefix-count: int}
-    suppressed_prefix_count: {bgp-rib/suppressed-prefix-count: int}
-    advertise_prefix_count: {bgp-rib/advertised-prefix-count: int}
+    rib: junos_bgp_rib_table
     flap_count: {flap-count: int}
+
+junos_bgp_rib_table:
+  item: bgp-rib
+  key: name
+  view: junos_bgp_rib_view
+
+junos_bgp_rib_view:
+  active_prefix_count: {active-prefix-count: int}
+  received_prefix_count: {received-prefix-count: int}
+  accepted_prefix_count: {accepted-prefix-count: int}
+  suppressed_prefix_count: {suppressed-prefix-count: int}
+  advertised_prefix_count: {advertised-prefix-count: int}
 
 ###
 ### ARP Table
