@@ -94,6 +94,7 @@ Other methods
 _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus   PANOS
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 **load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|   |yes|  |yes|      |yes|    
+**ping**                       |no|   |no|    |no|    |no|     |no|    |no|    |yes|  |no|       |no|
 **traceroute**                 |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 
