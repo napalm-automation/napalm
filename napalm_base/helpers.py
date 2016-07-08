@@ -7,11 +7,29 @@ import sys
 # third party libs
 import jinja2
 import textfsm
+from netaddr import EUI
+from netaddr import mac_unix
+from netaddr.core import AddrFormatError
 
 # local modules
 import napalm_base.exceptions
 
 from napalm_base.utils.jinja_filters import CustomJinjaFilters
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# helper classes -- will not be exported
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+class _MACFormat(mac_unix):
+    pass
+
+_MACFormat.word_fmt = '%.2X'
+
+# ----------------------------------------------------------------------------------------------------------------------
+# callable helpers
+# ----------------------------------------------------------------------------------------------------------------------
 
 
 def load_template(cls, template_name, template_source=None, template_path=None,
@@ -167,3 +185,30 @@ def convert(to, who, default=u''):
         return to(who)
     except:
         return default
+
+
+def mac(raw):
+
+    """
+    Converts a raw string to a standardised MAC Address EUI Format.
+
+    :param raw: the raw string containing the value of the MAC Address
+    :return: a string with the MAC Address in EUI format
+
+    Example:
+
+    .. code-block:: python
+
+        >>> mac('0123.4567.89ab')
+        u'01:23:45:67:89:AB'
+    """
+
+    mac = ''
+
+    try:
+        mac = unicode(EUI(raw, dialect=_MACFormat))
+    except AddrFormatError:
+        return ''
+
+    return mac
+
