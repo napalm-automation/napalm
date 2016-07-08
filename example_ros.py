@@ -92,7 +92,7 @@ except NotImplementedError as e:
 
 print 'foo.get_route_to()'
 try:
-	pprint.pprint(foo.get_route_to(destination='', protocol=''))
+	pprint.pprint(foo.get_route_to(destination='8.8.8.8', protocol=''))
 except NotImplementedError as e:
 	print e.message
 
