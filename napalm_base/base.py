@@ -745,6 +745,7 @@ class NetworkDriver(object):
         Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).
         The keys of the inner dictionary represent the AS number of the neighbors.
         Leaf dictionaries contain the following fields:
+
             * up (True/False)
             * local_as (int)
             * remote_as (int)
@@ -819,7 +820,7 @@ class NetworkDriver(object):
                             'received_prefix_count'     : 566739,
                             'accepted_prefix_count'     : 566479,
                             'suppressed_prefix_count'   : 0,
-                            'advertise_prefix_count'    : 0,
+                            'advertised_prefix_count'   : 0,
                             'flap_count'                : 27
                         }
                     ]

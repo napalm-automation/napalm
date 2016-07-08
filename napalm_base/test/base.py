@@ -286,7 +286,7 @@ class TestGettersNetworkDriver:
         for vrf, vrf_ases in get_bgp_neighbors_detail.iteritems():
             result = result and isinstance(vrf, unicode)
             for remote_as, neighbor_list in vrf_ases.iteritems():
-                result = result and isinstance(remote_as, unicode)
+                result = result and isinstance(remote_as, int)
                 for neighbor in neighbor_list:
                     result = result and self._test_model(models.peer_details, neighbor)
 
