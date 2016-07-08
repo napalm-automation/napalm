@@ -7,7 +7,7 @@ import re
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ConnectionException, SessionLockedException, MergeConfigException, ReplaceConfigException, CommandErrorException
 import napalm_base.utils.string_parsers
-import yandc.mikrotik
+from yandc import mikrotik
 
 
 class ROSDriver(NetworkDriver):
@@ -24,14 +24,25 @@ class ROSDriver(NetworkDriver):
 		if isinstance(optional_args, dict):
 			self.snmp_community = optional_args.get('snmp_community', None)
 			self.snmp_port = optional_args.get('snmp_port', 161)
-		
+
 	def cli(self, *commands):
 		cli_output = {}
 		for command in commands:
+			kwargs = {}
+			if command[0] == '/':
+					run_command = command
+			else:
+				find_index = command.find('=/')
+				if find_index == -1:
+					raise CommandErrorException('Invalid command - [{}]'.format(command))
+				option, run_command = command.split('=/', 1)
+				if option == 'cache':
+					kwargs['use_cache'] = True
+				run_command = '/{}'.format(run_command)
 			try:
-				device_output = self.device.cli_command(command)
+				device_output = self.device.cli_command(run_command, **kwargs)
 			except Exception as e:
-				raise CommandErrorException(e.message)
+				raise CommandErrorException(e)
 			if len(device_output) == 1:
 				if self.device.is_cli_error(device_output[0]):
 					raise CommandErrorException(device_output[0])
@@ -99,28 +110,8 @@ class ROSDriver(NetworkDriver):
 		else:
 			raise NotImplementedError
 
-	def config_sanity_check(self):
-		if self.merge_config:
-			config_regexp = re.compile(r'(.+)\s+(add|set)\s+(.*)$')
-			for config_line in self.candidate_config:
-				if config_line[0] == '#':
-					continue
-				re_match = re.match(config_regexp, config_line)
-				if re_match is None:
-					return False
-		return True	
-
 	def discard_config(self):
 		self.candidate_config = []
-
-	@staticmethod
-	def format_mac(mac_address):
-		if len(mac_address) != 17:
-			return mac_address
-		if mac_address.find(':') == -1:
-			return mac_address
-		mac_parts = mac_address.replace(':', '')
-		return ':'.join(list([mac_parts[:4], mac_parts[4:8], mac_parts[8:]]))
 
 	def get_arp_table(self):
 		cli_command = '/ip arp print without-paging terse'
@@ -131,10 +122,10 @@ class ROSDriver(NetworkDriver):
 				continue
 			arp_table.append(
 				{
-					u'interface': arp_entry.get('interface'),
-					u'mac': self.format_mac(arp_entry.get('mac-address')),
-					u'ip': arp_entry.get('address'),
-					u'age': -1,
+					'interface': unicode(arp_entry.get('interface')),
+					'mac': unicode(self._format_mac(arp_entry.get('mac-address'))),
+					'ip': unicode(arp_entry.get('address')),
+					'age': float(-1),
 				}
 			)
 		return arp_table
@@ -145,39 +136,28 @@ class ROSDriver(NetworkDriver):
 	def get_bgp_neighbors(self):
 		bgp_neighbors = {}
 		if not self.device.system_package_enabled('routing'):
-			return bgp_neighbors
+			return bgp_neighbors_detail
 
-		bgp_peer_print = '/routing bgp peer print without-paging status'
-		bgp_instance_print = '/routing bgp instance print without-paging terse'
-		cli_output = self.cli(bgp_peer_print, bgp_instance_print)
+		for routing_table, bgp_peers in self.device.index_values(self._get_bgp_peers(), 'routing-table').iteritems():
+			routing_table = unicode(routing_table)
+			bgp_neighbors[routing_table] = {
+				'router_id': u'',
+				'peers': {},
+			}
 
-		peer_print_status = cli_output[bgp_peer_print]
-		peer_print_status.pop(0)
-		peer_status_values = self.device.print_to_values_structured(self.device.print_concat(peer_print_status))
-		peer_status_values_indexed = self.device.index_values(peer_status_values, 'instance')
-
-		for bgp_instance in self.device.print_to_values_structured(cli_output[bgp_instance_print]):
-			routing_table = bgp_instance['routing-table'].replace('"', '')
-			if routing_table == '':
-				routing_table = 'global'
-			if not routing_table in bgp_neighbors:
-				bgp_neighbors[routing_table] = {
-					'router_id': bgp_instance['router-id']
-				}
-			for bgp_peer in peer_status_values_indexed[bgp_instance['name']]:
-				if bgp_peer['remote-address'] in bgp_neighbors[routing_table]:
-					raise Exception('Peer already seen')
-				bgp_neighbors[routing_table][bgp_peer['remote-address']] = {
-					'local_as': bgp_instance['as'],
-					'remote_as': bgp_peer['remote-as'],
-					'remote_id': bgp_peer.get('remote-id', ''),
+			router_ids = {}
+			for bgp_peer in bgp_peers:
+				bgp_neighbors[routing_table]['peers'][bgp_peer['remote-address']] = {
+					'local_as': int(bgp_peer['local-as']),
+					'remote_as': int(bgp_peer['remote-as']),
+					'remote_id': unicode(bgp_peer.get('remote-id', '')),
 					'is_up': bgp_peer['state'] == 'established',
 					'is_enabled': bgp_peer['flags'].find('X') == -1,
-					'description': bgp_peer['name'].replace('"', ''),
+					'description': unicode(bgp_peer['name'].replace('"', '')),
 					'uptime': self.device.to_seconds(bgp_peer.get('uptime', '')),
 					'address_family': {
 						'ipv4': {
-							'received_prefixes': bgp_peer.get('prefix-count', 0),
+							'received_prefixes': int(bgp_peer.get('prefix-count', 0)),
 							'accepted_prefixes': 0,
 							'sent_prefixes': 0
 						},
@@ -188,6 +168,10 @@ class ROSDriver(NetworkDriver):
 						}
 					}
 				}
+				router_ids[bgp_peer['router-id']] = True
+			if len(router_ids) != 1:
+				raise ValueError('Multiple router-id values seen')
+			bgp_neighbors[routing_table]['router_id'] = unicode(router_ids.keys()[0])
 		return bgp_neighbors
 
 	def get_bgp_neighbors_detail(self, neighbor_address=''):
@@ -195,71 +179,134 @@ class ROSDriver(NetworkDriver):
 		if not self.device.system_package_enabled('routing'):
 			return bgp_neighbors_detail
 
-		bgp_peer_print = '/routing bgp peer print without-paging status'
-		if neighbor_address != '':
-			bgp_peer_print += ' where name ="{}"'.format(neighbor_address)
-		bgp_instance_print = '/routing bgp instance print without-paging terse'
-		cli_output = self.cli(bgp_peer_print, bgp_instance_print)
-
-		peer_print_status = cli_output[bgp_peer_print]
-		peer_print_status.pop(0)
-
-		bgp_instances = self.device.index_values(self.device.print_to_values_structured(cli_output[bgp_instance_print]), 'name')
-
-		for bgp_peer in self.device.print_to_values_structured(self.device.print_concat(peer_print_status)):
-			bgp_instance = bgp_instances[bgp_peer['instance']][0]
-			remote_as = bgp_peer['remote-as']
-			if not remote_as in bgp_neighbors_detail:
-				bgp_neighbors_detail[remote_as] = []
-			bgp_neighbors_detail[remote_as].append(
-				{
-					'up': bgp_peer['state'] == 'established',
-					'local_as': bgp_instance['as'],
-					'remote_as': bgp_peer['remote-as'],
-					'local_address': bgp_peer.get('local-address'),
-					'routing_table': bgp_instance['routing-table'].replace('"', ''),
-					'local_address_configured': '',
-					'local_port': -1,
-					'remote_address': bgp_peer['remote-address'],
-					'remote_port': -1,
-					'multihop': bgp_peer['multihop'] == 'yes',
-					'multipath': False,
-					'remove_private_as': bgp_peer['remove-private-as'] == 'yes',
-					'import_policy': '',
-					'export_policy': '',
-					'input_messages': -1,
-					'output_messages': -1,
-					'input_updates': -1,
-					'output_updates': -1,
-					'messages_queued_out': -1,
-					'connection_state': bgp_peer['state'],
-					'previous_connection_state': '',
-					'last_event': '',
-					'suppress_4byte_as': bgp_peer.get('as4-capability', '') == 'no',
-					'local_as_prepend': False,
-					'holdtime': self.device.to_seconds(bgp_peer.get('used-hold-time', '')),
-					'configured_holdtime': self.device.to_seconds(bgp_peer['hold-time']),
-					'keepalive': self.device.to_seconds(bgp_peer.get('used-keepalive-time', '')),
-					'configured_keepalive': -1,
-					'active_prefix_count': -1,
-					'received_prefix_count': -1,
-					'accepted_prefix_count': -1,
-					'suppressed_prefix_count': -1,
-					'advertised_prefix_count': -1,
-					'flap_count': -1,
-					'_remote_id': bgp_peer.get('remote-id', ''),
-				}
-			)
+		for routing_table, peers in self.device.index_values(self._get_bgp_peers(), 'routing-table').iteritems():
+			routing_table = unicode(routing_table)
+			bgp_neighbors_detail[routing_table] = {}
+			for remote_as, bgp_peers in self.device.index_values(peers, 'remote-as').iteritems():
+				remote_as = int(remote_as)
+				if not remote_as in bgp_neighbors_detail[routing_table]:
+					bgp_neighbors_detail[routing_table][remote_as] = []
+				for bgp_peer in bgp_peers:
+					bgp_neighbors_detail[routing_table][remote_as].append(
+						{
+							'up': bgp_peer['state'] == 'established',
+							'local_as': int(bgp_peer['local-as']),
+							'remote_as': int(bgp_peer['remote-as']),
+							'router_id': unicode(bgp_peer.get('router_id', '')),
+							'local_address': unicode(bgp_peer.get('local-address')),
+							'routing_table': unicode(bgp_peer['routing-table']),
+							'local_address_configured': False,
+							'local_port': -1,
+							'remote_address': unicode(bgp_peer['remote-address']),
+							'remote_port': -1,
+							'multihop': bgp_peer['multihop'] == 'yes',
+							'multipath': False,
+							'remove_private_as': bgp_peer['remove-private-as'] == 'yes',
+							'import_policy': u'',
+							'export_policy': u'',
+							'input_messages': -1,
+							'output_messages': -1,
+							'input_updates': -1,
+							'output_updates': -1,
+							'messages_queued_out': -1,
+							'connection_state': unicode(bgp_peer['state']),
+							'previous_connection_state': u'',
+							'last_event': u'',
+							'suppress_4byte_as': bgp_peer.get('as4-capability', '') == 'no',
+							'local_as_prepend': False,
+							'holdtime': self.device.to_seconds(bgp_peer.get('used-hold-time', '')),
+							'configured_holdtime': self.device.to_seconds(bgp_peer['hold-time']),
+							'keepalive': self.device.to_seconds(bgp_peer.get('used-keepalive-time', '')),
+							'configured_keepalive': -1,
+							'active_prefix_count': -1,
+							'received_prefix_count': -1,
+							'accepted_prefix_count': -1,
+							'suppressed_prefix_count': -1,
+							'advertised_prefix_count': -1,
+							'flap_count': -1,
+						}
+					)
 		return bgp_neighbors_detail
 
+	def get_bridge_fdb(self):
+		bridge_host_print = '/interface bridge host print without-paging terse'
+		bridge_host_values = self.device.index_values(self.device.print_to_values_structured(self.cli(bridge_host_print)[bridge_host_print]), 'bridge')
+
+		switch_host_print = '/interface ethernet switch host print without-paging terse'
+		try:
+			cli_output = self.cli(switch_host_print)[switch_host_print]
+		except CommandErrorException as e:
+			switch_host_values = {}
+		else:
+			switch_host_values = self.device.index_values(self.device.print_to_values_structured(cli_output), 'mac-address')
+
+		interface_wireless_print = '/interface wireless print without-paging terse'
+		wireless_registration_print = '/interface wireless registration-table print without-paging terse'
+		try:
+			cli_output = self.cli(interface_wireless_print, wireless_registration_print)
+		except CommandErrorException as e:
+			wireless_registration_values = {}
+		else:
+			interface_wireless_values = self.device.index_values(self.device.print_to_values_structured(cli_output[interface_wireless_print]))
+			wireless_registration_values = self.device.index_values(self.device.print_to_values_structured(cli_output[wireless_registration_print]), 'mac-address')
+
+		bridge_fdb = {}
+		for key, value in bridge_host_values.iteritems():
+			bridge = unicode(key)
+			if not bridge in bridge_fdb:
+				bridge_fdb[bridge] = []
+			for bridge_mac in value:
+				if bridge_mac['flags'].find('L') != -1:
+					pass
+
+				mac_address = bridge_mac['mac-address']
+
+				fdb_entry = {
+					'mac_address': mac_address,
+					'interface': key,
+					'vlan': 0,
+					'static': False,
+					'active': True,
+					'moves': -1,
+					'last_move': float(self.device.to_seconds(bridge_mac['age'])),
+				}
+
+				on_interface = bridge_mac['on-interface']
+
+				if_type = self.device.interface_type(on_interface)
+				if if_type == 'ether':
+					if mac_address in switch_host_values:
+						if len(switch_host_values[mac_address]) > 2:
+							raise ValueError('Too many MAC addresses found')
+						for switch_mac in switch_host_values[mac_address]:
+							if on_interface in [switch_mac['ports'], self.device.master_port(switch_mac['ports'])]:
+								fdb_entry['interface'] = switch_mac['ports']
+								fdb_entry['static'] = switch_mac['flags'].find('D') == -1
+								fdb_entry['vlan'] = switch_mac['vlan-id']
+								break
+				elif if_type == 'wlan':
+					if bridge_mac['flags'].find('L') == -1 and bridge_mac['flags'].find('E') == -1:
+						raise ValueError('External FDB flag not set')
+					if mac_address in wireless_registration_values:
+						interface = wireless_registration_values[mac_address][0]['interface']
+						fdb_entry['interface'] = interface
+						if interface_wireless_values[interface][0]['vlan-mode'] != 'no-tag':
+							fdb_entry['vlan'] = interface_wireless_values[interface][0]['vlan-id']
+				else:
+					raise ValueError('Unsupported type - [{}][{}]'.format(if_type, on_interface))
+
+				bridge_fdb[bridge].append(fdb_entry)
+		return bridge_fdb
+
 	def get_environment(self):
-		system_resource_print = '/system resource print without-paging'
+		raise NotImplementedError('get_environment()')
+		system_resource_print = 'cache=/system resource print without-paging'
 		system_health_print = '/system health print without-paging'
 		resource_cpu_print = '/system resource cpu print without-paging terse'
 		cli_output = self.cli(system_resource_print, system_health_print, resource_cpu_print)
 
-		resource_values = self.device.print_to_values(cli_output[system_resource_print])
-		health_values = self.device.print_to_values(cli_output[system_health_print])
+		system_resource_values = self.device.print_to_values(cli_output[system_resource_print])
+		system_health_values = self.device.print_to_values(cli_output[system_health_print])
 
 		cpu_load = dict((v['cpu'], v['load'].rstrip('%')) for v in self.device.print_to_values_structured(cli_output[resource_cpu_print]))
 
@@ -271,7 +318,7 @@ class ROSDriver(NetworkDriver):
 			},
 			'temperature': {
 				'board': {
-					'temperature': float(health_values.get('temperature', '-1.0').rstrip('C')),
+					'temperature': float(system_health_values.get('temperature', '-1.0').rstrip('C')),
 					'is_alert': False,
 					'is_critical': False,
 				}
@@ -280,20 +327,20 @@ class ROSDriver(NetworkDriver):
 				'main': {
 					'status': True,
 					'capacity': 0.0,
-					'output': float(health_values.get('voltage', '0.0').rstrip('V'))
+					'output': float(system_health_values.get('voltage', '0.0').rstrip('V'))
 				}
 			},
 			'cpu': cpu_load,
 			'memory': {
-				'available_ram': float(re.sub('[KM]iB$', '', resource_values.get('total-memory'))),
-#				'used_ram': int(resource_values.get('total-memory')) - int(resource_values.get('free-memory'))
+				'available_ram': float(re.sub('[KM]iB$', '', system_resource_values.get('total-memory'))),
+#				'used_ram': int(resource_values.get('total-memory')) - int(system_resource_values.get('free-memory'))
 			}
 		}
 
 	def get_facts(self):
 		system_resource_print = '/system resource print without-paging'
 		system_identity_print = '/system identity print without-paging'
-		system_routerboard_print = '/system routerboard print without-paging'
+		system_routerboard_print = 'cache=/system routerboard print without-paging'
 		cli_output = self.cli(system_resource_print, system_identity_print, system_routerboard_print)
 
 		system_resource_values = self.device.print_to_values(cli_output[system_resource_print])
@@ -302,12 +349,12 @@ class ROSDriver(NetworkDriver):
 
 		return {
 			'uptime': self.device.to_seconds(system_resource_values['uptime']),
-			'vendor': system_resource_values['platform'],
-			'model': system_resource_values['board-name'],
-			'hostname': system_identity_values['name'],
-			'fqdn': '',
-			'os_version': system_resource_values['version'],
-			'serial_number': system_routerboard_values['serial-number'] if system_routerboard_values['routerboard'] == 'yes' else '',
+			'vendor': unicode(system_resource_values['platform']),
+			'model': unicode(system_resource_values['board-name']),
+			'hostname': unicode(system_identity_values['name']),
+			'fqdn': u'',
+			'os_version': unicode(system_resource_values['version']),
+			'serial_number': unicode(system_routerboard_values['serial-number'] if system_routerboard_values['routerboard'] == 'yes' else ''),
 			'interface_list': napalm_base.utils.string_parsers.sorted_nicely(self.device.interfaces())
 		}
 
@@ -320,24 +367,27 @@ class ROSDriver(NetworkDriver):
 			interfaces[if_name] = {
 				'is_up': if_entry['flags'].find('R') != -1,
 				'is_enabled': if_entry['flags'].find('X') == -1,
-				'description': if_entry.get('comment', ''),
-				'last_flapped': self.device.to_seconds_date_time(if_entry.get('last-link-up-time', '')),
+				'description': unicode(if_entry.get('comment', '')),
+				'last_flapped': float(self.device.to_seconds_date_time(if_entry.get('last-link-up-time', ''))),
 				'speed': -1,
-				'mac_address': self.format_mac(if_entry.get('mac-address', ''))
+				'mac_address': unicode(self._format_mac(if_entry.get('mac-address', ''))),
 			}
 		return interfaces
 
 	def get_interfaces_counters(self):
 		interface_print_stats = '/interface print without-paging stats-detail'
+		cli_output = self.cli(interface_print_stats)
 
-		stats_detail = self.cli(interface_print_stats)[interface_print_stats]
+		stats_detail = cli_output[interface_print_stats]
 		stats_detail.pop(0)
 
 		interface_counters = {}
 		for if_counters in self.device.print_to_values_structured(self.device.print_concat(stats_detail)):
 			if_name = unicode(if_counters['name'].replace('"', ''))
+			if self.device.interface_type(if_name) != 'ether':
+				continue
 			if if_name in if_counters:
-				raise Exception('Interface already seen')
+				raise ValueError('Interface already seen')
 			stats_command = '/interface ethernet print without-paging stats where name ="{}"'.format(if_name)
 			stats_output = self.cli(stats_command)[stats_command]
 			if stats_output[0] == '':
@@ -369,7 +419,7 @@ class ROSDriver(NetworkDriver):
 			if_name = unicode(key)
 			if not if_name in interfaces_ip:
 				interfaces_ip[if_name] = {
-					u'ipv4': {}
+					'ipv4': {}
 				}
 			for v in value:
 				ipv4_address, prefix_length = v['address'].split('/', 1)
@@ -383,94 +433,29 @@ class ROSDriver(NetworkDriver):
 				if_name = unicode(key)
 				if not if_name in interfaces_ip:
 					interfaces_ip[if_name] = {
-						u'ipv6': {}
+						'ipv6': {}
 					}
 				for v in value:
 					ipv6_address, prefix_length = v['address'].split('/', 1)
-					if not u'ipv6' in interfaces_ip[if_name]:
+					if not 'ipv6' in interfaces_ip[if_name]:
 						interfaces_ip[if_name][u'ipv6'] = {}
 					interfaces_ip[if_name][u'ipv6'][unicode(ipv6_address)] = dict(prefix_length=int(prefix_length))
 
 		return interfaces_ip
 
 	def get_lldp_neighbors(self):
-		return self.get_mndp_neighbors()
+		return self._get_mndp_neighbors()
 
 	def get_lldp_neighbors_detail(self, *args, **kwargs):
-		return self.get_mndp_neighbors_detail(*args, **kwargs)
+		return self._get_mndp_neighbors_detail(*args, **kwargs)
 
 	def get_mac_address_table(self):
-		switch_host_print = '/interface ethernet switch host print without-paging terse'
-
-		mac_address_table = []
-		try:
-			cli_output = self.cli(switch_host_print)
-		except CommandErrorException as e:
-			return mac_address_table
-
-		for mac_entry in self.device.print_to_values_structured(cli_output[switch_host_print]):
-			mac_address_table.append(
-				{
-					'mac': self.format_mac(mac_entry['mac-address']),
-					'interface': mac_entry['ports'],
-					'vlan': mac_entry.get('vlan-id', 0),
-					'static': mac_entry['flags'].find('D') == -1,
-					'active': True,
-					'moves': -1,
-					'last_move': 0.0
-				}
-			)
-		return mac_address_table
-
-	def get_mndp_neighbors(self):
-		ip_neighbor_print = '/ip neighbor print without-paging terse'
-
-		terse_values = self.device.print_to_values_structured(self.cli(ip_neighbor_print)[ip_neighbor_print])
-
-		mndp_neighbors = {}
-		for key, value in self.device.index_values(terse_values, 'interface').iteritems():
-			if_name = unicode(key)
-			if if_name in mndp_neighbors:
-				raise Exception('Key already seen')
-			mndp_neighbors[if_name] = []
-			for v in value:
-				mndp_neighbors[if_name].append(
-					{
-						'hostname': unicode(v['identity']),
-						'port': unicode(v['interface-name'])
-					}
-				)
-		return mndp_neighbors
-
-	def get_mndp_neighbors_detail(self, interface=''):
-		ip_neighbor_print = '/ip neighbor print without-paging terse'
-		if interface != '':
-			ip_neighbor_print += ' where interface ="{}"'.format(interface)
-
-		terse_values = self.device.print_to_values_structured(self.cli(ip_neighbor_print)[ip_neighbor_print])
-
-		mndp_neighbors_detail = {}
-		for key, value in self.device.index_values(terse_values, 'interface').iteritems():
-			if_name = unicode(key)
-			if if_name in mndp_neighbors_detail:
-				raise Exception('Key already seen')
-			mndp_neighbors_detail[if_name] = []
-			for v in value:
-				mndp_neighbors_detail[if_name].append(
-					{
-						'parent_interface': u'',
-						'remote_chassis_id': self.format_mac(v['mac-address']),
-						'remote_system_name': v['identity'],
-						'remote_port': v['interface-name'],
-						'remote_port_description': '',
-						'remote_system_description': '{} {}'.format(v['platform'], v.get('board', '')),
-						'remote_system_capab': u'',
-						'remote_system_enable_capab': u''
-					}
-				)
-		return mndp_neighbors_detail
+		raise NotImplementedError('get_mac_address_table()')
 
 	def get_ntp_peers(self):
+		raise NotImplementedError('get_ntp_peers()')
+
+	def get_ntp_servers(self):
 		ntp_client_print = '/system ntp client print without-paging'
 
 		ntp_client_values = self.device.print_to_values(self.cli(ntp_client_print)[ntp_client_print])
@@ -511,10 +496,15 @@ class ROSDriver(NetworkDriver):
 
 			protocol_attributes = {}
 			if route_type == 'BGP':
-				bgp_neighbor_details = self.get_bgp_neighbors_detail(ipv4_route['received-from'])[ipv4_route['bgp-as-path']][0]
+#				bgp_neighbor_details = self.get_bgp_neighbors_detail(ipv4_route['received-from'])[ipv4_route['bgp-as-path']][0]
+				bgp_neighbor_details = {
+					'local_as': 0,
+					'remote_as': 0,
+					'_router_id': '1.2.3.4',
+				}
 				protocol_attributes = {
 					'local_as': bgp_neighbor_details['local_as'],
-					'remote_as': bgp_neighbor_details['remote_as'],
+					'remote_as': int(bgp_neighbor_details['remote_as']),
 					'peer_id': bgp_neighbor_details.get('_remote_id', ''),
 					'as_path': ipv4_route['bgp-as-path'],
 					'communities': [unicode(c) for c in ipv4_route.get('bgp-communities', '').split(',') if len(c)],
@@ -553,14 +543,14 @@ class ROSDriver(NetworkDriver):
 		for v in snmp_community_values:
 			snmp_communities[unicode(v.get('name'))] = {
 				'acl': unicode(v.get('addresses', '')),
-				'mode': 'ro' if v.get('read-access', '') == 'yes' else 'rw'
+				'mode': unicode('ro' if v.get('read-access', '') == 'yes' else 'rw'),
 			}
 
 		return {
 			'chassis_id': unicode(snmp_values['engine-id']),
 			'community': snmp_communities,
 			'contact': unicode(snmp_values['contact']),
-			'location': unicode(snmp_values['location'])
+			'location': unicode(snmp_values['location']),
 		}
 
 	def get_users(self):
@@ -605,7 +595,7 @@ class ROSDriver(NetworkDriver):
 		raise NotImplementedError
 
 	def open(self):
-		self.device = yandc.mikrotik.ROS_Client(
+		self.device = mikrotik.ROS_Client(
 			host=self.hostname,
 			snmp_community=self.snmp_community,
 			snmp_port=self.snmp_port,
@@ -623,34 +613,37 @@ class ROSDriver(NetworkDriver):
 			ping_command + ' size={}'.format(size)
 
 		ping_output = self.cli(ping_command)[ping_command]
-		ping_output.pop(0)
+		if not ping_output.pop(0).startswith('  SEQ HOST'):
+			return {
+				'error': ' '.join(ping_output)
+			}
 
 		statistics = ping_output.pop().lstrip().rstrip()
 		if not len(statistics):
 			statistics = ping_output.pop().lstrip().rstrip()
 		statistics = self.device.print_to_values_structured(['0 {}'.format(statistics)])[0]
 
-		ret_ = {
-			'probes_sent': statistics['sent'],
-			'packet_loss': statistics['packet-loss'].rstrip('%'),
-			'rtt_min': statistics.get('min-rtt', '-1ms').replace('ms', ''),
-			'rtt_max': statistics.get('max-rtt', '-1ms').replace('ms', ''),
-			'rtt_avg': statistics.get('avg-rtt', '-1ms').replace('ms', ''),
-			'rtt_stddev': -1,
+		ping_results = {
+			'probes_sent': int(statistics['sent']),
+			'packet_loss': int(statistics['packet-loss'].rstrip('%')),
+			'rtt_min': float(statistics.get('min-rtt', '-1ms').replace('ms', '')),
+			'rtt_max': float(statistics.get('max-rtt', '-1ms').replace('ms', '')),
+			'rtt_avg': float(statistics.get('avg-rtt', '-1ms').replace('ms', '')),
+			'rtt_stddev': float(-1),
 			'results': []
 		}
-	
+
 		for ping_entry in ping_output:
 			entry_parts = ping_entry.lstrip().rstrip().split()
 			if len(entry_parts) != 5:
 				continue
-			ret_['results'].append(
+			ping_results['results'].append(
 				{
-					'ip_address': entry_parts[1],
-					'rtt': entry_parts[4].replace('ms', '')
+					'ip_address': unicode(entry_parts[1]),
+					'rtt': float(entry_parts[4].replace('ms', '')),
 				}
 			)
-		return ret_
+		return dict(success=ping_results)
 
 	def rollback(self):
 		raise NotImplementedError
@@ -691,11 +684,107 @@ class ROSDriver(NetworkDriver):
 						'probes': {}
 					}
 				probe_results[result_index]['probes'][num_probes] = {
-					'rtt': line_parts[4],
-					'ip_address': line_parts[1],
-					'host_name': ''
+					'rtt': float(line_parts[4].replace('ms', '')),
+					'ip_address': unicode(line_parts[1]),
+					'host_name': u''
 				}
 			num_probes -= 1
 		return {
 			'success': probe_results
 		}
+
+	def _config_sanity_check(self):
+		if self.merge_config:
+			config_regexp = re.compile(r'(.+)\s+(add|set)\s+(.*)$')
+			for config_line in self.candidate_config:
+				if config_line[0] == '#':
+					continue
+				re_match = re.match(config_regexp, config_line)
+				if re_match is None:
+					return False
+		return True
+
+	@staticmethod
+	def _format_mac(mac_address):
+		if len(mac_address) != 17:
+			return mac_address
+		if mac_address.find(':') == -1:
+			return mac_address
+		mac_parts = mac_address.replace(':', '')
+		return ':'.join(list([mac_parts[:4], mac_parts[4:8], mac_parts[8:]]))
+
+	def _get_bgp_peers(self):
+		bgp_peers = []
+		if not self.device.system_package_enabled('routing'):
+			return bgp_peers
+
+		peer_print_status = '/routing bgp peer print without-paging status'
+		instance_print = '/routing bgp instance print without-paging terse'
+		instance_vrf_print = '/routing bgp instance vrf print without-paging terse'
+		cli_output = self.cli(peer_print_status, instance_print, instance_vrf_print)
+
+		peer_status = cli_output[peer_print_status]
+		peer_status.pop(0)
+
+		instance_indexed = self.device.index_values(self.device.print_to_values_structured(cli_output[instance_print]))
+		instance_vrf_indexed = self.device.index_values(self.device.print_to_values_structured(cli_output[instance_vrf_print]))
+
+		for peer in self.device.print_to_values_structured(self.device.print_concat(peer_status)):
+			peer.pop('index')
+			peer_instance = peer['instance']
+			if not peer_instance in instance_indexed:
+				raise ValueError('No such instance - [{}]'.format(peer_instance))
+			peer['router-id'] = instance_indexed[peer_instance][0]['router-id']
+			peer['local-as'] = instance_indexed[peer_instance][0]['as']
+			routing_table = instance_indexed[peer_instance][0]['routing-table'].replace('"', '')
+			peer['routing-table'] = 'global' if routing_table == '' else routing_table
+			bgp_peers.append(peer)
+		return bgp_peers
+
+	def _get_mndp_neighbors(self):
+		ip_neighbor_print = '/ip neighbor print without-paging terse'
+
+		terse_values = self.device.print_to_values_structured(self.cli(ip_neighbor_print)[ip_neighbor_print])
+
+		mndp_neighbors = {}
+		for key, value in self.device.index_values(terse_values, 'interface').iteritems():
+			if_name = unicode(key)
+			if if_name in mndp_neighbors:
+				raise KeyError('Key already seen')
+			mndp_neighbors[if_name] = []
+			for v in value:
+				mndp_neighbors[if_name].append(
+					{
+						'hostname': unicode(v['identity']),
+						'port': unicode(v['interface-name'])
+					}
+				)
+		return mndp_neighbors
+
+	def _get_mndp_neighbors_detail(self, interface=''):
+		ip_neighbor_print = '/ip neighbor print without-paging terse'
+		if interface != '':
+			ip_neighbor_print += ' where interface ="{}"'.format(interface)
+
+		terse_values = self.device.print_to_values_structured(self.cli(ip_neighbor_print)[ip_neighbor_print])
+
+		mndp_neighbors_detail = {}
+		for key, value in self.device.index_values(terse_values, 'interface').iteritems():
+			if_name = unicode(key)
+			if if_name in mndp_neighbors_detail:
+				raise KeyError('Key already seen')
+			mndp_neighbors_detail[if_name] = []
+			for v in value:
+				mndp_neighbors_detail[if_name].append(
+					{
+						'parent_interface': u'',
+						'remote_chassis_id': unicode(self._format_mac(v['mac-address'])),
+						'remote_system_name': unicode(v['identity']),
+						'remote_port': unicode(v['interface-name']),
+						'remote_port_description': u'',
+						'remote_system_description': unicode('{} {}'.format(v['platform'], v.get('board', ''))),
+						'remote_system_capab': u'',
+						'remote_system_enable_capab': u''
+					}
+				)
+		return mndp_neighbors_detail
