@@ -18,6 +18,7 @@ import copy
 from collections import defaultdict
 
 # third party libs
+from lxml import etree as ETREE
 import xml.etree.ElementTree as ET
 
 from netaddr import IPAddress
@@ -28,6 +29,7 @@ from pyIOSXR.iosxr import __execute_show__
 from pyIOSXR.exceptions import InvalidInputError, TimeoutError, EOFError
 
 # napalm_base
+from napalm_base.helpers import convert, find_txt, mac, ip
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import string_parsers
 from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,\
@@ -164,52 +166,40 @@ class IOSXRDriver(NetworkDriver):
 
     def get_interfaces(self):
 
-        # init result dict
-        result = {}
+        interfaces = {}
 
-        # fetch show interface output
-        sh_int = self.device.show_interfaces()
-        # split per interface, eg by empty line
-        interface_list = sh_int.rstrip().split('\n\n')
-        # for each interface...
-        for interface in interface_list:
+        INTERFACE_DEFAULTS = {
+            'is_enabled': False,
+            'is_up': False,
+            'mac_address': u'',
+            'description': u'',
+            'speed': -1,
+            'last_flapped': -1.0
+        }
 
-            # splitting this and matching each line avoids issues with order
-            # sorry...
-            interface_lines = interface.split('\n')
+        interfaces_rpc_request = '<Get><Operational><Interfaces/></Operational></Get>'
 
-            # init variables to match for
-            interface_name = None
-            is_enabled = None
-            is_up = None
-            mac_address = None
-            description = None
-            speed = None
+        interfaces_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(interfaces_rpc_request))
 
-            # loop though and match each line
-            for line in interface_lines:
-                description = ''
-                if 'line protocol' in line:
-                    lp = line.split()
-                    interface_name = lp[0]
-                    is_enabled = lp[2] == 'up,'
-                    is_up = lp[6] == 'up'
-                elif 'bia' in line:
-                    mac_address = line.split()[-1].replace(')', '')
-                elif 'Description' in line:
-                    description = ' '.join(line.split()[1:])
-                elif 'BW' in line:
-                    speed = int(line.split()[4]) / 1000
-            result[interface_name] = {
-                'is_enabled': is_enabled,
+        for interface_tree in interfaces_rpc_reply.xpath('.//Interfaces/InterfaceTable/Interface'):
+            interface_name = find_txt(interface_tree, 'Naming/InterfaceName')
+            if not interface_name:
+                continue
+            is_up = (find_txt(interface_tree, 'LineState') == 'IM_STATE_UP')
+            is_enabled = (find_txt(interface_tree, 'LineState') == 'IM_STATE_UP')
+            mac_address = mac(find_txt(interface_tree, 'MACAddress/Address'))
+            speed = int(convert(int, find_txt(interface_tree, 'Bandwidth'), 0) * 1e-3)
+            description = find_txt(interface_tree, 'Description')
+            interfaces[interface_name] = copy.deepcopy(INTERFACE_DEFAULTS)
+            interfaces[interface_name].update({
                 'is_up': is_up,
-                'mac_address': unicode(mac_address),
-                'description': unicode(description),
                 'speed': speed,
-                'last_flapped': -1.0,
-            }
+                'is_enabled': is_enabled,
+                'mac_address': mac_address,
+                'description': description
+            })
 
-        return result
+        return interfaces
 
     def get_interfaces_counters(self):
         rpc_command = "<Get><Operational><Interfaces><InterfaceTable></InterfaceTable></Interfaces></Operational></Get>"
