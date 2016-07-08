@@ -1329,9 +1329,8 @@ class IOSDriver(NetworkDriver):
         if source != '':
             command += ' source {}'.format(source)
 
-        print(command)
         output = self.device.send_command(command)
-        print(output)
+
         if '%' in output:
             ping_dict['error'] = output
         elif 'Sending' in output:
