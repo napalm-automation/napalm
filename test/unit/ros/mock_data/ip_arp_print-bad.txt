@@ -1,0 +1,7 @@
+Flags: X - disabled, I - invalid, H - DHCP, D - dynamic, P - published, C - complete 
+ #    ADDRESS         MAC-ADDRESS       INTERFACE                                                                                          
+ 0 DC 192.168.144.1   AE:DE:48:00:00:01 ether1                                                                                             
+ 1 DC 192.168.144.57  00:0C:29:72:EE:E8 ether1                                                                                             
+ 2 DC 192.168.144.221 00:00:AB:13:32:00 ether1                                                                                             
+ 3 DC 192.168.144.101 00:0C:29:76:02:4D ether1                                                                                             
+ 4 D  192.168.144.233                   ether1                                                                                             

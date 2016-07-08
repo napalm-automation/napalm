@@ -1,0 +1,6 @@
+Flags: X - disabled, E - established 
+ 0   name="vEOS-S1" instance=default remote-address=192.168.144.101 
+     remote-as=64512 tcp-md5-key="" nexthop-choice=default multihop=no 
+     route-reflect=no hold-time=3m ttl=255 in-filter="" out-filter="" 
+     address-families=ip default-originate=never remove-private-as=no 
+     as-override=no passive=no use-bfd=no state=connect 

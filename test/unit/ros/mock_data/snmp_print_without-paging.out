@@ -1,0 +1,9 @@
+          enabled: yes
+          contact: Matt Ryan <inetuid@gmail.com>
+         location: Earth
+        engine-id: BLOB621
+      trap-target: 
+   trap-community: public
+     trap-version: 1
+  trap-generators: 
+

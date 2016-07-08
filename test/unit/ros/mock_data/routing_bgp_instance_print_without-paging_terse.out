@@ -1,0 +1,2 @@
+ 0 *  name=default as=65530 router-id=10.64.0.255 redistribute-connected=no redistribute-static=no redistribute-rip=no redistribute-ospf=no redistribute-other-bgp=no out-filter="" client-to-client-reflection=yes ignore-as-path-len=no routing-table="" 
+
