@@ -160,11 +160,11 @@ def find_txt(xml_tree, path, default=''):
             if isinstance(xpath_result, type(xml_tree)):
                 value = xpath_result.text.strip()
             else:
-                value = str(xpath_result)
+                value = xpath_result
     except Exception:  # in case of any exception, returns default
         value = default
 
-    return value
+    return unicode(value)
 
 
 def convert(to, who, default=u''):
