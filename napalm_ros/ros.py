@@ -491,21 +491,19 @@ class ROSDriver(NetworkDriver):
             elif ipv4_route['flags'].find('S') != -1:
                 route_type = 'static'
 
-            if protocol != '' and route_type != protocol:
+            if protocol != '' and route_type.lower() != protocol.lower():
                 continue
+
+            if not ipv4_route['dst-address'] in route_to:
+                route_to[ipv4_route['dst-address']] = []
 
             protocol_attributes = {}
             if route_type == 'BGP':
-#                bgp_neighbor_details = self.get_bgp_neighbors_detail(ipv4_route['received-from'])[ipv4_route['bgp-as-path']][0]
-                bgp_neighbor_details = {
-                    'local_as': 0,
-                    'remote_as': 0,
-                    '_router_id': '1.2.3.4',
-                }
+                bgp_neighbor_details = self._get_bgp_peers(name=ipv4_route['received-from'])[0]
                 protocol_attributes = {
-                    'local_as': bgp_neighbor_details['local_as'],
-                    'remote_as': int(bgp_neighbor_details['remote_as']),
-                    'peer_id': bgp_neighbor_details.get('_remote_id', ''),
+                    'local_as': bgp_neighbor_details['local-as'],
+                    'remote_as': int(bgp_neighbor_details['remote-as']),
+                    'peer_id': bgp_neighbor_details.get('remote-id', ''),
                     'as_path': ipv4_route['bgp-as-path'],
                     'communities': [unicode(c) for c in ipv4_route.get('bgp-communities', '').split(',') if len(c)],
                     'local_preference': ipv4_route.get('bgp-local-pref', 100),
@@ -524,11 +522,21 @@ class ROSDriver(NetworkDriver):
                 protocol_attributes['gateway_status'] = ipv4_route.get('gateway-status', '')
                 protocol_attributes['metric'] = ipv4_route['distance']
 
-            route_to[ipv4_route['dst-address']] = {
-                'next_hop': ipv4_route.get('gateway', ''),
-                'protocol': route_type,
-                'protocol_attributes': protocol_attributes
-            }
+            route_to[ipv4_route['dst-address']].append(
+                {
+                    'protocol': unicode(route_type),
+                    'current_active': False,
+                    'last_active': False,
+                    'age': int(0),
+                    'next_hop': unicode(ipv4_route.get('gateway', '')),
+                    'outgoing_interface': u'',
+                    'selected_next_hop': False,
+                    'preference': int(0),
+                    'inactive_reason': u'',
+                    'routing_table': u'',
+                    'protocol_attributes': protocol_attributes
+                }
+            )
         return route_to
 
     def get_snmp_information(self):
@@ -713,7 +721,7 @@ class ROSDriver(NetworkDriver):
         mac_parts = mac_address.replace(':', '')
         return ':'.join(list([mac_parts[:4], mac_parts[4:8], mac_parts[8:]]))
 
-    def _get_bgp_peers(self):
+    def _get_bgp_peers(self, name=''):
         bgp_peers = []
         if not self.device.system_package_enabled('routing'):
             return bgp_peers
@@ -730,6 +738,8 @@ class ROSDriver(NetworkDriver):
         instance_vrf_indexed = self.device.index_values(self.device.print_to_values_structured(cli_output[instance_vrf_print]))
 
         for peer in self.device.print_to_values_structured(self.device.print_concat(peer_status)):
+            if name != '' and peer['name'].replace('"', '') != name:
+                continue
             peer.pop('index')
             peer_instance = peer['instance']
             if not peer_instance in instance_indexed:
