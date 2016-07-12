@@ -1,2 +1,2 @@
-napalm_base
+napalm-base
 yandc
