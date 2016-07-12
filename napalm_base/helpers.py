@@ -9,11 +9,11 @@ import jinja2
 import textfsm
 from netaddr import EUI
 from netaddr import mac_unix
+from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 
 # local modules
 import napalm_base.exceptions
-
 from napalm_base.utils.jinja_filters import CustomJinjaFilters
 
 
@@ -203,12 +203,40 @@ def mac(raw):
         u'01:23:45:67:89:AB'
     """
 
-    mac = ''
+    mac = u''
 
     try:
         mac = unicode(EUI(raw, dialect=_MACFormat))
     except AddrFormatError:
-        return ''
+        return mac
 
     return mac
 
+
+def ip(addr):
+
+    """
+    Converts a raw string to a valid IP address.
+    Motivation: the groups of the IP addreses may contain leading zeros. IPv6 addresses can contain sometimes \
+    uppercase characters. E.g.: 2001:0dB8:85a3:0000:0000:8A2e:0370:7334 has the same logical value as \
+    2001:db8:85a3::8a2e:370:7334. However, their values as strings are not the same.
+
+    :param raw: the raw string containing the value of the IP Address
+    :return: a string containing the IP Address in a standard format (no leading zeros, zeros-grouping, lowercase)
+
+    Example:
+
+    .. code-block:: python
+
+        >>> ip('2001:0dB8:85a3:0000:0000:8A2e:0370:7334')
+        u'2001:db8:85a3::8a2e:370:7334'
+    """
+
+    ip_addr = u''
+
+    try:
+        ip_addr = unicode(IPAddress(addr))
+    except AddrFormatError:
+        return ip_addr
+
+    return ip_addr
