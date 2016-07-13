@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response MajorVersion="1" MinorVersion="0">
+    <Get ItemNotFound="true">
+        <Operational>
+            <BGP MajorVersion="25" MinorVersion="2">
+                <ConfigInstanceTable>
+                    <ConfigInstance>
+                        <Naming>
+                            <InstanceName>
+                                default
+                            </InstanceName>
+                        </Naming>
+                        <ConfigInstanceVRFTable NotFound="true"/>
+                    </ConfigInstance>
+                </ConfigInstanceTable>
+            </BGP>
+        </Operational>
+    </Get>
+    <ResultSummary ErrorCount="0" ItemNotFound="true"/>
+</Response>
