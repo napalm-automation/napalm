@@ -131,39 +131,52 @@ class IOSXRDriver(NetworkDriver):
         except:
             return default
 
-
     def get_facts(self):
 
-        sh_ver = self.device.show_version()
-
-        for line in sh_ver.splitlines():
-            if 'Cisco IOS XR Software' in line:
-                os_version = line.split()[-1]
-            elif 'uptime' in line:
-                uptime = string_parsers.convert_uptime_string_seconds(line)
-                hostname = line.split()[0]
-                fqdn = line.split()[0]
-            elif 'Series' in line:
-                model = ' '.join(line.split()[1:3])
-
-        interface_list = list()
-
-        for x in self.device.show_interface_description().splitlines()[3:-1]:
-            if '.' not in x:
-                interface_list.append(x.split()[0])
-
-        result = {
+        facts = {
             'vendor': u'Cisco',
-            'os_version': unicode(os_version),
-            'hostname': unicode(hostname),
-            'uptime': uptime,
-            'model': unicode(model),
+            'os_version': u'',
+            'hostname': u'',
+            'uptime': -1,
             'serial_number': u'',
-            'fqdn': unicode(fqdn),
-            'interface_list': interface_list,
+            'fqdn': u'',
+            'model': u'',
+            'interface_list': []
         }
 
-        return result
+        facts_rpc_request = (
+            '<Get>'
+                '<Operational>'
+                    '<SystemTime/>'
+                    '<PlatformInventory/>'
+                '</Operational>'
+            '</Get>'
+        )
+
+        facts_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(facts_rpc_request))
+        system_time_xpath = './/SystemTime/Uptime'
+        platform_attr_xpath = './/RackTable/Rack/Attributes/BasicInfo'
+        system_time_tree = facts_rpc_reply.xpath(system_time_xpath)[0]
+        platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)[0]
+
+        hostname = convert(unicode, find_txt(system_time_tree, 'Hostname'))
+        uptime = convert(int, find_txt(system_time_tree, 'Uptime'), -1)
+        serial = convert(unicode, find_txt(platform_attr_tree, 'SerialNumber'))
+        os_version = convert(unicode, find_txt(platform_attr_tree, 'SoftwareRevision'))
+        model = convert(unicode, find_txt(platform_attr_tree, 'ModelName'))
+        interface_list = self.get_interfaces().keys()
+
+        facts.update({
+            'os_version': os_version,
+            'hostname': hostname,
+            'model': model,
+            'uptime': uptime,
+            'serial_number': serial,
+            'fqdn': hostname,
+            'interface_list': interface_list
+        })
+
+        return facts
 
     def get_interfaces(self):
 
