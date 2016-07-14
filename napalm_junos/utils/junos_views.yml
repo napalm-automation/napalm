@@ -200,8 +200,7 @@ junos_lldp_neighbors_detail_view:
     parent_interface: {lldp-local-parent-interface-name: unicode}
     remote_port: {lldp-remote-port-id: unicode}
     remote_chassis_id: {lldp-remote-chassis-id: unicode}
-    remote_port: {lldp-remote-port-id: unicode}
-    remote_port_description: {lldp-remote-port-id: unicode}
+    remote_port_description: {lldp-remote-port-description: unicode}
     remote_system_name: {lldp-remote-system-name: unicode}
     remote_system_description: {lldp-system-description/lldp-remote-system-description: unicode}
     remote_system_capab: {lldp-remote-system-capabilities-supported: unicode}
