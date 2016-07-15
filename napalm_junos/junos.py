@@ -416,7 +416,6 @@ class JunOSDriver(NetworkDriver):
                     'parent_interface'          : item.parent_interface,
                     'remote_port'               : item.remote_port,
                     'remote_chassis_id'         : item.remote_chassis_id,
-                    'remote_port'               : item.remote_port,
                     'remote_port_description'   : convert(unicode, item.remote_port_description),
                     'remote_system_name'        : item.remote_system_name,
                     'remote_system_description' : item.remote_system_description,
