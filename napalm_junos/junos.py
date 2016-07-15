@@ -27,6 +27,7 @@ from jnpr.junos.exception import ConfigLoadError, ConnectTimeoutError
 # import NAPALM Base
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import string_parsers
+from napalm_base.helpers import convert
 from napalm_base.exceptions import ConnectionException, ReplaceConfigException, MergeConfigException,\
                                    CommandErrorException
 
@@ -416,7 +417,7 @@ class JunOSDriver(NetworkDriver):
                     'remote_port'               : item.remote_port,
                     'remote_chassis_id'         : item.remote_chassis_id,
                     'remote_port'               : item.remote_port,
-                    'remote_port_description'   : item.remote_port_description,
+                    'remote_port_description'   : convert(unicode, item.remote_port_description),
                     'remote_system_name'        : item.remote_system_name,
                     'remote_system_description' : item.remote_system_description,
                     'remote_system_capab'       : item.remote_system_capab,
