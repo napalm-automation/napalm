@@ -104,7 +104,7 @@ class ROSDriver(NetworkDriver):
                 bgp_neighbors[routing_table]['peers'][napalm_base.helpers.ip(bgp_peer['remote-address'])] = {
                     'local_as': int(bgp_peer['local-as']),
                     'remote_as': int(bgp_peer['remote-as']),
-                    'remote_id': unicode(bgp_peer.get('remote-id', '')),
+                    'remote_id': napalm_base.helpers.ip(bgp_peer.get('remote-id', '')),
                     'is_up': bgp_peer['state'] == 'established',
                     'is_enabled': bgp_peer['flags'].find('X') == -1,
                     'description': unicode(bgp_peer['name'].replace('"', '')),
@@ -125,7 +125,7 @@ class ROSDriver(NetworkDriver):
                 router_ids[bgp_peer['router-id']] = True
             if len(router_ids) != 1:
                 raise ValueError('Multiple router-id values seen')
-            bgp_neighbors[routing_table]['router_id'] = unicode(router_ids.keys()[0])
+            bgp_neighbors[routing_table]['router_id'] = napalm_base.helpers.ip(router_ids.keys()[0])
         return bgp_neighbors
 
     def get_bgp_neighbors_detail(self, neighbor_address=''):
@@ -146,7 +146,7 @@ class ROSDriver(NetworkDriver):
                             'up': bgp_peer['state'] == 'established',
                             'local_as': int(bgp_peer['local-as']),
                             'remote_as': int(bgp_peer['remote-as']),
-                            'router_id': unicode(bgp_peer.get('router_id', '')),
+                            'router_id': napalm_base.helpers.ip(bgp_peer.get('router_id', '')),
                             'local_address': napalm_base.helpers.ip(bgp_peer.get('local-address')),
                             'routing_table': unicode(bgp_peer['routing-table']),
                             'local_address_configured': False,
@@ -160,8 +160,8 @@ class ROSDriver(NetworkDriver):
                             'export_policy': u'',
                             'input_messages': -1,
                             'output_messages': -1,
-                            'input_updates': -1,
-                            'output_updates': -1,
+                            'input_updates': int(bgp_peer.get('updates-received', -1)),
+                            'output_updates': int(bgp_peer.get('updates-sent', -1)),
                             'messages_queued_out': -1,
                             'connection_state': unicode(bgp_peer['state']),
                             'previous_connection_state': u'',
@@ -169,11 +169,11 @@ class ROSDriver(NetworkDriver):
                             'suppress_4byte_as': bgp_peer.get('as4-capability', '') == 'no',
                             'local_as_prepend': False,
                             'holdtime': self.device.to_seconds(bgp_peer.get('used-hold-time', '')),
-                            'configured_holdtime': self.device.to_seconds(bgp_peer['hold-time']),
+                            'configured_holdtime': self.device.to_seconds(bgp_peer.get('hold-time', '3m')),
                             'keepalive': self.device.to_seconds(bgp_peer.get('used-keepalive-time', '')),
-                            'configured_keepalive': -1,
+                            'configured_keepalive': self.device.to_seconds(bgp_peer.get('keepalive-time', '1m')),
                             'active_prefix_count': -1,
-                            'received_prefix_count': -1,
+                            'received_prefix_count': int(bgp_peer.get('prefix-count', 0)),
                             'accepted_prefix_count': -1,
                             'suppressed_prefix_count': -1,
                             'advertised_prefix_count': -1,
@@ -181,87 +181,6 @@ class ROSDriver(NetworkDriver):
                         }
                     )
         return bgp_neighbors_detail
-
-    def _get_bridge_fdb(self):
-        bridge_host_print = '/interface bridge host print without-paging terse'
-        bridge_host_values = self.device.index_values(
-            self.device.print_to_values_structured(self.cli(bridge_host_print)[bridge_host_print]),
-            'bridge'
-        )
-
-        switch_host_print = '/interface ethernet switch host print without-paging terse'
-        try:
-            cli_output = self.cli(switch_host_print)[switch_host_print]
-        except CommandErrorException:
-            switch_host_values = {}
-        else:
-            switch_host_values = self.device.index_values(
-                self.device.print_to_values_structured(cli_output),
-                'mac-address'
-            )
-
-        interface_wireless_print = '/interface wireless print without-paging terse'
-        wireless_registration_print = '/interface wireless registration-table print without-paging terse'
-        try:
-            cli_output = self.cli(interface_wireless_print, wireless_registration_print)
-        except CommandErrorException:
-            wireless_registration_values = {}
-        else:
-            interface_wireless_values = self.device.index_values(
-                self.device.print_to_values_structured(cli_output[interface_wireless_print])
-            )
-            wireless_registration_values = self.device.index_values(
-                self.device.print_to_values_structured(cli_output[wireless_registration_print]),
-                'mac-address'
-            )
-
-        bridge_fdb = {}
-        for key, value in bridge_host_values.iteritems():
-            bridge = unicode(key)
-            if bridge not in bridge_fdb:
-                bridge_fdb[bridge] = []
-            for bridge_mac in value:
-                if bridge_mac['flags'].find('L') != -1:
-                    pass
-
-                mac_address = napalm_base.helpers.mac(bridge_mac['mac-address'])
-
-                fdb_entry = {
-                    'mac_address': napalm_base.helpers.mac(mac_address),
-                    'interface': key,
-                    'vlan': 0,
-                    'static': False,
-                    'active': True,
-                    'moves': -1,
-                    'last_move': float(self.device.to_seconds(bridge_mac['age'])),
-                }
-
-                on_interface = bridge_mac['on-interface']
-
-                if_type = self.device.interface_type(on_interface)
-                if if_type == 'ether':
-                    if mac_address in switch_host_values:
-                        if len(switch_host_values[mac_address]) > 2:
-                            raise ValueError('Too many MAC addresses found')
-                        for switch_mac in switch_host_values[mac_address]:
-                            if on_interface in [switch_mac['ports'], self.device.master_port(switch_mac['ports'])]:
-                                fdb_entry['interface'] = switch_mac['ports']
-                                fdb_entry['static'] = switch_mac['flags'].find('D') == -1
-                                fdb_entry['vlan'] = switch_mac['vlan-id']
-                                break
-                elif if_type == 'wlan':
-                    if bridge_mac['flags'].find('L') == -1 and bridge_mac['flags'].find('E') == -1:
-                        raise ValueError('External FDB flag not set')
-                    if mac_address in wireless_registration_values:
-                        interface = wireless_registration_values[mac_address][0]['interface']
-                        fdb_entry['interface'] = interface
-                        if interface_wireless_values[interface][0]['vlan-mode'] != 'no-tag':
-                            fdb_entry['vlan'] = interface_wireless_values[interface][0]['vlan-id']
-                else:
-                    raise TypeError('Unsupported type - [{}][{}]'.format(if_type, on_interface))
-
-                bridge_fdb[bridge].append(fdb_entry)
-        return bridge_fdb
 
     def get_environment(self):
         system_resource_print = 'cache=/system resource print without-paging'
@@ -272,41 +191,46 @@ class ROSDriver(NetworkDriver):
         system_resource_values = self.device.print_to_values(cli_output[system_resource_print])
         system_health_values = self.device.print_to_values(cli_output[system_health_print])
 
-        cpu_load = {}
+        environment = {
+            'fans': {},
+            'temperature': {},
+            'power': {},
+            'cpu': {},
+            'memory': {},
+        }
+
+        if 'active-fan' in system_health_values:
+            environment['fans'][system_health_values['active-fan']] = {
+                'status': int(system_health_values.get('fan-speed', '0RPM').replace('RPM', '')) != 0,
+            }
+
+        if 'temperature' in system_health_values:
+            environment['temperature']['board'] = {
+                'temperature': float(system_health_values['temperature'].rstrip('C')),
+                'is_alert': False,
+                'is_critical': False,
+            }
+
+        if 'cpu-temperature' in system_health_values:
+            environment['temperature']['cpu'] = {
+                'temperature': float(system_health_values['cpu-temperature'].rstrip('C')),
+                'is_alert': False,
+                'is_critical': False,
+            }
+
         for cpu_values in self.device.print_to_values_structured(cli_output[resource_cpu_print]):
-            cpu_load[cpu_values['cpu']] = {
+            environment['cpu'][cpu_values['cpu']] = {
                 '%usage': float(cpu_values['load'].rstrip('%')),
             }
 
         total_memory = int(float(re.sub('[KM]iB$', '', system_resource_values.get('total-memory'))))
         free_memory = float(re.sub('[KM]iB$', '', system_resource_values.get('free-memory')))
-
-        return {
-            'fans': {
-                'location': {
-                    'status': False
-                }
-            },
-            'temperature': {
-                'board': {
-                    'temperature': float(system_health_values.get('temperature', '-1.0').rstrip('C')),
-                    'is_alert': False,
-                    'is_critical': False,
-                }
-            },
-            'power': {
-                'main': {
-                    'status': True,
-                    'capacity': 0.0,
-                    'output': float(system_health_values.get('voltage', '0.0').rstrip('V'))
-                }
-            },
-            'cpu': cpu_load,
-            'memory': {
+        environment['memory'] = {
                 'available_ram': total_memory,
                 'used_ram': int(total_memory - free_memory),
-            }
         }
+
+        return environment
 
     def get_facts(self):
         system_resource_print = '/system resource print without-paging'
