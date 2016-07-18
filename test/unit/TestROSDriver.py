@@ -5,7 +5,7 @@ import unittest
 
 from napalm_ros import ros
 from napalm_base.test.base import TestGettersNetworkDriver
-from yandc.mikrotik import ROS_Client
+from yandc import ROS_Client
 
 
 class TestGetterROSDriver(unittest.TestCase, TestGettersNetworkDriver):
