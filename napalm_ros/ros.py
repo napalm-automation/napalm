@@ -1,9 +1,10 @@
+import datetime
 import re
 #
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import MergeConfigException, ReplaceConfigException, CommandErrorException
 import napalm_base.utils.string_parsers
-from yandc import mikrotik
+from yandc import ROS_Client
 
 
 class ROSDriver(NetworkDriver):
@@ -15,6 +16,7 @@ class ROSDriver(NetworkDriver):
         self.timeout = timeout
 
         self.candidate_config = []
+        self.config_session = None
         self.merge_config = False
 
         if isinstance(optional_args, dict):
@@ -39,7 +41,7 @@ class ROSDriver(NetworkDriver):
                 device_output = self.device.cli_command(run_command, **kwargs)
             except Exception as e:
                 raise CommandErrorException(e)
-            if len(device_output) == 1:
+            if len(device_output) == 1 and device_output[0] != '':
                 if self.device.is_cli_error(device_output[0]):
                     raise CommandErrorException(device_output[0])
             cli_output[unicode(command)] = device_output
@@ -52,64 +54,19 @@ class ROSDriver(NetworkDriver):
 
     def commit_config(self):
         if self.merge_config:
-            self.device.configure_via_cli(self.candidate_config)
+            merge_command = '/import file-name="{}.rsc" verbose=no'.format(self.config_session)
+            self.device.safe_mode_toggle()
+            cli_output = self.cli(merge_command)[merge_command]
+            self.device.safe_mode_toggle()
+            if cli_output[-1] != 'Script file loaded and executed successfully':
+                pass
             self.discard_config()
-        else:
-            raise NotImplementedError
 
-    def compare_config(self):
-        config_diff = []
-        if self.merge_config:
-            command_list = {}
-            set_commands = []
-            for config_line in self.candidate_config:
-                if config_line == '':
-                    continue
-                re_match = re.match(r'(.+)\s+(add|set)\s+(.*)$', config_line)
-                if re_match is not None:
-                    first_part, action, last_part = re_match.groups()
-                    if action == 'add':
-                        config_diff.append('+{}'.format(config_line))
-                    elif action == 'set':
-                        last_part = last_part.strip()
-                        if last_part[0] == '[':
-                            continue
-                        set_kv = last_part.split()
-                        thing = set_kv.pop(0)
-                        get_command = ':put [{} get {}]'.format(first_part, thing)
-                        command_list[get_command] = config_line
-                        set_commands.append(
-                            {
-                                'set_command': config_line,
-                                'get_command': get_command,
-                                'to_set': set_kv,
-                            }
-                        )
-            cli_output = self.cli(*[d['get_command'] for d in set_commands])
-
-            for command in set_commands:
-                set_command = command['set_command']
-                get_command = command['get_command']
-                kv_parts = cli_output[get_command][0].split(';')
-                kv_parts.pop(0)
-                as_values = self.device.parse_as_key_value(kv_parts)
-
-                foo = []
-                for key, value in self.device.parse_as_key_value(command['to_set']).iteritems():
-                    if value.lstrip()[0] == '"':
-                        foo.append('{}="{}"'.format(key, as_values.get(key, 'UNKNOWN')))
-                    else:
-                        foo.append('{}={}'.format(key, as_values.get(key, 'UNKNOWN')))
-                old_set = '{} set {} {}'.format(first_part, thing, ' '.join(foo))
-                if set_command != old_set:
-                    config_diff.append('-{}'.format(old_set))
-                    config_diff.append('+{}'.format(set_command))
-        else:
-            raise NotImplementedError
-        return config_diff
+#    def compare_config(self):
 
     def discard_config(self):
         self.candidate_config = []
+        self.cli('/file print without-paging terse', '/file remove "{}.rsc"'.format(self.config_session))
 
     def get_arp_table(self):
         cli_command = '/ip arp print without-paging terse'
@@ -121,8 +78,8 @@ class ROSDriver(NetworkDriver):
             arp_table.append(
                 {
                     'interface': unicode(arp_entry.get('interface')),
-                    'mac': unicode(self._format_mac(arp_entry.get('mac-address'))),
-                    'ip': unicode(arp_entry.get('address')),
+                    'mac': napalm_base.helpers.mac(arp_entry.get('mac-address').replace(':', '')),
+                    'ip': napalm_base.helpers.ip(arp_entry.get('address')),
                     'age': float(-1),
                 }
             )
@@ -144,7 +101,7 @@ class ROSDriver(NetworkDriver):
 
             router_ids = {}
             for bgp_peer in bgp_peers:
-                bgp_neighbors[routing_table]['peers'][bgp_peer['remote-address']] = {
+                bgp_neighbors[routing_table]['peers'][napalm_base.helpers.ip(bgp_peer['remote-address'])] = {
                     'local_as': int(bgp_peer['local-as']),
                     'remote_as': int(bgp_peer['remote-as']),
                     'remote_id': unicode(bgp_peer.get('remote-id', '')),
@@ -190,11 +147,11 @@ class ROSDriver(NetworkDriver):
                             'local_as': int(bgp_peer['local-as']),
                             'remote_as': int(bgp_peer['remote-as']),
                             'router_id': unicode(bgp_peer.get('router_id', '')),
-                            'local_address': unicode(bgp_peer.get('local-address')),
+                            'local_address': napalm_base.helpers.ip(bgp_peer.get('local-address')),
                             'routing_table': unicode(bgp_peer['routing-table']),
                             'local_address_configured': False,
                             'local_port': -1,
-                            'remote_address': unicode(bgp_peer['remote-address']),
+                            'remote_address': napalm_base.helpers.ip(bgp_peer['remote-address']),
                             'remote_port': -1,
                             'multihop': bgp_peer['multihop'] == 'yes',
                             'multipath': False,
@@ -267,10 +224,10 @@ class ROSDriver(NetworkDriver):
                 if bridge_mac['flags'].find('L') != -1:
                     pass
 
-                mac_address = bridge_mac['mac-address']
+                mac_address = napalm_base.helpers.mac(bridge_mac['mac-address'])
 
                 fdb_entry = {
-                    'mac_address': mac_address,
+                    'mac_address': napalm_base.helpers.mac(mac_address),
                     'interface': key,
                     'vlan': 0,
                     'static': False,
@@ -315,7 +272,14 @@ class ROSDriver(NetworkDriver):
         system_resource_values = self.device.print_to_values(cli_output[system_resource_print])
         system_health_values = self.device.print_to_values(cli_output[system_health_print])
 
-        cpu_load = dict((cpu_values['cpu'], cpu_values['load'].rstrip('%')) for cpu_values in self.device.print_to_values_structured(cli_output[resource_cpu_print]))
+        cpu_load = {}
+        for cpu_values in self.device.print_to_values_structured(cli_output[resource_cpu_print]):
+            cpu_load[cpu_values['cpu']] = {
+                '%usage': float(cpu_values['load'].rstrip('%')),
+            }
+
+        total_memory = int(float(re.sub('[KM]iB$', '', system_resource_values.get('total-memory'))))
+        free_memory = float(re.sub('[KM]iB$', '', system_resource_values.get('free-memory')))
 
         return {
             'fans': {
@@ -339,8 +303,8 @@ class ROSDriver(NetworkDriver):
             },
             'cpu': cpu_load,
             'memory': {
-                'available_ram': float(re.sub('[KM]iB$', '', system_resource_values.get('total-memory'))),
-#                'used_ram': int(resource_values.get('total-memory')) - int(system_resource_values.get('free-memory'))
+                'available_ram': total_memory,
+                'used_ram': int(total_memory - free_memory),
             }
         }
 
@@ -361,7 +325,8 @@ class ROSDriver(NetworkDriver):
             'hostname': unicode(system_identity_values['name']),
             'fqdn': u'',
             'os_version': unicode(system_resource_values['version']),
-            'serial_number': unicode(system_routerboard_values['serial-number'] if system_routerboard_values['routerboard'] == 'yes' else ''),
+            'serial_number': unicode(system_routerboard_values['serial-number'] \
+                if system_routerboard_values['routerboard'] == 'yes' else ''),
             'interface_list': napalm_base.utils.string_parsers.sorted_nicely(self.device.interfaces())
         }
 
@@ -377,7 +342,7 @@ class ROSDriver(NetworkDriver):
                 'description': unicode(if_entry.get('comment', '')),
                 'last_flapped': float(self.device.to_seconds_date_time(if_entry.get('last-link-up-time', ''))),
                 'speed': -1,
-                'mac_address': unicode(self._format_mac(if_entry.get('mac-address', ''))),
+                'mac_address': napalm_base.helpers.mac(if_entry.get('mac-address', '')),
             }
         return interfaces
 
@@ -430,7 +395,7 @@ class ROSDriver(NetworkDriver):
                 }
             for if_address in if_addresses:
                 ipv4_address, prefix_length = if_address['address'].split('/', 1)
-                interfaces_ip[if_name][u'ipv4'][unicode(ipv4_address)] = dict(prefix_length=int(prefix_length))
+                interfaces_ip[if_name][u'ipv4'][napalm_base.helpers.ip(ipv4_address)] = dict(prefix_length=int(prefix_length))
 
         if not self.device.system_package_enabled('ipv6'):
             return interfaces_ip
@@ -450,7 +415,7 @@ class ROSDriver(NetworkDriver):
                 ipv6_address, prefix_length = if_address['address'].split('/', 1)
                 if 'ipv6' not in interfaces_ip[if_name]:
                     interfaces_ip[if_name][u'ipv6'] = {}
-                interfaces_ip[if_name][u'ipv6'][unicode(ipv6_address)] = dict(prefix_length=int(prefix_length))
+                interfaces_ip[if_name][u'ipv6'][napalm_base.helpers.ip(ipv6_address)] = dict(prefix_length=int(prefix_length))
 
         return interfaces_ip
 
@@ -539,10 +504,10 @@ class ROSDriver(NetworkDriver):
             route_to[ipv4_route['dst-address']].append(
                 {
                     'protocol': unicode(route_type),
-                    'current_active': True,
+                    'current_active': ipv4_route['flags'].find('X') == -1,
                     'last_active': False,
                     'age': int(0),
-                    'next_hop': unicode(ipv4_route.get('gateway', '')),
+                    'next_hop': napalm_base.helpers.ip(ipv4_route.get('gateway', '')),
                     'outgoing_interface': unicode(ipv4_route.get('gateway-status', '').split()[-1]),
                     'selected_next_hop': False,
                     'preference': int(0),
@@ -596,20 +561,26 @@ class ROSDriver(NetworkDriver):
     def load_merge_candidate(self, filename=None, config=None):
         if filename is not None:
             try:
-                with open(filename, 'rb') as f:
-                    self.candidate_config = f.read().splitlines()
+                with open(filename, 'rU') as file_object:
+                    self.candidate_config = file_object.read().splitlines()
             except IOError as e:
                 raise MergeConfigException(e.message)
         elif config is not None:
-            self.candidate_config = config.splitlines()
+            if isinstance(config, list):
+                self.candidate_config = config.splitlines()
+            else:
+                self.candidate_config = config
         self.merge_config = True
+        if self.candidate_config != []:
+            self.config_session = 'napalm_{}'.format(datetime.datetime.now().microsecond)
+            self.device.upload_config(self.candidate_config, self.config_session)
 
 #    def load_replace_candidate(self, filename=None, config=None):
 
 #    def load_template(self, template_name, template_source=None, template_path=None, **template_vars):
 
     def open(self):
-        self.device = mikrotik.ROS_Client(
+        self.device = ROS_Client(
             host=self.hostname,
             snmp_community=self.snmp_community,
             snmp_port=self.snmp_port,
@@ -654,7 +625,7 @@ class ROSDriver(NetworkDriver):
                 continue
             ping_results['results'].append(
                 {
-                    'ip_address': unicode(ip_address),
+                    'ip_address': napalm_base.helpers.ip(ip_address),
                     'rtt': float(rtt_ms.replace('ms', '')),
                 }
             )
@@ -680,7 +651,7 @@ class ROSDriver(NetworkDriver):
         if last_line != '':
             traceroute_output.append(last_line)
             return {
-                'error': ' '.join([l.lstrip() for l in traceroute_output])
+                'error': ' '.join([line.lstrip() for line in traceroute_output])
                 }
 
         probe_results = {}
@@ -702,7 +673,7 @@ class ROSDriver(NetworkDriver):
                     }
                 probe_results[result_index]['probes'][num_probes] = {
                     'rtt': float(line_parts[4].replace('ms', '')),
-                    'ip_address': unicode(line_parts[1]),
+                    'ip_address': napalm_base.helpers.ip(line_parts[1]),
                     'host_name': u''
                 }
             num_probes -= 1
@@ -720,15 +691,6 @@ class ROSDriver(NetworkDriver):
                 if re_match is None:
                     return False
         return True
-
-    @staticmethod
-    def _format_mac(mac_address):
-        if len(mac_address) != 17:
-            return mac_address
-        if mac_address.find(':') == -1:
-            return mac_address
-        mac_parts = mac_address.replace(':', '')
-        return ':'.join(list([mac_parts[:4], mac_parts[4:8], mac_parts[8:]]))
 
     def _get_bgp_peers(self, name=''):
         bgp_peers = []
@@ -799,7 +761,7 @@ class ROSDriver(NetworkDriver):
                 mndp_neighbors_detail[if_name].append(
                     {
                         'parent_interface': u'',
-                        'remote_chassis_id': unicode(self._format_mac(if_neighbor['mac-address'])),
+                        'remote_chassis_id': napalm_base.helpers.mac(if_neighbor['mac-address']),
                         'remote_system_name': unicode(if_neighbor['identity']),
                         'remote_port': unicode(if_neighbor['interface-name']),
                         'remote_port_description': u'',
