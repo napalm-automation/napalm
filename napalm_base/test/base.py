@@ -473,14 +473,14 @@ class TestGettersNetworkDriver:
         except NotImplementedError:
             raise SkipTest()
 
-        result = isinstance(get_optics, dict)
+        result = isinstance(get_optics, list)
 
-        for intf, intf_optic in get_optics.iteritems():
-            for phy_chann in intf_optic:
-                for chan in intf_optic[phy_chan]:
-                    for item in intf_optic[phy_chan][chan]:
+        for item in get_optics:
+            for phy_chann in item:
+                for chan in item[phy_chan]:
+                    for optic_item in item[phy_chan][chan]:
                         for state, state_vals in (
-                                intf_optic[phy_chan][chan][item].iteritems()):
+                                item[phy_chan][chan][optic_item].iteritems()):
 
                             result = (
                                 result and self._test_model(models.optics,
