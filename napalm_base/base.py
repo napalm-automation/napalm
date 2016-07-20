@@ -1436,3 +1436,67 @@ class NetworkDriver(object):
             }
         """
         raise NotImplementedError
+
+    def get_optics(self):
+        """Fetches the power usage on the various transceivers installed
+        on the switch (in dbm), and returns a view that conforms with the
+        openconfig model openconfig-platform-transceiver.yang
+
+        Returns a dictionary where the keys are as listed below:
+
+            * intf_name (unicode)
+                * physical_channels (int)
+                    * channels (int)
+                        * index (int)
+                        * state
+                            * input_power
+                                * instant (float)
+                                * avg (float)
+                                * min (float)
+                                * max (float)
+                            * output_power
+                                * instant (float)
+                                * avg (float)
+                                * min (float)
+                                * max (float)
+                            * laser_bias_current
+                                * instant (float)
+                                * avg (float)
+                                * min (float)
+                                * max (float)
+
+        Example:
+
+            {
+                    'et1': {
+                        0: {
+                            0: [
+                                {
+                                    'index': 0,
+                                    'state': {
+                                        'input_power': {
+                                            'instant': 0.0,
+                                            'avg': 0.0,
+                                            'min': 0.0,
+                                            'max': 0.0,
+                                        },
+                                        'output_power': {
+                                            'instant': 0.0,
+                                            'avg': 0.0,
+                                            'min': 0.0,
+                                            'max': 0.0,
+                                        },
+                                        'laser_bias_current': {
+                                            'instant': 0.0,
+                                            'avg': 0.0,
+                                            'min': 0.0,
+                                            'max': 0.0,
+                                        },
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+        """
+        raise NotImplementedError
