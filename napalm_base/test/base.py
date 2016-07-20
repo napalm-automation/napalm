@@ -475,12 +475,11 @@ class TestGettersNetworkDriver:
 
         result = isinstance(get_optics, list)
 
-        for item in get_optics:
-            for phy_chan in item:
-                for chan in item[phy_chan]:
-                    for optic_item in item[phy_chan][chan]:
-                        for state, state_vals in (
-                                item[phy_chan][chan][optic_item].iteritems()):
+        for intf, intf_optic in get_optics.iteritems():
+            for phy_chan, chan in intf_optic.iteritems():
+                for stuff, more_stuff in chan.iteritems():
+                    for item in more_stuff:
+                        for state, state_vals in item.iteritems():
 
                             result = (
                                 result and self._test_model(models.optics,
