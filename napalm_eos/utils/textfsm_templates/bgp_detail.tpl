@@ -5,6 +5,7 @@ Value previous_connection_state (\S+)
 Value multihop (\d+)
 Value remote_as (\d+)
 Value local_as (\d+)
+Value router_id (\S+)
 Value local_address (\S+)
 Value local_port (\d+)
 Value remote_address (\S+)
@@ -22,11 +23,11 @@ Value input_updates (\d+)
 Value output_updates (\d+)
 Value messages_queued_out (\d+)
 Value received_prefix_count (\d+)
-Value advertise_prefix_count (\d+)
+Value advertised_prefix_count (\d+)
 
 Start
   ^BGP neighbor is ${remote_address}, remote AS ${remote_as}, .*
-  ^.*, VRF ${routing_table}
+  ^.* remote router ID ${router_id}, VRF ${routing_table}
   ^\s+Hold time is ${holdtime}, keepalive interval is ${keepalive} seconds
   ^\s+Configured hold time is ${configured_holdtime}, keepalive interval is ${configured_keepalive} seconds
   ^\s+BGP state is ${connection_state}, ${up} .*
@@ -35,7 +36,7 @@ Start
   ^\s+OutQ depth is ${messages_queued_out}
   ^\s+Updates:\s+${output_updates}\s+${input_updates}
   ^\s+Total messages:\s+${output_messages}\s+${input_messages}
-  ^\s+IPv4 Unicast:\s+${advertise_prefix_count}\s+${received_prefix_count}
+  ^\s+IPv4 Unicast:\s+${advertised_prefix_count}\s+${received_prefix_count}
   ^\s+Inbound route map is ${import_policy}
   ^\s+Outbound route map is ${export_policy}
   ^\s+Nexthop matches local IP address: ${multihop}

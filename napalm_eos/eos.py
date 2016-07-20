@@ -46,6 +46,8 @@ from napalm_base.exceptions import ConnectionException, MergeConfigException, Re
 class EOSDriver(NetworkDriver):
     """Napalm driver for Arista EOS."""
 
+    SUPPORTED_OC_MODELS = []
+
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         """Constructor."""
         self.device = None
@@ -1223,6 +1225,96 @@ class EOSDriver(NetworkDriver):
                                   BGP neighbor or for all BGP neighbors.
         """
 
+        def _parse_per_peer_bgp_detail(peer_output):
+            """This function parses the raw data per peer and returns a
+            json structure per peer.
+            """
+
+            int_fields = ['local_as', 'remote_as',
+                          'local_port', 'remote_port', 'local_port',
+                          'input_messages', 'output_messages', 'input_updates',
+                          'output_updates', 'messages_queued_out', 'holdtime',
+                          'configured_holdtime', 'keepalive',
+                          'configured_keepalive', 'advertised_prefix_count',
+                          'received_prefix_count']
+
+            peer_details = []
+
+            # Using preset template to extract peer info
+            peer_info = (
+                napalm_base.helpers.textfsm_extractor(
+                    self, 'bgp_detail', peer_output))
+
+            for item in peer_info:
+
+                # Determining a few other fields in the final peer_info
+                item['up'] = (
+                    True if item['up'] == "up" else False)
+                item['local_address_configured'] = (
+                    True if item['local_address'] else False)
+                item['multihop'] = (
+                    False if item['multihop'] == 0 or
+                    item['multihop'] == '' else True)
+
+                # TODO: The below fields need to be retrieved
+                # Currently defaulting their values to False or 0
+                item['multipath'] = False
+                item['remove_private_as'] = False
+                item['suppress_4byte_as'] = False
+                item['local_as_prepend'] = False
+                item['flap_count'] = 0
+                item['active_prefix_count'] = 0
+                item['suppressed_prefix_count'] = 0
+
+                # Converting certain fields into int
+                for key in int_fields:
+                    item[key] = napalm_base.helpers.convert(int, item[key], 0)
+
+                # Conforming with the datatypes defined by the base class
+                item['export_policy'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['export_policy']))
+                item['last_event'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['last_event']))
+                item['remote_address'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['remote_address']))
+                item['previous_connection_state'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['previous_connection_state']))
+                item['import_policy'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['import_policy']))
+                item['connection_state'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['connection_state']))
+                item['routing_table'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['routing_table']))
+                item['router_id'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['router_id']))
+                item['local_address'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['local_address']))
+
+                peer_details.append(item)
+
+            return peer_details
+
+        def _append(bgp_dict, peer_info):
+
+            remote_as = peer_info['remote_as']
+            vrf_name = peer_info['routing_table']
+
+            if vrf_name not in bgp_dict.keys():
+                bgp_dict[vrf_name] = {}
+            if remote_as not in bgp_dict[vrf_name].keys():
+                bgp_dict[vrf_name][remote_as] = []
+
+            bgp_dict[vrf_name][remote_as].append(peer_info)
+
         commands = []
         summary_commands = []
         if not neighbor_address:
@@ -1252,129 +1344,39 @@ class EOSDriver(NetworkDriver):
 
         bgp_detail_info = {}
 
+        v4_peer_info = []
+        v6_peer_info = []
+
         if neighbor_address:
-            peer_info = self._parse_per_peer_bgp_detail(
-                raw_output[0]['output'])
+            peer_info = _parse_per_peer_bgp_detail(raw_output[0]['output'])
 
-            peer_info[0]['accepted_prefix_count'] = (
-                bgp_summary[0]['vrfs']['default']['peers']
-                           [neighbor_address]['prefixAccepted'])
-
-            # Appending peer_info to final data structure
-            if int(peer_info[0]['remote_as']) not in bgp_detail_info:
-                bgp_detail_info[int(peer_info[0]['remote_as'])] = []
-
-            (bgp_detail_info[int(peer_info[0]['remote_as'])].
-                append(peer_info[0]))
+            if peer_ver == 4:
+                v4_peer_info.append(peer_info[0])
+            else:
+                v6_peer_info.append(peer_info[0])
 
         else:
             # Using preset template to extract peer info
-            v4_peer_info = self._parse_per_peer_bgp_detail(
-                raw_output[0]['output'])
+            v4_peer_info = _parse_per_peer_bgp_detail(raw_output[0]['output'])
+            v6_peer_info = _parse_per_peer_bgp_detail(raw_output[1]['output'])
 
-            v6_peer_info = self._parse_per_peer_bgp_detail(
-                raw_output[1]['output'])
+        for peer_info in v4_peer_info:
 
-            for peer_info in v4_peer_info:
+            peer_info['accepted_prefix_count'] = (
+                bgp_summary[0]['vrfs']['default']['peers']
+                           [peer_info['remote_address']]['prefixAccepted'])
 
-                peer_info['accepted_prefix_count'] = (
-                    bgp_summary[0]['vrfs']['default']['peers']
-                               [peer_info['remote_address']]['prefixAccepted'])
+            _append(bgp_detail_info, peer_info)
 
-                # Appending v4 peer_info to final data structure
-                if int(peer_info['remote_as']) not in bgp_detail_info:
-                    bgp_detail_info[int(peer_info['remote_as'])] = []
+        for peer_info in v6_peer_info:
 
-                bgp_detail_info[int(peer_info['remote_as'])].append(peer_info)
+            peer_info['accepted_prefix_count'] = (
+                bgp_summary[1]['vrfs']['default']['peers']
+                           [peer_info['remote_address']]['prefixAccepted'])
 
-            for peer_info in v6_peer_info:
-
-                peer_info['accepted_prefix_count'] = (
-                    bgp_summary[1]['vrfs']['default']['peers']
-                               [peer_info['remote_address']]['prefixAccepted'])
-
-                # Appending v6 peer_info to final data structure
-                if int(peer_info['remote_as']) not in bgp_detail_info:
-                    bgp_detail_info[int(peer_info['remote_as'])] = []
-
-                bgp_detail_info[int(peer_info['remote_as'])].append(peer_info)
+            _append(bgp_detail_info, peer_info)
 
         return bgp_detail_info
-
-    def _parse_per_peer_bgp_detail(self, peer_output):
-        """This function parses the raw data per peer and returns a
-        json structure per peer.
-        """
-
-        int_fields = ['local_as', 'remote_as',
-                      'local_port', 'remote_port', 'local_port',
-                      'input_messages', 'output_messages', 'input_updates',
-                      'output_updates', 'messages_queued_out', 'holdtime',
-                      'configured_holdtime', 'keepalive',
-                      'configured_keepalive', 'advertise_prefix_count',
-                      'received_prefix_count']
-
-        peer_details = []
-
-        # Using preset template to extract peer info
-        peer_info = (
-            napalm_base.helpers.textfsm_extractor(
-                self, 'bgp_detail', peer_output))
-
-        for item in peer_info:
-
-            # Determining a few other fields in the final peer_info
-            item['up'] = (
-                True if item['up'] == "up" else False)
-            item['local_address_configured'] = (
-                True if item['local_address'] else False)
-            item['multihop'] = (
-                False if item['multihop'] == 0 or
-                item['multihop'] == '' else True)
-
-            # TODO: The below fields need to be retrieved
-            # Currently defaulting their values to False or 0
-            item['multipath'] = False
-            item['remove_private_as'] = False
-            item['suppress_4byte_as'] = False
-            item['local_as_prepend'] = False
-            item['flap_count'] = 0
-            item['active_prefix_count'] = 0
-            item['suppressed_prefix_count'] = 0
-
-            # Converting certain fields into int
-            for key in int_fields:
-                item[key] = napalm_base.helpers.convert(int, item[key], 0)
-
-            # Conforming with the datatypes defined by the base class
-            item['export_policy'] = (
-                napalm_base.helpers.convert(
-                    unicode, item['export_policy']))
-            item['last_event'] = (
-                napalm_base.helpers.convert(
-                    unicode, item['last_event']))
-            item['remote_address'] = (
-                napalm_base.helpers.convert(
-                    unicode, item['remote_address']))
-            item['previous_connection_state'] = (
-                napalm_base.helpers.convert(
-                    unicode, item['previous_connection_state']))
-            item['import_policy'] = (
-                napalm_base.helpers.convert(
-                    unicode, item['import_policy']))
-            item['connection_state'] = (
-                napalm_base.helpers.convert(
-                    unicode, item['connection_state']))
-            item['routing_table'] = (
-                napalm_base.helpers.convert(
-                    unicode, item['routing_table']))
-            item['local_address'] = (
-                napalm_base.helpers.convert(
-                    unicode, item['local_address']))
-
-            peer_details.append(item)
-
-        return peer_details
 
     def get_optics(self):
 
