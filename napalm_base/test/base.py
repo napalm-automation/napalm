@@ -477,8 +477,8 @@ class TestGettersNetworkDriver:
 
         for intf, intf_optic in get_optics.iteritems():
             for phy_chan, chan in intf_optic.iteritems():
-                for stuff, more_stuff in chan.iteritems():
-                    for item in more_stuff:
+                for chan_num, chan_det in chan.iteritems():
+                    for item in chan_det:
                         for state, state_vals in item.get('state').iteritems():
 
                             result = (
