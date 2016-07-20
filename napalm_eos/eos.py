@@ -1375,3 +1375,56 @@ class EOSDriver(NetworkDriver):
             peer_details.append(item)
 
         return peer_details
+
+    def get_optics(self):
+
+        command = ['show interfaces transceiver']
+
+        output = (
+            self.device.run_commands(
+                command, encoding='json')[0]['interfaces'])
+
+        # Formatting data into return data structure
+        optics_detail = []
+
+        for port, port_values in output.iteritems():
+            port_detail = {}
+            port_detail[port] = {}
+
+            # Defaulting physical channel and channel values to 0
+            port_detail[port][0] = {}
+            port_detail[port][0][0] = []
+
+            # Defaulting avg, min, max values to 0.0 since device does not
+            # return these values
+            optic_states = {
+                'index': 0,
+                'state': {
+                    'input_power': {
+                        'instant': (port_values['rxPower']
+                                    if 'rxPower' in port_values else 0.0),
+                        'avg': 0.0,
+                        'min': 0.0,
+                        'max': 0.0
+                    },
+                    'output_power': {
+                        'instant': (port_values['txPower']
+                                    if 'txPower' in port_values else 0.0),
+                        'avg': 0.0,
+                        'min': 0.0,
+                        'max': 0.0
+                    },
+                    'laser_bias_current': {
+                        'instant': (port_values['txBias']
+                                    if 'txBias' in port_values else 0.0),
+                        'avg': 0.0,
+                        'min': 0.0,
+                        'max': 0.0
+                    }
+                }
+            }
+
+            port_detail[port][0][0].append(optic_states)
+            optics_detail.append(port_detail)
+
+        return optics_detail
