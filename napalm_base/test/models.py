@@ -276,3 +276,10 @@ users = {
     'password': str,
     'sshkeys': list
 }
+
+optics_state = {
+    'instant': float,
+    'avg': float,
+    'min': float,
+    'max': float
+}
