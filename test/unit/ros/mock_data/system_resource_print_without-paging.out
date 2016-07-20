@@ -1,0 +1,17 @@
+                   uptime: 2h3m55s
+                  version: 6.35.4 (stable)
+               build-time: Jun/09/2016 13:12:02
+              free-memory: 71.1MiB
+             total-memory: 96.1MiB
+                      cpu: QEMU
+                cpu-count: 1
+            cpu-frequency: 2294MHz
+                 cpu-load: 17%
+           free-hdd-space: 63.4MiB
+          total-hdd-space: 95.3MiB
+  write-sect-since-reboot: 4472
+         write-sect-total: 4473
+        architecture-name: x86_64
+               board-name: CHR
+                 platform: MikroTik
+

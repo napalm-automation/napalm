@@ -1,0 +1,7 @@
+ 0  R  comment=VM Network name=ether1 default-name=ether1 type=ether mtu=1500 actual-mtu=1500 mac-address=00:92:04:0B:C1:00 fast-path=no last-link-up-time=jul/07/2016 07:51:16 link-downs=0 
+ 1  R  comment=VMPG5 name=ether2 default-name=ether2 type=ether mtu=9000 actual-mtu=9000 mac-address=00:92:04:0B:C1:01 fast-path=no last-link-up-time=jul/07/2016 07:51:16 link-downs=0 
+ 2  R  name=ether3 default-name=ether3 type=ether mtu=1500 actual-mtu=1500 mac-address=00:92:04:0B:C1:02 fast-path=no last-link-up-time=jul/07/2016 07:51:16 link-downs=0 
+ 3  R  name=ether4 default-name=ether4 type=ether mtu=1500 actual-mtu=1500 mac-address=00:92:04:0B:C1:03 fast-path=no last-link-up-time=jul/07/2016 07:51:16 link-downs=0 
+ 4  R  name=ether5 default-name=ether5 type=ether mtu=1500 actual-mtu=1500 mac-address=00:92:04:0B:C1:04 fast-path=no last-link-up-time=jul/07/2016 07:51:16 link-downs=0 
+ 5  R  comment=BLAH name=loop1 type=bridge mtu=1520 actual-mtu=1520 l2mtu=65535 mac-address=00:00:00:00:00:00 fast-path=yes last-link-up-time=jul/07/2016 07:56:07 link-downs=0 
+
