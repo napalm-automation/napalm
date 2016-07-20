@@ -476,7 +476,7 @@ class TestGettersNetworkDriver:
         result = isinstance(get_optics, list)
 
         for item in get_optics:
-            for phy_chann in item:
+            for phy_chan in item:
                 for chan in item[phy_chan]:
                     for optic_item in item[phy_chan][chan]:
                         for state, state_vals in (
