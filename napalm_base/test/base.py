@@ -479,7 +479,7 @@ class TestGettersNetworkDriver:
             for phy_chan, chan in intf_optic.iteritems():
                 for stuff, more_stuff in chan.iteritems():
                     for item in more_stuff:
-                        for state, state_vals in item.iteritems():
+                        for state, state_vals in item.get('state').iteritems():
 
                             result = (
                                 result and self._test_model(models.optics,
