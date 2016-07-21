@@ -465,3 +465,23 @@ class TestGettersNetworkDriver:
             result = result and (0 <= user_details.get('level') <= 15)
 
         self.assertTrue(result)
+
+    def test_get_optics(self):
+
+        try:
+            get_optics = self.device.get_optics()
+        except NotImplementedError:
+            raise SkipTest()
+
+        result = isinstance(get_optics, list)
+
+        for intf, intf_optic in get_optics.iteritems():
+            for phy_chan, chan in intf_optic.iteritems():
+                for chan_num, chan_det in chan.iteritems():
+                    for item in chan_det:
+                        for state, state_vals in item.get('state').iteritems():
+
+                            result = (
+                                result and self._test_model(models.optics,
+                                                            state_vals))
+        self.assertTrue(result)
