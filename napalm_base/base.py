@@ -1471,6 +1471,8 @@ class NetworkDriver(object):
                     'et1': {
                         0: {
                             0: [
+                        'physical_channels': {
+                            'channel': [
                                 {
                                     'index': 0,
                                     'state': {
@@ -1498,5 +1500,6 @@ class NetworkDriver(object):
                         }
                     }
                 }
+            }
         """
         raise NotImplementedError
