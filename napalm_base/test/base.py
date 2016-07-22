@@ -473,9 +473,9 @@ class TestGettersNetworkDriver:
         except NotImplementedError:
             raise SkipTest()
 
-        result = isinstance(get_optics, dict)
+        assert isinstance(get_optics, dict)
 
-        for iface, iface_data in result.iteritems():
+        for iface, iface_data in get_optics.iteritems():
             assert isinstance(iface, str)
             for channel in iface_data['physical_channels']['channel']:
                 assert len(channel) == 2
