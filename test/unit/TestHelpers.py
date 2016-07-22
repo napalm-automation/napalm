@@ -272,6 +272,20 @@ class TestBaseHelpers(unittest.TestCase):
                            ) > 0
                        )
 
+    def test_mac(self):
+
+        """
+        Tests the helper function ```mac```:
+
+            * check if empty reply when invalid MAC
+            * check if MAC address returned as expected
+        """
+
+        self.assertEqual(napalm_base.helpers.mac('fake'), '')
+        self.assertEqual(napalm_base.helpers.mac('0123456789ab'), '01:23:45:67:89:AB')
+        self.assertEqual(napalm_base.helpers.mac('0123.4567.89ab'), '01:23:45:67:89:AB')
+        self.assertEqual(napalm_base.helpers.mac('123.4567.89ab'), '01:23:45:67:89:AB')
+
 
 class FakeNetworkDriver(NetworkDriver):
 

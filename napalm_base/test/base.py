@@ -283,9 +283,12 @@ class TestGettersNetworkDriver:
 
         result = len(get_bgp_neighbors_detail) > 0
 
-        for remote_as, neighbor_list in get_bgp_neighbors_detail.iteritems():
-            for neighbor in neighbor_list:
-                result = result and self._test_model(models.peer_details, neighbor)
+        for vrf, vrf_ases in get_bgp_neighbors_detail.iteritems():
+            result = result and isinstance(vrf, unicode)
+            for remote_as, neighbor_list in vrf_ases.iteritems():
+                result = result and isinstance(remote_as, int)
+                for neighbor in neighbor_list:
+                    result = result and self._test_model(models.peer_details, neighbor)
 
         self.assertTrue(result)
 
@@ -462,3 +465,27 @@ class TestGettersNetworkDriver:
             result = result and (0 <= user_details.get('level') <= 15)
 
         self.assertTrue(result)
+
+    def test_get_optics(self):
+
+        try:
+            get_optics = self.device.get_optics()
+        except NotImplementedError:
+            raise SkipTest()
+
+        assert isinstance(get_optics, dict)
+
+        for iface, iface_data in get_optics.iteritems():
+            assert isinstance(iface, unicode)
+            for channel in iface_data['physical_channels']['channel']:
+                assert len(channel) == 2
+                assert isinstance(channel['index'], int)
+                for field in ['input_power', 'output_power',
+                              'laser_bias_current']:
+
+                    assert len(channel['state'][field]) == 4
+                    assert isinstance(channel['state'][field]['instant'],
+                                      float)
+                    assert isinstance(channel['state'][field]['avg'], float)
+                    assert isinstance(channel['state'][field]['min'], float)
+                    assert isinstance(channel['state'][field]['max'], float)

@@ -124,6 +124,7 @@ peer_details = {
     'up'                        : bool,
     'local_as'                  : int,
     'remote_as'                 : int,
+    'router_id'                 : unicode,
     'local_address'             : unicode,
     'routing_table'             : unicode,
     'local_address_configured'  : bool,
@@ -153,7 +154,7 @@ peer_details = {
     'received_prefix_count'     : int,
     'accepted_prefix_count'     : int,
     'suppressed_prefix_count'   : int,
-    'advertise_prefix_count'    : int,
+    'advertised_prefix_count'   : int,
     'flap_count'                : int
 }
 
@@ -274,4 +275,11 @@ users = {
     'level': int,
     'password': str,
     'sshkeys': list
+}
+
+optics_state = {
+    'instant': float,
+    'avg': float,
+    'min': float,
+    'max': float
 }
