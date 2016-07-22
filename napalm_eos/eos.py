@@ -1387,15 +1387,13 @@ class EOSDriver(NetworkDriver):
                 command, encoding='json')[0]['interfaces'])
 
         # Formatting data into return data structure
-        optics_detail = []
+        optics_detail = {}
 
         for port, port_values in output.iteritems():
             port_detail = {}
-            port_detail[port] = {}
 
-            # Defaulting physical channel and channel values to 0
-            port_detail[port][0] = {}
-            port_detail[port][0][0] = []
+            port_detail['physical_channels'] = {}
+            port_detail['physical_channels']['channel'] = []
 
             # Defaulting avg, min, max values to 0.0 since device does not
             # return these values
@@ -1426,7 +1424,7 @@ class EOSDriver(NetworkDriver):
                 }
             }
 
-            port_detail[port][0][0].append(optic_states)
-            optics_detail.append(port_detail)
+            port_detail['physical_channels']['channel'].append(optic_states)
+            optics_detail[port] = port_detail
 
         return optics_detail
