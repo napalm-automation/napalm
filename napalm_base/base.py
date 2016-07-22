@@ -1445,8 +1445,8 @@ class NetworkDriver(object):
         Returns a dictionary where the keys are as listed below:
 
             * intf_name (unicode)
-                * physical_channels (int)
-                    * channels (int)
+                * physical_channels
+                    * channels (list of dicts)
                         * index (int)
                         * state
                             * input_power
