@@ -475,13 +475,17 @@ class TestGettersNetworkDriver:
 
         result = isinstance(get_optics, dict)
 
-        for intf, intf_optic in get_optics.iteritems():
-            for phy_chan, chan in intf_optic.iteritems():
-                for chan_num, chan_det in chan.iteritems():
-                    for item in chan_det:
-                        for state, state_vals in item.get('state').iteritems():
+        for iface, iface_data in result.iteritems():
+            assert isinstance(iface, str)
+            for channel in iface_data['physical_channels']['channel']:
+                assert len(channel) == 2
+                assert isinstance(channel['index'], int)
+                for field in ['input_power', 'output_power',
+                              'laser_bias_current']:
 
-                            result = (
-                                result and self._test_model(models.optics,
-                                                            state_vals))
-        self.assertTrue(result)
+                    assert len(channel['state'][field]) == 4
+                    assert isinstance(channel['state'][field]['instant'],
+                                      float)
+                    assert isinstance(channel['state'][field]['avg'], float)
+                    assert isinstance(channel['state'][field]['min'], float)
+                    assert isinstance(channel['state'][field]['max'], float)
