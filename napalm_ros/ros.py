@@ -61,9 +61,9 @@ class ROSDriver(NetworkDriver):
             merge_command = '/import file-name="{config_session}.rsc" verbose=no'.format(
                 config_session=self.config_session
             )
-            self.device.safe_mode_toggle()
+            self._safe_mode_toggle()
             cli_output = self.cli(merge_command)[merge_command]
-            self.device.safe_mode_toggle()
+            self._safe_mode_toggle()
             if cli_output[-1] != 'Script file loaded and executed successfully':
                 pass
             self.discard_config()
@@ -100,7 +100,7 @@ class ROSDriver(NetworkDriver):
 
     def get_bgp_neighbors(self):
         bgp_neighbors = {}
-        if not self.device.system_package_enabled('routing'):
+        if not self._system_package_enabled('routing'):
             return bgp_neighbors
 
         for routing_table, bgp_peers in ros.Utils.index_values(
@@ -147,7 +147,7 @@ class ROSDriver(NetworkDriver):
 
     def get_bgp_neighbors_detail(self, neighbor_address=''):
         bgp_neighbors_detail = {}
-        if not self.device.system_package_enabled('routing'):
+        if not self._system_package_enabled('routing'):
             return bgp_neighbors_detail
 
         for routing_table, peers in ros.Utils.index_values(
@@ -265,16 +265,22 @@ class ROSDriver(NetworkDriver):
         system_resource_print = '/system resource print without-paging'
         system_identity_print = '/system identity print without-paging'
         system_routerboard_print = 'cache=/system routerboard print without-paging'
+        interface_print = '/interface print without-paging terse'
+
         cli_output = self.cli(
             system_resource_print,
             system_identity_print,
-            system_routerboard_print
+            system_routerboard_print,
+            interface_print
         )
+
         system_resource_values = ros.Utils.print_to_values(cli_output[system_resource_print])
         system_identity_values = ros.Utils.print_to_values(cli_output[system_identity_print])
         system_routerboard_values = ros.Utils.print_to_values(
             cli_output[system_routerboard_print]
         )
+        interface_values = ros.Utils.print_to_values_structured(cli_output[interface_print])
+
         return {
             'uptime': ros.Utils.to_seconds(system_resource_values['uptime']),
             'vendor': unicode(system_resource_values['platform']),
@@ -285,7 +291,7 @@ class ROSDriver(NetworkDriver):
             'serial_number': unicode(system_routerboard_values['serial-number'] \
                 if system_routerboard_values['routerboard'] == 'yes' else ''),
             'interface_list': napalm_base.utils.string_parsers.sorted_nicely(
-                self.device.interfaces()
+                [value.get('name') for value in interface_values]
             ),
         }
 
@@ -321,7 +327,7 @@ class ROSDriver(NetworkDriver):
                 ros.Utils.print_concat(stats_detail)
         ):
             if_name = unicode(if_counters['name'].replace('"', ''))
-            if self.device.interface_type(if_name) != 'ether':
+            if self._interface_type(if_name) != 'ether':
                 continue
             if if_name in if_counters:
                 raise ValueError('Interface already seen')
@@ -375,7 +381,7 @@ class ROSDriver(NetworkDriver):
                 interfaces_ip[if_name][u'ipv4'][napalm_base.helpers.ip(ipv4_address)] = \
                     dict(prefix_length=int(prefix_length))
 
-        if not self.device.system_package_enabled('ipv6'):
+        if not self._system_package_enabled('ipv6'):
             return interfaces_ip
 
         ipv6_address_print = '/ipv6 address print without-paging terse'
@@ -692,7 +698,7 @@ class ROSDriver(NetworkDriver):
 
     def _get_bgp_peers(self, name='', neighbor_ip=''):
         bgp_peers = []
-        if not self.device.system_package_enabled('routing'):
+        if not self._system_package_enabled('routing'):
             return bgp_peers
 
         peer_print_status = '/routing bgp peer print without-paging status'
@@ -779,3 +785,12 @@ class ROSDriver(NetworkDriver):
                     }
                 )
         return mndp_neighbors_detail
+
+    def _safe_mode_toggle(self):
+        return self.device.safe_mode_toggle()
+
+    def _system_package_enabled(self, package):
+        return self.device.system_package_enabled(package)
+
+    def _interface_type(self, if_name):
+        return self.device.interface_type(if_name)
