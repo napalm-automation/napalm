@@ -476,7 +476,7 @@ class TestGettersNetworkDriver:
         assert isinstance(get_optics, dict)
 
         for iface, iface_data in get_optics.iteritems():
-            assert isinstance(iface, str)
+            assert isinstance(iface, unicode)
             for channel in iface_data['physical_channels']['channel']:
                 assert len(channel) == 2
                 assert isinstance(channel['index'], int)
