@@ -49,7 +49,7 @@ IOSDriver requires that the `archive` functionality be enabled to perform auto-r
 Configuration file
 ------------------
 
-IOS requires config file to begin with a `version` eg. `15.0` and `end` marker ath the end of the file. Otherwise IOS will reject `configure replace` operation.
+IOS requires config file to begin with a `version` eg. `15.0` and `end` marker at the end of the file. Otherwise IOS will reject `configure replace` operation.
 
 
 Notes
@@ -59,5 +59,5 @@ _______
 
 * During various operations, NAPALM ios driver will turn off the prompting for confirmations (`file prompt quiet`). It should re-enable prompting before exiting the device (`no file prompt quiet`).
 
-* `write mem` is not peformed on the device. Consequently, commit() commits the config to running-config, but does not save it to start-config.
+* `write mem` is not performed on the device. Consequently, commit() commits the config to running-config, but does not save it to start-config.
 
