@@ -58,3 +58,4 @@ Documentation
    support/index
    cli
    base
+   hackathons/index
