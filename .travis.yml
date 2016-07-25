@@ -36,4 +36,5 @@ script:
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_probes_results
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_traceroute
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_users
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_optics
 - cd ../..

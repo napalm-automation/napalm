@@ -1189,3 +1189,58 @@ class JunOSDriver(NetworkDriver):
             users[username] = user_details
 
         return users
+
+    def get_optics(self):
+
+        optics_table = junos_views.junos_intf_optics_table(self.device)
+        optics_table.get()
+        optics_items = optics_table.items()
+
+        # Formatting data into return data structure
+        optics_detail = {}
+        for intf_optic_item in optics_items:
+            optics = dict(intf_optic_item[1])
+            if intf_optic_item[0] not in optics_detail:
+                optics_detail[intf_optic_item[0]] = {}
+
+            # Defaulting avg, min, max values to 0.0 since device does not
+            # return these values
+            intf_optics = {
+                'physical_channels': {
+                    'channel': [{
+                            'index': 0,
+                            'state': {
+                                'input_power': {
+                                    'instant': (
+                                        float(optics['input_power'])
+                                        if optics['input_power'] != '- Inf'
+                                        else 0.0),
+                                    'avg': 0.0,
+                                    'max': 0.0,
+                                    'min': 0.0
+                                    },
+                                'output_power': {
+                                    'instant': (
+                                        float(optics['output_power'])
+                                        if optics['output_power'] != '- Inf'
+                                        else 0.0),
+                                    'avg': 0.0,
+                                    'max': 0.0,
+                                    'min': 0.0
+                                    },
+                                'laser_bias_current': {
+                                    'instant': (
+                                        float(optics['laser_bias_current'])
+                                        if optics['laser_bias_current'] != '- Inf'
+                                        else 0.0),
+                                    'avg': 0.0,
+                                    'max': 0.0,
+                                    'min': 0.0
+                                    }
+                                }
+                        }]
+                    }
+                }
+            optics_detail[intf_optic_item[0]] = intf_optics
+
+        return optics_detail

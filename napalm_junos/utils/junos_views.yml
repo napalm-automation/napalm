@@ -568,3 +568,20 @@ junos_users_table_view:
     ssh_rsa: authentication/ssh-rsa/name
     ssh_dsa: authentication/ssh-dsa/name
     ssh_ecdsa: authentication/ssh-ecdsa/name
+
+###
+### Get Optics
+###
+
+junos_intf_optics_table:
+  rpc: get-interface-optics-diagnostics-information
+  item: physical-interface
+  view: junos_intf_optics_view
+
+junos_intf_optics_view:
+  groups:
+    optics: optics-diagnostics
+  fields_optics:
+    laser_bias_current: laser-bias-current
+    output_power: laser-output-power-dbm
+    input_power: rx-signal-avg-optical-power-dbm
