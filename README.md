@@ -14,12 +14,12 @@ NAPALM supports several methods to connect to the devices, to manipulate configu
 Supported Network Operating Systems
 -----------------------------------
 
-Please check the following [link](http://napalm.readthedocs.org/en/latest/support/index.html) to see which devices are supported. Make sure you understand the [caveats](http://napalm.readthedocs.org/en/latest/support/index.html#caveats).
+Please check the following [link](https://napalm.readthedocs.io/en/latest/support/index.html) to see which devices are supported. Make sure you understand the [caveats](https://napalm.readthedocs.io/en/latest/support/index.html#caveats).
 
 Documentation
 =============
 
-Before using the library, please read the documentation at: [Read the Docs](http://napalm.readthedocs.org)
+Before using the library, please read the documentation at: [Read the Docs](https://napalm.readthedocs.io)
 
 You can also watch a [live demo](https://youtu.be/93q-dHC0u0I) of NAPALM to see what it is and what it can do for you.
 
@@ -73,9 +73,21 @@ pip install napalm-eos napalm-junos -U
 
 We will be posting news on our slack channel and on Twitter (more details soon).
 
+Automation Frameworks
+======================
+
+Due to its flexibility, NAPALM can be integrated in widely used automation frameworks.
+
 Ansible
-=======
-Please ckeck [napalm-ansible](https://github.com/napalm-automation/napalm-ansible) for existing Ansible modules leveraging the NAPALM API. Make sure you read the documentation and you understand how it works before trying to use it.
+-------
+
+Please check [napalm-ansible](https://github.com/napalm-automation/napalm-ansible) for existing Ansible modules leveraging the NAPALM API. Make sure you read the documentation and you understand how it works before trying to use it.
+
+Salt
+----
+
+NAPALM will be completely integrated in [Salt](https://saltstack.com/) beginning with the release code named `Carbon`. For usage examples, please check [naplam-salt](https://github.com/napalm-automation/napalm-salt).
+
 
 Contact
 =======
@@ -89,6 +101,32 @@ Slack
 -----
 
 Slack is probably the easiest way to get help with NAPALM. You can find us in the channel `napalm` on the [network.toCode()](https://networktocode.herokuapp.com/) team.
+
+FAQ
+---
+
+If you have any issues using NAPALM or encounter any errors, before submitting any questions (directly by email or on Slack), please go through the following checklist:
+
+- Double or triple check if you indeed are able to access the device using the credentials provided.
+- Does your device meet the minimum [requrirements](http://napalm.readthedocs.io/en/latest/support/index.html#general-support-matrix)?
+- Some operating systems have some specific [constraints](http://napalm.readthedocs.io/en/latest/support/index.html#caveats). (e.g. have you enabled the XML agent on IOS-XR, or the NXAPI feature on NXOS?)
+- Are you able to connect to the device using NAPALM? Check using the CLI test tool:
+
+```bash
+$ cl_napalm_test --vendor VENDOR --user USERNAME --password PASSWORD --optional_args OPTIONAL_ARGS HOSTNAME
+```
+
+Where vendor, username, password and hostname are mandatory. [Optional arguments](http://napalm.readthedocs.io/en/latest/support/index.html#optional-arguments) are specified as comma separated values.
+
+Example:
+
+```bash
+$ cl_napalm_test --vendor junos --user napalm --password dbejmujz --optional_args 'port=12202, config_lock=False' edge01.bjm01
+```
+
+In case you have any errors, please review the steps above - this looks like a problem with your environment setup.
+
+In order to get help faster, when submitting a bug/error make sure to include all the details requested.
 
 News
 ====
@@ -105,6 +143,7 @@ Presentations
 * [NANOG 64 Presentation & Demo](https://youtu.be/93q-dHC0u0I) by David Barroso and Elisa Jasinska
 * [Netnod Autumn Meeting 2015 Presentation](https://www.netnod.se/sites/default/files/NAPALM-david_barroso-Netnodautumnmeeting2015.pdf) by David Barroso
 * [Automating IXP Device Configurations with Ansible at the Euro-IX Forum](https://www.euro-ix.net/m/uploads/2015/10/26/euroix-berlin-v2.pdf) by Elisa Jasinska
+* [Network Automation with Salt and NAPALM at RIPE 72](https://ripe72.ripe.net/presentations/58-RIPE72-Network-Automation-with-Salt-and-NAPALM-Mircea-Ulinic-CloudFlare.pdf); [video](https://ripe72.ripe.net/archives/video/121/) by Mircea Ulinic
 
 Podcasts
 --------
