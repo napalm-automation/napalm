@@ -11,5 +11,6 @@ Mentors' slack handles are:
 
  * ``dbarroso``
  * ``mirceaulinic``
+ * ``ggabriele``
 
 .. _networkToCode: https://networktocode.herokuapp.com/
