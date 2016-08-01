@@ -1,2 +1,3 @@
+netaddr
 napalm_base
 pyPluribus
