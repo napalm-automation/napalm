@@ -1037,8 +1037,43 @@ class IOSXRDriver(NetworkDriver):
 
     def get_ntp_peers(self):
 
-        ntp_stats = self.get_ntp_stats()
-        return {ntp_peer.get('remote'): {} for ntp_peer in ntp_stats if ntp_peer.get('remote', '')}
+        ntp_peers = {}
+
+        rpc_command = '<Get><Configuration><NTP></NTP></Configuration></Get>'
+
+        result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for version in ['IPV4', 'IPV6']:
+            for peer in result_tree.findall('.//Peer{version}Table/Peer{version}'.format(version=version)):
+                peer_type = find_txt(peer, 'PeerType{version}/Naming/PeerType'.format(version=version))
+                if peer_type != 'Peer':
+                    continue
+                peer_address = find_txt(peer, 'Naming/Address{version}'.format(version=version))
+                if not peer_address:
+                    continue
+                ntp_peers[peer_address] = {}
+
+        return ntp_peers
+
+    def get_ntp_servers(self):
+
+        ntp_servers = {}
+
+        rpc_command = '<Get><Configuration><NTP></NTP></Configuration></Get>'
+
+        result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for version in ['IPV4', 'IPV6']:
+            for peer in result_tree.xpath('.//Peer{version}Table/Peer{version}'.format(version=version)):
+                peer_type = find_txt(peer, 'PeerType{version}/Naming/PeerType'.format(version=version))
+                if peer_type != 'Server':
+                    continue
+                server_address =find_txt(peer, 'Naming/Address{version}'.format(version=version))
+                if not server_address:
+                    continue
+                ntp_servers[server_address] = {}
+
+        return ntp_servers
 
     def get_ntp_stats(self):
 
