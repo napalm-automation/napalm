@@ -793,6 +793,18 @@ class JunOSDriver(NetworkDriver):
 
         return {unicode(peer[0]):{} for peer in ntp_peers}
 
+    def get_ntp_servers(self):
+
+        ntp_table = junos_views.junos_ntp_servers_config_table(self.device)
+        ntp_table.get()
+
+        ntp_servers = ntp_table.items()
+
+        if not ntp_servers:
+            return {}
+
+        return {unicode(server[0]):{} for server in ntp_servers}
+
     def get_ntp_stats(self):
 
         # NTP Peers does not have XML RPC defined

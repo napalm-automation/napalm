@@ -28,6 +28,7 @@ script:
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_arp_table
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_ntp_peers
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_ntp_stats
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_ntp_servers
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_interfaces_ip
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_mac_address_table
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_route_to
