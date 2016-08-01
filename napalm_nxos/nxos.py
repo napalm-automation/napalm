@@ -423,12 +423,32 @@ class NXOSDriver(NetworkDriver):
 
         return arp_table
 
+    def _get_ntp_entity(self, peer_type):
+
+        ntp_entities = {}
+
+        command = 'show ntp peers'
+
+        ntp_peers_table = self._get_command_table(command, 'TABLE_peers', 'ROW_peers')
+
+        if isinstance(ntp_peers_table, dict):
+            ntp_peers_table = [ntp_peers_table]
+
+        for ntp_peer in ntp_peers_table:
+            if ntp_peer.get('serv_peer', '') != peer_type:
+                continue
+            peer_addr = unicode(ntp_peer.get('PeerIPAddress'))
+            ntp_entities[peer_addr] = {}
+
+        return ntp_entities
 
     def get_ntp_peers(self):
 
-        ntp_stats = self.get_ntp_stats()
-        return {ntp_peer.get('remote'): {} for ntp_peer in ntp_stats if ntp_peer.get('remote', '')}
+        return self._get_ntp_entity('Peer')
 
+    def get_ntp_servers(self):
+
+        return self._get_ntp_entity('Server')
 
     def get_ntp_stats(self):
 
