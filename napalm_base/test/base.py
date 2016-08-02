@@ -317,6 +317,17 @@ class TestGettersNetworkDriver:
 
         self.assertTrue(result)
 
+    def test_get_ntp_servers(self):
+
+        get_ntp_servers = self.device.get_ntp_servers()
+        result = len(get_ntp_servers) > 0
+
+        for server, server_details in get_ntp_servers.iteritems():
+            result = result and isinstance(server, unicode)
+            result = result and self._test_model(models.ntp_server, server_details)
+
+        self.assertTrue(result)
+
     def test_get_ntp_stats(self):
         try:
             get_ntp_stats = self.device.get_ntp_stats()
