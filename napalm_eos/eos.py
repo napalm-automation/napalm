@@ -797,8 +797,7 @@ class EOSDriver(NetworkDriver):
 
         return arp_table
 
-
-    def get_ntp_peers(self):
+    def get_ntp_servers(self):
 
         commands = ['show running-config | section ntp']
 
@@ -807,7 +806,6 @@ class EOSDriver(NetworkDriver):
         ntp_config = napalm_base.helpers.textfsm_extractor(self, 'ntp_peers', raw_ntp_config)
 
         return {unicode(ntp_peer.get('ntppeer')):{} for ntp_peer in ntp_config if ntp_peer.get('ntppeer', '')}
-
 
     def get_ntp_stats(self):
 
