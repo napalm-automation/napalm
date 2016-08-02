@@ -183,6 +183,18 @@ junos_ntp_peers_config_view:
     peer: name
 
 ###
+### NTP Servers Config
+###
+
+junos_ntp_servers_config_table:
+  get: system/ntp/server
+  view: junos_ntp_servers_config_view
+
+junos_ntp_servers_config_view:
+  fields:
+    peer: name
+
+###
 ### LLDP Neighbors Detail
 ###
 
