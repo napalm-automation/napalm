@@ -12,7 +12,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-ros",
-    version="0.1.0",
+    version="0.1.1",
     packages=find_packages(),
     author="Matt Ryan",
     author_email="inetuid@gmail.com",

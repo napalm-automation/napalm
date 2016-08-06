@@ -1,74 +1,65 @@
 """NAPALM driver for Mikrotik RouterBoard OS (ROS)"""
 import datetime
 import re
+import socket
+import StringIO
 #
 from napalm_base.base import NetworkDriver
-from napalm_base.exceptions import MergeConfigException, ReplaceConfigException, \
-    CommandErrorException
+from napalm_base.exceptions import MergeConfigException, CommandErrorException
 import napalm_base.utils.string_parsers
+import paramiko
+import mikoshell
 #
-import yandc_ros as ros
+from . import utils as ros_utils
 
 
 class ROSDriver(NetworkDriver):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
-        self.device = None
         self.hostname = hostname
         self.username = username
         self.password = password
         self.timeout = timeout
+        if optional_args is None:
+            optional_args = {}
+        self.port = optional_args.get('port', 22)
 
         self.candidate_config = []
         self.config_session = None
         self.merge_config = False
 
-        if optional_args is None:
-            optional_args = {}
-        self.snmp_community = optional_args.get('snmp_community')
-        self.snmp_port = optional_args.get('snmp_port', 161)
-
     def cli(self, *commands):
         cli_output = {}
         for command in commands:
-            kwargs = {}
-            if command[0] == '/':
-                run_command = command
-            else:
-                find_index = command.find('=/')
-                if find_index == -1:
-                    raise CommandErrorException('Invalid command - [{}]'.format(command))
-                option, run_command = command.split('=/', 1)
-                if option == 'cache':
-                    kwargs['use_cache'] = True
-                run_command = '/{}'.format(run_command)
             try:
-                device_output = self.device.cli_command(run_command, **kwargs)
-            except Exception as e:
-                raise CommandErrorException(e)
+                device_output = self.mikoshell.command(command)
+            except Exception as exc:
+                raise CommandErrorException(exc)
             if len(device_output) == 1 and device_output[0] != '':
-                if ros.Utils.is_cli_error(device_output[0]):
+                if ros_utils.is_cli_error(device_output[0]):
                     raise CommandErrorException(device_output[0])
             cli_output[unicode(command)] = device_output
         return cli_output
 
     def close(self):
-        if hasattr(self, 'device'):
-            self.device.disconnect()
-            del self.device
+        if hasattr(self, 'mikoshell'):
+            self.mikoshell.exit('/quit')
+            del self.mikoshell
+        if hasattr(self, 'paramiko_transport'):
+            if self.paramiko_transport.is_active():
+                self.paramiko_transport.close()
+            del self.paramiko_transport
 
     def commit_config(self):
         if self.merge_config:
-            merge_command = '/import file-name="{config_session}.rsc" verbose=no'.format(
+            cli_command = '/import file-name="{config_session}.rsc" verbose=no'.format(
                 config_session=self.config_session
             )
-            self._safe_mode_toggle()
-            cli_output = self.cli(merge_command)[merge_command]
-            self._safe_mode_toggle()
+            cli_output = self.cli(cli_command)[cli_command]
             if cli_output[-1] != 'Script file loaded and executed successfully':
                 pass
             self.discard_config()
 
-#    def compare_config(self):
+#   def compare_config(self):
 
     def discard_config(self):
         self.candidate_config = []
@@ -78,11 +69,11 @@ class ROSDriver(NetworkDriver):
         )
 
     def get_arp_table(self):
-        ip_arp_print = '/ip arp print without-paging terse'
+        cli_command = '/ip arp print without-paging terse'
 
         arp_table = []
-        for arp_entry in ros.Utils.print_to_values_structured(
-                self.cli(ip_arp_print)[ip_arp_print]
+        for arp_entry in ros_utils.print_to_values_structured(
+                self.cli(cli_command)[cli_command]
         ):
             if arp_entry['flags'].find('C') == -1:
                 continue
@@ -96,14 +87,14 @@ class ROSDriver(NetworkDriver):
             )
         return arp_table
 
-#    def get_bgp_config(self, group='', neighbor=''):
+#   def get_bgp_config(self, group='', neighbor=''):
 
     def get_bgp_neighbors(self):
         bgp_neighbors = {}
         if not self._system_package_enabled('routing'):
             return bgp_neighbors
 
-        for routing_table, bgp_peers in ros.Utils.index_values(
+        for routing_table, bgp_peers in ros_utils.index_values(
                 self._get_bgp_peers(),
                 'routing-table'
         ).iteritems():
@@ -124,7 +115,7 @@ class ROSDriver(NetworkDriver):
                     'is_up': bgp_peer['state'] == 'established',
                     'is_enabled': bgp_peer['flags'].find('X') == -1,
                     'description': unicode(bgp_peer['name'].replace('"', '')),
-                    'uptime': ros.Utils.to_seconds(bgp_peer.get('uptime', '')),
+                    'uptime': ros_utils.to_seconds(bgp_peer.get('uptime', '')),
                     'address_family': {
                         'ipv4': {
                             'received_prefixes': int(bgp_peer.get('prefix-count', 0)),
@@ -150,13 +141,13 @@ class ROSDriver(NetworkDriver):
         if not self._system_package_enabled('routing'):
             return bgp_neighbors_detail
 
-        for routing_table, peers in ros.Utils.index_values(
+        for routing_table, peers in ros_utils.index_values(
                 self._get_bgp_peers(neighbor_ip=neighbor_address),
                 'routing-table'
         ).iteritems():
             routing_table = unicode(routing_table)
             bgp_neighbors_detail[routing_table] = {}
-            for remote_as, bgp_peers in ros.Utils.index_values(peers, 'remote-as').iteritems():
+            for remote_as, bgp_peers in ros_utils.index_values(peers, 'remote-as').iteritems():
                 remote_as = int(remote_as)
                 if remote_as not in bgp_neighbors_detail[routing_table]:
                     bgp_neighbors_detail[routing_table][remote_as] = []
@@ -188,14 +179,16 @@ class ROSDriver(NetworkDriver):
                             'last_event': u'',
                             'suppress_4byte_as': bgp_peer.get('as4-capability', '') == 'no',
                             'local_as_prepend': False,
-                            'holdtime': ros.Utils.to_seconds(bgp_peer.get('used-hold-time', '')),
-                            'configured_holdtime': ros.Utils.to_seconds(
+                            'holdtime': ros_utils.to_seconds(
+                                bgp_peer.get('used-hold-time', '')
+                            ),
+                            'configured_holdtime': ros_utils.to_seconds(
                                 bgp_peer.get('hold-time', '3m')
                             ),
-                            'keepalive': ros.Utils.to_seconds(
+                            'keepalive': ros_utils.to_seconds(
                                 bgp_peer.get('used-keepalive-time', '')
                             ),
-                            'configured_keepalive': ros.Utils.to_seconds(
+                            'configured_keepalive': ros_utils.to_seconds(
                                 bgp_peer.get('keepalive-time', '1m')
                             ),
                             'active_prefix_count': -1,
@@ -209,12 +202,12 @@ class ROSDriver(NetworkDriver):
         return bgp_neighbors_detail
 
     def get_environment(self):
-        system_resource_print = 'cache=/system resource print without-paging'
+        system_resource_print = '/system resource print without-paging'
         system_health_print = '/system health print without-paging'
         resource_cpu_print = '/system resource cpu print without-paging terse'
         cli_output = self.cli(system_resource_print, system_health_print, resource_cpu_print)
-        system_resource_values = ros.Utils.print_to_values(cli_output[system_resource_print])
-        system_health_values = ros.Utils.print_to_values(cli_output[system_health_print])
+        system_resource_values = ros_utils.print_to_values(cli_output[system_resource_print])
+        system_health_values = ros_utils.print_to_values(cli_output[system_health_print])
 
         environment = {
             'fans': {},
@@ -226,7 +219,9 @@ class ROSDriver(NetworkDriver):
 
         if 'active-fan' in system_health_values and system_health_values['active-fan'] != 'none':
             environment['fans'][system_health_values['active-fan']] = {
-                'status': int(system_health_values.get('fan-speed', '0RPM').replace('RPM', '')) != 0,
+                'status': int(
+                    system_health_values.get('fan-speed', '0RPM').replace('RPM', '')
+                ) != 0,
             }
 
         if 'temperature' in system_health_values:
@@ -243,7 +238,9 @@ class ROSDriver(NetworkDriver):
                 'is_critical': False,
             }
 
-        for cpu_values in ros.Utils.print_to_values_structured(cli_output[resource_cpu_print]):
+        for cpu_values in ros_utils.print_to_values_structured(
+                cli_output[resource_cpu_print]
+        ):
             environment['cpu'][cpu_values['cpu']] = {
                 '%usage': float(cpu_values['load'].rstrip('%')),
             }
@@ -264,7 +261,7 @@ class ROSDriver(NetworkDriver):
     def get_facts(self):
         system_resource_print = '/system resource print without-paging'
         system_identity_print = '/system identity print without-paging'
-        system_routerboard_print = 'cache=/system routerboard print without-paging'
+        system_routerboard_print = '/system routerboard print without-paging'
         interface_print = '/interface print without-paging terse'
 
         cli_output = self.cli(
@@ -274,15 +271,15 @@ class ROSDriver(NetworkDriver):
             interface_print
         )
 
-        system_resource_values = ros.Utils.print_to_values(cli_output[system_resource_print])
-        system_identity_values = ros.Utils.print_to_values(cli_output[system_identity_print])
-        system_routerboard_values = ros.Utils.print_to_values(
+        system_resource_values = ros_utils.print_to_values(cli_output[system_resource_print])
+        system_identity_values = ros_utils.print_to_values(cli_output[system_identity_print])
+        system_routerboard_values = ros_utils.print_to_values(
             cli_output[system_routerboard_print]
         )
-        interface_values = ros.Utils.print_to_values_structured(cli_output[interface_print])
+        interface_values = ros_utils.print_to_values_structured(cli_output[interface_print])
 
         return {
-            'uptime': ros.Utils.to_seconds(system_resource_values['uptime']),
+            'uptime': ros_utils.to_seconds(system_resource_values['uptime']),
             'vendor': unicode(system_resource_values['platform']),
             'model': unicode(system_resource_values['board-name']),
             'hostname': unicode(system_identity_values['name']),
@@ -296,18 +293,16 @@ class ROSDriver(NetworkDriver):
         }
 
     def get_interfaces(self):
-        interface_print = '/interface print without-paging terse'
+        cli_command = '/interface print without-paging terse'
 
         interfaces = {}
-        for if_entry in ros.Utils.print_to_values_structured(
-                self.cli(interface_print)[interface_print]
-        ):
+        for if_entry in ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command]):
             if_name = unicode(if_entry['name'])
             interfaces[if_name] = {
                 'is_up': if_entry['flags'].find('R') != -1,
                 'is_enabled': if_entry['flags'].find('X') == -1,
                 'description': unicode(if_entry.get('comment', '')),
-                'last_flapped': float(self.device.to_seconds_date_time(
+                'last_flapped': float(self._to_seconds_date_time(
                     if_entry.get('last-link-up-time', '')
                 )),
                 'speed': -1,
@@ -316,27 +311,27 @@ class ROSDriver(NetworkDriver):
         return interfaces
 
     def get_interfaces_counters(self):
-        interface_print_stats = '/interface print without-paging stats-detail'
-        cli_output = self.cli(interface_print_stats)
+        cli_command = '/interface print without-paging stats-detail'
 
-        stats_detail = cli_output[interface_print_stats]
+        stats_detail = self.cli(cli_command)[cli_command]
         stats_detail.pop(0)
 
         interface_counters = {}
-        for if_counters in ros.Utils.print_to_values_structured(
-                ros.Utils.print_concat(stats_detail)
+        for if_counters in ros_utils.print_to_values_structured(
+                ros_utils.print_concat(stats_detail)
         ):
             if_name = unicode(if_counters['name'].replace('"', ''))
             if self._interface_type(if_name) != 'ether':
                 continue
             if if_name in if_counters:
                 raise ValueError('Interface already seen')
-            stats_command = '/interface ethernet print without-paging stats where name ="{}"'.format(if_name)
+            stats_command = \
+                '/interface ethernet print without-paging stats where name ="{}"'.format(if_name)
             stats_output = self.cli(stats_command)[stats_command]
             if stats_output[0] == '':
                 ether_stats = {}
             else:
-                ether_stats = ros.Utils.print_to_values(stats_output)
+                ether_stats = ros_utils.print_to_values(stats_output)
             interface_counters[if_name] = {
                 'tx_errors': int(if_counters['tx-error'].replace(' ', '')),
                 'rx_errors': int(if_counters['rx-error'].replace(' ', '')),
@@ -362,13 +357,11 @@ class ROSDriver(NetworkDriver):
         return interface_counters
 
     def get_interfaces_ip(self):
-        ip_address_print = '/ip address print without-paging terse'
+        cli_command = '/ip address print without-paging terse'
 
         interfaces_ip = {}
-        for if_name, if_addresses in ros.Utils.index_values(
-                ros.Utils.print_to_values_structured(
-                    self.cli(ip_address_print)[ip_address_print]
-                ),
+        for if_name, if_addresses in ros_utils.index_values(
+                ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command]),
                 'interface'
         ).iteritems():
             if_name = unicode(if_name)
@@ -384,12 +377,10 @@ class ROSDriver(NetworkDriver):
         if not self._system_package_enabled('ipv6'):
             return interfaces_ip
 
-        ipv6_address_print = '/ipv6 address print without-paging terse'
+        cli_command = '/ipv6 address print without-paging terse'
 
-        for if_name, if_addresses in ros.Utils.index_values(
-                ros.Utils.print_to_values_structured(
-                    self.cli(ipv6_address_print)[ipv6_address_print]
-                ),
+        for if_name, if_addresses in ros_utils.index_values(
+                ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command]),
                 'interface'
         ).iteritems():
             if_name = unicode(if_name)
@@ -412,45 +403,41 @@ class ROSDriver(NetworkDriver):
     def get_lldp_neighbors_detail(self, *args, **kwargs):
         return self._get_mndp_neighbors_detail(*args, **kwargs)
 
-#    def get_mac_address_table(self):
+#   def get_mac_address_table(self):
 
-#    def get_ntp_peers(self):
+#   def get_ntp_peers(self):
 
     def get_ntp_servers(self):
-        ntp_client_print = '/system ntp client print without-paging'
+        cli_command = '/system ntp client print without-paging'
 
-        ntp_client_values = ros.Utils.print_to_values(
-            self.cli(ntp_client_print)[ntp_client_print]
-        )
+        ntp_client_values = ros_utils.print_to_values(self.cli(cli_command)[cli_command])
         if 'active-server' in ntp_client_values:
             return {
                 ntp_client_values['active-server']: {}
             }
         return {}
 
-#    def get_ntp_stats(self):
+#   def get_ntp_stats(self):
 
-#    def get_probes_config(self):
+#   def get_probes_config(self):
 
-#    def get_probes_results(self):
+#   def get_probes_results(self):
 
     def get_route_to(self, destination='', protocol=''):
-        ip_route_print = '/ip route print without-paging terse'
+        cli_command = '/ip route print without-paging terse'
 
         where_used = False
         if destination != '':
-            ip_route_print += ' where {} in dst-address'.format(destination)
+            cli_command += ' where {} in dst-address'.format(destination)
             where_used = True
         if protocol != '':
             if where_used:
-                ip_route_print += ' {}'.format(protocol.lower())
+                cli_command += ' {}'.format(protocol.lower())
             else:
-                ip_route_print += 'where {}'.format(protocol.lower())
+                cli_command += 'where {}'.format(protocol.lower())
 
         route_to = {}
-        for ipv4_route in ros.Utils.print_to_values_structured(
-                self.cli(ip_route_print)[ip_route_print]
-        ):
+        for ipv4_route in ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command]):
             route_type = None
             if ipv4_route['flags'].find('b') != -1:
                 route_type = 'BGP'
@@ -520,8 +507,8 @@ class ROSDriver(NetworkDriver):
         snmp_community_print = '/snmp community print without-paging terse'
         cli_output = self.cli(snmp_print, snmp_community_print)
 
-        snmp_values = ros.Utils.print_to_values(cli_output[snmp_print])
-        snmp_community_values = ros.Utils.print_to_values_structured(
+        snmp_values = ros_utils.print_to_values(cli_output[snmp_print])
+        snmp_community_values = ros_utils.print_to_values_structured(
             cli_output[snmp_community_print]
         )
 
@@ -544,13 +531,11 @@ class ROSDriver(NetworkDriver):
         user_sshkeys_print = '/user ssh-keys print without-paging terse'
         cli_output = self.cli(user_print, user_sshkeys_print)
 
-        user_sshkeys_values = ros.Utils.print_to_values_structured(
-            cli_output[user_sshkeys_print]
-        )
-        user_sshkeys_values_indexed = ros.Utils.index_values(user_sshkeys_values, 'user')
+        user_sshkeys_values = ros_utils.print_to_values_structured(cli_output[user_sshkeys_print])
+        user_sshkeys_values_indexed = ros_utils.index_values(user_sshkeys_values, 'user')
 
         users = {}
-        for user in ros.Utils.print_to_values_structured(cli_output[user_print]):
+        for user in ros_utils.print_to_values_structured(cli_output[user_print]):
             users[user['name']] = {
                 'level': 15 if user['group'] == 'full' else 0,
                 'password': '',
@@ -564,8 +549,8 @@ class ROSDriver(NetworkDriver):
             try:
                 with open(filename, 'rU') as file_object:
                     self.candidate_config = file_object.read().splitlines()
-            except IOError as e:
-                raise MergeConfigException(e.message)
+            except IOError as exc:
+                raise MergeConfigException(exc.message)
         elif config is not None:
             if isinstance(config, list):
                 self.candidate_config = config.splitlines()
@@ -575,20 +560,46 @@ class ROSDriver(NetworkDriver):
         self.merge_config = True
         if self.candidate_config != []:
             self.config_session = 'napalm_{}'.format(datetime.datetime.now().microsecond)
-            self.device.upload_config(self.candidate_config, self.config_session)
+            self._upload_config(self.candidate_config, self.config_session)
 
-#    def load_replace_candidate(self, filename=None, config=None):
+#   def load_replace_candidate(self, filename=None, config=None):
 
-#    def load_template(self, template_name, template_source=None, template_path=None, **template_vars):
+#   def load_template(self, template_name, template_source=None, template_path=None, **template_vars):
 
     def open(self):
-        self.device = ros.Client(
-            host=self.hostname,
-            snmp_community=self.snmp_community,
-            snmp_port=self.snmp_port,
-            ssh_username=self.username,
-            ssh_password=self.password
+#       paramiko.common.logging.basicConfig(level=paramiko.common.DEBUG)
+        paramiko.common.logging.basicConfig(level=paramiko.common.CRITICAL)
+
+        try:
+            sock = socket.create_connection((self.hostname, self.port), self.timeout)
+            paramiko_transport = paramiko.Transport(sock)
+            paramiko_transport.connect()
+        except socket.error as exc:
+            raise ConnectionException(
+                'Could not connect to {}:{} - [{}]'.format(self.hostname, self.port, exc.message)
+            )
+
+        paramiko_transport.set_keepalive(5)
+
+        try:
+            paramiko_transport.auth_password('{}+ct0h160w'.format(self.username), self.password)
+        except paramiko.AuthenticationException as auth_error:
+            raise ConnectionException(auth_error.message)
+        except paramiko.BadAuthenticationType as bad_auth_type:
+            raise ConnectionException(
+                'Auth method not supported - [{}]'.format(bad_auth_type.allowed_types)
+            )
+        else:
+            self.paramiko_transport = paramiko_transport
+
+        shell_prompts = mikoshell.ShellPrompt(
+            mikoshell.ShellPrompt.regexp_prompt(r'\[[^\@]+\@[^\]]+\] > $')
         )
+        shell_prompts.add_prompt(
+            mikoshell.ShellPrompt.regexp_prompt(r'\[[^\@]+\@[^\]]+\] <SAFE> $')
+        )
+
+        self.mikoshell = mikoshell.Shell( self.paramiko_transport.open_session(), shell_prompts)
 
     def ping(self, destination, source='', ttl=0, timeout=0, size=0, count=5):
         ping_command = '/ping {} count={}'.format(destination, 10 if count > 10 else count)
@@ -608,7 +619,7 @@ class ROSDriver(NetworkDriver):
         statistics = ping_output.pop().strip()
         if not len(statistics):
             statistics = ping_output.pop().strip()
-        statistics = ros.Utils.print_to_values_structured(['0 {}'.format(statistics)])[0]
+        statistics = ros_utils.print_to_values_structured(['0 {}'.format(statistics)])[0]
 
         ping_results = {
             'probes_sent': int(statistics['sent']),
@@ -633,7 +644,7 @@ class ROSDriver(NetworkDriver):
             )
         return dict(success=ping_results)
 
-#    def rollback(self):
+#   def rollback(self):
 
     def traceroute(self, destination, source='', ttl=0, timeout=0):
         num_probes = 3
@@ -649,7 +660,16 @@ class ROSDriver(NetworkDriver):
             traceroute_command += ' max-hops={}'.format(ttl)
         if timeout != 0:
             traceroute_command += ' timeout={}'.format(timeout)
-        traceroute_output = self.device.ssh_client.exec_command(traceroute_command)
+
+        chan = self.paramiko_transport.open_session()
+        chan.set_combine_stderr(True)
+        chan.exec_command(traceroute_command)
+        output = chan.makefile('rb')
+        traceroute_output = []
+        for output_line in output.readlines():
+            traceroute_output.append(output_line.rstrip('\r\n'))
+        chan.shutdown(2)
+        chan.close()
 
         last_line = traceroute_output.pop()
         if last_line != '':
@@ -709,14 +729,14 @@ class ROSDriver(NetworkDriver):
         peer_status = cli_output[peer_print_status]
         peer_status.pop(0)
 
-        instance_indexed = ros.Utils.index_values(
-            ros.Utils.print_to_values_structured(cli_output[instance_print])
+        instance_indexed = ros_utils.index_values(
+            ros_utils.print_to_values_structured(cli_output[instance_print])
         )
-        instance_vrf_indexed = ros.Utils.index_values(
-            ros.Utils.print_to_values_structured(cli_output[instance_vrf_print])
+        instance_vrf_indexed = ros_utils.index_values(
+            ros_utils.print_to_values_structured(cli_output[instance_vrf_print])
         )
 
-        for peer in ros.Utils.print_to_values_structured(ros.Utils.print_concat(peer_status)):
+        for peer in ros_utils.print_to_values_structured(ros_utils.print_concat(peer_status)):
             if name != '' and peer['name'].replace('"', '') != name:
                 continue
             if neighbor_ip != '' and peer.get('remote-address', '') != neighbor_ip:
@@ -733,13 +753,11 @@ class ROSDriver(NetworkDriver):
         return bgp_peers
 
     def _get_mndp_neighbors(self):
-        ip_neighbor_print = '/ip neighbor print without-paging terse'
+        cli_command = '/ip neighbor print without-paging terse'
 
         mndp_neighbors = {}
-        for if_name, if_neighbors in ros.Utils.index_values(
-                ros.Utils.print_to_values_structured(
-                    self.cli(ip_neighbor_print)[ip_neighbor_print]
-                ),
+        for if_name, if_neighbors in ros_utils.index_values(
+                ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command]),
                 'interface'
         ).iteritems():
             if_name = unicode(if_name)
@@ -755,15 +773,13 @@ class ROSDriver(NetworkDriver):
         return mndp_neighbors
 
     def _get_mndp_neighbors_detail(self, interface=''):
-        ip_neighbor_print = '/ip neighbor print without-paging terse'
+        cli_command = '/ip neighbor print without-paging terse'
         if interface != '':
-            ip_neighbor_print += ' where interface ="{}"'.format(interface)
+            cli_command += ' where interface ="{}"'.format(interface)
 
         mndp_neighbors_detail = {}
-        for if_name, if_neighbors in ros.Utils.index_values(
-                ros.Utils.print_to_values_structured(
-                    self.cli(ip_neighbor_print)[ip_neighbor_print]
-                ),
+        for if_name, if_neighbors in ros_utils.index_values(
+                ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command]),
                 'interface'
         ).iteritems():
             if_name = unicode(if_name)
@@ -786,11 +802,31 @@ class ROSDriver(NetworkDriver):
                 )
         return mndp_neighbors_detail
 
-    def _safe_mode_toggle(self):
-        return self.device.safe_mode_toggle()
+    def _interface_type(self, if_name):
+        cli_command = '/interface print without-paging terse'
+        indexed_values = ros_utils.index_values(
+            ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command])
+        )
+        if if_name in indexed_values:
+            return indexed_values[if_name][0].get('type')
+        return None
 
     def _system_package_enabled(self, package):
-        return self.device.system_package_enabled(package)
+        cli_command = '/system package print without-paging terse'
+        return ros_utils.index_values(
+            ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command])
+        ).get(package, [])[0].get('flags', '').find('X') == -1
 
-    def _interface_type(self, if_name):
-        return self.device.interface_type(if_name)
+    def _to_seconds_date_time(self, date_time):
+        if date_time == '':
+            return -1.0
+        time_then = datetime.datetime.strptime(date_time, '%b/%d/%Y %H:%M:%S')
+#       time_diff = datetime.datetime.now() - time_then + self._datetime_offset
+        time_diff = datetime.datetime.now() - time_then
+        return int(time_diff.total_seconds())
+
+    def _upload_config(self, config, config_name):
+        sftp_client = self.ssh_client.sftp_client()
+        config_file = StringIO.StringIO('\r\n'.join(config))
+        sftp_client.putfo(config_file, '{}.rsc'.format(config_name))
+        sftp_client.close()
