@@ -664,9 +664,9 @@ class ROSDriver(NetworkDriver):
         chan = self.paramiko_transport.open_session()
         chan.set_combine_stderr(True)
         chan.exec_command(traceroute_command)
-        output = chan.makefile('rb')
+        output_file = chan.makefile('rb')
         traceroute_output = []
-        for output_line in output.readlines():
+        for output_line in output_file.readlines():
             traceroute_output.append(output_line.rstrip('\r\n'))
         chan.shutdown(2)
         chan.close()
