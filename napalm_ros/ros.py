@@ -826,7 +826,7 @@ class ROSDriver(NetworkDriver):
         return int(time_diff.total_seconds())
 
     def _upload_config(self, config, config_name):
-        sftp_client = self.ssh_client.sftp_client()
+        sftp_client = paramiko.SFTPClient.from_transport(self.paramiko_transport)
         config_file = StringIO.StringIO('\r\n'.join(config))
         sftp_client.putfo(config_file, '{}.rsc'.format(config_name))
         sftp_client.close()
