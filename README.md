@@ -37,6 +37,13 @@ pip install napalm
 
 That will install all the drivers currently available.
 
+When installing on Linux, to ensure all dependencies are met, use the following commands:
+
+**Debian/Ubuntu**:
+`sudo apt-get install build-essential libssl-dev libffi-dev python-dev`
+
+**Fedora and RHEL-derivatives**:
+`sudo yum install gcc libffi-devel python-devel openssl-devel`
 
 Partial Installation
 --------------------
