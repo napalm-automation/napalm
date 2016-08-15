@@ -42,6 +42,7 @@ class TestGetterROSDriver(unittest.TestCase, TestGettersNetworkDriver):
         if cls.mock:
             cls.device.paramiko_transport = FakeParamikoTransport()
             cls.device.mikoshell = FakeMikoShell()
+            cls.device._datetime_offset = datetime.datetime.now() - datetime.datetime.now()
         else:
             cls.device.open()
 
@@ -52,9 +53,6 @@ class FakeParamikoTransport(object):
 
 
 class FakeMikoShell(object):
-    def __init__(self):
-        self._datetime_offset = datetime.datetime.now() - datetime.datetime.now()
-
     @staticmethod
     def command(command, *args, **kwargs):
         return get_mock_data(command).splitlines()
