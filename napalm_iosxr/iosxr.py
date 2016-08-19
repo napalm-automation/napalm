@@ -20,14 +20,14 @@ from collections import defaultdict
 # third party libs
 from lxml import etree as ETREE
 import xml.etree.ElementTree as ET
-from lxml import etree as ETREE
 
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 
 from pyIOSXR import IOSXR
-from pyIOSXR.iosxr import __execute_show__
-from pyIOSXR.exceptions import InvalidInputError, TimeoutError, EOFError
+from pyIOSXR.exceptions import ConnectError
+from pyIOSXR.exceptions import TimeoutError
+from pyIOSXR.exceptions import InvalidInputError
 
 # napalm_base
 from napalm_base.helpers import convert, find_txt, mac, ip
@@ -54,8 +54,8 @@ class IOSXRDriver(NetworkDriver):
     def open(self):
         try:
             self.device.open()
-        except EOFError as ee:
-            raise ConnectionException(ee.message)
+        except ConnectError as conn_err:
+            raise ConnectionException(conn_err.message)
 
     def close(self):
         self.device.close()
@@ -685,7 +685,7 @@ class IOSXRDriver(NetworkDriver):
 
         for command in commands:
             try:
-                cli_output[unicode(command)] = unicode(__execute_show__(self.device.device, command, self.timeout))
+                cli_output[unicode(command)] = unicode(self.device._execute_show(command))
             except TimeoutError:
                 cli_output[unicode(command)] = 'Execution of command "{command}" took too long! Please adjust your params!'.format(
                     command = command
