@@ -4,10 +4,7 @@ python:
 install:
 - pip install -r requirements.txt
 - pip install .
-- git clone https://github.com/napalm-automation/napalm-base.git napalm-automation/napalm-base
-- cd napalm-automation/napalm-base
-- python setup.py install
-- cd ../..
+- pip install -e git+https://github.com/napalm-automation/napalm-base.git@develop#egg=napalm-base
 
 deploy:
   provider: pypi
@@ -33,6 +30,7 @@ script:
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_mac_address_table
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_ntp_stats
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_ntp_peers
+- nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_ntp_servers
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_route_to
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_snmp_information
 - nosetests -v TestIOSXRDriver:TestGetterIOSXRDriver.test_get_probes_config

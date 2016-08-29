@@ -18,16 +18,19 @@ import copy
 from collections import defaultdict
 
 # third party libs
+from lxml import etree as ETREE
 import xml.etree.ElementTree as ET
 
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 
 from pyIOSXR import IOSXR
-from pyIOSXR.iosxr import __execute_show__
-from pyIOSXR.exceptions import InvalidInputError, TimeoutError, EOFError
+from pyIOSXR.exceptions import ConnectError
+from pyIOSXR.exceptions import TimeoutError
+from pyIOSXR.exceptions import InvalidInputError
 
 # napalm_base
+from napalm_base.helpers import convert, find_txt, mac, ip
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import string_parsers
 from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,\
@@ -51,8 +54,8 @@ class IOSXRDriver(NetworkDriver):
     def open(self):
         try:
             self.device.open()
-        except EOFError as ee:
-            raise ConnectionException(ee.message)
+        except ConnectError as conn_err:
+            raise ConnectionException(conn_err.message)
 
     def close(self):
         self.device.close()
@@ -128,88 +131,89 @@ class IOSXRDriver(NetworkDriver):
         except:
             return default
 
-
     def get_facts(self):
 
-        sh_ver = self.device.show_version()
-
-        for line in sh_ver.splitlines():
-            if 'Cisco IOS XR Software' in line:
-                os_version = line.split()[-1]
-            elif 'uptime' in line:
-                uptime = string_parsers.convert_uptime_string_seconds(line)
-                hostname = line.split()[0]
-                fqdn = line.split()[0]
-            elif 'Series' in line:
-                model = ' '.join(line.split()[1:3])
-
-        interface_list = list()
-
-        for x in self.device.show_interface_description().splitlines()[3:-1]:
-            if '.' not in x:
-                interface_list.append(x.split()[0])
-
-        result = {
+        facts = {
             'vendor': u'Cisco',
-            'os_version': unicode(os_version),
-            'hostname': unicode(hostname),
-            'uptime': uptime,
-            'model': unicode(model),
+            'os_version': u'',
+            'hostname': u'',
+            'uptime': -1,
             'serial_number': u'',
-            'fqdn': unicode(fqdn),
-            'interface_list': interface_list,
+            'fqdn': u'',
+            'model': u'',
+            'interface_list': []
         }
 
-        return result
+        facts_rpc_request = (
+            '<Get>'
+                '<Operational>'
+                    '<SystemTime/>'
+                    '<PlatformInventory/>'
+                '</Operational>'
+            '</Get>'
+        )
+
+        facts_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(facts_rpc_request))
+        system_time_xpath = './/SystemTime/Uptime'
+        platform_attr_xpath = './/RackTable/Rack/Attributes/BasicInfo'
+        system_time_tree = facts_rpc_reply.xpath(system_time_xpath)[0]
+        platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)[0]
+
+        hostname = convert(unicode, find_txt(system_time_tree, 'Hostname'))
+        uptime = convert(int, find_txt(system_time_tree, 'Uptime'), -1)
+        serial = convert(unicode, find_txt(platform_attr_tree, 'SerialNumber'))
+        os_version = convert(unicode, find_txt(platform_attr_tree, 'SoftwareRevision'))
+        model = convert(unicode, find_txt(platform_attr_tree, 'ModelName'))
+        interface_list = self.get_interfaces().keys()
+
+        facts.update({
+            'os_version': os_version,
+            'hostname': hostname,
+            'model': model,
+            'uptime': uptime,
+            'serial_number': serial,
+            'fqdn': hostname,
+            'interface_list': interface_list
+        })
+
+        return facts
 
     def get_interfaces(self):
 
-        # init result dict
-        result = {}
+        interfaces = {}
 
-        # fetch show interface output
-        sh_int = self.device.show_interfaces()
-        # split per interface, eg by empty line
-        interface_list = sh_int.rstrip().split('\n\n')
-        # for each interface...
-        for interface in interface_list:
+        INTERFACE_DEFAULTS = {
+            'is_enabled': False,
+            'is_up': False,
+            'mac_address': u'',
+            'description': u'',
+            'speed': -1,
+            'last_flapped': -1.0
+        }
 
-            # splitting this and matching each line avoids issues with order
-            # sorry...
-            interface_lines = interface.split('\n')
+        interfaces_rpc_request = '<Get><Operational><Interfaces/></Operational></Get>'
 
-            # init variables to match for
-            interface_name = None
-            is_enabled = None
-            is_up = None
-            mac_address = None
-            description = None
-            speed = None
+        interfaces_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(interfaces_rpc_request))
 
-            # loop though and match each line
-            for line in interface_lines:
-                description = ''
-                if 'line protocol' in line:
-                    lp = line.split()
-                    interface_name = lp[0]
-                    is_enabled = lp[2] == 'up,'
-                    is_up = lp[6] == 'up'
-                elif 'bia' in line:
-                    mac_address = line.split()[-1].replace(')', '')
-                elif 'Description' in line:
-                    description = ' '.join(line.split()[1:])
-                elif 'BW' in line:
-                    speed = int(line.split()[4]) / 1000
-            result[interface_name] = {
-                'is_enabled': is_enabled,
+        for interface_tree in interfaces_rpc_reply.xpath('.//Interfaces/InterfaceTable/Interface'):
+            interface_name = find_txt(interface_tree, 'Naming/InterfaceName')
+            if not interface_name:
+                continue
+            is_up = (find_txt(interface_tree, 'LineState') == 'IM_STATE_UP')
+            is_enabled = (find_txt(interface_tree, 'LineState') == 'IM_STATE_UP')
+            mac_address = mac(find_txt(interface_tree, 'MACAddress/Address'))
+            speed = int(convert(int, find_txt(interface_tree, 'Bandwidth'), 0) * 1e-3)
+            description = find_txt(interface_tree, 'Description')
+            interfaces[interface_name] = copy.deepcopy(INTERFACE_DEFAULTS)
+            interfaces[interface_name].update({
                 'is_up': is_up,
-                'mac_address': unicode(mac_address),
-                'description': unicode(description),
                 'speed': speed,
-                'last_flapped': -1.0,
-            }
+                'is_enabled': is_enabled,
+                'mac_address': mac_address,
+                'description': description
+            })
 
-        return result
+        return interfaces
 
     def get_interfaces_counters(self):
         rpc_command = "<Get><Operational><Interfaces><InterfaceTable></InterfaceTable></Interfaces></Operational></Get>"
@@ -681,7 +685,7 @@ class IOSXRDriver(NetworkDriver):
 
         for command in commands:
             try:
-                cli_output[unicode(command)] = unicode(__execute_show__(self.device.device, command, self.timeout))
+                cli_output[unicode(command)] = unicode(self.device._execute_show(command))
             except TimeoutError:
                 cli_output[unicode(command)] = 'Execution of command "{command}" took too long! Please adjust your params!'.format(
                     command = command
@@ -827,37 +831,77 @@ class IOSXRDriver(NetworkDriver):
 
         return bgp_config
 
-    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+    def get_bgp_neighbors_detail(self, neighbor_address=''):
 
-        bgp_neighbors = dict()
+        bgp_neighbors_detail = {}
 
-        rpc_command = '''
-                <Get>
-                    <Operational>
-                        <BGP>
-                            <InstanceTable>
-                                <Instance>
-                                    <Naming>
-                                        <InstanceName>
-                                            default
-                                        </InstanceName>
-                                    </Naming>
-                                    <InstanceActive>
-                                        <DefaultVRF>
-                                            <GlobalProcessInfo>
-                                            </GlobalProcessInfo>
-                                            <NeighborTable>
-                                            </NeighborTable>
-                                        </DefaultVRF>
-                                    </InstanceActive>
-                                </Instance>
-                            </InstanceTable>
-                        </BGP>
-                    </Operational>
-                </Get>
-        '''
+        active_vrfs = ['default']
 
-        result_tree = ET.fromstring(self.device.make_rpc_call(rpc_command))
+        active_vrfs_rpc_request = (
+            '<Get>'
+                '<Operational>'
+                    '<BGP>'
+                        '<ConfigInstanceTable>'
+                            '<ConfigInstance>'
+                                '<Naming>'
+                                    '<InstanceName>'
+                                        'default'
+                                    '</InstanceName>'
+                                '</Naming>'
+                                '<ConfigInstanceVRFTable/>'
+                            '</ConfigInstance>'
+                        '</ConfigInstanceTable>'
+                    '</BGP>'
+                '</Operational>'
+            '</Get>'
+        )
+
+        active_vrfs_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(active_vrfs_rpc_request))
+        active_vrfs_tree = active_vrfs_rpc_reply.xpath('.//ConfigVRF')
+
+        for active_vrf_tree in active_vrfs_tree:
+            active_vrfs.append(find_txt(active_vrf_tree, 'Naming/VRFName'))
+
+        unique_active_vrfs = set(active_vrfs)
+
+        bgp_neighbors_vrf_all_rpc = (
+            '<Get>'
+                '<Operational>'
+                    '<BGP>'
+                        '<InstanceTable>'
+                            '<Instance>'
+                                '<Naming>'
+                                    '<InstanceName>'
+                                        'default'
+                                    '</InstanceName>'
+                                '</Naming>'
+        )
+
+        for active_vrf in unique_active_vrfs:
+            vrf_rpc = (
+                '<InstanceActive>'
+                    '<VRFTable>'
+                        '<VRF>'
+                            '<Naming>'
+                                '{vrf_name}'
+                            '</Naming>'
+                            '<GlobalProcessInfo/>'
+                            '<NeighborTable/>'
+                        '</VRF>'
+                    '</VRFTable>'
+                '</InstanceActive>'
+            )
+            bgp_neighbors_vrf_all_rpc += vrf_rpc.format(vrf_name=active_vrf)
+
+        bgp_neighbors_vrf_all_rpc += (
+                            '</Instance>'
+                        '</InstanceTable>'
+                    '</BGP>'
+                '</Operational>'
+            '</Get>'
+        )
+
+        bgp_neighbors_vrf_all_tree = ETREE.fromstring(self.device.make_rpc_call(bgp_neighbors_vrf_all_rpc))
 
         _BGP_STATE_ = {
             '0': 'Unknown',
@@ -869,92 +913,97 @@ class IOSXRDriver(NetworkDriver):
             '6': 'Established'
         }
 
-        routing_table = unicode(self._find_txt(result_tree, 'InstanceTable/Instance/Naming/InstanceName', 'default'))
-        # if multi-VRF needed, create a loop through all instances
-        for neighbor in result_tree.iter('Neighbor'):
-            try:
-                up                          = (self._find_txt(neighbor, 'ConnectionState') == 'BGP_ST_ESTAB')
-                local_as                    = int(self._find_txt(neighbor, 'LocalAS', 0))
-                remote_as                   = int(self._find_txt(neighbor, 'RemoteAS', 0))
-                remote_address              = unicode(self._find_txt(neighbor, 'Naming/NeighborAddress/IPV4Address') \
-                    or self._find_txt(neighbor, 'Naming/NeighborAddress/IPV6Address'))
-                local_address_configured    = eval(self._find_txt(neighbor, 'IsLocalAddressConfigured', 'false').title())
-                local_address               = unicode(self._find_txt(neighbor, 'ConnectionLocalAddress/IPV4Address') \
-                    or self._find_txt(neighbor, 'ConnectionLocalAddress/IPV6Address'))
-                local_port                  = int(self._find_txt(neighbor, 'ConnectionLocalPort'))
-                remote_address              = unicode(self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV4Address') \
-                    or self._find_txt(neighbor, 'ConnectionRemoteAddress/IPV6Address'))
-                remote_port                 = int(self._find_txt(neighbor, 'ConnectionRemotePort'))
-                multihop                    = eval(self._find_txt(neighbor, 'IsExternalNeighborNotDirectlyConnected', 'false').title())
-                remove_private_as           = eval(self._find_txt(neighbor, 'AFData/Entry/RemovePrivateASFromUpdates', 'false').title())
-                multipath                   = eval(self._find_txt(neighbor, 'AFData/Entry/SelectiveMultipathEligible', 'false').title())
-                import_policy               = unicode(self._find_txt(neighbor, 'AFData/Entry/RoutePolicyIn'))
-                export_policy               = unicode(self._find_txt(neighbor, 'AFData/Entry/RoutePolicyOut'))
-                input_messages              = int(self._find_txt(neighbor, 'MessgesReceived', 0))
-                output_messages             = int(self._find_txt(neighbor, 'MessagesSent', 0))
-                connection_up_count         = int(self._find_txt(neighbor, 'ConnectionUpCount', 0))
-                connection_down_count       = int(self._find_txt(neighbor, 'ConnectionDownCount', 0))
-                messages_queued_out         = int(self._find_txt(neighbor, 'MessagesQueuedOut', 0))
-                connection_state            = unicode(self._find_txt(neighbor, 'ConnectionState').replace('BGP_ST_', '').title())
+        instance_active_list = bgp_neighbors_vrf_all_tree.xpath('.//InstanceTable/Instance/InstanceActive/VRFTable/VRF')
+
+        for vrf_tree in instance_active_list:
+            vrf_name = find_txt(vrf_tree, 'Naming/VRFName')
+            vrf_keepalive = convert(int, find_txt(instance_active_list, 'GlobalProcessInfo/VRF/KeepAliveTime'))
+            vrf_holdtime = convert(int, find_txt(instance_active_list, 'GlobalProcessInfo/VRF/HoldTime'))
+            if vrf_name not in bgp_neighbors_detail.keys():
+                bgp_neighbors_detail[vrf_name] = {}
+            for neighbor in vrf_tree.xpath('NeighborTable/Neighbor'):
+                up = (find_txt(neighbor, 'ConnectionState') == 'BGP_ST_ESTAB')
+                local_as = convert(int, find_txt(neighbor, 'LocalAS', 0))
+                remote_as = convert(int, find_txt(neighbor, 'RemoteAS', 0))
+                router_id = ip(find_txt(neighbor, 'RouterID'))
+                remote_address = ip(find_txt(neighbor, 'Naming/NeighborAddress/IPV4Address')) \
+                    or ip(find_txt(neighbor, 'Naming/NeighborAddress/IPV6Address'))
+                local_address_configured = eval(find_txt(neighbor, 'IsLocalAddressConfigured', 'false').title())
+                local_address = ip(find_txt(neighbor, 'ConnectionLocalAddress/IPV4Address')) \
+                    or ip(find_txt(neighbor, 'ConnectionLocalAddress/IPV6Address'))
+                local_port = convert(int, find_txt(neighbor, 'ConnectionLocalPort'))
+                remote_address = ip(find_txt(neighbor, 'ConnectionRemoteAddress/IPV4Address')) \
+                    or ip(find_txt(neighbor, 'ConnectionRemoteAddress/IPV6Address'))
+                remote_port = convert(int, find_txt(neighbor, 'ConnectionRemotePort'))
+                multihop = eval(find_txt(neighbor, 'IsExternalNeighborNotDirectlyConnected', 'false').title())
+                remove_private_as = eval(find_txt(neighbor, 'AFData/Entry/RemovePrivateASFromUpdates', 'false').title())
+                multipath = eval(find_txt(neighbor, 'AFData/Entry/SelectiveMultipathEligible', 'false').title())
+                import_policy = find_txt(neighbor, 'AFData/Entry/RoutePolicyIn')
+                export_policy = find_txt(neighbor, 'AFData/Entry/RoutePolicyOut')
+                input_messages = convert(int, find_txt(neighbor, 'MessgesReceived', 0))
+                output_messages = convert(int, find_txt(neighbor, 'MessagesSent', 0))
+                connection_up_count = convert(int, find_txt(neighbor, 'ConnectionUpCount', 0))
+                connection_down_count = convert(int, find_txt(neighbor, 'ConnectionDownCount', 0))
+                messages_queued_out = convert(int, find_txt(neighbor, 'MessagesQueuedOut', 0))
+                connection_state = find_txt(neighbor, 'ConnectionState').replace('BGP_ST_', '').title()
                 if connection_state == u'Estab':
                     connection_state = u'Established'
-                previous_connection_state   = unicode(_BGP_STATE_.get(self._find_txt(neighbor, 'PreviousConnectionState', '0')))
-                active_prefix_count         = int(self._find_txt(neighbor, 'AFData/Entry/NumberOfBestpaths', 0))
-                accepted_prefix_count       = int(self._find_txt(neighbor, 'AFData/Entry/PrefixesAccepted', 0))
-                suppressed_prefix_count     = int(self._find_txt(neighbor, 'AFData/Entry/PrefixesDenied', 0))
-                received_prefix_count       = accepted_prefix_count + suppressed_prefix_count # not quite right...
-                advertise_prefix_count      = int(self._find_txt(neighbor, 'AFData/Entry/PrefixesAdvertised', 0))
-                suppress_4byte_as           = eval(self._find_txt(neighbor, 'Suppress4ByteAs', 'false').title())
-                local_as_prepend            = not eval(self._find_txt(neighbor, 'LocalASNoPrepend', 'false').title())
-                holdtime                    = int(self._find_txt(neighbor, 'HoldTime', 0))
-                configured_holdtime         = int(self._find_txt(neighbor, 'ConfiguredHoldTime', 0))
-                keepalive                   = int(self._find_txt(neighbor, 'KeepAliveTime', 0))
-                configured_keepalive        = int(self._find_txt(neighbor, 'ConfiguredKeepalive', 0))
+                previous_connection_state = unicode(_BGP_STATE_.get(find_txt(neighbor, 'PreviousConnectionState', '0')))
+                active_prefix_count = convert(int, find_txt(neighbor, 'AFData/Entry/NumberOfBestpaths', 0))
+                accepted_prefix_count = convert(int, find_txt(neighbor, 'AFData/Entry/PrefixesAccepted', 0))
+                suppressed_prefix_count = convert(int, find_txt(neighbor, 'AFData/Entry/PrefixesDenied', 0))
+                received_prefix_count = accepted_prefix_count + suppressed_prefix_count # not quite right...
+                advertised_prefix_count = convert(int, find_txt(neighbor, 'AFData/Entry/PrefixesAdvertised', 0))
+                suppress_4byte_as = eval(find_txt(neighbor, 'Suppress4ByteAs', 'false').title())
+                local_as_prepend = not eval(find_txt(neighbor, 'LocalASNoPrepend', 'false').title())
+                holdtime = convert(int, find_txt(neighbor, 'HoldTime', 0)) or vrf_holdtime
+                configured_holdtime = convert(int, find_txt(neighbor, 'ConfiguredHoldTime', 0))
+                keepalive = convert(int, find_txt(neighbor, 'KeepAliveTime', 0)) or vrf_keepalive
+                configured_keepalive = convert(int, find_txt(neighbor, 'ConfiguredKeepalive', 0))
                 flap_count = connection_down_count / 2
                 if up:
                     flap_count -= 1
-                if remote_as not in bgp_neighbors.keys():
-                    bgp_neighbors[remote_as] = list()
-                bgp_neighbors[remote_as].append({
-                    'up'                        : up,
-                    'local_as'                  : local_as,
-                    'remote_as'                 : remote_as,
-                    'local_address'             : local_address,
-                    'routing_table'             : routing_table,
-                    'local_address_configured'  : local_address_configured,
-                    'local_port'                : local_port,
-                    'remote_address'            : remote_address,
-                    'remote_port'               : remote_port,
-                    'multihop'                  : multihop,
-                    'multipath'                 : multipath,
-                    'import_policy'             : import_policy,
-                    'export_policy'             : export_policy,
-                    'input_messages'            : input_messages,
-                    'output_messages'           : output_messages,
-                    'input_updates'             : 0,
-                    'output_updates'            : 0,
-                    'messages_queued_out'       : messages_queued_out,
-                    'connection_state'          : connection_state,
-                    'previous_connection_state' : previous_connection_state,
-                    'last_event'                : u'',
-                    'remove_private_as'         : remove_private_as,
-                    'suppress_4byte_as'         : suppress_4byte_as,
-                    'local_as_prepend'          : local_as_prepend,
-                    'holdtime'                  : holdtime,
-                    'configured_holdtime'       : configured_holdtime,
-                    'keepalive'                 : keepalive,
-                    'configured_keepalive'      : configured_keepalive,
-                    'active_prefix_count'       : active_prefix_count,
-                    'received_prefix_count'     : received_prefix_count,
-                    'accepted_prefix_count'     : accepted_prefix_count,
-                    'suppressed_prefix_count'   : suppressed_prefix_count,
-                    'advertise_prefix_count'    : advertise_prefix_count,
-                    'flap_count'                : flap_count
+                if remote_as not in bgp_neighbors_detail[vrf_name].keys():
+                    bgp_neighbors_detail[vrf_name][remote_as] = []
+                bgp_neighbors_detail[vrf_name][remote_as].append({
+                    'up': up,
+                    'local_as': local_as,
+                    'remote_as': remote_as,
+                    'router_id': router_id,
+                    'local_address': local_address,
+                    'routing_table': vrf_name,
+                    'local_address_configured': local_address_configured,
+                    'local_port': local_port,
+                    'remote_address': remote_address,
+                    'remote_port': remote_port,
+                    'multihop': multihop,
+                    'multipath': multipath,
+                    'import_policy': import_policy,
+                    'export_policy': export_policy,
+                    'input_messages': input_messages,
+                    'output_messages': output_messages,
+                    'input_updates': 0,
+                    'output_updates': 0,
+                    'messages_queued_out': messages_queued_out,
+                    'connection_state': connection_state,
+                    'previous_connection_state': previous_connection_state,
+                    'last_event': u'',
+                    'remove_private_as': remove_private_as,
+                    'suppress_4byte_as': suppress_4byte_as,
+                    'local_as_prepend': local_as_prepend,
+                    'holdtime': holdtime,
+                    'configured_holdtime': configured_holdtime,
+                    'keepalive': keepalive,
+                    'configured_keepalive': configured_keepalive,
+                    'active_prefix_count': active_prefix_count,
+                    'received_prefix_count': received_prefix_count,
+                    'accepted_prefix_count': accepted_prefix_count,
+                    'suppressed_prefix_count': suppressed_prefix_count,
+                    'advertised_prefix_count': advertised_prefix_count,
+                    'flap_count': flap_count
                 })
-            except Exception:
-                continue
 
-        return bgp_neighbors
+        return bgp_neighbors_detail
 
     def get_arp_table(self):
 
@@ -988,8 +1037,43 @@ class IOSXRDriver(NetworkDriver):
 
     def get_ntp_peers(self):
 
-        ntp_stats = self.get_ntp_stats()
-        return {ntp_peer.get('remote'): {} for ntp_peer in ntp_stats if ntp_peer.get('remote', '')}
+        ntp_peers = {}
+
+        rpc_command = '<Get><Configuration><NTP></NTP></Configuration></Get>'
+
+        result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for version in ['IPV4', 'IPV6']:
+            for peer in result_tree.findall('.//Peer{version}Table/Peer{version}'.format(version=version)):
+                peer_type = find_txt(peer, 'PeerType{version}/Naming/PeerType'.format(version=version))
+                if peer_type != 'Peer':
+                    continue
+                peer_address = find_txt(peer, 'Naming/Address{version}'.format(version=version))
+                if not peer_address:
+                    continue
+                ntp_peers[peer_address] = {}
+
+        return ntp_peers
+
+    def get_ntp_servers(self):
+
+        ntp_servers = {}
+
+        rpc_command = '<Get><Configuration><NTP></NTP></Configuration></Get>'
+
+        result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+
+        for version in ['IPV4', 'IPV6']:
+            for peer in result_tree.xpath('.//Peer{version}Table/Peer{version}'.format(version=version)):
+                peer_type = find_txt(peer, 'PeerType{version}/Naming/PeerType'.format(version=version))
+                if peer_type != 'Server':
+                    continue
+                server_address =find_txt(peer, 'Naming/Address{version}'.format(version=version))
+                if not server_address:
+                    continue
+                ntp_servers[server_address] = {}
+
+        return ntp_servers
 
     def get_ntp_stats(self):
 
