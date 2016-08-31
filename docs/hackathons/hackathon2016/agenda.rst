@@ -7,9 +7,10 @@ ______
 Friday 16th of Sept
 ^^^^^^^^^^^^^^^^^^^
 
-* **6.00 pm - 7.00 pm** - Kick off. Short introduction about napalm and the hackathon.
-* **7.00 pm - 8.00 pm** - Propose tasks, create teams...
-* **7.00 pm - 11.59 pm** - Hacking.
+* **6.00 pm - 7.00 pm** - Kick off. Short introduction about napalm, news about the project, vision for the future and some basic information about the hackathon.
+* **7.00 pm - 7.30 pm** - Keynote: Ivan Pepelnjak - ipSpace.net
+* **7.30 pm - 8.30 pm** - Propose tasks, create teams...
+* **8.30 pm - 11.59 pm** - Hacking.
 
 Saturday 17th of Sept
 ^^^^^^^^^^^^^^^^^^^^^
