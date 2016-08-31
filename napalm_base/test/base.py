@@ -318,8 +318,11 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_ntp_servers(self):
+        try:
+            get_ntp_servers = self.device.get_ntp_servers()
+        except NotImplementedError:
+            raise SkipTest()
 
-        get_ntp_servers = self.device.get_ntp_servers()
         result = len(get_ntp_servers) > 0
 
         for server, server_details in get_ntp_servers.iteritems():
