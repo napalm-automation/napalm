@@ -19,6 +19,10 @@ import sys
 import napalm_base.exceptions
 import napalm_base.helpers
 
+import pyangbind.lib.pybindJSON as pbJ
+from pyangbind.lib.xpathhelper import YANGPathHelper
+import openconfig_bindings
+
 
 class NetworkDriver(object):
 
@@ -102,6 +106,184 @@ class NetworkDriver(object):
                                                  template_source=template_source,
                                                  template_path=template_path,
                                                  **template_vars)
+
+    def load_openconfig(self, model, filename=None, data=None):
+        """
+        Load an OpenConfig model into the device.
+
+        NOTE: THIS IS AN EXPERIMENTAL FEATURE. It might change with time although we will try
+        to maintain backwards compatibility.
+
+        This method is going to take an OpenConfig object and then it's going to do one these
+        two things:
+
+        1. If the model is supported by the vendor is going to push it to the device as it is.
+        2. If the model is not supported is going to validate the object with pyangbind, check
+        if there is a device-specific template to translate the object into configuration commands
+        and load those commands into the device with the load_template method, which means that
+        then you will be able to use the commit, compare, discard, etc methods afterwards.
+
+        :param model: Model of the openconfig you want to load. Check OpenConfig models for more
+        information.
+        :param filename: Path to file with the object data. Only JSON is supported.
+        :param data: JSON represenation of the object.
+
+        For example:
+
+        >>> from napalm_base import get_network_driver
+        >>> driver = get_network_driver('eos')
+        >>> optional_args = {'port': 12443,}
+        >>>
+        >>> d = driver('localhost', 'vagrant', 'vagrant', optional_args=optional_args)
+        >>> d.open()
+        >>>
+        >>> with open('bgp_global.json', 'r') as f:
+        ...     data = f.read()
+        ...
+        >>> print(data)
+        {
+            "openconfig-bgp:bgp": {
+                "neighbors": {
+                    "neighbor": [
+                        {
+                            "ebgp-multihop": {
+                                "config": {
+                                    "enabled": true,
+                                    "multihop-ttl": 255
+                                }
+                            },
+                            "neighbor-address": "2001:db8::1",
+                            "config": {
+                                "neighbor-address": "2001:db8::1",
+                                "peer-as": 6643,
+                                "description": ":a=6643:d=Jive:"
+                            },
+                            "afi-safis": {
+                                "afi-safi": [
+                                    {
+                                        "config": {
+                                            "enabled": true,
+                                            "afi-safi-name": "openconfig-bgp-types:IPV6_UNICAST"
+                                        },
+                                        "afi-safi-name": "IPV6_UNICAST"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "neighbor-address": "192.0.2.2",
+                            "config": {
+                                "neighbor-address": "192.0.2.2",
+                                "peer-as": 54113,
+                                "description": ":a=54413:d=Fastly:"
+                            },
+                            "afi-safis": {
+                                "afi-safi": [
+                                    {
+                                        "config": {
+                                            "enabled": true,
+                                            "afi-safi-name": "openconfig-bgp-types:IPV6_UNICAST"
+                                        },
+                                        "afi-safi-name": "IPV6_UNICAST"
+                                    },
+                                    {
+                                        "config": {
+                                            "enabled": true,
+                                            "afi-safi-name": "openconfig-bgp-types:IPV4_UNICAST"
+                                        },
+                                        "afi-safi-name": "IPV4_UNICAST"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "global": {
+                    "config": {
+                        "as": 6643,
+                        "router-id": "192.0.2.1"
+                    },
+                    "afi-safis": {
+                        "afi-safi": [
+                            {
+                                "use-multiple-paths": {
+                                    "ebgp": {
+                                        "config": {
+                                            "maximum-paths": 8
+                                        }
+                                    }
+                                },
+                                "config": {
+                                    "enabled": true,
+                                    "afi-safi-name": "openconfig-bgp-types:IPV6_UNICAST"
+                                },
+                                "afi-safi-name": "IPV6_UNICAST"
+                            },
+                            {
+                                "use-multiple-paths": {
+                                    "ebgp": {
+                                        "config": {
+                                            "maximum-paths": 8
+                                        }
+                                    }
+                                },
+                                "config": {
+                                    "enabled": true,
+                                    "afi-safi-name": "openconfig-bgp-types:IPV4_UNICAST"
+                                },
+                                "afi-safi-name": "IPV4_UNICAST"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+
+        >>> d.load_openconfig(model='openconfig_bgp', data=data)
+        >>> print d.compare_config()
+        @@ -26,7 +26,20 @@
+         !
+         no ip routing
+         !
+        -router bgp 123
+        +router bgp 6643
+        +   maximum-paths 8
+        +   neighbor 192.0.2.2 remote-as 54113
+        +   neighbor 192.0.2.2 description :a=54413:d=Fastly:
+        +   neighbor 192.0.2.2 maximum-routes 12000
+        +   neighbor 2001:db8::1 remote-as 6643
+        +   neighbor 2001:db8::1 description :a=6643:d=Jive:
+        +   neighbor 2001:db8::1 maximum-routes 12000
+        +   address-family ipv4
+        +      neighbor 192.0.2.2 activate
+        +   !
+        +   address-family ipv6
+        +      neighbor 192.0.2.2 activate
+        +      neighbor 2001:db8::1 activate
+         !
+         management api http-commands
+            no shutdown
+        >>> d.commit_config()
+        >>> d.load_openconfig(model='openconfig_bgp', data=data)
+        >>> print d.compare_config()
+        ''
+        >>>
+        ```
+        """
+        if filename is not None:
+            with open(filename, 'r') as f:
+                data = f.read()
+
+        if model not in self.SUPPORTED_OC_MODELS:
+            yph = YANGPathHelper()
+            oc_data = pbJ.loads_ietf(data, openconfig_bindings, model, path_helper=yph)
+            return napalm_base.helpers.load_template(self, model, openconfig=True, template_vars=oc_data)
+        else:
+            # Here we will have some application logic to send supported models using native
+            # mechanisms like gRPC, NETCONF or whatever the vendor supports.
+            pass
+
+
 
     def load_replace_candidate(self, filename=None, config=None):
         """
@@ -560,11 +742,14 @@ class NetworkDriver(object):
 
         :param neighbor_address: Retuns the statistics for a spcific BGP neighbor.
 
-        The keys of the dictionary represent the AS number of the neighbors.
-        Inner dictionaries contain the following fields:
+        Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).
+        The keys of the inner dictionary represent the AS number of the neighbors.
+        Leaf dictionaries contain the following fields:
+
             * up (True/False)
             * local_as (int)
             * remote_as (int)
+            * router_id (string)
             * local_address (string)
             * routing_table (string)
             * local_address_configured (True/False)
@@ -600,44 +785,46 @@ class NetworkDriver(object):
         Example::
 
             {
-                8121: [
-                    {
-                        'up'                        : True,
-                        'local_as'                  : 13335,
-                        'remote_as'                 : 8121,
-                        'local_address'             : u'172.101.76.1',
-                        'local_address_configured'  : True,
-                        'local_port'                : 179,
-                        'routing_table'             : u'inet.0',
-                        'remote_address'            : u'192.247.78.0',
-                        'remote_port'               : 58380,
-                        'multihop'                  : False,
-                        'multipath'                 : True,
-                        'remove_private_as'         : True,
-                        'import_policy'             : u'4-NTT-TRANSIT-IN',
-                        'export_policy'             : u'4-NTT-TRANSIT-OUT',
-                        'input_messages'            : 123,
-                        'output_messages'           : 13,
-                        'input_updates'             : 123,
-                        'output_updates'            : 5,
-                        'messages_queued_out'       : 23,
-                        'connection_state'          : u'Established',
-                        'previous_connection_state' : u'EstabSync',
-                        'last_event'                : u'RecvKeepAlive',
-                        'suppress_4byte_as'         : False,
-                        'local_as_prepend'          : False,
-                        'holdtime'                  : 90,
-                        'configured_holdtime'       : 90,
-                        'keepalive'                 : 30,
-                        'configured_keepalive'      : 30,
-                        'active_prefix_count'       : 132808,
-                        'received_prefix_count'     : 566739,
-                        'accepted_prefix_count'     : 566479,
-                        'suppressed_prefix_count'   : 0,
-                        'advertise_prefix_count'    : 0,
-                        'flap_count'                : 27
-                    }
-                ]
+                'global': {
+                    8121: [
+                        {
+                            'up'                        : True,
+                            'local_as'                  : 13335,
+                            'remote_as'                 : 8121,
+                            'local_address'             : u'172.101.76.1',
+                            'local_address_configured'  : True,
+                            'local_port'                : 179,
+                            'routing_table'             : u'inet.0',
+                            'remote_address'            : u'192.247.78.0',
+                            'remote_port'               : 58380,
+                            'multihop'                  : False,
+                            'multipath'                 : True,
+                            'remove_private_as'         : True,
+                            'import_policy'             : u'4-NTT-TRANSIT-IN',
+                            'export_policy'             : u'4-NTT-TRANSIT-OUT',
+                            'input_messages'            : 123,
+                            'output_messages'           : 13,
+                            'input_updates'             : 123,
+                            'output_updates'            : 5,
+                            'messages_queued_out'       : 23,
+                            'connection_state'          : u'Established',
+                            'previous_connection_state' : u'EstabSync',
+                            'last_event'                : u'RecvKeepAlive',
+                            'suppress_4byte_as'         : False,
+                            'local_as_prepend'          : False,
+                            'holdtime'                  : 90,
+                            'configured_holdtime'       : 90,
+                            'keepalive'                 : 30,
+                            'configured_keepalive'      : 30,
+                            'active_prefix_count'       : 132808,
+                            'received_prefix_count'     : 566739,
+                            'accepted_prefix_count'     : 566479,
+                            'suppressed_prefix_count'   : 0,
+                            'advertised_prefix_count'   : 0,
+                            'flap_count'                : 27
+                        }
+                    ]
+                }
             }
         """
         raise NotImplementedError
@@ -671,7 +858,6 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-
     def get_ntp_peers(self):
 
         """
@@ -692,6 +878,25 @@ class NetworkDriver(object):
 
         raise NotImplementedError
 
+    def get_ntp_servers(self):
+
+        """
+        Returns the NTP servers configuration as dictionary.
+        The keys of the dictionary represent the IP Addresses of the servers.
+        Inner dictionaries do not have yet any available keys.
+
+        Example::
+
+            {
+                '192.168.0.1': {},
+                '17.72.148.53': {},
+                '37.187.56.220': {},
+                '162.158.20.18': {}
+            }
+
+        """
+
+        raise NotImplementedError
 
     def get_ntp_stats(self):
 
@@ -1115,7 +1320,6 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-
     def traceroute(self, destination, source='', ttl=0, timeout=0):
         """
         Executes traceroute on the device and returns a dictionary with the result.
@@ -1223,7 +1427,6 @@ class NetworkDriver(object):
             """
         raise NotImplementedError
 
-
     def get_users(self):
         """
         Returns a dictionary with the configured users.
@@ -1247,5 +1450,69 @@ class NetworkDriver(object):
                     ]
                 }
             }
+        """
+        raise NotImplementedError
+
+    def get_optics(self):
+        """Fetches the power usage on the various transceivers installed
+        on the switch (in dbm), and returns a view that conforms with the
+        openconfig model openconfig-platform-transceiver.yang
+
+        Returns a dictionary where the keys are as listed below:
+
+            * intf_name (unicode)
+                * physical_channels
+                    * channels (list of dicts)
+                        * index (int)
+                        * state
+                            * input_power
+                                * instant (float)
+                                * avg (float)
+                                * min (float)
+                                * max (float)
+                            * output_power
+                                * instant (float)
+                                * avg (float)
+                                * min (float)
+                                * max (float)
+                            * laser_bias_current
+                                * instant (float)
+                                * avg (float)
+                                * min (float)
+                                * max (float)
+
+        Example:
+
+            {
+                    'et1': {
+                        'physical_channels': {
+                            'channel': [
+                                {
+                                    'index': 0,
+                                    'state': {
+                                        'input_power': {
+                                            'instant': 0.0,
+                                            'avg': 0.0,
+                                            'min': 0.0,
+                                            'max': 0.0,
+                                        },
+                                        'output_power': {
+                                            'instant': 0.0,
+                                            'avg': 0.0,
+                                            'min': 0.0,
+                                            'max': 0.0,
+                                        },
+                                        'laser_bias_current': {
+                                            'instant': 0.0,
+                                            'avg': 0.0,
+                                            'min': 0.0,
+                                            'max': 0.0,
+                                        },
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
         """
         raise NotImplementedError
