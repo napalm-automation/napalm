@@ -18,7 +18,12 @@ Known gatherings
      CloudFlare, 25 Lavington St, London SE1 0NZ
      Contact: Mircea, @mirceaulinic (slack), tel: +447427735256
 
-* San Francisco, United states::
+* New York, NY, United States::
+
+     Network to Code (WeWork location), 315 W. 36th, NY 
+     Contact: Jason Edelman  (jason@networktocode.com) or jedelman8 on Slack and Twitter
+
+* San Francisco, CA, United states::
 
     Contact ktbyers@twb-tech.com for details
 
