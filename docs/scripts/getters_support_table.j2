@@ -1,0 +1,31 @@
+{%- macro resolve_unicode(txt) -%}
+{%- if txt == 'success' -%}✅
+{%- elif txt == 'broken' -%}❌
+{%- elif txt == 'not_implemented' -%}✋
+{%- endif -%}
+{%- endmacro -%}
+
+Getters support matrix
+----------------------
+
+.. raw:: html
+
+    <table  border="1" class="docutils">
+      <thead valign="bottom">
+        <th class="head">Method</th>{% for n in nos %}<th class="head">{{n}}</th>{% endfor %}
+      </thead>
+      <tbody valign="top">
+        <tr>
+        {% for m in methods %}
+        <td><strong>{{ m }}</strong></td>
+        {% for n in nos %}
+        <td>{{ resolve_unicode(results[m][n]) }}</td>
+        {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+* ✅ - Implemented
+* ❌ - Broken
+* ✋ - Not Implemented
