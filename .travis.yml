@@ -4,10 +4,7 @@ python:
 install:
 - pip install -r requirements.txt
 - pip install .
-- git clone https://github.com/napalm-automation/napalm-base.git napalm-automation/napalm-base
-- cd napalm-automation/napalm-base
-- python setup.py install
-- cd ../..
+- pip install -e git+https://github.com/napalm-automation/napalm-base.git@develop#egg=napalm-base
 deploy:
   provider: pypi
   user: dbarroso
@@ -29,10 +26,12 @@ script:
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors_detail
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_mac_address_table
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_ntp_peers
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_ntp_servers
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_ntp_stats
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_route_to
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_snmp_information
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_users
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_traceroute
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors_detail
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_optics
 - cd ../..

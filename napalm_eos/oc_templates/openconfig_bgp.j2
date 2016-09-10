@@ -1,0 +1,41 @@
+no router bgp
+router bgp {{ template_vars.bgp.global_.config.as_ }}
+
+  {% if template_vars.bgp.global_.graceful_restart.config.enabled %}
+  bgp graceful-restart
+  bgp graceful-restart restart-time {{ template_vars.bgp.global_.graceful_restart.config.restart_time }}
+  bgp graceful-restart stalepath-time {{ template_vars.bgp.global_.graceful_restart.config.stale_routes_time|int }}
+  {% endif %}
+
+  {% for name,afi_safi in template_vars.bgp.global_.afi_safis.afi_safi.iteritems() %}
+    {% if afi_safi.config.enabled %}
+    address-family {{ afi_safi.config.afi_safi_name|openconfig_to_eos_af }}
+    {% endif %}
+    {% if afi_safi.use_multiple_paths.ebgp.config.maximum_paths %}
+      maximum-paths {{ afi_safi.use_multiple_paths.ebgp.config.maximum_paths }}
+    {% endif %}
+    {% if afi_safi.use_multiple_paths.ibgp.config.maximum_paths %}
+      maximum-paths ibgp {{ afi_safi.use_multiple_paths.ibgp.config.maximum_paths }}
+    {% endif %}
+  {% endfor %}
+
+  {% for address,neighbor in template_vars.bgp.neighbors.neighbor.iteritems() %}
+    {% if not neighbor.config.description|oc_attr_isdefault %}
+    neighbor {{ neighbor.config.neighbor_address }} description {{ neighbor.config.description }}
+    {% endif %}
+    {% if not neighbor.config.peer_as|oc_attr_isdefault %}
+    neighbor {{ neighbor.config.neighbor_address }} remote-as {{ neighbor.config.peer_as }}
+    {% endif %}
+    {% if neighbor.ebgp_multihop.enabled %}
+    neighbor {{ neighbor.config.neighbor_address }} ebgp-multihop {{ neighbor.ebgp_multihop.multihop_ttl }}
+    {% endif %}
+
+    {% for afi,af in neighbor.afi_safis.afi_safi.iteritems() %}
+      {% if af.config.enabled %}
+    address-family {{ afi|openconfig_to_eos_af }}
+      neighbor {{ neighbor.config.neighbor_address }} activate
+      {% endif %}
+    {% endfor %}
+  {% endfor %}
+
+exit

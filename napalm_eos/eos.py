@@ -46,6 +46,8 @@ from napalm_base.exceptions import ConnectionException, MergeConfigException, Re
 class EOSDriver(NetworkDriver):
     """Napalm driver for Arista EOS."""
 
+    SUPPORTED_OC_MODELS = []
+
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         """Constructor."""
         self.device = None
@@ -795,8 +797,7 @@ class EOSDriver(NetworkDriver):
 
         return arp_table
 
-
-    def get_ntp_peers(self):
+    def get_ntp_servers(self):
 
         commands = ['show running-config | section ntp']
 
@@ -805,7 +806,6 @@ class EOSDriver(NetworkDriver):
         ntp_config = napalm_base.helpers.textfsm_extractor(self, 'ntp_peers', raw_ntp_config)
 
         return {unicode(ntp_peer.get('ntppeer')):{} for ntp_peer in ntp_config if ntp_peer.get('ntppeer', '')}
-
 
     def get_ntp_stats(self):
 
@@ -870,7 +870,7 @@ class EOSDriver(NetworkDriver):
             ipv4_list = list()
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = dict()
-                
+
             if u'ipv4' not in interfaces_ip.get(interface_name):
                 interfaces_ip[interface_name][u'ipv4'] = dict()
             if u'ipv6' not in interfaces_ip.get(interface_name):
@@ -1212,3 +1212,217 @@ class EOSDriver(NetworkDriver):
                 previous_probe_ip_address = ip_address
 
         return traceroute_result
+
+    def get_bgp_neighbors_detail(self, neighbor_address=''):
+        """Function to return detailed BGP information.
+
+        Information returned by this function can be about a single peer or
+        about all peers. This can be controlled using the following:
+
+        :params neighbor_address: Retuns the statistics for a specific
+                                  BGP neighbor or for all BGP neighbors.
+        """
+
+        def _parse_per_peer_bgp_detail(peer_output):
+            """This function parses the raw data per peer and returns a
+            json structure per peer.
+            """
+
+            int_fields = ['local_as', 'remote_as',
+                          'local_port', 'remote_port', 'local_port',
+                          'input_messages', 'output_messages', 'input_updates',
+                          'output_updates', 'messages_queued_out', 'holdtime',
+                          'configured_holdtime', 'keepalive',
+                          'configured_keepalive', 'advertised_prefix_count',
+                          'received_prefix_count']
+
+            peer_details = []
+
+            # Using preset template to extract peer info
+            peer_info = (
+                napalm_base.helpers.textfsm_extractor(
+                    self, 'bgp_detail', peer_output))
+
+            for item in peer_info:
+
+                # Determining a few other fields in the final peer_info
+                item['up'] = (
+                    True if item['up'] == "up" else False)
+                item['local_address_configured'] = (
+                    True if item['local_address'] else False)
+                item['multihop'] = (
+                    False if item['multihop'] == 0 or
+                    item['multihop'] == '' else True)
+
+                # TODO: The below fields need to be retrieved
+                # Currently defaulting their values to False or 0
+                item['multipath'] = False
+                item['remove_private_as'] = False
+                item['suppress_4byte_as'] = False
+                item['local_as_prepend'] = False
+                item['flap_count'] = 0
+                item['active_prefix_count'] = 0
+                item['suppressed_prefix_count'] = 0
+
+                # Converting certain fields into int
+                for key in int_fields:
+                    item[key] = napalm_base.helpers.convert(int, item[key], 0)
+
+                # Conforming with the datatypes defined by the base class
+                item['export_policy'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['export_policy']))
+                item['last_event'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['last_event']))
+                item['remote_address'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['remote_address']))
+                item['previous_connection_state'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['previous_connection_state']))
+                item['import_policy'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['import_policy']))
+                item['connection_state'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['connection_state']))
+                item['routing_table'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['routing_table']))
+                item['router_id'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['router_id']))
+                item['local_address'] = (
+                    napalm_base.helpers.convert(
+                        unicode, item['local_address']))
+
+                peer_details.append(item)
+
+            return peer_details
+
+        def _append(bgp_dict, peer_info):
+
+            remote_as = peer_info['remote_as']
+            vrf_name = peer_info['routing_table']
+
+            if vrf_name not in bgp_dict.keys():
+                bgp_dict[vrf_name] = {}
+            if remote_as not in bgp_dict[vrf_name].keys():
+                bgp_dict[vrf_name][remote_as] = []
+
+            bgp_dict[vrf_name][remote_as].append(peer_info)
+
+        commands = []
+        summary_commands = []
+        if not neighbor_address:
+            commands.append('show ip bgp neighbors vrf all')
+            commands.append('show ipv6 bgp neighbors vrf all')
+            summary_commands.append('show ip bgp summary vrf all')
+            summary_commands.append('show ipv6 bgp summary vrf all')
+        else:
+            try:
+                peer_ver = IPAddress(neighbor_address).version
+            except Exception as e:
+                raise e
+
+            if peer_ver == 4:
+                commands.append('show ip bgp neighbors %s vrf all' %
+                                neighbor_address)
+                summary_commands.append('show ip bgp summary vrf all')
+            elif peer_ver == 6:
+                commands.append('show ipv6 bgp neighbors %s vrf all' %
+                                neighbor_address)
+                summary_commands.append('show ipv6 bgp summary vrf all')
+
+        raw_output = (
+            self.device.run_commands(commands, encoding='text'))
+        bgp_summary = (
+            self.device.run_commands(summary_commands, encoding='json'))
+
+        bgp_detail_info = {}
+
+        v4_peer_info = []
+        v6_peer_info = []
+
+        if neighbor_address:
+            peer_info = _parse_per_peer_bgp_detail(raw_output[0]['output'])
+
+            if peer_ver == 4:
+                v4_peer_info.append(peer_info[0])
+            else:
+                v6_peer_info.append(peer_info[0])
+
+        else:
+            # Using preset template to extract peer info
+            v4_peer_info = _parse_per_peer_bgp_detail(raw_output[0]['output'])
+            v6_peer_info = _parse_per_peer_bgp_detail(raw_output[1]['output'])
+
+        for peer_info in v4_peer_info:
+
+            peer_info['accepted_prefix_count'] = (
+                bgp_summary[0]['vrfs']['default']['peers']
+                           [peer_info['remote_address']]['prefixAccepted'])
+
+            _append(bgp_detail_info, peer_info)
+
+        for peer_info in v6_peer_info:
+
+            peer_info['accepted_prefix_count'] = (
+                bgp_summary[1]['vrfs']['default']['peers']
+                           [peer_info['remote_address']]['prefixAccepted'])
+
+            _append(bgp_detail_info, peer_info)
+
+        return bgp_detail_info
+
+    def get_optics(self):
+
+        command = ['show interfaces transceiver']
+
+        output = (
+            self.device.run_commands(
+                command, encoding='json')[0]['interfaces'])
+
+        # Formatting data into return data structure
+        optics_detail = {}
+
+        for port, port_values in output.iteritems():
+            port_detail = {}
+
+            port_detail['physical_channels'] = {}
+            port_detail['physical_channels']['channel'] = []
+
+            # Defaulting avg, min, max values to 0.0 since device does not
+            # return these values
+            optic_states = {
+                'index': 0,
+                'state': {
+                    'input_power': {
+                        'instant': (port_values['rxPower']
+                                    if 'rxPower' in port_values else 0.0),
+                        'avg': 0.0,
+                        'min': 0.0,
+                        'max': 0.0
+                    },
+                    'output_power': {
+                        'instant': (port_values['txPower']
+                                    if 'txPower' in port_values else 0.0),
+                        'avg': 0.0,
+                        'min': 0.0,
+                        'max': 0.0
+                    },
+                    'laser_bias_current': {
+                        'instant': (port_values['txBias']
+                                    if 'txBias' in port_values else 0.0),
+                        'avg': 0.0,
+                        'min': 0.0,
+                        'max': 0.0
+                    }
+                }
+            }
+
+            port_detail['physical_channels']['channel'].append(optic_states)
+            optics_detail[port] = port_detail
+
+        return optics_detail
