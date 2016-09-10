@@ -1,0 +1,83 @@
+{
+  "ins_api": {
+    "type": "cli_show",
+    "version": "1.0",
+    "sid": "eoc",
+    "outputs": {
+      "output": {
+        "input": "show bgp sessions vrf all",
+        "msg": "Success",
+        "code": "200",
+        "body": {
+          "totalpeers": "3",
+          "totalestablishedpeers": "3",
+          "localas": "11111",
+          "TABLE_vrf": {
+            "ROW_vrf": [
+              {
+                "vrf-name-out": "VRF_1",
+                "local-as": "11111",
+                "vrfpeers": "2",
+                "vrfestablishedpeers": "2",
+                "router-id": "10.10.10.10",
+                "TABLE_neighbor": {
+                  "ROW_neighbor": [
+                    {
+                      "neighbor-id": "20.20.20.20",
+                      "remoteas": "22222",
+                      "connectionsdropped": "0",
+                      "lastflap": "P1M12DT2H43M23S",
+                      "lastread": "PT1S",
+                      "lastwrite": "PT2S",
+                      "state": "Established",
+                      "localport": "7",
+                      "remoteport": "8",
+                      "notificationssent": "0",
+                      "notificationsreceived": "0"
+                    },
+                    {
+                      "neighbor-id": "30.30.30.30",
+                      "remoteas": "22222",
+                      "connectionsdropped": "0",
+                      "lastflap": "P1M12DT2H43M23S",
+                      "lastread": "PT0S",
+                      "lastwrite": "PT2S",
+                      "state": "Established",
+                      "localport": "7",
+                      "remoteport": "9",
+                      "notificationssent": "0",
+                      "notificationsreceived": "0"
+                    },
+                  ]
+                }
+              },
+              {
+                "vrf-name-out": "default",
+                "local-as": "11111",
+                "vrfpeers": "1",
+                "vrfestablishedpeers": "1",
+                "router-id": "10.10.10.10",
+                "TABLE_neighbor": {
+                  "ROW_neighbor":
+                    {
+                      "neighbor-id": "40.40.40.40",
+                      "remoteas": "11111",
+                      "connectionsdropped": "1",
+                      "lastflap": "P1M12DT28M39S",
+                      "lastread": "PT6S",
+                      "lastwrite": "PT55S",
+                      "state": "Established",
+                      "localport": "10",
+                      "remoteport": "7",
+                      "notificationssent": "1",
+                      "notificationsreceived": "0"
+                    }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

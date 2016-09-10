@@ -79,7 +79,11 @@ class NXOSDriver(NetworkDriver):
 
     def _get_reply_body(self, result):
         # useful for debugging
-        return result.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
+        ret = result.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
+        # Original 'body' entry may have been an empty string, don't return that.
+        if not isinstance(ret, dict):
+            return {}
+        return ret
 
     def _get_reply_table(self, result, tablename, rowname):
         # still useful for debugging
@@ -241,6 +245,48 @@ class NXOSDriver(NetworkDriver):
 
         return results
 
+
+    def get_bgp_neighbors(self):
+        cmd = 'show bgp sessions vrf all'
+        vrf_list = self._get_command_table(cmd, 'TABLE_vrf', 'ROW_vrf')
+        if isinstance(vrf_list, dict):
+            vrf_list = [vrf_list]
+
+        results = {}
+        for vrf_dict in vrf_list:
+            result_vrf_dict = {}
+            result_vrf_dict['router_id'] = unicode(vrf_dict['router-id'])
+            result_vrf_dict['peers'] = {}
+
+            neighbors_list = vrf_dict.get('TABLE_neighbor', {}).get('ROW_neighbor', [])
+            if isinstance(neighbors_list, dict):
+                neighbors_list = [neighbors_list]
+            for neighbor_dict in neighbors_list:
+                neighborid = unicode(neighbor_dict['neighbor-id'])
+
+                result_peer_dict = {
+                    'local_as': int(vrf_dict['local-as']),
+                    'remote_as': int(neighbor_dict['remoteas']),
+                    'remote_id': neighborid,
+                    'is_enabled': True,
+                    'uptime': -1,
+                    'description': unicode(''),
+                    'is_up': True
+                }
+                result_peer_dict['address_family'] = {
+                    'ipv4': {
+                        'sent_prefixes': -1,
+                        'accepted_prefixes': -1,
+                        'received_prefixes': -1
+                    }
+                }
+
+                result_vrf_dict['peers'][neighborid] = result_peer_dict
+
+            results[vrf_dict['vrf-name-out']] = result_vrf_dict
+        return results
+
+
     def get_checkpoint_file(self):
         return install_config.get_checkpoint(self.device)
 
@@ -335,7 +381,8 @@ class NXOSDriver(NetworkDriver):
             try:
                 string_output = self.device.show(command, fmat = 'json', text = True)[1]
                 dict_output   = eval(string_output)
-                cli_output[unicode(command)] = self._get_reply_body(dict_output)
+                command_output = dict_output.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', '')
+                cli_output[unicode(command)] = command_output
             except Exception as e:
                 cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
                     cmd = command,
@@ -376,12 +423,32 @@ class NXOSDriver(NetworkDriver):
 
         return arp_table
 
+    def _get_ntp_entity(self, peer_type):
+
+        ntp_entities = {}
+
+        command = 'show ntp peers'
+
+        ntp_peers_table = self._get_command_table(command, 'TABLE_peers', 'ROW_peers')
+
+        if isinstance(ntp_peers_table, dict):
+            ntp_peers_table = [ntp_peers_table]
+
+        for ntp_peer in ntp_peers_table:
+            if ntp_peer.get('serv_peer', '') != peer_type:
+                continue
+            peer_addr = unicode(ntp_peer.get('PeerIPAddress'))
+            ntp_entities[peer_addr] = {}
+
+        return ntp_entities
 
     def get_ntp_peers(self):
 
-        ntp_stats = self.get_ntp_stats()
-        return {ntp_peer.get('remote'): {} for ntp_peer in ntp_stats if ntp_peer.get('remote', '')}
+        return self._get_ntp_entity('Peer')
 
+    def get_ntp_servers(self):
+
+        return self._get_ntp_entity('Server')
 
     def get_ntp_stats(self):
 
@@ -420,17 +487,27 @@ class NXOSDriver(NetworkDriver):
 
     def get_interfaces_ip(self):
 
+        def get_list_of_dicts(hsh, key):
+            # Helper, lookup key in hsh, return list.
+            result = hsh.get(key, {})
+            if type(result) is dict:
+                result = [result]
+            return result
+
+        def get_interfaces_data(command):
+            command_output = self.device.show(command, fmat = 'json')
+            json_output = eval(command_output[1])
+            body = json_output.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
+            if body == '':
+                return []
+            result = []
+            for row_intf in get_list_of_dicts(body, 'TABLE_intf'):
+                result.extend(get_list_of_dicts(row_intf, 'ROW_intf'))
+            return result
+
         interfaces_ip = dict()
 
-        command_ipv4 = 'show ip interface'
-
-        ipv4_interf_table_vrf = self._get_command_table(command_ipv4, 'TABLE_intf', 'ROW_intf')
-
-        if type(ipv4_interf_table_vrf) is dict:
-            # when there's one single entry, it is not returned as a list
-            # with one single element
-            # but as a simple dict
-            ipv4_interf_table_vrf = [ipv4_interf_table_vrf]
+        ipv4_interf_table_vrf = get_interfaces_data('show ip interface')
 
         for interface in ipv4_interf_table_vrf:
             interface_name = unicode(interface.get('intf-name', ''))
@@ -459,13 +536,7 @@ class NXOSDriver(NetworkDriver):
                     'prefix_length': secondary_address_prefix
                 })
 
-        command_ipv6 = 'show ipv6 interface'
-
-        ipv6_interf_table_vrf = self._get_command_table(command_ipv6, 'TABLE_intf', 'ROW_intf')
-
-        if type(ipv6_interf_table_vrf) is dict:
-            ipv6_interf_table_vrf = [ipv6_interf_table_vrf]
-
+        ipv6_interf_table_vrf = get_interfaces_data('show ipv6 interface')
         for interface in ipv6_interf_table_vrf:
             interface_name = unicode(interface.get('intf-name', ''))
             address = unicode(interface.get('addr', ''))

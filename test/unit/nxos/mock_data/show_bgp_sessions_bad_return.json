@@ -1,0 +1,6 @@
+{
+  "bad_data": {
+    "type": "cli_show",
+    "notes": "this test file may be overkill, but it is useful to see behaviour when the return data format changes."
+  }
+}
