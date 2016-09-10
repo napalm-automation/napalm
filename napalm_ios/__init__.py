@@ -14,3 +14,4 @@
 
 """napalm_ios package."""
 from ios import IOSDriver
+__version__ = '0.2.1'
