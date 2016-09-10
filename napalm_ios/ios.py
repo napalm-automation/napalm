@@ -16,7 +16,6 @@
 from __future__ import print_function
 
 import re
-from datetime import datetime
 
 from netmiko import ConnectHandler, FileTransfer
 from napalm_base.base import NetworkDriver
@@ -40,15 +39,41 @@ class IOSDriver(NetworkDriver):
         self.username = username
         self.password = password
         self.timeout = timeout
+
+        # Retrieve file names
         self.candidate_cfg = optional_args.get('candidate_cfg', 'candidate_config.txt')
         self.merge_cfg = optional_args.get('merge_cfg', 'merge_config.txt')
         self.rollback_cfg = optional_args.get('rollback_cfg', 'rollback_config.txt')
 
         # None will cause autodetection of dest_file_system
         self.dest_file_system = optional_args.get('dest_file_system', None)
-        self.global_delay_factor = optional_args.get('global_delay_factor', .5)
-        self.port = optional_args.get('port', 22)
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
+
+        # Netmiko possible arguments
+        netmiko_argument_map = {
+            'port': None,
+            'secret': '',
+            'verbose': False,
+            'global_delay_factor': 1,
+            'use_keys': False,
+            'key_file': None,
+            'ssh_strict': False,
+            'system_host_keys': False,
+            'alt_host_keys': False,
+            'alt_key_file': '',
+            'ssh_config_file': None,
+        }
+
+        # Build dict of any optional Netmiko args
+        self.netmiko_optional_args = {}
+        for k, v in netmiko_argument_map.items():
+            try:
+                self.netmiko_optional_args[k] = optional_args[k]
+            except KeyError:
+                pass
+        self.global_delay_factor = optional_args.get('global_delay_factor', 1)
+        self.port = optional_args.get('port', 22)
+
         self.device = None
         self.config_replace = False
         self.interface_map = {}
@@ -56,12 +81,10 @@ class IOSDriver(NetworkDriver):
     def open(self):
         """Open a connection to the device."""
         self.device = ConnectHandler(device_type='cisco_ios',
-                                     ip=self.hostname,
-                                     port=self.port,
+                                     host=self.hostname,
                                      username=self.username,
                                      password=self.password,
-                                     global_delay_factor=self.global_delay_factor,
-                                     verbose=False)
+                                     **self.netmiko_optional_args)
         if not self.dest_file_system:
             try:
                 self.dest_file_system = self.device._autodetect_fs()
@@ -190,7 +213,6 @@ class IOSDriver(NetworkDriver):
 
         If merge operation, perform copy <file> running-config.
         """
-        debug = False
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
@@ -257,7 +279,6 @@ class IOSDriver(NetworkDriver):
         """
         # Will automaticall enable SCP on remote device
         enable_scp = True
-        debug = False
 
         with FileTransfer(self.device,
                           source_file=source_file,
