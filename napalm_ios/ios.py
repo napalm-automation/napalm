@@ -1043,19 +1043,19 @@ class IOSDriver(NetworkDriver):
 
         output = self.device.send_command(cpu_cmd)
         output = output.strip()
+        environment.setdefault('cpu', {})
+        environment['cpu'][0] = {}
+        environment['cpu'][0]['%usage'] = 0.0
         for line in output.splitlines():
             if 'CPU utilization' in line:
                 # CPU utilization for five seconds: 2%/0%; one minute: 2%; five minutes: 1%
                 cpu_regex = r'^.*one minute: (\d+)%; five.*$'
                 match = re.search(cpu_regex, line)
+                environment['cpu'][0]['%usage'] = float(match.group(1))
                 break
-        environment.setdefault('cpu', {})
-        environment['cpu'][0] = {}
-        environment['cpu'][0]['%usage'] = float(match.group(1))
 
         output = self.device.send_command(mem_cmd)
         output = output.strip()
-
         for line in output.splitlines():
             if 'Processor' in line:
                 _, _, _, proc_used_mem, proc_free_mem = line.split()[:5]
