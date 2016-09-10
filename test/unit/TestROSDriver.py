@@ -1,11 +1,17 @@
 import datetime
 import unittest
+import StringIO
 
 from napalm_ros import ros
 from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
-#
-from yandc_ros import Client as ROS_Client
 
+def command_to_filename(command):
+    return 'ros/mock_data/{}.out'.format(command.lstrip('/').replace(' ', '_').replace('/', '-').replace('"', ''))
+
+def get_mock_data(command):
+    filename = command_to_filename(command)
+    with open(filename) as f:
+        return f.read()
 
 #class TestConfigROSDriver(unittest.TestCase, TestConfigNetworkDriver):
 #    @classmethod
@@ -34,33 +40,42 @@ class TestGetterROSDriver(unittest.TestCase, TestGettersNetworkDriver):
         cls.device = ros.ROSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
 
         if cls.mock:
-            cls.device.device = FakeROSDevice()
+            cls.device.paramiko_transport = FakeParamikoTransport()
+            cls.device.mikoshell = FakeMikoShell()
+            cls.device._datetime_offset = datetime.datetime.now() - datetime.datetime.now()
         else:
             cls.device.open()
 
 
-class FakeROSDevice(ROS_Client):
-    def __init__(self):
-        self._datetime_offset = datetime.datetime.now() - datetime.datetime.now()
-        self.ssh_client = FakeSSHClient()
+class FakeParamikoTransport(object):
+    def open_session(self):
+        return FakeParamikoChannel()
+
+
+class FakeMikoShell(object):
+    @staticmethod
+    def command(command, *args, **kwargs):
+        return get_mock_data(command).splitlines()
+
+
+class FakeParamikoChannel(object):
+    @staticmethod
+    def close():
+        pass
+
+    def exec_command(self, command):
+        self._exec_command = command
+
+    def makefile(self, *args):
+        return StringIO.StringIO(get_mock_data(self._exec_command))
 
     @staticmethod
-    def read_cmd_out(filename):
-        with open(filename) as f:
-            return f.read().splitlines()
+    def set_combine_stderr(*args):
+        pass
 
     @staticmethod
-    def cli_command(command, *args, **kwargs):
-        filename = 'ros/mock_data/{}.out'.format(command.lstrip('/').replace(' ', '_').replace('/', '-').replace('"', ''))
-        with open(filename) as f:
-            output = f.read().splitlines()
-            return output
-
-
-class FakeSSHClient(object):
-    @staticmethod
-    def exec_command(command):
-        return FakeROSDevice.cli_command(command)
+    def shutdown(*args):
+        pass
 
 
 if __name__ == '__main__':
