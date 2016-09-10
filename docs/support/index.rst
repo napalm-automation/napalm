@@ -40,7 +40,7 @@ _                       EOS         JunOS   IOS-XR      FortiOS         IBM     
 **Config. replace**     Yes         Yes     Yes         Yes             Yes [#c3]_     Yes             Yes             No              Yes
 **Config. merge**       Yes         Yes     Yes         Yes             Yes            Yes             Yes             No              Yes
 **Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c1]_     Yes [#c4]_      Yes             No              Yes
-**Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_ 
+**Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_
 **Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes [#c2]_     Yes/No [#c5]_   Yes             No              Yes
 =====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ==============
 
@@ -76,12 +76,13 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_lldp_neighbors**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |yes|      |no|
 **get_lldp_neighbors_detail**  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
 **get_bgp_neighbors**          |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|
-**get_bgp_neighbors_detail**   |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
+**get_bgp_neighbors_detail**   |yes|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_route_to**               |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_probes_config**          |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_probes_results**         |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
+**get_optics**                 |yes|  |yes|   |yes|   |no|      |no|   |no|     |no|  |no|        |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 
 Other methods
@@ -93,7 +94,7 @@ Other methods
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus   PANOS
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
-**load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|   |yes|  |yes|      |yes|    
+**load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|   |yes|  |yes|      |yes|
 **ping**                       |no|   |no|    |no|    |no|     |no|    |no|    |yes|  |no|       |no|
 **traceroute**                 |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
