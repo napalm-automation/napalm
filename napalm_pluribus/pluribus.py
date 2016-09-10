@@ -247,7 +247,7 @@ class PluribusDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def get_ntp_peers(self):
+    def get_ntp_servers(self):
 
         ntp_stats = self.get_ntp_stats()
         return {ntp_peer.get('remote'): {} for ntp_peer in ntp_stats if ntp_peer.get('remote', '')}
@@ -257,7 +257,7 @@ class PluribusDriver(NetworkDriver):
         ntp_stats = []
 
         sw_setup_show = self.device.show('switch setup', delim='@$@')
-        ntp_server = unicode(sw_setup_show.splitlines()[8].split('@$@')[-1])
+        ntp_server = unicode(sw_setup_show.splitlines()[9].split('@$@')[-1])
 
         ntp_stats.append({
             'remote': ntp_server,
