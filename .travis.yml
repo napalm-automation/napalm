@@ -4,10 +4,7 @@ python:
 install:
 - pip install -r requirements.txt
 - pip install .
-- git clone https://github.com/napalm-automation/napalm-base.git napalm-automation/napalm-base
-- cd napalm-automation/napalm-base
-- python setup.py install
-- cd ../..
+- pip install -e git+https://github.com/napalm-automation/napalm-base.git@develop#egg=napalm-base
 deploy:
   provider: pypi
   user: dbarroso
@@ -31,6 +28,7 @@ script:
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_arp_table
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_ntp_peers
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_ntp_stats
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_ntp_servers
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_interfaces_ip
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_mac_address_table
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_route_to
@@ -39,4 +37,5 @@ script:
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_probes_results
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_traceroute
 - nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_users
+- nosetests -v TestJunOSDriver:TestGetterJunOSDriver.test_get_optics
 - cd ../..

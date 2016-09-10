@@ -12,20 +12,27 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# import stdlib
 import re
 import collections
-from lxml.builder import E
+from copy import deepcopy
 
-from napalm_junos.utils import junos_views
-from napalm_base.base import NetworkDriver
+# import third party lib
+from lxml.builder import E
 
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 from jnpr.junos.exception import ConfigLoadError, ConnectTimeoutError
+
+# import NAPALM Base
+from napalm_base.base import NetworkDriver
+from napalm_base.utils import string_parsers
+from napalm_base.helpers import convert
 from napalm_base.exceptions import ConnectionException, ReplaceConfigException, MergeConfigException,\
                                    CommandErrorException
 
-from napalm_base.utils import string_parsers
+# import local modules
+from napalm_junos.utils import junos_views
 
 
 class JunOSDriver(NetworkDriver):
@@ -51,6 +58,10 @@ class JunOSDriver(NetworkDriver):
         except ConnectTimeoutError as cte:
             raise ConnectionException(cte.message)
         self.device.timeout = self.timeout
+        if hasattr(self.device, "cu"):
+            # make sure to remove the cu attr from previous session
+            # ValueError: requested attribute name cu already exists
+            del self.device.cu
         self.device.bind(cu=Config)
         if self.config_lock:
             self.lock()
@@ -145,7 +156,7 @@ class JunOSDriver(NetworkDriver):
 
         output = self.device.facts
 
-        uptime = 0
+        uptime = '0'
         if 'RE0' in output:
             uptime = output['RE0']['up_time']
 
@@ -405,8 +416,7 @@ class JunOSDriver(NetworkDriver):
                     'parent_interface'          : item.parent_interface,
                     'remote_port'               : item.remote_port,
                     'remote_chassis_id'         : item.remote_chassis_id,
-                    'remote_port'               : item.remote_port,
-                    'remote_port_description'   : item.remote_port_description,
+                    'remote_port_description'   : convert(unicode, item.remote_port_description),
                     'remote_system_name'        : item.remote_system_name,
                     'remote_system_description' : item.remote_system_description,
                     'remote_system_capab'       : item.remote_system_capab,
@@ -637,11 +647,11 @@ class JunOSDriver(NetworkDriver):
 
         return bgp_config
 
-    def get_bgp_neighbors_detail(self, neighbor_address = ''):
+    def get_bgp_neighbors_detail(self, neighbor_address=''):
 
-        bgp_neighbors = dict()
+        bgp_neighbors = {}
 
-        bgp_neighbors_table  = junos_views.junos_bgp_neighbors_table(self.device)
+        bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
 
         bgp_neighbors_table.get(
             neighbor_address = neighbor_address
@@ -649,47 +659,48 @@ class JunOSDriver(NetworkDriver):
         bgp_neighbors_items = bgp_neighbors_table.items()
 
         default_neighbor_details = {
-            'up'                        : False,
-            'local_as'                  : 0,
-            'remote_as'                 : 0,
-            'local_address'             : u'',
-            'routing_table'             : u'',
-            'local_address_configured'  : False,
-            'local_port'                : 0,
-            'remote_address'            : u'',
-            'remote_port'               : 0,
-            'multihop'                  : False,
-            'multipath'                 : False,
-            'remove_private_as'         : False,
-            'import_policy'             : u'',
-            'export_policy'             : u'',
-            'input_messages'            : 0,
-            'output_messages'           : 0,
-            'input_updates'             : 0,
-            'output_updates'            : 0,
-            'messages_queued_out'       : 0,
-            'connection_state'          : u'',
-            'previous_connection_state' : u'',
-            'last_event'                : u'',
-            'suppress_4byte_as'         : False,
-            'local_as_prepend'          : False,
-            'holdtime'                  : 0,
-            'configured_holdtime'       : 0,
-            'keepalive'                 : 0,
-            'configured_keepalive'      : 0,
-            'active_prefix_count'       : 0,
-            'received_prefix_count'     : 0,
-            'accepted_prefix_count'     : 0,
-            'suppressed_prefix_count'   : 0,
-            'advertise_prefix_count'    : 0,
-            'flap_count'                : 0
+            'up': False,
+            'local_as': 0,
+            'remote_as': 0,
+            'router_id': u'',
+            'local_address': u'',
+            'routing_table': u'',
+            'local_address_configured': False,
+            'local_port': 0,
+            'remote_address': u'',
+            'remote_port': 0,
+            'multihop': False,
+            'multipath': False,
+            'remove_private_as': False,
+            'import_policy': u'',
+            'export_policy': u'',
+            'input_messages': -1,
+            'output_messages': -1,
+            'input_updates': -1,
+            'output_updates': -1,
+            'messages_queued_out': -1,
+            'connection_state': u'',
+            'previous_connection_state': u'',
+            'last_event': u'',
+            'suppress_4byte_as': False,
+            'local_as_prepend': False,
+            'holdtime': 0,
+            'configured_holdtime': 0,
+            'keepalive': 0,
+            'configured_keepalive': 0,
+            'active_prefix_count': -1,
+            'received_prefix_count': -1,
+            'accepted_prefix_count': -1,
+            'suppressed_prefix_count': -1,
+            'advertised_prefix_count': -1,
+            'flap_count': 0
         }
 
-        _OPTION_KEY_MAP_ = {
+        OPTION_KEY_MAP = {
             'RemovePrivateAS': 'remove_private_as',
-            'Multipath'      : 'multipath',
-            'Multihop'       : 'multihop',
-            'AddressFamily'  : 'local_address_configured'
+            'Multipath': 'multipath',
+            'Multihop': 'multihop',
+            'AddressFamily': 'local_address_configured'
             # 'AuthKey'        : 'authentication_key_set'
             # but other vendors do not specify if auth key is set
             # other options:
@@ -698,9 +709,7 @@ class JunOSDriver(NetworkDriver):
 
         for bgp_neighbor in bgp_neighbors_items:
             remote_as = int(bgp_neighbor[0])
-            if remote_as not in bgp_neighbors.keys():
-                bgp_neighbors[remote_as] = list()
-            neighbor_details = default_neighbor_details.copy()
+            neighbor_details = deepcopy(default_neighbor_details)
             neighbor_details.update(
                 {elem[0]: elem[1] for elem in bgp_neighbor[1] if elem[1] is not None}
             )
@@ -708,30 +717,41 @@ class JunOSDriver(NetworkDriver):
             if isinstance(options, str):
                 options_list = options.split()
                 for option in options_list:
-                    key = _OPTION_KEY_MAP_.get(option)
-                    if key is None:
-                        continue
-                    neighbor_details[key] = True
+                    key = OPTION_KEY_MAP.get(option)
+                    if key is not None:
+                        neighbor_details[key] = True
             four_byte_as = neighbor_details.pop('4byte_as', 0)
             local_address = neighbor_details.pop('local_address', '')
             local_details = local_address.split('+')
             neighbor_details['local_address'] = unicode(local_details[0])
             if len(local_details) == 2:
-                neighbor_details['local_port']= int(local_details[1])
+                neighbor_details['local_port'] = int(local_details[1])
             else:
-                neighbor_details['local_port']=179
+                neighbor_details['local_port'] = 179
             neighbor_details['suppress_4byte_as'] = (remote_as != four_byte_as)
             peer_address = neighbor_details.pop('peer_address', '')
             remote_details = peer_address.split('+')
             neighbor_details['remote_address'] = unicode(remote_details[0])
             if len(remote_details) == 2:
-                neighbor_details['remote_port']    = int(remote_details[1])
+                neighbor_details['remote_port'] = int(remote_details[1])
             else:
                 neighbor_details['remote_port'] = 179
-            bgp_neighbors[remote_as].append(neighbor_details)
+            neighbors_rib = neighbor_details.pop('rib')
+            neighbors_rib_items = neighbors_rib.items()
+            for rib_entry in neighbors_rib_items:
+                _table = unicode(rib_entry[0])
+                if _table not in bgp_neighbors.keys():
+                    bgp_neighbors[_table] = {}
+                if remote_as not in bgp_neighbors[_table].keys():
+                    bgp_neighbors[_table][remote_as] = []
+                neighbor_rib_details = deepcopy(neighbor_details)
+                neighbor_rib_details.update({
+                    elem[0]:elem[1] for elem in rib_entry[1]
+                })
+                neighbor_rib_details['routing_table'] = unicode(_table)
+                bgp_neighbors[_table][remote_as].append(neighbor_rib_details)
 
         return bgp_neighbors
-
 
     def get_arp_table(self):
 
@@ -772,6 +792,18 @@ class JunOSDriver(NetworkDriver):
             return {}
 
         return {unicode(peer[0]):{} for peer in ntp_peers}
+
+    def get_ntp_servers(self):
+
+        ntp_table = junos_views.junos_ntp_servers_config_table(self.device)
+        ntp_table.get()
+
+        ntp_servers = ntp_table.items()
+
+        if not ntp_servers:
+            return {}
+
+        return {unicode(server[0]):{} for server in ntp_servers}
 
     def get_ntp_stats(self):
 
@@ -854,20 +886,24 @@ class JunOSDriver(NetworkDriver):
 
     def get_mac_address_table(self):
 
-        mac_address_table = list()
+        mac_address_table = []
 
-        mac_table = junos_views.junos_mac_address_table(self.device)
+        if self.device.facts.get('personality', '') in ['SWITCH']:  # for EX & QFX devices
+            mac_table = junos_views.junos_mac_address_table_switch(self.device)
+        else:
+            mac_table = junos_views.junos_mac_address_table(self.device)
+
         mac_table.get()
         mac_table_items = mac_table.items()
 
         default_values = {
-            'mac'       : u'',
-            'interface' : u'',
-            'vlan'      : 0,
-            'static'    : False,
-            'active'    : True,
-            'moves'     : 0,
-            'last_move' : 0.0
+            'mac': u'',
+            'interface': u'',
+            'vlan': 0,
+            'static': False,
+            'active': True,
+            'moves': 0,
+            'last_move': 0.0
         }
 
         for mac_table_entry in mac_table_items:
@@ -1181,3 +1217,58 @@ class JunOSDriver(NetworkDriver):
             users[username] = user_details
 
         return users
+
+    def get_optics(self):
+
+        optics_table = junos_views.junos_intf_optics_table(self.device)
+        optics_table.get()
+        optics_items = optics_table.items()
+
+        # Formatting data into return data structure
+        optics_detail = {}
+        for intf_optic_item in optics_items:
+            optics = dict(intf_optic_item[1])
+            if intf_optic_item[0] not in optics_detail:
+                optics_detail[intf_optic_item[0]] = {}
+
+            # Defaulting avg, min, max values to 0.0 since device does not
+            # return these values
+            intf_optics = {
+                'physical_channels': {
+                    'channel': [{
+                            'index': 0,
+                            'state': {
+                                'input_power': {
+                                    'instant': (
+                                        float(optics['input_power'])
+                                        if optics['input_power'] != '- Inf'
+                                        else 0.0),
+                                    'avg': 0.0,
+                                    'max': 0.0,
+                                    'min': 0.0
+                                    },
+                                'output_power': {
+                                    'instant': (
+                                        float(optics['output_power'])
+                                        if optics['output_power'] != '- Inf'
+                                        else 0.0),
+                                    'avg': 0.0,
+                                    'max': 0.0,
+                                    'min': 0.0
+                                    },
+                                'laser_bias_current': {
+                                    'instant': (
+                                        float(optics['laser_bias_current'])
+                                        if optics['laser_bias_current'] != '- Inf'
+                                        else 0.0),
+                                    'avg': 0.0,
+                                    'max': 0.0,
+                                    'min': 0.0
+                                    }
+                                }
+                        }]
+                    }
+                }
+            optics_detail[intf_optic_item[0]] = intf_optics
+
+        return optics_detail
