@@ -72,7 +72,9 @@ class EOSDriver(NetworkDriver):
                 port=self.port,
                 timeout=self.timeout
             )
-            self.device = pyeapi.client.Node(connection)
+
+            if self.device is None:
+                self.device = pyeapi.client.Node(connection)
             # does not raise an Exception if unusable
 
             # let's try to run a very simple command
@@ -1426,3 +1428,12 @@ class EOSDriver(NetworkDriver):
             optics_detail[port] = port_detail
 
         return optics_detail
+
+    def get_config(self):
+        """get_config implementation for EOS."""
+        result = self.device.run_commands(['show startup-config',
+                                           'show running-config'], encoding="text")
+        return {
+            'startup_config': result[0]['output'],
+            'running_config': result[1]['output'],
+        }

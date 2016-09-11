@@ -34,4 +34,5 @@ script:
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_traceroute
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors_detail
 - nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_optics
+- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_config
 - cd ../..
