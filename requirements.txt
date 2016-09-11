@@ -1,3 +1,4 @@
-jinja2
-pyangbind
 gtextfsm
+jinja2
+netaddr
+pyangbind
