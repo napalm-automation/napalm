@@ -1290,10 +1290,13 @@ class IOSDriver(NetworkDriver):
         'location': u'123 Anytown USA Rack 404'}
 
         """
-
         # default values
-
-        snmp_dict = {}
+        snmp_dict = {
+            'chassis_id': u'unknown',
+            'community': {},
+            'contact': u'unknown',
+            'location': u'unknown'
+        }
         command = 'show run | include snmp-server'
         output = self.device.send_command(command)
         for line in output.splitlines():
@@ -1303,26 +1306,25 @@ class IOSDriver(NetworkDriver):
                 if 'community' not in snmp_dict.keys():
                     snmp_dict.update({'community': {}})
                 snmp_dict['community'].update({name: {}})
-
                 try:
                     snmp_dict['community'][name].update({'mode': fields[3].lower()})
                 except IndexError:
                     snmp_dict['community'][name].update({'mode': u'N/A'})
-
                 try:
                     snmp_dict['community'][name].update({'acl': fields[4]})
                 except IndexError:
                     snmp_dict['community'][name].update({'acl': u'N/A'})
-
             elif 'snmp-server location' in line:
                 snmp_dict['location'] = ' '.join(fields[2:])
             elif 'snmp-server contact' in line:
                 snmp_dict['contact'] = ' '.join(fields[2:])
             elif 'snmp-server chassis-id' in line:
                 snmp_dict['chassis_id'] = ' '.join(fields[2:])
-            else:
-                raise ValueError("Unexpected Response from the device")
-
+        # If SNMP Chassis wasn't found; obtain using direct command
+        if snmp_dict['chassis_id'] == 'unknown':
+            command = 'show snmp chassis'
+            snmp_chassis = self.device.send_command(command)
+            snmp_dict['chassis_id'] = snmp_chassis
         return snmp_dict
 
     def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
