@@ -21,10 +21,13 @@ Read napalm.readthedocs.org for more information.
 # std libs
 import re
 import time
+
+from collections import defaultdict
 from datetime import datetime
+
 from netaddr import IPAddress
 from netaddr import IPNetwork
-from collections import defaultdict
+
 from netaddr.core import AddrFormatError
 
 # third party libs
@@ -32,11 +35,11 @@ import pyeapi
 from pyeapi.eapilib import ConnectionError
 
 # NAPALM base
-import napalm_base.helpers
-from napalm_base.base import NetworkDriver
-from napalm_base.utils import string_parsers
-from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,\
-                                   SessionLockedException, CommandErrorException
+import napalm_base.helpers                                                                              # noqa
+from napalm_base.base import NetworkDriver                                                              # noqa
+from napalm_base.utils import string_parsers                                                            # noqa
+from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,   # noqa \
+                                   SessionLockedException, CommandErrorException                        # noqa
 
 # local modules
 # here add local imports
@@ -1215,3 +1218,11 @@ class EOSDriver(NetworkDriver):
                 previous_probe_ip_address = ip_address
 
         return traceroute_result
+
+    def get_config(self):
+        """get_config implementation for EOS."""
+        result = self.run_commands['show startup-config',
+                                   'show running-config']
+        return {
+            'config_text': self.run_commands['show running-config']
+        }
