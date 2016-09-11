@@ -76,13 +76,13 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_lldp_neighbors**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |yes|      |no|
 **get_lldp_neighbors_detail**  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
 **get_bgp_neighbors**          |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|
-**get_bgp_neighbors_detail**   |yes|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
+**get_bgp_neighbors_detail**   |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_route_to**               |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_probes_config**          |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_probes_results**         |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
-**get_optics**                 |yes|  |yes|   |yes|   |no|      |no|   |no|     |no|  |no|        |no|
+**get_optics**                 |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_config**                 |no|   |no|    |no|    |no|     |no|    |no|    |no|   |no|       |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 
