@@ -55,3 +55,20 @@ class BaseTestDouble:
                 return json.loads(f.read())
             except ValueError:
                 raise ValueError("No JSON object could be decoded on filename: {}".format(filename))
+
+
+def _string_key_to_int(param):
+    """For a given dictionary, convert all strings that represent a number into an int."""
+    new_dict = {}
+
+    if isinstance(param, list):
+        return [_string_key_to_int(element) for element in param]
+    elif isinstance(param, dict):
+        for key, value in param.items():
+            try:
+                new_dict[int(key)] = _string_key_to_int(value)
+            except ValueError:
+                new_dict[key] = _string_key_to_int(value)
+        return new_dict
+    else:
+        return param
