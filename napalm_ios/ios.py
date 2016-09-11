@@ -443,10 +443,12 @@ class IOSDriver(NetworkDriver):
             system_capabilities = re.findall(r"System Capabilities: (.+)", output)
             enabled_capabilities = re.findall(r"Enabled Capabilities: (.+)", output)
             remote_address = re.findall(r"Management Addresses:\n    IP: (.+)", output)
-
+            if not remote_address:
+                remote_address = re.findall(r"Management Addresses:\n    Other: (.+)", output)
             number_entries = len(port_id)
             lldp_fields = [port_id, port_description, chassis_id, system_name, system_description,
                            system_capabilities, enabled_capabilities, remote_address]
+
             # Check length of each list
             for test_list in lldp_fields:
                 if len(test_list) > number_entries:
