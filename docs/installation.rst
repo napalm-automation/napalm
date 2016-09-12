@@ -34,7 +34,7 @@ Check the ['Supported Network Operating Systems'](http://napalm.readthedocs.io/e
 
 
 Upgrading
-=========
+---------
 
 We plan to upgrade napalm as fast as possible. Adding new methods and bugfixes. To upgrade napalm it's a simple as repeating the steps you performed while installing but adding the `-U` flag. For example:
 

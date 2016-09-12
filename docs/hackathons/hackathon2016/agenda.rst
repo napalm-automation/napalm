@@ -4,24 +4,8 @@ ______
 .. important::
     All dates and times are in UTC
 
-Friday 16th of Sept
-^^^^^^^^^^^^^^^^^^^
 
-* **6.00 pm - 7.00 pm** - Kick off. Short introduction about napalm, news about the project, vision for the future and some basic information about the hackathon.
-* **7.00 pm - 7.30 pm** - Keynote: Ivan Pepelnjak - ipSpace.net
-* **7.30 pm - 8.30 pm** - Propose tasks, create teams...
-* **8.30 pm - 11.59 pm** - Hacking.
+.. raw:: html
 
-Saturday 17th of Sept
-^^^^^^^^^^^^^^^^^^^^^
+        <iframe src="https://calendar.google.com/calendar/embed?title=NAPALM%20Hackathon%202016%20-%20Agenda&amp;showTitle=0&amp;showNav=0&amp;showDate=0&amp;showPrint=0&amp;showCalendars=0&amp;mode=AGENDA&amp;height=450&amp;wkst=2&amp;bgcolor=%23FFFFFF&amp;src=dravetech.com_lr8kn8cnm656ea4lfmjgec80t0%40group.calendar.google.com&amp;color=%23A32929&amp;ctz=Etc%2FGMT" style="border-width:0" width="500" height="450" frameborder="0" scrolling="no"></iframe>
 
-* **12.00 am - 11.59 pm** - More hacking
-
-Sunday 18th of Sept
-^^^^^^^^^^^^^^^^^^^
-
-* **12.00 am - 6.00 pm** - More hacking and PR merges
-* **6.00 pm - 8.00 pm** - Presentations
-
-.. note::
-    There is a chance that some participants have no prior experience with GitHub, python, napalm or even collaborating on big software projects. So we will have random sessions that will be recorded and published to explain some ideas like how to fork a project and submit a PR or what does pylama do or how do I test my code works, etc... This will be improvised and will depend on the types of questions people ask to the :doc:`mentors <mentors>`.
