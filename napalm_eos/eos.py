@@ -1431,9 +1431,15 @@ class EOSDriver(NetworkDriver):
 
     def get_config(self):
         """get_config implementation for EOS."""
-        result = self.device.run_commands(['show startup-config',
-                                           'show running-config'], encoding="text")
+        commands = ['show startup-config',
+                    'show running-config']
+
+        if self.config_session:
+            commands.append('show session-config named {}'.format(self.config_session))
+
+        output = self.device.run_commands(commands, encoding="text")
         return {
-            'startup_config': result[0]['output'],
-            'running_config': result[1]['output'],
+            'startup': output[0]['output'],
+            'running': output[1]['output'],
+            'candidate': output[2]['output'] if self.config_session else ""
         }
