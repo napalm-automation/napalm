@@ -13,7 +13,18 @@ Apparently there is something called real life and people like to gather in grou
 Known gatherings
 ^^^^^^^^^^^^^^^^
 
-* London, exact location TBD
+* London, UK::
+
+     CloudFlare, 25 Lavington St, London SE1 0NZ
+     Contact: Mircea, @mirceaulinic (slack), tel: +447427735256
+
+* San Francisco, United states::
+
+    Contact ktbyers@twb-tech.com for details
+
+* Krakow, Poland::
+
+    Contact elisa@bigwaveit.org for details
 
 
 

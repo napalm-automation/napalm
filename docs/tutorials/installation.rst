@@ -1,76 +1,24 @@
 Installation
 ============
 
-Dependencies
-------------
+Tools
+-----
 
-Some of the available drivers depend on the Python [cryptography](https://cryptography.io/en/latest/) package.
+You'll need a few tools:
 
-These drivers currently include:
+* Python
+* `pip <https://pip.pypa.io/en/stable/installing/>`_: The PyPA recommended tool for installing Python packages
+* `VirtualBox <https://www.virtualbox.org/>`_: a software virtualization tool
+* `Vagrant <https://www.vagrantup.com/downloads.html>`_: a command line utility for managing the lifecycle of virtual machines
 
-* `napalm_ios`
+As the focus of this tutorial is NAPALM, we don't even scratch the surface of these tools.  If you're not familiar with them, please do some research [#f1]_ as they will be an important part of your development/ops toolkit.
 
-To to ensure all dependencies are met for these drivers, use the following commands:
+Install
+-------
 
-**Debian/Ubuntu**:
+Install NAPALM with pip::
 
-```
-sudo apt-get install build-essential libssl-dev libffi-dev python-dev
-```
-
-**Fedora and RHEL-derivatives**:
-
-```
-sudo yum install gcc libffi-devel python-devel openssl-devel
-```
+    pip install napalm
 
 
-Full installation
------------------
-
-If you want to fully install NAPALM you can do it by executing:
-
-```
-pip install napalm
-```
-
-That will install all the drivers currently available.
-
-
-Partial Installation
---------------------
-
-If you want to install just a subset of the available modules you can just pick them as follows:
-
-```
-pip install napalm-eos napalm-junos
-```
-
-That will install only the `eos` and the `junos` drivers. If you want to remove or add a module later on you can just use `pip` to do it:
-
-```
-pip uninstall napalm-junos
-pip install napalm-ios
-```
-
-Check the ['Supported Network Operating Systems'](http://napalm.readthedocs.io/en/latest/support/index.html) section for more information about supported modules.
-
-
-Upgrading
-=========
-
-We plan to upgrade napalm as fast as possible. Adding new methods and bugfixes. To upgrade napalm it's a simple as repeating the steps you performed while installing but adding the `-U` flag. For example:
-
-```
-pip install napalm -U
-```
-
-or:
-
-```
-pip install napalm-eos napalm-junos -U
-```
-
-We will be posting news on our slack channel and on Twitter (more details soon).
-
-
+.. [#f1] Vagrant's `getting started guide <https://www.vagrantup.com/docs/getting-started/>`_ is worth reading and working through.
