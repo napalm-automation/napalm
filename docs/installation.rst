@@ -1,29 +1,6 @@
 Installation
 ============
 
-Dependencies
-------------
-
-Some of the available drivers depend on the Python [cryptography](https://cryptography.io/en/latest/) package.
-
-These drivers currently include:
-
-* `napalm_ios`
-
-To to ensure all dependencies are met for these drivers, use the following commands:
-
-**Debian/Ubuntu**:
-
-```
-sudo apt-get install build-essential libssl-dev libffi-dev python-dev
-```
-
-**Fedora and RHEL-derivatives**:
-
-```
-sudo yum install gcc libffi-devel python-devel openssl-devel
-```
-
 
 Full installation
 -----------------
@@ -71,5 +48,24 @@ or:
 pip install napalm-eos napalm-junos -U
 ```
 
-We will be posting news on our slack channel and on Twitter (more details soon).
+Dependencies
+------------
+
+Dependencies are supposed to be solved by `pip` and in most cases it works out of the box. However, on some systems some dependencies have to be installed using system tools. For example, the ``cryptography`` package that ``napalm-ios`` uses.
+
+* `napalm_ios`
+
+To to ensure all dependencies are met for these drivers, use the following commands:
+
+**Debian/Ubuntu**:
+
+```
+sudo apt-get install build-essential libssl-dev libffi-dev python-dev
+```
+
+**Fedora and RHEL-derivatives**:
+
+```
+sudo yum install gcc libffi-devel python-devel openssl-devel
+```
 
