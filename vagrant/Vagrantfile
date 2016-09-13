@@ -17,7 +17,9 @@ For running unittests always start the base box and the box you want to test:
     vagrant up base
 
 """
+
 Vagrant.configure(2) do |config|
+  config.vbguest.auto_update = false
 
   config.vm.define "base" do |base|
     base.vm.box = "hashicorp/precise64"
@@ -64,6 +66,15 @@ Vagrant.configure(2) do |config|
 
     ios.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
     ios.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
+  end
+
+  config.vm.define "ros" do |ros|
+    ros.vm.box = "mikrotik-chr-6.36"
+
+    ros.vm.network :forwarded_port, guest: 22, host: 12205, id: 'ssh'
+
+    ros.vm.network "private_network", virtualbox__intnet: "link_1", ip: "169.254.1.11", auto_config: false
+    ros.vm.network "private_network", virtualbox__intnet: "link_2", ip: "169.254.1.11", auto_config: false
   end
 
 end
