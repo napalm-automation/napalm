@@ -5,10 +5,11 @@ import socket
 import StringIO
 #
 from napalm_base.base import NetworkDriver
-from napalm_base.exceptions import MergeConfigException, CommandErrorException
+from napalm_base.exceptions import ConnectionException, MergeConfigException, CommandErrorException
 import napalm_base.utils.string_parsers
 import paramiko
 import mikoshell
+#import rosapi
 #
 from . import utils as ros_utils
 
@@ -19,9 +20,13 @@ class ROSDriver(NetworkDriver):
         self.username = username
         self.password = password
         self.timeout = timeout
-        if optional_args is None:
-            optional_args = {}
+        optional_args = optional_args or {}
         self.port = optional_args.get('port', 22)
+
+        self.paramiko_transport = None
+        self.mikoshell = None
+        self.ros_version = None
+        self._datetime_offset = None
 
         self.candidate_config = []
         self.config_session = None
@@ -41,6 +46,9 @@ class ROSDriver(NetworkDriver):
         return cli_output
 
     def close(self):
+#       if hasattr(self, 'apiros'):
+#           self.apiros.close_connection()
+#           del self.apiros
         if hasattr(self, 'mikoshell'):
             self.mikoshell.exit('/quit')
             del self.mikoshell
@@ -69,12 +77,8 @@ class ROSDriver(NetworkDriver):
         )
 
     def get_arp_table(self):
-        cli_command = '/ip arp print without-paging terse'
-
         arp_table = []
-        for arp_entry in ros_utils.print_to_values_structured(
-                self.cli(cli_command)[cli_command]
-        ):
+        for arp_entry in self._api_get('/ip/arp'):
             if arp_entry['flags'].find('C') == -1:
                 continue
             arp_table.append(
@@ -157,7 +161,7 @@ class ROSDriver(NetworkDriver):
                             'up': bgp_peer['state'] == 'established',
                             'local_as': int(bgp_peer['local-as']),
                             'remote_as': int(bgp_peer['remote-as']),
-                            'router_id': napalm_base.helpers.ip(bgp_peer.get('router_id', '')),
+                            'router_id': napalm_base.helpers.ip(bgp_peer.get('router-id', '')),
                             'local_address': napalm_base.helpers.ip(bgp_peer.get('local-address')),
                             'routing_table': unicode(bgp_peer['routing-table']),
                             'local_address_configured': False,
@@ -167,8 +171,8 @@ class ROSDriver(NetworkDriver):
                             'multihop': bgp_peer['multihop'] == 'yes',
                             'multipath': False,
                             'remove_private_as': bgp_peer['remove-private-as'] == 'yes',
-                            'import_policy': u'',
-                            'export_policy': u'',
+                            'import_policy': unicode(bgp_peer['in-filter'].replace('"', '')),
+                            'export_policy': unicode(bgp_peer['out-filter'].replace('"', '')),
                             'input_messages': -1,
                             'output_messages': -1,
                             'input_updates': int(bgp_peer.get('updates-received', -1)),
@@ -201,14 +205,14 @@ class ROSDriver(NetworkDriver):
                     )
         return bgp_neighbors_detail
 
-    def get_environment(self):
-        system_resource_print = '/system resource print without-paging'
-        system_health_print = '/system health print without-paging'
-        resource_cpu_print = '/system resource cpu print without-paging terse'
-        cli_output = self.cli(system_resource_print, system_health_print, resource_cpu_print)
-        system_resource_values = ros_utils.print_to_values(cli_output[system_resource_print])
-        system_health_values = ros_utils.print_to_values(cli_output[system_health_print])
+    def get_config(self):
+        cli_command = '/export'
+        cli_output = self.cli(cli_command)[cli_command]
+        return {
+            '': '\n'.join(ros_utils.export_concat(cli_output))
+        }
 
+    def get_environment(self):
         environment = {
             'fans': {},
             'temperature': {},
@@ -217,40 +221,36 @@ class ROSDriver(NetworkDriver):
             'memory': {},
         }
 
-        if 'active-fan' in system_health_values and system_health_values['active-fan'] != 'none':
-            environment['fans'][system_health_values['active-fan']] = {
-                'status': int(
-                    system_health_values.get('fan-speed', '0RPM').replace('RPM', '')
-                ) != 0,
+        system_health = self._api_get('/system/health', structured=False)[0]
+
+        if 'active-fan' in system_health and system_health['active-fan'] != 'none':
+            environment['fans'][system_health['active-fan']] = {
+                'status': int(system_health.get('fan-speed', '0RPM').replace('RPM', '')) != 0,
             }
 
-        if 'temperature' in system_health_values:
+        if 'temperature' in system_health:
             environment['temperature']['board'] = {
-                'temperature': float(system_health_values['temperature'].rstrip('C')),
+                'temperature': float(system_health['temperature'].rstrip('C')),
                 'is_alert': False,
                 'is_critical': False,
             }
 
-        if 'cpu-temperature' in system_health_values:
+        if 'cpu-temperature' in system_health:
             environment['temperature']['cpu'] = {
-                'temperature': float(system_health_values['cpu-temperature'].rstrip('C')),
+                'temperature': float(system_health['cpu-temperature'].rstrip('C')),
                 'is_alert': False,
                 'is_critical': False,
             }
 
-        for cpu_values in ros_utils.print_to_values_structured(
-                cli_output[resource_cpu_print]
-        ):
+        for cpu_values in self._api_get('/system/resource/cpu'):
             environment['cpu'][cpu_values['cpu']] = {
                 '%usage': float(cpu_values['load'].rstrip('%')),
             }
 
-        total_memory = int(float(re.sub(
-            '[KM]iB$',
-            '',
-            system_resource_values.get('total-memory')
-        )))
-        free_memory = float(re.sub('[KM]iB$', '', system_resource_values.get('free-memory')))
+        system_resource = self._api_get('/system/resource', structured=False)[0]
+
+        total_memory = int(float(re.sub('[KM]iB$', '', system_resource.get('total-memory'))))
+        free_memory = float(re.sub('[KM]iB$', '', system_resource.get('free-memory')))
         environment['memory'] = {
             'available_ram': total_memory,
             'used_ram': int(total_memory - free_memory),
@@ -259,46 +259,27 @@ class ROSDriver(NetworkDriver):
         return environment
 
     def get_facts(self):
-        system_resource_print = '/system resource print without-paging'
-        system_identity_print = '/system identity print without-paging'
-        system_routerboard_print = '/system routerboard print without-paging'
-        interface_print = '/interface print without-paging terse'
-
-        cli_output = self.cli(
-            system_resource_print,
-            system_identity_print,
-            system_routerboard_print,
-            interface_print
-        )
-
-        system_resource_values = ros_utils.print_to_values(cli_output[system_resource_print])
-        system_identity_values = ros_utils.print_to_values(cli_output[system_identity_print])
-        system_routerboard_values = ros_utils.print_to_values(
-            cli_output[system_routerboard_print]
-        )
-        interface_values = ros_utils.print_to_values_structured(cli_output[interface_print])
+        system_resource = self._api_get('/system/resource', structured=False)[0]
+        system_identity = self._api_get('/system/identity', structured=False)[0]
+        system_routerboard = self._api_get('/system/routerboard', structured=False)[0]
 
         return {
-            'uptime': ros_utils.to_seconds(system_resource_values['uptime']),
-            'vendor': unicode(system_resource_values['platform']),
-            'model': unicode(system_resource_values['board-name']),
-            'hostname': unicode(system_identity_values['name']),
+            'uptime': ros_utils.to_seconds(system_resource['uptime']),
+            'vendor': unicode(system_resource['platform']),
+            'model': unicode(system_resource['board-name']),
+            'hostname': unicode(system_identity['name']),
             'fqdn': u'',
-            'os_version': unicode(system_resource_values['version']),
-            'serial_number': unicode(system_routerboard_values['serial-number'] \
-                if system_routerboard_values['routerboard'] == 'yes' else ''),
+            'os_version': unicode(system_resource['version']),
+            'serial_number': unicode(system_routerboard.get('serial-number', '')),
             'interface_list': napalm_base.utils.string_parsers.sorted_nicely(
-                [value.get('name') for value in interface_values]
+                [intf.get('name') for intf in self._api_get('/interface')]
             ),
         }
 
     def get_interfaces(self):
-        cli_command = '/interface print without-paging terse'
-
         interfaces = {}
-        for if_entry in ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command]):
-            if_name = unicode(if_entry['name'])
-            interfaces[if_name] = {
+        for if_entry in self._api_get('/interface'):
+            interfaces[unicode(if_entry['name'])] = {
                 'is_up': if_entry['flags'].find('R') != -1,
                 'is_enabled': if_entry['flags'].find('X') == -1,
                 'description': unicode(if_entry.get('comment', '')),
@@ -357,11 +338,9 @@ class ROSDriver(NetworkDriver):
         return interface_counters
 
     def get_interfaces_ip(self):
-        cli_command = '/ip address print without-paging terse'
-
         interfaces_ip = {}
         for if_name, if_addresses in ros_utils.index_values(
-                ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command]),
+                self._api_get('/ip/address'),
                 'interface'
         ).iteritems():
             if_name = unicode(if_name)
@@ -377,10 +356,8 @@ class ROSDriver(NetworkDriver):
         if not self._system_package_enabled('ipv6'):
             return interfaces_ip
 
-        cli_command = '/ipv6 address print without-paging terse'
-
         for if_name, if_addresses in ros_utils.index_values(
-                ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command]),
+                self._api_get('/ipv6/address'),
                 'interface'
         ).iteritems():
             if_name = unicode(if_name)
@@ -408,16 +385,15 @@ class ROSDriver(NetworkDriver):
 #   def get_ntp_peers(self):
 
     def get_ntp_servers(self):
-        cli_command = '/system ntp client print without-paging'
-
-        ntp_client_values = ros_utils.print_to_values(self.cli(cli_command)[cli_command])
-        if 'active-server' in ntp_client_values:
-            return {
-                ntp_client_values['active-server']: {}
-            }
-        return {}
+        ntp_servers = {}
+        ntp_client_values = self._api_get('/system/ntp/client', structured=False)[0]
+        for ntp_peer in ntp_client_values.get('server-dns-names', '').split(','):
+            ntp_servers[unicode(ntp_peer)] = {}
+        return ntp_servers
 
 #   def get_ntp_stats(self):
+
+#   def get_optics(self):
 
 #   def get_probes_config(self):
 
@@ -496,28 +472,21 @@ class ROSDriver(NetworkDriver):
                     'selected_next_hop': False,
                     'preference': int(0),
                     'inactive_reason': u'',
-                    'routing_table': u'',
+                    'routing_table': unicode(ipv4_route.get('routing-mark', '')),
                     'protocol_attributes': protocol_attributes
                 }
             )
         return route_to
 
     def get_snmp_information(self):
-        snmp_print = '/snmp print without-paging'
-        snmp_community_print = '/snmp community print without-paging terse'
-        cli_output = self.cli(snmp_print, snmp_community_print)
-
-        snmp_values = ros_utils.print_to_values(cli_output[snmp_print])
-        snmp_community_values = ros_utils.print_to_values_structured(
-            cli_output[snmp_community_print]
-        )
-
         snmp_communities = {}
-        for snmp_community in snmp_community_values:
+        for snmp_community in self._api_get('/snmp/community'):
             snmp_communities[unicode(snmp_community.get('name'))] = {
                 'acl': unicode(snmp_community.get('addresses', '')),
                 'mode': unicode('ro' if snmp_community.get('read-access', '') == 'yes' else 'rw'),
             }
+
+        snmp_values = self._api_get('/snmp', structured=False)[0]
 
         return {
             'chassis_id': unicode(snmp_values['engine-id']),
@@ -527,19 +496,14 @@ class ROSDriver(NetworkDriver):
         }
 
     def get_users(self):
-        user_print = '/user print without-paging terse'
-        user_sshkeys_print = '/user ssh-keys print without-paging terse'
-        cli_output = self.cli(user_print, user_sshkeys_print)
-
-        user_sshkeys_values = ros_utils.print_to_values_structured(cli_output[user_sshkeys_print])
-        user_sshkeys_values_indexed = ros_utils.index_values(user_sshkeys_values, 'user')
+        user_sshkeys = ros_utils.index_values(self._api_get('/user/ssh-keys'), 'user')
 
         users = {}
-        for user in ros_utils.print_to_values_structured(cli_output[user_print]):
+        for user in self._api_get('/user'):
             users[user['name']] = {
                 'level': 15 if user['group'] == 'full' else 0,
                 'password': '',
-                'sshkeys': [s for s in user_sshkeys_values_indexed.get(user['name'], [])]
+                'sshkeys': [key for key in user_sshkeys.get(user['name'], [])]
 
             }
         return users
@@ -583,12 +547,12 @@ class ROSDriver(NetworkDriver):
 
         try:
             paramiko_transport.auth_password('{}+ct0h160w'.format(self.username), self.password)
-        except paramiko.AuthenticationException as auth_error:
-            raise ConnectionException(auth_error.message)
         except paramiko.BadAuthenticationType as bad_auth_type:
             raise ConnectionException(
                 'Auth method not supported - [{}]'.format(bad_auth_type.allowed_types)
             )
+        except paramiko.AuthenticationException as auth_error:
+            raise ConnectionException(auth_error.message)
         else:
             self.paramiko_transport = paramiko_transport
 
@@ -599,7 +563,11 @@ class ROSDriver(NetworkDriver):
             mikoshell.ShellPrompt.regexp_prompt(r'\[[^\@]+\@[^\]]+\] <SAFE> $')
         )
 
-        self.mikoshell = mikoshell.Shell( self.paramiko_transport.open_session(), shell_prompts)
+        self.mikoshell = mikoshell.Shell.from_transport(self.paramiko_transport, shell_prompts)
+#       self.apiros = rosapi.RouterboardAPI(self.hostname, self.username, self.password)
+        system_resource = self._api_get('/system/resource', structured=False)[0]
+        self.ros_version = system_resource.get('version')
+        self._datetime_offset = datetime.datetime.now() - self._ros_datetime()
 
     def ping(self, destination, source='', ttl=0, timeout=0, size=0, count=5):
         ping_command = '/ping {} count={}'.format(destination, 10 if count > 10 else count)
@@ -705,6 +673,62 @@ class ROSDriver(NetworkDriver):
             'success': probe_results
         }
 
+    def _api_get(self, command, **kwargs):
+        is_structured = kwargs.pop('structured', True)
+        if is_structured:
+            cli_command = '/{} print without-paging terse'.format(
+                command.lstrip('/').replace('/', ' ')
+            )
+        else:
+            cli_command = '/{} print without-paging'.format(
+                command.lstrip('/').replace('/', ' ')
+            )
+        cli_output = self.cli(cli_command)[cli_command]
+        if is_structured:
+            api_output = ros_utils.print_to_values_structured(cli_output)
+        else:
+            api_output = [ros_utils.print_to_values(cli_output)]
+        return api_output
+
+    def X_api_get(self, command, **kwargs):
+        if not hasattr(self, 'command_cache'):
+            self.command_cache = {}
+        use_cache = kwargs.pop('use_cache', False)
+        if use_cache:
+            if command in self.command_cache:
+                return self.command_cache[command]
+        is_structured = kwargs.pop('structured', True)
+        if is_structured:
+            self.command_cache[command] = ''
+        api_output = self.apiros.get_resource(command).get()
+        for api_entry in api_output:
+            if 'flags' not in api_entry:
+                api_entry['flags'] = ''
+            if api_entry.get('disabled', 'false') == 'true':
+                api_entry['flags'] += 'X'
+            if api_entry.get('invalid', 'false') == 'true':
+                api_entry['flags'] += 'I'
+            if api_entry.get('running', 'false') == 'true':
+                api_entry['flags'] += 'R'
+            if command.startswith('/interface'):
+                if api_entry.get('slave', 'false') == 'true':
+                    api_entry['flags'] += 'S'
+            elif command == '/ip/arp':
+                if api_entry.get('complete', 'false') == 'true':
+                    api_entry['flags'] += 'C'
+            elif command == '/ip/route':
+                if api_entry.get('bgp', 'false') == 'true':
+                    api_entry['flags'] += 'b'
+                if api_entry.get('connected', 'false') == 'true':
+                    api_entry['flags'] += 'C'
+                if api_entry.get('ospf', 'false') == 'true':
+                    api_entry['flags'] += 'o'
+                if api_entry.get('static', 'false') == 'true':
+                    api_entry['flags'] += 'S'
+        if use_cache:
+            self.command_cache[command] = api_output
+        return api_output
+
     def _config_sanity_check(self):
         if self.merge_config:
             config_regexp = re.compile(r'(.+)\s+(add|set)\s+(.*)$')
@@ -722,18 +746,15 @@ class ROSDriver(NetworkDriver):
             return bgp_peers
 
         peer_print_status = '/routing bgp peer print without-paging status'
-        instance_print = '/routing bgp instance print without-paging terse'
-        instance_vrf_print = '/routing bgp instance vrf print without-paging terse'
-        cli_output = self.cli(peer_print_status, instance_print, instance_vrf_print)
+        cli_output = self.cli(peer_print_status)
 
         peer_status = cli_output[peer_print_status]
         peer_status.pop(0)
 
-        instance_indexed = ros_utils.index_values(
-            ros_utils.print_to_values_structured(cli_output[instance_print])
-        )
+        instance_indexed = ros_utils.index_values(self._api_get('/routing/bgp/instance'), 'name')
         instance_vrf_indexed = ros_utils.index_values(
-            ros_utils.print_to_values_structured(cli_output[instance_vrf_print])
+            self._api_get('/routing/bgp/instance/vrf'),
+            'name'
         )
 
         for peer in ros_utils.print_to_values_structured(ros_utils.print_concat(peer_status)):
@@ -753,11 +774,9 @@ class ROSDriver(NetworkDriver):
         return bgp_peers
 
     def _get_mndp_neighbors(self):
-        cli_command = '/ip neighbor print without-paging terse'
-
         mndp_neighbors = {}
         for if_name, if_neighbors in ros_utils.index_values(
-                ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command]),
+                self._api_get('/ip/neighbor'),
                 'interface'
         ).iteritems():
             if_name = unicode(if_name)
@@ -803,26 +822,28 @@ class ROSDriver(NetworkDriver):
         return mndp_neighbors_detail
 
     def _interface_type(self, if_name):
-        cli_command = '/interface print without-paging terse'
-        indexed_values = ros_utils.index_values(
-            ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command])
-        )
+        indexed_values = ros_utils.index_values(self._api_get('/interface', name=if_name), 'name')
         if if_name in indexed_values:
             return indexed_values[if_name][0].get('type')
         return None
 
+    def _ros_datetime(self):
+        system_clock = self._api_get('/system/clock', structured=False)[0]
+        date_string = '{} {} {}'.format(system_clock['date'], system_clock['time'], 'gmt')
+        return datetime.datetime.strptime(date_string, '%b/%d/%Y %H:%M:%S %Z')
+
     def _system_package_enabled(self, package):
-        cli_command = '/system package print without-paging terse'
-        return ros_utils.index_values(
-            ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command])
-        ).get(package, [])[0].get('flags', '').find('X') == -1
+        indexed_values = ros_utils.index_values(
+            self._api_get('/system/package', name=package),
+            'name'
+        )
+        return indexed_values.get(package, [])[0].get('flags', '').find('X') == -1
 
     def _to_seconds_date_time(self, date_time):
         if date_time == '':
             return -1.0
         time_then = datetime.datetime.strptime(date_time, '%b/%d/%Y %H:%M:%S')
-#       time_diff = datetime.datetime.now() - time_then + self._datetime_offset
-        time_diff = datetime.datetime.now() - time_then
+        time_diff = datetime.datetime.now() - time_then + self._datetime_offset
         return int(time_diff.total_seconds())
 
     def _upload_config(self, config, config_name):
