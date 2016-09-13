@@ -1,0 +1,26 @@
+### Description of Issue/Question
+
+### Setup
+
+### NAPALM version
+(Paste verbatim output from `pip freeze | grep napalm` between quotes below)
+
+```
+
+```
+
+### Network OS version
+(Paste verbatim output from `show version | json` between quotes below)
+
+```
+
+```
+
+### Steps to Reproduce the Issue
+
+### Error Traceback
+(Paste the complete traceback of the exception between quotes below)
+
+```
+
+``
