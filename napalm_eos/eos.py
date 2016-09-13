@@ -1429,13 +1429,13 @@ class EOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve=None):
+    def get_config(self, retrieve="all"):
         """get_config implementation for EOS."""
-        get_startup = retrieve is None or retrieve == "startup"
-        get_running = retrieve is None or retrieve == "running"
-        get_candidate = (retrieve is None or retrieve == "candidate") and self.config_session
+        get_startup = retrieve == "all" or retrieve == "startup"
+        get_running = retrieve == "all" or retrieve == "running"
+        get_candidate = (retrieve == "all" or retrieve == "candidate") and self.config_session
 
-        if not retrieve:
+        if retrieve == "all":
             commands = ['show startup-config',
                         'show running-config']
 
