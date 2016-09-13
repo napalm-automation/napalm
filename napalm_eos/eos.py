@@ -1429,17 +1429,47 @@ class EOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self):
+    def get_config(self, retrieve=None):
         """get_config implementation for EOS."""
-        commands = ['show startup-config',
-                    'show running-config']
+        get_startup = retrieve is None or retrieve == "startup"
+        get_running = retrieve is None or retrieve == "running"
+        get_candidate = (retrieve is None or retrieve == "candidate") and self.config_session
 
-        if self.config_session:
-            commands.append('show session-config named {}'.format(self.config_session))
+        if not retrieve:
+            commands = ['show startup-config',
+                        'show running-config']
 
-        output = self.device.run_commands(commands, encoding="text")
-        return {
-            'startup': output[0]['output'],
-            'running': output[1]['output'],
-            'candidate': output[2]['output'] if self.config_session else ""
-        }
+            if self.config_session:
+                commands.append('show session-config named {}'.format(self.config_session))
+
+            output = self.device.run_commands(commands, encoding="text")
+            return {
+                'startup': output[0]['output'] if get_startup else "",
+                'running': output[1]['output'] if get_running else "",
+                'candidate': output[2]['output'] if get_candidate else "",
+            }
+        elif get_startup or get_running:
+            commands = ['show {}-config'.format(retrieve)]
+            output = self.device.run_commands(commands, encoding="text")
+            return {
+                'startup': output[0]['output'] if get_startup else "",
+                'running': output[0]['output'] if get_running else "",
+                'candidate': "",
+            }
+        elif get_candidate:
+            commands = ['show session-config named {}'.format(self.config_session)]
+            output = self.device.run_commands(commands, encoding="text")
+            return {
+                'startup': "",
+                'running': "",
+                'candidate': output[0]['output'],
+            }
+        elif retrieve == "candidate":
+            # If we get here it means that we want the candidate but there is none.
+            return {
+                'startup': "",
+                'running': "",
+                'candidate': "",
+            }
+        else:
+            raise Exception("Wrong retrieve filter: {}".format(retrieve))
