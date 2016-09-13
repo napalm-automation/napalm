@@ -11,7 +11,7 @@ Flags: X - disabled, E - established
 
  1   name="peer2" instance=default remote-address=192.168.144.249 
      remote-as=5388 tcp-md5-key="" nexthop-choice=default multihop=yes 
-     route-reflect=no hold-time=3m ttl=255 in-filter="" out-filter="" 
+     route-reflect=no hold-time=3m ttl=255 in-filter="bgp-in" out-filter="bgp-out" 
      address-families=ip,ipv6 default-originate=never remove-private-as=no 
      as-override=no passive=no use-bfd=no state=active 
 
