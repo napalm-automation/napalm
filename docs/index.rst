@@ -59,4 +59,5 @@ Documentation
    support/index
    cli
    base
+   contributing/index
    hackathons/index
