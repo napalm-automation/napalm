@@ -1,4 +1,3 @@
-import datetime
 import re
 
 def export_concat(export_config):
@@ -48,7 +47,23 @@ def is_cli_warning(output_line):
         return True
     return False
 
-def parse_as_key_value(keys_and_values):
+def parse_as_key_value(kv_pairs):
+    as_key_value = {}
+
+    key = None
+    for kv_split in kv_pairs.lstrip().split('='):
+        if kv_split.find(' ') == -1:
+            if key is None:
+                key = kv_split
+            else:
+                as_key_value[key] = kv_split
+        else:
+            if key is None:
+                raise Exception('Key undefined')
+            as_key_value[key], key = kv_split.rsplit(' ', 1)
+    return as_key_value
+
+def Xparse_as_key_value(keys_and_values):
     as_key_value = {}
 
     last_key = None
@@ -97,7 +112,7 @@ def print_to_values(print_output):
         to_values[key.strip()] = value.strip()
     return to_values
 
-def print_to_values_structured(print_output):
+def Xprint_to_values_structured(print_output):
     to_values_structured = []
     for line in print_output:
         line_parts = line.strip().split()
@@ -120,6 +135,36 @@ def print_to_values_structured(print_output):
                 line_parts.insert(0, 'index={}'.format(index_seen))
                 break
         to_values_structured.append(parse_as_key_value(line_parts))
+    return to_values_structured
+
+def print_to_values_structured(print_output):
+    to_values_structured = []
+    for line in print_output:
+        if line == '':
+            continue
+        key_value = {}
+
+        key = None
+        for split_line in line.lstrip().split('='):
+            if split_line.find(' ') == -1:
+                if key is None:
+                    key = split_line
+                else:
+                    key_value[key] = split_line
+            else:
+                part_a, part_b = split_line.rsplit(' ', 1)
+                if key is None:
+                    if part_a[0].isdigit():
+                        if part_a.find(' ') == -1:
+                            key_value['index'] = part_a
+                        else:
+                            key_value['index'], key_value['flags'] = part_a.split(' ', 1)
+                    else:
+                        key_value['flags'] = part_a
+                else:
+                    key_value[key] = part_a
+                key = part_b
+        to_values_structured.append(key_value)
     return to_values_structured
 
 def to_seconds(time_format):
