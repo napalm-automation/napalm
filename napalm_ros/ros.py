@@ -563,7 +563,8 @@ class ROSDriver(NetworkDriver):
             mikoshell.ShellPrompt.regexp_prompt(r'\[[^\@]+\@[^\]]+\] <SAFE> $')
         )
 
-        self.mikoshell = mikoshell.Shell.from_transport(self.paramiko_transport, shell_prompts)
+        self.mikoshell = mikoshell.Shell(self.paramiko_transport.open_session(), shell_prompts)
+#       self.mikoshell = mikoshell.Shell.from_transport(self.paramiko_transport, shell_prompts)
 #       self.apiros = rosapi.RouterboardAPI(self.hostname, self.username, self.password)
         system_resource = self._api_get('/system/resource', structured=False)[0]
         self.ros_version = system_resource.get('version')
