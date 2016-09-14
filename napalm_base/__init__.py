@@ -20,6 +20,7 @@ import inspect
 import importlib
 
 # NAPALM base
+__version__ = '0.16.0'
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ModuleImportError
 

@@ -287,3 +287,9 @@ optics_state = {
     'min': float,
     'max': float
 }
+
+config = {
+    'running': str,
+    'startup': str,
+    'candidate': str,
+}

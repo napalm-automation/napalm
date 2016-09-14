@@ -503,3 +503,25 @@ class TestGettersNetworkDriver:
                     assert isinstance(channel['state'][field]['avg'], float)
                     assert isinstance(channel['state'][field]['min'], float)
                     assert isinstance(channel['state'][field]['max'], float)
+
+    def test_get_config(self):
+        """Test get_config method."""
+        try:
+            get_config = self.device.get_config()
+        except NotImplementedError:
+            raise SkipTest()
+
+        assert isinstance(get_config, dict)
+        assert self._test_model(models.config, get_config)
+
+    def test_get_config_filtered(self):
+        """Test get_config method."""
+        for config in ['running', 'startup', 'candidate']:
+            try:
+                get_config = self.device.get_config(retrieve=config)
+            except NotImplementedError:
+                raise SkipTest()
+
+            assert get_config['candidate'] == "" if config != "candidate" else True
+            assert get_config['startup'] == "" if config != "startup" else True
+            assert get_config['running'] == "" if config != "running" else True

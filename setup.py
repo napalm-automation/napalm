@@ -1,9 +1,9 @@
 """setup.py file."""
-
 import uuid
 
 from setuptools import setup, find_packages
 from pip.req import parse_requirements
+from napalm_base.helpers import find_version
 
 __author__ = 'David Barroso <dbarrosop@dravetech.com>'
 
@@ -12,7 +12,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-base",
-    version="0.15.0",
+    version=find_version('napalm_base', '__init__.py'),
     packages=find_packages(),
     author="David Barroso",
     author_email="dbarrosop@dravetech.com",
