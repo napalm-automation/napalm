@@ -135,7 +135,8 @@ class IOSDriver(NetworkDriver):
     @staticmethod
     def normalize_compare_config(diff):
         """Filter out strings that should not show up in the diff."""
-        ignore_strings = ['Contextual Config Diffs', 'No changes were found', 'file prompt quiet', 'ntp clock-period']
+        ignore_strings = ['Contextual Config Diffs', 'No changes were found',
+                          'file prompt quiet', 'ntp clock-period']
 
         new_list = []
         for line in diff.splitlines():
@@ -460,8 +461,9 @@ class IOSDriver(NetworkDriver):
             # Standardize the fields
             port_id, port_description, chassis_id, system_name, system_description, \
                 system_capabilities, enabled_capabilities, remote_address = lldp_fields
-            standardized_fields = zip(port_id, port_description, chassis_id, system_name, system_description,
-                                      system_capabilities, enabled_capabilities, remote_address)
+            standardized_fields = zip(port_id, port_description, chassis_id, system_name,
+                                      system_description, system_capabilities,
+                                      enabled_capabilities, remote_address)
 
             lldp.setdefault(local_port, [])
             for entry in standardized_fields:
@@ -737,15 +739,16 @@ class IOSDriver(NetworkDriver):
                     if len(fields) == 3:
                         # Check for 'ip address dhcp', convert to ip address and mask
                         if fields[2] == 'dhcp':
-                            show_command = "show interface {0} | in Internet address is".format(interface)
-                            show_int = self.device.send_command(show_command)
+                            cmd = "show interface {} | in Internet address is".format(interface)
+                            show_int = self.device.send_command(cmd)
                             int_fields = show_int.split()
                             ip_address, subnet = int_fields[3].split(r'/')
                             interfaces[interface]['ipv4'] = {ip_address: {}}
                             try:
-                                interfaces[interface]['ipv4'][ip_address] = {'prefix_length': int(subnet)}
+                                val = {'prefix_length': int(subnet)}
                             except ValueError:
-                                interfaces[interface]['ipv4'][ip_address] = {'prefix_length': u'N/A'}
+                                val = {'prefix_length': u'N/A'}
+                            interfaces[interface]['ipv4'][ip_address] = val
                     elif len(fields) in [4, 5]:
                         # Check for 'ip address 10.10.10.1 255.255.255.0'
                         # Check for 'ip address 10.10.11.1 255.255.255.0 secondary'
@@ -1096,7 +1099,8 @@ class IOSDriver(NetworkDriver):
         environment.setdefault('fans', {})
         environment['fans']['invalid'] = {'status': True}
         environment.setdefault('temperature', {})
-        environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0}
+        env_value = {'is_alert': False, 'is_critical': False, 'temperature': -1.0}
+        environment['temperature']['invalid'] = env_value
         return environment
 
     def get_arp_table(self):
@@ -1159,7 +1163,8 @@ class IOSDriver(NetworkDriver):
 
     def cli(self, commands=None):
         """
-        Execute a list of commands and return the output in a dictionary format using the command as the key.
+        Execute a list of commands and return the output in a dictionary format using the command
+        as the key.
 
         Example input:
         ['show clock', 'show calendar']
@@ -1222,8 +1227,8 @@ class IOSDriver(NetworkDriver):
 
     def get_mac_address_table(self):
         """
-        Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address Table,
-        having the following keys
+        Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address
+        Table, having the following keys
             * mac (string)
             * interface (string)
             * vlan (int)
