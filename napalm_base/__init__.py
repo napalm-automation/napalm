@@ -19,11 +19,14 @@ import sys
 import inspect
 import importlib
 
+from pkg_resources import get_distribution
+
 # NAPALM base
-__version__ = '0.16.1'
+
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ModuleImportError
 
+__version__ = get_distribution('napalm-base').version
 
 __all__ = [
     'get_network_driver',  # export the function
