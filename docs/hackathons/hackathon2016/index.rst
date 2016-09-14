@@ -23,7 +23,7 @@ Quick Information
 +-----------------+-----------------------------------------------+
 | **Slack**       | ``#napalm-hackathon-2016`` in networkToCode_  |
 +-----------------+-----------------------------------------------+
-| **Live Feed**   | Google Hangouts_                              |
+| **Live Feed**   | Youtube Live_                                 |
 +-----------------+-----------------------------------------------+
 | **Recordings**  | Youtube_                                      |
 +-----------------+-----------------------------------------------+
@@ -41,5 +41,5 @@ Information
    volunteering
 
 .. _networkToCode: https://networktocode.herokuapp.com/
-.. _Hangouts: https://hangouts.google.com/hangouts/_/dravetech.com/napalm-hackathon-2016
+.. _Live: https://www.youtube.com/channel/UCkjR7tuducm2jxFsWv0dQBQ/live
 .. _youtube: https://www.youtube.com/playlist?list=PLTUN_ROR5c9jUUHk0Du0Yy6a6lf9PaUet
