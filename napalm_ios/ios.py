@@ -16,7 +16,6 @@
 from __future__ import print_function
 
 import re
-from datetime import datetime
 
 from netmiko import ConnectHandler, FileTransfer
 from napalm_base.base import NetworkDriver
@@ -40,15 +39,41 @@ class IOSDriver(NetworkDriver):
         self.username = username
         self.password = password
         self.timeout = timeout
+
+        # Retrieve file names
         self.candidate_cfg = optional_args.get('candidate_cfg', 'candidate_config.txt')
         self.merge_cfg = optional_args.get('merge_cfg', 'merge_config.txt')
         self.rollback_cfg = optional_args.get('rollback_cfg', 'rollback_config.txt')
 
         # None will cause autodetection of dest_file_system
         self.dest_file_system = optional_args.get('dest_file_system', None)
-        self.global_delay_factor = optional_args.get('global_delay_factor', .5)
-        self.port = optional_args.get('port', 22)
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
+
+        # Netmiko possible arguments
+        netmiko_argument_map = {
+            'port': None,
+            'secret': '',
+            'verbose': False,
+            'global_delay_factor': 1,
+            'use_keys': False,
+            'key_file': None,
+            'ssh_strict': False,
+            'system_host_keys': False,
+            'alt_host_keys': False,
+            'alt_key_file': '',
+            'ssh_config_file': None,
+        }
+
+        # Build dict of any optional Netmiko args
+        self.netmiko_optional_args = {}
+        for k, v in netmiko_argument_map.items():
+            try:
+                self.netmiko_optional_args[k] = optional_args[k]
+            except KeyError:
+                pass
+        self.global_delay_factor = optional_args.get('global_delay_factor', 1)
+        self.port = optional_args.get('port', 22)
+
         self.device = None
         self.config_replace = False
         self.interface_map = {}
@@ -56,12 +81,10 @@ class IOSDriver(NetworkDriver):
     def open(self):
         """Open a connection to the device."""
         self.device = ConnectHandler(device_type='cisco_ios',
-                                     ip=self.hostname,
-                                     port=self.port,
+                                     host=self.hostname,
                                      username=self.username,
                                      password=self.password,
-                                     global_delay_factor=self.global_delay_factor,
-                                     verbose=False)
+                                     **self.netmiko_optional_args)
         if not self.dest_file_system:
             try:
                 self.dest_file_system = self.device._autodetect_fs()
@@ -112,7 +135,8 @@ class IOSDriver(NetworkDriver):
     @staticmethod
     def normalize_compare_config(diff):
         """Filter out strings that should not show up in the diff."""
-        ignore_strings = ['Contextual Config Diffs', 'No changes were found', 'file prompt quiet', 'ntp clock-period']
+        ignore_strings = ['Contextual Config Diffs', 'No changes were found',
+                          'file prompt quiet', 'ntp clock-period']
 
         new_list = []
         for line in diff.splitlines():
@@ -190,7 +214,6 @@ class IOSDriver(NetworkDriver):
 
         If merge operation, perform copy <file> running-config.
         """
-        debug = False
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
@@ -257,7 +280,6 @@ class IOSDriver(NetworkDriver):
         """
         # Will automaticall enable SCP on remote device
         enable_scp = True
-        debug = False
 
         with FileTransfer(self.device,
                           source_file=source_file,
@@ -422,10 +444,12 @@ class IOSDriver(NetworkDriver):
             system_capabilities = re.findall(r"System Capabilities: (.+)", output)
             enabled_capabilities = re.findall(r"Enabled Capabilities: (.+)", output)
             remote_address = re.findall(r"Management Addresses:\n    IP: (.+)", output)
-
+            if not remote_address:
+                remote_address = re.findall(r"Management Addresses:\n    Other: (.+)", output)
             number_entries = len(port_id)
             lldp_fields = [port_id, port_description, chassis_id, system_name, system_description,
                            system_capabilities, enabled_capabilities, remote_address]
+
             # Check length of each list
             for test_list in lldp_fields:
                 if len(test_list) > number_entries:
@@ -437,8 +461,9 @@ class IOSDriver(NetworkDriver):
             # Standardize the fields
             port_id, port_description, chassis_id, system_name, system_description, \
                 system_capabilities, enabled_capabilities, remote_address = lldp_fields
-            standardized_fields = zip(port_id, port_description, chassis_id, system_name, system_description,
-                                      system_capabilities, enabled_capabilities, remote_address)
+            standardized_fields = zip(port_id, port_description, chassis_id, system_name,
+                                      system_description, system_capabilities,
+                                      enabled_capabilities, remote_address)
 
             lldp.setdefault(local_port, [])
             for entry in standardized_fields:
@@ -714,15 +739,16 @@ class IOSDriver(NetworkDriver):
                     if len(fields) == 3:
                         # Check for 'ip address dhcp', convert to ip address and mask
                         if fields[2] == 'dhcp':
-                            show_command = "show interface {0} | in Internet address is".format(interface)
-                            show_int = self.device.send_command(show_command)
+                            cmd = "show interface {} | in Internet address is".format(interface)
+                            show_int = self.device.send_command(cmd)
                             int_fields = show_int.split()
                             ip_address, subnet = int_fields[3].split(r'/')
                             interfaces[interface]['ipv4'] = {ip_address: {}}
                             try:
-                                interfaces[interface]['ipv4'][ip_address] = {'prefix_length': int(subnet)}
+                                val = {'prefix_length': int(subnet)}
                             except ValueError:
-                                interfaces[interface]['ipv4'][ip_address] = {'prefix_length': u'N/A'}
+                                val = {'prefix_length': u'N/A'}
+                            interfaces[interface]['ipv4'][ip_address] = val
                     elif len(fields) in [4, 5]:
                         # Check for 'ip address 10.10.10.1 255.255.255.0'
                         # Check for 'ip address 10.10.11.1 255.255.255.0 secondary'
@@ -1073,7 +1099,8 @@ class IOSDriver(NetworkDriver):
         environment.setdefault('fans', {})
         environment['fans']['invalid'] = {'status': True}
         environment.setdefault('temperature', {})
-        environment['temperature']['invalid'] = {'is_alert': False, 'is_critical': False, 'temperature': -1.0}
+        env_value = {'is_alert': False, 'is_critical': False, 'temperature': -1.0}
+        environment['temperature']['invalid'] = env_value
         return environment
 
     def get_arp_table(self):
@@ -1136,7 +1163,8 @@ class IOSDriver(NetworkDriver):
 
     def cli(self, commands=None):
         """
-        Execute a list of commands and return the output in a dictionary format using the command as the key.
+        Execute a list of commands and return the output in a dictionary format using the command
+        as the key.
 
         Example input:
         ['show clock', 'show calendar']
@@ -1198,10 +1226,9 @@ class IOSDriver(NetworkDriver):
         return ntp_stats
 
     def get_mac_address_table(self):
-
         """
-        Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address Table,
-        having the following keys
+        Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address
+        Table, having the following keys
             * mac (string)
             * interface (string)
             * vlan (int)
@@ -1210,31 +1237,26 @@ class IOSDriver(NetworkDriver):
             * moves (int)
             * last_move (float)
         """
-
         mac_address_table = []
         command = 'show mac-address-table'
         output = self.device.send_command(command)
         output = output.strip().split('\n')
 
         # Skip the first two lines which are headers
-        output = output[2:-1]
-
+        output = output[2:]
         for line in output:
             if len(line) == 0:
                 return mac_address_table
             elif len(line.split()) == 4:
                 mac, mac_type, vlan, interface = line.split()
-
                 if mac_type.lower() in ['self', 'static']:
                     static = True
                 else:
                     static = False
-
                 if mac_type.lower() in ['dynamic']:
                     active = True
                 else:
                     active = False
-
                 entry = {
                     'mac': mac,
                     'interface': interface,
@@ -1244,11 +1266,9 @@ class IOSDriver(NetworkDriver):
                     'moves': -1,
                     'last_move': -1.0
                 }
-
                 mac_address_table.append(entry)
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
-
         return mac_address_table
 
     def get_snmp_information(self):
@@ -1267,10 +1287,13 @@ class IOSDriver(NetworkDriver):
         'location': u'123 Anytown USA Rack 404'}
 
         """
-
         # default values
-
-        snmp_dict = {}
+        snmp_dict = {
+            'chassis_id': u'unknown',
+            'community': {},
+            'contact': u'unknown',
+            'location': u'unknown'
+        }
         command = 'show run | include snmp-server'
         output = self.device.send_command(command)
         for line in output.splitlines():
@@ -1280,26 +1303,25 @@ class IOSDriver(NetworkDriver):
                 if 'community' not in snmp_dict.keys():
                     snmp_dict.update({'community': {}})
                 snmp_dict['community'].update({name: {}})
-
                 try:
                     snmp_dict['community'][name].update({'mode': fields[3].lower()})
                 except IndexError:
                     snmp_dict['community'][name].update({'mode': u'N/A'})
-
                 try:
                     snmp_dict['community'][name].update({'acl': fields[4]})
                 except IndexError:
                     snmp_dict['community'][name].update({'acl': u'N/A'})
-
             elif 'snmp-server location' in line:
                 snmp_dict['location'] = ' '.join(fields[2:])
             elif 'snmp-server contact' in line:
                 snmp_dict['contact'] = ' '.join(fields[2:])
             elif 'snmp-server chassis-id' in line:
                 snmp_dict['chassis_id'] = ' '.join(fields[2:])
-            else:
-                raise ValueError("Unexpected Response from the device")
-
+        # If SNMP Chassis wasn't found; obtain using direct command
+        if snmp_dict['chassis_id'] == 'unknown':
+            command = 'show snmp chassis'
+            snmp_chassis = self.device.send_command(command)
+            snmp_dict['chassis_id'] = snmp_chassis
         return snmp_dict
 
     def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
