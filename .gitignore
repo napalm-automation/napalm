@@ -60,4 +60,4 @@ env
 
 test/unit/test_devices.py
 test/unit/TestIOSDriverKB.py
-test/unit/ios/*kb.conf
+test/unit/ios/
