@@ -1,12 +1,21 @@
 """Helper functions for the NAPALM base."""
 
+from __future__ import print_function
+from __future__ import unicode_literals
+
+# Python3 support
+try:
+  basestring
+except NameError:
+  basestring = str
+
 # std libs
 import os
 import sys
 
 # third party libs
 import jinja2
-import textfsm
+import jtextfsm as textfsm
 from netaddr import EUI
 from netaddr import mac_unix
 from netaddr import IPAddress

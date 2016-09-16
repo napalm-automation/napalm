@@ -1,4 +1,6 @@
 """Some common jinja filters."""
+from __future__ import print_function
+from __future__ import unicode_literals
 
 
 class CustomJinjaFilters(object):

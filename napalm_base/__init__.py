@@ -13,6 +13,14 @@
 # the License.
 
 """napalm_base package."""
+from __future__ import print_function
+from __future__ import unicode_literals
+
+# Python3 support
+try:
+  basestring
+except NameError:
+  basestring = str
 
 # Python std lib
 import sys
@@ -22,7 +30,6 @@ import importlib
 import pkg_resources
 
 # NAPALM base
-
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ModuleImportError
 
@@ -37,9 +44,9 @@ __all__ = [
     'NetworkDriver'  # also export the base class
 ]
 
-
 if not(sys.version_info.major == 2 and sys.version_info.minor == 7):
-    raise RuntimeError('NAPALM requires Python 2.7')
+    if not sys.version_info.major == 3:
+        raise RuntimeError('NAPALM requires Python 2.7 or Python 3')
 
 
 def get_network_driver(module_name):

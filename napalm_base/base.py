@@ -70,7 +70,8 @@ class NetworkDriver(object):
                       "https://github.com/napalm-automation/napalm/issues\n"
                       "Don't forget to include this traceback.")
             print(epilog)
-        raise exc_type, exc_value, exc_traceback
+        # Traceback should already be attached to exception; no need to re-attach
+        raise exc_value
 
     def open(self):
         """
