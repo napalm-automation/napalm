@@ -39,6 +39,7 @@ Information
    participating
    mentors
    volunteering
+   presentations
 
 .. _networkToCode: https://networktocode.herokuapp.com/
 .. _Live: https://www.youtube.com/channel/UCkjR7tuducm2jxFsWv0dQBQ/live
