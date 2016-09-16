@@ -60,6 +60,7 @@ class EOSDriver(NetworkDriver):
         if optional_args is None:
             optional_args = {}
         self.port = optional_args.get('port', 443)
+        self.enablepwd = optional_args.get('enablepwd', '')
 
     def open(self):
         """Implemantation of NAPALM method open."""
@@ -72,7 +73,7 @@ class EOSDriver(NetworkDriver):
                 port=self.port,
                 timeout=self.timeout
             )
-            self.device = pyeapi.client.Node(connection)
+            self.device = pyeapi.client.Node(connection, enablepwd=self.enablepwd)
             # does not raise an Exception if unusable
 
             # let's try to run a very simple command
