@@ -3,6 +3,7 @@ python:
 - 2.7
 install:
 - pip install .
+- pip install -r requirements-dev.txt
 - pip install -e git+https://github.com/napalm-automation/napalm-base.git@develop#egg=napalm-base
 deploy:
   provider: pypi
