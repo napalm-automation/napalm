@@ -63,6 +63,12 @@ class FakeIOSXRDevice:
         with open(fullpath) as data_file:
             return data_file.read()
 
+    def _execute_config_show(self, show_command):
+        rpc_request = '<CLI><Configuration>{show_command}</Configuration></CLI>'.format(
+            show_command=show_command
+        )
+        return self.make_rpc_call(rpc_request)
+
     def show_version(self):
         return self.read_txt_file('iosxr/mock_data/show_version.txt')
 
