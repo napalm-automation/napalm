@@ -29,4 +29,5 @@ script:
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_snmp_information
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_users
   - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_traceroute
+  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_config
   - cd ../..

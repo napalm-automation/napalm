@@ -438,3 +438,17 @@ class PluribusDriver(NetworkDriver):
                 previous_probe_ip_address = ip_address
 
         return traceroute_result
+
+    def get_config(self, retrieve='all'):
+
+        config = {
+            'startup': '',
+            'running': '',
+            'candidate': ''
+        }  # default values
+
+        if retrieve.lower() in ['running', 'all']:
+            config['running'] = self.device.show('running config')
+            # no startup as pluribus is WYSIWYG, no commit needed
+
+        return config
