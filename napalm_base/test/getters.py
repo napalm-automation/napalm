@@ -56,17 +56,24 @@ def wrap_test_cases(func):
         cls.device.device.current_test_case = test_case
 
         try:
-            result = func(cls)
+            # This is an ugly, ugly, ugly hack because some python objects don't load
+            # as expected. For example, dicts where integers are strings
+            result = json.loads(json.dumps(func(cls)))
             not_implemented = False
 
             if isinstance(cls.device.device, BaseTestDouble):
+                try:
+                    expected_result = cls.device.device.expected_result
+                except IOError as e:
+                    raise Exception("{}. Actual result was: {}".format(e, json.dumps(result)))
                 if isinstance(result, list):
-                    diff = list_dicts_diff(result, cls.device.device.expected_result)
+                    diff = list_dicts_diff(result, expected_result)
                 else:
-                    diff = dict_diff(result, cls.device.device.expected_result)
+                    diff = dict_diff(result, expected_result)
                 if diff:
                     print("Resulting JSON object was: {}".format(json.dumps(result)))
-                    raise AssertionError("Expected result varies on some keys {}".format(diff))
+                    raise AssertionError("Expected result varies on some keys {}".format(
+                                                                                json.dumps(diff)))
 
         except NotImplementedError:
             not_implemented = True
