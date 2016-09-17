@@ -103,110 +103,98 @@ class BaseTestGetters:
     def test_get_interfaces(self):
         """Test get_interfaces."""
         get_interfaces = self.device.get_interfaces()
-        result = len(get_interfaces) > 0
+        assert len(get_interfaces) > 0
 
         for interface, interface_data in get_interfaces.iteritems():
-            result = result and helpers.test_model(models.interface, interface_data)
+            assert helpers.test_model(models.interface, interface_data)
 
-        assert result
         return get_interfaces
 
     @wrap_test_cases
     def test_get_lldp_neighbors(self):
         """Test get_lldp_neighbors."""
         get_lldp_neighbors = self.device.get_lldp_neighbors()
-        result = len(get_lldp_neighbors) > 0
+        assert len(get_lldp_neighbors) > 0
 
         for interface, neighbor_list in get_lldp_neighbors.iteritems():
             for neighbor in neighbor_list:
-                result = result and helpers.test_model(models.lldp_neighbors, neighbor)
+                assert helpers.test_model(models.lldp_neighbors, neighbor)
 
-        assert result
         return get_lldp_neighbors
 
     @wrap_test_cases
     def test_get_interfaces_counters(self):
         """Test get_interfaces_counters."""
         get_interfaces_counters = self.device.get_interfaces_counters()
-        result = len(self.device.get_interfaces_counters()) > 0
+        assert len(self.device.get_interfaces_counters()) > 0
 
         for interface, interface_data in get_interfaces_counters.iteritems():
-            result = result and helpers.test_model(models.interface_counters, interface_data)
+            assert helpers.test_model(models.interface_counters, interface_data)
 
-        assert result
         return get_interfaces_counters
 
     @wrap_test_cases
     def test_get_environment(self):
         """Test get_environment."""
         environment = self.device.get_environment()
-        result = len(environment) > 0
+        assert len(environment) > 0
 
         for fan, fan_data in environment['fans'].iteritems():
-            result = result and helpers.test_model(models.fan, fan_data)
+            assert helpers.test_model(models.fan, fan_data)
 
         for power, power_data in environment['power'].iteritems():
-            result = result and helpers.test_model(models.power, power_data)
+            assert helpers.test_model(models.power, power_data)
 
         for temperature, temperature_data in environment['temperature'].iteritems():
-            result = result and helpers.test_model(models.temperature, temperature_data)
+            assert helpers.test_model(models.temperature, temperature_data)
 
         for cpu, cpu_data in environment['cpu'].iteritems():
-            result = result and helpers.test_model(models.cpu, cpu_data)
+            assert helpers.test_model(models.cpu, cpu_data)
 
-        result = result and helpers.test_model(models.memory, environment['memory'])
+        assert helpers.test_model(models.memory, environment['memory'])
 
-        assert result
         return environment
 
     @wrap_test_cases
     def test_get_bgp_neighbors(self):
         """Test get_bgp_neighbors."""
         get_bgp_neighbors = self.device.get_bgp_neighbors()
-        result = 'global' in get_bgp_neighbors.keys()
+        assert 'global' in get_bgp_neighbors.keys()
 
-        if not result:
-            print('global is not part of the returned vrfs')
-        else:
-            for vrf, vrf_data in get_bgp_neighbors.iteritems():
-                result = result and isinstance(vrf_data['router_id'], unicode)
-                if not result:
-                    print('router_id is not unicode')
+        for vrf, vrf_data in get_bgp_neighbors.iteritems():
+            assert isinstance(vrf_data['router_id'], unicode)
 
-                for peer, peer_data in vrf_data['peers'].iteritems():
-                    result = result and helpers.test_model(models.peer, peer_data)
+            for peer, peer_data in vrf_data['peers'].iteritems():
+                assert helpers.test_model(models.peer, peer_data)
 
-                    for af, af_data in peer_data['address_family'].iteritems():
-                        result = result and helpers.test_model(models.af, af_data)
+                for af, af_data in peer_data['address_family'].iteritems():
+                    assert helpers.test_model(models.af, af_data)
 
-            assert result
-            return get_bgp_neighbors
+        return get_bgp_neighbors
 
     @wrap_test_cases
     def test_get_lldp_neighbors_detail(self):
         """Test get_lldp_neighbors_detail."""
         get_lldp_neighbors_detail = self.device.get_lldp_neighbors_detail()
-        result = len(get_lldp_neighbors_detail) > 0
+        assert len(get_lldp_neighbors_detail) > 0
 
         for interface, neighbor_list in get_lldp_neighbors_detail.iteritems():
             for neighbor in neighbor_list:
-                result = result and helpers.test_model(models.lldp_neighbors_detail, neighbor)
+                assert helpers.test_model(models.lldp_neighbors_detail, neighbor)
 
-        assert result
         return get_lldp_neighbors_detail
 
     @wrap_test_cases
     def test_get_bgp_config(self):
         """Test get_bgp_config."""
         get_bgp_config = self.device.get_bgp_config()
-        result = len(get_bgp_config) > 0
+        assert len(get_bgp_config) > 0
 
         for bgp_group in get_bgp_config.values():
-            result = result and helpers.test_model(models.bgp_config_group, bgp_group)
+            assert helpers.test_model(models.bgp_config_group, bgp_group)
             for bgp_neighbor in bgp_group.get('neighbors', {}).values():
-                result = result and helpers.test_model(models.bgp_config_neighbor, bgp_neighbor)
+                assert helpers.test_model(models.bgp_config_neighbor, bgp_neighbor)
 
-        assert result
         return get_bgp_config
 
     @wrap_test_cases
@@ -214,70 +202,65 @@ class BaseTestGetters:
         """Test get_bgp_neighbors_detail."""
         get_bgp_neighbors_detail = self.device.get_bgp_neighbors_detail()
 
-        result = len(get_bgp_neighbors_detail) > 0
+        assert len(get_bgp_neighbors_detail) > 0
 
         for vrf, vrf_ases in get_bgp_neighbors_detail.iteritems():
-            result = result and isinstance(vrf, unicode)
+            assert isinstance(vrf, unicode)
             for remote_as, neighbor_list in vrf_ases.iteritems():
-                result = result and isinstance(remote_as, int)
+                assert isinstance(remote_as, int)
                 for neighbor in neighbor_list:
-                    result = result and helpers.test_model(models.peer_details, neighbor)
+                    assert helpers.test_model(models.peer_details, neighbor)
 
-        assert result
         return get_bgp_neighbors_detail
 
     @wrap_test_cases
     def test_get_arp_table(self):
         """Test get_arp_table."""
         get_arp_table = self.device.get_arp_table()
-        result = len(get_arp_table) > 0
+        assert len(get_arp_table) > 0
 
         for arp_entry in get_arp_table:
-            result = result and helpers.test_model(models.arp_table, arp_entry)
+            assert helpers.test_model(models.arp_table, arp_entry)
 
-        assert result
         return get_arp_table
 
     @wrap_test_cases
     def test_get_ntp_peers(self):
         """Test get_ntp_peers."""
         get_ntp_peers = self.device.get_ntp_peers()
-        result = len(get_ntp_peers) > 0
+        assert len(get_ntp_peers) > 0
 
         for peer, peer_details in get_ntp_peers.iteritems():
-            result = result and isinstance(peer, unicode)
-            result = result and helpers.test_model(models.ntp_peer, peer_details)
+            assert isinstance(peer, unicode)
+            assert helpers.test_model(models.ntp_peer, peer_details)
 
-        assert result
         return get_ntp_peers
 
     @wrap_test_cases
     def test_get_ntp_stats(self):
         """Test get_ntp_stats."""
         get_ntp_stats = self.device.get_ntp_stats()
-        result = len(get_ntp_stats) > 0
+        assert len(get_ntp_stats) > 0
 
         for ntp_peer_details in get_ntp_stats:
-            result = result and helpers.test_model(models.ntp_stats, ntp_peer_details)
+            assert helpers.test_model(models.ntp_stats, ntp_peer_details)
 
-        assert result
         return get_ntp_stats
 
     @wrap_test_cases
     def test_get_interfaces_ip(self):
         """Test get_interfaces_ip."""
         get_interfaces_ip = self.device.get_interfaces_ip()
-        result = len(get_interfaces_ip) > 0
+        assert len(get_interfaces_ip) > 0
 
         for interface, interface_details in get_interfaces_ip.iteritems():
             ipv4 = interface_details.get('ipv4', {})
             ipv6 = interface_details.get('ipv6', {})
             for ip, ip_details in ipv4.iteritems():
-                result = result and helpers.test_model(models.interfaces_ip, ip_details)
+                assert helpers.test_model(models.interfaces_ip, ip_details)
             for ip, ip_details in ipv6.iteritems():
-                result = result and helpers.test_model(models.interfaces_ip, ip_details)
+                assert helpers.test_model(models.interfaces_ip, ip_details)
 
-        assert result
         return get_interfaces_ip
 
     @wrap_test_cases
@@ -298,13 +281,12 @@ class BaseTestGetters:
         protocol = 'bgp'
         get_route_to = self.device.get_route_to(destination=destination, protocol=protocol)
 
-        result = len(get_route_to) > 0
+        assert len(get_route_to) > 0
 
         for prefix, routes in get_route_to.iteritems():
             for route in routes:
-                result = result and helpers.test_model(models.route, route)
+                assert helpers.test_model(models.route, route)
 
-        assert result
         return get_route_to
 
     @wrap_test_cases
@@ -312,15 +294,14 @@ class BaseTestGetters:
         """Test get_snmp_information."""
         get_snmp_information = self.device.get_snmp_information()
 
-        result = len(get_snmp_information) > 0
+        assert len(get_snmp_information) > 0
 
         for snmp_entry in get_snmp_information:
-            result = result and helpers.test_model(models.snmp, get_snmp_information)
+            assert helpers.test_model(models.snmp, get_snmp_information)
 
         for community, community_data in get_snmp_information['community'].iteritems():
-            result = result and helpers.test_model(models.snmp_community, community_data)
+            assert helpers.test_model(models.snmp_community, community_data)
 
-        assert result
         return get_snmp_information
 
     @wrap_test_cases
@@ -328,26 +309,24 @@ class BaseTestGetters:
         """Test get_probes_config."""
         get_probes_config = self.device.get_probes_config()
 
-        result = len(get_probes_config) > 0
+        assert len(get_probes_config) > 0
 
         for probe_name, probe_tests in get_probes_config.iteritems():
             for test_name, test_config in probe_tests.iteritems():
-                result = result and helpers.test_model(models.probe_test, test_config)
+                assert helpers.test_model(models.probe_test, test_config)
 
-        assert result
         return get_probes_config
 
     @wrap_test_cases
     def test_get_probes_results(self):
         """Test get_probes_results."""
         get_probes_results = self.device.get_probes_results()
-        result = len(get_probes_results) > 0
+        assert len(get_probes_results) > 0
 
         for probe_name, probe_tests in get_probes_results.iteritems():
             for test_name, test_results in probe_tests.iteritems():
-                result = result and helpers.test_model(models.probe_test_results, test_results)
+                assert helpers.test_model(models.probe_test_results, test_results)
 
-        assert result
         return get_probes_results
 
     @wrap_test_cases
@@ -355,15 +334,14 @@ class BaseTestGetters:
         """Test ping."""
         destination = '8.8.8.8'
         get_ping = self.device.ping(destination)
-        result = isinstance(get_ping.get('success'), dict)
+        assert isinstance(get_ping.get('success'), dict)
         ping_results = get_ping.get('success', {})
 
-        result = result and helpers.test_model(models.ping, ping_results)
+        assert helpers.test_model(models.ping, ping_results)
 
         for ping_result in ping_results.get('results', []):
-            result = result and helpers.test_model(models.ping_result, ping_result)
+            assert helpers.test_model(models.ping_result, ping_result)
 
-        assert result
         return get_ping
 
     @wrap_test_cases
@@ -371,27 +349,25 @@ class BaseTestGetters:
         """Test traceroute."""
         destination = '8.8.8.8'
         get_traceroute = self.device.traceroute(destination)
-        result = isinstance(get_traceroute.get('success'), dict)
+        assert isinstance(get_traceroute.get('success'), dict)
         traceroute_results = get_traceroute.get('success', {})
 
         for hope_id, hop_result in traceroute_results.iteritems():
             for probe_id, probe_result in hop_result.get('probes', {}).iteritems():
-                result = result and helpers.test_model(models.traceroute, probe_result)
+                assert helpers.test_model(models.traceroute, probe_result)
 
-        assert result
         return get_traceroute
 
     @wrap_test_cases
     def test_get_users(self):
         """Test get_users."""
         get_users = self.device.get_users()
-        result = len(get_users)
+        assert len(get_users)
 
         for user, user_details in get_users.iteritems():
-            result = result and helpers.test_model(models.users, user_details)
-            result = result and (0 <= user_details.get('level') <= 15)
+            assert helpers.test_model(models.users, user_details)
+            assert (0 <= user_details.get('level') <= 15)
 
-        assert result
         return get_users
 
     @wrap_test_cases
