@@ -35,11 +35,11 @@ import pyeapi
 from pyeapi.eapilib import ConnectionError
 
 # NAPALM base
-import napalm_base.helpers                                                                              # noqa
-from napalm_base.base import NetworkDriver                                                              # noqa
-from napalm_base.utils import string_parsers                                                            # noqa
-from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,   # noqa \
-                                   SessionLockedException, CommandErrorException                        # noqa
+import napalm_base.helpers
+from napalm_base.base import NetworkDriver
+from napalm_base.utils import string_parsers
+from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException, \
+                                   SessionLockedException, CommandErrorException
 
 # local modules
 # here add local imports
