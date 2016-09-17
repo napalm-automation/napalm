@@ -41,6 +41,6 @@ def pytest_generate_tests(metafunc, basefile):
             test_cases.append(test_case)
 
     if not test_cases:
-        print('\n[NAPALM] We failed to find test cases for {}. Please, add test cases in {}'.format(
-                                                                  metafunc.function.__name__, path))
+        test_cases.append("no_test_case_found")
+
     metafunc.parametrize("test_case", test_cases)
