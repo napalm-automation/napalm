@@ -30,6 +30,7 @@ from jnpr.junos.exception import RpcTimeoutError
 from jnpr.junos.exception import ConnectTimeoutError
 
 # import NAPALM Base
+import napalm_base.helpers
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import string_parsers
 from napalm_base.exceptions import ConnectionException
@@ -37,7 +38,6 @@ from napalm_base.exceptions import MergeConfigException
 from napalm_base.exceptions import CommandErrorException
 from napalm_base.exceptions import ReplaceConfigException
 from napalm_base.exceptions import CommandTimeoutException
-from napalm_base.helpers import convert, find_txt, mac, ip
 
 # import local modules
 from napalm_junos.utils import junos_views
@@ -195,7 +195,7 @@ class JunOSDriver(NetworkDriver):
                 'is_enabled': interfaces[iface]['is_enabled'],
                 'description': (interfaces[iface]['description'] or u''),
                 'last_flapped': float((interfaces[iface]['last_flapped'] or -1)),
-                'mac_address': unicode((interfaces[iface]['mac_address'] or '')),
+                'mac_address': napalm_base.helpers.mac(interfaces[iface]['mac_address']),
                 'speed': -1
             }
             # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
@@ -203,7 +203,7 @@ class JunOSDriver(NetworkDriver):
             match = re.search(r'(\d+)(\w*)', interfaces[iface]['speed'] or u'')
             if match is None:
                 continue
-            speed_value = convert(int, match.group(1), -1)
+            speed_value = napalm_base.helpers.convert(int, match.group(1), -1)
             if speed_value == -1:
                 continue
             speed_unit = match.group(2)
@@ -384,7 +384,7 @@ class JunOSDriver(NetworkDriver):
             bgp_neighbor_data[instance_name] = {'peers': {}}
             for neighbor, data in bgp_neighbors.get(instance=instance).items():
                 neighbor_data = {k: v for k, v in data}
-                peer_ip = neighbor.split('+')[0]
+                peer_ip = napalm_base.helpers.ip(neighbor.split('+')[0])
                 if 'router_id' not in bgp_neighbor_data[instance_name]:
                     # we only need to set this once
                     bgp_neighbor_data[instance_name]['router_id'] = \
@@ -413,7 +413,7 @@ class JunOSDriver(NetworkDriver):
         neighbors = {}
         for neigh in result:
             if neigh[0] not in neighbors.keys():
-                neighbors[neigh[0]] = list()
+                neighbors[neigh[0]] = []
             neighbors[neigh[0]].append({x[0]: unicode(x[1]) for x in neigh[1]})
 
         return neighbors
@@ -426,7 +426,8 @@ class JunOSDriver(NetworkDriver):
         lldp_table.get()
         interfaces = lldp_table.get().keys()
 
-        old_junos = convert(int, self.device.facts.get('version', '0.0').split('.')[0], '0') < 13
+        old_junos = napalm_base.helpers.convert(
+            int, self.device.facts.get('version', '0.0').split('.')[0], '0') < 13
 
         lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
         if old_junos:
@@ -439,12 +440,13 @@ class JunOSDriver(NetworkDriver):
                 lldp_table.get(interface_device=interface)
             for item in lldp_table:
                 if interface not in lldp_neighbors.keys():
-                    lldp_neighbors[interface] = list()
+                    lldp_neighbors[interface] = []
                 lldp_neighbors[interface].append({
                     'parent_interface': item.parent_interface,
                     'remote_port': item.remote_port,
-                    'remote_chassis_id': item.remote_chassis_id,
-                    'remote_port_description': convert(unicode, item.remote_port_description),
+                    'remote_chassis_id': napalm_base.helpers.mac(item.remote_chassis_id),
+                    'remote_port_description': napalm_base.helpers.convert(
+                        unicode, item.remote_port_description),
                     'remote_system_name': item.remote_system_name,
                     'remote_system_description': item.remote_system_description,
                     'remote_system_capab': item.remote_system_capab,
@@ -590,7 +592,7 @@ class JunOSDriver(NetworkDriver):
         bgp_neighbors = {}
 
         for bgp_group_neighbor in peers_items:
-            bgp_peer_address = bgp_group_neighbor[0]
+            bgp_peer_address = napalm_base.helpers.ip(bgp_group_neighbor[0])
             if neighbor and bgp_peer_address != neighbor:
                 continue  # if filters applied, jump over all other neighbors
             bgp_group_details = bgp_group_neighbor[1]
@@ -609,8 +611,10 @@ class JunOSDriver(NetworkDriver):
                 if key in ['export_policy', 'import_policy']:
                     if isinstance(value, list):
                         value = ' '.join(value)
+                if key == 'local_address':
+                    value = napalm_base.helpers.ip(value)
                 bgp_peer_details.update({
-                    key: convert(datatype, value, default)
+                    key: napalm_base.helpers.convert(datatype, value, default)
                 })
             prefix_limit_fields = {}
             for elem in bgp_group_details:
@@ -618,7 +622,9 @@ class JunOSDriver(NetworkDriver):
                     datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
                     default = _DATATYPE_DEFAULT_.get(datatype)
                     prefix_limit_fields.update({
-                        elem[0].replace('_prefix_limit', ''): convert(datatype, elem[1], default)
+                        elem[0].replace('_prefix_limit', ''): napalm_base.helpers.convert(datatype,
+                                                                                          elem[1],
+                                                                                          default)
                     })
             bgp_peer_details['prefix_limit'] = build_prefix_limit(**prefix_limit_fields)
             group = bgp_peer_details.pop('group')
@@ -646,8 +652,10 @@ class JunOSDriver(NetworkDriver):
                 if key in ['export_policy', 'import_policy']:
                     if isinstance(value, list):
                         value = ' '.join(value)
+                if key == 'local_address':
+                    value = napalm_base.helpers.ip(value)
                 bgp_config[bgp_group_name].update({
-                    key: convert(datatype, value, default)
+                    key: napalm_base.helpers.convert(datatype, value, default)
                 })
             prefix_limit_fields = {}
             for elem in bgp_group_details:
@@ -655,7 +663,9 @@ class JunOSDriver(NetworkDriver):
                     datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
                     default = _DATATYPE_DEFAULT_.get(datatype)
                     prefix_limit_fields.update({
-                        elem[0].replace('_prefix_limit', ''): convert(datatype, elem[1], default)
+                        elem[0].replace('_prefix_limit', ''): napalm_base.helpers.convert(datatype,
+                                                                                          elem[1],
+                                                                                          default)
                     })
             bgp_config[bgp_group_name]['prefix_limit'] = build_prefix_limit(**prefix_limit_fields)
             bgp_config[bgp_group_name]['neighbors'] = bgp_neighbors.get(bgp_group_name, {})
@@ -738,7 +748,7 @@ class JunOSDriver(NetworkDriver):
             four_byte_as = neighbor_details.pop('4byte_as', 0)
             local_address = neighbor_details.pop('local_address', '')
             local_details = local_address.split('+')
-            neighbor_details['local_address'] = unicode(local_details[0])
+            neighbor_details['local_address'] = napalm_base.helpers.ip(local_details[0])
             if len(local_details) == 2:
                 neighbor_details['local_port'] = int(local_details[1])
             else:
@@ -746,7 +756,7 @@ class JunOSDriver(NetworkDriver):
             neighbor_details['suppress_4byte_as'] = (remote_as != four_byte_as)
             peer_address = neighbor_details.pop('peer_address', '')
             remote_details = peer_address.split('+')
-            neighbor_details['remote_address'] = unicode(remote_details[0])
+            neighbor_details['remote_address'] = napalm_base.helpers.ip(remote_details[0])
             if len(remote_details) == 2:
                 neighbor_details['remote_port'] = int(remote_details[1])
             else:
@@ -779,7 +789,7 @@ class JunOSDriver(NetworkDriver):
         #   - group by VLAN ID
         #   - hostname & TTE fields as well
 
-        arp_table = list()
+        arp_table = []
 
         arp_table_raw = junos_views.junos_arp_table(self.device)
         arp_table_raw.get()
@@ -789,9 +799,8 @@ class JunOSDriver(NetworkDriver):
             arp_entry = {
                 elem[0]: elem[1] for elem in arp_table_entry[1]
             }
-            tte = arp_entry.pop('tte')
-            arp_entry['age'] = tte
-            # must compute age based on TTE
+            arp_entry['mac'] = napalm_base.helpers.mac(arp_entry.get('mac'))
+            arp_entry['ip'] = napalm_base.helpers.ip(arp_entry.get('ip'))
             arp_table.append(arp_entry)
 
         return arp_table
@@ -806,7 +815,7 @@ class JunOSDriver(NetworkDriver):
         if not ntp_peers:
             return {}
 
-        return {unicode(peer[0]): {} for peer in ntp_peers}
+        return {napalm_base.helpers.ip(peer[0]): {} for peer in ntp_peers}
 
     def get_ntp_servers(self):
         """Return the NTP servers configured on the device."""
@@ -818,7 +827,7 @@ class JunOSDriver(NetworkDriver):
         if not ntp_servers:
             return {}
 
-        return {unicode(server[0]): {} for server in ntp_servers}
+        return {napalm_base.helpers.ip(server[0]): {} for server in ntp_servers}
 
     def get_ntp_stats(self):
         """Return NTP stats (associations)."""
@@ -826,7 +835,7 @@ class JunOSDriver(NetworkDriver):
         # thus we need to retrieve raw text and parse...
         # :(
 
-        ntp_stats = list()
+        ntp_stats = []
 
         REGEX = (
             '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
@@ -846,7 +855,7 @@ class JunOSDriver(NetworkDriver):
             line_groups = line_search.groups()
             try:
                 ntp_stats.append({
-                    'remote': unicode(line_groups[1]),
+                    'remote': napalm_base.helpers.ip(line_groups[1]),
                     'synchronized': (line_groups[0] == '*'),
                     'referenceid': unicode(line_groups[2]),
                     'stratum': int(line_groups[3]),
@@ -879,8 +888,8 @@ class JunOSDriver(NetworkDriver):
 
         for interface_details in interface_table_items:
             ip_address = interface_details[0]
-            address = unicode(ip_address.split('/')[0])
-            prefix = convert(int, ip_address.split('/')[-1], 0)
+            address = napalm_base.helpers.ip(ip_address.split('/')[0])
+            prefix = napalm_base.helpers.convert(int, ip_address.split('/')[-1], 0)
             interface = unicode(interface_details[1][0][1])
             family_raw = interface_details[1][1][1]
             family = _FAMILY_VMAP_.get(family_raw)
@@ -923,7 +932,7 @@ class JunOSDriver(NetworkDriver):
             mac_entry.update(
                 {elem[0]: elem[1] for elem in mac_table_entry[1]}
             )
-            mac_entry['mac'] = mac(mac_entry.get('mac'))
+            mac_entry['mac'] = napalm_base.helpers.mac(mac_entry.get('mac'))
             mac_address_table.append(mac_entry)
 
         return mac_address_table
@@ -1006,7 +1015,7 @@ class JunOSDriver(NetworkDriver):
             d = {}
             next_hop = route[0]
             d = {elem[0]: elem[1] for elem in route[1]}
-            destination = d.pop('destination', '')
+            destination = napalm_base.helpers.ip(d.pop('destination', ''))
             prefix_length = d.pop('prefix_length', 32)
             destination = '{d}/{p}'.format(
                 d=destination,
@@ -1039,7 +1048,7 @@ class JunOSDriver(NetworkDriver):
             }
             d['protocol_attributes'] = protocol_attributes
             if destination not in routes.keys():
-                routes[destination] = list()
+                routes[destination] = []
             routes[destination].append(d)
 
         return routes
@@ -1060,7 +1069,7 @@ class JunOSDriver(NetworkDriver):
         if not snmp_items:
             return snmp_information
 
-        communities = list()
+        communities = []
         for snmp_config_out in snmp_items:
             community_details = snmp_config_out[1]
             communities.append({
@@ -1068,15 +1077,15 @@ class JunOSDriver(NetworkDriver):
             })
 
         snmp_information = {
-            'contact': convert(unicode, communities[0].get('contact')),
-            'location': convert(unicode, communities[0].get('location')),
-            'chassis_id': convert(unicode, communities[0].get('chassis')),
+            'contact': napalm_base.helpers.convert(unicode, communities[0].get('contact')),
+            'location': napalm_base.helpers.convert(unicode, communities[0].get('location')),
+            'chassis_id': napalm_base.helpers.convert(unicode, communities[0].get('chassis')),
             'community': {}
         }
 
         for snmp_entry in communities:
-            name = convert(unicode, snmp_entry.get('name'))
-            authorization = convert(unicode, snmp_entry.get('authorization'))
+            name = napalm_base.helpers.convert(unicode, snmp_entry.get('name'))
+            authorization = napalm_base.helpers.convert(unicode, snmp_entry.get('authorization'))
             snmp_information['community'][name] = {
                 'mode': _AUTHORIZATION_MODE_MAP_.get(authorization, u''),
                 'acl': u''
@@ -1097,12 +1106,14 @@ class JunOSDriver(NetworkDriver):
             test_details = {
                 p[0]: p[1] for p in probe_test[1]
             }
-            probe_name = convert(unicode, test_details.pop('probe_name'))
-            target = convert(unicode, test_details.pop('target', ''))
-            test_interval = convert(int, test_details.pop('test_interval', '0'))
-            probe_count = convert(int, test_details.pop('probe_count', '0'))
-            probe_type = convert(unicode, test_details.pop('probe_type', ''))
-            source = convert(unicode, test_details.pop('source_address', ''))
+            probe_name = napalm_base.helpers.convert(unicode, test_details.pop('probe_name'))
+            target = napalm_base.helpers.convert(
+                napalm_base.helpers.ip, test_details.pop('target', ''))
+            test_interval = napalm_base.helpers.convert(int, test_details.pop('test_interval', '0'))
+            probe_count = napalm_base.helpers.convert(int, test_details.pop('probe_count', '0'))
+            probe_type = napalm_base.helpers.convert(unicode, test_details.pop('probe_type', ''))
+            source = napalm_base.helpers.convert(
+                napalm_base.helpers.ip, test_details.pop('source_address', ''))
             if probe_name not in probes.keys():
                 probes[probe_name] = {}
             probes[probe_name][test_name] = {
@@ -1133,7 +1144,8 @@ class JunOSDriver(NetworkDriver):
                     test_results[test_param_name] = test_param_value * 1e-3
                     # convert from useconds to mseconds
             test_name = test_results.pop('test_name', '')
-            source = test_results.get('source', u'')
+            source = napalm_base.helpers.convert(
+                napalm_base.helpers.ip, test_results.get('source', u''))
             if source is None:
                 test_results['source'] = u''
             if probe_name not in probes_results.keys():
@@ -1172,22 +1184,28 @@ class JunOSDriver(NetworkDriver):
         # make direct RPC call via NETCONF
         traceroute_results = rpc_reply.find('.//traceroute-results')
 
-        traceroute_failure = find_txt(traceroute_results, 'traceroute-failure', '')
-        error_message = find_txt(traceroute_results, 'rpc-error/error-message', '')
+        traceroute_failure = napalm_base.helpers.find_txt(
+            traceroute_results, 'traceroute-failure', '')
+        error_message = napalm_base.helpers.find_txt(
+            traceroute_results, 'rpc-error/error-message', '')
 
         if traceroute_failure and error_message:
             return {'error': '{}: {}'.format(traceroute_failure, error_message)}
 
         traceroute_result['success'] = {}
         for hop in traceroute_results.findall('hop'):
-            ttl_value = convert(int, find_txt(hop, 'ttl-value'), 1)
+            ttl_value = napalm_base.helpers.convert(
+                int, napalm_base.helpers.find_txt(hop, 'ttl-value'), 1)
             if ttl_value not in traceroute_result['success']:
                 traceroute_result['success'][ttl_value] = {'probes': {}}
             for probe in hop.findall('probe-result'):
-                probe_index = convert(int, find_txt(probe, 'probe-index'), 0)
-                ip_address = unicode(find_txt(probe, 'ip-address', u'*'))
-                host_name = unicode(find_txt(probe, 'host-name', u'*'))
-                rtt = convert(float, find_txt(probe, 'rtt'), 0) * 1e-3  # ms
+                probe_index = napalm_base.helpers.convert(
+                    int, napalm_base.helpers.find_txt(probe, 'probe-index'), 0)
+                ip_address = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip, napalm_base.helpers.find_txt(probe, 'ip-address'), u'*')
+                host_name = unicode(napalm_base.helpers.find_txt(probe, 'host-name', u'*'))
+                rtt = napalm_base.helpers.convert(
+                    float, napalm_base.helpers.find_txt(probe, 'rtt'), 0) * 1e-3  # ms
                 traceroute_result['success'][ttl_value]['probes'][probe_index] = {
                     'ip_address': ip_address,
                     'host_name': host_name,
