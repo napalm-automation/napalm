@@ -1214,14 +1214,6 @@ class EOSDriver(NetworkDriver):
 
         return traceroute_result
 
-    def get_config(self):
-        """get_config implementation for EOS."""
-        result = self.run_commands['show startup-config',
-                                   'show running-config']
-        return {
-            'config_text': self.run_commands['show running-config']
-        }
-
     def get_bgp_neighbors_detail(self, neighbor_address=''):
         """Function to return detailed BGP information.
 
@@ -1435,3 +1427,48 @@ class EOSDriver(NetworkDriver):
             optics_detail[port] = port_detail
 
         return optics_detail
+
+    def get_config(self, retrieve="all"):
+        """get_config implementation for EOS."""
+        get_startup = retrieve == "all" or retrieve == "startup"
+        get_running = retrieve == "all" or retrieve == "running"
+        get_candidate = (retrieve == "all" or retrieve == "candidate") and self.config_session
+
+        if retrieve == "all":
+            commands = ['show startup-config',
+                        'show running-config']
+
+            if self.config_session:
+                commands.append('show session-config named {}'.format(self.config_session))
+
+            output = self.device.run_commands(commands, encoding="text")
+            return {
+                'startup': output[0]['output'] if get_startup else "",
+                'running': output[1]['output'] if get_running else "",
+                'candidate': output[2]['output'] if get_candidate else "",
+            }
+        elif get_startup or get_running:
+            commands = ['show {}-config'.format(retrieve)]
+            output = self.device.run_commands(commands, encoding="text")
+            return {
+                'startup': output[0]['output'] if get_startup else "",
+                'running': output[0]['output'] if get_running else "",
+                'candidate': "",
+            }
+        elif get_candidate:
+            commands = ['show session-config named {}'.format(self.config_session)]
+            output = self.device.run_commands(commands, encoding="text")
+            return {
+                'startup': "",
+                'running': "",
+                'candidate': output[0]['output'],
+            }
+        elif retrieve == "candidate":
+            # If we get here it means that we want the candidate but there is none.
+            return {
+                'startup': "",
+                'running': "",
+                'candidate': "",
+            }
+        else:
+            raise Exception("Wrong retrieve filter: {}".format(retrieve))
