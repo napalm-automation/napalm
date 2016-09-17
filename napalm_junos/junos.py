@@ -1148,6 +1148,8 @@ class JunOSDriver(NetworkDriver):
             test_results = {
                 p[0]: p[1] for p in probe_result[1]
             }
+            test_results['last_test_loss'] = napalm_base.helpers.convert(
+                int, test_results.pop('last_test_loss'), 0)
             for test_param_name, test_param_value in test_results.iteritems():
                 if isinstance(test_param_value, float):
                     test_results[test_param_name] = test_param_value * 1e-3
