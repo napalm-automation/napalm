@@ -3,8 +3,8 @@
 from __future__ import print_function
 
 import functools
-import json
 import itertools
+import json
 
 from double import BaseTestDouble
 
@@ -59,32 +59,36 @@ def wrap_test_cases(func):
             # This is an ugly, ugly, ugly hack because some python objects don't load
             # as expected. For example, dicts where integers are strings
             result = json.loads(json.dumps(func(cls)))
-            not_implemented = False
-
-            if isinstance(cls.device.device, BaseTestDouble):
-                try:
-                    expected_result = cls.device.device.expected_result
-                except IOError as e:
-                    raise Exception("{}. Actual result was: {}".format(e, json.dumps(result)))
-                if isinstance(result, list):
-                    diff = list_dicts_diff(result, expected_result)
-                else:
-                    diff = dict_diff(result, expected_result)
-                if diff:
-                    print("Resulting JSON object was: {}".format(json.dumps(result)))
-                    raise AssertionError("Expected result varies on some keys {}".format(
-                                                                                json.dumps(diff)))
-
+        except IOError:
+            if test_case == "no_test_case_found":
+                pytest.fail("No test case for '{}' found".format(func.__name__))
+            else:
+                raise
         except NotImplementedError:
-            not_implemented = True
-
-        cls.device.device.current_test = ''
-        cls.device.device.current_test_case = ''
-
-        if not_implemented:
             pytest.skip("Method not implemented")
-        else:
-            return result
+            return
+
+        # This is an ugly, ugly, ugly hack because some python objects don't load
+        # as expected. For example, dicts where integers are strings
+
+        if isinstance(cls.device.device, BaseTestDouble):
+            try:
+                expected_result = cls.device.device.expected_result
+            except IOError as e:
+                raise Exception("{}. Actual result was: {}".format(e, json.dumps(result)))
+            if isinstance(result, list):
+                diff = list_dicts_diff(result, expected_result)
+            else:
+                diff = dict_diff(result, expected_result)
+            if diff:
+                print("Resulting JSON object was: {}".format(json.dumps(result)))
+                raise AssertionError("Expected result varies on some keys {}".format(
+                                                                            json.dumps(diff)))
+
+        cls.device.device.current_test = ''  # Empty them to avoid side effects
+        cls.device.device.current_test_case = ''  # Empty them to avoid side effects
+
+        return result
 
     return wrapper
 
@@ -392,3 +396,25 @@ class BaseTestGetters:
                     assert isinstance(channel['state'][field]['max'], float)
 
         return get_optics
+
+    @wrap_test_cases
+    def test_get_config(self):
+        """Test get_config method."""
+        get_config = self.device.get_config()
+
+        assert isinstance(get_config, dict)
+        assert helpers.test_model(models.config, get_config)
+
+        return get_config
+
+    @wrap_test_cases
+    def test_get_config_filtered(self):
+        """Test get_config method."""
+        for config in ['running', 'startup', 'candidate']:
+            get_config = self.device.get_config(retrieve=config)
+
+            assert get_config['candidate'] == "" if config != "candidate" else True
+            assert get_config['startup'] == "" if config != "startup" else True
+            assert get_config['running'] == "" if config != "running" else True
+
+        return get_config
