@@ -141,6 +141,7 @@ ____________________________________
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: True).
 * :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: .5).
 * :code:`nxos_protocol` (nxos) - Protocol to connect with.  Only 'https' and 'http' allowed (default: 'http').
+* :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: '').
 
 
 Adding optional arguments to NAPALM drivers
