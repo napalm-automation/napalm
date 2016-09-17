@@ -317,6 +317,20 @@ class TestGettersNetworkDriver:
 
         self.assertTrue(result)
 
+    def test_get_ntp_servers(self):
+        try:
+            get_ntp_servers = self.device.get_ntp_servers()
+        except NotImplementedError:
+            raise SkipTest()
+
+        result = len(get_ntp_servers) > 0
+
+        for server, server_details in get_ntp_servers.iteritems():
+            result = result and isinstance(server, unicode)
+            result = result and self._test_model(models.ntp_server, server_details)
+
+        self.assertTrue(result)
+
     def test_get_ntp_stats(self):
         try:
             get_ntp_stats = self.device.get_ntp_stats()
@@ -489,3 +503,25 @@ class TestGettersNetworkDriver:
                     assert isinstance(channel['state'][field]['avg'], float)
                     assert isinstance(channel['state'][field]['min'], float)
                     assert isinstance(channel['state'][field]['max'], float)
+
+    def test_get_config(self):
+        """Test get_config method."""
+        try:
+            get_config = self.device.get_config()
+        except NotImplementedError:
+            raise SkipTest()
+
+        assert isinstance(get_config, dict)
+        assert self._test_model(models.config, get_config)
+
+    def test_get_config_filtered(self):
+        """Test get_config method."""
+        for config in ['running', 'startup', 'candidate']:
+            try:
+                get_config = self.device.get_config(retrieve=config)
+            except NotImplementedError:
+                raise SkipTest()
+
+            assert get_config['candidate'] == "" if config != "candidate" else True
+            assert get_config['startup'] == "" if config != "startup" else True
+            assert get_config['running'] == "" if config != "running" else True

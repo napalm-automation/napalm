@@ -3,6 +3,7 @@
 # std libs
 import os
 import sys
+import re
 
 # third party libs
 import jinja2
@@ -30,7 +31,6 @@ _MACFormat.word_fmt = '%.2X'
 # ----------------------------------------------------------------------------------------------------------------------
 # callable helpers
 # ----------------------------------------------------------------------------------------------------------------------
-
 
 def load_template(cls, template_name, template_source=None, template_path=None,
                   openconfig=False, **template_vars):
