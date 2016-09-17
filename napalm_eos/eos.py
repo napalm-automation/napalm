@@ -21,10 +21,13 @@ Read napalm.readthedocs.org for more information.
 # std libs
 import re
 import time
+
+from collections import defaultdict
 from datetime import datetime
+
 from netaddr import IPAddress
 from netaddr import IPNetwork
-from collections import defaultdict
+
 from netaddr.core import AddrFormatError
 
 # third party libs
@@ -32,11 +35,11 @@ import pyeapi
 from pyeapi.eapilib import ConnectionError
 
 # NAPALM base
-import napalm_base.helpers
-from napalm_base.base import NetworkDriver
-from napalm_base.utils import string_parsers
-from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,\
-                                   SessionLockedException, CommandErrorException
+import napalm_base.helpers                                                                              # noqa
+from napalm_base.base import NetworkDriver                                                              # noqa
+from napalm_base.utils import string_parsers                                                            # noqa
+from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,   # noqa \
+                                   SessionLockedException, CommandErrorException                        # noqa
 
 # local modules
 # here add local imports
@@ -72,7 +75,8 @@ class EOSDriver(NetworkDriver):
                 port=self.port,
                 timeout=self.timeout
             )
-            self.device = pyeapi.client.Node(connection)
+            if self.device is None:
+                self.device = pyeapi.client.Node(connection)
             # does not raise an Exception if unusable
 
             # let's try to run a very simple command
@@ -872,7 +876,7 @@ class EOSDriver(NetworkDriver):
             ipv4_list = list()
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = dict()
-                
+
             if u'ipv4' not in interfaces_ip.get(interface_name):
                 interfaces_ip[interface_name][u'ipv4'] = dict()
             if u'ipv6' not in interfaces_ip.get(interface_name):
@@ -1214,3 +1218,11 @@ class EOSDriver(NetworkDriver):
                 previous_probe_ip_address = ip_address
 
         return traceroute_result
+
+    def get_config(self):
+        """get_config implementation for EOS."""
+        result = self.run_commands['show startup-config',
+                                   'show running-config']
+        return {
+            'config_text': self.run_commands['show running-config']
+        }
