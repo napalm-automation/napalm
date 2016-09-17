@@ -60,7 +60,7 @@ class EOSDriver(NetworkDriver):
         if optional_args is None:
             optional_args = {}
         self.port = optional_args.get('port', 443)
-        self.enablepwd = optional_args.get('enablepwd', '')
+        self.enablepwd = optional_args.get('enable_password', '')
 
     def open(self):
         """Implemantation of NAPALM method open."""
