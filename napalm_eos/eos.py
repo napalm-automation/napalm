@@ -782,14 +782,12 @@ class EOSDriver(NetworkDriver):
         for neighbor in ipv4_neighbors:
             interface   = unicode(neighbor.get('interface'))
             mac_raw     = neighbor.get('hwAddress')
-            mac_all     = mac_raw.replace('.', '').replace(':', '')
-            mac_format  = unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
             ip          = unicode(neighbor.get('address'))
             age         = float(neighbor.get('age'))
             arp_table.append(
                 {
                     'interface' : interface,
-                    'mac'       : napalm_base.helpers.mac(mac_format),
+                    'mac'       : napalm_base.helpers.mac(mac_raw),
                     'ip'        : napalm_base.helpers.ip(ip),
                     'age'       : age
                 }
@@ -950,14 +948,12 @@ class EOSDriver(NetworkDriver):
             vlan        = mac_entry.get('vlanId')
             interface   = mac_entry.get('interface')
             mac_raw     = mac_entry.get('macAddress')
-            mac_str     = mac_raw.replace('.', '').replace(':', '')
-            mac_format  = ':'.join([ mac_str[i:i+2] for i in range(12)[::2] ])
             static      = (mac_entry.get('entryType') == 'static')
             last_move   = mac_entry.get('lastMove', 0.0)
             moves       = mac_entry.get('moves', 0)
             mac_table.append(
                 {
-                    'mac'       : napalm_base.helpers.mac(mac_format),
+                    'mac'       : napalm_base.helpers.mac(mac_raw),
                     'interface' : interface,
                     'vlan'      : vlan,
                     'active'    : True,
@@ -1275,9 +1271,7 @@ class EOSDriver(NetworkDriver):
                 item['last_event'] = (
                     napalm_base.helpers.convert(
                         unicode, item['last_event']))
-                item['remote_address'] = (
-                    napalm_base.helpers.convert(
-                        napalm_base.helpers.ip, item['remote_address']))
+                item['remote_address'] = napalm_base.helpers.ip(item['remote_address'])
                 item['previous_connection_state'] = (
                     napalm_base.helpers.convert(
                         unicode, item['previous_connection_state']))
@@ -1290,12 +1284,8 @@ class EOSDriver(NetworkDriver):
                 item['routing_table'] = (
                     napalm_base.helpers.convert(
                         unicode, item['routing_table']))
-                item['router_id'] = (
-                    napalm_base.helpers.convert(
-                        napalm_base.helpers.ip, item['router_id']))
-                item['local_address'] = (
-                    napalm_base.helpers.convert(
-                        napalm_base.helpers.ip, item['local_address']))
+                item['router_id'] = napalm_base.helpers.ip(item['router_id'])
+                item['local_address'] = napalm_base.helpers.ip(item['local_address'])
 
                 peer_details.append(item)
 
