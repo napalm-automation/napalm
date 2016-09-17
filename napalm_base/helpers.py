@@ -11,7 +11,6 @@ import textfsm
 from netaddr import EUI
 from netaddr import mac_unix
 from netaddr import IPAddress
-from netaddr.core import AddrFormatError
 
 # local modules
 import napalm_base.exceptions
@@ -203,14 +202,26 @@ def mac(raw):
         u'01:23:45:67:89:AB'
     """
 
-    mac = u''
+    if raw.endswith(':'):
+        # some vendors like Cisco return MAC addresses like a9:c5:2e:7b:6:
+        # which is kinda valid, but not entirely as does not repsect EUI48 or EUI64 standards
+        # therefore we need to stuff with trailing zeros
+        # e.g.:
+        # >>> mac('a9:c5:2e:7b:6:')
+        # u'A9:C5:2E:7B:60:00'
+        flat_raw = raw.replace(':', '')
+        raw = '{flat_raw}{zeros_stuffed}'.format(
+            flat_raw=flat_raw,
+            zeros_stuffed='0'*(12-len(flat_raw))
+        )
+    # if Cisco or other obscure vendors use their own standards, will throw an error and we can fix later
+    # however, still works with weird formats like:
+    # >>> mac('123.4567.89ab')
+    # u'01:23:45:67:89:AB'
+    # >>> mac('23.4567.89ab')
+    # u'00:23:45:67:89:AB'
 
-    try:
-        mac = unicode(EUI(raw, dialect=_MACFormat))
-    except AddrFormatError:
-        return mac
-
-    return mac
+    return unicode(EUI(raw, dialect=_MACFormat))
 
 
 def ip(addr):
@@ -232,11 +243,4 @@ def ip(addr):
         u'2001:db8:85a3::8a2e:370:7334'
     """
 
-    ip_addr = u''
-
-    try:
-        ip_addr = unicode(IPAddress(addr))
-    except AddrFormatError:
-        return ip_addr
-
-    return ip_addr
+    return unicode(IPAddress(addr))
