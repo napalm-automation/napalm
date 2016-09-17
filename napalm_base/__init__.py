@@ -15,6 +15,7 @@
 """napalm_base package."""
 
 # Python std lib
+import sys
 import inspect
 import importlib
 
@@ -27,6 +28,10 @@ __all__ = [
     'get_network_driver',  # export the function
     'NetworkDriver'  # also export the base class
 ]
+
+
+if not(sys.version_info.major == 2 and sys.version_info.minor == 7):
+    raise RuntimeError('NAPALM requires Python 2.7')
 
 
 def get_network_driver(module_name):
