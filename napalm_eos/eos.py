@@ -504,10 +504,7 @@ class EOSDriver(NetworkDriver):
         )
 
         lldp_neighbors_in = {}
-        try:
-            lldp_neighbors_in = self.device.run_commands(commands)[0].get('lldpNeighbors', {})
-        except Exception:
-            return {}
+        lldp_neighbors_in = self.device.run_commands(commands)[0].get('lldpNeighbors', {})
 
         for interface in lldp_neighbors_in:
             interface_neighbors = lldp_neighbors_in.get(interface).get('lldpNeighborInfo', {})
