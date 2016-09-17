@@ -19,6 +19,7 @@ import difflib
 import models
 from unittest import SkipTest
 
+
 class TestConfigNetworkDriver:
 
     @classmethod
@@ -91,7 +92,8 @@ class TestConfigNetworkDriver:
         replace_config_diff = self.device.compare_config()
         self.device.rollback()
 
-        # We try to load again the config. If the rollback was successful new diff should be like the first one
+        # We try to load the config again. If the rollback was successful new diff should be
+        # like the first one
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
         last_diff = self.device.compare_config()
         self.device.discard_config()
@@ -120,7 +122,7 @@ class TestConfigNetworkDriver:
         result = False
         try:
             self.device.load_merge_candidate(filename='%s/merge_typo.conf' % self.vendor)
-            diff = self.device.compare_config()
+            self.device.compare_config()
             self.device.commit_config()
             raise Exception("We shouldn't be here")
         except exceptions.MergeConfigException:

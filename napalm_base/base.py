@@ -28,9 +28,10 @@ class NetworkDriver(object):
 
     def __init__(self, hostname, username, password, timeout, optional_args):
         """
-        This is the base class you have to inherit from when writing your own Network Driver to manage any device. You
-        will, in addition, have to override all the methods specified on this class. Make sure you follow the guidelines
-        for every method and that you return the correct data.
+        This is the base class you have to inherit from when writing your own Network Driver to
+        manage any device. You will, in addition, have to override all the methods specified on
+        this class. Make sure you follow the guidelines for every method and that you return the
+        correct data.
 
         :param hostname: (str) IP or FQDN of the device you want to connect to.
         :param username: (str) Username you want to use
@@ -57,16 +58,18 @@ class NetworkDriver(object):
     @staticmethod
     def __raise_clean_exception(exc_type, exc_value, exc_traceback):
         """
-        This method is going to check if the exception exc_type is part of the builtins exceptions or part of the
-        napalm exceptions. If it is not, it will print a message on the screen giving instructions to fill a bug.
+        This method is going to check if the exception exc_type is part of the builtins exceptions
+        or part of the napalm exceptions. If it is not, it will print a message on the screen
+        giving instructions to fill a bug.
+
         Finally it will raise the original exception.
 
         :param exc_type: Exception class.
         :param exc_value: Exception object.
         :param exc_traceback: Traceback.
         """
-        if exc_type.__name__ not in dir(napalm_base.exceptions) and \
-                        exc_type.__name__ not in __builtins__.keys():
+        if (exc_type.__name__ not in dir(napalm_base.exceptions) and
+                exc_type.__name__ not in __builtins__.keys()):
             epilog = ("NAPALM didn't catch this exception. Please, fill a bugfix on "
                       "https://github.com/napalm-automation/napalm/issues\n"
                       "Don't forget to include this traceback.")
@@ -85,21 +88,22 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def load_template(self, template_name, template_source=None, template_path=None, **template_vars):
+    def load_template(self, template_name, template_source=None,
+                      template_path=None, **template_vars):
         """
         Will load a templated configuration on the device.
 
         :param cls: Instance of the driver class.
         :param template_name: Identifies the template name.
-        :param template_source (optional): A custom config template to be rendered and loaded on the device
-        :param template_path (optional): Specifies the absolute path to a different directory for the configuration \
-        templates
-        :param template_vars: Dictionary with the arguments  to be used when the template is rendered.
-        :raise DriverTemplateNotImplemented: No template defined for the device type
-        :raise TemplateNotImplemented: The template specified in template_name does not exist in the default path or \
-        in the custom path if any specified using parameter `template_path`
-        :raise TemplateRenderException: The template could not be rendered. Either the template source does not have \
-        the right format, either the arguments in `template_vars` are not properly specified.
+        :param template_source (optional): Custom config template rendered and loaded on device
+        :param template_path (optional): Absolute path to directory for the configuration templates
+        :param template_vars: Dictionary with arguments to be used when the template is rendered.
+        :raise DriverTemplateNotImplemented: No template defined for the device type.
+        :raise TemplateNotImplemented: The template specified in template_name does not exist in \
+        the default path or in the custom path if any specified using parameter `template_path`.
+        :raise TemplateRenderException: The template could not be rendered. Either the template \
+        source does not have the right format, either the arguments in `template_vars` are not \
+        properly specified.
         """
         return napalm_base.helpers.load_template(self,
                                                  template_name,
@@ -273,25 +277,25 @@ class NetworkDriver(object):
         if filename is not None:
             with open(filename, 'r') as f:
                 data = f.read()
-
         if model not in self.SUPPORTED_OC_MODELS:
             yph = YANGPathHelper()
             oc_data = pbJ.loads_ietf(data, openconfig_bindings, model, path_helper=yph)
-            return napalm_base.helpers.load_template(self, model, openconfig=True, template_vars=oc_data)
+            return napalm_base.helpers.load_template(self, model, openconfig=True,
+                                                     template_vars=oc_data)
         else:
             # Here we will have some application logic to send supported models using native
             # mechanisms like gRPC, NETCONF or whatever the vendor supports.
             pass
 
-
-
     def load_replace_candidate(self, filename=None, config=None):
         """
-        Populates the candidate configuration. You can populate it from a file or from a string. If you send both a
-        filename and a string containing the configuration, the file takes precedence.
+        Populates the candidate configuration. You can populate it from a file or from a string.
+        If you send both a filename and a string containing the configuration, the file takes
+        precedence.
 
-        If you use this method the existing configuration will be replaced entirely by the candidate configuration once
-        you commit the changes. This method will not change the configuration by itself.
+        If you use this method the existing configuration will be replaced entirely by the
+        candidate configuration once you commit the changes. This method will not change the
+        configuration by itself.
 
         :param filename: Path to the file containing the desired configuration. By default is None.
         :param config: String containing the desired configuration.
@@ -301,11 +305,13 @@ class NetworkDriver(object):
 
     def load_merge_candidate(self, filename=None, config=None):
         """
-        Populates the candidate configuration. You can populate it from a file or from a string. If you send both a
-        filename and a string containing the configuration, the file takes precedence.
+        Populates the candidate configuration. You can populate it from a file or from a string.
+        If you send both a filename and a string containing the configuration, the file takes
+        precedence.
 
-        If you use this method the existing configuration will be merged with the candidate configuration once
-        you commit the changes. This method will not change the configuration by itself.
+        If you use this method the existing configuration will be merged with the candidate
+        configuration once you commit the changes. This method will not change the configuration
+        by itself.
 
         :param filename: Path to the file containing the desired configuration. By default is None.
         :param config: String containing the desired configuration.
@@ -315,8 +321,9 @@ class NetworkDriver(object):
 
     def compare_config(self):
         """
-        :return: A string showing the difference between the running configuration and the candidate configuration. The\
-        running_config is loaded automatically just before doing the comparison so there is no need for you to do it.
+        :return: A string showing the difference between the running configuration and the \
+        candidate configuration. The running_config is loaded automatically just before doing the \
+        comparison so there is no need for you to do it.
         """
         raise NotImplementedError
 
@@ -368,8 +375,9 @@ class NetworkDriver(object):
 
     def get_interfaces(self):
         """
-        Returns a dictionary of dictionaries. The keys for the first dictionary will be the interfaces in the devices.\
-        The inner dictionary will containing the following data for each interface:
+        Returns a dictionary of dictionaries. The keys for the first dictionary will be the \
+        interfaces in the devices. The inner dictionary will containing the following data for \
+        each interface:
          * is_up (True/False)
          * is_enabled (True/False)
          * description (string)
@@ -422,8 +430,8 @@ class NetworkDriver(object):
 
     def get_lldp_neighbors(self):
         """
-        Returns a dictionary where the keys are local ports and the value is a list of dictionaries with the following \
-        information:
+        Returns a dictionary where the keys are local ports and the value is a list of \
+        dictionaries with the following information:
             * hostname
             * port
 
@@ -468,11 +476,12 @@ class NetworkDriver(object):
 
     def get_bgp_neighbors(self):
         """
-        Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).
-        The inner dictionary will contain the following data for each vrf:
+        Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf
+        (global if no vrf). The inner dictionary will contain the following data for each vrf:
 
           * router_id
-          * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. The inner keys are:
+          * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. \
+            The inner keys are:
              * local_as (int)
              * remote_as (int)
              * remote_id - peer router id
@@ -480,8 +489,8 @@ class NetworkDriver(object):
              * is_enabled (True/False)
              * description (string)
              * uptime (int in seconds)
-             * address_family (dictionary) - A dictionary of address families available for the neighbor. So far it can\
-               be 'ipv4' or 'ipv6'
+             * address_family (dictionary) - A dictionary of address families available for the \
+               neighbor. So far it can be 'ipv4' or 'ipv6'
                 * received_prefixes (int)
                 * accepted_prefixes (int)
                 * sent_prefixes (int)
@@ -494,10 +503,10 @@ class NetworkDriver(object):
 
             * fans is a dictionary of dictionaries where the key is the location and the values:
                  * status (True/False) - True if it's ok, false if it's broken
-            * temperature is a dictionary of dictionaries where the key is the location and the values:
+            * temperature is a dict of dictionaries where the key is the location and the values:
                  * temperature (float) - Temperature in celsius the sensor is reporting.
                  * is_alert (True/False) - True if the temperature is above the alert threshold
-                 * is_critical (True/False) - True if the temperature is above the critical threshold
+                 * is_critical (True/False) - True if the temp is above the critical threshold
             * power is a dictionary of dictionaries where the key is the PSU id and the values:
                  * status (True/False) - True if it's ok, false if it's broken
                  * capacity (float) - Capacity in W that the power supply can support
@@ -512,8 +521,8 @@ class NetworkDriver(object):
 
     def get_interfaces_counters(self):
         """
-        Returns a dictionary of dictionaries where the first key is an interface name and the inner dictionary contains
-        the following keys:
+        Returns a dictionary of dictionaries where the first key is an interface name and the
+        inner dictionary contains the following keys:
 
             * tx_errors (int)
             * rx_errors (int)
@@ -577,7 +586,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_lldp_neighbors_detail(self, interface = ''):
+    def get_lldp_neighbors_detail(self, interface=''):
         """
         Returns a detailed view of the LLDP neighbors as a dictionary
         containing lists of dictionaries for each interface.
@@ -602,7 +611,8 @@ class NetworkDriver(object):
                         'remote_system_name': u'switch',
                         'remote_port': u'Eth2/2/1',
                         'remote_port_description': u'Ethernet2/2/1',
-                        'remote_system_description': u'''Cisco Nexus Operating System (NX-OS) Software 7.1(0)N1(1a)
+                        'remote_system_description': u'''Cisco Nexus Operating System (NX-OS)
+                              Software 7.1(0)N1(1a)
                               TAC support: http://www.cisco.com/tac
                               Copyright (c) 2002-2015, Cisco Systems, Inc. All rights reserved.''',
                         'remote_system_capab': u'B, R',
@@ -621,7 +631,8 @@ class NetworkDriver(object):
         :param group: Returns the configuration of a specific BGP group.
         :param neighbor: Returns the configuration of a specific BGP neighbor.
 
-        Main dictionary keys represent the group name and the values represent a dictionary having the following keys:
+        Main dictionary keys represent the group name and the values represent a dictionary having
+        the following keys:
             * type (string)
             * description (string)
             * apply_groups (string list)
@@ -723,14 +734,14 @@ class NetworkDriver(object):
                                                         I just saw Episode Two
                                                         You're my only hope
                                             ''',
-                u'show chassis fan'     :   u'''Item                      Status   RPM     Measurement
-                                                Top Rear Fan              OK       3840    Spinning at intermediate-speed
-                                                Bottom Rear Fan           OK       3840    Spinning at intermediate-speed
-                                                Top Middle Fan            OK       3900    Spinning at intermediate-speed
-                                                Bottom Middle Fan         OK       3840    Spinning at intermediate-speed
-                                                Top Front Fan             OK       3810    Spinning at intermediate-speed
-                                                Bottom Front Fan          OK       3840    Spinning at intermediate-speed
-                                            '''
+                u'show chassis fan'     :   u'''
+                    Item               Status  RPM     Measurement
+                    Top Rear Fan       OK      3840    Spinning at intermediate-speed
+                    Bottom Rear Fan    OK      3840    Spinning at intermediate-speed
+                    Top Middle Fan     OK      3900    Spinning at intermediate-speed
+                    Bottom Middle Fan  OK      3840    Spinning at intermediate-speed
+                    Top Front Fan      OK      3810    Spinning at intermediate-speed
+                    Bottom Front Fan   OK      3840    Spinning at intermediate-speed'''
             }
         """
         raise NotImplementedError
@@ -742,7 +753,8 @@ class NetworkDriver(object):
 
         :param neighbor_address: Retuns the statistics for a spcific BGP neighbor.
 
-        Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf (global if no vrf).
+        Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf
+        (global if no vrf).
         The keys of the inner dictionary represent the AS number of the neighbors.
         Leaf dictionaries contain the following fields:
 
@@ -941,7 +953,8 @@ class NetworkDriver(object):
         Returns all configured IP addresses on all interfaces as a dictionary of dictionaries.
         Keys of the main dictionary represent the name of the interface.
         Values of the main dictionary represent are dictionaries that may consist of two keys
-        'ipv4' and 'ipv6' (one, both or none) which are themselvs dictionaries witht the IP addresses as keys.
+        'ipv4' and 'ipv6' (one, both or none) which are themselvs dictionaries witht the IP
+        addresses as keys.
         Each IP Address dictionary has the following keys:
             * prefix_length (int)
 
@@ -990,8 +1003,8 @@ class NetworkDriver(object):
     def get_mac_address_table(self):
 
         """
-        Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address Table,
-        having the following keys:
+        Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address
+        Table, having the following keys:
             * mac (string)
             * interface (string)
             * vlan (int)
@@ -1040,7 +1053,8 @@ class NetworkDriver(object):
     def get_route_to(self, destination='', protocol=''):
 
         """
-        Returns a dictionary of dictionaries containing details of all available routes to a destination.
+        Returns a dictionary of dictionaries containing details of all available routes to a
+        destination.
 
         :param destination: The destination prefix to be used when filtering the routes.
         :param protocol (optional): Retrieve the routes only for a specific protocol.
@@ -1155,7 +1169,8 @@ class NetworkDriver(object):
     def get_probes_config(self):
         """
         Returns a dictionary with the probes configured on the device.
-        Probes can be either RPM on JunOS devices, either SLA on IOS-XR. Other vendors do not support probes.
+        Probes can be either RPM on JunOS devices, either SLA on IOS-XR. Other vendors do not
+        support probes.
         The keys of the main dictionary represent the name of the probes.
         Each probe consists on multiple tests, each test name being a key in the probe dictionary.
         A test has the following keys:
@@ -1256,7 +1271,6 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-
     def ping(self, destination, source='', ttl=0, timeout=0, size=0, count=0):
         """
         Executes ping on the device and returns a dictionary with the result
@@ -1334,9 +1348,8 @@ class NetworkDriver(object):
             * success
             * error
 
-        In case of success, the keys of the dictionary represent the hop ID, while values are dictionaries
-        containing the probes results:
-
+        In case of success, the keys of the dictionary represent the hop ID, while values are
+        dictionaries containing the probes results:
             * rtt (float)
             * ip_address (str)
             * host_name (str)
@@ -1430,14 +1443,14 @@ class NetworkDriver(object):
     def get_users(self):
         """
         Returns a dictionary with the configured users.
-        The keys of the main dictionary represents the username. The values represent the details of the user,
-        represented by the following keys:
-
+        The keys of the main dictionary represents the username. The values represent the details
+        of the user, represented by the following keys:
             * level (int)
             * password (str)
             * sshkeys (list)
 
-        The level is an integer between 0 and 15, where 0 is the lowest access and 15 represents full access to the device.
+        The level is an integer between 0 and 15, where 0 is the lowest access and 15 represents
+        full access to the device.
 
         Example::
 
@@ -1446,7 +1459,12 @@ class NetworkDriver(object):
                     'level': 15,
                     'password': '$1$0P70xKPa$z46fewjo/10cBTckk6I/w/',
                     'sshkeys': [
-                        'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4pFn+shPwTb2yELO4L7NtQrKOJXNeCl1jel9STXVaGnRAnuc2PXl35vnWmcUq6YbUEcgUTRzzXfmelJKuVJTJIlMXii7h2xkbQp0YZIEs4P8ipwnRBAxFfk/ZcDsN3mjep4/yjN56eorF5xs7zP9HbqbJ1dsqk1p3A/9LIL7l6YewLBCwJj6D+fWSJ0/YW+7oH17Fk2HH+tw0L5PcWLHkwA4t60iXn16qDbIk/ze6jv2hDGdCdz7oYQeCE55CCHOHMJWYfN3jcL4s0qv8/u6Ka1FVkV7iMmro7ChThoV/5snI4Ljf2wKqgHH7TfNaCfpU0WvHAnTs8zhOrGScSrtb mircea@master-roshi'
+                        'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4pFn+shPwTb2yELO4L7NtQrKOJXNeCl1je\
+                         l9STXVaGnRAnuc2PXl35vnWmcUq6YbUEcgUTRzzXfmelJKuVJTJIlMXii7h2xkbQp0YZIEs4P\
+                         8ipwnRBAxFfk/ZcDsN3mjep4/yjN56eorF5xs7zP9HbqbJ1dsqk1p3A/9LIL7l6YewLBCwJj6\
+                         D+fWSJ0/YW+7oH17Fk2HH+tw0L5PcWLHkwA4t60iXn16qDbIk/ze6jv2hDGdCdz7oYQeCE55C\
+                         CHOHMJWYfN3jcL4s0qv8/u6Ka1FVkV7iMmro7ChThoV/5snI4Ljf2wKqgHH7TfNaCfpU0WvHA\
+                         nTs8zhOrGScSrtb mircea@master-roshi'
                     ]
                 }
             }

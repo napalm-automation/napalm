@@ -5,18 +5,17 @@ NAPALM CLI Tools: configure
 
 Deploy device config from the shell.
 '''
-
 from __future__ import print_function
 
-import sys
-
-import logging
-logger = logging.getLogger('cl-napalm-config.py')
-
 # import helpers
+from napalm_base import get_network_driver
 from napalm_base.clitools.helpers import build_help
 from napalm_base.clitools.helpers import configure_logging
 from napalm_base.clitools.helpers import parse_optional_args
+
+import sys
+import logging
+logger = logging.getLogger('cl-napalm-config.py')
 
 
 def run(vendor, hostname, user, password, strategy, optional_args, config_file, dry_run):
@@ -25,9 +24,8 @@ def run(vendor, hostname, user, password, strategy, optional_args, config_file, 
     driver = get_network_driver(vendor)
 
     optional_args = parse_optional_args(optional_args)
-
-    logger.debug('Connecting to device "{device}" with user "{user}" and optional_args={optional_args}'.format(
-                    device=hostname, user=user, optional_args=optional_args))
+    logger.debug('Connecting to device "{}" with user "{}" and optional_args={}'.format(
+                 hostname, user, optional_args))
     with driver(hostname, user, password, optional_args=optional_args) as device:
         logger.debug('Strategy for loading configuration is "{strategy}"'.format(strategy=strategy))
         if strategy == 'replace':
@@ -47,7 +45,6 @@ def run(vendor, hostname, user, password, strategy, optional_args, config_file, 
             logger.debug('Committing configuration')
             device.commit_config()
         logger.debug('Closing session')
-
         return diff
 
 

@@ -167,7 +167,6 @@ def find_txt(xml_tree, path, default=''):
 
 
 def convert(to, who, default=u''):
-
     """
     Converts data to a specific datatype.
     In case of error, will return a default value.
@@ -177,7 +176,6 @@ def convert(to, who, default=u''):
     :param default: value to return in case of error.
     :return: a str value.
     """
-
     if who is None:
         return default
     try:

@@ -80,89 +80,89 @@ af = {
 }
 
 lldp_neighbors_detail = {
-    'parent_interface'          : unicode,
-    'remote_port'               : unicode,
-    'remote_chassis_id'         : unicode,
-    'remote_port'               : unicode,
-    'remote_port_description'   : unicode,
-    'remote_system_name'        : unicode,
-    'remote_system_description' : unicode,
-    'remote_system_capab'       : unicode,
+    'parent_interface': unicode,
+    'remote_port': unicode,
+    'remote_chassis_id': unicode,
+    'remote_port': unicode,
+    'remote_port_description': unicode,
+    'remote_system_name': unicode,
+    'remote_system_description': unicode,
+    'remote_system_capab': unicode,
     'remote_system_enable_capab': unicode
 }
 
 bgp_config_group = {
-    'type'              : unicode,
-    'description'       : unicode,
-    'apply_groups'      : list,
-    'multihop_ttl'      : int,
-    'multipath'         : bool,
-    'local_address'     : unicode,
-    'local_as'          : int,
-    'remote_as'         : int,
-    'import_policy'     : unicode,
-    'export_policy'     : unicode,
-    'remove_private_as' : bool,
-    'prefix_limit'      : dict,
-    'neighbors'         : dict
+    'type': unicode,
+    'description': unicode,
+    'apply_groups': list,
+    'multihop_ttl': int,
+    'multipath': bool,
+    'local_address': unicode,
+    'local_as': int,
+    'remote_as': int,
+    'import_policy': unicode,
+    'export_policy': unicode,
+    'remove_private_as': bool,
+    'prefix_limit': dict,
+    'neighbors': dict
 }
 
 bgp_config_neighbor = {
-    'description'           : unicode,
-    'import_policy'         : unicode,
-    'export_policy'         : unicode,
-    'local_address'         : unicode,
-    'authentication_key'    : unicode,
-    'nhs'                   : bool,
+    'description': unicode,
+    'import_policy': unicode,
+    'export_policy': unicode,
+    'local_address': unicode,
+    'authentication_key': unicode,
+    'nhs': bool,
     'route_reflector_client': bool,
-    'local_as'              : int,
-    'remote_as'             : int,
-    'prefix_limit'          : dict
+    'local_as': int,
+    'remote_as': int,
+    'prefix_limit': dict
 }
 
 peer_details = {
-    'up'                        : bool,
-    'local_as'                  : int,
-    'remote_as'                 : int,
-    'router_id'                 : unicode,
-    'local_address'             : unicode,
-    'routing_table'             : unicode,
-    'local_address_configured'  : bool,
-    'local_port'                : int,
-    'remote_address'            : unicode,
-    'remote_port'               : int,
-    'multihop'                  : bool,
-    'multipath'                 : bool,
-    'remove_private_as'         : bool,
-    'import_policy'             : unicode,
-    'export_policy'             : unicode,
-    'input_messages'            : int,
-    'output_messages'           : int,
-    'input_updates'             : int,
-    'output_updates'            : int,
-    'messages_queued_out'       : int,
-    'connection_state'          : unicode,
-    'previous_connection_state' : unicode,
-    'last_event'                : unicode,
-    'suppress_4byte_as'         : bool,
-    'local_as_prepend'          : bool,
-    'holdtime'                  : int,
-    'configured_holdtime'       : int,
-    'keepalive'                 : int,
-    'configured_keepalive'      : int,
-    'active_prefix_count'       : int,
-    'received_prefix_count'     : int,
-    'accepted_prefix_count'     : int,
-    'suppressed_prefix_count'   : int,
-    'advertised_prefix_count'   : int,
-    'flap_count'                : int
+    'up': bool,
+    'local_as': int,
+    'remote_as': int,
+    'router_id': unicode,
+    'local_address': unicode,
+    'routing_table': unicode,
+    'local_address_configured': bool,
+    'local_port': int,
+    'remote_address': unicode,
+    'remote_port': int,
+    'multihop': bool,
+    'multipath': bool,
+    'remove_private_as': bool,
+    'import_policy': unicode,
+    'export_policy': unicode,
+    'input_messages': int,
+    'output_messages': int,
+    'input_updates': int,
+    'output_updates': int,
+    'messages_queued_out': int,
+    'connection_state': unicode,
+    'previous_connection_state': unicode,
+    'last_event': unicode,
+    'suppress_4byte_as': bool,
+    'local_as_prepend': bool,
+    'holdtime': int,
+    'configured_holdtime': int,
+    'keepalive': int,
+    'configured_keepalive': int,
+    'active_prefix_count': int,
+    'received_prefix_count': int,
+    'accepted_prefix_count': int,
+    'suppressed_prefix_count': int,
+    'advertised_prefix_count': int,
+    'flap_count': int
 }
 
 arp_table = {
-    'interface' : unicode,
-    'mac'       : unicode,
-    'ip'        : unicode,
-    'age'       : float
+    'interface': unicode,
+    'mac': unicode,
+    'ip': unicode,
+    'age': float
 }
 
 ntp_peer = {
@@ -174,17 +174,17 @@ ntp_server = {
 }
 
 ntp_stats = {
-    'remote'        : unicode,
-    'referenceid'   : unicode,
-    'synchronized'  : bool,
-    'stratum'       : int,
-    'type'          : unicode,
-    'when'          : unicode,
-    'hostpoll'      : int,
-    'reachability'  : int,
-    'delay'         : float,
-    'offset'        : float,
-    'jitter'        : float
+    'remote': unicode,
+    'referenceid': unicode,
+    'synchronized': bool,
+    'stratum': int,
+    'type': unicode,
+    'when': unicode,
+    'hostpoll': int,
+    'reachability': int,
+    'delay': float,
+    'offset': float,
+    'jitter': float
 }
 
 interfaces_ip = {
@@ -192,66 +192,66 @@ interfaces_ip = {
 }
 
 mac_address_table = {
-    'mac'       : unicode,
-    'interface' : unicode,
-    'vlan'      : int,
-    'static'    : bool,
-    'active'    : bool,
-    'moves'     : int,
-    'last_move' : float
+    'mac': unicode,
+    'interface': unicode,
+    'vlan': int,
+    'static': bool,
+    'active': bool,
+    'moves': int,
+    'last_move': float
 }
 
 route = {
-    'protocol'           : unicode,
-    'current_active'     : bool,
-    'last_active'        : bool,
-    'age'                : int,
-    'next_hop'           : unicode,
-    'outgoing_interface' : unicode,
-    'selected_next_hop'  : bool,
-    'preference'         : int,
-    'inactive_reason'    : unicode,
-    'routing_table'      : unicode,
+    'protocol': unicode,
+    'current_active': bool,
+    'last_active': bool,
+    'age': int,
+    'next_hop': unicode,
+    'outgoing_interface': unicode,
+    'selected_next_hop': bool,
+    'preference': int,
+    'inactive_reason': unicode,
+    'routing_table': unicode,
     'protocol_attributes': dict
 }
 
 snmp = {
-    'chassis_id'        : unicode,
-    'community'         : dict,
-    'contact'           : unicode,
-    'location'          : unicode
+    'chassis_id': unicode,
+    'community': dict,
+    'contact': unicode,
+    'location': unicode
 }
 
 snmp_community = {
-    'acl'               : unicode,
-    'mode'              : unicode,
+    'acl': unicode,
+    'mode': unicode,
 }
 
 probe_test = {
-    'probe_type'    : unicode,
-    'target'        : unicode,
-    'source'        : unicode,
-    'probe_count'   : int,
-    'test_interval' : int
+    'probe_type': unicode,
+    'target': unicode,
+    'source': unicode,
+    'probe_count': int,
+    'test_interval': int
 }
 
 probe_test_results = {
-    'target'                : unicode,
-    'source'                : unicode,
-    'probe_type'            : unicode,
-    'probe_count'           : int,
-    'rtt'                   : float,
-    'round_trip_jitter'     : float,
-    'last_test_loss'        : int,
+    'target': unicode,
+    'source': unicode,
+    'probe_type': unicode,
+    'probe_count': int,
+    'rtt': float,
+    'round_trip_jitter': float,
+    'last_test_loss': int,
     'current_test_min_delay': float,
     'current_test_max_delay': float,
     'current_test_avg_delay': float,
-    'last_test_min_delay'   : float,
-    'last_test_max_delay'   : float,
-    'last_test_avg_delay'   : float,
-    'global_test_min_delay' : float,
-    'global_test_max_delay' : float,
-    'global_test_avg_delay' : float
+    'last_test_min_delay': float,
+    'last_test_max_delay': float,
+    'last_test_avg_delay': float,
+    'global_test_min_delay': float,
+    'global_test_max_delay': float,
+    'global_test_avg_delay': float
 }
 
 ping = {
