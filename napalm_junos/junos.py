@@ -195,7 +195,10 @@ class JunOSDriver(NetworkDriver):
                 'is_enabled': interfaces[iface]['is_enabled'],
                 'description': (interfaces[iface]['description'] or u''),
                 'last_flapped': float((interfaces[iface]['last_flapped'] or -1)),
-                'mac_address': napalm_base.helpers.mac(interfaces[iface]['mac_address']),
+                'mac_address': napalm_base.helpers.convert(
+                    napalm_base.helpers.mac,
+                    interfaces[iface]['mac_address'],
+                    unicode(interfaces[iface]['mac_address'])),
                 'speed': -1
             }
             # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
@@ -444,7 +447,8 @@ class JunOSDriver(NetworkDriver):
                 lldp_neighbors[interface].append({
                     'parent_interface': item.parent_interface,
                     'remote_port': item.remote_port,
-                    'remote_chassis_id': napalm_base.helpers.mac(item.remote_chassis_id),
+                    'remote_chassis_id': napalm_base.helpers.convert(
+                        napalm_base.helpers.mac, item.remote_chassis_id, item.remote_chassis_id),
                     'remote_port_description': napalm_base.helpers.convert(
                         unicode, item.remote_port_description),
                     'remote_system_name': item.remote_system_name,
@@ -612,7 +616,8 @@ class JunOSDriver(NetworkDriver):
                     if isinstance(value, list):
                         value = ' '.join(value)
                 if key == 'local_address':
-                    value = napalm_base.helpers.ip(value)
+                    value = napalm_base.helpers.convert(
+                        napalm_base.helpers.ip, value, value)
                 bgp_peer_details.update({
                     key: napalm_base.helpers.convert(datatype, value, default)
                 })
@@ -653,7 +658,8 @@ class JunOSDriver(NetworkDriver):
                     if isinstance(value, list):
                         value = ' '.join(value)
                 if key == 'local_address':
-                    value = napalm_base.helpers.ip(value)
+                    value = napalm_base.helpers.convert(
+                        napalm_base.helpers.ip, value, value)
                 bgp_config[bgp_group_name].update({
                     key: napalm_base.helpers.convert(datatype, value, default)
                 })
@@ -748,7 +754,8 @@ class JunOSDriver(NetworkDriver):
             four_byte_as = neighbor_details.pop('4byte_as', 0)
             local_address = neighbor_details.pop('local_address', '')
             local_details = local_address.split('+')
-            neighbor_details['local_address'] = napalm_base.helpers.ip(local_details[0])
+            neighbor_details['local_address'] = napalm_base.helpers.convert(
+                napalm_base.helpers.ip, local_details[0], local_details[0])
             if len(local_details) == 2:
                 neighbor_details['local_port'] = int(local_details[1])
             else:
@@ -756,7 +763,8 @@ class JunOSDriver(NetworkDriver):
             neighbor_details['suppress_4byte_as'] = (remote_as != four_byte_as)
             peer_address = neighbor_details.pop('peer_address', '')
             remote_details = peer_address.split('+')
-            neighbor_details['remote_address'] = napalm_base.helpers.ip(remote_details[0])
+            neighbor_details['remote_address'] = napalm_base.helpers.convert(
+                napalm_base.helpers.ip, remote_details[0], remote_details[0])
             if len(remote_details) == 2:
                 neighbor_details['remote_port'] = int(remote_details[1])
             else:
@@ -887,9 +895,11 @@ class JunOSDriver(NetworkDriver):
         }
 
         for interface_details in interface_table_items:
-            ip_address = interface_details[0]
-            address = napalm_base.helpers.ip(ip_address.split('/')[0])
-            prefix = napalm_base.helpers.convert(int, ip_address.split('/')[-1], 0)
+            ip_network = interface_details[0]
+            ip_address = ip_network.split('/')[0]
+            address = napalm_base.helpers.convert(
+                napalm_base.helpers.ip, ip_address, ip_address)
+            prefix = napalm_base.helpers.convert(int, ip_network.split('/')[-1], 0)
             interface = unicode(interface_details[1][0][1])
             family_raw = interface_details[1][1][1]
             family = _FAMILY_VMAP_.get(family_raw)
@@ -932,7 +942,8 @@ class JunOSDriver(NetworkDriver):
             mac_entry.update(
                 {elem[0]: elem[1] for elem in mac_table_entry[1]}
             )
-            mac_entry['mac'] = napalm_base.helpers.mac(mac_entry.get('mac'))
+            mac = mac_entry.get('mac')
+            mac_entry['mac'] = napalm_base.helpers.mac(mac)
             mac_address_table.append(mac_entry)
 
         return mac_address_table
@@ -1107,13 +1118,11 @@ class JunOSDriver(NetworkDriver):
                 p[0]: p[1] for p in probe_test[1]
             }
             probe_name = napalm_base.helpers.convert(unicode, test_details.pop('probe_name'))
-            target = napalm_base.helpers.convert(
-                napalm_base.helpers.ip, test_details.pop('target', ''))
+            target = napalm_base.helpers.convert(unicode, test_details.pop('target', ''))
             test_interval = napalm_base.helpers.convert(int, test_details.pop('test_interval', '0'))
             probe_count = napalm_base.helpers.convert(int, test_details.pop('probe_count', '0'))
             probe_type = napalm_base.helpers.convert(unicode, test_details.pop('probe_type', ''))
-            source = napalm_base.helpers.convert(
-                napalm_base.helpers.ip, test_details.pop('source_address', ''))
+            source = napalm_base.helpers.convert(unicode, test_details.pop('source_address', ''))
             if probe_name not in probes.keys():
                 probes[probe_name] = {}
             probes[probe_name][test_name] = {
@@ -1144,8 +1153,7 @@ class JunOSDriver(NetworkDriver):
                     test_results[test_param_name] = test_param_value * 1e-3
                     # convert from useconds to mseconds
             test_name = test_results.pop('test_name', '')
-            source = napalm_base.helpers.convert(
-                napalm_base.helpers.ip, test_results.get('source', u''))
+            source = test_results.get('source', u'')
             if source is None:
                 test_results['source'] = u''
             if probe_name not in probes_results.keys():
