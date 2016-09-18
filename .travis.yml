@@ -20,3 +20,4 @@ script:
   - nosetests ./test/unit/TestGetNetworkDriver.py
   - nosetests ./test/unit/TestHelpers.py
   - nosetests ./test/unit/TestNapalmTestFramework.py
+  - pylama .

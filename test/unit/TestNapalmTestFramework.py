@@ -1,11 +1,11 @@
 import unittest
-import napalm_base.helpers
 from napalm_base.base import NetworkDriver
 import napalm_base.test.base as ntb
 
 # Note: don't import the TestGettersNetworkDriver class itself, or
 # nose finds it and tries to run the tests for it, which yields
 # errors.
+
 
 class TestSkipNotImplemented(unittest.TestCase, ntb.TestGettersNetworkDriver):
     """Ensure that any tests are skipped if not implemented."""
