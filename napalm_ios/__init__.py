@@ -13,8 +13,12 @@
 # the License.
 
 """napalm_ios package."""
-from pkg_resources import get_distribution
+import pkg_resources
 from napalm_ios.ios import IOSDriver
 
-__version__ = get_distribution('napalm-ios').version
+try:
+    __version__ = pkg_resources.get_distribution('napalm-ios').version
+except pkg_resources.DistributionNotFound:
+    __version__ = "Not installed"
+
 __all__ = ['IOSDriver']
