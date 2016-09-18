@@ -5,7 +5,8 @@ python:
 
 install:
   - pip install .
-  - pip install -r test/unit/requirements-dev.txt
+  - pip install -r requirements-dev.txt
+  - pip install -r test/unit/requirements.txt
 
 deploy:
   provider: pypi
