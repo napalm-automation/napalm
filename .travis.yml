@@ -4,10 +4,8 @@ python:
 install:
 - pip install -r requirements.txt
 - pip install .
-- git clone https://github.com/napalm-automation/napalm-base.git napalm-automation/napalm-base
-- cd napalm-automation/napalm-base
-- python setup.py install
-- cd ../..
+- pip install -e git+https://github.com/napalm-automation/napalm-base.git@develop#egg=napalm-base
+- pip install coveralls
 deploy:
   provider: pypi
   user: dbarroso
@@ -18,6 +16,8 @@ deploy:
     branch: master
 script:
 - cd test/unit
-- nosetests -v TestDriver:TestGetterDriver.test_get_facts
-- nosetests -v TestDriver:TestGetterDriver.test_get_interfaces
+- nosetests --with-coverage --cover-package napalm_panos -v TestDriver:TestGetterDriver.test_get_facts
+- nosetests --with-coverage --cover-package napalm_panos -v TestDriver:TestGetterDriver.test_get_interfaces
 - cd ../..
+- coverage combine test/unit/.coverage
+after_success: coveralls
