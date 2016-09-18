@@ -53,10 +53,8 @@ class TestGetterPluribusDriver(unittest.TestCase, TestGettersNetworkDriver):
 
 class FakePluribusConfig:
 
-
     def __init__(self, device):
         self._device = device
-
 
     def _download_running_config(self):
         return self._device.show('running config')
@@ -67,12 +65,10 @@ class FakePluribusDevice:
     def __init__(self):
         self.config = FakePluribusConfig(self)
 
-
     @staticmethod
     def read_txt_file(filename):
         with open(filename) as data_file:
             return data_file.read()
-
 
     def execute_show(self, command):
 

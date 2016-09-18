@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2016 CloudFlare, Inc. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
@@ -12,6 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+"""Pluribus driver."""
+
 # python std lib
 import re
 
@@ -20,6 +23,7 @@ import pyPluribus.exceptions
 from pyPluribus import PluribusDevice
 
 # NAPALM base
+import napalm_base.helpers
 import napalm_base.exceptions
 from napalm_base.base import NetworkDriver
 
@@ -43,37 +47,29 @@ class PluribusDriver(NetworkDriver):
 
         self.device = PluribusDevice(hostname, username, password, self.port, timeout)
 
-
     def open(self):
         try:
             self.device.open()
         except pyPluribus.exceptions.ConnectionError as connerr:
             raise napalm_base.exceptions.ConnectionException(connerr.message)
 
-
     def close(self):
         self.device.close()
-
 
     def load_merge_candidate(self, filename=None, config=None):
         return self.device.config.load_candidate(filename=filename, config=config)
 
-
     def config_compare(self):
         return self.device.config.compare()
-
 
     def commit_config(self):
         return self.device.config.commit()
 
-
     def discard_config(self):
         return self.device.config.discard()
 
-
     def rollback(self):
         return self.device.config.rollback(number=1)
-
 
     def get_facts(self):
 
@@ -96,7 +92,6 @@ class PluribusDriver(NetworkDriver):
         uptime_days_split = uptime_str.split('d')
         uptime_days = int(uptime_days_split[0])
         uptime_hours_split = uptime_days_split[-1].split('h')
-        uptime_hours = int(uptime_hours_split[0])
         uptime_minutes_split = uptime_hours_split[-1].split('m')
         uptime_minutes = int(uptime_minutes_split[0])
         uptime_seconds = int(uptime_minutes_split[-1].replace('s', ''))
@@ -123,7 +118,6 @@ class PluribusDriver(NetworkDriver):
 
         return facts
 
-
     def cli(self, commands=None):
 
         cli_output = {}
@@ -136,12 +130,11 @@ class PluribusDriver(NetworkDriver):
 
         return cli_output
 
-
     def get_interfaces(self):
 
         interfaces = {}
 
-        interface_info   = self.device.show('port config', delim='@$@')
+        interface_info = self.device.show('port config', delim='@$@')
         interfaces_lines = interface_info.splitlines()[1:-1]
 
         for line in interfaces_lines:
@@ -162,11 +155,11 @@ class PluribusDriver(NetworkDriver):
                 'description': description,
                 'last_flapped': last_flap,
                 'speed': speed,
-                'mac_address': mac_address
+                'mac_address': napalm_base.helpers.convert(
+                    napalm_base.helpers.mac, mac_address)
             }
 
         return interfaces
-
 
     def get_mac_address_table(self):
 
@@ -177,14 +170,13 @@ class PluribusDriver(NetworkDriver):
 
         for line in lines:
             mac_details = line.split('@$@')
-            mac_raw = unicode(mac_details[2].strip())
-            mac_all = mac_raw.replace('.', '').replace(':', '')
-            mac_format = unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
+            mac_raw = mac_details[2].strip()
             vlan = int(mac_details[3].strip())
             ports = unicode(mac_details[8].strip())
             active = (mac_details[9].strip == 'active')
             mac_table.append({
-                'mac': mac_format,
+                'mac': napalm_base.helpers.convert(
+                    napalm_base.helpers.mac, mac_raw),
                 'interface': ports,
                 'vlan': vlan,
                 'active': active,
@@ -194,7 +186,6 @@ class PluribusDriver(NetworkDriver):
             })
 
         return mac_table
-
 
     def get_lldp_neighbors(self):
 
@@ -217,7 +208,6 @@ class PluribusDriver(NetworkDriver):
 
         return lldp_neighbors
 
-
     def get_lldp_neighbors_detail(self):
 
         lldp_neighbors = {}
@@ -228,7 +218,8 @@ class PluribusDriver(NetworkDriver):
         for line in lines:
             neighbor_details = line.split('@$@')
             port = unicode(neighbor_details[1].strip())
-            chassis = unicode(neighbor_details[2].strip())
+            chassis = napalm_base.helpers.convert(
+                    napalm_base.helpers.mac, neighbor_details[2].strip())
             port_id = unicode(neighbor_details[3].strip())
             port_descr = unicode(neighbor_details[4].strip())
             system_name = unicode(neighbor_details[6].strip())
@@ -250,7 +241,10 @@ class PluribusDriver(NetworkDriver):
     def get_ntp_servers(self):
 
         ntp_stats = self.get_ntp_stats()
-        return {ntp_peer.get('remote'): {} for ntp_peer in ntp_stats if ntp_peer.get('remote', '')}
+        return {
+            napalm_base.helpers.convert(napalm_base.helpers.ip, ntp_peer.get('remote')): {}
+            for ntp_peer in ntp_stats if ntp_peer.get('remote', '')
+        }
 
     def get_ntp_stats(self):
 
@@ -285,7 +279,7 @@ class PluribusDriver(NetworkDriver):
         }
 
         switch_info = self.device.show('switch info', delim='@$@')
-        chassis_id  = switch_info.splitlines()[2].split('@$@')[-1]
+        chassis_id = switch_info.splitlines()[2].split('@$@')[-1]
 
         snmp_information['chassis_id'] = unicode(chassis_id)
         snmp_information['contact'] = u''
@@ -327,7 +321,8 @@ class PluribusDriver(NetworkDriver):
             running_config = role_details[6]
             if access == 'read-write' and running_config == 'permit':
                 level = 15
-            if (access == 'read-write' and running_config == 'deny') or (access == 'read-only' and running_config == 'permit'):
+            if (access == 'read-write' and running_config == 'deny') or\
+               (access == 'read-only' and running_config == 'permit'):
                 level = 5
             if access == 'read-only' and running_config == 'deny':
                 level = 1
@@ -413,10 +408,11 @@ class PluribusDriver(NetworkDriver):
             hop_index = int(hop_details[0])
             previous_probe_host_name = '*'
             previous_probe_ip_address = '*'
-            traceroute_result['success'][hop_index] = {'probes':{}}
+            traceroute_result['success'][hop_index] = {'probes': {}}
             for probe_index in range(probes):
                 host_name = hop_details[3+probe_index*5]
-                ip_address = hop_details[4+probe_index*5]
+                ip_address = napalm_base.helpers.convert(
+                        napalm_base.helpers.ip, hop_details[4+probe_index*5])
                 rtt = hop_details[5+probe_index*5]
                 if rtt:
                     rtt = float(rtt)
