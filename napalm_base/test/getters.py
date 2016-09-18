@@ -1,7 +1,8 @@
 """Testing framework."""
-
 from __future__ import print_function
+from __future__ import unicode_literals
 
+import sys
 import functools
 import itertools
 import json
@@ -9,11 +10,12 @@ import json
 from double import BaseTestDouble
 
 import helpers
-
 import models
-
-
 import pytest
+
+# For unit tests only!
+if sys.version[0] == '3':
+    unicode = str
 
 
 def list_dicts_diff(prv, nxt):

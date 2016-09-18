@@ -143,7 +143,6 @@ def textfsm_extractor(cls, template_name, raw_text):
 
 
 def find_txt(xml_tree, path, default=''):
-
     """
     Extracts the text value from an XML tree, using XPath.
     In case of error, will return a default value.
@@ -153,9 +152,7 @@ def find_txt(xml_tree, path, default=''):
     :param default:  Value to be returned in case of error.
     :return: a str value.
     """
-
     value = ''
-
     try:
         xpath_applied = xml_tree.xpath(path)  # will consider the first match only
         if len(xpath_applied) and xpath_applied[0] is not None:
@@ -166,8 +163,7 @@ def find_txt(xml_tree, path, default=''):
                 value = xpath_result
     except Exception:  # in case of any exception, returns default
         value = default
-
-    return unicode(value)
+    return value
 
 
 def convert(to, who, default=u''):
@@ -223,7 +219,7 @@ def mac(raw):
             flat_raw=flat_raw,
             zeros_stuffed='0'*(12-len(flat_raw))
         )
-    return unicode(EUI(raw, dialect=_MACFormat))
+    return EUI(raw, dialect=_MACFormat)
 
 
 def ip(addr):
@@ -246,5 +242,4 @@ def ip(addr):
         >>> ip('2001:0dB8:85a3:0000:0000:8A2e:0370:7334')
         u'2001:db8:85a3::8a2e:370:7334'
     """
-
-    return unicode(IPAddress(addr))
+    return IPAddress(addr)
