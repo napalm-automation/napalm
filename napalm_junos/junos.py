@@ -339,10 +339,15 @@ class JunOSDriver(NetworkDriver):
         """
         address_family_mapping = {
             'inet': 'ipv4',
-            'inet6': 'ipv6'
+            'inet6': 'ipv6',
+            'inetflow': 'flow'
         }
         family = table.split('.')[-2]
-        return address_family_mapping[family]
+        try:
+            address_family = address_family_mapping[family]
+        except KeyError:
+            address_family = family
+        return address_family
 
     def _parse_route_stats(self, neighbor):
         data = {}
