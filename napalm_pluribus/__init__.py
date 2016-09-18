@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2016 CloudFlare, Inc. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
@@ -13,4 +14,14 @@
 # the License.
 
 """napalm_pluribus package."""
-from pluribus import PluribusDriver
+
+# Import stdlib
+import pkg_resources
+
+# Import local modules
+from pluribus import PluribusDriver  # noqa
+
+try:
+    __version__ = pkg_resources.get_distribution('napalm-pluribus').version
+except pkg_resources.DistributionNotFound:
+    __version__ = "Not installed"
