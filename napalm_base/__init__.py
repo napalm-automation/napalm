@@ -19,17 +19,14 @@ import sys
 import inspect
 import importlib
 
-import pkg_resources
+from pkg_resources import get_distribution
 
 # NAPALM base
 
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ModuleImportError
 
-try:
-    __version__ = pkg_resources.get_distribution('napalm-base').version
-except pkg_resources.DistributionNotFound:
-    __version__ = "Not installed"
+__version__ = get_distribution('napalm-base').version
 
 __all__ = [
     'get_network_driver',  # export the function
