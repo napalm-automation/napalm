@@ -2,7 +2,7 @@ language: python
 python:
 - 2.7
 install:
-- pip install -r requirements.txt
+- pip install -r requirements-dev.txt
 - pip install .
 deploy:
   provider: pypi
@@ -13,6 +13,7 @@ deploy:
     tags: true
     branch: master
 script:
+- pylama .
 - cd test/unit
 - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_arp_table
 - nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_bgp_neighbors
