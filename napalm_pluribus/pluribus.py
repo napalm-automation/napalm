@@ -23,6 +23,7 @@ import pyPluribus.exceptions
 from pyPluribus import PluribusDevice
 
 # NAPALM base
+import napalm_base.helpers
 import napalm_base.exceptions
 from napalm_base.base import NetworkDriver
 
@@ -154,7 +155,8 @@ class PluribusDriver(NetworkDriver):
                 'description': description,
                 'last_flapped': last_flap,
                 'speed': speed,
-                'mac_address': mac_address
+                'mac_address': napalm_base.helpers.convert(
+                    napalm_base.helpers.mac, mac_address)
             }
 
         return interfaces
@@ -168,14 +170,13 @@ class PluribusDriver(NetworkDriver):
 
         for line in lines:
             mac_details = line.split('@$@')
-            mac_raw = unicode(mac_details[2].strip())
-            mac_all = mac_raw.replace('.', '').replace(':', '')
-            mac_format = unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
+            mac_raw = mac_details[2].strip()
             vlan = int(mac_details[3].strip())
             ports = unicode(mac_details[8].strip())
             active = (mac_details[9].strip == 'active')
             mac_table.append({
-                'mac': mac_format,
+                'mac': napalm_base.helpers.convert(
+                    napalm_base.helpers.mac, mac_raw),
                 'interface': ports,
                 'vlan': vlan,
                 'active': active,
@@ -217,7 +218,8 @@ class PluribusDriver(NetworkDriver):
         for line in lines:
             neighbor_details = line.split('@$@')
             port = unicode(neighbor_details[1].strip())
-            chassis = unicode(neighbor_details[2].strip())
+            chassis = napalm_base.helpers.convert(
+                    napalm_base.helpers.mac, neighbor_details[2].strip())
             port_id = unicode(neighbor_details[3].strip())
             port_descr = unicode(neighbor_details[4].strip())
             system_name = unicode(neighbor_details[6].strip())
@@ -239,7 +241,10 @@ class PluribusDriver(NetworkDriver):
     def get_ntp_servers(self):
 
         ntp_stats = self.get_ntp_stats()
-        return {ntp_peer.get('remote'): {} for ntp_peer in ntp_stats if ntp_peer.get('remote', '')}
+        return {
+            napalm_base.helpers.convert(napalm_base.helpers.ip, ntp_peer.get('remote')): {}
+            for ntp_peer in ntp_stats if ntp_peer.get('remote', '')
+        }
 
     def get_ntp_stats(self):
 
@@ -406,7 +411,8 @@ class PluribusDriver(NetworkDriver):
             traceroute_result['success'][hop_index] = {'probes': {}}
             for probe_index in range(probes):
                 host_name = hop_details[3+probe_index*5]
-                ip_address = hop_details[4+probe_index*5]
+                ip_address = napalm_base.helpers.convert(
+                        napalm_base.helpers.ip, hop_details[4+probe_index*5])
                 rtt = hop_details[5+probe_index*5]
                 if rtt:
                     rtt = float(rtt)
