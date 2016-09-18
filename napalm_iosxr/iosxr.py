@@ -200,7 +200,7 @@ class IOSXRDriver(NetworkDriver):
             if not interface_name:
                 continue
             is_up = (find_txt(interface_tree, 'LineState') == 'IM_STATE_UP')
-            is_enabled = (find_txt(interface_tree, 'LineState') == 'IM_STATE_UP')
+            is_enabled = (find_txt(interface_tree, 'State') == 'IM_STATE_UP')
             mac_address = mac(find_txt(interface_tree, 'MACAddress/Address'))
             speed = int(convert(int, find_txt(interface_tree, 'Bandwidth'), 0) * 1e-3)
             description = find_txt(interface_tree, 'Description')
