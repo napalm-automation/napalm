@@ -2,8 +2,8 @@ language: python
 python:
 - 2.7
 install:
-- pip install -r requirements.txt
 - pip install .
+- pip install -r requirements-dev.txt
 - pip install -e git+https://github.com/napalm-automation/napalm-base.git@develop#egg=napalm-base
 deploy:
   provider: pypi
@@ -14,25 +14,4 @@ deploy:
     tags: true
     branch: master
 script:
-- cd test/unit
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_arp_table
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_config
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_environment
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_facts
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces_counters
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_interfaces_ip
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_lldp_neighbors_detail
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_mac_address_table
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_ntp_servers
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_ntp_stats
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_route_to
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_snmp_information
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_users
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_traceroute
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_bgp_neighbors_detail
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_optics
-- nosetests -v TestEOSDriver:TestGetterEOSDriver.test_get_config
-- cd ../..
+- py.test
