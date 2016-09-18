@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import sys
 from pyIOSXR import IOSXR
@@ -13,8 +15,8 @@ import httplib
 
 
 def print_info_message():
-    print "BOX is no longer reachable with vagrant up. Use ssh (check the IP in the initial conf)"
-    print "Don't forget to change the network type of the first NIC of the box."
+    print("BOX is no longer reachable with vagrant up. Use ssh (check the IP in the initial conf)")
+    print("Don't forget to change the network type of the first NIC of the box.")
 
 
 def provision_iosxr(port, username, password):
