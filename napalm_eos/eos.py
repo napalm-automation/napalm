@@ -1474,7 +1474,6 @@ class EOSDriver(NetworkDriver):
         else:
             raise Exception("Wrong retrieve filter: {}".format(retrieve))
 
-
     def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
         """
         Execute ping on the device and returns a dictionary with the result.
@@ -1513,18 +1512,18 @@ class EOSDriver(NetworkDriver):
                                 'rtt_stddev': 0.0,
                                 'results': []
             }
-	    results_array=[]
+            results_array = []
             for line in output.splitlines():
                 fields = line.split()
                 if 'icmp' in line:
                     if 'Unreachable' in line:
-                        results_array.append({'ip_address': unicode(fields[1]),'rtt': 0.0})
+                        results_array.append({'ip_address': unicode(fields[1]), 'rtt': 0.0})
                     elif fields[1] == 'bytes':
-		        m = fields[6][5:]
-                        results_array.append({'ip_address': unicode(fields[3]),'rtt': float(m)})
+                        m = fields[6][5:]
+                        results_array.append({'ip_address': unicode(fields[3]), 'rtt': float(m)})
                 elif 'packets transmitted' in line:
                     ping_dict['success']['probes_sent'] = int(fields[0])
-                    ping_dict['success']['packet_loss'] = int(fields[0])-int(fields[3])
+                    ping_dict['success']['packet_loss'] = int(fields[0]) - int(fields[3])
                 elif 'min/avg/max' in line:
                     m = fields[3].split('/')
                     ping_dict['success'].update({
@@ -1535,4 +1534,3 @@ class EOSDriver(NetworkDriver):
                     })
             ping_dict['success'].update({'results': results_array})
         return ping_dict
-
