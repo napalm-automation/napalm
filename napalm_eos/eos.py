@@ -1500,7 +1500,7 @@ class EOSDriver(NetworkDriver):
         command += ' repeat {}'.format(count)
         if source != '':
             command += ' source {}'.format(source)
-        output = self.device.run_commands(command, encoding='text')[0]['output']
+        output = self.device.run_commands([command], encoding='text')[0]['output']
         if 'connect:' in output:
             ping_dict['error'] = output
         elif 'PING' in output:
