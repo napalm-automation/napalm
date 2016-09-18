@@ -138,6 +138,29 @@ class FortiOSDriver(NetworkDriver):
         self.device.candidate_config['vpn certificate local']['Fortinet_SSLProxy'].del_param('certificate')
         self.device.commit()
 
+    def get_config(self, retrieve="all"):
+        """get_config implementation for FortiOS."""
+        get_startup = retrieve == "all" or retrieve == "startup"
+        get_running = retrieve == "all" or retrieve == "running"
+        get_candidate = retrieve == "all" or retrieve == "candidate"
+
+        if retrieve == "all" or get_running:
+            result = self.execute_command_with_vdom('show')
+            text_result = '\n'.join(result)
+
+            return {
+                'startup': "",
+                'running': text_result,
+                'candidate': "",
+            }
+
+        elif get_startup or get_candidate:
+            return {
+                'startup': "",
+                'running': "",
+                'candidate': "",
+            }
+
     def get_facts(self):
         system_status = self.get_command_with_vdom('get system status', vdom='global')
         performance_status = self.get_command_with_vdom('get system performance status', vdom='global')
