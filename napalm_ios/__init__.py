@@ -22,3 +22,5 @@ except pkg_resources.DistributionNotFound:
     __version__ = "Not installed"
 
 __all__ = ['IOSDriver']
+
+# intentionally introduce a pylama error to make sure it fails the unit tests...................................
