@@ -1,0 +1,32 @@
+### Description of Issue/Question
+
+
+### Did you follow the steps from https://github.com/napalm-automation/napalm#faq
+[ ] Yes
+[ ] No
+
+
+### Setup
+
+### napalm-junos version
+(Paste verbatim output from `pip freeze | grep napalm-junos` between quotes below)
+
+```
+
+```
+
+### JunOS version
+(Paste verbatim output from `show version and haiku` between quotes below)
+
+```
+
+```
+
+### Steps to Reproduce the Issue
+
+### Error Traceback
+(Paste the complete traceback of the exception between quotes below)
+
+```
+
+```
