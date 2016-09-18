@@ -18,9 +18,9 @@ from __future__ import unicode_literals
 
 # Python3 support
 try:
-  basestring
+    basestring
 except NameError:
-  basestring = str
+    basestring = str
 
 # Python std lib
 import sys
