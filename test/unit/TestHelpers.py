@@ -121,7 +121,6 @@ class TestBaseHelpers(unittest.TestCase):
                                                           **_TEMPLATE_VARS))
 
     def test_textfsm_extractor(self):
-
         """
         Tests the helper function ```textfsm_extractor```:
 
@@ -132,7 +131,6 @@ class TestBaseHelpers(unittest.TestCase):
         """
 
         self.assertTrue(HAS_TEXTFSM)  # before anything else, let's see if TextFSM is available
-
         _TEXTFSM_TEST_STRING = '''
         Groups: 3 Peers: 3 Down peers: 0
         Table          Tot Paths  Act Paths Suppressed    History Damp State    Pending
@@ -172,7 +170,6 @@ class TestBaseHelpers(unittest.TestCase):
                               list)
 
     def test_convert(self):
-
         """
         Tests helper function ```convert```:
 
@@ -180,7 +177,6 @@ class TestBaseHelpers(unittest.TestCase):
             * cast of str to float returns desired float-type value
             * cast of None obj to string does not cast, but returns default
         """
-
         self.assertTrue(napalm_base.helpers.convert(int, 'non-int-value', default=-100) == -100)
         # default value returned
         self.assertIsInstance(napalm_base.helpers.convert(float, '1e-17'), float)
