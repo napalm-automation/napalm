@@ -1473,3 +1473,66 @@ class EOSDriver(NetworkDriver):
             }
         else:
             raise Exception("Wrong retrieve filter: {}".format(retrieve))
+
+
+    def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
+        """
+        Execute ping on the device and returns a dictionary with the result.
+        Output dictionary has one of following keys:
+            * success
+            * error
+        In case of success, inner dictionary will have the followin keys:
+            * probes_sent (int)
+            * packet_loss (int)
+            * rtt_min (float)
+            * rtt_max (float)
+            * rtt_avg (float)
+            * rtt_stddev (float)
+            * results (list)
+        'results' is a list of dictionaries with the following keys:
+            * ip_address (str)
+            * rtt (float)
+        """
+        ping_dict = {}
+        command = 'ping {}'.format(destination)
+        command += ' timeout {}'.format(timeout)
+        command += ' size {}'.format(size)
+        command += ' repeat {}'.format(count)
+        if source != '':
+            command += ' source {}'.format(source)
+        output = self.device.run_commands(command, encoding='text')[0]['output']
+        if 'connect:' in output:
+            ping_dict['error'] = output
+        elif 'PING' in output:
+            ping_dict['success'] = {
+                                'probes_sent': 0,
+                                'packet_loss': 0,
+                                'rtt_min': 0.0,
+                                'rtt_max': 0.0,
+                                'rtt_avg': 0.0,
+                                'rtt_stddev': 0.0,
+                                'results': []
+            }
+	    results_array=[]
+            for line in output.splitlines():
+                fields = line.split()
+                if 'icmp' in line:
+                    if 'Unreachable' in line:
+                        results_array.append({'ip_address': unicode(fields[1]),'rtt': 0.0})
+                    elif fields[1] == 'bytes':
+		        m = fields[6][5:]
+                        results_array.append({'ip_address': unicode(fields[3]),'rtt': float(m)})
+                elif 'packets transmitted' in line:
+                    ping_dict['success']['probes_sent'] = int(fields[0])
+                    ping_dict['success']['packet_loss'] = int(fields[0])-int(fields[3])
+                elif 'min/avg/max' in line:
+                    m = fields[3].split('/')
+                    ping_dict['success'].update({
+                                    'rtt_min': float(m[0]),
+                                    'rtt_avg': float(m[1]),
+                                    'rtt_max': float(m[2]),
+                                    'rtt_stddev': float(m[3]),
+                    })
+            ping_dict['success'].update({'results': results_array})
+        return ping_dict
+
