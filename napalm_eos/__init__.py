@@ -14,3 +14,5 @@
 
 """napalm_eos package."""
 from eos import EOSDriver
+
+__all__ = ['EOSDriver']

@@ -15,3 +15,4 @@ deploy:
     branch: master
 script:
 - py.test
+- pylama .
