@@ -21,10 +21,13 @@ Read napalm.readthedocs.org for more information.
 # std libs
 import re
 import time
+
+from collections import defaultdict
 from datetime import datetime
+
 from netaddr import IPAddress
 from netaddr import IPNetwork
-from collections import defaultdict
+
 from netaddr.core import AddrFormatError
 
 # third party libs
@@ -35,7 +38,7 @@ from pyeapi.eapilib import ConnectionError
 import napalm_base.helpers
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import string_parsers
-from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException,\
+from napalm_base.exceptions import ConnectionException, MergeConfigException, ReplaceConfigException, \
                                    SessionLockedException, CommandErrorException
 
 # local modules
@@ -60,6 +63,7 @@ class EOSDriver(NetworkDriver):
         if optional_args is None:
             optional_args = {}
         self.port = optional_args.get('port', 443)
+        self.enablepwd = optional_args.get('enable_password', '')
 
     def open(self):
         """Implemantation of NAPALM method open."""
@@ -72,9 +76,8 @@ class EOSDriver(NetworkDriver):
                 port=self.port,
                 timeout=self.timeout
             )
-
             if self.device is None:
-                self.device = pyeapi.client.Node(connection)
+                self.device = pyeapi.client.Node(connection, enablepwd=self.enablepwd)
             # does not raise an Exception if unusable
 
             # let's try to run a very simple command
@@ -502,10 +505,7 @@ class EOSDriver(NetworkDriver):
         )
 
         lldp_neighbors_in = {}
-        try:
-            lldp_neighbors_in = self.device.run_commands(commands)[0].get('lldpNeighbors', {})
-        except Exception:
-            return {}
+        lldp_neighbors_in = self.device.run_commands(commands)[0].get('lldpNeighbors', {})
 
         for interface in lldp_neighbors_in:
             interface_neighbors = lldp_neighbors_in.get(interface).get('lldpNeighborInfo', {})
