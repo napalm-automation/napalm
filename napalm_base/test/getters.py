@@ -95,7 +95,7 @@ def wrap_test_cases(func):
     return wrapper
 
 
-class BaseTestGetters:
+class BaseTestGetters(object):
     """Base class for testing drivers."""
 
     @wrap_test_cases

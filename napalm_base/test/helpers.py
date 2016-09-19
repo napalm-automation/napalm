@@ -1,5 +1,9 @@
 """Several methods to help with the tests."""
 
+# Python3 support
+from __future__ import print_function
+from __future__ import unicode_literals
+
 
 def test_model(model, data):
     """Return if the dictionary `data` complies with the `model`."""

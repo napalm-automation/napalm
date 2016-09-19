@@ -13,10 +13,10 @@
 # the License.
 
 """napalm_base package."""
-from __future__ import print_function
-from __future__ import unicode_literals
 
 # Python3 support
+from __future__ import print_function
+from __future__ import unicode_literals
 try:
     basestring
 except NameError:

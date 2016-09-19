@@ -12,6 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# Python3 support
 from __future__ import print_function
 from __future__ import unicode_literals
 
@@ -26,7 +27,7 @@ if sys.version[0] == '3':
     unicode = str
 
 
-class TestConfigNetworkDriver:
+class TestConfigNetworkDriver(object):
 
     @classmethod
     def tearDownClass(cls):
@@ -148,7 +149,7 @@ class TestConfigNetworkDriver:
         self.assertTrue(diff is not '')
 
 
-class TestGettersNetworkDriver:
+class TestGettersNetworkDriver(object):
 
     @staticmethod
     def _test_model(model, data):
