@@ -9,7 +9,6 @@ import napalm_base.test.base as ntb
 
 class TestSkipNotImplemented(unittest.TestCase, ntb.TestGettersNetworkDriver):
     """Ensure that any tests are skipped if not implemented."""
-
     def setUp(self):
         class FakeThing(NetworkDriver):
             def __init__(self):

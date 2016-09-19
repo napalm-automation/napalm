@@ -1,5 +1,4 @@
 """Helper functions for the NAPALM base."""
-
 from __future__ import print_function
 from __future__ import unicode_literals
 
@@ -113,6 +112,7 @@ def textfsm_extractor(cls, template_name, raw_text):
     )
 
     try:
+        print(template_path)
         fsm_handler = textfsm.TextFSM(open(template_path))
     except IOError:
         raise napalm_base.exceptions.TemplateNotImplemented(
@@ -125,7 +125,7 @@ def textfsm_extractor(cls, template_name, raw_text):
         raise napalm_base.exceptions.TemplateRenderException(
             "Wrong format of TextFSM template {template_name}: {error}".format(
                 template_name=template_name,
-                error=tfte.message
+                error=str(tfte)
             )
         )
 
@@ -242,4 +242,4 @@ def ip(addr):
         >>> ip('2001:0dB8:85a3:0000:0000:8A2e:0370:7334')
         u'2001:db8:85a3::8a2e:370:7334'
     """
-    return IPAddress(addr)
+    return str(IPAddress(addr))

@@ -47,7 +47,6 @@ class TestBaseHelpers(unittest.TestCase):
         # neded when calling helpers
 
     def test_load_template(self):
-
         """
         Tests the helper function ```load_template```:
 
@@ -61,9 +60,7 @@ class TestBaseHelpers(unittest.TestCase):
             * check if can load correct template from custom path
             * check if template passed as string can be loaded
         """
-
         self.assertTrue(HAS_JINJA)  # firstly check if jinja2 is installed
-
         _NTP_PEERS_LIST = [
             '172.17.17.1',
             '172.17.17.2'
