@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2016 Dravetech AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
@@ -13,4 +14,16 @@
 # the License.
 
 """napalm_iosxr package."""
-from iosxr import IOSXRDriver
+
+# Import stdlib
+import pkg_resources
+
+# Import local modules
+from napalm_iosxr.iosxr import IOSXRDriver  # noqa
+
+__all__ = ['IOSXRDriver']
+
+try:
+    __version__ = pkg_resources.get_distribution('napalm-iosxr').version
+except pkg_resources.DistributionNotFound:
+    __version__ = "Not installed"
