@@ -2,7 +2,10 @@
 import datetime
 import re
 import socket
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 #
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ConnectionException, MergeConfigException, CommandErrorException
