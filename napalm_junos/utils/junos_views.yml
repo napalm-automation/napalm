@@ -381,6 +381,7 @@ junos_arp_table:
   rpc: get-arp-table-information
   args:
     expiration-time: true
+    no-resolve: true
   item: arp-table-entry
   key: interface-name
   view: junos_arp_view
