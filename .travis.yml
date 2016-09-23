@@ -4,6 +4,7 @@ python:
 install:
 - pip install -r requirements.txt
 - pip install .
+- pip install coveralls
 deploy:
   provider: pypi
   user: dbarroso
@@ -14,9 +15,11 @@ deploy:
     branch: master
 script:
 - cd test/unit
-- nosetests -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_bgp_neighbors
-- nosetests -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_environment
-- nosetests -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_facts
-- nosetests -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_interfaces
-- nosetests -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_interfaces_counters
+- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_bgp_neighbors
+- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_environment
+- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_facts
+- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_interfaces
+- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_interfaces_counters
 - cd ../..
+- coverage combine test/unit/.coverage
+after_success: coveralls
