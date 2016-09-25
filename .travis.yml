@@ -20,6 +20,7 @@ script:
 - nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_facts
 - nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_interfaces
 - nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_interfaces_counters
+- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_config
 - cd ../..
 - coverage combine test/unit/.coverage
 after_success: coveralls
