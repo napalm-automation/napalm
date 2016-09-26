@@ -39,6 +39,7 @@ script:
 - nosetests --with-coverage --cover-package napalm_junos -v TestJunOSDriver:TestGetterJunOSDriver.test_traceroute
 - nosetests --with-coverage --cover-package napalm_junos -v TestJunOSDriver:TestGetterJunOSDriver.test_get_users
 - nosetests --with-coverage --cover-package napalm_junos -v TestJunOSDriver:TestGetterJunOSDriver.test_get_optics
+- nosetests --with-coverage --cover-package napalm_junos -v TestJunOSDriver:TestGetterJunOSDriver.test_get_config
 - cd ../..
 - coverage combine test/unit/.coverage
 after_success: coveralls

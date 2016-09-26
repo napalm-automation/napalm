@@ -119,17 +119,24 @@ class FakeRPCObject:
             'junos/mock_data/{}{}.txt'.format(self.item, instance))
         return lxml.etree.fromstring(xml_string)
 
-    def get_config(self, get_cmd='', options={}):
+    def get_config(self, get_cmd=None, filter_xml=None, options={}):
 
         # get_cmd is an XML tree that requests a specific part of the config
         # E.g.: <configuration><protocols><bgp><group/></bgp></protocols></configuration>
 
-        get_cmd_str = lxml.etree.tostring(get_cmd)
-        filename = get_cmd_str.replace('<', '_')\
-                              .replace('>', '_')\
-                              .replace('/', '_')\
-                              .replace('\n', '')\
-                              .replace(' ', '')
+        if get_cmd is not None:
+            get_cmd_str = lxml.etree.tostring(get_cmd)
+            filename = get_cmd_str.replace('<', '_')\
+                                  .replace('>', '_')\
+                                  .replace('/', '_')\
+                                  .replace('\n', '')\
+                                  .replace(' ', '')
+
+        # no get_cmd means it should mock the eznc get_config
+        else:
+            filename = 'get_config__' + '__'.join(
+                ['{0}_{1}'.format(k, v) for k, v in options.items()]
+            )
 
         xml_string = self._device.read_txt_file(
             'junos/mock_data/{filename}.txt'.format(

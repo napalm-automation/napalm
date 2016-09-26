@@ -1325,3 +1325,26 @@ class JunOSDriver(NetworkDriver):
             optics_detail[intf_optic_item[0]] = intf_optics
 
         return optics_detail
+
+    def get_config(self, retrieve='all'):
+        rv = {
+            'startup': '',
+            'running': '',
+            'candidate': ''
+        }
+
+        options = {
+            'format': 'text',
+            'database': 'candidate'
+        }
+
+        if retrieve in ('candidate', 'all'):
+            config = self.device.rpc.get_config(filter_xml=None, options=options)
+            rv['candidate'] = config.text.encode('ascii', 'replace')
+
+        if retrieve in ('running', 'all'):
+            options['database'] = 'committed'
+            config = self.device.rpc.get_config(filter_xml=None, options=options)
+            rv['running'] = config.text.encode('ascii', 'replace')
+
+        return rv
