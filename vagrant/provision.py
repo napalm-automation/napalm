@@ -8,11 +8,12 @@ from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
 import jnpr.junos.exception
 
-import pexpect, httplib
+import pexpect
+import httplib
 
 
 def print_info_message():
-    print "BOX is no longer reachable with vagrant up. Use ssh instead (check the IP in the initial conf)"
+    print "BOX is no longer reachable with vagrant up. Use ssh (check the IP in the initial conf)"
     print "Don't forget to change the network type of the first NIC of the box."
 
 

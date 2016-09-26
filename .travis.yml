@@ -5,6 +5,7 @@ python:
 
 install:
   - pip install .
+  - pip install -r requirements-dev.txt
   - pip install -r test/unit/requirements.txt
 
 deploy:
@@ -20,3 +21,4 @@ script:
   - nosetests ./test/unit/TestGetNetworkDriver.py
   - nosetests ./test/unit/TestHelpers.py
   - nosetests ./test/unit/TestNapalmTestFramework.py
+  - pylama .
