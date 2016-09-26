@@ -1352,17 +1352,25 @@ class EOSDriver(NetworkDriver):
 
         for peer_info in v4_peer_info:
 
+            vrf_name = peer_info['routing_table']
+            peer_remote_addr = peer_info['remote_address']
             peer_info['accepted_prefix_count'] = (
-                bgp_summary[0]['vrfs']['default']['peers']
-                           [peer_info['remote_address']]['prefixAccepted'])
+                bgp_summary[0]['vrfs'][vrf_name]['peers'][peer_remote_addr]['prefixAccepted']
+                if peer_remote_addr in bgp_summary[0]['vrfs'][vrf_name]['peers'].keys()
+                else 0
+            )
 
             _append(bgp_detail_info, peer_info)
 
         for peer_info in v6_peer_info:
 
+            vrf_name = peer_info['routing_table']
+            peer_remote_addr = peer_info['remote_address']
             peer_info['accepted_prefix_count'] = (
-                bgp_summary[1]['vrfs']['default']['peers']
-                           [peer_info['remote_address']]['prefixAccepted'])
+                bgp_summary[1]['vrfs'][vrf_name]['peers'][peer_remote_addr]['prefixAccepted']
+                if peer_remote_addr in bgp_summary[1]['vrfs'][vrf_name]['peers'].keys()
+                else 0
+            )
 
             _append(bgp_detail_info, peer_info)
 
