@@ -5,7 +5,6 @@ NAPALM CLI Tools: helpers
 
 Defines helpers for the CLI tools.
 '''
-
 from __future__ import absolute_import
 
 # stdlib
@@ -13,9 +12,6 @@ import sys
 import logging
 import getpass
 import argparse
-
-# NAPALM base
-from napalm_base import get_network_driver
 
 
 def build_help(connect_test=False):
@@ -54,7 +50,7 @@ def build_help(connect_test=False):
         '--optional_args', '-o',
         dest='optional_args',
         action='store',
-        help='String with comma separated key=value pairs that will be passed via optional_args to the driver.',
+        help='String with comma separated key=value pairs passed via optional_args to the driver.',
     )
     parser.add_argument(
         '--debug',

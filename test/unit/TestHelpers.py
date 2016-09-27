@@ -9,13 +9,13 @@ import unittest
 
 # third party libs
 try:
-    import jinja2
+    import jinja2  # noqa
     HAS_JINJA = True
 except ImportError:
     HAS_JINJA = False
 
 try:
-    import textfsm
+    import textfsm  # noqa
     HAS_TEXTFSM = True
 except ImportError:
     HAS_TEXTFSM = False
@@ -25,6 +25,12 @@ try:
     HAS_LXML = True
 except ImportError:
     HAS_LXML = False
+
+try:
+    from netaddr.core import AddrFormatError
+    HAS_NETADDR = True
+except ImportError:
+    HAS_NETADDR = False
 
 # NAPALM base
 import napalm_base.helpers
@@ -50,7 +56,8 @@ class TestBaseHelpers(unittest.TestCase):
             * check if raises TemplateRenderException when template is not correctly formatted
             * check if can load correct template
             * check if can load correct template even if wrong custom path specified
-            * check if raises TemplateNotImplemented when trying to use inexisting template in custom path
+            * check if raises TemplateNotImplemented when trying to use inexisting template in
+              custom path
             * check if can load correct template from custom path
             * check if template passed as string can be loaded
         """
@@ -90,7 +97,8 @@ class TestBaseHelpers(unittest.TestCase):
                                                           template_path='/this/path/does/not/exist',
                                                           **_TEMPLATE_VARS))
 
-        install_dir = os.path.dirname(os.path.abspath(sys.modules[self.network_driver.__module__].__file__))
+        install_dir = os.path.dirname(
+            os.path.abspath(sys.modules[self.network_driver.__module__].__file__))
         custom_path = os.path.join(install_dir, 'test/custom/path/base')
 
         self.assertRaises(napalm_base.exceptions.TemplateNotImplemented,
@@ -130,7 +138,7 @@ class TestBaseHelpers(unittest.TestCase):
         Table          Tot Paths  Act Paths Suppressed    History Damp State    Pending
         inet.0               947        310          0          0          0          0
         inet6.0              849        807          0          0          0          0
-        Peer                     AS      InPkt     OutPkt    OutQ   Flaps Last Up/Dwn State|#Active/Received/Damped...
+        Peer                     AS      InPkt     OutPkt    OutQ   Flaps Last Up/Dwn State|#Active/Received/Damped...  #noqa
         10.247.68.182         65550     131725   28179233       0      11     6w3d17h Establ
           inet.0: 4/5/1
           inet6.0: 0/0/0
@@ -229,62 +237,73 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertFalse(napalm_base.helpers.find_txt(_XML_TREE, 'parent100/child200', False))
         # returns default value (in this case boolean value False)
 
-        self.assertTrue(len(
-                            napalm_base.helpers.find_txt(_XML_TREE, 'parent1/child1')
-                           ) > 0
-                       )  # check if content inside the tag /parent1/child1
-        self.assertTrue(eval(
-                             napalm_base.helpers.find_txt(_XML_TREE, 'parent3/@lonely', 'false').title()
-                            )
-                       )  # check if able to eval boolean returned as text inside the XML tree
-        self.assertIsInstance(int(
-                                  napalm_base.helpers.find_txt(_XML_TREE, 'stats/parents')
-                                 ),
-                              int
-                             )  #  int values
+        # check if content inside the tag /parent1/child1
+        self.assertTrue(len(napalm_base.helpers.find_txt(_XML_TREE, 'parent1/child1')) > 0)
 
-        _CHILD3_TAG = _XML_TREE.find('.//child3')  # get first match of the tag child3, wherever would be
+        # check if able to eval boolean returned as text inside the XML tree
+        self.assertTrue(
+            eval(napalm_base.helpers.find_txt(_XML_TREE, 'parent3/@lonely', 'false').title()))
 
-        self.assertTrue(len(
-                            napalm_base.helpers.find_txt(_CHILD3_TAG, '.')
-                           ) > 0
-                       )  # check if content inside the discovered tag child3
+        # int values
+        self.assertIsInstance(
+            int(napalm_base.helpers.find_txt(_XML_TREE, 'stats/parents')), int)
+
+        # get first match of the tag child3, wherever would be
+        _CHILD3_TAG = _XML_TREE.find('.//child3')
+
+        # check if content inside the discovered tag child3
+        self.assertTrue(len(napalm_base.helpers.find_txt(_CHILD3_TAG, '.')) > 0)
 
         _SPECIAL_CHILD2 = _XML_TREE.find('.//child2[@special="true"]')
 
-        self.assertTrue(len(
-                            napalm_base.helpers.find_txt(_SPECIAL_CHILD2, '.')
-                           ) > 0
-                       )
+        self.assertTrue(len(napalm_base.helpers.find_txt(_SPECIAL_CHILD2, '.')) > 0)
 
         _SPECIAL_CHILD100 = _XML_TREE.find('.//child100[@special="true"]')
 
-        self.assertFalse(len(
-                            napalm_base.helpers.find_txt(_SPECIAL_CHILD100, '.')
-                           ) > 0
-                       )
+        self.assertFalse(len(napalm_base.helpers.find_txt(_SPECIAL_CHILD100, '.')) > 0)
 
         _NOT_SPECIAL_CHILD2 = _XML_TREE.xpath('.//child2[not(@special="true")]')[0]
         # use XPath to get tags using predicates!
 
-        self.assertTrue(len(
-                            napalm_base.helpers.find_txt(_NOT_SPECIAL_CHILD2, '.')
-                           ) > 0
-                       )
+        self.assertTrue(len(napalm_base.helpers.find_txt(_NOT_SPECIAL_CHILD2, '.')) > 0)
 
     def test_mac(self):
 
         """
         Tests the helper function ```mac```:
 
-            * check if empty reply when invalid MAC
+            * check if raises AddrFormatError when invalid MAC
             * check if MAC address returned as expected
         """
 
-        self.assertEqual(napalm_base.helpers.mac('fake'), '')
+        self.assertTrue(HAS_NETADDR)
+
+        # test that raises AddrFormatError when wrong format
+        self.assertRaises(AddrFormatError, napalm_base.helpers.mac, 'fake')
+
         self.assertEqual(napalm_base.helpers.mac('0123456789ab'), '01:23:45:67:89:AB')
         self.assertEqual(napalm_base.helpers.mac('0123.4567.89ab'), '01:23:45:67:89:AB')
         self.assertEqual(napalm_base.helpers.mac('123.4567.89ab'), '01:23:45:67:89:AB')
+
+    def test_ip(self):
+
+        """
+        Tests the helper function ```ip```:
+
+            * check if raises AddrFormatError when invalid IP address
+            * check if IPv6 address returned as expected
+        """
+
+        self.assertTrue(HAS_NETADDR)
+
+        # test that raises AddrFormatError when wrong format
+        self.assertRaises(AddrFormatError, napalm_base.helpers.ip, 'fake')
+        self.assertEqual(
+          napalm_base.helpers.ip(
+            '2001:0dB8:85a3:0000:0000:8A2e:0370:7334'
+          ),
+          '2001:db8:85a3::8a2e:370:7334'
+        )
 
 
 class FakeNetworkDriver(NetworkDriver):

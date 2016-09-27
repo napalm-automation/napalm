@@ -19,14 +19,18 @@ import sys
 import inspect
 import importlib
 
-from pkg_resources import get_distribution
+import pkg_resources
 
 # NAPALM base
 
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ModuleImportError
 
-__version__ = get_distribution('napalm-base').version
+try:
+    __version__ = pkg_resources.get_distribution('napalm-ios').version
+except pkg_resources.DistributionNotFound:
+    __version__ = "Not installed"
+
 
 __all__ = [
     'get_network_driver',  # export the function
@@ -39,19 +43,22 @@ if not(sys.version_info.major == 2 and sys.version_info.minor == 7):
 
 
 def get_network_driver(module_name):
-
     """
     Searches for a class derived form the base NAPALM class NetworkDriver in a specific library.
     The library name must repect the following pattern: napalm_[DEVICE_OS].
-    NAPALM community supports a list of devices and provides the corresponding libraries; for full reference
-    please refer to the `Supported Network Operation Systems`_ paragraph on `Read the Docs`_.
+    NAPALM community supports a list of devices and provides the corresponding libraries; for
+    full reference please refer to the `Supported Network Operation Systems`_ paragraph on
+    `Read the Docs`_.
 
-    .. _`Supported Network Operation Systems`: http://napalm.readthedocs.io/en/latest/#supported-network-operating-systems
-    .. _`Read the Docs`: http://napalm.readthedocs.io/
+    .. _`Supported Network Operation Systems`: \
+    http://napalm.readthedocs.io/en/latest/#supported-network-operating-systems
+    .. _`Read the Docs`: \
+    http://napalm.readthedocs.io/
 
-    :param module_name:         the name of the device operating system, or the name of the library.
+    :param module_name:         the name of the device operating system or the name of the library.
     :return:                    the first class derived from NetworkDriver, found in the library.
-    :raise ModuleImportError:   when the library is not installed, or a derived class from NetworkDriver was not found.
+    :raise ModuleImportError:   when the library is not installed or a derived class from \
+    NetworkDriver was not found.
 
     Example::
 
@@ -64,16 +71,20 @@ def get_network_driver(module_name):
         >>> get_network_driver('napalm_eos')
         <class 'napalm_eos.eos.EOSDriver'>
         >>> get_network_driver('wrong')
-        napalm_base.exceptions.ModuleImportError: Cannot import "napalm_wrong". Is the library installed?
+        napalm_base.exceptions.ModuleImportError: Cannot import "napalm_wrong". Is the library \
+        installed?
     """
 
     if not (isinstance(module_name, basestring) and len(module_name) > 0):
         raise ModuleImportError('Please provide a valid driver name.')
 
     try:
-        module_name = module_name.lower()  # only lowercase allowed
-        module_install_name = module_name.replace('-', '')  # to not raise error when users requests IOS-XR for e.g.
-        if 'napalm_' not in module_install_name:  # can also request using napalm_[SOMETHING]
+        # Only lowercase allowed
+        module_name = module_name.lower()
+        # Try to not raise error when users requests IOS-XR for e.g.
+        module_install_name = module_name.replace('-', '')
+        # Can also request using napalm_[SOMETHING]
+        if 'napalm_' not in module_install_name:
             module_install_name = 'napalm_{name}'.format(name=module_install_name)
         module = importlib.import_module(module_install_name)
     except ImportError:
@@ -89,7 +100,5 @@ def get_network_driver(module_name):
 
     # looks like you don't have any Driver class in your module...
     raise ModuleImportError(
-            'No class inheriting "napalm_base.base.NetworkDriver" found in "{install_name}".'.format(
-                install_name=module_install_name
-            )
-        )
+        'No class inheriting "napalm_base.base.NetworkDriver" found in "{install_name}".'
+        .format(install_name=module_install_name))

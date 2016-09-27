@@ -19,6 +19,7 @@ import difflib
 import models
 from unittest import SkipTest
 
+
 class TestConfigNetworkDriver:
 
     @classmethod
@@ -91,7 +92,8 @@ class TestConfigNetworkDriver:
         replace_config_diff = self.device.compare_config()
         self.device.rollback()
 
-        # We try to load again the config. If the rollback was successful new diff should be like the first one
+        # We try to load the config again. If the rollback was successful new diff should be
+        # like the first one
         self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
         last_diff = self.device.compare_config()
         self.device.discard_config()
@@ -120,11 +122,12 @@ class TestConfigNetworkDriver:
         result = False
         try:
             self.device.load_merge_candidate(filename='%s/merge_typo.conf' % self.vendor)
-            diff = self.device.compare_config()
+            self.device.compare_config()
             self.device.commit_config()
             raise Exception("We shouldn't be here")
         except exceptions.MergeConfigException:
-            # We load the original config as candidate. If the commit failed cleanly the compare_config should be empty
+            # We load the original config as candidate. If the commit failed cleanly the
+            # compare_config should be empty
             self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
             result = self.device.compare_config() == ''
             self.device.discard_config()
@@ -137,6 +140,7 @@ class TestConfigNetworkDriver:
         diff = self.device.compare_config()
         self.device.discard_config()
         self.assertTrue(diff is not '')
+
 
 class TestGettersNetworkDriver:
 
@@ -153,7 +157,7 @@ class TestGettersNetworkDriver:
             correct_class = correct_class and same_class
             if not same_class:
                 print("key: {}\nmodel_class: {}\ndata_class: {}".format(
-                                                            key, instance_class, data[key].__class__))
+                    key, instance_class, data[key].__class__))
 
         return correct_class and same_keys
 
@@ -373,8 +377,7 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_get_route_to(self):
-
-        destination  = '1.0.4.0/24'
+        destination = '1.0.4.0/24'
         protocol = 'bgp'
         try:
             get_route_to = self.device.get_route_to(destination=destination, protocol=protocol)
@@ -386,11 +389,9 @@ class TestGettersNetworkDriver:
         for prefix, routes in get_route_to.iteritems():
             for route in routes:
                 result = result and self._test_model(models.route, route)
-
         self.assertTrue(result)
 
     def test_get_snmp_information(self):
-
         try:
             get_snmp_information = self.device.get_snmp_information()
         except NotImplementedError:
@@ -434,7 +435,6 @@ class TestGettersNetworkDriver:
         self.assertTrue(result)
 
     def test_ping(self):
-
         destination = '8.8.8.8'
         try:
             get_ping = self.device.ping(destination)

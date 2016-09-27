@@ -3,7 +3,6 @@
 # std libs
 import os
 import sys
-import re
 
 # third party libs
 import jinja2
@@ -11,7 +10,6 @@ import textfsm
 from netaddr import EUI
 from netaddr import mac_unix
 from netaddr import IPAddress
-from netaddr.core import AddrFormatError
 
 # local modules
 import napalm_base.exceptions
@@ -21,17 +19,15 @@ from napalm_base.utils.jinja_filters import CustomJinjaFilters
 # ----------------------------------------------------------------------------------------------------------------------
 # helper classes -- will not be exported
 # ----------------------------------------------------------------------------------------------------------------------
-
-
 class _MACFormat(mac_unix):
     pass
 
 _MACFormat.word_fmt = '%.2X'
 
+
 # ----------------------------------------------------------------------------------------------------------------------
 # callable helpers
 # ----------------------------------------------------------------------------------------------------------------------
-
 def load_template(cls, template_name, template_source=None, template_path=None,
                   openconfig=False, **template_vars):
     try:
@@ -39,7 +35,8 @@ def load_template(cls, template_name, template_source=None, template_path=None,
             template = jinja2.Template(template_source)
         else:
             current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
-            if isinstance(template_path, basestring) and os.path.isdir(template_path) and os.path.isabs(template_path):
+            if (isinstance(template_path, basestring) and
+                    os.path.isdir(template_path) and os.path.isabs(template_path)):
                 current_dir = os.path.join(template_path, cls.__module__.split('.')[-1])
                 # append driver name at the end of the custom path
 
@@ -84,7 +81,6 @@ def load_template(cls, template_name, template_source=None, template_path=None,
 
 
 def textfsm_extractor(cls, template_name, raw_text):
-
     """
     Applies a TextFSM template over a raw text and return the matching table.
 
@@ -96,10 +92,8 @@ def textfsm_extractor(cls, template_name, raw_text):
     :param raw_text: Text output as the devices prompts on the CLI
     :return: table-like list of entries
     """
-
     textfsm_data = list()
-
-    driver_name = cls.__class__.__name__.replace('Driver', '')
+    cls.__class__.__name__.replace('Driver', '')
     current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
     template_dir_path = '{current_dir}/utils/textfsm_templates'.format(
         current_dir=current_dir
@@ -168,7 +162,6 @@ def find_txt(xml_tree, path, default=''):
 
 
 def convert(to, who, default=u''):
-
     """
     Converts data to a specific datatype.
     In case of error, will return a default value.
@@ -178,7 +171,6 @@ def convert(to, who, default=u''):
     :param default: value to return in case of error.
     :return: a str value.
     """
-
     if who is None:
         return default
     try:
@@ -188,7 +180,6 @@ def convert(to, who, default=u''):
 
 
 def mac(raw):
-
     """
     Converts a raw string to a standardised MAC Address EUI Format.
 
@@ -201,28 +192,43 @@ def mac(raw):
 
         >>> mac('0123.4567.89ab')
         u'01:23:45:67:89:AB'
+
+    Some vendors like Cisco return MAC addresses like a9:c5:2e:7b:6: which is not entirely valid
+    (with respect to EUI48 or EUI64 standards). Therefore we need to stuff with trailing zeros
+
+    Example
+    >>> mac('a9:c5:2e:7b:6:')
+    u'A9:C5:2E:7B:60:00'
+
+    If Cisco or other obscure vendors use their own standards, will throw an error and we can fix
+    later, however, still works with weird formats like:
+
+    >>> mac('123.4567.89ab')
+    u'01:23:45:67:89:AB'
+    >>> mac('23.4567.89ab')
+    u'00:23:45:67:89:AB'
     """
-
-    mac = u''
-
-    try:
-        mac = unicode(EUI(raw, dialect=_MACFormat))
-    except AddrFormatError:
-        return mac
-
-    return mac
+    if raw.endswith(':'):
+        flat_raw = raw.replace(':', '')
+        raw = '{flat_raw}{zeros_stuffed}'.format(
+            flat_raw=flat_raw,
+            zeros_stuffed='0'*(12-len(flat_raw))
+        )
+    return unicode(EUI(raw, dialect=_MACFormat))
 
 
 def ip(addr):
-
     """
     Converts a raw string to a valid IP address.
-    Motivation: the groups of the IP addreses may contain leading zeros. IPv6 addresses can contain sometimes \
-    uppercase characters. E.g.: 2001:0dB8:85a3:0000:0000:8A2e:0370:7334 has the same logical value as \
-    2001:db8:85a3::8a2e:370:7334. However, their values as strings are not the same.
+
+    Motivation: the groups of the IP addreses may contain leading zeros. IPv6 addresses can \
+    contain sometimes uppercase characters. E.g.: 2001:0dB8:85a3:0000:0000:8A2e:0370:7334 has \
+    the same logical value as 2001:db8:85a3::8a2e:370:7334. However, their values as strings are \
+    not the same.
 
     :param raw: the raw string containing the value of the IP Address
-    :return: a string containing the IP Address in a standard format (no leading zeros, zeros-grouping, lowercase)
+    :return: a string containing the IP Address in a standard format (no leading zeros, \
+    zeros-grouping, lowercase)
 
     Example:
 
@@ -232,11 +238,4 @@ def ip(addr):
         u'2001:db8:85a3::8a2e:370:7334'
     """
 
-    ip_addr = u''
-
-    try:
-        ip_addr = unicode(IPAddress(addr))
-    except AddrFormatError:
-        return ip_addr
-
-    return ip_addr
+    return unicode(IPAddress(addr))

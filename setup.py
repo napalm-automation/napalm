@@ -9,9 +9,10 @@ __author__ = 'David Barroso <dbarrosop@dravetech.com>'
 install_reqs = parse_requirements('requirements.txt', session=uuid.uuid1())
 reqs = [str(ir.req) for ir in install_reqs]
 
+
 setup(
     name="napalm-base",
-    version='0.16.2',
+    version='0.17.0',
     packages=find_packages(),
     author="David Barroso",
     author_email="dbarrosop@dravetech.com",
