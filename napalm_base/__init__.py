@@ -26,8 +26,15 @@ except NameError:
 import sys
 import inspect
 import importlib
-
 import pkg_resources
+
+# Verify Python Version that is running
+try:
+    if not(sys.version_info.major == 2 and sys.version_info.minor == 7) and \
+            not(sys.version_info.major == 3):
+        raise RuntimeError('NAPALM requires Python 2.7 or Python3')
+except AttributeError:
+    raise RuntimeError('NAPALM requires Python 2.7 or Python3')
 
 # NAPALM base
 from napalm_base.base import NetworkDriver
@@ -43,10 +50,6 @@ __all__ = [
     'get_network_driver',  # export the function
     'NetworkDriver'  # also export the base class
 ]
-
-if not(sys.version_info.major == 2 and sys.version_info.minor == 7):
-    if not sys.version_info.major == 3:
-        raise RuntimeError('NAPALM requires Python 2.7 or Python 3')
 
 
 def get_network_driver(module_name):
