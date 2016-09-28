@@ -93,8 +93,8 @@ def convert_uptime_string_seconds(uptime):
         uptime_dict = dict()
     uptime_seconds = 0
 
-    for unit, value in uptime_dict.iteritems():
-        if value is not None:
+    for unit, value in uptime_dict.items():
+        if value != None:
             if unit == 'weeks':
                 uptime_seconds += int(value) * 604800
             elif unit == 'days':
