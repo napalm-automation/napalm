@@ -112,7 +112,6 @@ def textfsm_extractor(cls, template_name, raw_text):
     )
 
     try:
-        print(template_path)
         fsm_handler = textfsm.TextFSM(open(template_path))
     except IOError:
         raise napalm_base.exceptions.TemplateNotImplemented(
