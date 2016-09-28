@@ -17,14 +17,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import difflib
-import sys
 from napalm_base import exceptions
 from napalm_base.test import models
 from unittest import SkipTest
 
-# For unit tests only!
-if sys.version[0] == '3':
-    unicode = str
+# text_type is 'unicode' for py2 and 'str' for py3
+from napalm_base.utils.py23_compat import text_type
 
 
 class TestConfigNetworkDriver(object):
@@ -247,9 +245,9 @@ class TestGettersNetworkDriver(object):
             print('global is not part of the returned vrfs')
         else:
             for vrf, vrf_data in get_bgp_neighbors.items():
-                result = result and isinstance(vrf_data['router_id'], unicode)
+                result = result and isinstance(vrf_data['router_id'], text_type)
                 if not result:
-                    print('router_id is not unicode')
+                    print('router_id is not {}'.format(text_type))
 
                 for peer, peer_data in vrf_data['peers'].items():
                     result = result and self._test_model(models.peer, peer_data)
@@ -295,7 +293,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_bgp_neighbors_detail) > 0
 
         for vrf, vrf_ases in get_bgp_neighbors_detail.items():
-            result = result and isinstance(vrf, unicode)
+            result = result and isinstance(vrf, text_type)
             for remote_as, neighbor_list in vrf_ases.items():
                 result = result and isinstance(remote_as, int)
                 for neighbor in neighbor_list:
@@ -323,7 +321,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_ntp_peers) > 0
 
         for peer, peer_details in get_ntp_peers.items():
-            result = result and isinstance(peer, unicode)
+            result = result and isinstance(peer, text_type)
             result = result and self._test_model(models.ntp_peer, peer_details)
 
         self.assertTrue(result)
@@ -337,7 +335,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_ntp_servers) > 0
 
         for server, server_details in get_ntp_servers.items():
-            result = result and isinstance(server, unicode)
+            result = result and isinstance(server, text_type)
             result = result and self._test_model(models.ntp_server, server_details)
 
         self.assertTrue(result)
@@ -497,7 +495,7 @@ class TestGettersNetworkDriver(object):
         assert isinstance(get_optics, dict)
 
         for iface, iface_data in get_optics.items():
-            assert isinstance(iface, unicode)
+            assert isinstance(iface, text_type)
             for channel in iface_data['physical_channels']['channel']:
                 assert len(channel) == 2
                 assert isinstance(channel['index'], int)

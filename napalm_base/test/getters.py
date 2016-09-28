@@ -2,7 +2,6 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys
 import functools
 import itertools
 import json
@@ -13,9 +12,8 @@ import helpers
 import models
 import pytest
 
-# For unit tests only!
-if sys.version[0] == '3':
-    unicode = str
+# text_type is 'unicode' for py2 and 'str' for py3
+from napalm_base.utils.py23_compat import text_type
 
 
 def list_dicts_diff(prv, nxt):
@@ -168,7 +166,7 @@ class BaseTestGetters(object):
         assert 'global' in get_bgp_neighbors.keys()
 
         for vrf, vrf_data in get_bgp_neighbors.items():
-            assert isinstance(vrf_data['router_id'], unicode)
+            assert isinstance(vrf_data['router_id'], text_type)
 
             for peer, peer_data in vrf_data['peers'].items():
                 assert helpers.test_model(models.peer, peer_data)
@@ -211,7 +209,7 @@ class BaseTestGetters(object):
         assert len(get_bgp_neighbors_detail) > 0
 
         for vrf, vrf_ases in get_bgp_neighbors_detail.items():
-            assert isinstance(vrf, unicode)
+            assert isinstance(vrf, text_type)
             for remote_as, neighbor_list in vrf_ases.items():
                 assert isinstance(remote_as, int)
                 for neighbor in neighbor_list:
@@ -237,7 +235,7 @@ class BaseTestGetters(object):
         assert len(get_ntp_peers) > 0
 
         for peer, peer_details in get_ntp_peers.items():
-            assert isinstance(peer, unicode)
+            assert isinstance(peer, text_type)
             assert helpers.test_model(models.ntp_peer, peer_details)
 
         return get_ntp_peers
@@ -383,7 +381,7 @@ class BaseTestGetters(object):
         assert isinstance(get_optics, dict)
 
         for iface, iface_data in get_optics.items():
-            assert isinstance(iface, unicode)
+            assert isinstance(iface, text_type)
             for channel in iface_data['physical_channels']['channel']:
                 assert len(channel) == 2
                 assert isinstance(channel['index'], int)

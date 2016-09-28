@@ -1,4 +1,3 @@
-import sys
 
 # text_type is 'unicode' for py2 and 'str' for py3
 from napalm_base.utils.py23_compat import text_type
