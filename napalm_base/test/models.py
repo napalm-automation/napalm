@@ -1,3 +1,9 @@
+import sys
+
+# For unit tests only!
+if sys.version[0] == '3':
+    unicode = str
+
 facts = {
     'os_version': unicode,
     'uptime': int,
@@ -277,7 +283,7 @@ traceroute = {
 
 users = {
     'level': int,
-    'password': str,
+    'password': unicode,
     'sshkeys': list
 }
 
@@ -289,7 +295,7 @@ optics_state = {
 }
 
 config = {
-    'running': str,
-    'startup': str,
-    'candidate': str,
+    'running': unicode,
+    'startup': unicode,
+    'candidate': unicode,
 }
