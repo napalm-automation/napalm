@@ -3,10 +3,6 @@
 # Python3 support
 from __future__ import print_function
 from __future__ import unicode_literals
-try:
-    basestring
-except NameError:
-    basestring = str
 
 # std libs
 import os
@@ -22,6 +18,7 @@ from netaddr import IPAddress
 # local modules
 import napalm_base.exceptions
 from napalm_base.utils.jinja_filters import CustomJinjaFilters
+from napalm_base.utils import py23_compat
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -39,11 +36,11 @@ _MACFormat.word_fmt = '%.2X'
 def load_template(cls, template_name, template_source=None, template_path=None,
                   openconfig=False, **template_vars):
     try:
-        if isinstance(template_source, basestring):
+        if isinstance(template_source, py23_compat.string_types):
             template = jinja2.Template(template_source)
         else:
             current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
-            if (isinstance(template_path, basestring) and
+            if (isinstance(template_path, py23_compat.string_types) and
                     os.path.isdir(template_path) and os.path.isabs(template_path)):
                 current_dir = os.path.join(template_path, cls.__module__.split('.')[-1])
                 # append driver name at the end of the custom path

@@ -17,10 +17,6 @@
 # Python3 support
 from __future__ import print_function
 from __future__ import unicode_literals
-try:
-    basestring
-except NameError:
-    basestring = str
 
 # Python std lib
 import sys
@@ -39,6 +35,7 @@ except AttributeError:
 # NAPALM base
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ModuleImportError
+from napalm_base.utils import py23_compat
 
 try:
     __version__ = pkg_resources.get_distribution('napalm-ios').version
@@ -85,7 +82,7 @@ def get_network_driver(module_name):
         installed?
     """
 
-    if not (isinstance(module_name, basestring) and len(module_name) > 0):
+    if not (isinstance(module_name, py23_compat.string_types) and len(module_name) > 0):
         raise ModuleImportError('Please provide a valid driver name.')
 
     try:
