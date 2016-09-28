@@ -1,31 +1,30 @@
 import sys
 
-# For unit tests only!
-if sys.version[0] == '3':
-    unicode = str
+# text_type is 'unicode' for py2 and 'str' for py3
+from napalm_base.utils.py23_compat import text_type
 
 facts = {
-    'os_version': unicode,
+    'os_version': text_type,
     'uptime': int,
     'interface_list': list,
-    'vendor': unicode,
-    'serial_number': unicode,
-    'model': unicode,
-    'hostname': unicode,
-    'fqdn': unicode
+    'vendor': text_type,
+    'serial_number': text_type,
+    'model': text_type,
+    'hostname': text_type,
+    'fqdn': text_type
 }
 interface = {
     'is_up': bool,
     'is_enabled': bool,
-    'description': unicode,
+    'description': text_type,
     'last_flapped': float,
     'speed': int,
-    'mac_address': unicode,
+    'mac_address': text_type,
 }
 
 lldp_neighbors = {
-    'hostname': unicode,
-    'port': unicode,
+    'hostname': text_type,
+    'port': text_type,
 }
 
 interface_counters = {
@@ -72,8 +71,8 @@ peer = {
     'is_enabled': bool,
     'uptime': int,
     'remote_as': int,
-    'description': unicode,
-    'remote_id': unicode,
+    'description': text_type,
+    'remote_id': text_type,
     'local_as': int,
     'is_up': bool,
     'address_family': dict,
@@ -86,39 +85,39 @@ af = {
 }
 
 lldp_neighbors_detail = {
-    'parent_interface': unicode,
-    'remote_port': unicode,
-    'remote_chassis_id': unicode,
-    'remote_port': unicode,
-    'remote_port_description': unicode,
-    'remote_system_name': unicode,
-    'remote_system_description': unicode,
-    'remote_system_capab': unicode,
-    'remote_system_enable_capab': unicode
+    'parent_interface': text_type,
+    'remote_port': text_type,
+    'remote_chassis_id': text_type,
+    'remote_port': text_type,
+    'remote_port_description': text_type,
+    'remote_system_name': text_type,
+    'remote_system_description': text_type,
+    'remote_system_capab': text_type,
+    'remote_system_enable_capab': text_type
 }
 
 bgp_config_group = {
-    'type': unicode,
-    'description': unicode,
+    'type': text_type,
+    'description': text_type,
     'apply_groups': list,
     'multihop_ttl': int,
     'multipath': bool,
-    'local_address': unicode,
+    'local_address': text_type,
     'local_as': int,
     'remote_as': int,
-    'import_policy': unicode,
-    'export_policy': unicode,
+    'import_policy': text_type,
+    'export_policy': text_type,
     'remove_private_as': bool,
     'prefix_limit': dict,
     'neighbors': dict
 }
 
 bgp_config_neighbor = {
-    'description': unicode,
-    'import_policy': unicode,
-    'export_policy': unicode,
-    'local_address': unicode,
-    'authentication_key': unicode,
+    'description': text_type,
+    'import_policy': text_type,
+    'export_policy': text_type,
+    'local_address': text_type,
+    'authentication_key': text_type,
     'nhs': bool,
     'route_reflector_client': bool,
     'local_as': int,
@@ -130,26 +129,26 @@ peer_details = {
     'up': bool,
     'local_as': int,
     'remote_as': int,
-    'router_id': unicode,
-    'local_address': unicode,
-    'routing_table': unicode,
+    'router_id': text_type,
+    'local_address': text_type,
+    'routing_table': text_type,
     'local_address_configured': bool,
     'local_port': int,
-    'remote_address': unicode,
+    'remote_address': text_type,
     'remote_port': int,
     'multihop': bool,
     'multipath': bool,
     'remove_private_as': bool,
-    'import_policy': unicode,
-    'export_policy': unicode,
+    'import_policy': text_type,
+    'export_policy': text_type,
     'input_messages': int,
     'output_messages': int,
     'input_updates': int,
     'output_updates': int,
     'messages_queued_out': int,
-    'connection_state': unicode,
-    'previous_connection_state': unicode,
-    'last_event': unicode,
+    'connection_state': text_type,
+    'previous_connection_state': text_type,
+    'last_event': text_type,
     'suppress_4byte_as': bool,
     'local_as_prepend': bool,
     'holdtime': int,
@@ -165,9 +164,9 @@ peer_details = {
 }
 
 arp_table = {
-    'interface': unicode,
-    'mac': unicode,
-    'ip': unicode,
+    'interface': text_type,
+    'mac': text_type,
+    'ip': text_type,
     'age': float
 }
 
@@ -180,12 +179,12 @@ ntp_server = {
 }
 
 ntp_stats = {
-    'remote': unicode,
-    'referenceid': unicode,
+    'remote': text_type,
+    'referenceid': text_type,
     'synchronized': bool,
     'stratum': int,
-    'type': unicode,
-    'when': unicode,
+    'type': text_type,
+    'when': text_type,
     'hostpoll': int,
     'reachability': int,
     'delay': float,
@@ -198,8 +197,8 @@ interfaces_ip = {
 }
 
 mac_address_table = {
-    'mac': unicode,
-    'interface': unicode,
+    'mac': text_type,
+    'interface': text_type,
     'vlan': int,
     'static': bool,
     'active': bool,
@@ -208,43 +207,43 @@ mac_address_table = {
 }
 
 route = {
-    'protocol': unicode,
+    'protocol': text_type,
     'current_active': bool,
     'last_active': bool,
     'age': int,
-    'next_hop': unicode,
-    'outgoing_interface': unicode,
+    'next_hop': text_type,
+    'outgoing_interface': text_type,
     'selected_next_hop': bool,
     'preference': int,
-    'inactive_reason': unicode,
-    'routing_table': unicode,
+    'inactive_reason': text_type,
+    'routing_table': text_type,
     'protocol_attributes': dict
 }
 
 snmp = {
-    'chassis_id': unicode,
+    'chassis_id': text_type,
     'community': dict,
-    'contact': unicode,
-    'location': unicode
+    'contact': text_type,
+    'location': text_type
 }
 
 snmp_community = {
-    'acl': unicode,
-    'mode': unicode,
+    'acl': text_type,
+    'mode': text_type,
 }
 
 probe_test = {
-    'probe_type': unicode,
-    'target': unicode,
-    'source': unicode,
+    'probe_type': text_type,
+    'target': text_type,
+    'source': text_type,
     'probe_count': int,
     'test_interval': int
 }
 
 probe_test_results = {
-    'target': unicode,
-    'source': unicode,
-    'probe_type': unicode,
+    'target': text_type,
+    'source': text_type,
+    'probe_type': text_type,
     'probe_count': int,
     'rtt': float,
     'round_trip_jitter': float,
@@ -271,19 +270,19 @@ ping = {
 }
 
 ping_result = {
-    'ip_address': unicode,
+    'ip_address': text_type,
     'rtt': float
 }
 
 traceroute = {
     'rtt': float,
-    'ip_address': unicode,
-    'host_name': unicode
+    'ip_address': text_type,
+    'host_name': text_type
 }
 
 users = {
     'level': int,
-    'password': unicode,
+    'password': text_type,
     'sshkeys': list
 }
 
@@ -295,7 +294,7 @@ optics_state = {
 }
 
 config = {
-    'running': unicode,
-    'startup': unicode,
-    'candidate': unicode,
+    'running': text_type,
+    'startup': text_type,
+    'candidate': text_type,
 }
