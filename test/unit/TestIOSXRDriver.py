@@ -29,7 +29,11 @@ class TestConfigIOSXRDriver(unittest.TestCase, TestConfigNetworkDriver):
         cls.vendor = 'iosxr'
 
         optional_args = {'port': 12202}
-        cls.device = IOSXRDriver(hostname, username, password, timeout=60, optional_args=optional_args)
+        cls.device = IOSXRDriver(hostname,
+                                 username,
+                                 password,
+                                 timeout=60,
+                                 optional_args=optional_args)
         cls.device.open()
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
         cls.device.commit_config()
@@ -63,6 +67,12 @@ class FakeIOSXRDevice:
         with open(fullpath) as data_file:
             return data_file.read()
 
+    def _execute_config_show(self, show_command):
+        rpc_request = '<CLI><Configuration>{show_command}</Configuration></CLI>'.format(
+            show_command=show_command
+        )
+        return self.make_rpc_call(rpc_request)
+
     def show_version(self):
         return self.read_txt_file('iosxr/mock_data/show_version.txt')
 
@@ -76,6 +86,9 @@ class FakeIOSXRDevice:
         return self.read_txt_file('iosxr/mock_data/show_lldp_neighbors.txt')
 
     def make_rpc_call(self, rpc_call):
-        rpc_call = \
-            rpc_call.replace('<', '_').replace('>', '_').replace('/', '_').replace('\n', '').replace(' ', '')
+        rpc_call = rpc_call.replace('<', '_')\
+                           .replace('>', '_')\
+                           .replace('/', '_')\
+                           .replace('\n', '')\
+                           .replace(' ', '')
         return self.read_txt_file('iosxr/mock_data/{}.rpc'.format(rpc_call[0:150]))
