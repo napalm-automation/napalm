@@ -12,7 +12,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-iosxr",
-    version="0.2.2",
+    version="0.3.0",
     packages=find_packages(),
     author="David Barroso",
     author_email="dbarrosop@dravetech.com",
