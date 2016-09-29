@@ -21,7 +21,7 @@ import pkg_resources
 # Import local modules
 from napalm_iosxr.iosxr import IOSXRDriver  # noqa
 
-__all__ = ['IOSXRDriver']
+__all__ = ('IOSXRDriver',)
 
 try:
     __version__ = pkg_resources.get_distribution('napalm-iosxr').version

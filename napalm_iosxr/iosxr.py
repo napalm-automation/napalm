@@ -1666,8 +1666,6 @@ class IOSXRDriver(NetworkDriver):
         if retrieve.lower() in ['running', 'all']:
             config['running'] = self.device._execute_config_show('show running-config')
         if retrieve.lower() in ['candidate', 'all']:
-            if self.pending_changes:
-                # can retrieve the candidate only when in configure mode
-                config['candidate'] = self.device._execute_config_show('show configuration merge')
+            config['candidate'] = self.device._execute_config_show('show configuration merge')
 
         return config
