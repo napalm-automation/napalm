@@ -38,7 +38,7 @@ from napalm_base.exceptions import ModuleImportError
 from napalm_base.utils import py23_compat
 
 try:
-    __version__ = pkg_resources.get_distribution('napalm-ios').version
+    __version__ = pkg_resources.get_distribution('napalm-base').version
 except pkg_resources.DistributionNotFound:
     __version__ = "Not installed"
 
