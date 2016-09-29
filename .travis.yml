@@ -4,9 +4,10 @@ python:
   - 2.7
 
 install:
-  - pip install -r requirements.txt
+  - pip install -r requirements-dev.txt
   - pip install .
   - pip install -e git+https://github.com/napalm-automation/napalm-base.git@develop#egg=napalm-base
+  - pip install coveralls
 
 deploy:
   provider: pypi
@@ -18,15 +19,19 @@ deploy:
     branch: master
 
 script:
+  - pylama .
   - cd test/unit
-  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_facts
-  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_interfaces
-  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_lldp_neighbors
-  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_lldp_neighbors_detail
-  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_mac_address_table
-  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_ntp_stats
-  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_ntp_servers
-  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_snmp_information
-  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_get_users
-  - nosetests -v TestPluribusDriver:TestGetterPluribusDriver.test_traceroute
+  - nosetests --with-coverage --cover-package napalm_pluribus -v TestPluribusDriver:TestGetterPluribusDriver.test_get_facts
+  - nosetests --with-coverage --cover-package napalm_pluribus -v TestPluribusDriver:TestGetterPluribusDriver.test_get_interfaces
+  - nosetests --with-coverage --cover-package napalm_pluribus -v TestPluribusDriver:TestGetterPluribusDriver.test_get_lldp_neighbors
+  - nosetests --with-coverage --cover-package napalm_pluribus -v TestPluribusDriver:TestGetterPluribusDriver.test_get_lldp_neighbors_detail
+  - nosetests --with-coverage --cover-package napalm_pluribus -v TestPluribusDriver:TestGetterPluribusDriver.test_get_mac_address_table
+  - nosetests --with-coverage --cover-package napalm_pluribus -v TestPluribusDriver:TestGetterPluribusDriver.test_get_ntp_stats
+  - nosetests --with-coverage --cover-package napalm_pluribus -v TestPluribusDriver:TestGetterPluribusDriver.test_get_ntp_servers
+  - nosetests --with-coverage --cover-package napalm_pluribus -v TestPluribusDriver:TestGetterPluribusDriver.test_get_snmp_information
+  - nosetests --with-coverage --cover-package napalm_pluribus -v TestPluribusDriver:TestGetterPluribusDriver.test_get_users
+  - nosetests --with-coverage --cover-package napalm_pluribus -v TestPluribusDriver:TestGetterPluribusDriver.test_traceroute
+  - nosetests --with-coverage --cover-package napalm_pluribus -v TestPluribusDriver:TestGetterPluribusDriver.test_get_config
   - cd ../..
+  - coverage combine test/unit/.coverage
+after_success: coveralls
