@@ -21,6 +21,8 @@ import pkg_resources
 # Import local modules
 from pluribus import PluribusDriver  # noqa
 
+__all__ = ('PluribusDriver',)
+
 try:
     __version__ = pkg_resources.get_distribution('napalm-pluribus').version
 except pkg_resources.DistributionNotFound:
