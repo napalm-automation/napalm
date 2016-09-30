@@ -121,7 +121,7 @@ def textfsm_extractor(cls, template_name, raw_text):
         raise napalm_base.exceptions.TemplateRenderException(
             "Wrong format of TextFSM template {template_name}: {error}".format(
                 template_name=template_name,
-                error=str(tfte)
+                error=py23_compat.text_type(tfte)
             )
         )
 
@@ -159,7 +159,7 @@ def find_txt(xml_tree, path, default=''):
                 value = xpath_result
     except Exception:  # in case of any exception, returns default
         value = default
-    return value
+    return py23_compat.text_type(value)
 
 
 def convert(to, who, default=u''):
@@ -215,7 +215,7 @@ def mac(raw):
             flat_raw=flat_raw,
             zeros_stuffed='0'*(12-len(flat_raw))
         )
-    return EUI(raw, dialect=_MACFormat)
+    return py23_compat.text_type(EUI(raw, dialect=_MACFormat))
 
 
 def ip(addr):
@@ -238,4 +238,4 @@ def ip(addr):
         >>> ip('2001:0dB8:85a3:0000:0000:8A2e:0370:7334')
         u'2001:db8:85a3::8a2e:370:7334'
     """
-    return str(IPAddress(addr))
+    return py23_compat.text_type(IPAddress(addr))
