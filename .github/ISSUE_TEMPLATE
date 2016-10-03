@@ -2,14 +2,14 @@
 
 ### Setup
 
-### NAPALM version
-(Paste verbatim output from `pip freeze | grep napalm` between quotes below)
+### napalm-eos version
+(Paste verbatim output from `pip freeze | grep napalm-eos` between quotes below)
 
 ```
 
 ```
 
-### Network OS version
+### eOS version
 (Paste verbatim output from `show version | json` between quotes below)
 
 ```
@@ -23,4 +23,5 @@
 
 ```
 
-``
+```
+
