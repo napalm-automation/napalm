@@ -1,3 +1,4 @@
+coveralls
 pytest
 pytest-cov
 pytest-json
