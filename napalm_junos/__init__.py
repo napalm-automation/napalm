@@ -12,5 +12,15 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-"""napalm_iosxr package."""
-from junos import JunOSDriver
+"""napalm_junos package."""
+
+# Import stdlib
+import pkg_resources
+
+# Import local modules
+from junos import JunOSDriver  # noqa
+
+try:
+    __version__ = pkg_resources.get_distribution('napalm-junos').version
+except pkg_resources.DistributionNotFound:
+    __version__ = "Not installed"

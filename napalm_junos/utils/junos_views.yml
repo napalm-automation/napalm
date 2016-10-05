@@ -381,6 +381,7 @@ junos_arp_table:
   rpc: get-arp-table-information
   args:
     expiration-time: true
+    no-resolve: true
   item: arp-table-entry
   key: interface-name
   view: junos_arp_view
@@ -390,7 +391,7 @@ junos_arp_view:
     interface: {interface-name: unicode}
     mac: {mac-address: unicode}
     ip: {ip-address: unicode}
-    tte: {time-to-expire: float}
+    age: {time-to-expire: float}
 
 ###
 ### Interfaces IPs
@@ -567,7 +568,7 @@ junos_rpm_probes_results_view:
     last_test_min_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
     last_test_max_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
     last_test_avg_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
-    last_test_loss: {probe-last-test-results/probe-test-generic-results/loss-percentage: int}
+    last_test_loss: {probe-last-test-results/probe-test-generic-results/loss-percentage: float}
     global_test_min_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
     global_test_max_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
     global_test_avg_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
