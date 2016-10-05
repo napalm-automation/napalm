@@ -1,2 +1,2 @@
-napalm-base
+napalm_base==0.17.0
 netmiko>=1.0.0
