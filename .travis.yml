@@ -4,8 +4,6 @@ python:
 install:
 - pip install .
 - pip install -r requirements-dev.txt
-- pip install -e git+https://github.com/napalm-automation/napalm-base.git@develop#egg=napalm-base
-- pip install coveralls
 deploy:
   provider: pypi
   user: dbarroso
