@@ -15,9 +15,7 @@
 import unittest
 
 from napalm_eos import eos
-from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
-import json
-import re
+from napalm_base.test.base import TestConfigNetworkDriver
 
 
 class TestConfigEOSDriver(unittest.TestCase, TestConfigNetworkDriver):
@@ -29,54 +27,10 @@ class TestConfigEOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         password = 'vagrant'
         cls.vendor = 'eos'
 
-        optional_args = {'port': 12443,}
-        cls.device = eos.EOSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
+        optional_args = {'port': 12443, }
+        cls.device = eos.EOSDriver(hostname, username, password,
+                                   timeout=60, optional_args=optional_args)
         cls.device.open()
 
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
         cls.device.commit_config()
-
-
-class TestGetterEOSDriver(unittest.TestCase, TestGettersNetworkDriver):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.mock = True
-
-        hostname = '127.0.0.1'
-        username = 'vagrant'
-        password = 'vagrant'
-        cls.vendor = 'eos'
-
-        optional_args = {'port': 12443,}
-        cls.device = eos.EOSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
-
-        if cls.mock:
-            cls.device.device = FakeEOSDevice()
-        else:
-            cls.device.open()
-
-
-class FakeEOSDevice:
-
-    @staticmethod
-    def read_json_file(filename):
-        with open(filename) as data_file:
-            return json.load(data_file)
-
-    @staticmethod
-    def read_txt_file(filename):
-        with open(filename) as data_file:
-            return data_file.read()
-
-    def run_commands(self, command_list, encoding='json'):
-        result = list()
-
-        for command in command_list:
-            if encoding == 'json':
-                result.append(self.read_json_file('eos/mock_data/{}.json'.format(command.replace(' ', '_').replace('/', '_'))))
-            else:
-                cmd = re.sub(r'[^a-zA-Z0-9]+', '_', command)
-                result.append({'output': self.read_txt_file('eos/mock_data/{}.txt'.format(cmd))})
-
-        return result
