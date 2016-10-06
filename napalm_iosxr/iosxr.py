@@ -1443,6 +1443,7 @@ class IOSXRDriver(NetworkDriver):
                 for response_time in response_times
             ]
             rtt = 0.0
+
             if len(response_times):
                 rtt = sum(response_times, 0.0)/len(response_times)
             return_codes = probe.xpath(
@@ -1451,6 +1452,7 @@ class IOSXRDriver(NetworkDriver):
                 napalm_base.helpers.find_txt(return_code, '.')
                 for return_code in return_codes
             ]
+
             last_test_loss = 0.0
             if len(return_codes):
                 last_test_loss = napalm_base.helpers.convert(
@@ -1464,7 +1466,10 @@ class IOSXRDriver(NetworkDriver):
                 float, napalm_base.helpers.find_txt(probe, 'Statistics/Aggregated/HourTable/Hour\
                     /Distributed/Target/DistributionIntervalTable/DistributionInterval/CommonStats\
                     /UpdateCount'))
-            jitter = rtt-(rms/global_test_updates)**0.5
+
+            jitter = 0.0
+            if global_test_updates:
+                jitter = rtt-(rms/global_test_updates)**0.5
             # jitter = max(rtt - max(response_times), rtt - min(response_times))
             current_test_min_delay = 0.0  # no stats for undergoing test :(
             current_test_max_delay = 0.0
