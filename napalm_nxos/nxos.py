@@ -56,6 +56,7 @@ class NXOSDriver(NetworkDriver):
         self.loaded = False
         self.fc = None
         self.changed = False
+        self.port = optional_args.get('port', 80)
         self.protocol = optional_args.get('nxos_protocol', 'http')
 
     def open(self):
@@ -64,6 +65,7 @@ class NXOSDriver(NetworkDriver):
                                      password=self.password,
                                      ip=self.hostname,
                                      timeout=self.timeout,
+                                     port=self.port,
                                      protocol=self.protocol)
             self.device.show('show version', fmat='json')
             # execute something easy
