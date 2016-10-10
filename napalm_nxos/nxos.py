@@ -20,6 +20,7 @@ import re
 import tempfile
 from urllib2 import URLError
 from datetime import datetime
+import ssl
 
 # third party libs
 from netaddr import IPAddress
@@ -36,6 +37,8 @@ from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ConnectionException, MergeConfigException,\
                                    ReplaceConfigException, CommandErrorException
 
+# Allow untrusted SSL Certificates
+ssl._create_default_https_context = ssl._create_unverified_context
 
 def strip_trailing(string):
     lines = list(x.rstrip(' ') for x in string.splitlines())
