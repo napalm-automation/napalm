@@ -97,7 +97,12 @@ class ROSDriver(NetworkDriver):
 #   def get_bgp_config(self, group='', neighbor=''):
 
     def get_bgp_neighbors(self):
-        bgp_neighbors = {}
+        bgp_neighbors = {
+            u'global': {
+                'router_id': u'',
+                'peers': {},
+            }
+        }
         if not self._system_package_enabled('routing'):
             return bgp_neighbors
 
@@ -113,12 +118,15 @@ class ROSDriver(NetworkDriver):
 
             router_ids = {}
             for bgp_peer in bgp_peers:
+                remote_id = bgp_peer.get('remote-id', u'')
+                if remote_id != u'':
+                    remote_id = napalm_base.helpers.ip(remote_id)
                 bgp_neighbors[routing_table]['peers'][napalm_base.helpers.ip(
                     bgp_peer['remote-address']
                 )] = {
                     'local_as': int(bgp_peer['local-as']),
                     'remote_as': int(bgp_peer['remote-as']),
-                    'remote_id': napalm_base.helpers.ip(bgp_peer.get('remote-id', '')),
+                    'remote_id': remote_id,
                     'is_up': bgp_peer['state'] == 'established',
                     'is_enabled': bgp_peer['flags'].find('X') == -1,
                     'description': unicode(bgp_peer['name'].replace('"', '')),
@@ -144,7 +152,9 @@ class ROSDriver(NetworkDriver):
         return bgp_neighbors
 
     def get_bgp_neighbors_detail(self, neighbor_address=''):
-        bgp_neighbors_detail = {}
+        bgp_neighbors_detail = {
+            u'global': {}
+        }
         if not self._system_package_enabled('routing'):
             return bgp_neighbors_detail
 
@@ -159,13 +169,16 @@ class ROSDriver(NetworkDriver):
                 if remote_as not in bgp_neighbors_detail[routing_table]:
                     bgp_neighbors_detail[routing_table][remote_as] = []
                 for bgp_peer in bgp_peers:
+                    local_address = bgp_peer.get('local-address', u'')
+                    if local_address != u'':
+                        local_address = napalm_base.helpers.ip(local_address)
                     bgp_neighbors_detail[routing_table][remote_as].append(
                         {
                             'up': bgp_peer['state'] == 'established',
                             'local_as': int(bgp_peer['local-as']),
                             'remote_as': int(bgp_peer['remote-as']),
                             'router_id': napalm_base.helpers.ip(bgp_peer.get('router-id', '')),
-                            'local_address': napalm_base.helpers.ip(bgp_peer.get('local-address')),
+                            'local_address': local_address,
                             'routing_table': unicode(bgp_peer['routing-table']),
                             'local_address_configured': False,
                             'local_port': -1,
@@ -208,12 +221,17 @@ class ROSDriver(NetworkDriver):
                     )
         return bgp_neighbors_detail
 
-    def get_config(self):
-        cli_command = '/export'
-        cli_output = self.cli(cli_command)[cli_command]
-        return {
-            '': '\n'.join(ros_utils.export_concat(cli_output))
+    def get_config(self, retrieve='all'):
+        config = {
+            'candidate': '',
+            'running': '',
+            'startup': ''
         }
+        if retrieve == 'all' or retrieve == 'running':
+            cli_command = '/export'
+            cli_output = self.cli(cli_command)[cli_command]
+            config['running'] = '\n'.join(ros_utils.export_concat(cli_output))
+        return config
 
     def get_environment(self):
         environment = {
@@ -378,9 +396,14 @@ class ROSDriver(NetworkDriver):
         return interfaces_ip
 
     def get_lldp_neighbors(self):
+        if not self._minimum_version(6, 37):
+            raise NotImplementedError
+        print 'get_lldp_neighbors()'
         return self._get_mndp_neighbors()
 
     def get_lldp_neighbors_detail(self, *args, **kwargs):
+        if not self._minimum_version(6, 37):
+            raise NotImplementedError
         return self._get_mndp_neighbors_detail(*args, **kwargs)
 
 #   def get_mac_address_table(self):
@@ -440,10 +463,13 @@ class ROSDriver(NetworkDriver):
 
             if route_type == 'BGP':
                 bgp_neighbor_details = self._get_bgp_peers(name=ipv4_route['received-from'])[0]
+                peer_id = bgp_neighbor_details.get('remote-id', u'')
+                if peer_id != u'':
+                    peer_id = napalm_base.helpers.ip(peer_id)
                 protocol_attributes = {
                     'local_as': bgp_neighbor_details['local-as'],
                     'remote_as': int(bgp_neighbor_details['remote-as']),
-                    'peer_id': napalm_base.helpers.ip(bgp_neighbor_details.get('remote-id', '')),
+                    'peer_id': peer_id,
                     'as_path': ipv4_route['bgp-as-path'],
                     'communities': communities,
                     'local_preference': ipv4_route.get('bgp-local-pref', 100),
@@ -569,8 +595,7 @@ class ROSDriver(NetworkDriver):
         self.mikoshell = mikoshell.Shell(self.paramiko_transport.open_session(), shell_prompts)
 #       self.mikoshell = mikoshell.Shell.from_transport(self.paramiko_transport, shell_prompts)
 #       self.apiros = rosapi.RouterboardAPI(self.hostname, self.username, self.password)
-        system_resource = self._api_get('/system/resource', structured=False)[0]
-        self.ros_version = system_resource.get('version')
+        self.ros_version = self._ros_version()
         self._datetime_offset = datetime.datetime.now() - self._ros_datetime()
 
     def ping(self, destination, source='', ttl=0, timeout=0, size=0, count=5):
@@ -831,10 +856,47 @@ class ROSDriver(NetworkDriver):
             return indexed_values[if_name][0].get('type')
         return None
 
+    def _minimum_version(self, major_version, minor_version=None, patch_level=None):
+        ros_version = self.ros_version or self._ros_version()
+        if ros_version['major'] < major_version:
+            return False
+        if minor_version is not None:
+            if ros_version['minor'] < minor_version:
+                return False
+        return True
+
     def _ros_datetime(self):
         system_clock = self._api_get('/system/clock', structured=False)[0]
         date_string = '{} {} {}'.format(system_clock['date'], system_clock['time'], 'gmt')
         return datetime.datetime.strptime(date_string, '%b/%d/%Y %H:%M:%S %Z')
+
+    def _ros_version(self):
+        system_resource = self._api_get('/system/resource', structured=False)[0]
+        for version_regexp in [
+                r'(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+) \((?P<channel>[^\)]+)\)$',
+                r'(?P<major>\d+)\.(?P<minor>\d+) \((?P<channel>[^\)]+)\)$',
+                r'(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
+                r'(?P<major>\d+)\.(?P<minor>\d+)$'
+            ]:
+            re_match = re.match(version_regexp, system_resource.get('version'))
+            if re_match:
+                version = {
+                    'major': None,
+                    'minor': None,
+                    'patch': None,
+                    'channel': None,
+                }
+                for key in version.keys():
+                    try:
+                        value = re_match.group(key)
+                        if value.isdigit():
+                            version[key] = int(value)
+                        else:
+                            version[key] = value
+                    except IndexError:
+                        pass
+                return version
+        raise ValueError
 
     def _system_package_enabled(self, package):
         indexed_values = ros_utils.index_values(
