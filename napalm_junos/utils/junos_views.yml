@@ -222,6 +222,7 @@ junos_lldp_neighbors_detail_view:
 ### BGP config
 ###
 
+
 junos_bgp_config_table:
   get: protocols/bgp/group
   view: junos_bgp_config_view
@@ -234,64 +235,65 @@ junos_bgp_config_group_table:
 
 junos_bgp_config_view:
   fields:
-    type: type
-    description: description
-    apply_groups: apply-groups
-    local_address: local-address
-    multihop_ttl: multihop/ttl
-    local_as: local-as/as-number
-    remote_as: peer-as
+    type: {type: unicode}
+    description: {description: unicode}
+    apply_groups: {apply-groups: unicode}
+    local_address: {local-address: unicode}
+    multihop_ttl: {multihop/ttl: int}
+    local_as: {local-as/as-number: int}
+    remote_as: {peer-as: int}
     multipath: multipath
     remove_private_as: remove-private
-    import_policy: import
-    export_policy: export
-    inet_unicast_limit_prefix_limit: family/inet/unicast/prefix-limit/maximum
-    inet_unicast_teardown_threshold_prefix_limit: family/inet/unicast/prefix-limit/teardown/limit-threshold
-    inet_unicast_teardown_timeout_prefix_limit: family/inet/unicast/prefix-limit/teardown/idle-timeout/timeout
-    inet_unicast_novalidate_prefix_limit: family/inet/unicast/prefix-limit/no-validate
-    inet_flow_limit_prefix_limit: family/inet/flow/prefix-limit/maximum
-    inet_flow_teardown_threshold_prefix_limit: family/inet/flow/prefix-limit/teardown/limit-threshold
-    inet_flow_teardown_timeout_prefix_limit: family/inet/flow/prefix-limit/teardown/idle-timeout/timeout
-    inet_flow_novalidate_prefix_limit: family/inet/flow/prefix-limit/no-validate
-    inet6_unicast_limit_prefix_limit: family/inet6/unicast/prefix-limit/maximum
-    inet6_unicast_teardown_threshold_prefix_limit: family/inet6/unicast/prefix-limit/teardown/limit-threshold
-    inet6_unicast_teardown_timeout_prefix_limit: family/inet6/unicast/prefix-limit/teardown/idle-timeout/timeout
-    inet6_unicast_novalidate_prefix_limit: family/inet6/unicast/prefix-limit/no-validate
-    inet6_flow_limit_prefix_limit: family/inet6/flow/prefix-limit/maximum
-    inet6_flow_teardown_threshold_prefix_limit: family/inet6/flow/prefix-limit/teardown/limit-threshold
-    inet6_flow_teardown_timeout_prefix_limit: family/inet6/flow/prefix-limit/teardown/idle-timeout/timeout
-    inet6_flow_novalidate_prefix_limit: family/inet6/flow/prefix-limit/no-validate
+    import_policy: {import: unicode}
+    export_policy: {export: unicode}
+    neighbors: junos_bgp_config_peers_table
+    inet_unicast_limit_prefix_limit: {family/inet/unicast/prefix-limit/maximum: int}
+    inet_unicast_teardown_threshold_prefix_limit: {family/inet/unicast/prefix-limit/teardown/limit-threshold: int}
+    inet_unicast_teardown_timeout_prefix_limit: {family/inet/unicast/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet_unicast_novalidate_prefix_limit: {family/inet/unicast/prefix-limit/no-validate: int}
+    inet_flow_limit_prefix_limit: {family/inet/flow/prefix-limit/maximum: int}
+    inet_flow_teardown_threshold_prefix_limit: {family/inet/flow/prefix-limit/teardown/limit-threshold: int}
+    inet_flow_teardown_timeout_prefix_limit: {family/inet/flow/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet_flow_novalidate_prefix_limit: {family/inet/flow/prefix-limit/no-validate: unicode}
+    inet6_unicast_limit_prefix_limit: {family/inet6/unicast/prefix-limit/maximum: int}
+    inet6_unicast_teardown_threshold_prefix_limit: {family/inet6/unicast/prefix-limit/teardown/limit-threshold: int}
+    inet6_unicast_teardown_timeout_prefix_limit: {family/inet6/unicast/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet6_unicast_novalidate_prefix_limit: {family/inet6/unicast/prefix-limit/no-validate: int}
+    inet6_flow_limit_prefix_limit: {family/inet6/flow/prefix-limit/maximum: int}
+    inet6_flow_teardown_threshold_prefix_limit: {family/inet6/flow/prefix-limit/teardown/limit-threshold: int}
+    inet6_flow_teardown_timeout_prefix_limit: {family/inet6/flow/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet6_flow_novalidate_prefix_limit: {family/inet6/flow/prefix-limit/no-validate: unicode}
 
 junos_bgp_config_peers_table:
-  get: protocols/bgp/group/neighbor
+  item: neighbor
+  key: name
   view: junos_bgp_config_peers_view
 
 junos_bgp_config_peers_view:
   fields:
-    group: ../name
-    description: description
-    import_policy: import
-    export_policy: export
-    local_address: neighbor/local-address
-    local_as: local-as
-    remote_as: peer-as
-    authentication_key: authentication_key
-    inet_unicast_limit_prefix_limit: family/inet/unicast/prefix-limit/maximum
-    inet_unicast_teardown_threshold_prefix_limit: family/inet/unicast/prefix-limit/teardown/limit-threshold
-    inet_unicast_teardown_timeout_prefix_limit: family/inet/unicast/prefix-limit/teardown/idle-timeout/timeout
-    inet_unicast_novalidate_prefix_limit: family/inet/unicast/prefix-limit/no-validate
-    inet_flow_limit_prefix_limit: family/inet/flow/prefix-limit/maximum
-    inet_flow_teardown_threshold_prefix_limit: family/inet/flow/prefix-limit/teardown/limit-threshold
-    inet_flow_teardown_timeout_prefix_limit: family/inet/flow/prefix-limit/teardown/idle-timeout/timeout
-    inet_flow_novalidate_prefix_limit: family/inet/flow/prefix-limit/no-validate
-    inet6_unicast_limit_prefix_limit: family/inet6/unicast/prefix-limit/maximum
-    inet6_unicast_teardown_threshold_prefix_limit: family/inet6/unicast/prefix-limit/teardown/limit-threshold
-    inet6_unicast_teardown_timeout_prefix_limit: family/inet6/unicast/prefix-limit/teardown/idle-timeout/timeout
-    inet6_unicast_novalidate_prefix_limit: family/inet6/unicast/prefix-limit/no-validate
-    inet6_flow_limit_prefix_limit: family/inet6/flow/prefix-limit/maximum
-    inet6_flow_teardown_threshold_prefix_limit: family/inet6/flow/prefix-limit/teardown/limit-threshold
-    inet6_flow_teardown_timeout_prefix_limit: family/inet6/flow/prefix-limit/teardown/idle-timeout/timeout
-    inet6_flow_novalidate_prefix_limit: family/inet6/flow/prefix-limit/no-validate
+    description: {description: unicode}
+    import_policy: {import: unicode}
+    export_policy: {export: unicode}
+    local_address: {local-address: unicode}
+    local_as: {ocal-as: int}
+    remote_as: {peer-as: int}
+    authentication_key: {authentication_key: unicode}
+    inet_unicast_limit_prefix_limit: {family/inet/unicast/prefix-limit/maximum: int}
+    inet_unicast_teardown_threshold_prefix_limit: {family/inet/unicast/prefix-limit/teardown/limit-threshold: int}
+    inet_unicast_teardown_timeout_prefix_limit: {family/inet/unicast/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet_unicast_novalidate_prefix_limit: {family/inet/unicast/prefix-limit/no-validate: int}
+    inet_flow_limit_prefix_limit: {family/inet/flow/prefix-limit/maximum: int}
+    inet_flow_teardown_threshold_prefix_limit: {family/inet/flow/prefix-limit/teardown/limit-threshold: int}
+    inet_flow_teardown_timeout_prefix_limit: {family/inet/flow/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet_flow_novalidate_prefix_limit: {family/inet/flow/prefix-limit/no-validate: unicode}
+    inet6_unicast_limit_prefix_limit: {family/inet6/unicast/prefix-limit/maximum: int}
+    inet6_unicast_teardown_threshold_prefix_limit: {family/inet6/unicast/prefix-limit/teardown/limit-threshold: int}
+    inet6_unicast_teardown_timeout_prefix_limit: {family/inet6/unicast/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet6_unicast_novalidate_prefix_limit: {family/inet6/unicast/prefix-limit/no-validate: int}
+    inet6_flow_limit_prefix_limit: {family/inet6/flow/prefix-limit/maximum: int}
+    inet6_flow_teardown_threshold_prefix_limit: {family/inet6/flow/prefix-limit/teardown/limit-threshold: int}
+    inet6_flow_teardown_timeout_prefix_limit: {family/inet6/flow/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet6_flow_novalidate_prefix_limit: {family/inet6/flow/prefix-limit/no-validate: unicode}
 
 ####
 #### BGP Neighbors and Routing Tables Stats
