@@ -87,14 +87,6 @@ class NXOSDriver(NetworkDriver):
         if self.changed:
             self._delete_file(self.backup_file)
 
-    @staticmethod
-    def _get_list_of_dicts(hsh, key):
-        # Helper, lookup key in hsh, return list.
-        result = hsh.get(key, {})
-        if type(result) is dict:
-            result = [result]
-        return result
-
     def _get_reply_body(self, result):
         # useful for debugging
         ret = result.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
@@ -105,7 +97,13 @@ class NXOSDriver(NetworkDriver):
 
     def _get_reply_table(self, result, tablename, rowname):
         # still useful for debugging
-        return self._get_reply_body(result).get(tablename, {}).get(rowname, [])
+        _reply_table = []
+        _table = self._get_reply_body(result).get(tablename, [])
+        if not isinstance(_table, list):
+            _table = [_table]
+        for _row in _table:
+            _reply_table.append(_row.get(rowname, {}))
+        return _reply_table
 
     def _get_command_table(self, command, tablename, rowname):
 
