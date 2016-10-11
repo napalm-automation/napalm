@@ -62,20 +62,33 @@ class EOSDriver(NetworkDriver):
 
         if optional_args is None:
             optional_args = {}
-        self.port = optional_args.get('port', 443)
+
+        self.transport = optional_args.get('eos_transport', 'https')
+
+        if self.transport == 'https':
+            self.port = optional_args.get('port', 443)
+        elif self.transrpot == 'http':
+            self.port = optional_args.get('port', 80)
+
         self.enablepwd = optional_args.get('enable_password', '')
 
     def open(self):
         """Implemantation of NAPALM method open."""
         try:
-            connection = pyeapi.client.connect(
-                transport='https',
-                host=self.hostname,
-                username=self.username,
-                password=self.password,
-                port=self.port,
-                timeout=self.timeout
-            )
+            if self.transport in ('http', 'https'):
+                connection = pyeapi.client.connect(
+                    transport='https',
+                    host=self.hostname,
+                    username=self.username,
+                    password=self.password,
+                    port=self.port,
+                    timeout=self.timeout
+                )
+            elif self.transport == 'socket':
+                connection = pyeapi.client.connect(transport=self.transport)
+            else:
+                raise ConnectionException("Unknown transport: {}".format(self.transport))
+
             if self.device is None:
                 self.device = pyeapi.client.Node(connection, enablepwd=self.enablepwd)
             # does not raise an Exception if unusable
