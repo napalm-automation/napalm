@@ -776,3 +776,20 @@ class NXOSDriver(NetworkDriver):
                 previous_probe_ip_address = ip_address
 
         return traceroute_result
+
+    def get_config(self, retrieve='all'):
+
+        config = {
+            'startup': '',
+            'running': '',
+            'candidate': ''
+        }  # default values
+
+        if retrieve.lower() in ('running', 'all'):
+            _cmd = 'show running-config'
+            config['running'] = self.cli([_cmd]).get(_cmd)
+        if retrieve.lower() in ('startup', 'all'):
+            _cmd = 'show startup-config'
+            config['startup'] = self.cli([_cmd]).get(_cmd)
+
+        return config
