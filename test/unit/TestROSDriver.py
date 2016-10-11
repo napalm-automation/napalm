@@ -36,7 +36,7 @@ class TestGetterROSDriver(unittest.TestCase, TestGettersNetworkDriver):
         password = 'vagrant'
         cls.vendor = 'ros'
 
-        optional_args = {'snmp_community': 'public',}
+        optional_args = {'port': 12205,}
         cls.device = ros.ROSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
 
         if cls.mock:
