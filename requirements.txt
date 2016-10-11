@@ -1,4 +1,4 @@
-napalm-base
+napalm-base==0.17.0
 pycsco
-PyYAML # this is a requirement for pycsco but seems to be missing
+PyYAML  # this is a requirement for pycsco but seems to be missing
 netaddr
