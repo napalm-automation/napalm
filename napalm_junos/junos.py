@@ -593,6 +593,9 @@ class JunOSDriver(NetworkDriver):
             neighbor = ''  # if no group is set, no neighbor should be set either
         bgp_items = bgp.items()
 
+        if neighbor:
+            neighbor_ip = napalm_base.helpers.ip(neighbor)
+
         for bgp_group in bgp_items:
             bgp_group_name = bgp_group[0]
             bgp_group_details = bgp_group[1]
@@ -669,7 +672,7 @@ class JunOSDriver(NetworkDriver):
                         })
                 bgp_peer_details['prefix_limit'] = build_prefix_limit(**prefix_limit_fields)
                 bgp_config[bgp_group_name]['neighbors'][bgp_peer_address] = bgp_peer_details
-                if neighbor and bgp_peer_address == neighbor:
+                if neighbor and bgp_peer_address == neighbor_ip:
                     break  # found the desired neighbor
 
         return bgp_config
