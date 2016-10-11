@@ -556,7 +556,6 @@ class JunOSDriver(NetworkDriver):
         }
 
         _PEER_FIELDS_DATATYPE_MAP_ = {
-            'group': unicode,
             'authentication_key': unicode,
             'route_reflector_client': bool,
             'nhs': bool
@@ -594,56 +593,6 @@ class JunOSDriver(NetworkDriver):
             neighbor = ''  # if no group is set, no neighbor should be set either
         bgp_items = bgp.items()
 
-        peers = junos_views.junos_bgp_config_peers_table(self.device)
-        peers.get()  # unfortunately cannot add filters for group name of neighbor address
-        peers_items = peers.items()
-
-        bgp_neighbors = {}
-
-        for bgp_group_neighbor in peers_items:
-            bgp_peer_address = napalm_base.helpers.ip(bgp_group_neighbor[0])
-            if neighbor and bgp_peer_address != neighbor:
-                continue  # if filters applied, jump over all other neighbors
-            bgp_group_details = bgp_group_neighbor[1]
-            bgp_peer_details = {
-                field: _DATATYPE_DEFAULT_.get(datatype)
-                for field, datatype in _PEER_FIELDS_DATATYPE_MAP_.iteritems()
-                if '_prefix_limit' not in field
-            }
-            for elem in bgp_group_details:
-                if not('_prefix_limit' not in elem[0] and elem[1] is not None):
-                    continue
-                datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
-                default = _DATATYPE_DEFAULT_.get(datatype)
-                key = elem[0]
-                value = elem[1]
-                if key in ['export_policy', 'import_policy']:
-                    if isinstance(value, list):
-                        value = ' '.join(value)
-                if key == 'local_address':
-                    value = napalm_base.helpers.convert(
-                        napalm_base.helpers.ip, value, value)
-                bgp_peer_details.update({
-                    key: napalm_base.helpers.convert(datatype, value, default)
-                })
-            prefix_limit_fields = {}
-            for elem in bgp_group_details:
-                if '_prefix_limit' in elem[0] and elem[1] is not None:
-                    datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
-                    default = _DATATYPE_DEFAULT_.get(datatype)
-                    prefix_limit_fields.update({
-                        elem[0].replace('_prefix_limit', ''): napalm_base.helpers.convert(datatype,
-                                                                                          elem[1],
-                                                                                          default)
-                    })
-            bgp_peer_details['prefix_limit'] = build_prefix_limit(**prefix_limit_fields)
-            group = bgp_peer_details.pop('group')
-            if group not in bgp_neighbors.keys():
-                bgp_neighbors[group] = {}
-            bgp_neighbors[group][bgp_peer_address] = bgp_peer_details
-            if neighbor and bgp_peer_address == neighbor:
-                break  # found the desired neighbor
-
         for bgp_group in bgp_items:
             bgp_group_name = bgp_group[0]
             bgp_group_details = bgp_group[1]
@@ -665,6 +614,9 @@ class JunOSDriver(NetworkDriver):
                 if key == 'local_address':
                     value = napalm_base.helpers.convert(
                         napalm_base.helpers.ip, value, value)
+                if key == 'neighbors':
+                    bgp_group_peers = value
+                    continue
                 bgp_config[bgp_group_name].update({
                     key: napalm_base.helpers.convert(datatype, value, default)
                 })
@@ -674,12 +626,51 @@ class JunOSDriver(NetworkDriver):
                     datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
                     default = _DATATYPE_DEFAULT_.get(datatype)
                     prefix_limit_fields.update({
-                        elem[0].replace('_prefix_limit', ''): napalm_base.helpers.convert(datatype,
-                                                                                          elem[1],
-                                                                                          default)
+                        elem[0].replace('_prefix_limit', ''):
+                            napalm_base.helpers.convert(datatype, elem[1], default)
                     })
             bgp_config[bgp_group_name]['prefix_limit'] = build_prefix_limit(**prefix_limit_fields)
-            bgp_config[bgp_group_name]['neighbors'] = bgp_neighbors.get(bgp_group_name, {})
+
+            bgp_config[bgp_group_name]['neighbors'] = {}
+            for bgp_group_neighbor in bgp_group_peers.items():
+                bgp_peer_address = napalm_base.helpers.ip(bgp_group_neighbor[0])
+                if neighbor and bgp_peer_address != neighbor:
+                    continue  # if filters applied, jump over all other neighbors
+                bgp_group_details = bgp_group_neighbor[1]
+                bgp_peer_details = {
+                    field: _DATATYPE_DEFAULT_.get(datatype)
+                    for field, datatype in _PEER_FIELDS_DATATYPE_MAP_.iteritems()
+                    if '_prefix_limit' not in field
+                }
+                for elem in bgp_group_details:
+                    if not('_prefix_limit' not in elem[0] and elem[1] is not None):
+                        continue
+                    datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
+                    default = _DATATYPE_DEFAULT_.get(datatype)
+                    key = elem[0]
+                    value = elem[1]
+                    if key in ['export_policy', 'import_policy']:
+                        if isinstance(value, list):
+                            value = ' '.join(value)
+                    if key == 'local_address':
+                        value = napalm_base.helpers.convert(
+                            napalm_base.helpers.ip, value, value)
+                    bgp_peer_details.update({
+                        key: napalm_base.helpers.convert(datatype, value, default)
+                    })
+                prefix_limit_fields = {}
+                for elem in bgp_group_details:
+                    if '_prefix_limit' in elem[0] and elem[1] is not None:
+                        datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
+                        default = _DATATYPE_DEFAULT_.get(datatype)
+                        prefix_limit_fields.update({
+                            elem[0].replace('_prefix_limit', ''):
+                                napalm_base.helpers.convert(datatype, elem[1], default)
+                        })
+                bgp_peer_details['prefix_limit'] = build_prefix_limit(**prefix_limit_fields)
+                bgp_config[bgp_group_name]['neighbors'][bgp_peer_address] = bgp_peer_details
+                if neighbor and bgp_peer_address == neighbor:
+                    break  # found the desired neighbor
 
         return bgp_config
 
