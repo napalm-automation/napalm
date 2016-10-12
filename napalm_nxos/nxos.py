@@ -776,7 +776,9 @@ class NXOSDriver(NetworkDriver):
             traceroute_result['success'][hop_index] = {'probes': {}}
             for probe_index in range(probes):
                 host_name = hop_details[3+probe_index*5]
-                ip_address = hop_details[4+probe_index*5]
+                ip_address_raw = hop_details[4+probe_index*5]
+                ip_address = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip, ip_address_raw, ip_address_raw)
                 rtt = hop_details[5+probe_index*5]
                 if rtt:
                     rtt = float(rtt)
