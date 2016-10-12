@@ -90,6 +90,11 @@ class NXOSDriver(NetworkDriver):
 
     @staticmethod
     def _compute_timestamp(stupid_cisco_output):
+        """
+        Some fields such `uptime` are returned as: 23week(s) 3day(s)
+        This method will determine the epoch of the event.
+        e.g.: 23week(s) 3day(s) -> 1462248287
+        """
 
         if not stupid_cisco_output:
             return -1.0
