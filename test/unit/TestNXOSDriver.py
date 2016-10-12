@@ -191,7 +191,7 @@ class TestNXOSDriver_get_interfaces_ip(unittest.TestCase):
                 u'ipv4': {u'192.168.0.1': {'prefix_length': 24}}
             },
             u'Vlan777': {
-                u'ipv6': {u'2001:db8:85a3:8d3:1319:8a2e:370:7349/64': {u'prefix_length': 64}}
+                u'ipv6': {u'2001:db8:85a3:8d3:1319:8a2e:370:7349': {u'prefix_length': 64}}
             }}
         self.assertEqual(actual_data, expected_data)
 
@@ -206,7 +206,7 @@ class TestNXOSDriver_get_interfaces_ip(unittest.TestCase):
                 u'ipv4': {u'10.1.2.0': {'prefix_length': 31}}
             },
             u'Vlan777': {
-                u'ipv6': {u'2001:db8:85a3:8d3:1319:8a2e:370:7349/64': {u'prefix_length': 64}}
+                u'ipv6': {u'2001:db8:85a3:8d3:1319:8a2e:370:7349': {u'prefix_length': 64}}
             }}
         self.assertEqual(actual_data, expected_data)
 
