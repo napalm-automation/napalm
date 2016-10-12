@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# python stdlib
+# import stdlib
 import re
 import ssl
 import time
@@ -21,7 +21,7 @@ import tempfile
 from urllib2 import URLError
 from datetime import datetime
 
-# third party libs
+# import third party lib
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 
@@ -33,7 +33,7 @@ from pycsco.nxos.device import Device as NXOSDevice
 from pycsco.nxos.error import CLIError
 from pycsco.nxos.error import FileTransferError
 
-# NAPALM base
+# import NAPALM Base
 import napalm_base.helpers
 from napalm_base import NetworkDriver
 from napalm_base.exceptions import ConnectionException
@@ -256,7 +256,8 @@ class NXOSDriver(NetworkDriver):
         facts['serial_number'] = unicode(sh_ver_body.get('proc_board_id'))
         facts['os_version'] = unicode(sh_ver_body.get('sys_ver_str'))
         facts['uptime'] = int(time.time() - time.mktime(
-            datetime.strptime(sh_ver_body.get('rr_ctime', '').strip(),
+            datetime.strptime(
+                sh_ver_body.get('rr_ctime', '').strip(),
                 '%a %b %d %H:%M:%S %Y').timetuple()))
         # only an idiot would display dattime as
         # Tue Jul  5 20:48:16 2016 dafuq
@@ -291,13 +292,13 @@ class NXOSDriver(NetworkDriver):
             interface_name = interface_details.get('interface')
             interfaces[interface_name] = {
                 'is_up': (interface_details.get('admin_state', '') == 'up'),
-                'is_enabled': (interface_details.get('state') == 'up') or \
-                    (interface_details.get('admin_state', '') == 'up'),
+                'is_enabled': (interface_details.get('state') == 'up') or
+                (interface_details.get('admin_state', '') == 'up'),
                 'description': unicode(interface_details.get('desc', '')),
                 'last_flapped': self._compute_timestamp(
                     interface_details.get('eth_link_flapped', '')),
-                'speed': int(napalm_base.helpers.convert(int,
-                    interface_details.get('eth_bw', [0])[0], 0) * 1e-3),
+                'speed': int(napalm_base.helpers.convert(
+                    int, interface_details.get('eth_bw', [0])[0], 0) * 1e-3),
                 'mac_address': napalm_base.helpers.convert(
                     napalm_base.helpers.mac, interface_details.get('eth_hw_addr')),
 
@@ -678,8 +679,8 @@ class NXOSDriver(NetworkDriver):
 
         command = 'sh run | sec username'
         section_username_raw_output = self.cli([command]).get(command, '')
-        section_username_tabled_output = napalm_base.helpers.textfsm_extractor(self,
-            'users', section_username_raw_output)
+        section_username_tabled_output = napalm_base.helpers.textfsm_extractor(
+            self, 'users', section_username_raw_output)
 
         for user in section_username_tabled_output:
             username = user.get('username', '')
@@ -744,8 +745,8 @@ class NXOSDriver(NetworkDriver):
         try:
             version = '6' if IPAddress(destination).version == 6 else ''
         except AddrFormatError:
-            return {
-            'error': 'Destination doest not look like a valid IP Address: {}'.format(destination)}
+            return {'error': 'Destination doest not look like a valid IP Address: {}'.format(
+                destination)}
 
         source_opt = ''
         if source:
