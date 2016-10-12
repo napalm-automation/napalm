@@ -4,7 +4,6 @@ python:
 install:
 - pip install -r requirements-dev.txt
 - pip install .
-- pip install coveralls
 deploy:
   provider: pypi
   user: dbarroso
