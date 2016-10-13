@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2016 Dravetech AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
@@ -13,12 +14,16 @@
 # the License.
 
 """napalm_nxos package."""
-from nxos import NXOSDriver
+
+# Import stdlib
 import pkg_resources
+
+# Import local modules
+from nxos import NXOSDriver  # noqa
 
 try:
     __version__ = pkg_resources.get_distribution('napalm-nxos').version
 except pkg_resources.DistributionNotFound:
     __version__ = "Not installed"
 
-__all__= ('NXOSDriver',)
+__all__ = ('NXOSDriver',)

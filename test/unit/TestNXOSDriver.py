@@ -12,12 +12,17 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-import unittest
-
-from napalm_nxos.nxos import NXOSDriver
-from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
+# import stdlib
 import re
 import os
+import unittest
+
+# import NAPALM Base
+# from napalm_base.test.base import TestConfigNetworkDriver
+from napalm_base.test.base import TestGettersNetworkDriver
+
+# import napalm-nxos
+from napalm_nxos import NXOSDriver
 
 # class TestConfigNXOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
@@ -84,7 +89,7 @@ class TestNXOSDriver_bgp_neighbors(unittest.TestCase):
                             'ipv4': {
                                 'accepted_prefixes': -1,
                                 'received_prefixes': -1,
-                                'sent_prefixes': -1 }},
+                                'sent_prefixes': -1}},
                         'description': u'',
                         'is_enabled': True,
                         'is_up': True,
@@ -92,7 +97,7 @@ class TestNXOSDriver_bgp_neighbors(unittest.TestCase):
                         'remote_as': 11111,
                         'remote_id': u'40.40.40.40',
                         'uptime': -1}}
-            }, # End default
+            },  # End default
             'VRF_1': {
                 'router_id': u'10.10.10.10',
                 'peers': {
@@ -120,11 +125,10 @@ class TestNXOSDriver_bgp_neighbors(unittest.TestCase):
                         'remote_as': 22222,
                         'remote_id': u'30.30.30.30',
                         'uptime': -1}}
-            } # End VRF_1
+            }  # End VRF_1
         }
         self.maxDiff = None
         self.assertEqual(actual_data, expected_data)
-
 
     def test_get_bgp_neighbors_with_no_data_works(self):
         # TODO: verify that Nexus devices with no BGP set up return
@@ -191,7 +195,7 @@ class TestNXOSDriver_get_interfaces_ip(unittest.TestCase):
                 u'ipv4': {u'192.168.0.1': {'prefix_length': 24}}
             },
             u'Vlan777': {
-                u'ipv6': {u'2001:db8:85a3:8d3:1319:8a2e:370:7349/64': {u'prefix_length': 64}}
+                u'ipv6': {u'2001:db8:85a3:8d3:1319:8a2e:370:7349': {u'prefix_length': 64}}
             }}
         self.assertEqual(actual_data, expected_data)
 
@@ -206,7 +210,7 @@ class TestNXOSDriver_get_interfaces_ip(unittest.TestCase):
                 u'ipv4': {u'10.1.2.0': {'prefix_length': 31}}
             },
             u'Vlan777': {
-                u'ipv6': {u'2001:db8:85a3:8d3:1319:8a2e:370:7349/64': {u'prefix_length': 64}}
+                u'ipv6': {u'2001:db8:85a3:8d3:1319:8a2e:370:7349': {u'prefix_length': 64}}
             }}
         self.assertEqual(actual_data, expected_data)
 
@@ -235,7 +239,7 @@ class FakeNXOSDevice(object):
         """Set the returned data for different scenarios."""
         self.data_overrides = command_hash
 
-    def get_filename(self, command, fmat = 'xml', text = False):
+    def get_filename(self, command, fmat='xml', text=False):
         if command in self.data_overrides:
             return self.data_overrides[command]
 
@@ -245,25 +249,25 @@ class FakeNXOSDevice(object):
             extension = 'txt'
         filename = re.sub(r'[\[\]\*\^\+\s\|\/]', '_', command)
         mock_file = '{filename}.{extension}'.format(
-            filename  = filename[0:150],
-            extension = extension
+            filename=filename[0:150],
+            extension=extension
         )
         return mock_file
 
-    def show(self, command, fmat = 'xml', text = False):
+    def show(self, command, fmat='xml', text=False):
         curr_dir = os.path.dirname(os.path.abspath(__file__))
         mock_file = self.get_filename(command, fmat, text)
         mock_file = os.path.join(curr_dir, 'nxos', 'mock_data', mock_file)
         mock_data = self.read_txt_file(mock_file)
         if text:
             mock_data = {
-                'ins_api':{
+                'ins_api': {
                     'outputs': {
                         'output': {
-                            'msg'   : 'Success',
-                            'code'  : 200,
-                            'input' : command,
-                            'body'  : mock_data
+                            'msg': 'Success',
+                            'code': 200,
+                            'input': command,
+                            'body': mock_data
                         }
                     }
                 }
