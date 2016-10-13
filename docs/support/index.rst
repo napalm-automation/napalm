@@ -83,6 +83,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_probes_results**         |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
 **get_optics**                 |yes|  |yes|   |yes|   |no|      |no|   |no|     |no|  |no|        |no|
+**get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|   |yes|      |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 
 Other methods
