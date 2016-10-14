@@ -1,0 +1,20 @@
+language: python
+
+python:
+- 2.7
+
+install:
+- pip install -r requirements.txt
+- pip install .
+
+deploy:
+  provider: pypi
+  user: dbarroso
+  password:
+    secure: rc45r+LLfen9hE709M0voQ9bfyRbNE++lDVjuPG/qhVQHeYQnFijvT7c/ErFCkFdv+QzdvhM+8XLRYcQL98IJ+FvK7XFJdqZ26zNWKnyylLmT35FfNFOFsj95nitM3XO84es5PpOGZFINxUDg3QVHdN/jstzSJVSr7kHLlkvUFeFLUI5sDW0vlBIrSAs1bfL1ZFypkHnNyZPtvJn+Z4dkUw7Oe4+JfzEDBzKfs/cmxz7PpkSsKqmbYaFaCWTah3Sv7JAKFLEFYIVC19isj+ZGu4y6X1JDpe6OI2XBClpAeQRMO0Ae1RRuQTtmYcjzl55+RdKO3nP+cldSK3FoZbRvx36zv6zV9nD32MX+Jf3HhaHPWkolcLGmb4tiaKUfFuE/eEO3IPMP+5P+JqCn429h6MnP0xcggE9aKcSlcs5WWn69J29fkrvSrNIzuZcvjbGEqnGq8Wh6/RIOZbgE1jNlCjuKFtRLib9rQP0+RiUx7nOoakeul7PM5LpK+G9cPJKUPcATiI5d9VqspKsfsYeYSMpMSYNCRFz96W7b5JjwTKnZllHU2O3049WJPrnOvq9ZR2klbw5QGnfOV3RsdXv3FbV7eveXc3eeEXCok74CWmygAZ+OxHI6B0LRA35QRWRwjnyA4RVGvZjKusiJt+2HvQuyrURCieS58Wvl/81gwE=
+  on:
+    tags: true
+    branch: master
+
+script:
+- pylama .
