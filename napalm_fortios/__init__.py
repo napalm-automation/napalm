@@ -13,4 +13,15 @@
 # the License.
 
 """napalm_fortios package."""
-from fortios import FortiOSDriver
+# Import stdlib
+import pkg_resources
+
+# Import local modules
+from napalm_fortios.fortios import FortiOSDriver
+
+try:
+    __version__ = pkg_resources.get_distribution('napalm-fortios').version
+except pkg_resources.DistributionNotFound:
+    __version__ = "Not installed"
+
+__all__ = ('FortiOSDriver',)
