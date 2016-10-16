@@ -1,6 +1,4 @@
-import datetime
 import unittest
-import StringIO
 
 from napalm_ros import ros
 from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver  # noqa
