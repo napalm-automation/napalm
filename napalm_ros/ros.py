@@ -34,10 +34,7 @@ class ROSDriver(NetworkDriver):
     def cli(self, *commands):
         cli_output = {}
         for command in commands:
-            try:
-                device_output = self.mikoshell.command(command)
-            except Exception as exc:
-                raise CommandErrorException(exc)
+            device_output = self.mikoshell.command(command)
             if len(device_output) == 1 and device_output[0] != '':
                 if ros_utils.is_cli_error(device_output[0]):
                     raise CommandErrorException(device_output[0])
