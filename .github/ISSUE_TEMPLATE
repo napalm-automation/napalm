@@ -1,0 +1,27 @@
+### Description of Issue/Question
+
+### Setup
+
+### napalm-eos version
+(Paste verbatim output from `pip freeze | grep napalm-ros` between quotes below)
+
+```
+
+```
+
+### ROS version
+(Paste verbatim output from `show version` between quotes below)
+
+```
+
+```
+
+### Steps to Reproduce the Issue
+
+### Error Traceback
+(Paste the complete traceback of the exception between quotes below)
+
+```
+
+```
+
