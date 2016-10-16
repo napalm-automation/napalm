@@ -3,17 +3,21 @@ import unittest
 import StringIO
 
 from napalm_ros import ros
-from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
+from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver  # noqa
+
 
 def command_to_filename(command):
-    return 'ros/mock_data/{}.out'.format(command.lstrip('/').replace(' ', '_').replace('/', '-').replace('"', ''))
+    command = command.lstrip('/').replace(' ', '_').replace('/', '-').replace('"', '')
+    return 'ros/mock_data/{}.out'.format(command)
+
 
 def get_mock_data(command):
     filename = command_to_filename(command)
     with open(filename) as f:
         return f.read()
 
-#class TestConfigROSDriver(unittest.TestCase, TestConfigNetworkDriver):
+
+# class TestConfigROSDriver(unittest.TestCase, TestConfigNetworkDriver):
 #    @classmethod
 #    def setUpClass(cls):
 #        """Executed when the class is instantiated."""
@@ -36,8 +40,9 @@ class TestGetterROSDriver(unittest.TestCase, TestGettersNetworkDriver):
         password = 'vagrant'
         cls.vendor = 'ros'
 
-        optional_args = {'snmp_community': 'public',}
-        cls.device = ros.ROSDriver(hostname, username, password, timeout=60, optional_args=optional_args)
+        optional_args = {'snmp_community': 'public'}
+        cls.device = ros.ROSDriver(hostname, username, password,
+                                   timeout=60, optional_args=optional_args)
 
         if cls.mock:
             cls.device.paramiko_transport = FakeParamikoTransport()

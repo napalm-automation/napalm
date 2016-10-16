@@ -3,14 +3,13 @@ import datetime
 import re
 import socket
 import StringIO
-#
+
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ConnectionException, MergeConfigException, CommandErrorException
 import napalm_base.utils.string_parsers
 import paramiko
 import mikoshell
-#import rosapi
-#
+
 from . import utils as ros_utils
 
 
@@ -46,9 +45,6 @@ class ROSDriver(NetworkDriver):
         return cli_output
 
     def close(self):
-#       if hasattr(self, 'apiros'):
-#           self.apiros.close_connection()
-#           del self.apiros
         if hasattr(self, 'mikoshell'):
             self.mikoshell.exit('/quit')
             del self.mikoshell
@@ -526,12 +522,7 @@ class ROSDriver(NetworkDriver):
             self.config_session = 'napalm_{}'.format(datetime.datetime.now().microsecond)
             self._upload_config(self.candidate_config, self.config_session)
 
-#   def load_replace_candidate(self, filename=None, config=None):
-
-#   def load_template(self, template_name, template_source=None, template_path=None, **template_vars):
-
     def open(self):
-#       paramiko.common.logging.basicConfig(level=paramiko.common.DEBUG)
         paramiko.common.logging.basicConfig(level=paramiko.common.CRITICAL)
 
         try:
@@ -753,7 +744,7 @@ class ROSDriver(NetworkDriver):
         peer_status.pop(0)
 
         instance_indexed = ros_utils.index_values(self._api_get('/routing/bgp/instance'), 'name')
-        instance_vrf_indexed = ros_utils.index_values(
+        ros_utils.index_values(
             self._api_get('/routing/bgp/instance/vrf'),
             'name'
         )
