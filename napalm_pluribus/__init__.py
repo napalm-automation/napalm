@@ -19,7 +19,7 @@
 import pkg_resources
 
 # Import local modules
-from pluribus import PluribusDriver  # noqa
+from napalm_pluribus.pluribus import PluribusDriver
 
 __all__ = ('PluribusDriver',)
 
