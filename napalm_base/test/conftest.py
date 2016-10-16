@@ -1,7 +1,6 @@
 """Test fixtures."""
 import json
 import os
-import sys
 
 NAPALM_TEST_MOCK = os.getenv('NAPALM_TEST_MOCK', default=True)
 NAPALM_HOSTNAME = os.getenv('NAPALM_HOSTNAME', default='127.0.0.1')
