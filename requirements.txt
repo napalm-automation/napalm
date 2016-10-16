@@ -1,4 +1,4 @@
-napalm-base
+napalm-base==0.17.0
 pan-python
 netmiko>=0.5.0
 requests-toolbelt
