@@ -12,17 +12,16 @@ NAPALM_OPTIONAL_ARGS = json.loads(os.getenv('NAPALM_OPTIONAL_ARGS', default='{"p
 
 def set_device_parameters(request):
     """Set up the class."""
-    request.cls.device = request.cls.driver(NAPALM_HOSTNAME,
-                                            NAPALM_USERNAME,
-                                            NAPALM_PASSWORD,
-                                            timeout=60,
-                                            optional_args=NAPALM_OPTIONAL_ARGS)
     if NAPALM_TEST_MOCK:
-        request.cls.device.device = request.cls.fake_driver()
-        module_file = os.path.dirname(sys.modules[request.cls.__module__].__file__)
-        request.cls.device.mocked_data_dir = os.path.join(module_file, 'mocked_data')
+        driver = request.cls.patched_driver
     else:
-        request.cls.device.mocked_data_dir = None
+        driver = request.cls.driver
+
+    request.cls.device = driver(NAPALM_HOSTNAME,
+                                NAPALM_USERNAME,
+                                NAPALM_PASSWORD,
+                                timeout=60,
+                                optional_args=NAPALM_OPTIONAL_ARGS)
     request.cls.device.open()
 
 
