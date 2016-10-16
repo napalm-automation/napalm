@@ -25,8 +25,6 @@ from datetime import datetime
 import time
 
 # local modules
-import napalm_base.exceptions
-import napalm_base.helpers
 from napalm_base.utils.string_parsers import convert_uptime_string_seconds
 from napalm_base.exceptions import ConnectionException, ReplaceConfigException,\
                                    MergeConfigException
@@ -127,7 +125,8 @@ class PANOSDriver(NetworkDriver):
 
             path = self._import_file(filename)
             if path is False:
-                raise ReplaceConfigException("Error while trying to move the config file to the device.")
+                msg = "Error while trying to move the config file to the device."
+                raise ReplaceConfigException(msg)
 
             # Let's load the config.
             cmd = '<load><config><from>{0}</from></config></load>'.format(path)

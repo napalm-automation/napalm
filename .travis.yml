@@ -1,11 +1,13 @@
 language: python
+
 python:
 - 2.7
+
 install:
-- pip install -r requirements.txt
+- pip install -r requirements-dev.txt
 - pip install .
-- pip install -e git+https://github.com/napalm-automation/napalm-base.git@develop#egg=napalm-base
 - pip install coveralls
+
 deploy:
   provider: pypi
   user: dbarroso
@@ -14,10 +16,13 @@ deploy:
   on:
     tags: true
     branch: master
+
 script:
+- pylama .
 - cd test/unit
 - nosetests --with-coverage --cover-package napalm_panos -v TestDriver:TestGetterDriver.test_get_facts
 - nosetests --with-coverage --cover-package napalm_panos -v TestDriver:TestGetterDriver.test_get_interfaces
 - cd ../..
 - coverage combine test/unit/.coverage
+
 after_success: coveralls
