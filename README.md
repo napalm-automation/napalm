@@ -143,7 +143,7 @@ Presentations
 * [NANOG 64 Presentation & Demo](https://youtu.be/93q-dHC0u0I) by David Barroso and Elisa Jasinska
 * [Netnod Autumn Meeting 2015 Presentation](https://www.netnod.se/sites/default/files/NAPALM-david_barroso-Netnodautumnmeeting2015.pdf) by David Barroso
 * [Automating IXP Device Configurations with Ansible at the Euro-IX Forum](https://www.euro-ix.net/m/uploads/2015/10/26/euroix-berlin-v2.pdf) by Elisa Jasinska
-* [Network Automation with Salt and NAPALM at RIPE 72](https://ripe72.ripe.net/presentations/58-RIPE72-Network-Automation-with-Salt-and-NAPALM-Mircea-Ulinic-CloudFlare.pdf); [video](https://ripe72.ripe.net/archives/video/121/) by Mircea Ulinic
+* [Network Automation with Salt and NAPALM at NANOG 68](https://www.nanog.org/sites/default/files/NANOG68%20Network%20Automation%20with%20Salt%20and%20NAPALM%20Mircea%20Ulinic%20Cloudflare%20(1).pdf); [video](https://www.youtube.com/watch?v=gV2918bH5_c); [recorded demo](https://www.youtube.com/watch?v=AqBk5fM7qZ0) by Mircea Ulinic
 
 Podcasts
 --------
