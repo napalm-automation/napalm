@@ -535,7 +535,11 @@ class IOSDriver(NetworkDriver):
                 serial_number = serial_number.strip()
 
             if re.search(r"Cisco IOS Software", line):
-                _, os_version = line.split("Cisco IOS Software, ")
+                try:
+                    _, os_version = line.split("Cisco IOS Software, ")
+                except ValueError:
+                    # Handle 'Cisco IOS Software [Denali],'
+                    _, os_version = re.split(r"Cisco IOS Software \[.*?\], ", line)
                 os_version = os_version.strip()
             elif re.search(r"IOS (tm).+Software", line):
                 _, os_version = line.split("IOS (tm) ")
