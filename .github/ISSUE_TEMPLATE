@@ -1,0 +1,32 @@
+###Description of Issue/Question
+
+
+### Did you follow the steps from https://github.com/napalm-automation/napalm#faq
+- [ ] Yes
+- [ ] No
+
+
+### Setup
+
+### napalm-fortios version
+(Paste verbatim output from `pip freeze | grep napalm-fortios` between quotes below)
+
+```
+
+```
+
+### FortiOS version
+(Paste verbatim output from `get sys status` between quotes below)
+
+```
+
+```
+
+### Steps to Reproduce the Issue
+
+### Error Traceback
+(Paste the complete traceback of the exception between quotes below)
+
+```
+
+```
