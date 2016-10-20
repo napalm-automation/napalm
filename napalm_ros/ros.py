@@ -10,6 +10,7 @@ except ImportError:
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ConnectionException, MergeConfigException, CommandErrorException
 import napalm_base.utils.string_parsers
+import netaddr
 import paramiko
 import mikoshell
 #import rosapi
@@ -118,15 +119,12 @@ class ROSDriver(NetworkDriver):
 
             router_ids = {}
             for bgp_peer in bgp_peers:
-                remote_id = bgp_peer.get('remote-id', u'')
-                if remote_id != u'':
-                    remote_id = napalm_base.helpers.ip(remote_id)
                 bgp_neighbors[routing_table]['peers'][napalm_base.helpers.ip(
                     bgp_peer['remote-address']
                 )] = {
                     'local_as': int(bgp_peer['local-as']),
                     'remote_as': int(bgp_peer['remote-as']),
-                    'remote_id': remote_id,
+                    'remote_id': self._helpers_ip_wrapper(bgp_peer.get('remote-id', '')),
                     'is_up': bgp_peer['state'] == 'established',
                     'is_enabled': bgp_peer['flags'].find('X') == -1,
                     'description': unicode(bgp_peer['name'].replace('"', '')),
@@ -169,16 +167,15 @@ class ROSDriver(NetworkDriver):
                 if remote_as not in bgp_neighbors_detail[routing_table]:
                     bgp_neighbors_detail[routing_table][remote_as] = []
                 for bgp_peer in bgp_peers:
-                    local_address = bgp_peer.get('local-address', u'')
-                    if local_address != u'':
-                        local_address = napalm_base.helpers.ip(local_address)
                     bgp_neighbors_detail[routing_table][remote_as].append(
                         {
                             'up': bgp_peer['state'] == 'established',
                             'local_as': int(bgp_peer['local-as']),
                             'remote_as': int(bgp_peer['remote-as']),
-                            'router_id': napalm_base.helpers.ip(bgp_peer.get('router-id', '')),
-                            'local_address': local_address,
+                            'router_id': self._helpers_ip_wrapper(bgp_peer.get('router-id', '')),
+                            'local_address': self._helpers_ip_wrapper(
+                                bgp_peer.get('local-address', '')
+                            ),
                             'routing_table': unicode(bgp_peer['routing-table']),
                             'local_address_configured': False,
                             'local_port': -1,
@@ -396,13 +393,12 @@ class ROSDriver(NetworkDriver):
         return interfaces_ip
 
     def get_lldp_neighbors(self):
-        if not self._minimum_version(6, 37):
+        if not self._minimum_version(6, 38):
             raise NotImplementedError
-        print 'get_lldp_neighbors()'
         return self._get_mndp_neighbors()
 
     def get_lldp_neighbors_detail(self, *args, **kwargs):
-        if not self._minimum_version(6, 37):
+        if not self._minimum_version(6, 38):
             raise NotImplementedError
         return self._get_mndp_neighbors_detail(*args, **kwargs)
 
@@ -463,13 +459,10 @@ class ROSDriver(NetworkDriver):
 
             if route_type == 'BGP':
                 bgp_neighbor_details = self._get_bgp_peers(name=ipv4_route['received-from'])[0]
-                peer_id = bgp_neighbor_details.get('remote-id', u'')
-                if peer_id != u'':
-                    peer_id = napalm_base.helpers.ip(peer_id)
                 protocol_attributes = {
                     'local_as': bgp_neighbor_details['local-as'],
                     'remote_as': int(bgp_neighbor_details['remote-as']),
-                    'peer_id': peer_id,
+                    'peer_id': self._helpers_ip_wrapper(bgp_neighbor_details.get('remote-id', '')),
                     'as_path': ipv4_route['bgp-as-path'],
                     'communities': communities,
                     'local_preference': ipv4_route.get('bgp-local-pref', 100),
@@ -494,7 +487,7 @@ class ROSDriver(NetworkDriver):
                     'current_active': ipv4_route['flags'].find('X') == -1,
                     'last_active': False,
                     'age': int(-1),
-                    'next_hop': napalm_base.helpers.ip(ipv4_route.get('gateway', '')),
+                    'next_hop': self._helpers_ip_wrapper(ipv4_route.get('gateway', '')),
                     'outgoing_interface': unicode(
                         ipv4_route.get('gateway-status', '').split()[-1]
                     ),
@@ -850,6 +843,14 @@ class ROSDriver(NetworkDriver):
                 )
         return mndp_neighbors_detail
 
+    @staticmethod
+    def _helpers_ip_wrapper(candidate_ip):
+        if candidate_ip is None or candidate_ip == '':
+            return u''
+        if netaddr.valid_ipv4(candidate_ip) or netaddr.valid_ipv6(candidate_ip):
+            return napalm_base.helpers.ip(candidate_ip)
+        return unicode(candidate_ip)
+
     def _interface_type(self, if_name):
         indexed_values = ros_utils.index_values(self._api_get('/interface', name=if_name), 'name')
         if if_name in indexed_values:
@@ -877,6 +878,7 @@ class ROSDriver(NetworkDriver):
                 r'(?P<major>\d+)\.(?P<minor>\d+) \((?P<channel>[^\)]+)\)$',
                 r'(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
                 r'(?P<major>\d+)\.(?P<minor>\d+)$'
+                r'(?P<major>\d+)\.(?P<minor>\d+)rc(?P<patch>\d+)$'
             ]:
             re_match = re.match(version_regexp, system_resource.get('version'))
             if re_match:
@@ -889,12 +891,13 @@ class ROSDriver(NetworkDriver):
                 for key in version.keys():
                     try:
                         value = re_match.group(key)
+                    except IndexError:
+                        pass
+                    else:
                         if value.isdigit():
                             version[key] = int(value)
                         else:
                             version[key] = value
-                    except IndexError:
-                        pass
                 return version
         raise ValueError
 
@@ -914,6 +917,6 @@ class ROSDriver(NetworkDriver):
 
     def _upload_config(self, config, config_name):
         sftp_client = paramiko.SFTPClient.from_transport(self.paramiko_transport)
-        config_file = StringIO.StringIO('\r\n'.join(config))
+        config_file = StringIO('\r\n'.join(config))
         sftp_client.putfo(config_file, '{}.rsc'.format(config_name))
         sftp_client.close()
