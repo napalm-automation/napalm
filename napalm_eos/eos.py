@@ -512,7 +512,11 @@ class EOSDriver(NetworkDriver):
                         'remote_port_description': u'',
                         'remote_system_name': neighbor.get('systemName', u''),
                         'remote_system_description': neighbor.get('systemDescription', u''),
-                        'remote_chassis_id': neighbor.get('chassisId', u''),
+                        'remote_chassis_id': napalm_base.helpers.convert(
+                            napalm_base.helpers.mac,
+                            neighbor.get('chassisId'),
+                            neighbor.get('chassisId', u'')
+                        ),
                         'remote_system_capab': unicode(', '.join(capabilities)),
                         'remote_system_enable_capab': unicode(', '.join(
                             [capability for capability in capabilities.keys()
@@ -1188,7 +1192,10 @@ class EOSDriver(NetworkDriver):
             traceroute_result['success'][hop_index] = {'probes': {}}
             for probe_index in range(probes):
                 host_name = hop_details[3+probe_index*5]
-                ip_address = napalm_base.helpers.ip(hop_details[4+probe_index*5])
+                hop_addr = hop_details[4+probe_index*5]
+                ip_address = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip, hop_addr, hop_addr
+                )
                 rtt = hop_details[5+probe_index*5]
                 if rtt:
                     rtt = float(rtt)

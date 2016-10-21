@@ -4,7 +4,7 @@
     "description": "",
     "last_flapped": 1466586841.4151127,
     "is_up": true,
-    "mac_address": "08:00:27:10:c4:8f",
+    "mac_address": "08:00:27:10:C4:8F",
     "speed": 0
   },
   "Management1": {
@@ -12,7 +12,7 @@
     "description": "",
     "last_flapped": 1466586841.4284112,
     "is_up": true,
-    "mac_address": "08:00:27:20:b9:04",
+    "mac_address": "08:00:27:20:B9:04",
     "speed": 1000
   },
   "Ethernet1": {
@@ -20,7 +20,7 @@
     "description": "",
     "last_flapped": 1466586841.4148579,
     "is_up": true,
-    "mac_address": "08:00:27:c6:00:f0",
+    "mac_address": "08:00:27:C6:00:F0",
     "speed": 0
   },
   "Ethernet4": {
@@ -28,7 +28,7 @@
     "description": "",
     "last_flapped": 1466586841.415464,
     "is_up": true,
-    "mac_address": "08:00:27:e0:12:d2",
+    "mac_address": "08:00:27:E0:12:D2",
     "speed": 0
   },
   "Ethernet3": {
@@ -36,7 +36,7 @@
     "description": "",
     "last_flapped": 1466586841.4152465,
     "is_up": true,
-    "mac_address": "08:00:27:1f:60:43",
+    "mac_address": "08:00:27:1F:60:43",
     "speed": 0
   }
 }
