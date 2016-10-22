@@ -1,3 +1,2 @@
-napalm-base
-netaddr
-netmiko>=0.5.0
+napalm_base==0.17.0
+netmiko>=1.0.0

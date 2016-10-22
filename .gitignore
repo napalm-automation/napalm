@@ -59,4 +59,6 @@ env
 *.swp
 
 test/unit/test_devices.py
-
+test/unit/TestIOSDriverKB.py
+#test/unit/ios/*.conf
+#test/unit/ios/*.diff

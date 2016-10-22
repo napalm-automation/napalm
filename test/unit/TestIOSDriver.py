@@ -105,11 +105,11 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
     def test_ios_only_check_file_exists(self):
         """Test _check_file_exists() method."""
         self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
-
-        valid_file = self.device._check_file_exists(self.device.dest_file_system + '/candidate_config.txt')
+        valid_file = self.device._check_file_exists(self.device.dest_file_system +
+                                                    '/candidate_config.txt')
         self.assertTrue(valid_file)
-
-        invalid_file = self.device._check_file_exists(self.device.dest_file_system + '/bogus_999.txt')
+        invalid_file = self.device._check_file_exists(self.device.dest_file_system +
+                                                      '/bogus_999.txt')
         self.assertFalse(invalid_file)
 
 
