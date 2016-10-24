@@ -1209,7 +1209,7 @@ class IOSDriver(NetworkDriver):
         ntp_servers = {}
         command = 'show run | include ntp server'
         output = self.device.send_command(command)
-        
+
         for line in output.splitlines():
             split_line = line.split()
             if "vrf" == split_line[2]:
