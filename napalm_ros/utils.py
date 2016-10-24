@@ -1,5 +1,6 @@
 import re
 
+
 def export_concat(export_config):
     export_section = None
     line_buffer = []
@@ -24,6 +25,7 @@ def export_concat(export_config):
             line_buffer = []
     return concat_config
 
+
 def index_values(values, key='name'):
     values_indexed = {}
     for value in values:
@@ -35,17 +37,20 @@ def index_values(values, key='name'):
             raise KeyError('Key not seen - [{}]'.format(key))
     return values_indexed
 
+
 def is_cli_error(output_line):
     re_match = re.match(r'[^\(]+\(line \d+ column \d+\)', output_line)
     if re_match is not None:
         return True
     return False
 
+
 def is_cli_warning(output_line):
     re_match = re.match(r'\[([^\]]+)\]$', output_line)
     if re_match is not None:
         return True
     return False
+
 
 def parse_as_key_value(kv_pairs):
     as_key_value = {}
@@ -62,6 +67,7 @@ def parse_as_key_value(kv_pairs):
                 raise Exception('Key undefined')
             as_key_value[key], key = kv_split.rsplit(' ', 1)
     return as_key_value
+
 
 def Xparse_as_key_value(keys_and_values):
     as_key_value = {}
@@ -80,6 +86,7 @@ def Xparse_as_key_value(keys_and_values):
             raise ValueError(kv_part)
     return as_key_value
 
+
 def parse_print_as_value(print_as_values):
     as_value = []
     for line in print_as_values.replace('.id=*', '\n.id=*').splitlines():
@@ -87,6 +94,7 @@ def parse_print_as_value(print_as_values):
             continue
         as_value.append(parse_as_key_value(line.split(';')))
     return as_value
+
 
 def print_concat(print_output):
     concat = []
@@ -101,6 +109,7 @@ def print_concat(print_output):
             concat.append(line.strip())
     return concat
 
+
 def print_to_values(print_output):
     to_values = {}
     for line in print_output:
@@ -111,6 +120,7 @@ def print_to_values(print_output):
             raise KeyError('Key already seen - [{}]'.format(key))
         to_values[key.strip()] = value.strip()
     return to_values
+
 
 def Xprint_to_values_structured(print_output):
     to_values_structured = []
@@ -136,6 +146,7 @@ def Xprint_to_values_structured(print_output):
                 break
         to_values_structured.append(parse_as_key_value(line_parts))
     return to_values_structured
+
 
 def print_to_values_structured(print_output):
     to_values_structured = []
@@ -166,6 +177,7 @@ def print_to_values_structured(print_output):
                 key = part_b
         to_values_structured.append(key_value)
     return to_values_structured
+
 
 def to_seconds(time_format):
     seconds = minutes = hours = days = weeks = 0
