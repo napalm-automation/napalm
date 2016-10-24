@@ -76,3 +76,7 @@ class FakePANOSDevice:
     def op(self, cmd=''):
         self.cmd = cmd
         return True
+
+    def show(self, cmd=''):
+        self.cmd = 'running_config'
+        return True

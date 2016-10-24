@@ -173,6 +173,37 @@ class PANOSDriver(NetworkDriver):
         self.loaded = True
         self.merge_config = True
 
+    def _get_candidate(self):
+        candidate_command = '<show><config><candidate></candidate></config></show>'
+        self.device.op(cmd=candidate_command)
+        candidate = str(self.device.xml_root())
+        return candidate
+
+    def _get_running(self):
+        self.device.show()
+        running = str(self.device.xml_root())
+        return running
+
+    def get_config(self, retrieve='all'):
+        configs = {}
+        running = ''
+        candidate = ''
+        startup = ''
+
+        if retrieve == 'all':
+            running = self._get_running()
+            candidate = self._get_candidate()
+        elif retrieve == 'running':
+            running = self._get_running()
+        elif retrieve == 'candidate':
+            candidate = self._get_candidate()
+
+        configs['running'] = running
+        configs['candidate'] = candidate
+        configs['startup'] = startup
+
+        return configs
+
     def load_merge_candidate(self, filename=None, config=None):
         if filename:
             file_config = True
