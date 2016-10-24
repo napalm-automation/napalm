@@ -13,4 +13,16 @@
 # the License.
 
 """napalm_panos package."""
-from panos import PANOSDriver
+
+# Import stdlib
+import pkg_resources
+
+# Import local modules
+from napalm_panos.panos import PANOSDriver
+
+try:
+    __version__ = pkg_resources.get_distribution('napalm-panos').version
+except pkg_resources.DistributionNotFound:
+    __version__ = "Not installed"
+
+__all__ = ('PANOSDriver',)

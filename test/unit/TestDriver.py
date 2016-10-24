@@ -17,7 +17,7 @@ import unittest
 
 from napalm_panos import panos
 from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
-from napalm_base import exceptions
+
 
 class TestConfigDriver(unittest.TestCase, TestConfigNetworkDriver):
     """Group of tests that test Configuration related methods."""
@@ -67,7 +67,8 @@ class FakePANOSDevice:
             return data_file.read()
 
     def xml_root(self):
-        filename = self.cmd.replace('<', '_').replace('>', '_').replace('/', '_').replace('\n', '').replace(' ', '')
+        tmp_str = self.cmd.replace('<', '_').replace('>', '_')
+        filename = tmp_str.replace('/', '_').replace('\n', '').replace(' ', '')
         xml_string = self.read_txt_file(
             'panos/mock_data/{filename}.txt'.format(filename=filename[0:150]))
         return xml_string
