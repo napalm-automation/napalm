@@ -232,7 +232,9 @@ class EOSDriver(NetworkDriver):
             interfaces[interface]['last_flapped'] = values.pop('lastStatusChangeTimestamp', None)
 
             interfaces[interface]['speed'] = int(values['bandwidth'] * 1e-6)
-            interfaces[interface]['mac_address'] = napalm_base.helpers.mac(values.pop('physicalAddress', u''))
+            interfaces[interface]['mac_address'] = napalm_base.helpers.mac(
+                values.pop('physicalAddress', u'')
+            )
 
         return interfaces
 
