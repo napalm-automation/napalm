@@ -369,11 +369,12 @@ junos_bgp_rib_table:
   view: junos_bgp_rib_view
 
 junos_bgp_rib_view:
-  active_prefix_count: {active-prefix-count: int}
-  received_prefix_count: {received-prefix-count: int}
-  accepted_prefix_count: {accepted-prefix-count: int}
-  suppressed_prefix_count: {suppressed-prefix-count: int}
-  advertised_prefix_count: {advertised-prefix-count: int}
+  fields:
+    active_prefix_count: {active-prefix-count: int}
+    received_prefix_count: {received-prefix-count: int}
+    accepted_prefix_count: {accepted-prefix-count: int}
+    suppressed_prefix_count: {suppressed-prefix-count: int}
+    advertised_prefix_count: {advertised-prefix-count: int}
 
 ###
 ### ARP Table
