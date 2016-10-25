@@ -532,7 +532,8 @@ class EOSDriver(NetworkDriver):
                         'remote_port_description': u'',
                         'remote_system_name': neighbor.get('systemName', u''),
                         'remote_system_description': neighbor.get('systemDescription', u''),
-                        'remote_chassis_id': neighbor.get('chassisId', u''),
+                        'remote_chassis_id': napalm_base.helpers.mac(
+                            neighbor.get('chassisId', u'')),
                         'remote_system_capab': unicode(', '.join(capabilities)),
                         'remote_system_enable_capab': unicode(', '.join(
                             [capability for capability in capabilities.keys()
