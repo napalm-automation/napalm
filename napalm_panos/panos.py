@@ -25,8 +25,6 @@ from datetime import datetime
 import time
 
 # local modules
-import napalm_base.exceptions
-import napalm_base.helpers
 from napalm_base.utils.string_parsers import convert_uptime_string_seconds
 from napalm_base.exceptions import ConnectionException, ReplaceConfigException,\
                                    MergeConfigException
@@ -127,7 +125,8 @@ class PANOSDriver(NetworkDriver):
 
             path = self._import_file(filename)
             if path is False:
-                raise ReplaceConfigException("Error while trying to move the config file to the device.")
+                msg = "Error while trying to move the config file to the device."
+                raise ReplaceConfigException(msg)
 
             # Let's load the config.
             cmd = '<load><config><from>{0}</from></config></load>'.format(path)
@@ -173,6 +172,37 @@ class PANOSDriver(NetworkDriver):
         self.ssh_device.send_config_set(config)
         self.loaded = True
         self.merge_config = True
+
+    def _get_candidate(self):
+        candidate_command = '<show><config><candidate></candidate></config></show>'
+        self.device.op(cmd=candidate_command)
+        candidate = str(self.device.xml_root())
+        return candidate
+
+    def _get_running(self):
+        self.device.show()
+        running = str(self.device.xml_root())
+        return running
+
+    def get_config(self, retrieve='all'):
+        configs = {}
+        running = ''
+        candidate = ''
+        startup = ''
+
+        if retrieve == 'all':
+            running = self._get_running()
+            candidate = self._get_candidate()
+        elif retrieve == 'running':
+            running = self._get_running()
+        elif retrieve == 'candidate':
+            candidate = self._get_candidate()
+
+        configs['running'] = running
+        configs['candidate'] = candidate
+        configs['startup'] = startup
+
+        return configs
 
     def load_merge_candidate(self, filename=None, config=None):
         if filename:
