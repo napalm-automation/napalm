@@ -65,9 +65,12 @@ class IOSDriver(NetworkDriver):
             'ssh_config_file': None,
         }
 
-        maj_ver, min_ver, bug_fix = netmiko_version.split('.')
-        # allow_agent argument is only supported starting netmiko 1.1.0
-        if int(maj_ver + min_ver + bug_fix) >= 110:
+        fields = netmiko_version.split('.')
+        fields = [int(x) for x in fields]
+        maj_ver, min_ver, bug_fix = fields
+        if maj_ver >= 2:
+            netmiko_argument_map['allow_agent'] = False
+        elif maj_ver == 1 and min_ver >= 1:
             netmiko_argument_map['allow_agent'] = False
 
         # Build dict of any optional Netmiko args
