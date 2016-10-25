@@ -73,7 +73,7 @@ class EOSDriver(NetworkDriver):
         self.enablepwd = optional_args.get('enable_password', '')
 
     def open(self):
-        """Implemantation of NAPALM method open."""
+        """Implementation of NAPALM method open."""
         try:
             if self.transport in ('http', 'https'):
                 connection = pyeapi.client.connect(
@@ -102,7 +102,7 @@ class EOSDriver(NetworkDriver):
             raise ConnectionException(ce.message)
 
     def close(self):
-        """Implemantation of NAPALM method close."""
+        """Implementation of NAPALM method close."""
         self.discard_config()
 
     def _load_config(self, filename=None, config=None, replace=True):
@@ -145,15 +145,15 @@ class EOSDriver(NetworkDriver):
                 raise MergeConfigException(e.message)
 
     def load_replace_candidate(self, filename=None, config=None):
-        """Implemantation of NAPALM method load_replace_candidate."""
+        """Implementation of NAPALM method load_replace_candidate."""
         self._load_config(filename, config, True)
 
     def load_merge_candidate(self, filename=None, config=None):
-        """Implemantation of NAPALM method load_merge_candidate."""
+        """Implementation of NAPALM method load_merge_candidate."""
         self._load_config(filename, config, False)
 
     def compare_config(self):
-        """Implemantation of NAPALM method compare_config."""
+        """Implementation of NAPALM method compare_config."""
         if self.config_session is None:
             return ''
         else:
@@ -165,7 +165,7 @@ class EOSDriver(NetworkDriver):
             return result.strip()
 
     def commit_config(self):
-        """Implemantation of NAPALM method commit_config."""
+        """Implementation of NAPALM method commit_config."""
         commands = list()
         commands.append('copy startup-config flash:rollback-0')
         commands.append('configure session {}'.format(self.config_session))
@@ -176,7 +176,7 @@ class EOSDriver(NetworkDriver):
         self.config_session = None
 
     def discard_config(self):
-        """Implemantation of NAPALM method discard_config."""
+        """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
             commands = list()
             commands.append('configure session {}'.format(self.config_session))
@@ -185,14 +185,14 @@ class EOSDriver(NetworkDriver):
             self.config_session = None
 
     def rollback(self):
-        """Implemantation of NAPALM method rollback."""
+        """Implementation of NAPALM method rollback."""
         commands = list()
         commands.append('configure replace flash:rollback-0')
         commands.append('write memory')
         self.device.run_commands(commands)
 
     def get_facts(self):
-        """Implemantation of NAPALM method get_facts."""
+        """Implementation of NAPALM method get_facts."""
         commands = list()
         commands.append('show version')
         commands.append('show hostname')
@@ -245,9 +245,8 @@ class EOSDriver(NetworkDriver):
             interfaces[interface]['last_flapped'] = values.pop('lastStatusChangeTimestamp', None)
 
             interfaces[interface]['speed'] = int(values['bandwidth'] * 1e-6)
-            interfaces[interface]['mac_address'] = napalm_base.helpers.mac(
-                values.pop('physicalAddress', u'')
-            )
+            interfaces[interface]['mac_address'] = napalm_base.helpers.convert(
+                napalm_base.helpers.mac, values.pop('physicalAddress', u''))
 
         return interfaces
 
@@ -339,7 +338,7 @@ class EOSDriver(NetworkDriver):
             ['show ip ' + NEIGHBOR_FILTER, 'show ipv6 ' + NEIGHBOR_FILTER],
             encoding='text')
 
-        bgp_counters = defaultdict(lambda: dict(peers=dict()))
+        bgp_counters = {}
         for summary in output_summary_cmds:
             """
             Json output looks as follows
@@ -366,6 +365,10 @@ class EOSDriver(NetworkDriver):
             }
             """
             for vrf, vrf_data in summary['vrfs'].iteritems():
+                if vrf not in bgp_counters.keys():
+                    bgp_counters[vrf] = {
+                        'peers': {}
+                    }
                 bgp_counters[vrf]['router_id'] = vrf_data['routerId']
                 for peer, peer_data in vrf_data['peers'].iteritems():
                     peer_info = {
@@ -421,7 +424,10 @@ class EOSDriver(NetworkDriver):
                     }
                 }
             }
-            bgp_counters[vrf]['peers'][napalm_base.helpers.ip(neighbor)].update(data)
+            peer_addr = napalm_base.helpers.ip(neighbor)
+            if peer_addr not in bgp_counters[vrf]['peers'].keys():
+                bgp_counters[vrf]['peers'][peer_addr] = {}
+            bgp_counters[vrf]['peers'][peer_addr].update(data)
 
         if 'default' in bgp_counters.keys():
             bgp_counters['global'] = bgp_counters.pop('default')
@@ -566,7 +572,7 @@ class EOSDriver(NetworkDriver):
         return cli_output
 
     def get_bgp_config(self, group='', neighbor=''):
-        """Implemantation of NAPALM method get_bgp_config."""
+        """Implementation of NAPALM method get_bgp_config."""
         _GROUP_FIELD_MAP_ = {
             'type': 'type',
             'multipath': 'multipath',
@@ -922,7 +928,8 @@ class EOSDriver(NetworkDriver):
 
             ipv6_list.append(
                 {
-                    'address': napalm_base.helpers.ip(interface_details.get(
+                    'address': napalm_base.helpers.convert(
+                        napalm_base.helpers.ip, interface_details.get(
                         'linkLocal', {}).get('address')),
                     'masklen': int(interface_details.get('linkLocal', {}).get(
                         'subnet', '::/0').split('/')[-1])
@@ -1297,7 +1304,8 @@ class EOSDriver(NetworkDriver):
                     napalm_base.helpers.convert(
                         unicode, item['routing_table']))
                 item['router_id'] = napalm_base.helpers.ip(item['router_id'])
-                item['local_address'] = napalm_base.helpers.ip(item['local_address'])
+                item['local_address'] = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip, item['local_address'])
 
                 peer_details.append(item)
 
