@@ -22,7 +22,6 @@ Read napalm.readthedocs.org for more information.
 import re
 import time
 
-from collections import defaultdict
 from datetime import datetime
 
 from netaddr import IPAddress
@@ -929,10 +928,10 @@ class EOSDriver(NetworkDriver):
             ipv6_list.append(
                 {
                     'address': napalm_base.helpers.convert(
-                        napalm_base.helpers.ip, interface_details.get(
-                        'linkLocal', {}).get('address')),
-                    'masklen': int(interface_details.get('linkLocal', {}).get(
-                        'subnet', '::/0').split('/')[-1])
+                        napalm_base.helpers.ip, interface_details.get('linkLocal', {})
+                                                                 .get('address')),
+                    'masklen': int(
+                        interface_details.get('linkLocal', {}).get('subnet', '::/0').split('/')[-1])
                     # when no link-local set, address will be None and maslken 0
                 }
             )
