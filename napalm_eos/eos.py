@@ -324,12 +324,17 @@ class EOSDriver(NetworkDriver):
         return m.group('as')
 
     @staticmethod
+    def _bgp_neighbor_enabled(line):
+        m = re.match('\s+BGP\s+state\s+is\s+.*,\s+Administratively\s+shut\s+down', line)
+        return m is None
+
+    @staticmethod
     def _parse_prefix_info(line):
         m = re.match('(\s*?)(?P<af>IPv[46]) Unicast:\s*(?P<sent>\d+)\s*(?P<received>\d+)', line)
         return m.group('sent'), m.group('received')
 
     def get_bgp_neighbors(self):
-        NEIGHBOR_FILTER = 'bgp neighbors vrf all | include remote AS | remote router ID |^\s*IPv[46] Unicast:.*[0-9]+|^Local AS|Desc'  # noqa
+        NEIGHBOR_FILTER = 'bgp neighbors vrf all | include remote AS | remote router ID |^\s*IPv[46] Unicast:.*[0-9]+|^Local AS|Desc|BGP state'  # noqa
         output_summary_cmds = self.device.run_commands(
             ['show ipv6 bgp summary vrf all', 'show ip bgp summary vrf all'],
             encoding='json')
@@ -386,6 +391,7 @@ class EOSDriver(NetworkDriver):
               BGP neighbor is 1.1.1.1, remote AS 1, external link
                 Description: Very info such descriptive
                 BGP version 4, remote router ID 1.1.1.1, VRF my_vrf
+                BGP state is Idle, Administratively shut down
                  IPv4 Unicast:         683        78
                  IPv6 Unicast:           0         0
               Local AS is 2, local router ID 2.2.2.2
@@ -402,6 +408,7 @@ class EOSDriver(NetworkDriver):
             else:
                 rid, vrf = self._parse_rid_info(lines.pop(0))
 
+            is_enabled = self._bgp_neighbor_enabled(lines.pop(0))
             v4_sent, v4_recv = self._parse_prefix_info(lines.pop(0))
             v6_sent, v6_recv = self._parse_prefix_info(lines.pop(0))
             local_as = self._parse_local_info(lines.pop(0))
@@ -425,7 +432,12 @@ class EOSDriver(NetworkDriver):
             }
             peer_addr = napalm_base.helpers.ip(neighbor)
             if peer_addr not in bgp_counters[vrf]['peers'].keys():
-                bgp_counters[vrf]['peers'][peer_addr] = {}
+                bgp_counters[vrf]['peers'][peer_addr] = {
+                    'is_up': False,  # if not found, means it was not found in the oper stats
+                    # i.e. neighbor down,
+                    'uptime': 0,
+                    'is_enabled': is_enabled
+                }
             bgp_counters[vrf]['peers'][peer_addr].update(data)
 
         if 'default' in bgp_counters.keys():
