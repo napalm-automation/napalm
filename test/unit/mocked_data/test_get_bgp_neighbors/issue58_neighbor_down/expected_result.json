@@ -67,7 +67,7 @@
       },
       "2001:7f8::f10:0:3": {
         "is_enabled": true,
-        "uptime": 1452696202,
+        "uptime": 0,
         "remote_as": 65001,
         "description": "",
         "remote_id": "192.168.56.3",
