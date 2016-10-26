@@ -1,0 +1,40 @@
+{
+    "interfaces": {
+        "Loopback0": {
+            "dadStatus": "unsupported",
+            "vrf": "default",
+            "addresses": [
+                {
+                    "subnet": "2400:beef::1/128",
+                    "dadfailed": false,
+                    "active": true,
+                    "address": "2400:beef::1"
+                }
+            ],
+            "name": "Loopback0",
+            "ndReachableTime": 2147483000,
+            "interfaceStatus": "connected",
+            "multicastGroupAddresses": [
+                "ff02::1",
+                "ff02::2",
+                "ff02::1:ff00:1"
+            ],
+            "urpf": "disable",
+            "urpfV4V6Mismatch": false,
+            "state": "enabled",
+            "lineProtocolStatus": "up",
+            "neighborDiscoverDetails": {
+                "ndAdvertisedReachableTime": 2147483000,
+                "ndRouterAdvRetransmitInterval": 1000,
+                "ndRouterAdvInterval": 200000,
+                "routerAdvHopLimit": 64,
+                "routerAdvLifetime": 1800,
+                "ndRouterAdvSuppressed": true,
+                "routerPreference": "Medium"
+            },
+            "dadAttempts": 1,
+            "ndRetransmitInterval": 1000,
+            "autoConfigStatus": "stateless"
+        }
+    }
+}
