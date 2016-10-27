@@ -1,0 +1,14 @@
+{
+  "Loopback0": {
+    "ipv4": {
+      "172.17.17.1": {
+        "prefix_length": 32
+      }
+    },
+    "ipv6": {
+      "2400:beef::1": {
+        "prefix_length": 128
+      }
+    }
+  }
+}
