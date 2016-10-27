@@ -5,8 +5,8 @@ from __future__ import print_function
 import functools
 import itertools
 import json
+import os
 
-from double import BaseTestDouble
 
 import helpers
 
@@ -14,6 +14,9 @@ import models
 
 
 import pytest
+
+
+NAPALM_TEST_MOCK = os.getenv('NAPALM_TEST_MOCK', default=True)
 
 
 def list_dicts_diff(prv, nxt):
@@ -52,8 +55,10 @@ def wrap_test_cases(func):
     """Wrap test cases."""
     @functools.wraps(func)
     def wrapper(cls, test_case):
-        cls.device.device.current_test = func.__name__
-        cls.device.device.current_test_case = test_case
+        for patched_attr in cls.device.patched_attrs:
+            attr = getattr(cls.device, patched_attr)
+            attr.current_test = func.__name__
+            attr.current_test_case = test_case
 
         try:
             # This is an ugly, ugly, ugly hack because some python objects don't load
@@ -71,9 +76,9 @@ def wrap_test_cases(func):
         # This is an ugly, ugly, ugly hack because some python objects don't load
         # as expected. For example, dicts where integers are strings
 
-        if isinstance(cls.device.device, BaseTestDouble):
+        if NAPALM_TEST_MOCK:
             try:
-                expected_result = cls.device.device.expected_result
+                expected_result = attr.expected_result
             except IOError as e:
                 raise Exception("{}. Actual result was: {}".format(e, json.dumps(result)))
             if isinstance(result, list):
@@ -85,8 +90,10 @@ def wrap_test_cases(func):
                 raise AssertionError("Expected result varies on some keys {}".format(
                                                                             json.dumps(diff)))
 
-        cls.device.device.current_test = ''  # Empty them to avoid side effects
-        cls.device.device.current_test_case = ''  # Empty them to avoid side effects
+        for patched_attr in cls.device.patched_attrs:
+            attr = getattr(cls.device, patched_attr)
+            attr.current_test = ''   # Empty them to avoid side effects
+            attr.current_test_case = ''   # Empty them to avoid side effects
 
         return result
 
