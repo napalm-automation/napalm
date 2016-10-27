@@ -22,7 +22,6 @@ Read napalm.readthedocs.org for more information.
 import re
 import time
 
-from collections import defaultdict
 from datetime import datetime
 
 from netaddr import IPAddress
@@ -62,20 +61,33 @@ class EOSDriver(NetworkDriver):
 
         if optional_args is None:
             optional_args = {}
-        self.port = optional_args.get('port', 443)
+
+        self.transport = optional_args.get('eos_transport', 'https')
+
+        if self.transport == 'https':
+            self.port = optional_args.get('port', 443)
+        elif self.transrpot == 'http':
+            self.port = optional_args.get('port', 80)
+
         self.enablepwd = optional_args.get('enable_password', '')
 
     def open(self):
-        """Implemantation of NAPALM method open."""
+        """Implementation of NAPALM method open."""
         try:
-            connection = pyeapi.client.connect(
-                transport='https',
-                host=self.hostname,
-                username=self.username,
-                password=self.password,
-                port=self.port,
-                timeout=self.timeout
-            )
+            if self.transport in ('http', 'https'):
+                connection = pyeapi.client.connect(
+                    transport='https',
+                    host=self.hostname,
+                    username=self.username,
+                    password=self.password,
+                    port=self.port,
+                    timeout=self.timeout
+                )
+            elif self.transport == 'socket':
+                connection = pyeapi.client.connect(transport=self.transport)
+            else:
+                raise ConnectionException("Unknown transport: {}".format(self.transport))
+
             if self.device is None:
                 self.device = pyeapi.client.Node(connection, enablepwd=self.enablepwd)
             # does not raise an Exception if unusable
@@ -89,7 +101,7 @@ class EOSDriver(NetworkDriver):
             raise ConnectionException(ce.message)
 
     def close(self):
-        """Implemantation of NAPALM method close."""
+        """Implementation of NAPALM method close."""
         self.discard_config()
 
     def _load_config(self, filename=None, config=None, replace=True):
@@ -132,15 +144,15 @@ class EOSDriver(NetworkDriver):
                 raise MergeConfigException(e.message)
 
     def load_replace_candidate(self, filename=None, config=None):
-        """Implemantation of NAPALM method load_replace_candidate."""
+        """Implementation of NAPALM method load_replace_candidate."""
         self._load_config(filename, config, True)
 
     def load_merge_candidate(self, filename=None, config=None):
-        """Implemantation of NAPALM method load_merge_candidate."""
+        """Implementation of NAPALM method load_merge_candidate."""
         self._load_config(filename, config, False)
 
     def compare_config(self):
-        """Implemantation of NAPALM method compare_config."""
+        """Implementation of NAPALM method compare_config."""
         if self.config_session is None:
             return ''
         else:
@@ -152,7 +164,7 @@ class EOSDriver(NetworkDriver):
             return result.strip()
 
     def commit_config(self):
-        """Implemantation of NAPALM method commit_config."""
+        """Implementation of NAPALM method commit_config."""
         commands = list()
         commands.append('copy startup-config flash:rollback-0')
         commands.append('configure session {}'.format(self.config_session))
@@ -163,7 +175,7 @@ class EOSDriver(NetworkDriver):
         self.config_session = None
 
     def discard_config(self):
-        """Implemantation of NAPALM method discard_config."""
+        """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
             commands = list()
             commands.append('configure session {}'.format(self.config_session))
@@ -172,14 +184,14 @@ class EOSDriver(NetworkDriver):
             self.config_session = None
 
     def rollback(self):
-        """Implemantation of NAPALM method rollback."""
+        """Implementation of NAPALM method rollback."""
         commands = list()
         commands.append('configure replace flash:rollback-0')
         commands.append('write memory')
         self.device.run_commands(commands)
 
     def get_facts(self):
-        """Implemantation of NAPALM method get_facts."""
+        """Implementation of NAPALM method get_facts."""
         commands = list()
         commands.append('show version')
         commands.append('show hostname')
@@ -232,7 +244,8 @@ class EOSDriver(NetworkDriver):
             interfaces[interface]['last_flapped'] = values.pop('lastStatusChangeTimestamp', None)
 
             interfaces[interface]['speed'] = int(values['bandwidth'] * 1e-6)
-            interfaces[interface]['mac_address'] = values.pop('physicalAddress', u'')
+            interfaces[interface]['mac_address'] = napalm_base.helpers.convert(
+                napalm_base.helpers.mac, values.pop('physicalAddress', u''))
 
         return interfaces
 
@@ -311,12 +324,17 @@ class EOSDriver(NetworkDriver):
         return m.group('as')
 
     @staticmethod
+    def _bgp_neighbor_enabled(line):
+        m = re.match('\s+BGP\s+state\s+is\s+.*,\s+Administratively\s+shut\s+down', line)
+        return m is None
+
+    @staticmethod
     def _parse_prefix_info(line):
         m = re.match('(\s*?)(?P<af>IPv[46]) Unicast:\s*(?P<sent>\d+)\s*(?P<received>\d+)', line)
         return m.group('sent'), m.group('received')
 
     def get_bgp_neighbors(self):
-        NEIGHBOR_FILTER = 'bgp neighbors vrf all | include remote AS | remote router ID |^\s*IPv[46] Unicast:.*[0-9]+|^Local AS|Desc'  # noqa
+        NEIGHBOR_FILTER = 'bgp neighbors vrf all | include remote AS | remote router ID |IPv[46] Unicast:.*[0-9]+|^Local AS|Desc|BGP state'  # noqa
         output_summary_cmds = self.device.run_commands(
             ['show ipv6 bgp summary vrf all', 'show ip bgp summary vrf all'],
             encoding='json')
@@ -324,7 +342,7 @@ class EOSDriver(NetworkDriver):
             ['show ip ' + NEIGHBOR_FILTER, 'show ipv6 ' + NEIGHBOR_FILTER],
             encoding='text')
 
-        bgp_counters = defaultdict(lambda: dict(peers=dict()))
+        bgp_counters = {}
         for summary in output_summary_cmds:
             """
             Json output looks as follows
@@ -351,6 +369,10 @@ class EOSDriver(NetworkDriver):
             }
             """
             for vrf, vrf_data in summary['vrfs'].iteritems():
+                if vrf not in bgp_counters.keys():
+                    bgp_counters[vrf] = {
+                        'peers': {}
+                    }
                 bgp_counters[vrf]['router_id'] = vrf_data['routerId']
                 for peer, peer_data in vrf_data['peers'].iteritems():
                     peer_info = {
@@ -359,7 +381,7 @@ class EOSDriver(NetworkDriver):
                         peer_data['peerState'] == 'Active',
                         'uptime': int(peer_data['upDownTime'])
                     }
-                    bgp_counters[vrf]['peers'][peer] = peer_info
+                    bgp_counters[vrf]['peers'][napalm_base.helpers.ip(peer)] = peer_info
         lines = []
         [lines.extend(x['output'].splitlines()) for x in output_neighbor_cmds]
         for line in lines:
@@ -369,6 +391,7 @@ class EOSDriver(NetworkDriver):
               BGP neighbor is 1.1.1.1, remote AS 1, external link
                 Description: Very info such descriptive
                 BGP version 4, remote router ID 1.1.1.1, VRF my_vrf
+                BGP state is Idle, Administratively shut down
                  IPv4 Unicast:         683        78
                  IPv6 Unicast:           0         0
               Local AS is 2, local router ID 2.2.2.2
@@ -385,12 +408,13 @@ class EOSDriver(NetworkDriver):
             else:
                 rid, vrf = self._parse_rid_info(lines.pop(0))
 
+            is_enabled = self._bgp_neighbor_enabled(lines.pop(0))
             v4_sent, v4_recv = self._parse_prefix_info(lines.pop(0))
             v6_sent, v6_recv = self._parse_prefix_info(lines.pop(0))
             local_as = self._parse_local_info(lines.pop(0))
             data = {
                 'remote_as': int(r_as),
-                'remote_id': unicode(rid),
+                'remote_id': napalm_base.helpers.ip(rid),
                 'local_as': int(local_as),
                 'description': unicode(desc),
                 'address_family': {
@@ -406,7 +430,15 @@ class EOSDriver(NetworkDriver):
                     }
                 }
             }
-            bgp_counters[vrf]['peers'][neighbor].update(data)
+            peer_addr = napalm_base.helpers.ip(neighbor)
+            if peer_addr not in bgp_counters[vrf]['peers'].keys():
+                bgp_counters[vrf]['peers'][peer_addr] = {
+                    'is_up': False,  # if not found, means it was not found in the oper stats
+                    # i.e. neighbor down,
+                    'uptime': 0,
+                    'is_enabled': is_enabled
+                }
+            bgp_counters[vrf]['peers'][peer_addr].update(data)
 
         if 'default' in bgp_counters.keys():
             bgp_counters['global'] = bgp_counters.pop('default')
@@ -512,7 +544,8 @@ class EOSDriver(NetworkDriver):
                         'remote_port_description': u'',
                         'remote_system_name': neighbor.get('systemName', u''),
                         'remote_system_description': neighbor.get('systemDescription', u''),
-                        'remote_chassis_id': neighbor.get('chassisId', u''),
+                        'remote_chassis_id': napalm_base.helpers.mac(
+                            neighbor.get('chassisId', u'')),
                         'remote_system_capab': unicode(', '.join(capabilities)),
                         'remote_system_enable_capab': unicode(', '.join(
                             [capability for capability in capabilities.keys()
@@ -551,7 +584,7 @@ class EOSDriver(NetworkDriver):
         return cli_output
 
     def get_bgp_config(self, group='', neighbor=''):
-        """Implemantation of NAPALM method get_bgp_config."""
+        """Implementation of NAPALM method get_bgp_config."""
         _GROUP_FIELD_MAP_ = {
             'type': 'type',
             'multipath': 'multipath',
@@ -778,15 +811,13 @@ class EOSDriver(NetworkDriver):
         for neighbor in ipv4_neighbors:
             interface = unicode(neighbor.get('interface'))
             mac_raw = neighbor.get('hwAddress')
-            mac_all = mac_raw.replace('.', '').replace(':', '')
-            mac_format = unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
             ip = unicode(neighbor.get('address'))
             age = float(neighbor.get('age'))
             arp_table.append(
                 {
                     'interface': interface,
-                    'mac': mac_format,
-                    'ip': ip,
+                    'mac': napalm_base.helpers.mac(mac_raw),
+                    'ip': napalm_base.helpers.ip(ip),
                     'age': age
                 }
             )
@@ -876,14 +907,15 @@ class EOSDriver(NetworkDriver):
             if iface_details.get('primaryIp', {}).get('address') != '0.0.0.0':
                 ipv4_list.append(
                     {
-                        'address': iface_details.get('primaryIp', {}).get('address'),
+                        'address': napalm_base.helpers.ip(iface_details.get(
+                            'primaryIp', {}).get('address')),
                         'masklen': iface_details.get('primaryIp', {}).get('maskLen')
                     }
                 )
             for secondary_ip in iface_details.get('secondaryIpsOrderedList', []):
                 ipv4_list.append(
                     {
-                        'address': secondary_ip.get('address'),
+                        'address': napalm_base.helpers.ip(secondary_ip.get('address')),
                         'masklen': secondary_ip.get('maskLen')
                     }
                 )
@@ -908,16 +940,18 @@ class EOSDriver(NetworkDriver):
 
             ipv6_list.append(
                 {
-                    'address': interface_details.get('linkLocal', {}).get('address'),
-                    'masklen': int(interface_details.get('linkLocal', {}).get(
-                        'subnet', '::/0').split('/')[-1])
+                    'address': napalm_base.helpers.convert(
+                        napalm_base.helpers.ip, interface_details.get('linkLocal', {})
+                                                                 .get('address')),
+                    'masklen': int(
+                        interface_details.get('linkLocal', {}).get('subnet', '::/0').split('/')[-1])
                     # when no link-local set, address will be None and maslken 0
                 }
             )
             for address in interface_details.get('addresses'):
                 ipv6_list.append(
                     {
-                        'address': address.get('address'),
+                        'address': napalm_base.helpers.ip(address.get('address')),
                         'masklen': int(address.get('subnet').split('/')[-1])
                     }
                 )
@@ -948,14 +982,12 @@ class EOSDriver(NetworkDriver):
             vlan = mac_entry.get('vlanId')
             interface = mac_entry.get('interface')
             mac_raw = mac_entry.get('macAddress')
-            mac_str = mac_raw.replace('.', '').replace(':', '')
-            mac_format = ':'.join([mac_str[i:i+2] for i in range(12)[::2]])
             static = (mac_entry.get('entryType') == 'static')
             last_move = mac_entry.get('lastMove', 0.0)
             moves = mac_entry.get('moves', 0)
             mac_table.append(
                 {
-                    'mac': mac_format,
+                    'mac': napalm_base.helpers.mac(mac_raw),
                     'interface': interface,
                     'vlan': vlan,
                     'active': True,
@@ -1023,10 +1055,10 @@ class EOSDriver(NetworkDriver):
                     bgp_route = route.copy()
                     as_path = bgp_route_details.get('asPathEntry', {}).get('asPath', u'')
                     remote_as = int(as_path.split()[-1])
-                    remote_address = bgp_route_details.get(
-                        'routeDetail', {}).get('peerEntry', {}).get('peerAddr', '')
+                    remote_address = napalm_base.helpers.ip(bgp_route_details.get(
+                        'routeDetail', {}).get('peerEntry', {}).get('peerAddr', ''))
                     local_preference = bgp_route_details.get('localPreference')
-                    next_hop = bgp_route_details.get('nextHop')
+                    next_hop = napalm_base.helpers.ip(bgp_route_details.get('nextHop'))
                     active_route = bgp_route_details.get('routeType', {}).get('active', False)
                     last_active = active_route  # should find smth better
                     communities = bgp_route_details.get('routeDetail', {}).get('communityList', [])
@@ -1053,7 +1085,7 @@ class EOSDriver(NetworkDriver):
                     route_next_hop = route.copy()
                     route_next_hop.update(
                         {
-                            'next_hop': next_hop.get('nexthopAddr'),
+                            'next_hop': napalm_base.helpers.ip(next_hop.get('nexthopAddr')),
                             'outgoing_interface': next_hop.get('interface')
                         }
                     )
@@ -1190,7 +1222,10 @@ class EOSDriver(NetworkDriver):
             traceroute_result['success'][hop_index] = {'probes': {}}
             for probe_index in range(probes):
                 host_name = hop_details[3+probe_index*5]
-                ip_address = hop_details[4+probe_index*5]
+                hop_addr = hop_details[4+probe_index*5]
+                ip_address = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip, hop_addr, hop_addr
+                )
                 rtt = hop_details[5+probe_index*5]
                 if rtt:
                     rtt = float(rtt)
@@ -1267,9 +1302,7 @@ class EOSDriver(NetworkDriver):
                 item['last_event'] = (
                     napalm_base.helpers.convert(
                         unicode, item['last_event']))
-                item['remote_address'] = (
-                    napalm_base.helpers.convert(
-                        unicode, item['remote_address']))
+                item['remote_address'] = napalm_base.helpers.ip(item['remote_address'])
                 item['previous_connection_state'] = (
                     napalm_base.helpers.convert(
                         unicode, item['previous_connection_state']))
@@ -1282,12 +1315,9 @@ class EOSDriver(NetworkDriver):
                 item['routing_table'] = (
                     napalm_base.helpers.convert(
                         unicode, item['routing_table']))
-                item['router_id'] = (
-                    napalm_base.helpers.convert(
-                        unicode, item['router_id']))
-                item['local_address'] = (
-                    napalm_base.helpers.convert(
-                        unicode, item['local_address']))
+                item['router_id'] = napalm_base.helpers.ip(item['router_id'])
+                item['local_address'] = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip, item['local_address'])
 
                 peer_details.append(item)
 

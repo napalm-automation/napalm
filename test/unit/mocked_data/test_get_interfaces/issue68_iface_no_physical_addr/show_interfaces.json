@@ -1,0 +1,40 @@
+{
+    "interfaces": {
+        "Loopback0": {
+            "lastStatusChangeTimestamp": 1474274582.7947989,
+            "name": "Loopback0",
+            "interfaceStatus": "connected",
+            "mtu": 65535,
+            "hardware": "loopback",
+            "bandwidth": 0,
+            "forwardingModel": "routed",
+            "interfaceAddress": [
+                {
+                    "secondaryIpsOrderedList": [],
+                    "broadcastAddress": "255.255.255.255",
+                    "secondaryIps": {},
+                    "primaryIp": {
+                        "maskLen": 32,
+                        "address": "172.17.17.1"
+                    },
+                    "virtualIp": {
+                        "maskLen": 0,
+                        "address": "0.0.0.0"
+                    }
+                }
+            ],
+            "interfaceAddressIp6": {
+                "globalUnicastIp6s": [
+                    {
+                        "subnet": "2400:ca13::1/128",
+                        "dadfailed": false,
+                        "active": true,
+                        "address": "2400:ca13::1"
+                    }
+                ]
+            },
+            "lineProtocolStatus": "up",
+            "description": ""
+        }
+    }
+}
