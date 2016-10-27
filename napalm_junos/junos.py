@@ -285,7 +285,7 @@ class JunOSDriver(NetworkDriver):
                         environment_data['temperature'][sensor_object] = {}
 
                     environment_data['temperature'][sensor_object]['temperature'] = \
-                        float(structured_object_data['temperature'])
+                        structured_object_data['temperature']
                     # Set a default value (False) to the key is_critical and is_alert
                     environment_data['temperature'][sensor_object]['is_alert'] = False
                     environment_data['temperature'][sensor_object]['is_critical'] = False
