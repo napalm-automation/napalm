@@ -1,0 +1,30 @@
+{
+    "interfaces": {
+        "Loopback0": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 32,
+                    "address": "172.17.17.1"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Loopback0",
+            "urpf": "disable",
+            "interfaceStatus": "connected",
+            "enabled": true,
+            "mtu": 65535,
+            "addresslessForwarding": "isInvalid",
+            "vrf": "default",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "up",
+            "description": ""
+        }
+    }
+}
