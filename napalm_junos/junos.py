@@ -283,9 +283,10 @@ class JunOSDriver(NetworkDriver):
                     except KeyError:
                         environment_data['temperature'] = {}
                         environment_data['temperature'][sensor_object] = {}
-
-                    environment_data['temperature'][sensor_object]['temperature'] = \
-                        structured_object_data['temperature']
+                    # Check we have a temperature field in this class (See #66)
+                    if structured_object_data['temperature']:
+                        environment_data['temperature'][sensor_object]['temperature'] = \
+                            float(structured_object_data['temperature'])
                     # Set a default value (False) to the key is_critical and is_alert
                     environment_data['temperature'][sensor_object]['is_alert'] = False
                     environment_data['temperature'][sensor_object]['is_critical'] = False
