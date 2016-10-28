@@ -31,11 +31,12 @@ from napalm_base.exceptions import ConnectionException, ReplaceConfigException,\
 
 from napalm_base.base import NetworkDriver
 from netmiko import ConnectHandler
+from netmiko import __version__ as netmiko_version
 
 
 class PANOSDriver(NetworkDriver):
 
-    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+    def __init__(self, hostname, username, password='', timeout=60, optional_args=None):
         self.hostname = hostname
         self.username = username
         self.password = password
@@ -49,13 +50,46 @@ class PANOSDriver(NetworkDriver):
 
         if optional_args is None:
             optional_args = {}
-        self.port = optional_args.get('port', 22)
+
+        netmiko_argument_map = {
+            'port': None,
+            'verbose': False,
+            'use_keys': False,
+            'key_file': None,
+            'ssh_strict': False,
+            'system_host_keys': False,
+            'alt_host_keys': False,
+            'alt_key_file': '',
+            'ssh_config_file': None,
+        }
+
+        fields = netmiko_version.split('.')
+        fields = [int(x) for x in fields]
+        maj_ver, min_ver, bug_fix = fields
+        if maj_ver >= 2:
+            netmiko_argument_map['allow_agent'] = False
+        elif maj_ver == 1 and min_ver >= 1:
+            netmiko_argument_map['allow_agent'] = False
+
+        # Build dict of any optional Netmiko args
+        self.netmiko_optional_args = {}
+        for k, v in netmiko_argument_map.items():
+            try:
+                self.netmiko_optional_args[k] = optional_args[k]
+            except KeyError:
+                pass
+        self.api_key = optional_args.get('api_key', '')
+
 
     def open(self):
         try:
-            self.device = pan.xapi.PanXapi(hostname=self.hostname,
-                                           api_username=self.username,
-                                           api_password=self.password)
+            if self.api_key:
+                self.device = pan.xapi.PanXapi(hostname=self.hostname,
+                                               api_key=self.api_key)
+            else:
+                self.device = pan.xapi.PanXapi(hostname=self.hostname,
+                                               api_username=self.username,
+                                               api_password=self.password)
         except ConnectionException, e:
             raise ConnectionException(e.message)
 
@@ -65,7 +99,7 @@ class PANOSDriver(NetworkDriver):
                                              ip=self.hostname,
                                              username=self.username,
                                              password=self.password,
-                                             port=self.port)
+                                             **self.netmiko_optional_args)
         except ConnectionException, e:
             raise ConnectionException(e.message)
 
@@ -79,7 +113,10 @@ class PANOSDriver(NetworkDriver):
             self.ssh_device = None
 
     def _import_file(self, filename):
-        key = self.device.keygen()
+        if not self.api_key:
+            key = self.device.keygen()
+        else:
+            key = self.api_key
 
         params = {
             'type': 'import',
