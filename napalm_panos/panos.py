@@ -80,7 +80,6 @@ class PANOSDriver(NetworkDriver):
                 pass
         self.api_key = optional_args.get('api_key', '')
 
-
     def open(self):
         try:
             if self.api_key:
