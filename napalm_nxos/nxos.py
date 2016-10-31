@@ -255,23 +255,33 @@ class NXOSDriver(NetworkDriver):
             'vendor': u'Cisco'
         }
 
+        sh_uptime_cmd = 'show system uptime'
+        sh_uptime = eval(self.device.show(sh_uptime_cmd, fmat='json')[1])
+        sh_uptime_body = self._get_reply_body(sh_uptime)
+
+        uptime_days = sh_uptime_body.get('sys_up_days', 0)
+        uptime_hrs = sh_uptime_body.get('sys_up_hrs', 0)
+        uptime_mins = sh_uptime_body.get('sys_up_mins', 0)
+        uptime_secs = sh_uptime_body.get('sys_up_secs', 0)
+        facts['uptime'] = (uptime_secs + uptime_mins * 60 + uptime_hrs * (60 * 60) +
+                           uptime_days * (60 * 60 * 24))
+
         sh_ver_cmd = 'show version'
         sh_ver_json = eval(self.device.show(sh_ver_cmd, fmat='json')[1])
         sh_ver_body = self._get_reply_body(sh_ver_json)
+
+        sh_ver_json = eval(self.device.show(sh_ver_cmd, fmat='json')[1])
         facts['serial_number'] = unicode(sh_ver_body.get('proc_board_id'))
         facts['os_version'] = unicode(sh_ver_body.get('sys_ver_str'))
-        facts['uptime'] = int(time.time() - time.mktime(
-            datetime.strptime(
-                sh_ver_body.get('rr_ctime', '').strip(),
-                '%a %b %d %H:%M:%S %Y').timetuple()))
-        # only an idiot would display dattime as
-        # Tue Jul  5 20:48:16 2016 dafuq
         facts['model'] = unicode(sh_ver_body.get('chassis_id'))
         host_name = unicode(sh_ver_body.get('host_name'))
         facts['hostname'] = host_name
 
         sh_domain_cmd = 'show running-config | include domain-name'
         sh_domain_name_out = self.cli([sh_domain_cmd])[sh_domain_cmd]
+        if not sh_domain_name_out:
+            sh_domain_name_out = ''
+
         domain_name = ''
         for line in sh_domain_name_out.splitlines():
             if line.startswith('ip domain-name'):
