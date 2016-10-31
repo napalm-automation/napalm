@@ -83,7 +83,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_probes_config**          |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_probes_results**         |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
-**get_optics**                 |yes|  |yes|   |yes|   |no|      |no|   |no|     |no|  |no|        |no|
+**get_optics**                 |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|   |yes|      |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 
@@ -144,6 +144,8 @@ ____________________________________
 * :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: .5).
 * :code:`nxos_protocol` (nxos) - Protocol to connect with.  Only 'https' and 'http' allowed (default: 'http').
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: '').
+* :code:`allow_agent` (ios) - Paramiko argument, enable connecting to the SSH agent (default: 'False').
+* :code:`use_keys` (ios) - Paramiko argument, enable searching for discoverable private key files in ~/.ssh/ (default: 'False').
 
 
 Adding optional arguments to NAPALM drivers
