@@ -429,6 +429,7 @@ class NXOSDriver(NetworkDriver):
                     'remote_chassis_id': napalm_base.helpers.mac(chassis_rgx.groups()[1])
                 }
                 continue
+            lldp_neighbor['parent_interface'] = u''
             port_rgx = re.search(PORT_REGEX, line, re.I)
             if port_rgx:
                 lldp_neighbor['parent_interface'] = unicode(port_rgx.groups()[1])
