@@ -8,7 +8,7 @@ _____________
 IOS has no native API to play with, that's the reason why we used the Netmiko library to interact with it.
 Having Netmiko installed in your working box is a prerequisite.
 
-netmiko >= 0.3.0
+netmiko >= 1.0.0
 
 Full ios driver support requires configuration rollback on error::
 
@@ -59,5 +59,5 @@ _______
 
 * During various operations, NAPALM ios driver will turn off the prompting for confirmations (`file prompt quiet`). It should re-enable prompting before exiting the device (`no file prompt quiet`).
 
-* `write mem` is not performed on the device. Consequently, commit() commits the config to running-config, but does not save it to start-config.
+* The NAPALM-ios driver supports all Netmiko arguments as either standard arguments (hostname, username, password, timeout) or as optional_args (everything else).  
 
