@@ -305,6 +305,11 @@ class NXOSDriver(NetworkDriver):
 
         for interface_details in interfaces_out:
             interface_name = interface_details.get('interface')
+            # Earlier version of Nexus returned a list for 'eth_bw' (observed on 7.1(0)N1(1a))
+            interface_speed = interface_details.get('eth_bw', 0)
+            if isinstance(interface_speed, list):
+                interface_speed = interface_speed[0]
+            interface_speed = int(interface_speed * 1000)
             interfaces[interface_name] = {
                 'is_up': (interface_details.get('admin_state', '') == 'up'),
                 'is_enabled': (interface_details.get('state') == 'up') or
@@ -312,8 +317,7 @@ class NXOSDriver(NetworkDriver):
                 'description': unicode(interface_details.get('desc', '')),
                 'last_flapped': self._compute_timestamp(
                     interface_details.get('eth_link_flapped', '')),
-                'speed': int(napalm_base.helpers.convert(
-                    int, interface_details.get('eth_bw', [0])[0], 0) * 1e-3),
+                'speed': interface_speed,
                 'mac_address': napalm_base.helpers.convert(
                     napalm_base.helpers.mac, interface_details.get('eth_hw_addr')),
 
@@ -324,7 +328,11 @@ class NXOSDriver(NetworkDriver):
     def get_lldp_neighbors(self):
         results = {}
 
-        neighbor_list = nxapi_lib.get_neighbors(self.device, 'lldp')
+        try:
+            neighbor_list = nxapi_lib.get_neighbors(self.device, 'lldp')
+        except CLIError:
+            neighbor_list = []
+
         for neighbor in neighbor_list:
             local_iface = neighbor.get('local_interface')
             if neighbor.get(local_iface) is None:
