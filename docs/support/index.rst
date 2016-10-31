@@ -67,7 +67,8 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_facts**                  |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|      |yes|
 **get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|
 **get_snmp_information**       |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_ntp_peers**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
+**get_ntp_servers**            |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
+**get_ntp_peers**              |no|   |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
 **get_ntp_stats**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
 **get_mac_address_table**      |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
 **get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|       |no|
@@ -83,7 +84,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_probes_results**         |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
 **get_optics**                 |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_config**                 |yes|  |no|    |no|    |no|     |no|    |no|    |no|   |no|       |no|
+**get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|   |yes|      |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 
 Other methods
@@ -142,10 +143,9 @@ ____________________________________
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: True).
 * :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: .5).
 * :code:`nxos_protocol` (nxos) - Protocol to connect with.  Only 'https' and 'http' allowed (default: 'http').
+* :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: '').
 * :code:`allow_agent` (ios) - Paramiko argument, enable connecting to the SSH agent (default: 'False').
 * :code:`use_keys` (ios) - Paramiko argument, enable searching for discoverable private key files in ~/.ssh/ (default: 'False').
-
-
 
 
 Adding optional arguments to NAPALM drivers
