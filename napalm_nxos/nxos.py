@@ -340,11 +340,12 @@ class NXOSDriver(NetworkDriver):
         return results
 
     def get_bgp_neighbors(self):
-
         results = {}
-
-        cmd = 'show bgp sessions vrf all'
-        vrf_list = self._get_command_table(cmd, 'TABLE_vrf', 'ROW_vrf')
+        try:
+            cmd = 'show bgp sessions vrf all'
+            vrf_list = self._get_command_table(cmd, 'TABLE_vrf', 'ROW_vrf')
+        except CLIError:
+            vrf_list = []
 
         for vrf_dict in vrf_list:
             result_vrf_dict = {}
