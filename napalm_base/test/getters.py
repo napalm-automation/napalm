@@ -1,6 +1,6 @@
 """Testing framework."""
-
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import functools
 import itertools
@@ -9,11 +9,11 @@ import os
 
 
 import helpers
-
 import models
-
-
 import pytest
+
+# text_type is 'unicode' for py2 and 'str' for py3
+from napalm_base.utils.py23_compat import text_type
 
 
 NAPALM_TEST_MOCK = os.getenv('NAPALM_TEST_MOCK', default=True)
@@ -100,7 +100,7 @@ def wrap_test_cases(func):
     return wrapper
 
 
-class BaseTestGetters:
+class BaseTestGetters(object):
     """Base class for testing drivers."""
 
     @wrap_test_cases
@@ -116,7 +116,7 @@ class BaseTestGetters:
         get_interfaces = self.device.get_interfaces()
         assert len(get_interfaces) > 0
 
-        for interface, interface_data in get_interfaces.iteritems():
+        for interface, interface_data in get_interfaces.items():
             assert helpers.test_model(models.interface, interface_data)
 
         return get_interfaces
@@ -127,7 +127,7 @@ class BaseTestGetters:
         get_lldp_neighbors = self.device.get_lldp_neighbors()
         assert len(get_lldp_neighbors) > 0
 
-        for interface, neighbor_list in get_lldp_neighbors.iteritems():
+        for interface, neighbor_list in get_lldp_neighbors.items():
             for neighbor in neighbor_list:
                 assert helpers.test_model(models.lldp_neighbors, neighbor)
 
@@ -139,7 +139,7 @@ class BaseTestGetters:
         get_interfaces_counters = self.device.get_interfaces_counters()
         assert len(self.device.get_interfaces_counters()) > 0
 
-        for interface, interface_data in get_interfaces_counters.iteritems():
+        for interface, interface_data in get_interfaces_counters.items():
             assert helpers.test_model(models.interface_counters, interface_data)
 
         return get_interfaces_counters
@@ -150,16 +150,16 @@ class BaseTestGetters:
         environment = self.device.get_environment()
         assert len(environment) > 0
 
-        for fan, fan_data in environment['fans'].iteritems():
+        for fan, fan_data in environment['fans'].items():
             assert helpers.test_model(models.fan, fan_data)
 
-        for power, power_data in environment['power'].iteritems():
+        for power, power_data in environment['power'].items():
             assert helpers.test_model(models.power, power_data)
 
-        for temperature, temperature_data in environment['temperature'].iteritems():
+        for temperature, temperature_data in environment['temperature'].items():
             assert helpers.test_model(models.temperature, temperature_data)
 
-        for cpu, cpu_data in environment['cpu'].iteritems():
+        for cpu, cpu_data in environment['cpu'].items():
             assert helpers.test_model(models.cpu, cpu_data)
 
         assert helpers.test_model(models.memory, environment['memory'])
@@ -172,13 +172,13 @@ class BaseTestGetters:
         get_bgp_neighbors = self.device.get_bgp_neighbors()
         assert 'global' in get_bgp_neighbors.keys()
 
-        for vrf, vrf_data in get_bgp_neighbors.iteritems():
-            assert isinstance(vrf_data['router_id'], unicode)
+        for vrf, vrf_data in get_bgp_neighbors.items():
+            assert isinstance(vrf_data['router_id'], text_type)
 
-            for peer, peer_data in vrf_data['peers'].iteritems():
+            for peer, peer_data in vrf_data['peers'].items():
                 assert helpers.test_model(models.peer, peer_data)
 
-                for af, af_data in peer_data['address_family'].iteritems():
+                for af, af_data in peer_data['address_family'].items():
                     assert helpers.test_model(models.af, af_data)
 
         return get_bgp_neighbors
@@ -189,7 +189,7 @@ class BaseTestGetters:
         get_lldp_neighbors_detail = self.device.get_lldp_neighbors_detail()
         assert len(get_lldp_neighbors_detail) > 0
 
-        for interface, neighbor_list in get_lldp_neighbors_detail.iteritems():
+        for interface, neighbor_list in get_lldp_neighbors_detail.items():
             for neighbor in neighbor_list:
                 assert helpers.test_model(models.lldp_neighbors_detail, neighbor)
 
@@ -215,9 +215,9 @@ class BaseTestGetters:
 
         assert len(get_bgp_neighbors_detail) > 0
 
-        for vrf, vrf_ases in get_bgp_neighbors_detail.iteritems():
-            assert isinstance(vrf, unicode)
-            for remote_as, neighbor_list in vrf_ases.iteritems():
+        for vrf, vrf_ases in get_bgp_neighbors_detail.items():
+            assert isinstance(vrf, text_type)
+            for remote_as, neighbor_list in vrf_ases.items():
                 assert isinstance(remote_as, int)
                 for neighbor in neighbor_list:
                     assert helpers.test_model(models.peer_details, neighbor)
@@ -241,8 +241,8 @@ class BaseTestGetters:
         get_ntp_peers = self.device.get_ntp_peers()
         assert len(get_ntp_peers) > 0
 
-        for peer, peer_details in get_ntp_peers.iteritems():
-            assert isinstance(peer, unicode)
+        for peer, peer_details in get_ntp_peers.items():
+            assert isinstance(peer, text_type)
             assert helpers.test_model(models.ntp_peer, peer_details)
 
         return get_ntp_peers
@@ -264,12 +264,12 @@ class BaseTestGetters:
         get_interfaces_ip = self.device.get_interfaces_ip()
         assert len(get_interfaces_ip) > 0
 
-        for interface, interface_details in get_interfaces_ip.iteritems():
+        for interface, interface_details in get_interfaces_ip.items():
             ipv4 = interface_details.get('ipv4', {})
             ipv6 = interface_details.get('ipv6', {})
-            for ip, ip_details in ipv4.iteritems():
+            for ip, ip_details in ipv4.items():
                 assert helpers.test_model(models.interfaces_ip, ip_details)
-            for ip, ip_details in ipv6.iteritems():
+            for ip, ip_details in ipv6.items():
                 assert helpers.test_model(models.interfaces_ip, ip_details)
 
         return get_interfaces_ip
@@ -294,7 +294,7 @@ class BaseTestGetters:
 
         assert len(get_route_to) > 0
 
-        for prefix, routes in get_route_to.iteritems():
+        for prefix, routes in get_route_to.items():
             for route in routes:
                 assert helpers.test_model(models.route, route)
 
@@ -310,7 +310,7 @@ class BaseTestGetters:
         for snmp_entry in get_snmp_information:
             assert helpers.test_model(models.snmp, get_snmp_information)
 
-        for community, community_data in get_snmp_information['community'].iteritems():
+        for community, community_data in get_snmp_information['community'].items():
             assert helpers.test_model(models.snmp_community, community_data)
 
         return get_snmp_information
@@ -322,8 +322,8 @@ class BaseTestGetters:
 
         assert len(get_probes_config) > 0
 
-        for probe_name, probe_tests in get_probes_config.iteritems():
-            for test_name, test_config in probe_tests.iteritems():
+        for probe_name, probe_tests in get_probes_config.items():
+            for test_name, test_config in probe_tests.items():
                 assert helpers.test_model(models.probe_test, test_config)
 
         return get_probes_config
@@ -334,8 +334,8 @@ class BaseTestGetters:
         get_probes_results = self.device.get_probes_results()
         assert len(get_probes_results) > 0
 
-        for probe_name, probe_tests in get_probes_results.iteritems():
-            for test_name, test_results in probe_tests.iteritems():
+        for probe_name, probe_tests in get_probes_results.items():
+            for test_name, test_results in probe_tests.items():
                 assert helpers.test_model(models.probe_test_results, test_results)
 
         return get_probes_results
@@ -363,8 +363,8 @@ class BaseTestGetters:
         assert isinstance(get_traceroute.get('success'), dict)
         traceroute_results = get_traceroute.get('success', {})
 
-        for hope_id, hop_result in traceroute_results.iteritems():
-            for probe_id, probe_result in hop_result.get('probes', {}).iteritems():
+        for hope_id, hop_result in traceroute_results.items():
+            for probe_id, probe_result in hop_result.get('probes', {}).items():
                 assert helpers.test_model(models.traceroute, probe_result)
 
         return get_traceroute
@@ -375,7 +375,7 @@ class BaseTestGetters:
         get_users = self.device.get_users()
         assert len(get_users)
 
-        for user, user_details in get_users.iteritems():
+        for user, user_details in get_users.items():
             assert helpers.test_model(models.users, user_details)
             assert (0 <= user_details.get('level') <= 15)
 
@@ -387,8 +387,8 @@ class BaseTestGetters:
         get_optics = self.device.get_optics()
         assert isinstance(get_optics, dict)
 
-        for iface, iface_data in get_optics.iteritems():
-            assert isinstance(iface, unicode)
+        for iface, iface_data in get_optics.items():
+            assert isinstance(iface, text_type)
             for channel in iface_data['physical_channels']['channel']:
                 assert len(channel) == 2
                 assert isinstance(channel['index'], int)

@@ -14,17 +14,28 @@
 
 """napalm_base package."""
 
+# Python3 support
+from __future__ import print_function
+from __future__ import unicode_literals
+
 # Python std lib
 import sys
 import inspect
 import importlib
-
 import pkg_resources
 
-# NAPALM base
+# Verify Python Version that is running
+try:
+    if not(sys.version_info.major == 2 and sys.version_info.minor == 7) and \
+            not(sys.version_info.major == 3):
+        raise RuntimeError('NAPALM requires Python 2.7 or Python3')
+except AttributeError:
+    raise RuntimeError('NAPALM requires Python 2.7 or Python3')
 
+# NAPALM base
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ModuleImportError
+from napalm_base.utils import py23_compat
 
 try:
     __version__ = pkg_resources.get_distribution('napalm-base').version
@@ -36,10 +47,6 @@ __all__ = [
     'get_network_driver',  # export the function
     'NetworkDriver'  # also export the base class
 ]
-
-
-if not(sys.version_info.major == 2 and sys.version_info.minor == 7):
-    raise RuntimeError('NAPALM requires Python 2.7')
 
 
 def get_network_driver(module_name):
@@ -75,7 +82,7 @@ def get_network_driver(module_name):
         installed?
     """
 
-    if not (isinstance(module_name, basestring) and len(module_name) > 0):
+    if not (isinstance(module_name, py23_compat.string_types) and len(module_name) > 0):
         raise ModuleImportError('Please provide a valid driver name.')
 
     try:

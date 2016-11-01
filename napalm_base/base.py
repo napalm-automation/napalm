@@ -12,6 +12,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# Python3 support
+from __future__ import print_function
+from __future__ import unicode_literals
+
 # std libs
 import sys
 
@@ -70,7 +74,8 @@ class NetworkDriver(object):
                       "https://github.com/napalm-automation/napalm/issues\n"
                       "Don't forget to include this traceback.")
             print(epilog)
-        raise exc_type, exc_value, exc_traceback
+        # Traceback should already be attached to exception; no need to re-attach
+        raise exc_value
 
     def open(self):
         """

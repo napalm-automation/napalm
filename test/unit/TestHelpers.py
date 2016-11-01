@@ -2,6 +2,10 @@
 Test base helpers.
 """
 
+# Python3 support
+from __future__ import print_function
+from __future__ import unicode_literals
+
 # Python std lib
 import os
 import sys
@@ -15,7 +19,7 @@ except ImportError:
     HAS_JINJA = False
 
 try:
-    import textfsm  # noqa
+    import jtextfsm as textfsm  # noqa
     HAS_TEXTFSM = True
 except ImportError:
     HAS_TEXTFSM = False
@@ -47,7 +51,6 @@ class TestBaseHelpers(unittest.TestCase):
         # neded when calling helpers
 
     def test_load_template(self):
-
         """
         Tests the helper function ```load_template```:
 
@@ -61,9 +64,7 @@ class TestBaseHelpers(unittest.TestCase):
             * check if can load correct template from custom path
             * check if template passed as string can be loaded
         """
-
         self.assertTrue(HAS_JINJA)  # firstly check if jinja2 is installed
-
         _NTP_PEERS_LIST = [
             '172.17.17.1',
             '172.17.17.2'
@@ -121,7 +122,6 @@ class TestBaseHelpers(unittest.TestCase):
                                                           **_TEMPLATE_VARS))
 
     def test_textfsm_extractor(self):
-
         """
         Tests the helper function ```textfsm_extractor```:
 
@@ -132,7 +132,6 @@ class TestBaseHelpers(unittest.TestCase):
         """
 
         self.assertTrue(HAS_TEXTFSM)  # before anything else, let's see if TextFSM is available
-
         _TEXTFSM_TEST_STRING = '''
         Groups: 3 Peers: 3 Down peers: 0
         Table          Tot Paths  Act Paths Suppressed    History Damp State    Pending
@@ -172,7 +171,6 @@ class TestBaseHelpers(unittest.TestCase):
                               list)
 
     def test_convert(self):
-
         """
         Tests helper function ```convert```:
 
@@ -180,7 +178,6 @@ class TestBaseHelpers(unittest.TestCase):
             * cast of str to float returns desired float-type value
             * cast of None obj to string does not cast, but returns default
         """
-
         self.assertTrue(napalm_base.helpers.convert(int, 'non-int-value', default=-100) == -100)
         # default value returned
         self.assertIsInstance(napalm_base.helpers.convert(float, '1e-17'), float)

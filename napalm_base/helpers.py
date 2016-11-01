@@ -1,12 +1,16 @@
 """Helper functions for the NAPALM base."""
 
+# Python3 support
+from __future__ import print_function
+from __future__ import unicode_literals
+
 # std libs
 import os
 import sys
 
 # third party libs
 import jinja2
-import textfsm
+import jtextfsm as textfsm
 from netaddr import EUI
 from netaddr import mac_unix
 from netaddr import IPAddress
@@ -14,6 +18,7 @@ from netaddr import IPAddress
 # local modules
 import napalm_base.exceptions
 from napalm_base.utils.jinja_filters import CustomJinjaFilters
+from napalm_base.utils import py23_compat
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -31,11 +36,11 @@ _MACFormat.word_fmt = '%.2X'
 def load_template(cls, template_name, template_source=None, template_path=None,
                   openconfig=False, **template_vars):
     try:
-        if isinstance(template_source, basestring):
+        if isinstance(template_source, py23_compat.string_types):
             template = jinja2.Template(template_source)
         else:
             current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
-            if (isinstance(template_path, basestring) and
+            if (isinstance(template_path, py23_compat.string_types) and
                     os.path.isdir(template_path) and os.path.isabs(template_path)):
                 current_dir = os.path.join(template_path, cls.__module__.split('.')[-1])
                 # append driver name at the end of the custom path
@@ -112,11 +117,11 @@ def textfsm_extractor(cls, template_name, raw_text):
                 path=template_dir_path
             )
         )
-    except textfsm.textfsm.TextFSMTemplateError as tfte:
+    except textfsm.TextFSMTemplateError as tfte:
         raise napalm_base.exceptions.TemplateRenderException(
             "Wrong format of TextFSM template {template_name}: {error}".format(
                 template_name=template_name,
-                error=tfte.message
+                error=py23_compat.text_type(tfte)
             )
         )
 
@@ -134,7 +139,6 @@ def textfsm_extractor(cls, template_name, raw_text):
 
 
 def find_txt(xml_tree, path, default=''):
-
     """
     Extracts the text value from an XML tree, using XPath.
     In case of error, will return a default value.
@@ -144,9 +148,7 @@ def find_txt(xml_tree, path, default=''):
     :param default:  Value to be returned in case of error.
     :return: a str value.
     """
-
     value = ''
-
     try:
         xpath_applied = xml_tree.xpath(path)  # will consider the first match only
         if len(xpath_applied) and xpath_applied[0] is not None:
@@ -157,8 +159,7 @@ def find_txt(xml_tree, path, default=''):
                 value = xpath_result
     except Exception:  # in case of any exception, returns default
         value = default
-
-    return unicode(value)
+    return py23_compat.text_type(value)
 
 
 def convert(to, who, default=u''):
@@ -214,7 +215,7 @@ def mac(raw):
             flat_raw=flat_raw,
             zeros_stuffed='0'*(12-len(flat_raw))
         )
-    return unicode(EUI(raw, dialect=_MACFormat))
+    return py23_compat.text_type(EUI(raw, dialect=_MACFormat))
 
 
 def ip(addr):
@@ -237,5 +238,4 @@ def ip(addr):
         >>> ip('2001:0dB8:85a3:0000:0000:8A2e:0370:7334')
         u'2001:db8:85a3::8a2e:370:7334'
     """
-
-    return unicode(IPAddress(addr))
+    return py23_compat.text_type(IPAddress(addr))

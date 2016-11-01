@@ -6,6 +6,8 @@ NAPALM CLI Tools: test connectivity
 Module to test connectivity with the network device through NAPALM.
 '''
 from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 # import helpers
 from napalm_base import get_network_driver
