@@ -1,0 +1,31 @@
+language: python
+python:
+- 2.7
+install:
+- pip install -r requirements.txt
+- pip install .
+deploy:
+  provider: pypi
+  user: dbarroso
+  password:
+    secure: d9XnLqr0mmLiMONfoiSqShwQ761pD3THIwsEtllm1/1KknoFyOtyqYOfPvUIvy2wg7JGDYyRCfyj1j3SiYz1whmmtAmtOZYYB14wk3eftNBVHDERc1ROOVO2u3ahL6WwdZBhxjpuz6lXX0sSJtDxY2IBFGDy2cj2VzWyuiWKoS2YrQoLTLBt/FWPbHvVIIeUkQ1wZnZ/G0H45ZAntd9v9BCFkjKc2wEagPYv5Li+54Tet8nFiNFC/m+UBbcgtITFp5xNz0nbjMDTxKwIEgRNqXig/P/OOeh3aNtjPZtwLdeuJw/p4QBZ+eCnqD9paGcOdkCpK6b4i+8RV8n3/Dpz3qbyYBxpMqAn+JnOpVpWWnoARI3Kc+hHMpuT9fPLt+J5iqU/YZQhDRavmrggYWlnqWk67udFxDBec6BidQuZfksVhdT6CcD5cATRDrV0m7CchAQa0RDJ9NRUFu3L6h3vP5F49xzFPa87fG1s9l/Qccby5/rR3cryyHcnxsw1F1kPD1cpWbHwmkPnWYAqzYIso8rhJ8XjNj4Cw5/S4E1ri4e7fKRmYKYgB7Eq1QkefODAoDu6LBOkf2JtGOrSEa+bwLx2nnoGWfs6KkkRKzJNuNwBVYQYhfSRXLsXzWwfpYwqCuuEt/p4scgkqLtm5cGqZ5EG15g52N9gnQzpK8MK+uw=
+  on:
+    tags: true
+    branch: master
+script:
+- cd test/unit
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_arp_table
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_bgp_neighbors
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_environment
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_facts
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_interfaces
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_interfaces_counters
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_interfaces_ip
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_lldp_neighbors
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_lldp_neighbors_detail
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_mac_address_table
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_ntp_stats
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_get_snmp_information
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_ios_only_bgp_time_conversion
+- nosetests -v TestIOSDriver:TestGetterIOSDriver.test_ping
+- cd ../..
