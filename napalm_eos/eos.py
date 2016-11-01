@@ -1128,10 +1128,10 @@ class EOSDriver(NetworkDriver):
 
         def _sshkey_type(sshkey):
             if sshkey.startswith('ssh-rsa'):
-                return 'ssh_rsa', sshkey
+                return u'ssh_rsa', unicode(sshkey)
             elif sshkey.startswith('ssh-dss'):
-                return 'ssh_dsa', sshkey
-            return 'ssh_rsa', ''
+                return u'ssh_dsa', unicode(sshkey)
+            return u'ssh_rsa', u''
 
         users = dict()
 
@@ -1144,7 +1144,7 @@ class EOSDriver(NetworkDriver):
             sshkey_type, sshkey_value = _sshkey_type(sshkey_value)
             user_details.update({
                 'level': user_details.pop('privLevel', 0),
-                'password': user_details.pop('secret', ''),
+                'password': unicode(user_details.pop('secret', '')),
                 'sshkeys': [sshkey_value]
             })
             users[user] = user_details
@@ -1472,32 +1472,32 @@ class EOSDriver(NetworkDriver):
 
             output = self.device.run_commands(commands, encoding="text")
             return {
-                'startup': output[0]['output'] if get_startup else "",
-                'running': output[1]['output'] if get_running else "",
-                'candidate': output[2]['output'] if get_candidate else "",
+                'startup': unicode(output[0]['output']) if get_startup else u"",
+                'running': unicode(output[1]['output']) if get_running else u"",
+                'candidate': unicode(output[2]['output']) if get_candidate else u"",
             }
         elif get_startup or get_running:
             commands = ['show {}-config'.format(retrieve)]
             output = self.device.run_commands(commands, encoding="text")
             return {
-                'startup': output[0]['output'] if get_startup else "",
-                'running': output[0]['output'] if get_running else "",
-                'candidate': "",
+                'startup': unicode(output[0]['output']) if get_startup else u"",
+                'running': unicode(output[0]['output']) if get_running else u"",
+                'candidate': u"",
             }
         elif get_candidate:
             commands = ['show session-config named {}'.format(self.config_session)]
             output = self.device.run_commands(commands, encoding="text")
             return {
-                'startup': "",
-                'running': "",
-                'candidate': output[0]['output'],
+                'startup': u"",
+                'running': u"",
+                'candidate': unicode(output[0]['output']),
             }
         elif retrieve == "candidate":
             # If we get here it means that we want the candidate but there is none.
             return {
-                'startup': "",
-                'running': "",
-                'candidate': "",
+                'startup': u"",
+                'running': u"",
+                'candidate': u"",
             }
         else:
             raise Exception("Wrong retrieve filter: {}".format(retrieve))

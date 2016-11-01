@@ -1,2 +1,2 @@
-napalm_base==0.17.1
+napalm_base>=0.18.0
 pyeapi
