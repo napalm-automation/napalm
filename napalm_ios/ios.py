@@ -18,6 +18,7 @@ from __future__ import print_function
 import re
 
 from netmiko import ConnectHandler, FileTransfer
+from netmiko import __version__ as netmiko_version
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ReplaceConfigException, MergeConfigException
 
@@ -63,6 +64,14 @@ class IOSDriver(NetworkDriver):
             'alt_key_file': '',
             'ssh_config_file': None,
         }
+
+        fields = netmiko_version.split('.')
+        fields = [int(x) for x in fields]
+        maj_ver, min_ver, bug_fix = fields
+        if maj_ver >= 2:
+            netmiko_argument_map['allow_agent'] = False
+        elif maj_ver == 1 and min_ver >= 1:
+            netmiko_argument_map['allow_agent'] = False
 
         # Build dict of any optional Netmiko args
         self.netmiko_optional_args = {}
