@@ -1,4 +1,4 @@
 napalm_base
 paramiko
-netmiko
+netmiko>=1.1.0
 vyattaconfparser
