@@ -21,7 +21,7 @@ Read napalm.readthedocs.org for more information.
 """
 
 import re
-
+import os
 
 import vyattaconfparser
 
@@ -88,7 +88,7 @@ class VyOSDriver(NetworkDriver):
 
 
   def close(self):
-    self._device.close()
+    self._device.disconnect()
 
   def load_replace_candidate(self, filename=None, config=None):
     """
