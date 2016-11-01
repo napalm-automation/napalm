@@ -149,16 +149,16 @@ class FortiOSDriver(NetworkDriver):
             text_result = '\n'.join(result)
 
             return {
-                'startup': "",
-                'running': text_result,
-                'candidate': "",
+                'startup': u"",
+                'running': unicode(text_result),
+                'candidate': u"",
             }
 
         elif get_startup or get_candidate:
             return {
-                'startup': "",
-                'running': "",
-                'candidate': "",
+                'startup': u"",
+                'running': u"",
+                'candidate': u"",
             }
 
     def get_facts(self):
