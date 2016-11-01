@@ -1216,7 +1216,7 @@ class IOSDriver(NetworkDriver):
                 ntp_servers[split_line[4]] = {}
             else:
                 ntp_servers[split_line[2]] = {}
-        print(ntp_servers)
+
         return ntp_servers
 
     def get_ntp_stats(self):
