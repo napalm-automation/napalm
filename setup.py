@@ -12,7 +12,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-fortios",
-    version="0.2.0",
+    version="0.2.1",
     packages=find_packages(),
     author="David Barroso",
     author_email="dbarrosop@dravetech.com",
