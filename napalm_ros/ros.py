@@ -772,10 +772,10 @@ class ROSDriver(NetworkDriver):
         peer_status.pop(0)
 
         instance_indexed = ros_utils.index_values(self._api_get('/routing/bgp/instance'), 'name')
-        instance_indexed_vrf = ros_utils.index_values(
-            self._api_get('/routing/bgp/instance/vrf'),
-            'name'
-        )
+#       instance_indexed_vrf = ros_utils.index_values(
+#           self._api_get('/routing/bgp/instance/vrf'),
+#           'name'
+#       )
 
         for peer in ros_utils.print_to_values_structured(ros_utils.print_concat(peer_status)):
             if name != '' and peer['name'].replace('"', '') != name:
@@ -875,7 +875,7 @@ class ROSDriver(NetworkDriver):
                 r'(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$',
                 r'(?P<major>\d+)\.(?P<minor>\d+)$'
                 r'(?P<major>\d+)\.(?P<minor>\d+)rc(?P<patch>\d+)$'
-            ]:
+        ]:
             re_match = re.match(version_regexp, system_resource.get('version'))
             if re_match:
                 version = {
