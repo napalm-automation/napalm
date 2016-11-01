@@ -208,15 +208,18 @@ class NXOSDriver(NetworkDriver):
 
         return ''
 
-    def _commit_merge(self):
-        commands = self.merge_candidate.splitlines()
-        command_string = ';'.join(list(' %s ' % x.strip() for x in commands))
-        self.device.config(command_string)  # this will load all lines in running config only
+    def _copy_run_start(self):
         _save_startup_cmd = 'copy run start'
         copy_output = self.cli([_save_startup_cmd])[_save_startup_cmd]  # exec copy run st
         last_line = copy_output.splitlines()[-1]  # Should be `Copy complete.`
         if 'copy complete' not in last_line.lower():  # weak?
-            raise MergeConfigException('Unable to commit config!')
+            raise CommandErrorException('Unable to commit config!')
+
+    def _commit_merge(self):
+        commands = self.merge_candidate.splitlines()
+        command_string = ';'.join(list(' %s ' % x.strip() for x in commands))
+        self.device.config(command_string)  # this will load all lines in running config only
+        self._copy_run_start()
 
     def commit_config(self):
         if self.loaded:
@@ -253,6 +256,7 @@ class NXOSDriver(NetworkDriver):
     def rollback(self):
         if self.changed:
             install_config.rollback(self.device, self.backup_file)
+            self._copy_run_start()
             self.changed = False
 
     def get_facts(self):
