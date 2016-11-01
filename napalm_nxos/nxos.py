@@ -211,7 +211,12 @@ class NXOSDriver(NetworkDriver):
     def _commit_merge(self):
         commands = self.merge_candidate.splitlines()
         command_string = ';'.join(list(' %s ' % x.strip() for x in commands))
-        self.device.config(command_string)
+        self.device.config(command_string)  # this will load all lines in running config only
+        _save_startup_cmd = 'copy run start'
+        copy_output = self.cli([_save_startup_cmd])[_save_startup_cmd]  # exec copy run st
+        last_line = copy_output.splitlines()[-1]  # Should be `Copy complete.`
+        if 'copy complete' not in last_line.lower():  # weak?
+            raise MergeConfigException('Unable to commit config!')
 
     def commit_config(self):
         if self.loaded:
@@ -402,9 +407,12 @@ class NXOSDriver(NetworkDriver):
         command = 'show lldp neighbors {filter}detail'.format(filter=filter)
         # seems that show LLDP neighbors detail does not return JSON output...
 
-        lldp_neighbors_table_str = self.cli([command]).get(command)
-        # thus we need to take the raw text output
-        lldp_neighbors_list = lldp_neighbors_table_str.splitlines()
+        try:
+            lldp_neighbors_table_str = self.cli([command]).get(command)
+            # thus we need to take the raw text output
+            lldp_neighbors_list = lldp_neighbors_table_str.splitlines()
+        except CLIError:
+            lldp_neighbors_list = []
 
         if not lldp_neighbors_list:
             return lldp_neighbors  # empty dict
