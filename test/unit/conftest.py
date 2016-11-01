@@ -1,4 +1,5 @@
 """Test fixtures."""
+from builtins import super
 
 import pytest
 from napalm_base.test import conftest as parent_conftest
@@ -16,7 +17,7 @@ def set_device_parameters(request):
     request.addfinalizer(fin)
 
     request.cls.driver = eos.EOSDriver
-    request.cls.fake_driver = FakeEOSDevice
+    request.cls.patched_driver = PatchedEOSDriver
     request.cls.vendor = 'eos'
     parent_conftest.set_device_parameters(request)
 
@@ -24,6 +25,16 @@ def set_device_parameters(request):
 def pytest_generate_tests(metafunc):
     """Generate test cases dynamically."""
     parent_conftest.pytest_generate_tests(metafunc, __file__)
+
+
+class PatchedEOSDriver(eos.EOSDriver):
+    """Patched EOS Driver."""
+
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        super().__init__(hostname, username, password, timeout, optional_args)
+
+        self.patched_attrs = ['device']
+        self.device = FakeEOSDevice()
 
 
 class FakeEOSDevice(BaseTestDouble):
