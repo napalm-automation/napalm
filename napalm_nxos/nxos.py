@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2015 Spotify AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
@@ -12,29 +13,37 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# import xmltodict
-# used for XML output from the API
-
-# python stdlib
+# import stdlib
 import re
+import ssl
+import time
 import tempfile
 from urllib2 import URLError
 from datetime import datetime
 
-# third party libs
+# import third party lib
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
-from pycsco.nxos.device import Device as NXOSDevice
-from pycsco.nxos.utils.file_copy import FileCopy
-from pycsco.nxos.utils import install_config
-from pycsco.nxos.utils import nxapi_lib
-from pycsco.nxos.error import DiffError, FileTransferError, CLIError
 
-# NAPALM base
+from pycsco.nxos.utils import nxapi_lib
+from pycsco.nxos.utils import install_config
+from pycsco.nxos.utils.file_copy import FileCopy
+from pycsco.nxos.device import Device as NXOSDevice
+
+from pycsco.nxos.error import CLIError
+from pycsco.nxos.error import FileTransferError
+
+# import NAPALM Base
 import napalm_base.helpers
-from napalm_base.base import NetworkDriver
-from napalm_base.exceptions import ConnectionException, MergeConfigException,\
-                                   ReplaceConfigException, CommandErrorException
+from napalm_base import NetworkDriver
+from napalm_base.exceptions import ConnectionException
+from napalm_base.exceptions import MergeConfigException
+from napalm_base.exceptions import CommandErrorException
+from napalm_base.exceptions import ReplaceConfigException
+
+
+# Allow untrusted SSL Certificates
+ssl._create_default_https_context = ssl._create_unverified_context
 
 
 def strip_trailing(string):
@@ -56,6 +65,7 @@ class NXOSDriver(NetworkDriver):
         self.loaded = False
         self.fc = None
         self.changed = False
+        self.port = optional_args.get('port', 80)
         self.protocol = optional_args.get('nxos_protocol', 'http')
 
     def open(self):
@@ -64,6 +74,7 @@ class NXOSDriver(NetworkDriver):
                                      password=self.password,
                                      ip=self.hostname,
                                      timeout=self.timeout,
+                                     port=self.port,
                                      protocol=self.protocol)
             self.device.show('show version', fmat='json')
             # execute something easy
@@ -77,7 +88,51 @@ class NXOSDriver(NetworkDriver):
         if self.changed:
             self._delete_file(self.backup_file)
 
-    def _get_reply_body(self, result):
+    @staticmethod
+    def _compute_timestamp(stupid_cisco_output):
+        """
+        Some fields such `uptime` are returned as: 23week(s) 3day(s)
+        This method will determine the epoch of the event.
+        e.g.: 23week(s) 3day(s) -> 1462248287
+        """
+
+        if not stupid_cisco_output:
+            return -1.0
+
+        things = {
+            'second(s)': {
+                'weight': 1
+            },
+            'minute(s)': {
+                'weight': 60
+            },
+            'hour(s)': {
+                'weight': 3600
+            },
+            'day(s)': {
+                'weight': 24*3600
+            },
+            'week(s)': {
+                'weight': 7*24*3600
+            },
+            'year(s)': {
+                'weight': 365.25*24*3600
+            }
+        }
+
+        things_keys = things.keys()
+        for part in stupid_cisco_output.split():
+            for key in things_keys:
+                if key in part:
+                    things[key]['count'] = napalm_base.helpers.convert(
+                        int, part.replace(key, ''), 0)
+
+        delta = sum([det.get('count', 0)*det.get('weight') for det in things.values()])
+
+        return time.time() - delta
+
+    @staticmethod
+    def _get_reply_body(result):
         # useful for debugging
         ret = result.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
         # Original 'body' entry may have been an empty string, don't return that.
@@ -85,26 +140,35 @@ class NXOSDriver(NetworkDriver):
             return {}
         return ret
 
-    def _get_reply_table(self, result, tablename, rowname):
-        # still useful for debugging
-        return self._get_reply_body(result).get(tablename, {}).get(rowname, [])
+    @staticmethod
+    def _get_table_rows(parent_table, table_name, row_name):
+        # because if an inconsistent piece of shit.
+        # {'TABLE_intf': [{'ROW_intf': {
+        # vs
+        # {'TABLE_mac_address': {'ROW_mac_address': [{
+        # vs
+        # {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
+        _table = parent_table.get(table_name)
+        _table_rows = []
+        if isinstance(_table, list):
+            _table_rows = [_table_row.get(row_name) for _table_row in _table]
+        elif isinstance(_table, dict):
+            _table_rows = _table.get(row_name)
+        if not isinstance(_table_rows, list):
+            _table_rows = [_table_rows]
+        return _table_rows
 
-    def _get_command_table(self, command, tablename, rowname):
+    def _get_reply_table(self, result, table_name, row_name):
+        _table = self._get_reply_body(result)
+        return self._get_table_rows(_table, table_name, row_name)
+
+    def _get_command_table(self, command, table_name, row_name):
 
         result = {}
+        result = self.device.show(command, fmat='json')
+        json_output = eval(result[1])
 
-        try:
-            # xml_result          = self.device.show(command)
-            # json_output  = xmltodict.parse(xml_result[1])
-
-            # or directly retrive JSON
-            result = self.device.show(command, fmat = 'json')
-            json_output = eval(result[1])
-            # which will converted to a plain dictionary
-        except Exception:
-            return []
-
-        return self._get_reply_table(json_output, tablename, rowname)
+        return self._get_reply_table(json_output, table_name, row_name)
 
     def load_replace_candidate(self, filename=None, config=None):
         self.replace = True
@@ -144,10 +208,18 @@ class NXOSDriver(NetworkDriver):
 
         return ''
 
+    def _copy_run_start(self):
+        _save_startup_cmd = 'copy run start'
+        copy_output = self.cli([_save_startup_cmd])[_save_startup_cmd]  # exec copy run st
+        last_line = copy_output.splitlines()[-1]  # Should be `Copy complete.`
+        if 'copy complete' not in last_line.lower():  # weak?
+            raise CommandErrorException('Unable to commit config!')
+
     def _commit_merge(self):
         commands = self.merge_candidate.splitlines()
         command_string = ';'.join(list(' %s ' % x.strip() for x in commands))
-        self.device.config(command_string)
+        self.device.config(command_string)  # this will load all lines in running config only
+        self._copy_run_start()
 
     def commit_config(self):
         if self.loaded:
@@ -184,53 +256,92 @@ class NXOSDriver(NetworkDriver):
     def rollback(self):
         if self.changed:
             install_config.rollback(self.device, self.backup_file)
+            self._copy_run_start()
             self.changed = False
 
     def get_facts(self):
-        results = {}
-        facts_dict = nxapi_lib.get_facts(self.device)
-        results['uptime'] = -1 # not implemented
-        results['vendor'] = unicode('Cisco')
-        results['os_version'] = facts_dict.get('os')
-        results['serial_number'] = unicode('N/A')
-        results['model'] = facts_dict.get('platform')
-        results['hostname'] = facts_dict.get('hostname')
-        results['fqdn'] = unicode('N/A')
-        iface_list = results['interface_list'] = []
+        facts = {
+            'vendor': u'Cisco'
+        }
 
-        intf_dict = nxapi_lib.get_interfaces_dict(self.device)
-        for intf_list in intf_dict.values():
-            for intf in intf_list:
-                iface_list.append(intf)
+        sh_uptime_cmd = 'show system uptime'
+        sh_uptime = eval(self.device.show(sh_uptime_cmd, fmat='json')[1])
+        sh_uptime_body = self._get_reply_body(sh_uptime)
 
-        return results
+        uptime_days = sh_uptime_body.get('sys_up_days', 0)
+        uptime_hrs = sh_uptime_body.get('sys_up_hrs', 0)
+        uptime_mins = sh_uptime_body.get('sys_up_mins', 0)
+        uptime_secs = sh_uptime_body.get('sys_up_secs', 0)
+        facts['uptime'] = (uptime_secs + uptime_mins * 60 + uptime_hrs * (60 * 60) +
+                           uptime_days * (60 * 60 * 24))
+
+        sh_ver_cmd = 'show version'
+        sh_ver_json = eval(self.device.show(sh_ver_cmd, fmat='json')[1])
+        sh_ver_body = self._get_reply_body(sh_ver_json)
+
+        sh_ver_json = eval(self.device.show(sh_ver_cmd, fmat='json')[1])
+        facts['serial_number'] = unicode(sh_ver_body.get('proc_board_id'))
+        facts['os_version'] = unicode(sh_ver_body.get('sys_ver_str'))
+        facts['model'] = unicode(sh_ver_body.get('chassis_id'))
+        host_name = unicode(sh_ver_body.get('host_name'))
+        facts['hostname'] = host_name
+
+        sh_domain_cmd = 'show running-config | include domain-name'
+        sh_domain_name_out = self.cli([sh_domain_cmd])[sh_domain_cmd]
+        if not sh_domain_name_out:
+            sh_domain_name_out = ''
+
+        domain_name = ''
+        for line in sh_domain_name_out.splitlines():
+            if line.startswith('ip domain-name'):
+                domain_name = line.replace('ip domain-name', '').strip()
+                break
+
+        facts['fqdn'] = unicode(
+            '{0}.{1}'.format(host_name, domain_name) if domain_name else host_name)
+
+        intrf_cmd = 'show interface status'
+        interfaces_status = self._get_command_table(intrf_cmd, 'TABLE_interface', 'ROW_interface')
+        facts['interface_list'] = [intrf.get('interface') for intrf in interfaces_status]
+
+        return facts
 
     def get_interfaces(self):
-        results = {}
-        intf_dict = nxapi_lib.get_interfaces_dict(self.device)
-        for intf_list in intf_dict.values():
-            for intf in intf_list:
-                intf_info = nxapi_lib.get_interface(self.device, intf)
-                formatted_info = results[intf] = {}
-                formatted_info['is_up'] = 'up' in intf_info.get('state', intf_info.get('admin_state', '')).lower()
-                formatted_info['is_enabled'] = 'up' in intf_info.get('admin_state').lower()
-                formatted_info['description'] = unicode(intf_info.get('description'))
-                formatted_info['last_flapped'] = -1.0 #not implemented
+        interfaces = {}
 
-                speed = intf_info.get('speed', '0')
-                try:
-                    speed = int(re.sub(r'[^\d]', '', speed).strip())
-                except ValueError:
-                    speed = -1
+        iface_cmd = 'show interface'
+        interfaces_out = self._get_command_table(iface_cmd, 'TABLE_interface', 'ROW_interface')
 
-                formatted_info['speed'] = speed
-                formatted_info['mac_address'] = unicode(intf_info.get('mac_address', 'N/A'))
+        for interface_details in interfaces_out:
+            interface_name = interface_details.get('interface')
+            # Earlier version of Nexus returned a list for 'eth_bw' (observed on 7.1(0)N1(1a))
+            interface_speed = interface_details.get('eth_bw', 0)
+            if isinstance(interface_speed, list):
+                interface_speed = interface_speed[0]
+            interface_speed = int(interface_speed * 1000)
+            interfaces[interface_name] = {
+                'is_up': (interface_details.get('admin_state', '') == 'up'),
+                'is_enabled': (interface_details.get('state') == 'up') or
+                (interface_details.get('admin_state', '') == 'up'),
+                'description': unicode(interface_details.get('desc', '')),
+                'last_flapped': self._compute_timestamp(
+                    interface_details.get('eth_link_flapped', '')),
+                'speed': interface_speed,
+                'mac_address': napalm_base.helpers.convert(
+                    napalm_base.helpers.mac, interface_details.get('eth_hw_addr')),
 
-        return results
+            }
+
+        return interfaces
 
     def get_lldp_neighbors(self):
         results = {}
-        neighbor_list = nxapi_lib.get_neighbors(self.device, 'lldp')
+
+        try:
+            neighbor_list = nxapi_lib.get_neighbors(self.device, 'lldp')
+        except CLIError:
+            neighbor_list = []
+
         for neighbor in neighbor_list:
             local_iface = neighbor.get('local_interface')
             if neighbor.get(local_iface) is None:
@@ -245,14 +356,14 @@ class NXOSDriver(NetworkDriver):
 
         return results
 
-
     def get_bgp_neighbors(self):
-        cmd = 'show bgp sessions vrf all'
-        vrf_list = self._get_command_table(cmd, 'TABLE_vrf', 'ROW_vrf')
-        if isinstance(vrf_list, dict):
-            vrf_list = [vrf_list]
-
         results = {}
+        try:
+            cmd = 'show bgp sessions vrf all'
+            vrf_list = self._get_command_table(cmd, 'TABLE_vrf', 'ROW_vrf')
+        except CLIError:
+            vrf_list = []
+
         for vrf_dict in vrf_list:
             result_vrf_dict = {}
             result_vrf_dict['router_id'] = unicode(vrf_dict['router-id'])
@@ -262,7 +373,7 @@ class NXOSDriver(NetworkDriver):
             if isinstance(neighbors_list, dict):
                 neighbors_list = [neighbors_list]
             for neighbor_dict in neighbors_list:
-                neighborid = unicode(neighbor_dict['neighbor-id'])
+                neighborid = napalm_base.helpers.ip(neighbor_dict['neighbor-id'])
 
                 result_peer_dict = {
                     'local_as': int(vrf_dict['local-as']),
@@ -286,41 +397,39 @@ class NXOSDriver(NetworkDriver):
             results[vrf_dict['vrf-name-out']] = result_vrf_dict
         return results
 
-
     def get_checkpoint_file(self):
         return install_config.get_checkpoint(self.device)
 
-    def get_lldp_neighbors_detail(self, interface = ''):
+    def get_lldp_neighbors_detail(self, interface=''):
 
-        lldp_neighbors = dict()
+        lldp_neighbors = {}
 
         filter = ''
         if interface:
-            filter = 'interface {name} '.format(
-                name = interface
-            )
+            filter = 'interface {name} '.format(name=interface)
 
-        command = 'show lldp neighbors {filter}detail'.format(
-            filter = filter
-        ) # seems that show LLDP neighbors detail does not return JSON output...
+        command = 'show lldp neighbors {filter}detail'.format(filter=filter)
+        # seems that show LLDP neighbors detail does not return JSON output...
 
-        lldp_neighbors_table_str = self.cli([command]).get(command)
-        # thus we need to take the raw text output
-
-        lldp_neighbors_list = lldp_neighbors_table_str.splitlines()
+        try:
+            lldp_neighbors_table_str = self.cli([command]).get(command)
+            # thus we need to take the raw text output
+            lldp_neighbors_list = lldp_neighbors_table_str.splitlines()
+        except CLIError:
+            lldp_neighbors_list = []
 
         if not lldp_neighbors_list:
-            return lldp_neighbors # empty dict
+            return lldp_neighbors  # empty dict
 
-        CHASSIS_REGEX       = '^(Chassis id:)\s+([a-z0-9\.]+)$'
-        PORT_REGEX          = '^(Port id:)\s+([0-9]+)$'
+        CHASSIS_REGEX = '^(Chassis id:)\s+([a-z0-9\.]+)$'
+        PORT_REGEX = '^(Port id:)\s+([0-9]+)$'
         LOCAL_PORT_ID_REGEX = '^(Local Port id:)\s+(.*)$'
-        PORT_DESCR_REGEX    = '^(Port Description:)\s+(.*)$'
-        SYSTEM_NAME_REGEX   = '^(System Name:)\s+(.*)$'
-        SYSTEM_DESCR_REGEX  = '^(System Description:)\s+(.*)$'
-        SYST_CAPAB_REEGX    = '^(System Capabilities:)\s+(.*)$'
-        ENABL_CAPAB_REGEX   = '^(Enabled Capabilities:)\s+(.*)$'
-        VLAN_ID_REGEX       = '^(Vlan ID:)\s+(.*)$'
+        PORT_DESCR_REGEX = '^(Port Description:)\s+(.*)$'
+        SYSTEM_NAME_REGEX = '^(System Name:)\s+(.*)$'
+        SYSTEM_DESCR_REGEX = '^(System Description:)\s+(.*)$'
+        SYST_CAPAB_REEGX = '^(System Capabilities:)\s+(.*)$'
+        ENABL_CAPAB_REGEX = '^(Enabled Capabilities:)\s+(.*)$'
+        VLAN_ID_REGEX = '^(Vlan ID:)\s+(.*)$'
 
         lldp_neighbor = {}
         interface_name = None
@@ -329,13 +438,14 @@ class NXOSDriver(NetworkDriver):
             chassis_rgx = re.search(CHASSIS_REGEX, line, re.I)
             if chassis_rgx:
                 lldp_neighbor = {
-                    'remote_chassis_id': unicode(chassis_rgx.groups()[1])
+                    'remote_chassis_id': napalm_base.helpers.mac(chassis_rgx.groups()[1])
                 }
                 continue
+            lldp_neighbor['parent_interface'] = u''
             port_rgx = re.search(PORT_REGEX, line, re.I)
             if port_rgx:
                 lldp_neighbor['parent_interface'] = unicode(port_rgx.groups()[1])
-                continue # jump to next line
+                continue  # jump to next line
             local_port_rgx = re.search(LOCAL_PORT_ID_REGEX, line, re.I)
             if local_port_rgx:
                 interface_name = local_port_rgx.groups()[1]
@@ -365,61 +475,51 @@ class NXOSDriver(NetworkDriver):
             if vlan_rgx:
                 # at the end of the loop
                 if interface_name not in lldp_neighbors.keys():
-                    lldp_neighbors[interface_name] = list()
+                    lldp_neighbors[interface_name] = []
                 lldp_neighbors[interface_name].append(lldp_neighbor)
 
         return lldp_neighbors
 
-    def cli(self, commands = None):
+    def cli(self, commands=None):
 
-        cli_output = dict()
+        cli_output = {}
 
         if type(commands) is not list:
             raise TypeError('Please enter a valid list of commands!')
 
         for command in commands:
-            try:
-                string_output = self.device.show(command, fmat = 'json', text = True)[1]
-                dict_output   = eval(string_output)
-                command_output = dict_output.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', '')
-                cli_output[unicode(command)] = command_output
-            except Exception as e:
-                cli_output[unicode(command)] = 'Unable to execute command "{cmd}": {err}'.format(
-                    cmd = command,
-                    err = e
-                )
-                raise CommandErrorException(str(cli_output))
+            string_output = self.device.show(command, fmat='json', text=True)[1]
+            dict_output = eval(string_output)
+            command_output = dict_output.get('ins_api', {})\
+                                        .get('outputs', {})\
+                                        .get('output', {})\
+                                        .get('body', '')
+            cli_output[unicode(command)] = command_output
 
         return cli_output
 
     def get_arp_table(self):
 
-        arp_table = list()
+        arp_table = []
 
         command = 'show ip arp'
-
-        arp_table_raw = self._get_command_table(command, 'TABLE_vrf', 'ROW_vrf').get('TABLE_adj', {}).get('ROW_adj', [])
-
-        if type(arp_table_raw) is dict:
-            arp_table_raw = [arp_table_raw]
+        arp_table_vrf = self._get_command_table(command, 'TABLE_vrf', 'ROW_vrf')
+        arp_table_raw = self._get_table_rows(arp_table_vrf[0], 'TABLE_adj', 'ROW_adj')
 
         for arp_table_entry in arp_table_raw:
-            ip          = unicode(arp_table_entry.get('ip-addr-out'))
-            mac_raw     = arp_table_entry.get('mac')
-            mac_all     = mac_raw.replace('.', '').replace(':', '')
-            mac_format  = unicode(':'.join([mac_all[i:i+2] for i in range(12)[::2]]))
-            age         = arp_table_entry.get('time-stamp')
-            age_time    = ''.join(age.split(':'))
-            age_sec     = float(3600 * int(age_time[:2]) + 60 * int(age_time[2:4]) + int(age_time[4:]))
-            interface   = unicode(arp_table_entry.get('intf-out'))
-            arp_table.append(
-                {
-                    'interface' : interface,
-                    'mac'       : mac_format,
-                    'ip'        : ip,
-                    'age'       : age_sec
-                }
-            )
+            raw_ip = arp_table_entry.get('ip-addr-out')
+            raw_mac = arp_table_entry.get('mac')
+            age = arp_table_entry.get('time-stamp')
+            age_time = ''.join(age.split(':'))
+            age_sec = float(3600 * int(age_time[:2]) + 60 * int(age_time[2:4]) + int(age_time[4:]))
+            interface = unicode(arp_table_entry.get('intf-out'))
+            arp_table.append({
+                'interface': interface,
+                'mac': napalm_base.helpers.convert(
+                    napalm_base.helpers.mac, raw_mac, raw_mac),
+                'ip': napalm_base.helpers.ip(raw_ip),
+                'age': age_sec
+            })
 
         return arp_table
 
@@ -428,125 +528,100 @@ class NXOSDriver(NetworkDriver):
         ntp_entities = {}
 
         command = 'show ntp peers'
-
         ntp_peers_table = self._get_command_table(command, 'TABLE_peers', 'ROW_peers')
 
-        if isinstance(ntp_peers_table, dict):
-            ntp_peers_table = [ntp_peers_table]
-
         for ntp_peer in ntp_peers_table:
-            if ntp_peer.get('serv_peer', '') != peer_type:
+            if ntp_peer.get('serv_peer', '').strip() != peer_type:
                 continue
-            peer_addr = unicode(ntp_peer.get('PeerIPAddress'))
+            peer_addr = napalm_base.helpers.ip(ntp_peer.get('PeerIPAddress').strip())
             ntp_entities[peer_addr] = {}
 
         return ntp_entities
 
     def get_ntp_peers(self):
-
         return self._get_ntp_entity('Peer')
 
     def get_ntp_servers(self):
-
         return self._get_ntp_entity('Server')
 
     def get_ntp_stats(self):
 
-        ntp_stats = list()
+        ntp_stats = []
 
         command = 'show ntp peer-status'
-
         ntp_stats_table = self._get_command_table(command, 'TABLE_peersstatus', 'ROW_peersstatus')
 
-        if type(ntp_stats_table) is dict:
-            ntp_stats_table = [ntp_stats_table]
-
         for ntp_peer in ntp_stats_table:
-            peer_address = unicode(ntp_peer.get('remote'))
-            syncmode     = ntp_peer.get('syncmode')
-            stratum      = int(ntp_peer.get('st'))
-            hostpoll     = int(ntp_peer.get('poll'))
+            peer_address = napalm_base.helpers.ip(ntp_peer.get('remote'))
+            syncmode = ntp_peer.get('syncmode')
+            stratum = int(ntp_peer.get('st'))
+            hostpoll = int(ntp_peer.get('poll'))
             reachability = int(ntp_peer.get('reach'))
-            delay        = float(ntp_peer.get('delay'))
+            delay = float(ntp_peer.get('delay'))
             ntp_stats.append({
-                'remote'        : peer_address,
-                'synchronized'  : (syncmode == '*'),
-                'referenceid'   : peer_address,
-                'stratum'       : stratum,
-                'type'          : u'',
-                'when'          : u'',
-                'hostpoll'      : hostpoll,
-                'reachability'  : reachability,
-                'delay'         : delay,
-                'offset'        : 0.0,
-                'jitter'        : 0.0
+                'remote': peer_address,
+                'synchronized': (syncmode == '*'),
+                'referenceid': peer_address,
+                'stratum': stratum,
+                'type': u'',
+                'when': u'',
+                'hostpoll': hostpoll,
+                'reachability': reachability,
+                'delay': delay,
+                'offset': 0.0,
+                'jitter': 0.0
             })
 
         return ntp_stats
 
-
     def get_interfaces_ip(self):
 
-        def get_list_of_dicts(hsh, key):
-            # Helper, lookup key in hsh, return list.
-            result = hsh.get(key, {})
-            if type(result) is dict:
-                result = [result]
-            return result
+        interfaces_ip = {}
 
-        def get_interfaces_data(command):
-            command_output = self.device.show(command, fmat = 'json')
-            json_output = eval(command_output[1])
-            body = json_output.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
-            if body == '':
-                return []
-            result = []
-            for row_intf in get_list_of_dicts(body, 'TABLE_intf'):
-                result.extend(get_list_of_dicts(row_intf, 'ROW_intf'))
-            return result
-
-        interfaces_ip = dict()
-
-        ipv4_interf_table_vrf = get_interfaces_data('show ip interface')
+        ipv4_command = 'show ip interface'
+        ipv4_interf_table_vrf = self._get_command_table(ipv4_command, 'TABLE_intf', 'ROW_intf')
 
         for interface in ipv4_interf_table_vrf:
             interface_name = unicode(interface.get('intf-name', ''))
-            address = unicode(interface.get('prefix', ''))
-            prefix  = int(interface.get('masklen', ''))
+            address = napalm_base.helpers.ip(interface.get('prefix'))
+            prefix = int(interface.get('masklen', ''))
             if interface_name not in interfaces_ip.keys():
-                interfaces_ip[interface_name] = dict()
+                interfaces_ip[interface_name] = {}
             if u'ipv4' not in interfaces_ip[interface_name].keys():
-                interfaces_ip[interface_name][u'ipv4'] = dict()
+                interfaces_ip[interface_name][u'ipv4'] = {}
             if address not in interfaces_ip[interface_name].get(u'ipv4'):
-                interfaces_ip[interface_name][u'ipv4'][address] = dict()
+                interfaces_ip[interface_name][u'ipv4'][address] = {}
             interfaces_ip[interface_name][u'ipv4'][address].update({
                 'prefix_length': prefix
             })
-            secondary_addresses = interface.get('TABLE_secondary_address', {}).get('ROW_secondary_address', [])
+            secondary_addresses = interface.get('TABLE_secondary_address', {})\
+                                           .get('ROW_secondary_address', [])
             if type(secondary_addresses) is dict:
                 secondary_addresses = [secondary_addresses]
             for secondary_address in secondary_addresses:
-                secondary_address_ip        = unicode(secondary_address.get('prefix1', ''))
-                secondary_address_prefix    = int(secondary_address.get('masklen1', ''))
+                secondary_address_ip = napalm_base.helpers.ip(secondary_address.get('prefix1'))
+                secondary_address_prefix = int(secondary_address.get('masklen1', ''))
                 if u'ipv4' not in interfaces_ip[interface_name].keys():
-                    interfaces_ip[interface_name][u'ipv4'] = dict()
+                    interfaces_ip[interface_name][u'ipv4'] = {}
                 if secondary_address_ip not in interfaces_ip[interface_name].get(u'ipv4'):
-                    interfaces_ip[interface_name][u'ipv4'][secondary_address_ip] = dict()
+                    interfaces_ip[interface_name][u'ipv4'][secondary_address_ip] = {}
                 interfaces_ip[interface_name][u'ipv4'][secondary_address_ip].update({
                     'prefix_length': secondary_address_prefix
                 })
 
-        ipv6_interf_table_vrf = get_interfaces_data('show ipv6 interface')
+        ipv6_command = 'show ipv6 interface'
+        ipv6_interf_table_vrf = self._get_command_table(ipv6_command, 'TABLE_intf', 'ROW_intf')
+
         for interface in ipv6_interf_table_vrf:
             interface_name = unicode(interface.get('intf-name', ''))
-            address = unicode(interface.get('addr', ''))
-            prefix  = int(interface.get('prefix', '').split('/')[-1])
+            address = napalm_base.helpers.ip(interface.get('addr', '').split('/')[0])
+            prefix = int(interface.get('prefix', '').split('/')[-1])
             if interface_name not in interfaces_ip.keys():
-                interfaces_ip[interface_name] = dict()
+                interfaces_ip[interface_name] = {}
             if u'ipv6' not in interfaces_ip[interface_name].keys():
-                interfaces_ip[interface_name][u'ipv6'] = dict()
+                interfaces_ip[interface_name][u'ipv6'] = {}
             if address not in interfaces_ip[interface_name].get('ipv6'):
-                interfaces_ip[interface_name][u'ipv6'][address] = dict()
+                interfaces_ip[interface_name][u'ipv6'][address] = {}
             interfaces_ip[interface_name][u'ipv6'][address].update({
                 u'prefix_length': prefix
             })
@@ -555,12 +630,12 @@ class NXOSDriver(NetworkDriver):
                 secondary_addresses = [secondary_addresses]
             for secondary_address in secondary_addresses:
                 sec_prefix = secondary_address.get('sec-prefix', '').split('/')
-                secondary_address_ip        = unicode(sec_prefix[0])
-                secondary_address_prefix    = int(sec_prefix[-1])
+                secondary_address_ip = napalm_base.helpers.ip(sec_prefix[0])
+                secondary_address_prefix = int(sec_prefix[-1])
                 if u'ipv6' not in interfaces_ip[interface_name].keys():
-                    interfaces_ip[interface_name][u'ipv6'] = dict()
+                    interfaces_ip[interface_name][u'ipv6'] = {}
                 if secondary_address_ip not in interfaces_ip[interface_name].get(u'ipv6'):
-                    interfaces_ip[interface_name][u'ipv6'][secondary_address_ip] = dict()
+                    interfaces_ip[interface_name][u'ipv6'][secondary_address_ip] = {}
                 interfaces_ip[interface_name][u'ipv6'][secondary_address_ip].update({
                     u'prefix_length': secondary_address_prefix
                 })
@@ -569,57 +644,48 @@ class NXOSDriver(NetworkDriver):
 
     def get_mac_address_table(self):
 
-        mac_table = list()
+        mac_table = []
 
         command = 'show mac address-table'
         mac_table_raw = self._get_command_table(command, 'TABLE_mac_address', 'ROW_mac_address')
 
-        if type(mac_table_raw) is dict:
-            mac_table_raw = [mac_table_raw]
-
         for mac_entry in mac_table_raw:
-            mac_raw     = mac_entry.get('disp_mac_addr')
-            mac_str     = mac_raw.replace('.', '').replace(':', '')
-            mac_format  = unicode(':'.join([ mac_str[i:i+2] for i in range(12)[::2] ]))
-            interface   = unicode(mac_entry.get('disp_port'))
-            age         = mac_entry.get('disp_age')
-            vlan        = int(mac_entry.get('disp_vlan'))
-            active      = True
-            static      = (mac_entry.get('disp_is_static') != '0')
-            moves       = 0
-            last_move   = 0.0
-            mac_table.append(
-                {
-                    'mac'       : mac_format,
-                    'interface' : interface,
-                    'vlan'      : vlan,
-                    'active'    : active,
-                    'static'    : static,
-                    'moves'     : moves,
-                    'last_move' : last_move
-                }
-            )
+            raw_mac = mac_entry.get('disp_mac_addr')
+            interface = unicode(mac_entry.get('disp_port'))
+            # age = mac_entry.get('disp_age')
+            vlan = int(mac_entry.get('disp_vlan'))
+            active = True
+            static = (mac_entry.get('disp_is_static') != '0')
+            moves = 0
+            last_move = 0.0
+            mac_table.append({
+                'mac': napalm_base.helpers.mac(raw_mac),
+                'interface': interface,
+                'vlan': vlan,
+                'active': active,
+                'static': static,
+                'moves': moves,
+                'last_move': last_move
+            })
 
         return mac_table
 
     def get_snmp_information(self):
 
-        snmp_information = dict()
+        snmp_information = {}
 
         snmp_command = 'show running-config | section snmp-server'
-
         snmp_raw_output = self.cli([snmp_command]).get(snmp_command, '')
-
         snmp_config = napalm_base.helpers.textfsm_extractor(self, 'snmp_config', snmp_raw_output)
 
         if not snmp_config:
             return snmp_information
 
         snmp_information = {
-            'contact'   : unicode(snmp_config[0].get('contact', '')),
-            'location'  : unicode(snmp_config[0].get('location', '')),
+            'contact': unicode(snmp_config[0].get('contact', '')),
+            'location': unicode(snmp_config[0].get('location', '')),
             'chassis_id': unicode(snmp_config[0].get('chassis_id', '')),
-            'community' : {}
+            'community': {}
         }
 
         for snmp_entry in snmp_config:
@@ -635,10 +701,6 @@ class NXOSDriver(NetworkDriver):
 
     def get_users(self):
 
-        users = dict()
-
-        command = 'sh run | sec username'
-
         _CISCO_TO_CISCO_MAP = {
             'network-admin': 15,
             'network-operator': 5
@@ -650,9 +712,12 @@ class NXOSDriver(NetworkDriver):
             'sshkeys': []
         }
 
-        section_username_raw_output = self.cli([command]).get(command, '')
+        users = {}
 
-        section_username_tabled_output = napalm_base.helpers.textfsm_extractor(self, 'users', section_username_raw_output)
+        command = 'sh run | sec username'
+        section_username_raw_output = self.cli([command]).get(command, '')
+        section_username_tabled_output = napalm_base.helpers.textfsm_extractor(
+            self, 'users', section_username_raw_output)
 
         for user in section_username_tabled_output:
             username = user.get('username', '')
@@ -681,7 +746,6 @@ class NXOSDriver(NetworkDriver):
             if sshkeytype and sshkeyvalue:
                 if sshkeytype not in ['ssh-rsa', 'ssh-dsa']:
                     continue
-                key = sshkeytype.replace('-', '_')
                 users[username]['sshkeys'].append(sshkeyvalue)
 
         return users
@@ -714,11 +778,12 @@ class NXOSDriver(NetworkDriver):
         timeout = 5  # seconds
         probes = 3  # 3 probes/jop and this cannot be changed on NXOS!
 
-        version=''
+        version = ''
         try:
             version = '6' if IPAddress(destination).version == 6 else ''
         except AddrFormatError:
-            return {'error': 'Destination doest not look like a valid IP Address: {}'.format(destination)}
+            return {'error': 'Destination doest not look like a valid IP Address: {}'.format(
+                destination)}
 
         source_opt = ''
         if source:
@@ -746,10 +811,12 @@ class NXOSDriver(NetworkDriver):
             hop_index = int(hop_details[0])
             previous_probe_host_name = '*'
             previous_probe_ip_address = '*'
-            traceroute_result['success'][hop_index] = {'probes':{}}
+            traceroute_result['success'][hop_index] = {'probes': {}}
             for probe_index in range(probes):
                 host_name = hop_details[3+probe_index*5]
-                ip_address = hop_details[4+probe_index*5]
+                ip_address_raw = hop_details[4+probe_index*5]
+                ip_address = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip, ip_address_raw, ip_address_raw)
                 rtt = hop_details[5+probe_index*5]
                 if rtt:
                     rtt = float(rtt)
@@ -771,3 +838,20 @@ class NXOSDriver(NetworkDriver):
                 previous_probe_ip_address = ip_address
 
         return traceroute_result
+
+    def get_config(self, retrieve='all'):
+
+        config = {
+            'startup': '',
+            'running': '',
+            'candidate': ''
+        }  # default values
+
+        if retrieve.lower() in ('running', 'all'):
+            _cmd = 'show running-config'
+            config['running'] = self.cli([_cmd]).get(_cmd)
+        if retrieve.lower() in ('startup', 'all'):
+            _cmd = 'show startup-config'
+            config['startup'] = self.cli([_cmd]).get(_cmd)
+
+        return config
