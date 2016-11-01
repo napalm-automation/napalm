@@ -1,2 +1,2 @@
-napalm-base==0.17.0
+napalm-base>=0.18.0
 pyFG
