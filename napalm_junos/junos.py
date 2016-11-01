@@ -15,6 +15,8 @@
 
 """Driver for JunOS devices."""
 
+from __future__ import unicode_literals
+
 # import stdlib
 import re
 import collections
@@ -956,7 +958,8 @@ class JunOSDriver(NetworkDriver):
         if not isinstance(destination, py23_compat.string_types):
             raise TypeError('Please specify a valid destination!')
 
-        if not isinstance(protocol, py23_compat.string_types) or protocol.lower() not in ['static', 'bgp', 'isis']:
+        if not isinstance(protocol, py23_compat.string_types) or \
+           protocol.lower() not in ('static', 'bgp', 'isis'):
             raise TypeError("Protocol not supported: {protocol}.".format(
                 protocol=protocol
             ))
@@ -1328,9 +1331,9 @@ class JunOSDriver(NetworkDriver):
 
     def get_config(self, retrieve='all'):
         rv = {
-            'startup': py23_compat.text_type(''),
-            'running': py23_compat.text_type(''),
-            'candidate': py23_compat.text_type('')
+            'startup': '',
+            'running': '',
+            'candidate': ''
         }
 
         options = {
