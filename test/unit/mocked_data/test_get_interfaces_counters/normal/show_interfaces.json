@@ -1,0 +1,125 @@
+{
+    "interfaces": {
+        "Ethernet1": {
+            "lastStatusChangeTimestamp": 1475664667.431372,
+            "name": "Ethernet1",
+            "interfaceStatus": "notconnect",
+            "autoNegotiate": "off",
+            "burnedInAddress": "44:4c:a8:cd:33:7e",
+            "loopbackMode": "loopbackNone",
+            "interfaceStatistics": {
+                "inBitsRate": 0.0,
+                "inPktsRate": 0.0,
+                "outBitsRate": 0.0,
+                "updateInterval": 300.0,
+                "outPktsRate": 0.0
+            },
+            "mtu": 9214,
+            "hardware": "ethernet",
+            "duplex": "duplexFull",
+            "bandwidth": 10000000000,
+            "forwardingModel": "dataLink",
+            "lineProtocolStatus": "down",
+            "interfaceCounters": {
+                "outBroadcastPkts": 0,
+                "linkStatusChanges": 2,
+                "totalOutErrors": 0,
+                "inMulticastPkts": 0,
+                "counterRefreshTime": 1478085320.927135,
+                "inBroadcastPkts": 0,
+                "outputErrorsDetail": {
+                    "deferredTransmissions": 0,
+                    "txPause": 0,
+                    "collisions": 0,
+                    "lateCollisions": 0
+                },
+                "inOctets": 0,
+                "outDiscards": 0,
+                "outOctets": 0,
+                "inUcastPkts": 0,
+                "inputErrorsDetail": {
+                    "runtFrames": 0,
+                    "rxPause": 0,
+                    "fcsErrors": 0,
+                    "alignmentErrors": 0,
+                    "giantFrames": 0,
+                    "symbolErrors": 0
+                },
+                "outUcastPkts": 0,
+                "outMulticastPkts": 0,
+                "totalInErrors": 0,
+                "inDiscards": 0
+            },
+            "interfaceMembership": "Member of Port-Channel1",
+            "interfaceAddress": [],
+            "physicalAddress": "44:4c:a8:cd:33:7e",
+            "description": "not available"
+        },
+        "Port-Channel1": {
+            "lastStatusChangeTimestamp": 1475664568.7738712,
+            "name": "Port-Channel1",
+            "interfaceStatus": "notconnect",
+            "memberInterfaces": {},
+            "interfaceStatistics": {
+                "inBitsRate": 0.0,
+                "inPktsRate": 0.0,
+                "outBitsRate": 0.0,
+                "updateInterval": 300.0,
+                "outPktsRate": 0.0
+            },
+            "mtu": 1500,
+            "hardware": "portChannel",
+            "bandwidth": 0,
+            "forwardingModel": "routed",
+            "fallbackEnabled": false,
+            "lineProtocolStatus": "lowerLayerDown",
+            "interfaceCounters": {
+                "outBroadcastPkts": 0,
+                "linkStatusChanges": 1,
+                "totalOutErrors": 0,
+                "inMulticastPkts": 0,
+                "counterRefreshTime": 1478085363.701278,
+                "inBroadcastPkts": 0,
+                "inOctets": 0,
+                "outDiscards": 0,
+                "outOctets": 0,
+                "inUcastPkts": 0,
+                "outUcastPkts": 0,
+                "outMulticastPkts": 0,
+                "totalInErrors": 0,
+                "inDiscards": 0
+            },
+            "fallbackEnabledType": "fallbackNone",
+            "interfaceAddress": [],
+            "physicalAddress": "44:4c:a8:cd:33:7d",
+            "description": "description not available"
+        },
+        "Port-Channel1.20": {
+            "lastStatusChangeTimestamp": 1475664578.738529,
+            "name": "Port-Channel2.20",
+            "interfaceStatus": "notconnect",
+            "mtu": 1500,
+            "hardware": "subinterface",
+            "bandwidth": 0,
+            "forwardingModel": "routed",
+            "lineProtocolStatus": "lowerLayerDown",
+            "interfaceAddress": [
+                {
+                    "secondaryIpsOrderedList": [],
+                    "broadcastAddress": "255.255.255.255",
+                    "secondaryIps": {},
+                    "primaryIp": {
+                        "maskLen": 31,
+                        "address": "1.1.1.1"
+                    },
+                    "virtualIp": {
+                        "maskLen": 0,
+                        "address": "0.0.0.0"
+                    }
+                }
+            ],
+            "physicalAddress": "44:4c:a8:cd:33:7d",
+            "description": "Not available"
+        }
+    }
+}
