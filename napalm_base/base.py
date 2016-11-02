@@ -26,7 +26,7 @@ import napalm_base.helpers
 
 class NetworkDriver(object):
 
-    def __init__(self, hostname, username, password, timeout, optional_args):
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         """
         This is the base class you have to inherit from when writing your own Network Driver to
         manage any device. You will, in addition, have to override all the methods specified on
