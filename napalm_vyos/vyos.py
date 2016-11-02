@@ -95,17 +95,26 @@ class VyOSDriver(NetworkDriver):
     Only configuration files are supported with load_replace_candidate.
     It must be a full config file like /config/config.boot
     Due to the OS nature,  we do not
-    support a replace using a configuration string.
+    support a replace using a configuration string.    
     """
     if filename is not None:
       if os.path.exists(filename) == True:
           self._scp_client.scp_transfer_file(filename, self._DEST_FILENAME)
           print self._device.send_command("cp "+self._BOOT_FILENAME+" "+self._BACKUP_FILENAME)
           output_loadcmd = self._device.send_config_set(['load '+self._DEST_FILENAME])
-          match = re.findall("Load complete.", output_loadcmd)
-          if not match:
+          match_loaded = re.findall("Load complete.", output_loadcmd)
+          match_notchanged = re.findall("No configuration changes to commit", output_loadcmd)
+          match_failed = re.findall("Failed to parse specified config file", output_loadcmd)
+
+          if match_failed:
               raise ReplaceConfigException("Failed replace config: "
                     +output_loadcmd)
+
+          if not match_loaded:
+              if not match_notchanged:
+                  raise ReplaceConfigException("Failed replace config: "
+                        +output_loadcmd)
+
       else:
         raise ReplaceConfigException("config file is not found")
     else:
@@ -138,7 +147,7 @@ class VyOSDriver(NetworkDriver):
     match = re.findall("No changes between working and active configurations",
             output_compare)
     if match:
-        return
+        return ""
     else:
         return output_compare
 
