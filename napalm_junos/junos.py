@@ -15,6 +15,8 @@
 
 """Driver for JunOS devices."""
 
+from __future__ import unicode_literals
+
 # import stdlib
 import re
 import collections
@@ -33,6 +35,7 @@ from jnpr.junos.exception import ConnectTimeoutError
 import napalm_base.helpers
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import string_parsers
+from napalm_base.utils import py23_compat
 from napalm_base.exceptions import ConnectionException
 from napalm_base.exceptions import MergeConfigException
 from napalm_base.exceptions import CommandErrorException
@@ -948,14 +951,15 @@ class JunOSDriver(NetworkDriver):
 
         return mac_address_table
 
-    def get_route_to(self, destination='', protocol=''):
+    def get_route_to(self, destination=None, protocol=None):
         """Return route details to a specific destination, learned from a certain protocol."""
         routes = {}
 
-        if not isinstance(destination, str):
+        if not isinstance(destination, py23_compat.string_types):
             raise TypeError('Please specify a valid destination!')
 
-        if not isinstance(protocol, str) or protocol.lower() not in ['static', 'bgp', 'isis']:
+        if not isinstance(protocol, py23_compat.string_types) or \
+           protocol.lower() not in ('static', 'bgp', 'isis'):
             raise TypeError("Protocol not supported: {protocol}.".format(
                 protocol=protocol
             ))
@@ -1253,6 +1257,10 @@ class JunOSDriver(NetworkDriver):
                 d[0]: d[1] for d in user_entry[1] if d[1]
             })
             user_class = user_details.pop('class', '')
+            user_details = {
+                key: py23_compat.text_type(user_details[key])
+                for key in user_details.keys()
+            }
             level = _JUNOS_CLASS_CISCO_PRIVILEGE_LEVEL_MAP.get(user_class, 0)
             user_details.update({
                 'level': level
@@ -1335,11 +1343,11 @@ class JunOSDriver(NetworkDriver):
 
         if retrieve in ('candidate', 'all'):
             config = self.device.rpc.get_config(filter_xml=None, options=options)
-            rv['candidate'] = config.text.encode('ascii', 'replace')
+            rv['candidate'] = py23_compat.text_type(config.text.encode('ascii', 'replace'))
 
         if retrieve in ('running', 'all'):
             options['database'] = 'committed'
             config = self.device.rpc.get_config(filter_xml=None, options=options)
-            rv['running'] = config.text.encode('ascii', 'replace')
+            rv['running'] = py23_compat.text_type(config.text.encode('ascii', 'replace'))
 
         return rv
