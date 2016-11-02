@@ -36,7 +36,7 @@ from netmiko import __version__ as netmiko_version
 
 class PANOSDriver(NetworkDriver):
 
-    def __init__(self, hostname, username, password='', timeout=60, optional_args=None):
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         self.hostname = hostname
         self.username = username
         self.password = password
