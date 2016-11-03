@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+from __future__ import unicode_literals
+
 # import stdlib
 import re
 import ssl
@@ -36,6 +38,7 @@ from pycsco.nxos.error import FileTransferError
 # import NAPALM Base
 import napalm_base.helpers
 from napalm_base import NetworkDriver
+from napalm_base.utils import py23_compat
 from napalm_base.exceptions import ConnectionException
 from napalm_base.exceptions import MergeConfigException
 from napalm_base.exceptions import CommandErrorException
@@ -728,7 +731,7 @@ class NXOSDriver(NetworkDriver):
 
             password = user.get('password', '')
             if password:
-                users[username]['password'] = password.strip()
+                users[username]['password'] = py23_compat.text_type(password.strip())
 
             level = 0
             role = user.get('role', '')
@@ -746,7 +749,7 @@ class NXOSDriver(NetworkDriver):
             if sshkeytype and sshkeyvalue:
                 if sshkeytype not in ['ssh-rsa', 'ssh-dsa']:
                     continue
-                users[username]['sshkeys'].append(sshkeyvalue)
+                users[username]['sshkeys'].append(py23_compat.text_type(sshkeyvalue))
 
         return users
 
@@ -849,9 +852,9 @@ class NXOSDriver(NetworkDriver):
 
         if retrieve.lower() in ('running', 'all'):
             _cmd = 'show running-config'
-            config['running'] = self.cli([_cmd]).get(_cmd)
+            config['running'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
         if retrieve.lower() in ('startup', 'all'):
             _cmd = 'show startup-config'
-            config['startup'] = self.cli([_cmd]).get(_cmd)
+            config['startup'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
 
         return config
