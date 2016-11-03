@@ -94,6 +94,8 @@ class IOSDriver(NetworkDriver):
                                      username=self.username,
                                      password=self.password,
                                      **self.netmiko_optional_args)
+        # ensure in enable mode
+        self.device.enable()
         if not self.dest_file_system:
             try:
                 self.dest_file_system = self.device._autodetect_fs()
