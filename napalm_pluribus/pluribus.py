@@ -15,6 +15,8 @@
 
 """Pluribus driver."""
 
+from __future__ import unicode_literals
+
 # python std lib
 import re
 
@@ -25,6 +27,7 @@ from pyPluribus import PluribusDevice
 # NAPALM base
 import napalm_base.helpers
 import napalm_base.exceptions
+from napalm_base.utils import py23_compat
 from napalm_base.base import NetworkDriver
 
 
@@ -333,8 +336,8 @@ class PluribusDriver(NetworkDriver):
                 continue
             user_details = _DEFAULT_USER_DETAILS.copy()
             user_config = line.split()
-            username = user_config[3]
-            password = user_config[7]
+            username = py23_compat.text_type(user_config[3])
+            password = py23_compat.text_type(user_config[7])
             role = user_config[9]
             level = role_level.get(role)
             user_details.update({
@@ -444,7 +447,7 @@ class PluribusDriver(NetworkDriver):
         }  # default values
 
         if retrieve.lower() in ['running', 'all']:
-            config['running'] = self.device.show('running config')
+            config['running'] = py23_compat.text_type(self.device.show('running config'))
             # no startup as pluribus is WYSIWYG, no commit needed
 
         return config

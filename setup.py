@@ -12,10 +12,10 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-pluribus",
-    version="0.4.1",
+    version="0.4.2",
     packages=find_packages(),
-    author="David Barroso",
-    author_email="dbarrosop@dravetech.com",
+    author="David Barroso, Mircea Ulinic",
+    author_email="dbarrosop@dravetech.com, mircea@cloudflare.com",
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
     classifiers=[
         'Topic :: Utilities',
