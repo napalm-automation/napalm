@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+from __future__ import unicode_literals
+
 # import stdlib
 import re
 import copy
@@ -32,6 +34,7 @@ from pyIOSXR.exceptions import InvalidInputError
 # import NAPALM base
 import napalm_base.helpers
 from napalm_base.base import NetworkDriver
+from napalm_base.utils import py23_compat
 from napalm_base.exceptions import ConnectionException
 from napalm_base.exceptions import MergeConfigException
 from napalm_base.exceptions import ReplaceConfigException
@@ -1186,15 +1189,18 @@ class IOSXRDriver(NetworkDriver):
 
         return mac_table
 
-    def get_route_to(self, destination='', protocol=''):
+    def get_route_to(self, destination=None, protocol=None):
 
         routes = {}
 
-        if not isinstance(destination, str):
+        if not isinstance(destination, py23_compat.string_types):
             raise TypeError('Please specify a valid destination!')
 
-        if not isinstance(protocol, str) or protocol.lower() not in ['static', 'bgp', 'isis']:
-            raise TypeError("Protocol not supported: {protocol}.".format(protocol=protocol))
+        if not isinstance(protocol, py23_compat.string_types) or \
+           protocol.lower() not in ('static', 'bgp', 'isis'):
+            raise TypeError("Protocol not supported: {protocol}.".format(
+                protocol=protocol
+            ))
 
         protocol = protocol.lower()
         dest_split = destination.split('/')
@@ -1654,7 +1660,7 @@ class IOSXRDriver(NetworkDriver):
             user_details = _DEFAULT_USER_DETAILS.copy()
             user_details.update({
                 'level': level,
-                'password': str(password)
+                'password': py23_compat.text_type(password)
             })
             users[username] = user_details
 
@@ -1669,8 +1675,10 @@ class IOSXRDriver(NetworkDriver):
         }  # default values
 
         if retrieve.lower() in ['running', 'all']:
-            config['running'] = self.device._execute_config_show('show running-config')
+            config['running'] = py23_compat.text_type(
+                self.device._execute_config_show('show running-config'))
         if retrieve.lower() in ['candidate', 'all']:
-            config['candidate'] = self.device._execute_config_show('show configuration merge')
+            config['candidate'] = py23_compat.text_type(
+                self.device._execute_config_show('show configuration merge'))
 
         return config
