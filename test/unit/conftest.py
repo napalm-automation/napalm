@@ -1,0 +1,190 @@
+"""Test fixtures."""
+
+import pytest
+from napalm_base.test import conftest as parent_conftest
+
+from napalm_base.test.double import BaseTestDouble
+
+from napalm_junos import junos
+
+
+@pytest.fixture(scope='class')
+def set_device_parameters(request):
+    """Set up the class."""
+    def fin():
+        request.cls.device.close()
+    request.addfinalizer(fin)
+
+    request.cls.driver = junos.JunOSDriver
+    request.cls.patched_driver = PatchedJunOSDriver
+    request.cls.vendor = 'junos'
+    parent_conftest.set_device_parameters(request)
+
+
+def pytest_generate_tests(metafunc):
+    """Generate test cases dynamically."""
+    parent_conftest.pytest_generate_tests(metafunc, __file__)
+
+
+class PatchedJunOSDriver(junos.JunOSDriver):
+    """Patched JunOS Driver."""
+
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        super(self.__class__, self).__init__(hostname, username, password, timeout, optional_args)
+
+        self.patched_attrs = ['device']
+        self.device = FakeJunOSDevice()
+
+
+# class FakeJunOSDevice(BaseTestDouble):
+#     """JunOS device test double."""
+
+#     def run_commands(self, command_list, encoding='json'):
+#         """Fake run_commands."""
+#         result = list()
+
+#         for command in command_list:
+#             filename = '{}.{}'.format(self.sanitize_text(command), encoding)
+#             full_path = self.find_file(filename)
+
+#             if encoding == 'json':
+#                 result.append(self.read_json_file(full_path))
+#             else:
+#                 result.append({'output': self.read_txt_file(full_path)})
+
+#         return result
+
+
+class FakeJunOSDevice(BaseTestDouble):
+
+    def __init__(self):
+        self.rpc = FakeRPCObject(self)
+        self._conn = FakeConnection(self.rpc)
+        self.ON_JUNOS = True  # necessary for fake devices
+        self.facts = {
+            'domain': None,
+            'hostname': 'vsrx',
+            'ifd_style': 'CLASSIC',
+            '2RE': False,
+            'serialnumber': 'beb914a9cca3',
+            'fqdn': 'vsrx',
+            'virtual': True,
+            'switch_style': 'NONE',
+            'version': '12.1X47-D20.7',
+            'HOME': '/cf/var/home/vagrant',
+            'srx_cluster': False,
+            'model': 'FIREFLY-PERIMETER',
+            'RE0': {
+                'status': 'Testing',
+                'last_reboot_reason': 'Router rebooted after a normal shutdown.',
+                'model': 'FIREFLY-PERIMETER RE',
+                'up_time': '1 hour, 13 minutes, 37 seconds'
+            },
+            'vc_capable': False,
+            'personality': 'SRX_BRANCH'
+        }
+        self.cu = FakeConfigUnitObject()
+
+    def open(self):
+        pass
+
+    def close(self):
+        pass
+
+    def bind(*args, **kvargs):
+        pass
+
+    def read_txt_file(self, filename):
+        with open(filename) as data_file:
+            return data_file.read()
+
+    def cli(self, command=''):
+        return self.read_txt_file(
+            'junos/mock_data/{parsed_command}.txt'.format(
+                parsed_command=command.replace(' ', '_')
+            )
+        )
+
+
+class FakeConfigUnitObject:
+
+    def lock(self):
+        pass
+
+    def unlock(self):
+        pass
+
+
+class FakeRPCObject:
+
+    """
+    Fake RPC caller.
+    """
+
+    def __init__(self, device):
+        self._device = device
+
+    def __getattr__(self, item):
+        self.item = item
+        return self
+
+    def response(self, **rpc_args):
+        instance = rpc_args.pop('instance', '')
+
+        xml_string = self._device.read_txt_file(
+            'junos/mock_data/{}{}.txt'.format(self.item, instance))
+        return lxml.etree.fromstring(xml_string)
+
+    def get_config(self, get_cmd=None, filter_xml=None, options={}):
+
+        # get_cmd is an XML tree that requests a specific part of the config
+        # E.g.: <configuration><protocols><bgp><group/></bgp></protocols></configuration>
+
+        if get_cmd is not None:
+            get_cmd_str = lxml.etree.tostring(get_cmd)
+            filename = get_cmd_str.replace('<', '_')\
+                                  .replace('>', '_')\
+                                  .replace('/', '_')\
+                                  .replace('\n', '')\
+                                  .replace(' ', '')
+
+        # no get_cmd means it should mock the eznc get_config
+        else:
+            filename = 'get_config__' + '__'.join(
+                ['{0}_{1}'.format(k, v) for k, v in options.items()]
+            )
+
+        xml_string = self._device.read_txt_file(
+            'junos/mock_data/{filename}.txt'.format(
+                filename=filename[0:150]
+            )
+        )
+        return lxml.etree.fromstring(xml_string)
+
+    __call__ = response
+
+
+class FakeConnectionRPCObject:
+
+    """
+    Will make fake RPC requests that usually are directly made via netconf.
+    """
+
+    def __init__(self, rpc):
+        self._rpc = rpc
+
+    def response(self, non_std_command=None):
+        class RPCReply:
+            def __init__(self, reply):
+                self._NCElement__doc = reply
+        rpc_reply = RPCReply(self._rpc.get_config(get_cmd=non_std_command))
+        return rpc_reply
+
+    __call__ = response
+
+
+class FakeConnection:
+
+    def __init__(self, rpc):
+        self.rpc = FakeConnectionRPCObject(rpc)
+
