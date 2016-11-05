@@ -25,10 +25,9 @@ import os
 
 import vyattaconfparser
 
-
+from netmiko import __version__ as netmiko_version
 from netmiko import ConnectHandler
 from netmiko import SCPConn
-
 
 # NAPALM base
 from napalm_base.base import NetworkDriver
@@ -59,31 +58,48 @@ class VyOSDriver(NetworkDriver):
     self._old_config = None
     self._ssh_usekeys = False
 
-    if optional_args is None:
-        optional_args = {}
-    self._port = optional_args.get('port', 22)
-    self._ssh_keyfile = optional_args.get('ssh_keyfile', None)
-    if self._ssh_keyfile != None:
-        self._ssh_usekeys = True
 
+    # Netmiko possible arguments
+    netmiko_argument_map = {
+        'port': None,
+        'secret': '',
+        'verbose': False,
+        'global_delay_factor': 1,
+        'use_keys': False,
+        'key_file': None,
+        'ssh_strict': False,
+        'system_host_keys': False,
+        'alt_host_keys': False,
+        'alt_key_file': '',
+        'ssh_config_file': None,
+    }
 
+    fields = netmiko_version.split('.')
+    fields = [int(x) for x in fields]
+    maj_ver, min_ver, bug_fix = fields
+    if maj_ver >= 2:
+        netmiko_argument_map['allow_agent'] = False
+    elif maj_ver == 1 and min_ver >= 1:
+        netmiko_argument_map['allow_agent'] = False
+
+    # Build dict of any optional Netmiko args
+    self.netmiko_optional_args = {}
+    for k, v in netmiko_argument_map.items():
+        try:
+            self.netmiko_optional_args[k] = optional_args[k]
+        except KeyError:
+            pass
+    self.global_delay_factor = optional_args.get('global_delay_factor', 1)
+    self.port = optional_args.get('port', 22)
 
 
   def open(self):
 
-    device = {
-    'device_type': 'vyos',
-    'ip':   self._hostname,
-    'username': self._username,
-    'password': self._password,
-    'use_keys': self._ssh_usekeys,
-    'key_file': self._ssh_keyfile,
-    'port' : self._port,          # optional, defaults to 22
-    'secret': 'secret',     # optional, defaults to ''
-    'verbose': False,       # optional, defaults to False
-    }
-
-    self._device = ConnectHandler(**device)
+    self._device = ConnectHandler(device_type='vyos',
+                             host=self._hostname,
+                             username=self._username,
+                             password=self._password,
+                             **self.netmiko_optional_args)
     self._scp_client = SCPConn(self._device)
 
 
@@ -95,7 +111,7 @@ class VyOSDriver(NetworkDriver):
     Only configuration files are supported with load_replace_candidate.
     It must be a full config file like /config/config.boot
     Due to the OS nature,  we do not
-    support a replace using a configuration string.    
+    support a replace using a configuration string.
     """
     if filename is not None:
       if os.path.exists(filename) == True:
@@ -140,7 +156,7 @@ class VyOSDriver(NetworkDriver):
 
 
   def discard_config(self):
-    self._device.send_config_set(['discard'])
+    self._device.exit_config_mode()
 
   def compare_config(self):
     output_compare = self._device.send_config_set(['compare'])
@@ -149,10 +165,13 @@ class VyOSDriver(NetworkDriver):
     if match:
         return ""
     else:
-        return output_compare
+        diff = ''.join(output_compare.splitlines(True)[1:-1])
+        return diff
 
   def commit_config(self):
-    self._device.send_config_set(['commit', 'save'])
+    if self._device.commit():
+        self._device.send_config_set(['save'])
+    self._device.exit_config_mode()
 
   def rollback(self, filename=None):
     """Rollback configuration to filename or to self.rollback_cfg file."""
