@@ -1,5 +1,6 @@
 """Test fixtures."""
 
+import lxml
 import pytest
 from napalm_base.test import conftest as parent_conftest
 
@@ -34,6 +35,12 @@ class PatchedJunOSDriver(junos.JunOSDriver):
 
         self.patched_attrs = ['device']
         self.device = FakeJunOSDevice()
+
+    def lock(self):
+        pass
+
+    def unlock(self):
+        pass
 
 
 # class FakeJunOSDevice(BaseTestDouble):
@@ -83,7 +90,6 @@ class FakeJunOSDevice(BaseTestDouble):
             'vc_capable': False,
             'personality': 'SRX_BRANCH'
         }
-        self.cu = FakeConfigUnitObject()
 
     def open(self):
         pass
@@ -94,25 +100,10 @@ class FakeJunOSDevice(BaseTestDouble):
     def bind(*args, **kvargs):
         pass
 
-    def read_txt_file(self, filename):
-        with open(filename) as data_file:
-            return data_file.read()
-
     def cli(self, command=''):
-        return self.read_txt_file(
-            'junos/mock_data/{parsed_command}.txt'.format(
-                parsed_command=command.replace(' ', '_')
-            )
-        )
-
-
-class FakeConfigUnitObject:
-
-    def lock(self):
-        pass
-
-    def unlock(self):
-        pass
+        filename = '{safe_command}.txt'.format(safe_command=self.sanitize_text(command))
+        fielpath = self.find_file(filename)
+        return self.read_txt_file(fielpath)
 
 
 class FakeRPCObject:
@@ -131,8 +122,12 @@ class FakeRPCObject:
     def response(self, **rpc_args):
         instance = rpc_args.pop('instance', '')
 
-        xml_string = self._device.read_txt_file(
-            'junos/mock_data/{}{}.txt'.format(self.item, instance))
+        filename = '{item}{instance}.xml'.format(
+            item=self.item, instance=instance
+        )
+        filepathpath = self._device.find_file(filename)
+        xml_string = self._device.read_txt_file(filepathpath)
+
         return lxml.etree.fromstring(xml_string)
 
     def get_config(self, get_cmd=None, filter_xml=None, options={}):
@@ -142,11 +137,7 @@ class FakeRPCObject:
 
         if get_cmd is not None:
             get_cmd_str = lxml.etree.tostring(get_cmd)
-            filename = get_cmd_str.replace('<', '_')\
-                                  .replace('>', '_')\
-                                  .replace('/', '_')\
-                                  .replace('\n', '')\
-                                  .replace(' ', '')
+            filename = self._device.sanitize_text(get_cmd_str)
 
         # no get_cmd means it should mock the eznc get_config
         else:
@@ -154,11 +145,10 @@ class FakeRPCObject:
                 ['{0}_{1}'.format(k, v) for k, v in options.items()]
             )
 
-        xml_string = self._device.read_txt_file(
-            'junos/mock_data/{filename}.txt'.format(
-                filename=filename[0:150]
-            )
-        )
+        filename = '{filename}.txt'.format(filename=filename[0:150])
+        filepathpath = self._device.find_file(filename)
+        xml_string = self._device.read_txt_file(filepathpath)
+
         return lxml.etree.fromstring(xml_string)
 
     __call__ = response
