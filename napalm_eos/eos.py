@@ -66,7 +66,7 @@ class EOSDriver(NetworkDriver):
 
         if self.transport == 'https':
             self.port = optional_args.get('port', 443)
-        elif self.transrpot == 'http':
+        elif self.transport == 'http':
             self.port = optional_args.get('port', 80)
 
         self.enablepwd = optional_args.get('enable_password', '')
@@ -76,7 +76,7 @@ class EOSDriver(NetworkDriver):
         try:
             if self.transport in ('http', 'https'):
                 connection = pyeapi.client.connect(
-                    transport='https',
+                    transport=self.transport,
                     host=self.hostname,
                     username=self.username,
                     password=self.password,
