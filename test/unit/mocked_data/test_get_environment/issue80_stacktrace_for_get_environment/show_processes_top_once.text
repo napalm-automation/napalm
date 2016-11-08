@@ -1,0 +1,14 @@
+top - 12:14:45 up 30 days,  1:28,  3 users,  load average: 0.05, 0.14, 0.20
+Tasks: 297 total,   2 running, 295 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  4.2 us,  0.9 sy,  0.0 ni, 94.6 id,  0.0 wa,  0.1 hi,  0.2 si,  0.0 st
+KiB Mem:  32472080 total,  5696652 used, 26775428 free,   372092 buffers
+KiB Swap:        0 total,        0 used,        0 free,  2602532 cached
+
+  PID USER      PR  NI  VIRT  RES  SHR S  %CPU %MEM    TIME+  COMMAND
+16136 loke      20   0 25864  12m 9016 R   8.3  0.0   0:00.11 top
+ 2392 root      20   0  3860 1104  848 S   4.1  0.0  34:44.61 EosOomAdjust
+    1 root      20   0  7940 4036 2492 S   0.0  0.0   2:23.32 systemd
+    2 root      20   0     0    0    0 S   0.0  0.0   0:00.02 kthreadd
+    3 root      20   0     0    0    0 S   0.0  0.0   0:00.68 ksoftirqd/0
+    6 root      rt   0     0    0    0 S   0.0  0.0   0:05.75 migration/0
+
