@@ -86,7 +86,7 @@ Please check [napalm-ansible](https://github.com/napalm-automation/napalm-ansibl
 Salt
 ----
 
-NAPALM will be completely integrated in [Salt](https://saltstack.com/) beginning with the release code named `Carbon`. For usage examples, please check [naplam-salt](https://github.com/napalm-automation/napalm-salt).
+NAPALM will be completely integrated in [Salt](https://saltstack.com/) beginning with the release code named `Carbon`. For usage examples, please check [napalm-salt](https://github.com/napalm-automation/napalm-salt).
 
 
 Contact
