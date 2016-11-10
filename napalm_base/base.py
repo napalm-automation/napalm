@@ -1384,19 +1384,19 @@ class NetworkDriver(object):
         """
         Return a dictionary of VRFs configured on the device, including default/global
         The keys of the main dictionary represent the name of the VRF.  The values are as below:
-            * route_descriptor (unicode or None)
+            * route_distinguisher (unicode or None)
             * interfaces (list of unicodes)
 
         Example:
         {
             u'MGMT': {
-                u'route_descriptor': u'123:456',
+                u'route_distinguisher': u'123:456',
                 u'interfaces': [
                     u'Management1',
                 ]
             }
             u'default': {
-                u'route_descriptor': None,
+                u'route_distinguisher': None,
                 u'interfaces: [
                     u'Ethernet1',
                     u'Ethernet2',
