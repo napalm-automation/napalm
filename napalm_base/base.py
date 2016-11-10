@@ -1379,3 +1379,31 @@ class NetworkDriver(object):
               empty string
         """
         raise NotImplementedError
+
+    def get_vrfs(self):
+        """
+        Return a dictionary of VRFs configured on the device, including default/global
+        The keys of the main dictionary represent the name of the VRF.  The values are as below:
+            * route_descriptor (unicode or None)
+            * interfaces (list of unicodes)
+
+        Example:
+        {
+            u'MGMT': {
+                u'route_descriptor': u'123:456',
+                u'interfaces': [
+                    u'Management1',
+                ]
+            }
+            u'default': {
+                u'route_descriptor': None,
+                u'interfaces: [
+                    u'Ethernet1',
+                    u'Ethernet2',
+                    u'Ethernet3',
+                    u'Ethernet4',
+                ]
+            }
+        }
+        """
+        raise NotImplementedError
