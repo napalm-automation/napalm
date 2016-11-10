@@ -27,6 +27,7 @@ from napalm_base.utils import py23_compat
 class _MACFormat(mac_unix):
     pass
 
+
 _MACFormat.word_fmt = '%.2X'
 
 
