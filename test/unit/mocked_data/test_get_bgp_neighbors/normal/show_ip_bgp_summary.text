@@ -1,0 +1,9 @@
+BGP router identifier 10.2.2.2, local AS number 65002
+IPv4 Unicast - max multipaths: ebgp 1 ibgp 1
+RIB entries 9, using 864 bytes of memory
+Peers 1, using 4560 bytes of memory
+
+Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.0.12.1       4 65001   36938   33380        0    0    0 01w3d00h        4
+
+Total number of neighbors 1

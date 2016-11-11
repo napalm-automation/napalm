@@ -211,21 +211,27 @@ class VyOSDriver(NetworkDriver):
 
     environment = {
       "fans": {
-        "status": None
+        "invalid": {
+          "status": False
+        }
       },
       "temperature": {
-        "temperature": None,
-        "is_alert"   : None,
-        "is_critical": None
+        "invalid" : {
+          "temperature": 0.0,
+          "is_alert"   : False,
+          "is_critical": False
+        }
       },
       "power": {
-        "status"  : None,
-        "capacity": None,
-        "output"  : None
+          "invalid" : {
+          "status"  : True,
+          "capacity": 0.0,
+          "output"  : 0.0
+        }
       },
       "cpu": {
         "0": {
-          "%usage": cpu
+          "%usage": float(cpu)
         },
       },
       "memory": {
@@ -273,20 +279,28 @@ class VyOSDriver(NetworkDriver):
       for iface_name in ifaces_detail:
 
         description = self._get_value("description", ifaces_detail[iface_name])
+        if description is None:
+            description = ""
         speed = self._get_value("speed", ifaces_detail[iface_name])
+        if speed is None:
+            speed = 0
+        if speed == "auto":
+            speed = 0
         hw_id = self._get_value("hw-id", ifaces_detail[iface_name])
+        if hw_id is None:
+            hw_id = "00:00:00:00:00:00"
 
         is_up      = (iface_state[iface_name]["Link"]  == "u")
         is_enabled = (iface_state[iface_name]["State"] == "u")
 
         iface_dict.update({
           iface_name: {
-            "is_up"        : is_up,
-            "is_enabled"   : is_enabled,
-            "description"  : description,
-            "last_flapped" : -1,
-            "speed"        : speed,
-            "mac_address"  : hw_id
+            "is_up"        : bool(is_up),
+            "is_enabled"   : bool(is_enabled),
+            "description"  : unicode(description),
+            "last_flapped" : float(-1),
+            "speed"        : int(speed),
+            "mac_address"  : unicode(hw_id)
           }
         })
 
@@ -328,16 +342,18 @@ class VyOSDriver(NetworkDriver):
       # ["10.129.2.254", "ether", "00:50:56:97:af:b1", "C", "eth0"]
       # [u'10.0.12.33', u'(incomplete)', u'eth1']
       if "incomplete" in line[1]:
-          macaddr=None
+          macaddr=unicode("00:00:00:00:00:00")
       else:
           macaddr=unicode(line[2])
 
-      arp_table.append({
-        "interface" : unicode(line[-1]),
-        "mac" : macaddr,
-        "ip"  : unicode(line[0]),
-        "age" : None
-      })
+      arp_table.append(
+        {
+          'interface': unicode(line[-1]),
+          'mac': macaddr,
+          'ip': unicode(line[0]),
+          'age': 0.0
+        }
+      )
 
     return arp_table
 
@@ -370,10 +386,10 @@ class VyOSDriver(NetworkDriver):
       ntp_stats.append({
         "remote"      : unicode(ip),
         "referenceid" : unicode(refid),
-        "synchronized": synchronized,
+        "synchronized": bool(synchronized),
         "stratum"     : int(st),
         "type"        : unicode(t),
-        "when"        : int(when),
+        "when"        : unicode(when),
         "hostpoll"    : int(hostpoll),
         "reachability": int(reachability),
         "delay"       : float(delay),
@@ -472,20 +488,20 @@ class VyOSDriver(NetworkDriver):
 
       bgp_neighbor_data["global"]["peers"].setdefault(peer_id, {})
       peer_dict = {
-        "description": "",
-        "is_enabled" : is_enabled,
-        "local_as"   : local_as,
-        "is_up"      : is_up,
+        "description": unicode(""),
+        "is_enabled" : bool(is_enabled),
+        "local_as"   : int(local_as),
+        "is_up"      : bool(is_up),
         "remote_id"  : unicode(remote_rid),
-        "uptime"     : self._bgp_time_conversion(up_time),
+        "uptime"     : int(self._bgp_time_conversion(up_time)),
         "remote_as"  : int(remote_as)
       }
 
       af_dict = dict()
       af_dict[address_family] = {
-        "sent_prefixes"    : None,
+        "sent_prefixes"    : int(-1),
         "accepted_prefixes": int(accepted_prefixes),
-        "received_prefixes": received_prefixes
+        "received_prefixes": int(received_prefixes)
       }
 
       peer_dict["address_family"] = af_dict
@@ -555,22 +571,22 @@ class VyOSDriver(NetworkDriver):
         rx_octets = i[0]
         rx_unicast_packets = i[1]
         rx_multicast_packets = i[5]
-        rx_broadcast_packets = None
+        rx_broadcast_packets = -1
       else:
         counters.update({
           interfaces[j / 2]: {
-            "tx_errors"           : i[2],
-            "tx_discards"         : i[3],
-            "tx_octets"           : i[0],
-            "tx_unicast_packets"  : i[1],
-            "tx_multicast_packets": None,
-            "tx_broadcast_packets": None,
-            "rx_errors"           : rx_errors,
-            "rx_discards"         : rx_discards,
-            "rx_octets"           : rx_octets,
-            "rx_unicast_packets"  : rx_unicast_packets,
-            "rx_multicast_packets": rx_multicast_packets,
-            "rx_broadcast_packets": rx_broadcast_packets
+            "tx_errors"           : int(i[2]),
+            "tx_discards"         : int(i[3]),
+            "tx_octets"           : int(i[0]),
+            "tx_unicast_packets"  : int(i[1]),
+            "tx_multicast_packets": int(-1),
+            "tx_broadcast_packets": int(-1),
+            "rx_errors"           : int(rx_errors),
+            "rx_discards"         : int(rx_discards),
+            "rx_octets"           : int(rx_octets),
+            "rx_unicast_packets"  : int(rx_unicast_packets),
+            "rx_multicast_packets": int(rx_multicast_packets),
+            "rx_broadcast_packets": int(rx_broadcast_packets)
           }
         })
       j += 1
@@ -593,14 +609,15 @@ class VyOSDriver(NetworkDriver):
         for i in config["service"]["snmp"]["community"]:
           snmp["community"].update({
             i: {
-              "acl": None,
-              "mode": config["service"]["snmp"]["community"][i]["authorization"]
+              "acl": unicode(""),
+              "mode": unicode(config["service"]["snmp"]["community"][i]["authorization"])
             }
           })
 
         snmp.update({
-          "contact": config["service"]["snmp"]["contact"],
-          "location": config["service"]["snmp"]["location"]
+          "chassis_id": unicode(""),
+          "contact": unicode(config["service"]["snmp"]["contact"]),
+          "location": unicode(config["service"]["snmp"]["location"])
         })
 
         return snmp
@@ -635,7 +652,7 @@ class VyOSDriver(NetworkDriver):
     if "domain-name" in config["system"]:
         fqdn = config["system"]["domain-name"]
     else:
-        fqdn = None
+        fqdn = ""
 
     iface_list = list()
     for iface_type in config["interfaces"]:
@@ -644,7 +661,7 @@ class VyOSDriver(NetworkDriver):
 
     facts = {
       "uptime"        : int(uptime),
-      "vendor"        : "VyOS",
+      "vendor"        : unicode("VyOS"),
       "os_version"    : unicode(version),
       "serial_number" : unicode(snumber),
       "model"         : unicode(hwmodel),
@@ -701,7 +718,7 @@ class VyOSDriver(NetworkDriver):
       if ip_ver not in ifaces_ip[iface_name]:
         ifaces_ip[iface_name][ip_ver] = dict()
 
-      ifaces_ip[iface_name][ip_ver][ip_addr] = { "prefix_length": mask }
+      ifaces_ip[iface_name][ip_ver][ip_addr] = { "prefix_length": int(mask) }
 
     return ifaces_ip
 
@@ -794,23 +811,28 @@ class VyOSDriver(NetworkDriver):
       # 'rtt_info' example:
       # ["0.307/0.396/0.480/0.061"]
       rtt_info = output_ping.split("\n")[-1]
-      match = re.search("([\d\.]+)/([\d\.]+)/([\d\.]+)/[\d\.]+", rtt_info)
+      match = re.search("([\d\.]+)/([\d\.]+)/([\d\.]+)/([\d\.]+)", rtt_info)
 
       if match is not None:
         rtt_min = float(match.group(1))
         rtt_avg = float(match.group(2))
+        rtt_max = float(match.group(3))
+        rtt_stddev = float(match.group(4))
       else:
         rtt_min = None
         rtt_avg = None
+        rtt_max = None
+        rtt_stddev = None
 
       ping_result["success"] = dict()
       ping_result["success"] = {
         "probes_sent": sent,
         "packet_loss": lost,
         "rtt_min"    : rtt_min,
+        "rtt_max"    : rtt_max,
         "rtt_avg"    : rtt_avg,
-        "rtt_stdev"  : None,
-        "results"    : {"ip_address": destination, "rtt": rtt_avg}
+        "rtt_stddev"  : rtt_stddev,
+        "results"    : [{"ip_address": destination, "rtt": rtt_avg}]
       }
 
     return ping_result

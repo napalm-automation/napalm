@@ -1,0 +1,5 @@
+Address                  HWtype  HWaddress           Flags Mask            Iface
+10.0.12.33                       (incomplete)                              eth1
+10.0.12.1                ether   08:00:27:60:0f:ee   C                     eth1
+10.0.2.2                 ether   52:54:00:12:35:02   C                     eth0
+10.0.2.3                 ether   52:54:00:12:35:03   C                     eth0
