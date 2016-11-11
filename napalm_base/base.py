@@ -1380,29 +1380,52 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_vrfs(self):
+    def get_network_instances(self, name=''):
         """
-        Return a dictionary of VRFs configured on the device, including default/global
-        The keys of the main dictionary represent the name of the VRF.  The values are as below:
-            * route_distinguisher (unicode or None)
-            * interfaces (list of unicodes)
+        Return a dictionary of network instances (VRFs) configured on the device, including default/global
+
+        Args:
+            name(string) - Name of the network instance to return, default is all.
+
+        Returns:
+            A dictionary of network instances in OC format:
+            * name (dict)
+              * name (unicode)
+              * type (unicode, fixed to L3VRF)
+              * state (dict)
+                * route_distinguisher (unicode or None)
+              * interfaces (dict)
+                * interface (dict)
+                  * interface name: (dict)
 
         Example:
         {
             u'MGMT': {
-                u'route_distinguisher': u'123:456',
-                u'interfaces': [
-                    u'Management1',
-                ]
+                u'name': u'MGMT',
+                u'type': u'L3VRF',
+                u'state': {
+                    u'route_distinguisher': u'123:456',
+                },
+                u'interfaces': {
+                    u'interface': {
+                        u'Management1': {}
+                    }
+                }
             }
             u'default': {
-                u'route_distinguisher': None,
-                u'interfaces: [
-                    u'Ethernet1',
-                    u'Ethernet2',
-                    u'Ethernet3',
-                    u'Ethernet4',
-                ]
+                u'name': u'default',
+                u'type': u'L3VRF',
+                u'state': {
+                    u'route_distinguisher': None,
+                },
+                u'interfaces: {
+                    u'interface': {
+                        u'Ethernet1': {}
+                        u'Ethernet2': {}
+                        u'Ethernet3': {}
+                        u'Ethernet4': {}
+                    }
+                }
             }
         }
         """
