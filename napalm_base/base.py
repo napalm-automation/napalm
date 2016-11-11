@@ -1382,7 +1382,7 @@ class NetworkDriver(object):
 
     def get_network_instances(self, name=''):
         """
-        Return a dictionary of network instances (VRFs) configured on the device, including default/global
+        Return a dictionary of network instances (VRFs) configured, including default/global
 
         Args:
             name(string) - Name of the network instance to return, default is all.
