@@ -807,11 +807,11 @@ class IOSDriver(NetworkDriver):
                         raise ValueError(u"Unexpected Response from the device")
 
         # remove keys with no data
-        for key in interfaces.keys():
-            if not bool(interfaces[key]):
-                del interfaces[key]
-
-        return interfaces
+        new_interfaces = {}
+        for k, v in interfaces.items():
+            if bool(interfaces[k]):
+                new_interfaces[k] = v
+        return new_interfaces
 
     @staticmethod
     def bgp_time_conversion(bgp_uptime):
