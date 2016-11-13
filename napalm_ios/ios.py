@@ -808,9 +808,9 @@ class IOSDriver(NetworkDriver):
 
         # remove keys with no data
         new_interfaces = {}
-        for k, v in interfaces.items():
-            if bool(interfaces[k]):
-                new_interfaces[k] = v
+        for k, val in interfaces.items():
+            if val:
+                new_interfaces[k] = val
         return new_interfaces
 
     @staticmethod
