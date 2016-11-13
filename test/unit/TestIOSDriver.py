@@ -160,7 +160,7 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
             "never": -1,
         }
 
-        for bgp_time, result in test_cases.iteritems():
+        for bgp_time, result in test_cases.items():
             self.assertEqual(self.device.bgp_time_conversion(bgp_time), result)
 
 
