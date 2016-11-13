@@ -16,6 +16,7 @@
 
 import unittest
 from napalm_ios import ios
+from napalm_base.utils import py23_compat
 from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import re
 
@@ -176,7 +177,7 @@ class FakeIOSDevice:
         """Fake execute a command in the device by just returning the content of a file."""
         cmd = re.sub(r'[\[\]\*\^\+\s\|]', '_', command)
         output = self.read_txt_file('ios/mock_data/{}.txt'.format(cmd))
-        return unicode(output)
+        return py23_compat.text_type(output)
 
     def send_command(self, command):
         """Fake execute a command in the device by just returning the content of a file."""
