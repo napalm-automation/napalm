@@ -8,9 +8,9 @@ import json
 import os
 
 
-import helpers
-import models
 import pytest
+import napalm_base.test.helpers
+import napalm_base.test.models
 
 # text_type is 'unicode' for py2 and 'str' for py3
 from napalm_base.utils.py23_compat import text_type
