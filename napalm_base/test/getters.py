@@ -9,8 +9,8 @@ import os
 
 
 import pytest
-import napalm_base.test.helpers
-import napalm_base.test.models
+from napalm_base.test import helpers
+from napalm_base.test import models
 
 # text_type is 'unicode' for py2 and 'str' for py3
 from napalm_base.utils.py23_compat import text_type
