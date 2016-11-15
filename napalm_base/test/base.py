@@ -530,3 +530,16 @@ class TestGettersNetworkDriver(object):
             assert get_config['candidate'] == "" if config != "candidate" else True
             assert get_config['startup'] == "" if config != "startup" else True
             assert get_config['running'] == "" if config != "running" else True
+
+    def test_get_network_instances(self):
+        """Test get_network_instances method."""
+        try:
+            get_network_instances = self.device.get_network_instances()
+        except NotImplementedError:
+            raise SkipTest()
+
+        result = isinstance(get_network_instances, dict)
+        for network_instance_name, network_instance in get_network_instances.items():
+            result = result and self._test_model(models.network_instance, network_instance)
+
+        self.assertTrue(result)
