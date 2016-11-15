@@ -6,13 +6,13 @@ import functools
 
 # python2/3 support
 try:
-    from itertools import izip_longest as zip_longest
+    from itertools import zip_longest
+#    from itertools import izip_longest as zip_longest
 except AttributeError:
     from itertools import zip_longest
 
 import json
 import os
-
 
 import pytest
 from napalm_base.test import helpers
@@ -28,7 +28,7 @@ NAPALM_TEST_MOCK = os.getenv('NAPALM_TEST_MOCK', default=True)
 def list_dicts_diff(prv, nxt):
     """Compare two lists of dicts."""
     result = []
-    for prv_element, nxt_element in zip_longest(prv, nxt, fillvalue={}):
+    for prv_element, nxt_element in itertools.izip_longest(prv, nxt, fillvalue={}):
         intermediate_result = dict_diff(prv_element, nxt_element)
         if intermediate_result:
             result.append(intermediate_result)
