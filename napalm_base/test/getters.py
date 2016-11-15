@@ -6,13 +6,13 @@ import functools
 
 # python2/3 support
 try:
-    from itertools import izip_longest as zip_longest
+    from itertools import zip_longest
+#    from itertools import izip_longest as zip_longest
 except AttributeError:
     from itertools import zip_longest
 
 import json
 import os
-
 
 import pytest
 from napalm_base.test import helpers
@@ -28,7 +28,7 @@ NAPALM_TEST_MOCK = os.getenv('NAPALM_TEST_MOCK', default=True)
 def list_dicts_diff(prv, nxt):
     """Compare two lists of dicts."""
     result = []
-    for prv_element, nxt_element in zip_longest(prv, nxt, fillvalue={}):
+    for prv_element, nxt_element in itertools.izip_longest(prv, nxt, fillvalue={}):
         intermediate_result = dict_diff(prv_element, nxt_element)
         if intermediate_result:
             result.append(intermediate_result)
@@ -37,7 +37,7 @@ def list_dicts_diff(prv, nxt):
 
 def dict_diff(prv, nxt):
     """Return a dict of keys that differ with another config object."""
-    keys = set(prv.keys() + nxt.keys())
+    keys = set(list(prv.keys()) + list(nxt.keys()))
     result = {}
 
     for k in keys:
@@ -69,7 +69,7 @@ def wrap_test_cases(func):
         try:
             # This is an ugly, ugly, ugly hack because some python objects don't load
             # as expected. For example, dicts where integers are strings
-            result = json.loads(json.dumps(func(cls)))
+            result = json.loads(json.dumps(func(cls, test_case)))
         except IOError:
             if test_case == "no_test_case_found":
                 pytest.fail("No test case for '{}' found".format(func.__name__))
@@ -110,14 +110,14 @@ class BaseTestGetters(object):
     """Base class for testing drivers."""
 
     @wrap_test_cases
-    def test_get_facts(self):
+    def test_get_facts(self, test_case):
         """Test get_facts method."""
         facts = self.device.get_facts()
         assert helpers.test_model(models.facts, facts)
         return facts
 
     @wrap_test_cases
-    def test_get_interfaces(self):
+    def test_get_interfaces(self, test_case):
         """Test get_interfaces."""
         get_interfaces = self.device.get_interfaces()
         assert len(get_interfaces) > 0
@@ -128,7 +128,7 @@ class BaseTestGetters(object):
         return get_interfaces
 
     @wrap_test_cases
-    def test_get_lldp_neighbors(self):
+    def test_get_lldp_neighbors(self, test_case):
         """Test get_lldp_neighbors."""
         get_lldp_neighbors = self.device.get_lldp_neighbors()
         assert len(get_lldp_neighbors) > 0
@@ -140,7 +140,7 @@ class BaseTestGetters(object):
         return get_lldp_neighbors
 
     @wrap_test_cases
-    def test_get_interfaces_counters(self):
+    def test_get_interfaces_counters(self, test_case):
         """Test get_interfaces_counters."""
         get_interfaces_counters = self.device.get_interfaces_counters()
         assert len(self.device.get_interfaces_counters()) > 0
@@ -151,7 +151,7 @@ class BaseTestGetters(object):
         return get_interfaces_counters
 
     @wrap_test_cases
-    def test_get_environment(self):
+    def test_get_environment(self, test_case):
         """Test get_environment."""
         environment = self.device.get_environment()
         assert len(environment) > 0
@@ -173,7 +173,7 @@ class BaseTestGetters(object):
         return environment
 
     @wrap_test_cases
-    def test_get_bgp_neighbors(self):
+    def test_get_bgp_neighbors(self, test_case):
         """Test get_bgp_neighbors."""
         get_bgp_neighbors = self.device.get_bgp_neighbors()
         assert 'global' in get_bgp_neighbors.keys()
@@ -190,7 +190,7 @@ class BaseTestGetters(object):
         return get_bgp_neighbors
 
     @wrap_test_cases
-    def test_get_lldp_neighbors_detail(self):
+    def test_get_lldp_neighbors_detail(self, test_case):
         """Test get_lldp_neighbors_detail."""
         get_lldp_neighbors_detail = self.device.get_lldp_neighbors_detail()
         assert len(get_lldp_neighbors_detail) > 0
@@ -202,7 +202,7 @@ class BaseTestGetters(object):
         return get_lldp_neighbors_detail
 
     @wrap_test_cases
-    def test_get_bgp_config(self):
+    def test_get_bgp_config(self, test_case):
         """Test get_bgp_config."""
         get_bgp_config = self.device.get_bgp_config()
         assert len(get_bgp_config) > 0
@@ -215,7 +215,7 @@ class BaseTestGetters(object):
         return get_bgp_config
 
     @wrap_test_cases
-    def test_get_bgp_neighbors_detail(self):
+    def test_get_bgp_neighbors_detail(self, test_case):
         """Test get_bgp_neighbors_detail."""
         get_bgp_neighbors_detail = self.device.get_bgp_neighbors_detail()
 
@@ -231,7 +231,7 @@ class BaseTestGetters(object):
         return get_bgp_neighbors_detail
 
     @wrap_test_cases
-    def test_get_arp_table(self):
+    def test_get_arp_table(self, test_case):
         """Test get_arp_table."""
         get_arp_table = self.device.get_arp_table()
         assert len(get_arp_table) > 0
@@ -242,7 +242,7 @@ class BaseTestGetters(object):
         return get_arp_table
 
     @wrap_test_cases
-    def test_get_ntp_peers(self):
+    def test_get_ntp_peers(self, test_case):
         """Test get_ntp_peers."""
         get_ntp_peers = self.device.get_ntp_peers()
         assert len(get_ntp_peers) > 0
@@ -254,7 +254,7 @@ class BaseTestGetters(object):
         return get_ntp_peers
 
     @wrap_test_cases
-    def test_get_ntp_stats(self):
+    def test_get_ntp_stats(self, test_case):
         """Test get_ntp_stats."""
         get_ntp_stats = self.device.get_ntp_stats()
         assert len(get_ntp_stats) > 0
@@ -265,7 +265,7 @@ class BaseTestGetters(object):
         return get_ntp_stats
 
     @wrap_test_cases
-    def test_get_interfaces_ip(self):
+    def test_get_interfaces_ip(self, test_case):
         """Test get_interfaces_ip."""
         get_interfaces_ip = self.device.get_interfaces_ip()
         assert len(get_interfaces_ip) > 0
@@ -281,7 +281,7 @@ class BaseTestGetters(object):
         return get_interfaces_ip
 
     @wrap_test_cases
-    def test_get_mac_address_table(self):
+    def test_get_mac_address_table(self, test_case):
         """Test get_mac_address_table."""
         get_mac_address_table = self.device.get_mac_address_table()
         assert len(get_mac_address_table) > 0
@@ -292,7 +292,7 @@ class BaseTestGetters(object):
         return get_mac_address_table
 
     @wrap_test_cases
-    def test_get_route_to(self):
+    def test_get_route_to(self, test_case):
         """Test get_route_to."""
         destination = '1.0.4.0/24'
         protocol = 'bgp'
@@ -307,7 +307,7 @@ class BaseTestGetters(object):
         return get_route_to
 
     @wrap_test_cases
-    def test_get_snmp_information(self):
+    def test_get_snmp_information(self, test_case):
         """Test get_snmp_information."""
         get_snmp_information = self.device.get_snmp_information()
 
@@ -322,7 +322,7 @@ class BaseTestGetters(object):
         return get_snmp_information
 
     @wrap_test_cases
-    def test_get_probes_config(self):
+    def test_get_probes_config(self, test_case):
         """Test get_probes_config."""
         get_probes_config = self.device.get_probes_config()
 
@@ -335,7 +335,7 @@ class BaseTestGetters(object):
         return get_probes_config
 
     @wrap_test_cases
-    def test_get_probes_results(self):
+    def test_get_probes_results(self, test_case):
         """Test get_probes_results."""
         get_probes_results = self.device.get_probes_results()
         assert len(get_probes_results) > 0
@@ -347,7 +347,7 @@ class BaseTestGetters(object):
         return get_probes_results
 
     @wrap_test_cases
-    def test_ping(self):
+    def test_ping(self, test_case):
         """Test ping."""
         destination = '8.8.8.8'
         get_ping = self.device.ping(destination)
@@ -362,7 +362,7 @@ class BaseTestGetters(object):
         return get_ping
 
     @wrap_test_cases
-    def test_traceroute(self):
+    def test_traceroute(self, test_case):
         """Test traceroute."""
         destination = '8.8.8.8'
         get_traceroute = self.device.traceroute(destination)
@@ -376,7 +376,7 @@ class BaseTestGetters(object):
         return get_traceroute
 
     @wrap_test_cases
-    def test_get_users(self):
+    def test_get_users(self, test_case):
         """Test get_users."""
         get_users = self.device.get_users()
         assert len(get_users)
@@ -388,7 +388,7 @@ class BaseTestGetters(object):
         return get_users
 
     @wrap_test_cases
-    def test_get_optics(self):
+    def test_get_optics(self, test_case):
         """Test get_optics."""
         get_optics = self.device.get_optics()
         assert isinstance(get_optics, dict)
@@ -411,7 +411,7 @@ class BaseTestGetters(object):
         return get_optics
 
     @wrap_test_cases
-    def test_get_config(self):
+    def test_get_config(self, test_case):
         """Test get_config method."""
         get_config = self.device.get_config()
 
@@ -421,7 +421,7 @@ class BaseTestGetters(object):
         return get_config
 
     @wrap_test_cases
-    def test_get_config_filtered(self):
+    def test_get_config_filtered(self, test_case):
         """Test get_config method."""
         for config in ['running', 'startup', 'candidate']:
             get_config = self.device.get_config(retrieve=config)
