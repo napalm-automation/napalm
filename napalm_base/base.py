@@ -1391,7 +1391,7 @@ class NetworkDriver(object):
             A dictionary of network instances in OC format:
             * name (dict)
               * name (unicode)
-              * type (unicode, fixed to L3VRF)
+              * type (unicode)
               * state (dict)
                 * route_distinguisher (unicode or None)
               * interfaces (dict)
@@ -1414,7 +1414,7 @@ class NetworkDriver(object):
             }
             u'default': {
                 u'name': u'default',
-                u'type': u'L3VRF',
+                u'type': u'DEFAULT_INSTANCE',
                 u'state': {
                     u'route_distinguisher': None,
                 },
