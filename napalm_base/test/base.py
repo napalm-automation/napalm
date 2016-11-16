@@ -171,7 +171,8 @@ class TestGettersNetworkDriver(object):
             alive = self.device.is_alive()
         except NotImplementedError:
             raise SkipTest()
-        self.assertIsInstance(alive, bool, msg='`is_alive` must return a boolean value.')
+        result = self._test_model(models.alive, alive)
+        self.assertTrue(result)
 
     def test_get_facts(self):
         try:
