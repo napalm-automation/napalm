@@ -541,5 +541,9 @@ class TestGettersNetworkDriver(object):
         result = isinstance(get_network_instances, dict)
         for network_instance_name, network_instance in get_network_instances.items():
             result = result and self._test_model(models.network_instance, network_instance)
+            result = result and \
+                self._test_model(models.network_instance_state, network_instance['state'])
+            result = result and \
+                self._test_model(models.network_instance_interfaces, network_instance['interfaces'])
 
         self.assertTrue(result)
