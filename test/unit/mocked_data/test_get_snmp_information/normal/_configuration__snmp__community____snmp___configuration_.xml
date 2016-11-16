@@ -1,0 +1,11 @@
+<configuration commit-seconds="1457011246" commit-localtime="2016-03-03 13:20:46 UTC">
+        <snmp>
+            <contact>noc@cloudflare.com</contact>
+            <location>Stockholm, Sweden</location>
+            <system-name>edge02.arn02</system-name>
+            <community>
+                <name>hackme</name>
+                <authorization>read-only</authorization>
+            </community>
+        </snmp>
+</configuration>

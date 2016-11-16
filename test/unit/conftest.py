@@ -43,25 +43,6 @@ class PatchedJunOSDriver(junos.JunOSDriver):
         pass
 
 
-# class FakeJunOSDevice(BaseTestDouble):
-#     """JunOS device test double."""
-
-#     def run_commands(self, command_list, encoding='json'):
-#         """Fake run_commands."""
-#         result = list()
-
-#         for command in command_list:
-#             filename = '{}.{}'.format(self.sanitize_text(command), encoding)
-#             full_path = self.find_file(filename)
-
-#             if encoding == 'json':
-#                 result.append(self.read_json_file(full_path))
-#             else:
-#                 result.append({'output': self.read_txt_file(full_path)})
-
-#         return result
-
-
 class FakeJunOSDevice(BaseTestDouble):
 
     def __init__(self):
@@ -145,7 +126,7 @@ class FakeRPCObject:
                 ['{0}_{1}'.format(k, v) for k, v in options.items()]
             )
 
-        filename = '{filename}.txt'.format(filename=filename[0:150])
+        filename = '{filename}.xml'.format(filename=filename[0:150])
         filepathpath = self._device.find_file(filename)
         xml_string = self._device.read_txt_file(filepathpath)
 
@@ -177,4 +158,3 @@ class FakeConnection:
 
     def __init__(self, rpc):
         self.rpc = FakeConnectionRPCObject(rpc)
-

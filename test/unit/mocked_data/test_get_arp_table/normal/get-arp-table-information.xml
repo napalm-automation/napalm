@@ -1,0 +1,32 @@
+<arp-table-information junos_style="normal">
+    <arp-table-entry>
+        <mac-address>02:01:00:00:00:05</mac-address>
+        <ip-address>172.17.17.1</ip-address>
+        <hostname>dummy-host</hostname>
+        <interface-name>em1.0</interface-name>
+        <time-to-expire> 1031</time-to-expire>
+        <arp-table-entry-flags>
+            <none/>
+        </arp-table-entry-flags>
+    </arp-table-entry>
+    <arp-table-entry>
+        <mac-address>00:0f:53:2b:c5:e1</mac-address>
+        <ip-address>172.17.17.3</ip-address>
+        <hostname>test-server</hostname>
+        <interface-name>ae7.10</interface-name>
+        <time-to-expire> 1031</time-to-expire>
+        <arp-table-entry-flags>
+            <none/>
+        </arp-table-entry-flags>
+    </arp-table-entry>
+    <arp-table-entry>
+        <mac-address>2c:60:0c:7a:7e:63</mac-address>
+        <ip-address>172.17.17.2</ip-address>
+        <hostname>another-server</hostname>
+        <interface-name>ae7.637</interface-name>
+        <time-to-expire> 1031</time-to-expire>
+        <arp-table-entry-flags>
+            <permanent/>
+        </arp-table-entry-flags>
+    </arp-table-entry>
+</arp-table-information>
