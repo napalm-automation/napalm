@@ -439,66 +439,64 @@ class EOSDriver(NetworkDriver):
         return bgp_counters
 
     def get_environment(self):
-        """Impplementation of get_environment"""
-        command = list()
-        command.append('show environment cooling')
-        command.append('show environment temperature')
-        command.append('show environment power')
-        output = self.device.run_commands(command)
+        def extract_temperature_data(data):
+            for s in data:
+                temp = s['currentTemperature']
+                name = s['name']
+                values = {
+                   'temperature': temp,
+                   'is_alert': temp > s['overheatThreshold'],
+                   'is_critical': temp > s['criticalThreshold']
+                }
+                yield name, values
 
-        environment_counters = dict()
-        environment_counters['fans'] = dict()
-        environment_counters['temperature'] = dict()
-        environment_counters['power'] = dict()
-        environment_counters['cpu'] = dict()
-        environment_counters['available_ram'] = ''
-        environment_counters['used_ram'] = ''
-
-        fans_output = output[0]
-        temp_output = output[1]
-        power_output = output[2]
+        command = [
+            'show environment cooling',
+            'show environment temperature',
+            'show environment power'
+        ]
+        fans_output, temp_output, power_output = self.device.run_commands(command)
+        environment_counters = {
+            'fans': {},
+            'temperature': {},
+            'power': {},
+            'cpu': {}
+        }
         cpu_output = self.device.run_commands(['show processes top once'],
                                               encoding='text')[0]['output']
-
-        ''' Get fans counters '''
         for slot in fans_output['fanTraySlots']:
-            environment_counters['fans'][slot['label']] = dict()
-            environment_counters['fans'][slot['label']]['status'] = slot['status'] == 'ok'
-
-        ''' Get temp counters '''
-        for slot in temp_output:
-            try:
-                for sensorsgroup in temp_output[slot]:
-                    for sensor in sensorsgroup['tempSensors']:
-                        environment_counters['temperature'][sensor['name']] = {
-                           'temperature': sensor['currentTemperature'],
-                           'is_alert': sensor['currentTemperature'] > sensor['overheatThreshold'],
-                           'is_critical': sensor['currentTemperature'] > sensor['criticalThreshold']
-                        }
-            except:
-                pass
-
-        ''' Get power counters '''
-        for _, item in power_output.iteritems():
-            for id, ps in item.iteritems():
-                environment_counters['power'][id] = {
-                    'status': ps['state'] == 'ok',
-                    'capacity': ps['capacity'],
-                    'output': ps['outputPower']
-                }
-
-        ''' Get CPU counters '''
-        m = re.search('(\d+.\d+)\%', cpu_output.splitlines()[2])
+            environment_counters['fans'][slot['label']] = {'status': slot['status'] == 'ok'}
+        # First check FRU's
+        for fru_type in ['cardSlots', 'powerSupplySlots']:
+            for fru in temp_output[fru_type]:
+                t = {name: value for name, value in extract_temperature_data(fru['tempSensors'])}
+                environment_counters['temperature'].update(t)
+        # On board sensors
+        parsed = {n: v for n, v in extract_temperature_data(temp_output['tempSensors'])}
+        environment_counters['temperature'].update(parsed)
+        for psu, data in power_output['powerSupplies'].iteritems():
+            environment_counters['power'][psu] = {
+                'status': data['state'] == 'ok',
+                'capacity': data['capacity'],
+                'output': data['outputPower']
+            }
+        cpu_lines = cpu_output.splitlines()
+        # Matches either of
+        # Cpu(s):  5.2%us,  1.4%sy,  0.0%ni, 92.2%id,  0.6%wa,  0.3%hi,  0.4%si,  0.0%st ( 4.16 > )
+        # %Cpu(s):  4.2 us,  0.9 sy,  0.0 ni, 94.6 id,  0.0 wa,  0.1 hi,  0.2 si,  0.0 st ( 4.16 < )
+        m = re.match('.*ni, (?P<idle>.*).id.*', cpu_lines[2])
         environment_counters['cpu'][0] = {
-            '%usage': float(m.group(1))
+            '%usage': round(100 - float(m.group('idle')), 1)
         }
-        m = re.search('(\d+)k\W+total\W+(\d+)k\W+used\W+(\d+)k\W+free', cpu_output.splitlines()[3])
-
+        # Matches either of
+        # Mem:   3844356k total,  3763184k used,    81172k free,    16732k buffers ( 4.16 > )
+        # KiB Mem:  32472080 total,  5697604 used, 26774476 free,   372052 buffers ( 4.16 < )
+        mem_regex = '.*total,\s+ (?P<used>\d+)[k\s]+used,\s+(?P<free>\d+)[k\s]+free,.*'
+        m = re.match(mem_regex, cpu_lines[3])
         environment_counters['memory'] = {
-            'available_ram': int(m.group(1)),
-            'used_ram': int(m.group(2))
+            'available_ram': int(m.group('free')),
+            'used_ram': int(m.group('used'))
         }
-
         return environment_counters
 
     def get_lldp_neighbors_detail(self, interface=''):
