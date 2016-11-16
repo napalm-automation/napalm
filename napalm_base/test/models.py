@@ -302,3 +302,18 @@ config = {
     'startup': text_type,
     'candidate': text_type,
 }
+
+network_instance = {
+    'name': text_type,
+    'type': text_type,
+    'state': dict,
+    'interfaces': dict,
+}
+
+network_instance_state = {
+    'route_descriptor': text_type,
+}
+
+network_instance_interfaces = {
+    'interface': dict,
+}

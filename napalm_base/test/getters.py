@@ -432,3 +432,17 @@ class BaseTestGetters(object):
             assert get_config['running'] == "" if config != "running" else True
 
         return get_config
+
+    @wrap_test_cases
+    def test_get_network_instances(self):
+        """Test get_network_instances method."""
+        get_network_instances = self.device.get_network_instances()
+
+        assert isinstance(get_network_instances, dict)
+        for network_instance_name, network_instance in get_network_instances:
+            assert helpers.test_model(models.network_instance, network_instance)
+            assert helpers.test_model(models.network_instance_state, network_instance['state'])
+            assert helpers.test_model(models.network_instance_interfaces,
+                                      network_instance['interfaces'])
+
+        return get_network_instances
