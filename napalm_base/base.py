@@ -89,6 +89,16 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
+    def is_alive(self):
+        """
+        Returns a flag with the connection state.
+        Depends on the nature of API used by each driver.
+        The state does not reflect only on the connection status (when SSH), it must also take into
+        consideration other parameters, e.g.: NETCONF session might not be usable, althought the
+        underlying SSH session is still open etc.
+        """
+        raise NotImplementedError
+
     def load_template(self, template_name, template_source=None,
                       template_path=None, **template_vars):
         """

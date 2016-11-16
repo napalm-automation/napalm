@@ -104,6 +104,12 @@ class BaseTestGetters(object):
     """Base class for testing drivers."""
 
     @wrap_test_cases
+    def test_is_alive(self):
+        """Test is_alive method."""
+        alive = self.device.is_alive()
+        assert isinstance(alive, bool)
+
+    @wrap_test_cases
     def test_get_facts(self):
         """Test get_facts method."""
         facts = self.device.get_facts()

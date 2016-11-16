@@ -166,6 +166,13 @@ class TestGettersNetworkDriver(object):
 
         return correct_class and same_keys
 
+    def test_is_alive(self):
+        try:
+            alive = self.device.is_alive()
+        except NotImplementedError:
+            raise SkipTest()
+        self.assertIsInstance(alive, bool, msg='`is_alive` must return a boolean value.')
+
     def test_get_facts(self):
         try:
             facts = self.device.get_facts()
