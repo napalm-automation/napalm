@@ -34,7 +34,7 @@ class BaseTestDouble(object):
     @staticmethod
     def sanitize_text(text):
         """Remove some weird characters from text, useful for building filenames from commands."""
-        regexp = r'[\[\]\*\^\+\s\|\/\$\%\!\"]'
+        regexp = '[^a-zA-Z0-9]'
         return re.sub(regexp, '_', text)[0:150]
 
     @staticmethod
