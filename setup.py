@@ -4,17 +4,17 @@ import uuid
 from setuptools import setup, find_packages
 from pip.req import parse_requirements
 
-__author__ = 'David Barroso <dbarrosop@dravetech.com>'
+__author__ = 'Kirk Byers <ktbyers@twb-tech.com>'
 
 install_reqs = parse_requirements('requirements.txt', session=uuid.uuid1())
 reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-ios",
-    version="0.3.1",
+    version="0.4.0",
     packages=find_packages(),
-    author="David Barroso",
-    author_email="dbarrosop@dravetech.com",
+    author="Kirk Byers",
+    author_email="ktbyers@twb-tech.com",
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
     classifiers=[
         'Topic :: Utilities',
