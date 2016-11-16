@@ -1003,6 +1003,8 @@ class JunOSDriver(NetworkDriver):
                 'level',
                 'metric',
                 'local_as'
+            ],
+            'static': [  # nothing specific to static routes
             ]
         }
 
