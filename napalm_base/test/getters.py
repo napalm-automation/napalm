@@ -104,7 +104,7 @@ class BaseTestGetters(object):
     """Base class for testing drivers."""
 
     @wrap_test_cases
-    def test_is_alive(self):
+    def test_is_alive(self, test_case):
         """Test is_alive method."""
         alive = self.device.is_alive()
         assert helpers.test_model(models.alive, alive)
@@ -434,7 +434,7 @@ class BaseTestGetters(object):
         return get_config
 
     @wrap_test_cases
-    def test_get_network_instances(self):
+    def test_get_network_instances(self, test_case):
         """Test get_network_instances method."""
         get_network_instances = self.device.get_network_instances()
 
