@@ -2,6 +2,10 @@
 # text_type is 'unicode' for py2 and 'str' for py3
 from napalm_base.utils.py23_compat import text_type
 
+alive = {
+    'is_alive': bool
+}
+
 facts = {
     'os_version': text_type,
     'uptime': int,
@@ -12,6 +16,7 @@ facts = {
     'hostname': text_type,
     'fqdn': text_type
 }
+
 interface = {
     'is_up': bool,
     'is_enabled': bool,
