@@ -42,6 +42,11 @@ class PatchedJunOSDriver(junos.JunOSDriver):
     def unlock(self):
         pass
 
+    def is_alive(self):
+        return {
+            'is_alive': True  # always alive during the tests...
+        }
+
 
 class FakeJunOSDevice(BaseTestDouble):
 
