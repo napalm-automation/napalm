@@ -104,6 +104,13 @@ class JunOSDriver(NetworkDriver):
             self.device.cu.unlock()
             self.locked = False
 
+    def is_alive(self):
+        # evaluate the state of the underlying SSH connection
+        # and also the NETCONF status from PyEZ
+        return {
+            'is_alive': self.device._conn._session.transport.is_active() and self.device.connected
+        }
+
     def _load_candidate(self, filename, config, overwrite):
         if filename is None:
             configuration = config
