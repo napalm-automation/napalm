@@ -1446,7 +1446,7 @@ class NetworkDriver(object):
         Return a dictionary of configured Firewall policies
 
         Returns:
-            A dictionary of policies 
+            A dictionary of policies
             * name
                 * n amount of arguments
 
@@ -1475,4 +1475,4 @@ class NetworkDriver(object):
            }
         }
         """
-        raise NotImplementedError 
+        raise NotImplementedError
