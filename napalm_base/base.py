@@ -1454,23 +1454,23 @@ class NetworkDriver(object):
         {
             '1': {
                 'uuid': '9d747de8-dad4-51e5-7a7e-d078aa77140a',
-                'service': '"ALL"', 
-                'schedule': '"always"', 
-                'srcaddr': '"all"', 
-                'dstintf': '"any"', 
-                'srcintf': '"any"', 
-                'action': 'accept', 
+                'service': '"ALL"',
+                'schedule': '"always"',
+                'srcaddr': '"all"',
+                'dstintf': '"any"',
+                'srcintf': '"any"',
+                'action': 'accept',
                 'dstaddr': '"all"'
-            } 
+            }
             '2': {
                 'name': '"bla"',
                 'service': '"ALL"',
-                'schedule': '"always"', 
+                'schedule': '"always"',
                 'logtraffic': 'all',
-                'srcaddr': '"all"', 
-                'dstintf': '"port2"', 
-                'srcintf': '"port3"', 
-                'dstaddr': '"all"', 
+                'srcaddr': '"all"',
+                'dstintf': '"port2"',
+                'srcintf': '"port3"',
+                'dstaddr': '"all"',
                 'uuid': 'de597b64-aca8-51e6-5d00-b7874e6b72b8'
            }
         }
