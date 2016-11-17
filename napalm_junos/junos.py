@@ -1285,9 +1285,10 @@ class JunOSDriver(NetworkDriver):
         # Formatting data into return data structure
         optics_detail = {}
         for intf_optic_item in optics_items:
+            interface_name = py23_compat.text_type(intf_optic_item[0])
             optics = dict(intf_optic_item[1])
-            if intf_optic_item[0] not in optics_detail:
-                optics_detail[intf_optic_item[0]] = {}
+            if interface_name not in optics_detail:
+                optics_detail[interface_name] = {}
 
             # Defaulting avg, min, max values to 0.0 since device does not
             # return these values
@@ -1327,7 +1328,7 @@ class JunOSDriver(NetworkDriver):
                         }]
                     }
                 }
-            optics_detail[intf_optic_item[0]] = intf_optics
+            optics_detail[interface_name] = intf_optics
 
         return optics_detail
 
