@@ -136,6 +136,7 @@ Blog Posts
 
 * [NAPALM, Ansible, and Cisco IOS](https://pynet.twb-tech.com/blog/automation/napalm-ios.html) by Kirk Byers
 * [Adding Cisco IOS support to NAPALM (Network Automation and Programmability Abstraction Layer with Multivendor support)](https://projectme10.wordpress.com/2015/12/07/adding-cisco-ios-support-to-napalm-network-automation-and-programmability-abstraction-layer-with-multivendor-support/) by Gabriele Gerbino
+* [Network orchestration with Salt and NAPALM](https://mirceaulinic.net/2016-11-17-network-orchestration-with-salt-and-napalm/) by Mircea Ulinic
 
 Presentations
 -------------
