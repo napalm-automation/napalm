@@ -14,6 +14,7 @@
 # the License.
 
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import re
 
@@ -21,6 +22,7 @@ from netmiko import ConnectHandler, FileTransfer
 from netmiko import __version__ as netmiko_version
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ReplaceConfigException, MergeConfigException
+from napalm_base.utils import py23_compat
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
@@ -94,6 +96,8 @@ class IOSDriver(NetworkDriver):
                                      username=self.username,
                                      password=self.password,
                                      **self.netmiko_optional_args)
+        # ensure in enable mode
+        self.device.enable()
         if not self.dest_file_system:
             try:
                 self.dest_file_system = self.device._autodetect_fs()
@@ -582,10 +586,10 @@ class IOSDriver(NetworkDriver):
         return {
             'uptime': uptime,
             'vendor': vendor,
-            'os_version': unicode(os_version),
-            'serial_number': unicode(serial_number),
-            'model': unicode(model),
-            'hostname': unicode(hostname),
+            'os_version': py23_compat.text_type(os_version),
+            'serial_number': py23_compat.text_type(serial_number),
+            'model': py23_compat.text_type(model),
+            'hostname': py23_compat.text_type(hostname),
             'fqdn': fqdn,
             'interface_list': interface_list
         }
@@ -686,7 +690,7 @@ class IOSDriver(NetworkDriver):
                 match_mac = re.match(mac_regex, interface_output, flags=re.DOTALL)
                 group_mac = match_mac.groupdict()
                 mac_address = group_mac["mac_address"]
-                interface_list[interface]['mac_address'] = unicode(mac_address)
+                interface_list[interface]['mac_address'] = py23_compat.text_type(mac_address)
             except AttributeError:
                 interface_list[interface]['mac_address'] = u'N/A'
             try:
@@ -803,11 +807,11 @@ class IOSDriver(NetworkDriver):
                         raise ValueError(u"Unexpected Response from the device")
 
         # remove keys with no data
-        for key in interfaces.keys():
-            if not bool(interfaces[key]):
-                del interfaces[key]
-
-        return interfaces
+        new_interfaces = {}
+        for k, val in interfaces.items():
+            if val:
+                new_interfaces[k] = val
+        return new_interfaces
 
     @staticmethod
     def bgp_time_conversion(bgp_uptime):
@@ -899,7 +903,7 @@ class IOSDriver(NetworkDriver):
                 router_id = match.group(1)
                 local_as = int(match.group(2))
                 break
-        bgp_neighbor_data['global']['router_id'] = unicode(router_id)
+        bgp_neighbor_data['global']['router_id'] = py23_compat.text_type(router_id)
         bgp_neighbor_data['global']['peers'] = {}
 
         cmd_neighbor_table = 'show ip bgp summary | begin Neighbor'
@@ -942,7 +946,7 @@ class IOSDriver(NetworkDriver):
             peer_dict['local_as'] = local_as
             peer_dict['is_enabled'] = is_enabled
             peer_dict['is_up'] = is_up
-            peer_dict['remote_id'] = unicode(remote_rid)
+            peer_dict['remote_id'] = py23_compat.text_type(remote_rid)
 
             cmd_current_prefixes = 'show ip bgp neighbors {} | inc Prefixes Current'.format(peer_id)
             # output: Prefixes Current:               0          0
@@ -1221,12 +1225,12 @@ class IOSDriver(NetworkDriver):
                 address_regex = re.match('(\W*)([0-9.*]*)', address)
             try:
                 ntp_stats.append({
-                    'remote': unicode(address_regex.group(2)),
+                    'remote': py23_compat.text_type(address_regex.group(2)),
                     'synchronized': ('*' in address_regex.group(1)),
-                    'referenceid': unicode(ref_clock),
+                    'referenceid': py23_compat.text_type(ref_clock),
                     'stratum': int(st),
                     'type': u'-',
-                    'when': unicode(when),
+                    'when': py23_compat.text_type(when),
                     'hostpoll': int(poll),
                     'reachability': int(reach),
                     'delay': float(delay),
@@ -1402,8 +1406,8 @@ class IOSDriver(NetworkDriver):
                     })
                     results_array = []
                     for i in range(probes_received):
-                        results_array.append({'ip_address': unicode(destination), 'rtt': 0.0})
-
+                        results_array.append({'ip_address': py23_compat.text_type(destination),
+                                             'rtt': 0.0})
                     ping_dict['success'].update({'results': results_array})
 
         return ping_dict
