@@ -1440,3 +1440,39 @@ class NetworkDriver(object):
         }
         """
         raise NotImplementedError
+
+    def get_firewall_policies(self):
+        """
+        Return a dictionary of configured Firewall policies
+
+        Returns:
+            A dictionary of policies 
+            * name
+                * n amount of arguments
+
+        Example:
+        {
+            '1': {
+                'uuid': '9d747de8-dad4-51e5-7a7e-d078aa77140a',
+                'service': '"ALL"', 
+                'schedule': '"always"', 
+                'srcaddr': '"all"', 
+                'dstintf': '"any"', 
+                'srcintf': '"any"', 
+                'action': 'accept', 
+                'dstaddr': '"all"'
+            } 
+            '2': {
+                'name': '"bla"',
+                'service': '"ALL"',
+                'schedule': '"always"', 
+                'logtraffic': 'all',
+                'srcaddr': '"all"', 
+                'dstintf': '"port2"', 
+                'srcintf': '"port3"', 
+                'dstaddr': '"all"', 
+                'uuid': 'de597b64-aca8-51e6-5d00-b7874e6b72b8'
+           }
+        }
+        """
+        raise NotImplementedError 
