@@ -260,6 +260,18 @@ class BaseTestGetters(object):
         return get_ntp_peers
 
     @wrap_test_cases
+    def test_get_ntp_servers(self, test_case):
+        """Test get_ntp_servers."""
+        get_ntp_servers = self.device.get_ntp_servers()
+        assert len(get_ntp_servers) > 0
+
+        for server, server_details in get_ntp_servers.items():
+            assert isinstance(server, text_type)
+            assert helpers.test_model(models.ntp_server, server_details)
+
+        return get_ntp_servers
+
+    @wrap_test_cases
     def test_get_ntp_stats(self, test_case):
         """Test get_ntp_stats."""
         get_ntp_stats = self.device.get_ntp_stats()
