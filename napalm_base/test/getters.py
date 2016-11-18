@@ -456,7 +456,7 @@ class BaseTestGetters(object):
         get_network_instances = self.device.get_network_instances()
 
         assert isinstance(get_network_instances, dict)
-        for network_instance_name, network_instance in get_network_instances:
+        for network_instance_name, network_instance in get_network_instances.items():
             assert helpers.test_model(models.network_instance, network_instance)
             assert helpers.test_model(models.network_instance_state, network_instance['state'])
             assert helpers.test_model(models.network_instance_interfaces,

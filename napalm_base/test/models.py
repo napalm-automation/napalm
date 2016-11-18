@@ -311,7 +311,7 @@ network_instance = {
 }
 
 network_instance_state = {
-    'route_descriptor': text_type,
+    'route_distinguisher': text_type,
 }
 
 network_instance_interfaces = {
