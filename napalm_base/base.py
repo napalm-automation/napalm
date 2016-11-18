@@ -1403,7 +1403,7 @@ class NetworkDriver(object):
               * name (unicode)
               * type (unicode)
               * state (dict)
-                * route_distinguisher (unicode or None)
+                * route_distinguisher (unicode)
               * interfaces (dict)
                 * interface (dict)
                   * interface name: (dict)
