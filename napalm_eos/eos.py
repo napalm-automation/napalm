@@ -1494,6 +1494,62 @@ class EOSDriver(NetworkDriver):
         else:
             raise Exception("Wrong retrieve filter: {}".format(retrieve))
 
+    def get_network_instances(self, name=''):
+        """get_network_instances implementation for EOS."""
+
+        commands = ['show vrf']
+
+        # This command has no JSON yet
+        raw_output = self.device.run_commands(commands, encoding='text')[0].get('output', '')
+
+        output = napalm_base.helpers.textfsm_extractor(self, 'vrf', raw_output)
+        vrfs = dict()
+        all_vrf_interfaces = dict()
+        for vrf in output:
+            if (vrf.get('route_distinguisher', '') == "<not set>" or
+                    vrf.get('route_distinguisher', '') == 'None'):
+                vrf['route_distinguisher'] = u''
+            else:
+                vrf['route_distinguisher'] = unicode(vrf['route_distinguisher'])
+            interfaces = dict()
+            for interface_raw in vrf.get('interfaces', []):
+                interface = interface_raw.split(',')
+                for line in interface:
+                    if line.strip() != '':
+                        interfaces[unicode(line.strip())] = {}
+                        all_vrf_interfaces[unicode(line.strip())] = {}
+
+            vrfs[unicode(vrf['name'])] = {
+                          u'name': unicode(vrf['name']),
+                          u'type': u'L3VRF',
+                          u'state': {
+                              u'route_distinguisher': vrf['route_distinguisher'],
+                          },
+                          u'interfaces': {
+                              u'interface': interfaces,
+                          },
+            }
+        all_interfaces = self.get_interfaces_ip().keys()
+        vrfs[u'default'] = {
+            u'name': u'default',
+            u'type': u'DEFAULT_INSTANCE',
+            u'state': {
+                u'route_distinguisher': u'',
+            },
+            u'interfaces': {
+                u'interface': {
+                    k: {} for k in all_interfaces if k not in all_vrf_interfaces.keys()
+                },
+            },
+        }
+
+        if name:
+            if name in vrfs:
+                return {unicode(name): vrfs[name]}
+            return {}
+        else:
+            return vrfs
+
     def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
         """
         Execute ping on the device and returns a dictionary with the result.
