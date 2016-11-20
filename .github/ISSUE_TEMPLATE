@@ -2,7 +2,7 @@
 
 ### Setup
 
-### napalm-eos version
+### napalm-ros version
 (Paste verbatim output from `pip freeze | grep napalm-ros` between quotes below)
 
 ```
