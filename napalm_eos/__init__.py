@@ -13,7 +13,7 @@
 # the License.
 
 """napalm_eos package."""
-from eos import EOSDriver
+from napalm_eos.eos import EOSDriver
 import pkg_resources
 
 try:
