@@ -9,7 +9,7 @@ my current configuration and a new candidate configuration:
 
 .. code-block:: diff
 
-    # cl_napalm_configure --user vagrant --vendor eos --strategy replace --optional_args 'port=12443' --dry-run new_good.conf localhost
+    # cl_napalm_configure --user vagrant --vendor eos --strategy replace --optional_args 'port=12443' --dry-run localhost new_good.conf
     Enter password:
     @@ -2,30 +2,38 @@
      !
