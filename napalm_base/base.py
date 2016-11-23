@@ -1461,9 +1461,9 @@ class NetworkDriver(object):
                 'l3_src': 'any',
                 'l3_dst': 'any',
                 'service': 'HTTP',
-	            'src_zone': 'port2',
-            	'dst_zone': 'port3',
-	            'action': 'Permit'
+                'src_zone': 'port2',
+                'dst_zone': 'port3',
+                'action': 'Permit'
             }
         }
         """
