@@ -1443,14 +1443,23 @@ class NetworkDriver(object):
 
     def get_firewall_policies(self):
         """
-        Return a dictionary of configured Firewall policies
+        Returns a dictionary of dictionaries where the first key is an unique policy name and the
+        inner dictionary contains the following keys:
 
-        Returns:
-            A dictionary of policies
-            * name
-                * n amount of arguments
+        * position (int)
+        * id (text_type)
+        * enabled (bool)
+        * schedule (text_type)
+        * log (text_type)
+        * l3_src (text_type)
+        * l3_dst (text_type)
+        * service (text_type)
+        * src_zone (text_type)
+        * dst_zone (text_type)
+        * action (text_type)        
 
-        Example:
+        Example::
+
         {
             'src_zone-to-dst_zone': {
                 'position': 1,
