@@ -469,7 +469,7 @@ class BaseTestGetters(object):
         """Test get_firewall_policies method."""
         get_firewall_policies = self.device.get_firewall_policies()
         assert len(get_firewall_policies) > 0
-        for firewall_policies in get_firewall_policies:
-            assert helpers.test_model(models.firewall_policies)
+        for policy_name, policy_details in get_firewall_policies.items():
+            assert helpers.test_model(models.firewall_policies, policy_details)
 
         return get_firewall_policies
