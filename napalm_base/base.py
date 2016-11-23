@@ -1456,7 +1456,7 @@ class NetworkDriver(object):
         * service (text_type)
         * src_zone (text_type)
         * dst_zone (text_type)
-        * action (text_type)        
+        * action (text_type)
 
         Example::
 
