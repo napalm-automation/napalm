@@ -317,3 +317,17 @@ network_instance_state = {
 network_instance_interfaces = {
     'interface': dict,
 }
+
+firewall_policies = {
+    'position': int,
+    'id': text_type,
+    'enabled': bool,
+    'schedule': text_type,
+    'log': text_type,
+    'l3_src': text_type,
+    'l3_dst': text_type,
+    'service': text_type,
+    'src_zone': text_type,
+    'dst_zone': text_type,
+    'action': text_type
+}
