@@ -171,7 +171,7 @@ class TestGettersNetworkDriver(object):
             policies = self.device.get_firewall_policies()
         except NotImplementedError:
             raise SkipTest()
-        result = len(policies["1"]) > 0
+        result = len(policies["any-to-any"]) > 0
         self.assertTrue(result)
 
     def test_is_alive(self):

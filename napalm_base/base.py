@@ -1452,27 +1452,19 @@ class NetworkDriver(object):
 
         Example:
         {
-            '1': {
-                'uuid': '9d747de8-dad4-51e5-7a7e-d078aa77140a',
-                'service': '"ALL"',
-                'schedule': '"always"',
-                'srcaddr': '"all"',
-                'dstintf': '"any"',
-                'srcintf': '"any"',
-                'action': 'accept',
-                'dstaddr': '"all"'
+            'src_zone-to-dst_zone': {
+                'position': 1,
+                'id': '230',
+                'enabled': True,
+                'schedule': 'Always',
+                'log': 'all',
+                'l3_src': 'any',
+                'l3_dst': 'any',
+                'service': 'HTTP',
+	            'src_zone': 'port2',
+            	'dst_zone': 'port3',
+	            'action': 'Permit'
             }
-            '2': {
-                'name': '"bla"',
-                'service': '"ALL"',
-                'schedule': '"always"',
-                'logtraffic': 'all',
-                'srcaddr': '"all"',
-                'dstintf': '"port2"',
-                'srcintf': '"port3"',
-                'dstaddr': '"all"',
-                'uuid': 'de597b64-aca8-51e6-5d00-b7874e6b72b8'
-           }
         }
         """
         raise NotImplementedError
