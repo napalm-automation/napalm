@@ -72,6 +72,11 @@ class ROSDriver(NetworkDriver):
             '/file remove "{config_session}.rsc"'.format(config_session=self.config_session)
         )
 
+    def is_alive(self):
+        if hasattr(self, 'paramiko_transport'):
+            return self.paramiko_transport.is_active()
+        return False
+
     def get_arp_table(self):
         arp_table = []
         for arp_entry in self._api_get('/ip/arp'):
