@@ -146,7 +146,14 @@ class VyOSDriver(NetworkDriver):
           print self._device.send_command("cp "+self._BOOT_FILENAME+" "+self._BACKUP_FILENAME)
           self._new_config = f.read()
           cfg = [x for x in self._new_config.split("\n") if x is not ""]
-          self._device.send_config_set(cfg)
+          output_loadcmd = self._device.send_config_set(cfg)
+          match_setfailed = re.findall("Delete failed", output_loadcmd)
+          match_delfailed = re.findall("Set failed", output_loadcmd)
+
+          if match_setfailed or match_delfailed:
+              raise MergeConfigException("Failed merge config: "
+                    +output_loadcmd)
+
       else:
         raise MergeConfigException("config file is not found")
     elif config is not None:

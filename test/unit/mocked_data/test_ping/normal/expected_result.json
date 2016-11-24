@@ -1,1 +1,1 @@
-{"success": {"packet_loss": 0, "rtt_stddev": 0.123, "rtt_min": 0.086, "results": [{"rtt": 0.175, "ip_address": "8.8.8.8"}], "rtt_avg": 0.175, "rtt_max": 0.417, "probes_sent": 5}}
+{"success": {"packet_loss": 0, "rtt_stddev": "...", "rtt_min": "...", "results": "...", "rtt_avg": "...", "rtt_max": "...", "probes_sent": "..."}}
