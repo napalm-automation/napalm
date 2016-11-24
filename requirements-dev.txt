@@ -1,4 +1,5 @@
 future
+mock
 pytest
 pytest-cov
 pytest-json
