@@ -1,0 +1,151 @@
+Building configuration...
+
+Current configuration : 1366 bytes
+!
+! Last configuration change at 18:41:02 UTC Thu Nov 24 2016
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console auto
+!
+hostname CSR1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable password cisco
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authorization exec default local
+!
+!
+!
+!
+!
+aaa session-id common
+!
+ip vrf MGMT
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip domain name example.local
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9OSEGKJXRHE
+spanning-tree extend system-id
+!
+username cisco privilege 15 password 0 cisco
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+!
+interface GigabitEthernet1
+ ip vrf forwarding MGMT
+ ip address 192.168.35.121 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet2
+ ip address 10.1.1.1 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+router ospf 1
+ redistribute connected subnets
+ network 10.1.1.0 0.0.0.255 area 0
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+control-plane
+!
+ !
+ !
+ !
+ !
+!
+!
+!
+!
+!
+line con 0
+line vty 0 4
+!
+!
+end
