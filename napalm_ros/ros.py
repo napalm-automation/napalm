@@ -9,6 +9,7 @@ except ImportError:
 #
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ConnectionException, MergeConfigException, CommandErrorException
+from rosapi import connect
 import napalm_base.utils.string_parsers
 import paramiko
 import mikoshell
@@ -25,6 +26,7 @@ class ROSDriver(NetworkDriver):
         optional_args = optional_args or {}
         self.port = optional_args.get('port', 22)
 
+        self.api = None
         self.paramiko_transport = None
         self.mikoshell = None
         self.ros_version = None
@@ -45,6 +47,7 @@ class ROSDriver(NetworkDriver):
         return cli_output
 
     def close(self):
+        self.api.close()
         if hasattr(self, 'mikoshell'):
             self.mikoshell.exit('/quit')
             del self.mikoshell
@@ -273,20 +276,20 @@ class ROSDriver(NetworkDriver):
         return environment
 
     def get_facts(self):
-        system_resource = self._api_get('/system/resource', structured=False)[0]
-        system_identity = self._api_get('/system/identity', structured=False)[0]
-        system_routerboard = self._api_get('/system/routerboard', structured=False)[0]
-
+        resource = self.api('/system/resource/print')[0]
+        identity = self.api('/system/identity/print')[0]
+        routerboard = self.api('/system/routerboard/print')[0]
+        interfaces = self.api('/interface/print')
         return {
-            'uptime': ros_utils.to_seconds(system_resource['uptime']),
-            'vendor': unicode(system_resource['platform']),
-            'model': unicode(system_resource['board-name']),
-            'hostname': unicode(system_identity['name']),
+            'uptime': ros_utils.to_seconds(resource['uptime']),
+            'vendor': unicode(resource['platform']),
+            'model': unicode(resource['board-name']),
+            'hostname': unicode(identity['name']),
             'fqdn': u'',
-            'os_version': unicode(system_resource['version']),
-            'serial_number': unicode(system_routerboard.get('serial-number', '')),
+            'os_version': unicode(resource['version']),
+            'serial_number': unicode(routerboard.get('serial_number', '')),
             'interface_list': napalm_base.utils.string_parsers.sorted_nicely(
-                [intf.get('name') for intf in self._api_get('/interface')]
+                tuple(iface['name'] for iface in interfaces)
             ),
         }
 
@@ -588,6 +591,12 @@ class ROSDriver(NetworkDriver):
 #       self.apiros = rosapi.RouterboardAPI(self.hostname, self.username, self.password)
         self.ros_version = self._ros_version()
         self._datetime_offset = datetime.datetime.now() - self._ros_datetime()
+        self.api = connect(
+                host=self.hostname,
+                username=self.username,
+                password=self.password,
+                timeout=self.timeout
+                )
 
     def ping(self, destination, source='', ttl=0, timeout=0, size=0, count=5):
         ping_command = '/ping {} count={}'.format(destination, 10 if count > 10 else count)

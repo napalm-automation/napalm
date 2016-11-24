@@ -17,4 +17,5 @@ deploy:
     branch: master
 
 script:
+- py.test --cov-report= test/
 - pylama .
