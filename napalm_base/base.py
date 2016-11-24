@@ -1443,7 +1443,7 @@ class NetworkDriver(object):
 
     def get_firewall_policies(self):
         """
-        Returns a dictionary of dictionaries where the first key is an unique policy name and the
+        Returns a dictionary of lists of dictionaries where the first key is an unique policy name and the
         inner dictionary contains the following keys:
 
         * position (int)
@@ -1461,7 +1461,7 @@ class NetworkDriver(object):
         Example::
 
         {
-            'src_zone-to-dst_zone': {
+            'policy_name': [{
                 'position': 1,
                 'id': '230',
                 'enabled': True,
@@ -1473,7 +1473,7 @@ class NetworkDriver(object):
                 'src_zone': 'port2',
                 'dst_zone': 'port3',
                 'action': 'Permit'
-            }
+            }]
         }
         """
         raise NotImplementedError
