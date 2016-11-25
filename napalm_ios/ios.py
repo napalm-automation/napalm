@@ -1519,9 +1519,15 @@ class IOSDriver(NetworkDriver):
             # Prepare dictionary for each hop (assuming there are 3 probes in each hop)
             results[current_hop] = dict()
             results[current_hop]['probes'] = dict()
-            results[current_hop]['probes'][1] = {'rtt': float(), 'ip_address': str(), 'host_name': str()}
-            results[current_hop]['probes'][2] = {'rtt': float(), 'ip_address': str(), 'host_name': str()}
-            results[current_hop]['probes'][3] = {'rtt': float(), 'ip_address': str(), 'host_name': str()}
+            results[current_hop]['probes'][1] = {'rtt': float(),
+                                                 'ip_address': unicode(),
+                                                 'host_name': unicode()}
+            results[current_hop]['probes'][2] = {'rtt': float(),
+                                                 'ip_address': unicode(),
+                                                 'host_name': unicode()}
+            results[current_hop]['probes'][3] = {'rtt': float(),
+                                                 'ip_address': unicode(),
+                                                 'host_name': unicode()}
             current_probe = 1
             ip_address = ''
             host_name = ''
