@@ -1520,14 +1520,14 @@ class IOSDriver(NetworkDriver):
             results[current_hop] = dict()
             results[current_hop]['probes'] = dict()
             results[current_hop]['probes'][1] = {'rtt': float(),
-                                                 'ip_address': unicode(),
-                                                 'host_name': unicode()}
+                                                 'ip_address': '',
+                                                 'host_name': ''}
             results[current_hop]['probes'][2] = {'rtt': float(),
-                                                 'ip_address': unicode(),
-                                                 'host_name': unicode()}
+                                                 'ip_address': '',
+                                                 'host_name': ''}
             results[current_hop]['probes'][3] = {'rtt': float(),
-                                                 'ip_address': unicode(),
-                                                 'host_name': unicode()}
+                                                 'ip_address': '',
+                                                 'host_name': ''}
             current_probe = 1
             ip_address = ''
             host_name = ''
@@ -1538,6 +1538,8 @@ class IOSDriver(NetworkDriver):
                     current_probe += 1
                 # If current_element contains msec record the entry for probe
                 elif 'msec' in current_element:
+                    ip_address = py23_compat.text_type(ip_address)
+                    host_name = py23_compat.text_type(host_name)
                     rtt = float(current_element.replace('msec', ''))
                     results[current_hop]['probes'][current_probe]['ip_address'] = ip_address
                     results[current_hop]['probes'][current_probe]['host_name'] = host_name
