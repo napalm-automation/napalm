@@ -1445,8 +1445,8 @@ class IOSDriver(NetworkDriver):
 
         :param destination: Host or IP Address of the destination
         :param source (optional): Use a specific IP Address to execute the traceroute
-        :param ttl (optional): Maimum number of hops -> should be int between 0 and 255
-        :param timeout (optional): Number of seconds to wait for response -> should be int between 1 and 3600
+        :param ttl (optional): Maimum number of hops -> int (0-255)
+        :param timeout (optional): Number of seconds to wait for response -> int (1-3600)
 
         Output dictionary has one of the following keys:
 
@@ -1519,12 +1519,13 @@ class IOSDriver(NetworkDriver):
                     current_probe += 1
                 # If current_element contains msec record the entry for probe
                 elif 'msec' in current_element:
+                    rtt = float(current_element.replace('msec', ''))
                     results[current_hop]['probes'][current_probe]['ip_address'] = ip_address
                     results[current_hop]['probes'][current_probe]['host_name'] = host_name
-                    results[current_hop]['probes'][current_probe]['rtt'] = float(current_element.replace('msec', ''))
+                    results[current_hop]['probes'][current_probe]['rtt'] = rtt
                     # After recording the entry move the index to next probe
                     current_probe += 1
-                # If element contains '(' and ')' it means that output was in format 'FQDN (IP_ADDRESS)'
+                # If element contains '(' and ')', the output format is 'FQDN (IP_ADDRESS)'
                 # Save the IP address
                 elif '(' in current_element:
                     ip_address = current_element.replace('(', '').replace(')', '')
