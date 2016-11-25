@@ -72,6 +72,11 @@ class IOSXRDriver(NetworkDriver):
     def close(self):
         self.device.close()
 
+    def is_alive(self):
+        return {
+            'is_alive': self.device.device.remote_conn.transport.is_active()
+        }
+
     def load_replace_candidate(self, filename=None, config=None):
         self.pending_changes = True
         self.replace = True
@@ -480,44 +485,53 @@ class IOSXRDriver(NetworkDriver):
         # Memory
         #
 
-        rpc_command = '<Get><AdminOperational><MemorySummary>\
-        </MemorySummary></AdminOperational></Get>'
-        result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+        facts = self.get_facts()
+        router_model = facts.get('model')
+        is_xrv = router_model.lower().startswith('xrv')
+        environment_status['memory'] = {
+            'available_ram': 0.0,
+            'used_ram': 0.0
+        }
 
-        for node in result_tree.xpath('.//Node'):
-            if napalm_base.helpers.find_txt(node,
-            'Naming/NodeName/Slot') == active_modules['RSP'][0]:
-                available_ram = napalm_base.helpers.convert(
-                    int, napalm_base.helpers.find_txt(node, 'Summary/SystemRAMMemory'))
-                free_ram = napalm_base.helpers.convert(
-                    int, napalm_base.helpers.find_txt(node, 'Summary/FreeApplicationMemory'))
-                break    # we're only looking at one of the RSP's
-
-        if available_ram and free_ram:
-            used_ram = available_ram - free_ram
-            memory = {}
-            memory['available_ram'] = available_ram
-            memory['used_ram'] = used_ram
-            environment_status['memory'] = memory
-
-        #
-        # Fans
-        #
-
-        for fan in active_modules['FT']:
-            rpc_command = get_module_xml_query(fan, '')
+        if not is_xrv:
+            rpc_command = '<Get><AdminOperational><MemorySummary>\
+            </MemorySummary></AdminOperational></Get>'
             result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
-            for module in result_tree.xpath('.//Module'):
-                for sensortype in module.xpath('.//SensorType'):
-                    for sensorname in sensortype.xpath('.//SensorNameTable'):
-                        if napalm_base.helpers.find_txt(sensorname,
-                        'SensorName/Naming/Name') == "host__FanSpeed_0":
-                            environment_status['fans'][fan] = {
-                                'status': napalm_base.helpers.convert(
-                                    int, napalm_base.helpers.find_txt(sensorname,
-                                        'SensorName/ValueDetailed/Status')
-                                    ) == 1
-                            }
+
+            for node in result_tree.xpath('.//Node'):
+                if napalm_base.helpers.find_txt(node,
+                'Naming/NodeName/Slot') == active_modules['RSP'][0]:
+                    available_ram = napalm_base.helpers.convert(
+                        int, napalm_base.helpers.find_txt(node, 'Summary/SystemRAMMemory'))
+                    free_ram = napalm_base.helpers.convert(
+                        int, napalm_base.helpers.find_txt(node, 'Summary/FreeApplicationMemory'))
+                    break    # we're only looking at one of the RSP's
+
+            if available_ram and free_ram:
+                used_ram = available_ram - free_ram
+                memory = {}
+                memory['available_ram'] = available_ram
+                memory['used_ram'] = used_ram
+                environment_status['memory'] = memory
+
+            #
+            # Fans
+            #
+
+            for fan in active_modules['FT']:
+                rpc_command = get_module_xml_query(fan, '')
+                result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+                for module in result_tree.xpath('.//Module'):
+                    for sensortype in module.xpath('.//SensorType'):
+                        for sensorname in sensortype.xpath('.//SensorNameTable'):
+                            if napalm_base.helpers.find_txt(sensorname,
+                            'SensorName/Naming/Name') == "host__FanSpeed_0":
+                                environment_status['fans'][fan] = {
+                                    'status': napalm_base.helpers.convert(
+                                        int, napalm_base.helpers.find_txt(sensorname,
+                                            'SensorName/ValueDetailed/Status')
+                                        ) == 1
+                                }
 
         #
         # CPU
@@ -549,25 +563,26 @@ class IOSXRDriver(NetworkDriver):
         for category, slot in active_modules.iteritems():
             slot_list |= set(slot)
 
-        for slot in slot_list:
-            rpc_command = get_module_xml_query(slot, '')
-            result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
-            for sensor in result_tree.xpath(".//SensorName"):
-                if not napalm_base.helpers.find_txt(sensor, 'Naming/Name') == "host__Inlet0":
-                    continue
-                this_reading = {}
-                this_reading['temperature'] = napalm_base.helpers.convert(
-                    float, napalm_base.helpers.find_txt(sensor, 'ValueBrief'))
-                threshold_value = [
-                    napalm_base.helpers.convert(float, x.text)
-                    for x in sensor.xpath("ThresholdTable/Threshold/ValueBrief")
-                ]
-                this_reading['is_alert'] = \
-                    threshold_value[2] <= this_reading['temperature'] <= threshold_value[3]
-                this_reading['is_critical'] = \
-                    threshold_value[4] <= this_reading['temperature'] <= threshold_value[5]
-                this_reading['temperature'] = this_reading['temperature']/10
-                environment_status["temperature"][slot] = this_reading
+        if not is_xrv:
+            for slot in slot_list:
+                rpc_command = get_module_xml_query(slot, '')
+                result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+                for sensor in result_tree.xpath(".//SensorName"):
+                    if not napalm_base.helpers.find_txt(sensor, 'Naming/Name') == "host__Inlet0":
+                        continue
+                    this_reading = {}
+                    this_reading['temperature'] = napalm_base.helpers.convert(
+                        float, napalm_base.helpers.find_txt(sensor, 'ValueBrief'))
+                    threshold_value = [
+                        napalm_base.helpers.convert(float, x.text)
+                        for x in sensor.xpath("ThresholdTable/Threshold/ValueBrief")
+                    ]
+                    this_reading['is_alert'] = \
+                        threshold_value[2] <= this_reading['temperature'] <= threshold_value[3]
+                    this_reading['is_critical'] = \
+                        threshold_value[4] <= this_reading['temperature'] <= threshold_value[5]
+                    this_reading['temperature'] = this_reading['temperature']/10
+                    environment_status["temperature"][slot] = this_reading
 
         return environment_status
 
@@ -1223,11 +1238,14 @@ class IOSXRDriver(NetworkDriver):
         routes_tree = ETREE.fromstring(self.device.make_rpc_call(route_info_rpc_command))
 
         for route in routes_tree.xpath('.//Route'):
+            route_protocol = napalm_base.helpers.convert(
+                unicode, napalm_base.helpers.find_txt(route, 'ProtocolName').upper())
+            if route_protocol.lower() != protocol:
+                continue  # ignore routes learned via a different protocol
             route_details = {}
             address = napalm_base.helpers.find_txt(route, 'Prefix')
             length = napalm_base.helpers.find_txt(route, 'PrefixLength')
-            protocol = napalm_base.helpers.convert(
-                unicode, napalm_base.helpers.find_txt(route, 'ProtocolName').upper())
+
             priority = napalm_base.helpers.convert(
                 int, napalm_base.helpers.find_txt(route, 'Priority'))
             age = napalm_base.helpers.convert(
@@ -1247,7 +1265,7 @@ class IOSXRDriver(NetworkDriver):
                 'last_active': False,
                 'age': age,
                 'next_hop': u'',
-                'protocol': protocol,
+                'protocol': route_protocol,
                 'outgoing_interface': u'',
                 'preference': priority,
                 'selected_next_hop': False,
@@ -1271,58 +1289,59 @@ class IOSXRDriver(NetworkDriver):
                 bgp_route_tree = ETREE.fromstring(
                     self.device.make_rpc_call(bgp_route_info_rpc_command))
                 for bgp_path in bgp_route_tree.xpath('.//Path'):
-                    best_path = eval(napalm_base.helpers.find_txt(
-                        bgp_path, 'PathInformation/IsBestPath', 'false').title())
-                    local_preference = napalm_base.helpers.convert(
-                        int,
-                        napalm_base.helpers.find_txt(
-                            bgp_path,
-                            'AttributesAfterPolicyIn/CommonAttributes/LocalPreference'
-                        ),
-                        0
-                    )
-                    local_preference = napalm_base.helpers.convert(
-                        int,
-                        napalm_base.helpers.find_txt(
-                            bgp_path,
-                            'AttributesAfterPolicyIn/CommonAttributes/LocalPreference',
-                        ),
-                        0
-                    )
-                    remote_as = napalm_base.helpers.convert(
-                        int,
-                        napalm_base.helpers.find_txt(
-                            bgp_path,
-                            'AttributesAfterPolicyIn/CommonAttributes/NeighborAS',
-                        ),
-                        0
-                    )
-                    remote_address = napalm_base.helpers.ip(
-                        napalm_base.helpers.find_txt(
-                            bgp_path, 'PathInformation/NeighborAddress/IPV4Address') or
-                        napalm_base.helpers.find_txt(
-                            bgp_path, 'PathInformation/NeighborAddress/IPV6Address')
-                    )
-                    as_path = ' '.join(
-                        [
-                            bgp_as.text
-                            for bgp_as in bgp_path.xpath(
-                                'AttributesAfterPolicyIn/CommonAttributes/NeighborAS/Entry')
-                        ]
-                    )
-                    next_hop = napalm_base.helpers.find_txt(
-                        bgp_path, 'PathInformation/NextHop/IPV4Address') \
-                        or napalm_base.helpers.find_txt(
-                            bgp_path, 'PathInformation/NextHop/IPV6Address')
                     single_route_details = route_details.copy()
-                    single_route_details['current_active'] = best_path
-                    single_route_details['next_hop'] = next_hop
-                    single_route_details['protocol_attributes'] = {
-                        'local_preference': local_preference,
-                        'as_path': as_path,
-                        'remote_as': remote_as,
-                        'remote_address': remote_address
-                    }
+                    if 'NotFound' not in bgp_path.keys():
+                        best_path = eval(napalm_base.helpers.find_txt(
+                            bgp_path, 'PathInformation/IsBestPath', 'false').title())
+                        local_preference = napalm_base.helpers.convert(
+                            int,
+                            napalm_base.helpers.find_txt(
+                                bgp_path,
+                                'AttributesAfterPolicyIn/CommonAttributes/LocalPreference'
+                            ),
+                            0
+                        )
+                        local_preference = napalm_base.helpers.convert(
+                            int,
+                            napalm_base.helpers.find_txt(
+                                bgp_path,
+                                'AttributesAfterPolicyIn/CommonAttributes/LocalPreference',
+                            ),
+                            0
+                        )
+                        remote_as = napalm_base.helpers.convert(
+                            int,
+                            napalm_base.helpers.find_txt(
+                                bgp_path,
+                                'AttributesAfterPolicyIn/CommonAttributes/NeighborAS',
+                            ),
+                            0
+                        )
+                        remote_address = napalm_base.helpers.ip(
+                            napalm_base.helpers.find_txt(
+                                bgp_path, 'PathInformation/NeighborAddress/IPV4Address') or
+                            napalm_base.helpers.find_txt(
+                                bgp_path, 'PathInformation/NeighborAddress/IPV6Address')
+                        )
+                        as_path = ' '.join(
+                            [
+                                bgp_as.text
+                                for bgp_as in bgp_path.xpath(
+                                    'AttributesAfterPolicyIn/CommonAttributes/NeighborAS/Entry')
+                            ]
+                        )
+                        next_hop = napalm_base.helpers.find_txt(
+                            bgp_path, 'PathInformation/NextHop/IPV4Address') \
+                            or napalm_base.helpers.find_txt(
+                                bgp_path, 'PathInformation/NextHop/IPV6Address')
+                        single_route_details['current_active'] = best_path
+                        single_route_details['next_hop'] = next_hop
+                        single_route_details['protocol_attributes'] = {
+                            'local_preference': local_preference,
+                            'as_path': as_path,
+                            'remote_as': remote_as,
+                            'remote_address': remote_address
+                        }
                     routes[destination].append(single_route_details)
 
             else:
