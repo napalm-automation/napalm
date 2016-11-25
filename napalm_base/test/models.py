@@ -320,6 +320,8 @@ network_instance_interfaces = {
 
 firewall_policies = {
     'position': int,
+    'packet_hits': int,
+    'byte_hits': int,
     'id': text_type,
     'enabled': bool,
     'schedule': text_type,

@@ -1447,6 +1447,8 @@ class NetworkDriver(object):
         name and the inner dictionary contains the following keys:
 
         * position (int)
+        * packet_hits (int)
+        * byte_hits (int)
         * id (text_type)
         * enabled (bool)
         * schedule (text_type)
@@ -1463,6 +1465,8 @@ class NetworkDriver(object):
         {
             'policy_name': [{
                 'position': 1,
+                'packet_hits': 200,
+                'byte_hits': 83883,
                 'id': '230',
                 'enabled': True,
                 'schedule': 'Always',
