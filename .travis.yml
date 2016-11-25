@@ -32,6 +32,7 @@ script:
 - nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_snmp_information
 - nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_ios_only_bgp_time_conversion
 - nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_ping
+- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_traceroute
 - nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_config
 - cd ../..
 - coverage combine test/unit/.coverage
