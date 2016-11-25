@@ -1471,7 +1471,20 @@ class IOSDriver(NetworkDriver):
             if isinstance(timeout, int) and 1 <= timeout <= 3600:
                 command += " timeout {}".format(str(timeout))
         # Have to extend "send_command timeout" since traceroute can last for long time
-        output = self.device.send_command(command, max_loops=3000)
+        # The formula to calculate the max_loops parameter is:
+        # (5 * expected_hops * timeout ) + 150
+        # 5 -> because the default sleep time in send_command is 0.2s
+        # ttl_value -> based on expected hops, 255 if not set
+        # timeout -> configured timeout, 10 is used when not configured
+        # 150 -> to make some buffer
+        ttl_value = 255
+        if ttl != 0:
+            ttl_value = ttl
+        timeout_value = 10
+        if timeout != 0:
+            timeout_value = timeout
+        max_loops = (5 * ttl_value * timeout_value) + 150
+        output = self.device.send_command(command, max_loops=max_loops)
 
         # Prepare return dict
         traceroute_dict = dict()
@@ -1506,9 +1519,9 @@ class IOSDriver(NetworkDriver):
             # Prepare dictionary for each hop (assuming there are 3 probes in each hop)
             results[current_hop] = dict()
             results[current_hop]['probes'] = dict()
-            results[current_hop]['probes'][1] = {'rtt': None, 'ip_address': None, 'host_name': None}
-            results[current_hop]['probes'][2] = {'rtt': None, 'ip_address': None, 'host_name': None}
-            results[current_hop]['probes'][3] = {'rtt': None, 'ip_address': None, 'host_name': None}
+            results[current_hop]['probes'][1] = {'rtt': float(), 'ip_address': str(), 'host_name': str()}
+            results[current_hop]['probes'][2] = {'rtt': float(), 'ip_address': str(), 'host_name': str()}
+            results[current_hop]['probes'][3] = {'rtt': float(), 'ip_address': str(), 'host_name': str()}
             current_probe = 1
             ip_address = ''
             host_name = ''
