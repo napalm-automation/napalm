@@ -1443,8 +1443,8 @@ class NetworkDriver(object):
 
     def get_firewall_policies(self):
         """
-        Returns a dictionary of lists of dictionaries where the first key is an unique policy 
-	name and the inner dictionary contains the following keys:
+        Returns a dictionary of lists of dictionaries where the first key is an unique policy
+        name and the inner dictionary contains the following keys:
 
         * position (int)
         * id (text_type)
