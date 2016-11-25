@@ -72,6 +72,11 @@ class IOSXRDriver(NetworkDriver):
     def close(self):
         self.device.close()
 
+    def is_alive(self):
+        return {
+            'is_alive': self.device.device.remote_conn.transport.is_active()
+        }
+
     def load_replace_candidate(self, filename=None, config=None):
         self.pending_changes = True
         self.replace = True
