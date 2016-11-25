@@ -1471,7 +1471,7 @@ class IOSDriver(NetworkDriver):
             if isinstance(timeout, int) and 1 <= timeout <= 3600:
                 command += " timeout {}".format(str(timeout))
         # Have to extend "send_command timeout" since traceroute can last for long time
-        output = self.device.send_command_expect(command, max_loops=3000)
+        output = self.device.send_command(command, max_loops=3000)
 
         # Prepare return dict
         traceroute_dict = dict()

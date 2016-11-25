@@ -173,13 +173,13 @@ class FakeIOSDevice:
         with open(filename) as data_file:
             return data_file.read()
 
-    def send_command_expect(self, command):
+    def send_command_expect(self, command, **kvargs):
         """Fake execute a command in the device by just returning the content of a file."""
         cmd = re.sub(r'[\[\]\*\^\+\s\|]', '_', command)
         output = self.read_txt_file('ios/mock_data/{}.txt'.format(cmd))
         return py23_compat.text_type(output)
 
-    def send_command(self, command):
+    def send_command(self, command, **kvargs):
         """Fake execute a command in the device by just returning the content of a file."""
         return self.send_command_expect(command)
 
