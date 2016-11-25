@@ -485,44 +485,53 @@ class IOSXRDriver(NetworkDriver):
         # Memory
         #
 
-        rpc_command = '<Get><AdminOperational><MemorySummary>\
-        </MemorySummary></AdminOperational></Get>'
-        result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+        facts = self.get_facts()
+        router_model = facts.get('model')
+        is_xrv = router_model.lower().startswith('xrv')
+        environment_status['memory'] = {
+            'available_ram': 0.0,
+            'used_ram': 0.0
+        }
 
-        for node in result_tree.xpath('.//Node'):
-            if napalm_base.helpers.find_txt(node,
-            'Naming/NodeName/Slot') == active_modules['RSP'][0]:
-                available_ram = napalm_base.helpers.convert(
-                    int, napalm_base.helpers.find_txt(node, 'Summary/SystemRAMMemory'))
-                free_ram = napalm_base.helpers.convert(
-                    int, napalm_base.helpers.find_txt(node, 'Summary/FreeApplicationMemory'))
-                break    # we're only looking at one of the RSP's
-
-        if available_ram and free_ram:
-            used_ram = available_ram - free_ram
-            memory = {}
-            memory['available_ram'] = available_ram
-            memory['used_ram'] = used_ram
-            environment_status['memory'] = memory
-
-        #
-        # Fans
-        #
-
-        for fan in active_modules['FT']:
-            rpc_command = get_module_xml_query(fan, '')
+        if not is_xrv:
+            rpc_command = '<Get><AdminOperational><MemorySummary>\
+            </MemorySummary></AdminOperational></Get>'
             result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
-            for module in result_tree.xpath('.//Module'):
-                for sensortype in module.xpath('.//SensorType'):
-                    for sensorname in sensortype.xpath('.//SensorNameTable'):
-                        if napalm_base.helpers.find_txt(sensorname,
-                        'SensorName/Naming/Name') == "host__FanSpeed_0":
-                            environment_status['fans'][fan] = {
-                                'status': napalm_base.helpers.convert(
-                                    int, napalm_base.helpers.find_txt(sensorname,
-                                        'SensorName/ValueDetailed/Status')
-                                    ) == 1
-                            }
+
+            for node in result_tree.xpath('.//Node'):
+                if napalm_base.helpers.find_txt(node,
+                'Naming/NodeName/Slot') == active_modules['RSP'][0]:
+                    available_ram = napalm_base.helpers.convert(
+                        int, napalm_base.helpers.find_txt(node, 'Summary/SystemRAMMemory'))
+                    free_ram = napalm_base.helpers.convert(
+                        int, napalm_base.helpers.find_txt(node, 'Summary/FreeApplicationMemory'))
+                    break    # we're only looking at one of the RSP's
+
+            if available_ram and free_ram:
+                used_ram = available_ram - free_ram
+                memory = {}
+                memory['available_ram'] = available_ram
+                memory['used_ram'] = used_ram
+                environment_status['memory'] = memory
+
+            #
+            # Fans
+            #
+
+            for fan in active_modules['FT']:
+                rpc_command = get_module_xml_query(fan, '')
+                result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+                for module in result_tree.xpath('.//Module'):
+                    for sensortype in module.xpath('.//SensorType'):
+                        for sensorname in sensortype.xpath('.//SensorNameTable'):
+                            if napalm_base.helpers.find_txt(sensorname,
+                            'SensorName/Naming/Name') == "host__FanSpeed_0":
+                                environment_status['fans'][fan] = {
+                                    'status': napalm_base.helpers.convert(
+                                        int, napalm_base.helpers.find_txt(sensorname,
+                                            'SensorName/ValueDetailed/Status')
+                                        ) == 1
+                                }
 
         #
         # CPU
@@ -554,25 +563,26 @@ class IOSXRDriver(NetworkDriver):
         for category, slot in active_modules.iteritems():
             slot_list |= set(slot)
 
-        for slot in slot_list:
-            rpc_command = get_module_xml_query(slot, '')
-            result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
-            for sensor in result_tree.xpath(".//SensorName"):
-                if not napalm_base.helpers.find_txt(sensor, 'Naming/Name') == "host__Inlet0":
-                    continue
-                this_reading = {}
-                this_reading['temperature'] = napalm_base.helpers.convert(
-                    float, napalm_base.helpers.find_txt(sensor, 'ValueBrief'))
-                threshold_value = [
-                    napalm_base.helpers.convert(float, x.text)
-                    for x in sensor.xpath("ThresholdTable/Threshold/ValueBrief")
-                ]
-                this_reading['is_alert'] = \
-                    threshold_value[2] <= this_reading['temperature'] <= threshold_value[3]
-                this_reading['is_critical'] = \
-                    threshold_value[4] <= this_reading['temperature'] <= threshold_value[5]
-                this_reading['temperature'] = this_reading['temperature']/10
-                environment_status["temperature"][slot] = this_reading
+        if not is_xrv:
+            for slot in slot_list:
+                rpc_command = get_module_xml_query(slot, '')
+                result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
+                for sensor in result_tree.xpath(".//SensorName"):
+                    if not napalm_base.helpers.find_txt(sensor, 'Naming/Name') == "host__Inlet0":
+                        continue
+                    this_reading = {}
+                    this_reading['temperature'] = napalm_base.helpers.convert(
+                        float, napalm_base.helpers.find_txt(sensor, 'ValueBrief'))
+                    threshold_value = [
+                        napalm_base.helpers.convert(float, x.text)
+                        for x in sensor.xpath("ThresholdTable/Threshold/ValueBrief")
+                    ]
+                    this_reading['is_alert'] = \
+                        threshold_value[2] <= this_reading['temperature'] <= threshold_value[3]
+                    this_reading['is_critical'] = \
+                        threshold_value[4] <= this_reading['temperature'] <= threshold_value[5]
+                    this_reading['temperature'] = this_reading['temperature']/10
+                    environment_status["temperature"][slot] = this_reading
 
         return environment_status
 
