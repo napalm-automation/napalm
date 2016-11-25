@@ -175,7 +175,8 @@ class TestGettersNetworkDriver(object):
         result = len(policies) > 0
 
         for policy_name, policy_details in policies.items():
-            result = result and self._test_model(models.firewall_policies, policy_details)
+            for policy_term in policy_details:
+                result = result and self._test_model(models.firewall_policies, policy_term)
 
         self.assertTrue(result)
 
