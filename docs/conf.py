@@ -15,6 +15,8 @@
 import sys
 import os
 
+import invoke
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -272,3 +274,12 @@ texinfo_documents = [
 # Disable pdf and epub generation
 enable_pdf_build = False
 enable_epub_build = False
+
+
+def build_getters_support_matrix(app):
+    invoke.run("./test.sh")
+
+
+def setup(app):
+    app.connect('builder-inited', build_getters_support_matrix)
+
