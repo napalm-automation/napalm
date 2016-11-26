@@ -79,7 +79,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_bgp_neighbors**          |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|       |yes|
 **get_bgp_neighbors_detail**   |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |yes|
 **get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |no|
-**get_route_to**               |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |no|
+**get_route_to**               |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |yes|
 **get_probes_config**          |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |no|
 **get_probes_results**         |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |no|
 **get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|       |yes|
