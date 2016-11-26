@@ -1,1 +1,0 @@
-{"included": [], "data": [{"relationships": {"tests": {"data": []}}, "attributes": {"environment": {}, "created_at": "2016-10-16 18:30:05.089497", "summary": {"duration": 0.004537820816040039, "num_tests": 0}}, "type": "report", "id": 1}]}
