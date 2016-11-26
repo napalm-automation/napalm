@@ -77,20 +77,16 @@ class ROSDriver(NetworkDriver):
 
     def get_arp_table(self):
         arp_table = []
-        for arp_entry in self._api_get('/ip/arp'):
-            if arp_entry['flags'].find('C') == -1:
-                continue
+        for entry in self.api('/ip/arp/print'):
             arp_table.append(
                 {
-                    'interface': unicode(arp_entry.get('interface')),
-                    'mac': napalm_base.helpers.mac(arp_entry.get('mac-address')),
-                    'ip': napalm_base.helpers.ip(arp_entry.get('address')),
+                    'interface': unicode(entry['interface']),
+                    'mac': napalm_base.helpers.mac(entry['mac-address']),
+                    'ip': napalm_base.helpers.ip(entry['address']),
                     'age': float(-1),
                 }
             )
         return arp_table
-
-#   def get_bgp_config(self, group='', neighbor=''):
 
     def get_bgp_neighbors(self):
         bgp_neighbors = {
@@ -295,16 +291,15 @@ class ROSDriver(NetworkDriver):
 
     def get_interfaces(self):
         interfaces = {}
-        for if_entry in self._api_get('/interface'):
-            interfaces[unicode(if_entry['name'])] = {
-                'is_up': if_entry['flags'].find('R') != -1,
-                'is_enabled': if_entry['flags'].find('X') == -1,
-                'description': unicode(if_entry.get('comment', '')),
-                'last_flapped': float(self._to_seconds_date_time(
-                    if_entry.get('last-link-up-time', '')
-                )),
+        for entry in self.api('/interface/print'):
+            interfaces[unicode(entry['name'])] = {
+                'is_up': entry['running'],
+                'is_enabled': not entry['disabled'],
+                'description': unicode(entry.get('comment', '')),
+                'last_flapped': -1.0,
                 'speed': -1,
-                'mac_address': napalm_base.helpers.mac(if_entry.get('mac-address', '')),
+                'mac_address': napalm_base.helpers.mac(entry['mac-address'])
+                if entry.get('mac-address') else u'',
             }
         return interfaces
 
