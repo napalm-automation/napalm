@@ -109,6 +109,12 @@ class IOSDriver(NetworkDriver):
         """Close the connection to the device."""
         self.device.disconnect()
 
+    def is_alive(self):
+        """Returns a flag with the state of the SSH connection."""
+        return {
+            'is_alive': self.device.remote_conn.transport.is_active()
+        }
+
     def load_replace_candidate(self, filename=None, config=None):
         """
         SCP file to device filesystem, defaults to candidate_config.
