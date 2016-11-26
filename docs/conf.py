@@ -22,6 +22,7 @@ import sys
 #  import invoke
 
 from napalm_base import NetworkDriver
+from jinja2 import Environment, FileSystemLoader
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -281,9 +282,9 @@ texinfo_documents = [
 enable_pdf_build = False
 enable_epub_build = False
 
-EXCLUDE_METHODS = ('close', 'commit_config', 'compare_config',
+EXCLUDE_METHODS = ('cli', 'close', 'commit_config', 'compare_config',
                    'discard_config', 'load_merge_candidate',
-                   'load_replace_candidate', 'load_template',
+                   'load_replace_candidate', 'load_template', 'open',
                    'rollback')
 
 METHOD_ALIASES = {
@@ -294,6 +295,7 @@ METHOD_ALIASES = {
 def build_getters_support_matrix(app):
     """Build the getters support matrix."""
     #  invoke.run("./test.sh")
+    drivers = []
     matrix = {m: defaultdict(dict) for m in dir(NetworkDriver)
               if not (m.startswith('_') or
                       m in EXCLUDE_METHODS)}
@@ -301,9 +303,11 @@ def build_getters_support_matrix(app):
     basepath = './support/tests/'
     regex_name = re.compile(r"::test_(\w+)\[")
 
+    sorted_methods = sorted(matrix.keys())
     for _, _, files in os.walk('./support/tests/'):
         for filename in files:
             driver = filename.split('.')[0]
+            drivers.append(driver)
             with open('{}/{}'.format(basepath, filename), 'r') as f:
                 data = json.loads(f.read())
                 for test in data['included']:
@@ -327,7 +331,14 @@ def build_getters_support_matrix(app):
                         matrix[method][driver] = 'ok' if result == 'ok' else result
                     else:
                         matrix[method][driver] = result
-    print(matrix)
+
+    env = Environment(loader=FileSystemLoader("."))
+    template_file = env.get_template("matrix.j2")
+    rendered_template = template_file.render(matrix=matrix, drivers=drivers,
+                                             sorted_methods=sorted_methods)
+
+    with open('support/matrix.rst', 'w') as f:
+        f.write(rendered_template)
 
 
 def setup(app):

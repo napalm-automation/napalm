@@ -87,6 +87,9 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|   |yes|      |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 
+.. include:: matrix.rst
+
+
 Other methods
 -------------
 
