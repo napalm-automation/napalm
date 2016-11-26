@@ -75,6 +75,13 @@ class ROSDriver(NetworkDriver):
             '/file remove "{config_session}.rsc"'.format(config_session=self.config_session)
         )
 
+    def is_alive(self):
+        alive = False
+        if hasattr(self, 'paramiko_transport'):
+            alive = self.paramiko_transport.is_active()
+
+        return {'is_alive': alive}
+
     def get_arp_table(self):
         arp_table = []
         for entry in self.api('/ip/arp/print'):
@@ -215,14 +222,14 @@ class ROSDriver(NetworkDriver):
 
     def get_config(self, retrieve='all'):
         config = {
-            'candidate': '',
-            'running': '',
-            'startup': ''
+            'candidate': u'',
+            'running': u'',
+            'startup': u''
         }
         if retrieve == 'all' or retrieve == 'running':
             cli_command = '/export'
             cli_output = self.cli(cli_command)[cli_command]
-            config['running'] = '\n'.join(ros_utils.export_concat(cli_output))
+            config['running'] = u'\n'.join(ros_utils.export_concat(cli_output))
         return config
 
     def get_environment(self):
@@ -525,7 +532,7 @@ class ROSDriver(NetworkDriver):
         for user in self._api_get('/user'):
             users[user['name']] = {
                 'level': 15 if user['group'] == 'full' else 0,
-                'password': '',
+                'password': u'',
                 'sshkeys': [key for key in user_sshkeys.get(user['name'], [])]
 
             }
