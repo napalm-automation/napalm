@@ -298,7 +298,7 @@ class ROSDriver(NetworkDriver):
                 'is_up': entry['running'],
                 'is_enabled': not entry['disabled'],
                 'description': unicode(entry.get('comment', '')),
-                'last_flapped': -1,
+                'last_flapped': -1.0,
                 'speed': -1,
                 'mac_address': napalm_base.helpers.mac(entry['mac-address'])
                 if entry.get('mac-address') else u'',
