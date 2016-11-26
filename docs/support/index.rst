@@ -5,14 +5,14 @@ General support matrix
 ----------------------
 
 
-=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  ========================
-_                       EOS         JunOS           IOS-XR       FortiOS         IBM            NXOS          IOS           Pluribus         PANOS
-=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  ========================
-**Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-fortios  napalm-ibm     napalm-nxos   napalm-ios    napalm-pluribus  napalm-panos
-**Driver Name**         eos         junos           iosxr        fortios         ibm            nxos          ios           pluribus         panos
-**Structured data**     Yes         Yes             No           No              Yes            Yes           No            No               Yes
-**Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           ???            6.1 [#g1]_    12.4(20)T     N/A              7.0
-**Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_         `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_    `netmiko`_, `pan-python`_
+=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  ========================  =============
+_                       EOS         JunOS           IOS-XR       FortiOS         IBM            NXOS          IOS           Pluribus         PANOS                     ROS
+=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  ========================  =============
+**Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-fortios  napalm-ibm     napalm-nxos   napalm-ios    napalm-pluribus  napalm-panos              napalm-ros
+**Driver Name**         eos         junos           iosxr        fortios         ibm            nxos          ios           pluribus         panos                     ros
+**Structured data**     Yes         Yes             No           No              Yes            Yes           No            No               Yes                       Yes
+**Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           ???            6.1 [#g1]_    12.4(20)T     N/A              7.0                       N/A
+**Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_         `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_    `netmiko`_, `pan-python`_ `mikoshell`_
 **Caveats**             :doc:`eos`                               :doc:`fortios`  :doc:`ibm`     :doc:`nxos`   :doc:`ios`                     :doc:`panos`
 =====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  ========================
 
@@ -34,15 +34,15 @@ _                       EOS         JunOS           IOS-XR       FortiOS        
 Configuration support matrix
 ----------------------------
 
-=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ==============
-_                       EOS         JunOS   IOS-XR      FortiOS         IBM            NXOS            IOS             Pluribus        PANOS
-=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ==============
-**Config. replace**     Yes         Yes     Yes         Yes             Yes [#c3]_     Yes             Yes             No              Yes
-**Config. merge**       Yes         Yes     Yes         Yes             Yes            Yes             Yes             No              Yes
-**Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c1]_     Yes [#c4]_      Yes             No              Yes
-**Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_
-**Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes [#c2]_     Yes/No [#c5]_   Yes             No              Yes
-=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ==============
+=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ==============  ==============
+_                       EOS         JunOS   IOS-XR      FortiOS         IBM            NXOS            IOS             Pluribus        PANOS           ROS
+=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ==============  ==============
+**Config. replace**     Yes         Yes     Yes         Yes             Yes [#c3]_     Yes             Yes             No              Yes             No
+**Config. merge**       Yes         Yes     Yes         Yes             Yes            Yes             Yes             No              Yes             Yes
+**Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c1]_     Yes [#c4]_      Yes             No              Yes             No
+**Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_   No
+**Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes [#c2]_     Yes/No [#c5]_   Yes             No              Yes             No
+=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ==============  ==============
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
@@ -60,49 +60,49 @@ Getters support matrix
 .. |yes|   unicode:: U+02705 .. Yes
 .. |no|    unicode:: U+0274C .. No
 
-============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
-_                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus   PANOS
-============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
-**cli**                        |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_facts**                  |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|      |yes|
-**get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|
-**get_snmp_information**       |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_ntp_servers**            |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
-**get_ntp_peers**              |no|   |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
-**get_ntp_stats**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_mac_address_table**      |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|       |no|
-**get_interfaces**             |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|      |yes|
-**get_interfaces_ip**          |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|       |no|
-**get_lldp_neighbors**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |yes|      |no|
-**get_lldp_neighbors_detail**  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_bgp_neighbors**          |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|
-**get_bgp_neighbors_detail**   |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_route_to**               |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_probes_config**          |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_probes_results**         |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
-**get_optics**                 |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|   |yes|      |no|
-============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
+============================== =====  =====   ======  =======  ======  ======  =====  =========  =========  ======
+_                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus   PANOS      ROS
+============================== =====  =====   ======  =======  ======  ======  =====  =========  =========  ======
+**cli**                        |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|       |yes|
+**get_facts**                  |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|      |yes|      |yes|
+**get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|       |yes|
+**get_snmp_information**       |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|       |yes|
+**get_ntp_servers**            |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|       |no|
+**get_ntp_peers**              |no|   |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|       |no|
+**get_ntp_stats**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|       |no|
+**get_mac_address_table**      |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|       |no|
+**get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|       |no|       |yes|
+**get_interfaces**             |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|      |yes|      |yes|
+**get_interfaces_ip**          |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|       |no|       |yes|
+**get_lldp_neighbors**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |yes|      |no|       |yes|
+**get_lldp_neighbors_detail**  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|       |yes|
+**get_bgp_neighbors**          |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|       |yes|
+**get_bgp_neighbors_detail**   |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |yes|
+**get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |yes|
+**get_route_to**               |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |no|
+**get_probes_config**          |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |yes|
+**get_probes_results**         |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |no|
+**get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|       |no|
+**get_optics**                 |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|       |no|
+**get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|   |yes|      |no|       |yes|
+============================== =====  =====   ======  =======  ======  ======  =====  =========  =========  ======
 
 Other methods
 -------------
 
-============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
-_                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus   PANOS
-============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
-**load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|   |yes|  |yes|      |yes|
-**ping**                       |no|   |no|    |no|    |no|     |no|    |no|    |yes|  |no|       |no|
-**traceroute**                 |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
-============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
+============================== =====  =====   ======  =======  ======  ======  =====  =========  =========  ======
+_                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus   PANOS      ROS
+============================== =====  =====   ======  =======  ======  ======  =====  =========  =========  ======
+**load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|   |yes|  |yes|      |yes|      |yes|
+**ping**                       |no|   |no|    |no|    |no|     |no|    |no|    |yes|  |no|       |no|       |yes|
+**traceroute**                 |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|       |yes|
+============================== =====  =====   ======  =======  ======  ======  =====  =========  =========  ======
 
 Available configuration templates
 ---------------------------------
 
-* :code:`set_hostname` (JunOS, IOS-XR, IOS, PANOS) - Configures the hostname of the device.
-* :code:`set_ntp_peers` (JunOS, IOS-XR, EOS, NXOS, IOS) - Configures NTP peers of the device.
+* :code:`set_hostname` (JunOS, IOS-XR, IOS, PANOS, ROS) - Configures the hostname of the device.
+* :code:`set_ntp_peers` (JunOS, IOS-XR, EOS, NXOS, IOS, ROS) - Configures NTP peers of the device.
 * :code:`delete_ntp_peers` (JunOS, IOS-XR, EOS, NXOS, IOS): Removes NTP peers form device's configuration.
 * :code:`set_probes` (JunOS, IOS-XR): Configures RPM/SLA probes.
 * :code:`schedule_probes` (IOS-XR): On Cisco devices, after defining the SLA probes, it is mandatory to schedule them. Defined also for JunOS as empty template, for consistency reasons.
