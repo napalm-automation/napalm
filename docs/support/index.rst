@@ -85,6 +85,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
 **get_optics**                 |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|   |yes|      |no|
+**get_network_instances**      |yes|  |no|    |no|    |no|     |no|    |no|    |no|   |no|       |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 
 Other methods
