@@ -77,14 +77,12 @@ class ROSDriver(NetworkDriver):
 
     def get_arp_table(self):
         arp_table = []
-        for arp_entry in self._api_get('/ip/arp'):
-            if arp_entry['flags'].find('C') == -1:
-                continue
+        for entry in self.api('/ip/arp/print'):
             arp_table.append(
                 {
-                    'interface': unicode(arp_entry.get('interface')),
-                    'mac': napalm_base.helpers.mac(arp_entry.get('mac-address')),
-                    'ip': napalm_base.helpers.ip(arp_entry.get('address')),
+                    'interface': unicode(entry['interface']),
+                    'mac': napalm_base.helpers.mac(entry['mac-address']),
+                    'ip': napalm_base.helpers.ip(entry['address']),
                     'age': float(-1),
                 }
             )
