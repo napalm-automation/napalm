@@ -107,6 +107,11 @@ class EOSDriver(NetworkDriver):
         """Implementation of NAPALM method close."""
         self.discard_config()
 
+    def is_alive(self):
+        return {
+            'is_alive': True  # always true as eAPI is HTTP-based
+        }
+
     def _load_config(self, filename=None, config=None, replace=True):
         if self.config_session is not None:
             raise SessionLockedException('Session is already in use by napalm')
