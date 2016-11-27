@@ -1,0 +1,1 @@
+{"mgmt2": {"is_enabled": true, "description": "", "last_flapped": -1.0, "is_up": false, "mac_address": "00:09:0f:09:00:01", "speed": -1}, "port1": {"is_enabled": false, "description": "", "last_flapped": -1.0, "is_up": false, "mac_address": "00:09:0f:09:00:02", "speed": 1000}}
