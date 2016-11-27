@@ -351,9 +351,6 @@ class FortiOSDriver(NetworkDriver):
                     interface_counters[if_name]['tx_octets'] = int(if_data[7].split(':')[1])
         return interface_counters
 
-    def get_lldp_neighbors(self):
-        return {}
-
     def get_environment(self):
 
         def parse_string(line):
