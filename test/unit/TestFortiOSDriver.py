@@ -60,9 +60,11 @@ class FakeFortiOSDevice:
 
     def execute_command(self, command):
         return self.read_txt_file(
-            'fortios/mock_data/{}.txt'.format(command.replace(' ', '_').replace('|', '').replace(':', '')))
+            'fortios/mock_data/{}.txt'.format(
+                command.replace(' ', '_').replace('|', '').replace(':', '')))
 
     def load_config(self, config_block):
         self.running_config = FortiConfig('running')
-        self.running_config.parse_config_output(self.read_txt_file('fortios/mock_data/{}.txt'.format(
-            config_block.replace(' ', '_'))))
+        self.running_config.parse_config_output(
+            self.read_txt_file('fortios/mock_data/{}.txt'.format(
+                config_block.replace(' ', '_'))))
