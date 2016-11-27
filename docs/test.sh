@@ -4,6 +4,8 @@ BUILDPATH=../
 TEST_RESULTS_PATH="docs/support/tests"
 DRIVER=`/bin/cat ../requirements.txt | grep napalm | grep -v base | awk -F\- '{print $2}'`
 
+set -e
+
 function process_driver {
 	echo PROCESSING $1
 	git clone https://github.com/napalm-automation/napalm-$1.git ../$1

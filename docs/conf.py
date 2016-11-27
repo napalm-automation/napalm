@@ -17,9 +17,9 @@ from collections import defaultdict
 import json
 import os
 import re
+import subprocess
 import sys
 
-#  import invoke
 
 from napalm_base import NetworkDriver
 from jinja2 import Environment, FileSystemLoader
@@ -292,9 +292,25 @@ METHOD_ALIASES = {
 }
 
 
+def _merge_results(last, intermediate):
+    if intermediate == 'failed':
+        return 'failed'
+    elif intermediate == 'skipped':
+        return 'failed' if last == 'failed' else 'skipped'
+    elif intermediate == 'passed':
+        return 'ok' if last == 'ok' else last
+    else:
+        return last
+
+
 def build_getters_support_matrix(app):
     """Build the getters support matrix."""
-    #  invoke.run("./test.sh")
+    status = subprocess.call("./test.sh", stdout=sys.stdout, stderr=sys.stderr)
+
+    if status != 0:
+        print("Something bad happened when processing the test reports.")
+        sys.exit(-1)
+
     drivers = []
     matrix = {m: defaultdict(dict) for m in dir(NetworkDriver)
               if not (m.startswith('_') or
@@ -314,23 +330,11 @@ def build_getters_support_matrix(app):
                     method = regex_name.search(test['attributes']['name']).group(1)
                     result = test['attributes']['outcome']
 
-                    try:
-                        intermediate_result = matrix[method].get(driver, None)
-                    except KeyError as e:
-                        method = METHOD_ALIASES.get(method, None)
-                        if method is None:
-                            raise e
-                        intermediate_result = matrix[method].get(driver, None)
+                    if method in METHOD_ALIASES.keys():
+                        method = METHOD_ALIASES[method]
 
-                    # Either failed, skipped or passed
-                    if intermediate_result == 'failed':
-                        continue
-                    elif intermediate_result == 'skipped':
-                        matrix[method][driver] = 'failed' if result == 'failed' else 'skipped'
-                    elif intermediate_result == 'passed':
-                        matrix[method][driver] = 'ok' if result == 'ok' else result
-                    else:
-                        matrix[method][driver] = result
+                    intermediate_result = matrix[method].get(driver, None)
+                    matrix[method][driver] = _merge_results(result, intermediate_result)
 
     env = Environment(loader=FileSystemLoader("."))
     template_file = env.get_template("matrix.j2")
