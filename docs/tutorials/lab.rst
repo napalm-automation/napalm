@@ -28,7 +28,7 @@ You can delete the downloaded .box file once you have added it, as ``vagrant box
 Starting Vagrant
 ----------------
 
-Create a file named ``Vagrantfile`` (no file extension) in your working directory with the following content:
+Create a file named ``Vagrantfile`` (no file extension) in your working directory with the following content (replace VEOS_BOX by your downloaded EOS version):
 
 .. literalinclude:: Vagrantfile
    :language: ruby
