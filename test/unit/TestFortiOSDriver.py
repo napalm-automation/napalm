@@ -15,8 +15,7 @@
 import unittest
 
 from napalm_fortios.fortios import FortiOSDriver
-from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
-from pyFG.fortios import FortiConfig
+from napalm_base.test.base import TestConfigNetworkDriver
 
 
 class TestConfigFortiOSDriver(unittest.TestCase, TestConfigNetworkDriver):

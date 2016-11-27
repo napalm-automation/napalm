@@ -9,7 +9,6 @@ install:
 
 script:
 - py.test
-- coverage combine test/unit/.coverage
 - pylama .
 
 after_success:
