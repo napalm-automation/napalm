@@ -53,6 +53,12 @@ class EOSDriver(NetworkDriver):
 
     SUPPORTED_OC_MODELS = []
 
+    _RE_BGP_INFO = re.compile('BGP neighbor is (?P<neighbor>.*?), remote AS (?P<as>.*?), .*') # noqa
+    _RE_BGP_RID_INFO = re.compile('.*BGP version 4, remote router ID (?P<rid>.*?), VRF (?P<vrf>.*?)$') # noqa
+    _RE_BGP_DESC = re.compile('\s+Description: (?P<description>.*?)')
+    _RE_BGP_LOCAL = re.compile('Local AS is (?P<as>.*?),.*')
+    _RE_BGP_PREFIX = re.compile('(\s*?)(?P<af>IPv[46]) Unicast:\s*(?P<sent>\d+)\s*(?P<received>\d+)') # noqa
+
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         """Constructor."""
         self.device = None
@@ -302,40 +308,15 @@ class EOSDriver(NetworkDriver):
             )
         return interface_counters
 
-    @staticmethod
-    def _parse_neigbor_info(line):
-        m = re.match('BGP neighbor is (?P<neighbor>.*?), remote AS (?P<as>.*?), .*', line)
-        return m.group('neighbor'), m.group('as')
-
-    @staticmethod
-    def _parse_rid_info(line):
-        m = re.match('.*BGP version 4, remote router ID (?P<rid>.*?), VRF (?P<vrf>.*?)$', line)
-        return m.group('rid'), m.group('vrf')
-
-    @staticmethod
-    def _parse_desc(line):
-        m = re.match('\s+Description: (?P<description>.*?)', line)
-        if m:
-            return m.group('description')
-        else:
-            return None
-
-    @staticmethod
-    def _parse_local_info(line):
-        m = re.match('Local AS is (?P<as>.*?),.*', line)
-        return m.group('as')
-
-    @staticmethod
-    def _bgp_neighbor_enabled(line):
-        m = re.match('\s+BGP\s+state\s+is\s+.*,\s+Administratively\s+shut\s+down', line)
-        return m is None
-
-    @staticmethod
-    def _parse_prefix_info(line):
-        m = re.match('(\s*?)(?P<af>IPv[46]) Unicast:\s*(?P<sent>\d+)\s*(?P<received>\d+)', line)
-        return m.group('sent'), m.group('received')
-
     def get_bgp_neighbors(self):
+
+        def get_re_group(res, key, default=None):
+            """ Small helper to retrive data from re match groups"""
+            try:
+                return res.group(key)
+            except KeyError:
+                return default
+
         NEIGHBOR_FILTER = 'bgp neighbors vrf all | include remote AS | remote router ID |IPv[46] Unicast:.*[0-9]+|^Local AS|Desc|BGP state'  # noqa
         output_summary_cmds = self.device.run_commands(
             ['show ipv6 bgp summary vrf all', 'show ip bgp summary vrf all'],
@@ -344,7 +325,7 @@ class EOSDriver(NetworkDriver):
             ['show ip ' + NEIGHBOR_FILTER, 'show ipv6 ' + NEIGHBOR_FILTER],
             encoding='text')
 
-        bgp_counters = {}
+        bgp_counters = defaultdict(lambda: dict(peers=dict()))
         for summary in output_summary_cmds:
             """
             Json output looks as follows
@@ -371,22 +352,21 @@ class EOSDriver(NetworkDriver):
             }
             """
             for vrf, vrf_data in summary['vrfs'].items():
-                if vrf not in bgp_counters.keys():
-                    bgp_counters[vrf] = {
-                        'peers': {}
-                    }
                 bgp_counters[vrf]['router_id'] = vrf_data['routerId']
                 for peer, peer_data in vrf_data['peers'].items():
+                    if peer_data['peerState'] == 'Idle':
+                        is_enabled = True if peer_data['peerStateIdleReason'] != 'Admin' else False
+                    else:
+                        is_enabled = True
                     peer_info = {
                         'is_up': peer_data['peerState'] == 'Established',
-                        'is_enabled': peer_data['peerState'] == 'Established' or
-                        peer_data['peerState'] == 'Active',
-                        'uptime': int(peer_data['upDownTime'])
+                        'is_enabled': is_enabled,
+                        'uptime': int(time.time() - peer_data['upDownTime'])
                     }
                     bgp_counters[vrf]['peers'][napalm_base.helpers.ip(peer)] = peer_info
         lines = []
         [lines.extend(x['output'].splitlines()) for x in output_neighbor_cmds]
-        for line in lines:
+        while lines:
             """
             Raw output from the command looks like the following:
 
@@ -398,53 +378,51 @@ class EOSDriver(NetworkDriver):
                  IPv6 Unicast:           0         0
               Local AS is 2, local router ID 2.2.2.2
             """
-            if line is '':
-                continue
-            neighbor, r_as = self._parse_neigbor_info(lines.pop(0))
+            neighbor_info = re.match(self._RE_BGP_INFO, lines.pop(0))
             # this line can be either description or rid info
             next_line = lines.pop(0)
-            desc = self._parse_desc(next_line)
+            desc = re.match(self._RE_BGP_DESC, next_line)
             if desc is None:
-                rid, vrf = self._parse_rid_info(next_line)
+                rid_info = re.match(self._RE_BGP_RID_INFO, next_line)
                 desc = ''
             else:
-                rid, vrf = self._parse_rid_info(lines.pop(0))
-
-            is_enabled = self._bgp_neighbor_enabled(lines.pop(0))
-            v4_sent, v4_recv = self._parse_prefix_info(lines.pop(0))
-            v6_sent, v6_recv = self._parse_prefix_info(lines.pop(0))
-            local_as = self._parse_local_info(lines.pop(0))
+                rid_info = re.match(self._RE_BGP_RID_INFO, lines.pop(0))
+                desc = desc.group('description')
+            lines.pop(0)
+            v4_stats = re.match(self._RE_BGP_PREFIX, lines.pop(0))
+            v6_stats = re.match(self._RE_BGP_PREFIX, lines.pop(0))
+            local_as = re.match(self._RE_BGP_LOCAL, lines.pop(0))
             data = {
-                'remote_as': int(r_as),
-                'remote_id': napalm_base.helpers.ip(rid),
-                'local_as': int(local_as),
+                'remote_as': int(neighbor_info.group('as')),
+                'remote_id': napalm_base.helpers.ip(get_re_group(rid_info, 'rid', '0.0.0.0')),
+                'local_as': int(local_as.group('as')),
                 'description': py23_compat.text_type(desc),
                 'address_family': {
                     'ipv4': {
-                        'sent_prefixes': int(v4_sent),
-                        'received_prefixes': int(v4_recv),
+                        'sent_prefixes': int(get_re_group(v4_stats, 'sent', -1)),
+                        'received_prefixes': int(get_re_group(v4_stats, 'received', -1)),
                         'accepted_prefixes': -1
                     },
                     'ipv6': {
-                        'sent_prefixes': int(v6_sent),
-                        'received_prefixes': int(v6_recv),
+                        'sent_prefixes': int(get_re_group(v6_stats, 'sent', -1)),
+                        'received_prefixes': int(get_re_group(v6_stats, 'received', -1)),
                         'accepted_prefixes': -1
                     }
                 }
             }
-            peer_addr = napalm_base.helpers.ip(neighbor)
-            if peer_addr not in bgp_counters[vrf]['peers'].keys():
+            peer_addr = napalm_base.helpers.ip(neighbor_info.group('neighbor'))
+            vrf = rid_info.group('vrf')
+            if peer_addr not in bgp_counters[vrf]['peers']:
                 bgp_counters[vrf]['peers'][peer_addr] = {
                     'is_up': False,  # if not found, means it was not found in the oper stats
-                    # i.e. neighbor down,
+                                     # i.e. neighbor down,
                     'uptime': 0,
-                    'is_enabled': is_enabled
+                    'is_enabled': True
                 }
             bgp_counters[vrf]['peers'][peer_addr].update(data)
-
-        if 'default' in bgp_counters.keys():
+        if 'default' in bgp_counters:
             bgp_counters['global'] = bgp_counters.pop('default')
-        return bgp_counters
+        return dict(bgp_counters)
 
     def get_environment(self):
         def extract_temperature_data(data):
