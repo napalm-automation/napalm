@@ -39,6 +39,12 @@ class FortiOSDriver(NetworkDriver):
     def close(self):
         self.device.close()
 
+    def is_alive(self):
+            """Returns a flag with the state of the SSH connection."""
+            return {
+                'is_alive': self.device.ssh.get_transport().is_active()
+            }
+
     def execute_command_with_vdom(self, command, vdom=None):
         # If the user doesn't specify a particular vdom we use the default vdom for the object.
         vdom = vdom or self.vdom
