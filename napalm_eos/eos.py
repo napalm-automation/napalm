@@ -206,7 +206,7 @@ class EOSDriver(NetworkDriver):
 
     def get_facts(self):
         """Implementation of NAPALM method get_facts."""
-        commands = list()
+        commands = []
         commands.append('show version')
         commands.append('show hostname')
         commands.append('show interfaces')
@@ -436,12 +436,17 @@ class EOSDriver(NetworkDriver):
                 }
                 yield name, values
 
-        command = [
+        sh_version_out = self.device.run_commands(['show version'])
+        is_veos = sh_version_out[0]['modelName'].lower() == 'veos'
+        commands = [
             'show environment cooling',
-            'show environment temperature',
-            'show environment power'
+            'show environment temperature'
         ]
-        fans_output, temp_output, power_output = self.device.run_commands(command)
+        if not is_veos:
+            commands.append('show environment power')
+            fans_output, temp_output, power_output = self.device.run_commands(commands)
+        else:
+            fans_output, temp_output = self.device.run_commands(commands)
         environment_counters = {
             'fans': {},
             'temperature': {},
@@ -460,12 +465,13 @@ class EOSDriver(NetworkDriver):
         # On board sensors
         parsed = {n: v for n, v in extract_temperature_data(temp_output['tempSensors'])}
         environment_counters['temperature'].update(parsed)
-        for psu, data in power_output['powerSupplies'].items():
-            environment_counters['power'][psu] = {
-                'status': data['state'] == 'ok',
-                'capacity': data['capacity'],
-                'output': data['outputPower']
-            }
+        if not is_veos:
+            for psu, data in power_output['powerSupplies'].items():
+                environment_counters['power'][psu] = {
+                    'status': data['state'] == 'ok',
+                    'capacity': data['capacity'],
+                    'output': data['outputPower']
+                }
         cpu_lines = cpu_output.splitlines()
         # Matches either of
         # Cpu(s):  5.2%us,  1.4%sy,  0.0%ni, 92.2%id,  0.6%wa,  0.3%hi,  0.4%si,  0.0%st ( 4.16 > )
