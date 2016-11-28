@@ -166,6 +166,20 @@ class TestGettersNetworkDriver(object):
 
         return correct_class and same_keys
 
+    def test_get_firewall_policies(self):
+        try:
+            policies = self.device.get_firewall_policies()
+        except NotImplementedError:
+            raise SkipTest()
+
+        result = len(policies) > 0
+
+        for policy_name, policy_details in policies.items():
+            for policy_term in policy_details:
+                result = result and self._test_model(models.firewall_policies, policy_term)
+
+        self.assertTrue(result)
+
     def test_is_alive(self):
         try:
             alive = self.device.is_alive()

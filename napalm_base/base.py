@@ -1440,3 +1440,44 @@ class NetworkDriver(object):
         }
         """
         raise NotImplementedError
+
+    def get_firewall_policies(self):
+        """
+        Returns a dictionary of lists of dictionaries where the first key is an unique policy
+        name and the inner dictionary contains the following keys:
+
+        * position (int)
+        * packet_hits (int)
+        * byte_hits (int)
+        * id (text_type)
+        * enabled (bool)
+        * schedule (text_type)
+        * log (text_type)
+        * l3_src (text_type)
+        * l3_dst (text_type)
+        * service (text_type)
+        * src_zone (text_type)
+        * dst_zone (text_type)
+        * action (text_type)
+
+        Example::
+
+        {
+            'policy_name': [{
+                'position': 1,
+                'packet_hits': 200,
+                'byte_hits': 83883,
+                'id': '230',
+                'enabled': True,
+                'schedule': 'Always',
+                'log': 'all',
+                'l3_src': 'any',
+                'l3_dst': 'any',
+                'service': 'HTTP',
+                'src_zone': 'port2',
+                'dst_zone': 'port3',
+                'action': 'Permit'
+            }]
+        }
+        """
+        raise NotImplementedError

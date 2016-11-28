@@ -463,3 +463,13 @@ class BaseTestGetters(object):
                                       network_instance['interfaces'])
 
         return get_network_instances
+
+    @wrap_test_cases
+    def test_get_firewall_policies(self, test_case):
+        """Test get_firewall_policies method."""
+        get_firewall_policies = self.device.get_firewall_policies()
+        assert len(get_firewall_policies) > 0
+        for policy_name, policy_details in get_firewall_policies.items():
+            for policy_term in policy_details:
+                assert helpers.test_model(models.firewall_policies, policy_term)
+        return get_firewall_policies
