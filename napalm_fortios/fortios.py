@@ -282,7 +282,7 @@ class FortiOSDriver(NetworkDriver):
 
             enabled = 'status' in policy[key]
 
-            logtraffic = policy[key]['logtraffic'] if 'logtraffic' in  policy[key] else False
+            logtraffic = policy[key]['logtraffic'] if 'logtraffic' in policy[key] else False
 
             action = 'permit' if 'action' in policy[key] else 'reject'
 
