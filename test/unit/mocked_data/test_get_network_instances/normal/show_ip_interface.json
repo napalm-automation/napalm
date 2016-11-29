@@ -1,0 +1,279 @@
+{
+    "interfaces": {
+        "Management1": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 23,
+                    "address": "10.192.100.98"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Management1",
+            "urpf": "disable",
+            "interfaceStatus": "connected",
+            "enabled": true,
+            "mtu": 1500,
+            "vrf": "default",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "up",
+            "description": ""
+        },
+        "Vlan3": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Vlan3",
+            "urpf": "disable",
+            "interfaceStatus": "notconnect",
+            "enabled": true,
+            "mtu": 1478,
+            "vrf": "MGMT",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "lowerLayerDown",
+            "description": ""
+        },
+        "Ethernet3": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Ethernet3",
+            "urpf": "disable",
+            "interfaceStatus": "connected",
+            "enabled": true,
+            "mtu": 1500,
+            "vrf": "default",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "up",
+            "description": ""
+        },
+        "Ethernet1": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Ethernet1",
+            "urpf": "disable",
+            "interfaceStatus": "connected",
+            "enabled": true,
+            "mtu": 1500,
+            "vrf": "TEST",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "up",
+            "description": ""
+        },
+        "Vlan103": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Vlan103",
+            "urpf": "disable",
+            "interfaceStatus": "notconnect",
+            "enabled": true,
+            "mtu": 1478,
+            "vrf": "TEST",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "lowerLayerDown",
+            "description": ""
+        },
+        "Vlan102": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Vlan102",
+            "urpf": "disable",
+            "interfaceStatus": "notconnect",
+            "enabled": true,
+            "mtu": 1478,
+            "vrf": "TEST",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "lowerLayerDown",
+            "description": ""
+        },
+        "Vlan2": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Vlan2",
+            "urpf": "disable",
+            "interfaceStatus": "notconnect",
+            "enabled": true,
+            "mtu": 1478,
+            "vrf": "MGMT",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "lowerLayerDown",
+            "description": ""
+        },
+        "Vlan100": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Vlan100",
+            "urpf": "disable",
+            "interfaceStatus": "notconnect",
+            "enabled": true,
+            "mtu": 1478,
+            "vrf": "TEST",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "lowerLayerDown",
+            "description": ""
+        },
+        "Vlan4": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Vlan4",
+            "urpf": "disable",
+            "interfaceStatus": "notconnect",
+            "enabled": true,
+            "mtu": 1478,
+            "vrf": "MGMT",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "lowerLayerDown",
+            "description": ""
+        },
+        "Vlan101": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Vlan101",
+            "urpf": "disable",
+            "interfaceStatus": "notconnect",
+            "enabled": true,
+            "mtu": 1478,
+            "vrf": "TEST",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "lowerLayerDown",
+            "description": ""
+        },
+        "Vlan104": {
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                },
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Vlan104",
+            "urpf": "disable",
+            "interfaceStatus": "notconnect",
+            "enabled": true,
+            "mtu": 1478,
+            "vrf": "TEST",
+            "localProxyArp": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "lowerLayerDown",
+            "description": ""
+        }
+    }
+}

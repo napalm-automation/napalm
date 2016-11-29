@@ -1,0 +1,7 @@
+{
+    "cardSlots": [],
+    "powerSupplySlots": [],
+    "shutdownOnOverheat": true,
+    "tempSensors": [],
+    "systemStatus": "unknownTemperatureAlarmLevel"
+}
