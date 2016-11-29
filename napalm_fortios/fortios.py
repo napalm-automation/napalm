@@ -261,6 +261,51 @@ class FortiOSDriver(NetworkDriver):
             if search in l:
                 return l
 
+    def get_firewall_policies(self):
+        cmd = self.execute_command_with_vdom('show firewall policy')
+        policy = dict()
+        policy_id = None
+        default_policy = dict()
+        position = 1
+
+        for line in cmd:
+            policy_data = line.strip()
+            if policy_data.find("edit") == 0:
+                policy_id = policy_data.split()[1]
+                policy[policy_id] = dict()
+            if policy_id is not None:
+                if len(policy_data.split()) > 2:
+                    policy_setting = policy_data.split()[1]
+                    policy[policy_id][policy_setting] = policy_data.split()[2].replace("\"", "")
+
+        for key in policy:
+
+            enabled = 'status' in policy[key]
+
+            logtraffic = policy[key]['logtraffic'] if 'logtraffic' in  policy[key] else False
+
+            action = 'permit' if 'action' in policy[key] else 'reject'
+
+            policy_item = dict()
+            default_policy[key] = list()
+            policy_item['position'] = position
+            policy_item['packet_hits'] = -1
+            policy_item['byte_hits'] = -1
+            policy_item['id'] = unicode(key)
+            policy_item['enabled'] = enabled
+            policy_item['schedule'] = unicode(policy[key]['schedule'])
+            policy_item['log'] = unicode(logtraffic)
+            policy_item['l3_src'] = unicode(policy[key]['srcaddr'])
+            policy_item['l3_dst'] = unicode(policy[key]['dstaddr'])
+            policy_item['service'] = unicode(policy[key]['service'])
+            policy_item['src_zone'] = unicode(policy[key]['srcintf'])
+            policy_item['dst_zone'] = unicode(policy[key]['dstintf'])
+            policy_item['action'] = unicode(action)
+            default_policy[key].append(policy_item)
+
+            position = position + 1
+        return default_policy
+
     def get_bgp_neighbors(self):
 
         families = ['ipv4', 'ipv6']
