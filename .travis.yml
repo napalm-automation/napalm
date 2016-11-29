@@ -1,10 +1,20 @@
 language: python
+
 python:
 - 2.7
+
 install:
-- pip install -r requirements.txt
+- pip install -r requirements-dev.txt
 - pip install .
-- pip install coveralls
+
+script:
+- py.test
+- pylama .
+
+after_success:
+   - coveralls
+   - if [ $TRAVIS_TAG ]; then curl -X POST https://readthedocs.org/build/napalm; fi
+
 deploy:
   provider: pypi
   user: dbarroso
@@ -13,14 +23,3 @@ deploy:
   on:
     tags: true
     branch: master
-script:
-- cd test/unit
-- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_bgp_neighbors
-- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_environment
-- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_facts
-- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_interfaces
-- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_interfaces_counters
-- nosetests --with-coverage --cover-package napalm_fortios -v TestFortiOSDriver:TestGetterFortiOSDriver.test_get_config
-- cd ../..
-- coverage combine test/unit/.coverage
-after_success: coveralls

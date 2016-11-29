@@ -15,8 +15,7 @@
 import unittest
 
 from napalm_fortios.fortios import FortiOSDriver
-from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
-from pyFG.fortios import FortiConfig
+from napalm_base.test.base import TestConfigNetworkDriver
 
 
 class TestConfigFortiOSDriver(unittest.TestCase, TestConfigNetworkDriver):
@@ -30,39 +29,3 @@ class TestConfigFortiOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
         cls.device = FortiOSDriver(hostname, username, password, timeout=60)
         cls.device.open()
-
-
-class TestGetterFortiOSDriver(unittest.TestCase, TestGettersNetworkDriver):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.mock = True
-
-        hostname = '192.168.56.201'
-        username = 'vagrant'
-        password = 'vagrant'
-        cls.vendor = 'eos'
-
-        cls.device = FortiOSDriver(hostname, username, password, timeout=60)
-
-        if cls.mock:
-            cls.device.device = FakeFortiOSDevice()
-        else:
-            cls.device.open()
-
-
-class FakeFortiOSDevice:
-
-    @staticmethod
-    def read_txt_file(filename):
-        with open(filename.lower()) as data_file:
-            return data_file.read().splitlines()
-
-    def execute_command(self, command):
-        return self.read_txt_file(
-            'fortios/mock_data/{}.txt'.format(command.replace(' ', '_').replace('|', '').replace(':', '')))
-
-    def load_config(self, config_block):
-        self.running_config = FortiConfig('running')
-        self.running_config.parse_config_output(self.read_txt_file('fortios/mock_data/{}.txt'.format(
-            config_block.replace(' ', '_'))))
