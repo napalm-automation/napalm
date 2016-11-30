@@ -15,24 +15,8 @@ deploy:
     tags: true
     branch: master
 script:
+- py.test --cov-report= --cov=napalm_ios test/
 - pylama .
-- cd test/unit
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_arp_table
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_bgp_neighbors
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_environment
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_facts
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_interfaces
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_interfaces_counters
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_interfaces_ip
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_lldp_neighbors
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_lldp_neighbors_detail
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_mac_address_table
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_ntp_servers
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_ntp_stats
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_snmp_information
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_ios_only_bgp_time_conversion
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_ping
-- nosetests --with-coverage --cover-package napalm_ios -v TestIOSDriver:TestGetterIOSDriver.test_get_config
-- cd ../..
-- coverage combine test/unit/.coverage
-after_success: coveralls
+after_success:
+- coveralls
+- if [ $TRAVIS_TAG ]; then curl -X POST https://readthedocs.org/build/napalm; fi
