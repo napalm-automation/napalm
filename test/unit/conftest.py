@@ -40,6 +40,9 @@ class PatchedDriver(OriginalDriver):
     def close(self):
         pass
 
+    def is_alive(self):
+        return({'is_alive': True})
+
 
 class FakeDevice(BaseTestDouble):
     """Device test double."""

@@ -1,0 +1,23 @@
+config firewall policy
+    edit 1
+        set uuid 9d747de8-dad4-51e5-7a7e-d078aa77140a
+        set srcintf "any"
+        set dstintf "any"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 2
+        set name "bla"
+        set uuid de597b64-aca8-51e6-5d00-b7874e6b72b8
+        set srcintf "port3"
+        set dstintf "port2"
+        set srcaddr "all"
+        set dstaddr "all"
+        set schedule "always"
+        set service "ALL"
+        set logtraffic all
+    next
+end
