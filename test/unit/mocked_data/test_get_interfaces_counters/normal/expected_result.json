@@ -1,0 +1,44 @@
+{
+	"GigabitEthernet1": {
+		"tx_discards": -1,
+		"tx_broadcast_packets": -1,
+		"rx_multicast_packets": 0,
+		"tx_unicast_packets": 9297,
+		"rx_octets": 2,
+		"rx_broadcast_packets": 0,
+		"rx_errors": 0,
+		"tx_octets": 1,
+		"rx_discards": -1,
+		"tx_multicast_packets": -1,
+		"tx_errors": 0,
+		"rx_unicast_packets": 13799
+	},
+	"GigabitEthernet2": {
+		"tx_discards": -1,
+		"tx_broadcast_packets": -1,
+		"rx_multicast_packets": 0,
+		"tx_unicast_packets": 154,
+		"rx_octets": 3,
+		"rx_broadcast_packets": 0,
+		"rx_errors": 0,
+		"tx_octets": 7,
+		"rx_discards": -1,
+		"tx_multicast_packets": -1,
+		"tx_errors": 0,
+		"rx_unicast_packets": 105
+	},
+	"GigabitEthernet3": {
+		"tx_discards": -1,
+		"tx_broadcast_packets": -1,
+		"rx_multicast_packets": 0,
+		"tx_unicast_packets": 3,
+		"rx_octets": 0,
+		"rx_broadcast_packets": 0,
+		"rx_errors": 0,
+		"tx_octets": 8,
+		"rx_discards": -1,
+		"tx_multicast_packets": -1,
+		"tx_errors": 0,
+		"rx_unicast_packets": 0
+	}
+}

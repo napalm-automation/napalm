@@ -1,0 +1,10 @@
+{
+	"os_version": "C2960 Software (C2960-LANBASEK9-M), Version 15.0(2)SE4, RELEASE SOFTWARE (fc1)",
+	"uptime": 16676160,
+	"interface_list": ["Vlan1", "Vlan20", "Vlan40", "Vlan41", "GigabitEthernet0/1", "GigabitEthernet0/2", "GigabitEthernet0/3", "GigabitEthernet0/4", "GigabitEthernet0/5", "GigabitEthernet0/6", "GigabitEthernet0/7", "GigabitEthernet0/8", "Port-channel1"],
+	"vendor": "Cisco",
+	"serial_number": "FOC1308V5NB",
+	"model": "WS-C2960G-8TC-L",
+	"hostname": "NS2903-ASW-01",
+	"fqdn": "NS2903-ASW-01.int.ogenstad.com"
+}

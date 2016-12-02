@@ -1,0 +1,13 @@
+[{
+	"jitter": 18.659,
+	"synchronized": true,
+	"offset": 0.122,
+	"referenceid": "83.168.200.199",
+	"remote": "172.29.50.34",
+	"reachability": 377,
+	"when": "54",
+	"delay": 1.186,
+	"hostpoll": 1024,
+	"stratum": 3,
+	"type": "-"
+}]
