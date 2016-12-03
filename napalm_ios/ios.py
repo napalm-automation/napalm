@@ -30,6 +30,10 @@ DAY_SECONDS = 24 * HOUR_SECONDS
 WEEK_SECONDS = 7 * DAY_SECONDS
 YEAR_SECONDS = 365 * DAY_SECONDS
 
+# IP addresses
+IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+RE_IPADDR_STRIP = re.compile(r"({})\n".format(IP_ADDR_REGEX))
+
 
 class IOSDriver(NetworkDriver):
     """NAPALM Cisco IOS Handler."""
@@ -899,6 +903,8 @@ class IOSDriver(NetworkDriver):
         bgp_neighbor_data['global'] = {}
 
         output = self.device.send_command(cmd_bgp_summary).strip()
+        # Cisco issue where new lines are inserted after neighbor IP
+        output = re.sub(RE_IPADDR_STRIP, r"\1", output)
         if 'Neighbor' not in output:
             return {}
         for line in output.splitlines():
@@ -914,6 +920,8 @@ class IOSDriver(NetworkDriver):
 
         cmd_neighbor_table = 'show ip bgp summary | begin Neighbor'
         output = self.device.send_command(cmd_neighbor_table).strip()
+        # Cisco issue where new lines are inserted after neighbor IP
+        output = re.sub(RE_IPADDR_STRIP, r"\1", output)
         for line in output.splitlines():
             line = line.strip()
             if 'Neighbor' in line or line == '':
