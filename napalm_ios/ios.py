@@ -396,8 +396,7 @@ class IOSDriver(NetworkDriver):
         if self.interface_map.get(interface_brief):
             return self.interface_map.get(interface_brief)
         command = 'show int {}'.format(interface_brief)
-        output = self.device.send_command(command)
-        output = output.strip()
+        output = self._send_command(command)
         first_line = output.splitlines()[0]
         if 'line protocol' in first_line:
             full_int_name = first_line.split()[0]
