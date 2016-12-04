@@ -1408,6 +1408,14 @@ class IOSDriver(NetworkDriver):
                     mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
                 else:
                     raise ValueError("Unexpected output from: {}".format(line.split()))
+            # Cat4948 format
+            #  999    1111.2222.3333   dynamic ip                    Port-channel1
+            elif re.search(r"^\s+\d+\s+" + MAC_REGEX, line) or re.search(r"^\d+\s+" + MAC_REGEX, line):
+                if len(line.split()) == 5:
+                    vlan, mac, mac_type, _, interface = line.split()
+                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                else:
+                    raise ValueError("Unexpected output from: {}".format(line.split()))
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
         return mac_address_table
