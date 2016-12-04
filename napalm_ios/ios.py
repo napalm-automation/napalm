@@ -124,7 +124,9 @@ class IOSDriver(NetworkDriver):
         """
         if hasattr(command, '__iter__'):
             for cmd in command:
+                print(cmd)
                 output = self.device.send_command(cmd)
+                print(output)
                 if "% Invalid" not in output:
                     break
         else:

@@ -2,7 +2,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 1,
-	"mac": "400.f1cf.2cc6",
+	"mac": "6400.f1cf.2cc6",
 	"interface": "Wlan-GigabitEthernet0",
 	"moves": -1,
 	"last_move": -1.0
