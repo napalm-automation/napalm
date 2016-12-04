@@ -1335,39 +1335,81 @@ class IOSDriver(NetworkDriver):
             * static (boolean)
             * moves (int)
             * last_move (float)
+
+        Format1:
+        Destination Address  Address Type  VLAN  Destination Port
+        -------------------  ------------  ----  --------------------
+        6400.f1cf.2cc6          Dynamic       1     Wlan-GigabitEthernet0
+
+        Cat 6500:
+        Legend: * - primary entry
+                age - seconds since last seen
+                n/a - not available
+
+          vlan   mac address     type    learn     age              ports
+        ------+----------------+--------+-----+----------+--------------------------
+        *  999  1111.2222.3333   dynamic  Yes          0   Port-channel1
+
+        Cat 4948
+        Unicast Entries
+         vlan   mac address     type        protocols               port
+        -------+---------------+--------+---------------------+--------------------
+         999    1111.2222.3333   dynamic ip                    Port-channel1
+
+        Cat 2960
+        Mac Address Table
+        -------------------------------------------
+
+        Vlan    Mac Address       Type        Ports
+        ----    -----------       --------    -----
+        All    1111.2222.3333    STATIC      CPU
         """
+
+        def process_mac_fields(vlan, mac, mac_type, interface):
+            """Return proper data for mac address fields."""
+            if mac_type.lower() in ['self', 'static']:
+                static = True
+            else:
+                static = False
+            if mac_type.lower() in ['dynamic']:
+                active = True
+            else:
+                active = False
+            return {
+                'mac': mac,
+                'interface': interface,
+                'vlan': int(vlan),
+                'static': static,
+                'active': active,
+                'moves': -1,
+                'last_move': -1.0
+            }
+
         mac_address_table = []
         command = IOS_COMMANDS['show_mac_address']
         output = self._send_command(command)
-        output = output.split('\n')
 
-        # Skip the first two lines which are headers
-        output = output[2:]
-        for line in output:
-            if len(line) == 0:
-                return mac_address_table
-            elif len(line.split()) == 4:
-                mac, mac_type, vlan, interface = line.split()
-                if mac_type.lower() in ['self', 'static']:
-                    static = True
+        # Skip the header lines
+        output = re.split(r'^----.*', output, flags=re.M)[1:]
+        output = "\n".join(output).strip()
+        for line in output.splitlines():
+            # Format1
+            if re.search(r"^" + MAC_REGEX, line):
+                if len(line.split()) == 4:
+                    mac, mac_type, vlan, interface = line.split()
+                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
                 else:
-                    static = False
-                if mac_type.lower() in ['dynamic']:
-                    active = True
+                    raise ValueError("Unexpected output from: {}".format(line.split()))
+            # Cat6500 format
+            # *  999  1111.2222.3333   dynamic  Yes          0   Port-channel1
+            elif re.search(r"^\*\s+\d+\s+" + MAC_REGEX, line):
+                if len(line.split()) == 7:
+                    _, vlan, mac, mac_type, _, _, interface = line.split()
+                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
                 else:
-                    active = False
-                entry = {
-                    'mac': mac,
-                    'interface': interface,
-                    'vlan': int(vlan),
-                    'static': static,
-                    'active': active,
-                    'moves': -1,
-                    'last_move': -1.0
-                }
-                mac_address_table.append(entry)
+                    raise ValueError("Unexpected output from: {}".format(line.split()))
             else:
-                raise ValueError("Unexpected output from: {}".format(line.split()))
+                raise ValueError("Unexpected output from: {}".format(repr(line)))
         return mac_address_table
 
     def get_snmp_information(self):
