@@ -30,9 +30,12 @@ DAY_SECONDS = 24 * HOUR_SECONDS
 WEEK_SECONDS = 7 * DAY_SECONDS
 YEAR_SECONDS = 365 * DAY_SECONDS
 
-# IP Address
+# STD REGEX PATTERNS
 IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
+RE_IPADDR = re.compile(r"{}".format(IP_ADDR_REGEX))
 RE_IPADDR_STRIP = re.compile(r"({})\n".format(IP_ADDR_REGEX))
+RE_MAC = re.compile(r"{}".format(MAC_REGEX))
 
 IOS_COMMANDS = {
    'show_mac_address': ['show mac-address-table', 'show mac address-table'],
@@ -124,9 +127,7 @@ class IOSDriver(NetworkDriver):
         """
         if isinstance(command, list):
             for cmd in command:
-                print(cmd)
                 output = self.device.send_command(cmd)
-                print(output)
                 if "% Invalid" not in output:
                     break
         else:
@@ -1200,24 +1201,35 @@ class IOSDriver(NetworkDriver):
         for line in output:
             if len(line) == 0:
                 return {}
-            if len(line.split()) == 6:
+            if len(line.split()) == 5:
+                # Static ARP entries have no interface
+                # Internet  10.0.0.1                -   0010.2345.1cda  ARPA
+                interface = ''
+                protocol, address, age, mac, eth_type = line.split()
+            elif len(line.split()) == 6:
                 protocol, address, age, mac, eth_type, interface = line.split()
-                try:
-                    if age == '-':
-                        age = 0
-                    age = float(age)
-                except ValueError:
-                    print("Unable to convert age value to float: {}".format(age))
-                entry = {
-                    'interface': interface,
-                    'mac': mac,
-                    'ip': address,
-                    'age': age
-                }
-                arp_table.append(entry)
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
 
+            try:
+                if age == '-':
+                    age = 0
+                age = float(age)
+            except ValueError:
+                raise ValueError("Unable to convert age value to float: {}".format(age))
+
+            # Validate we matched correctly
+            if not re.search(RE_IPADDR, address):
+                raise ValueError("Invalid IP Address detected: {}".format(address))
+            if not re.search(RE_MAC, mac):
+                raise ValueError("Invalid MAC Address detected: {}".format(mac))
+            entry = {
+                'interface': interface,
+                'mac': mac,
+                'ip': address,
+                'age': age
+            }
+            arp_table.append(entry)
         return arp_table
 
     def cli(self, commands=None):

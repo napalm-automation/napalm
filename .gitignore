@@ -64,3 +64,5 @@ test/unit/TestIOSDriverKB.py
 #test/unit/ios/*.diff
 test/unit/ios/cleanup.sh
 test/unit/ios/prep_test.sh
+
+report.json
