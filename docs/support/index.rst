@@ -57,35 +57,7 @@ _                       EOS         JunOS   IOS-XR      FortiOS         IBM     
 Getters support matrix
 ----------------------
 
-.. |yes|   unicode:: U+02705 .. Yes
-.. |no|    unicode:: U+0274C .. No
-
-============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
-_                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus   PANOS
-============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
-**cli**                        |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_facts**                  |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|      |yes|
-**get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|
-**get_snmp_information**       |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_ntp_servers**            |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
-**get_ntp_peers**              |no|   |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
-**get_ntp_stats**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_mac_address_table**      |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|       |no|
-**get_interfaces**             |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|      |yes|
-**get_interfaces_ip**          |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|       |no|
-**get_lldp_neighbors**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |yes|      |no|
-**get_lldp_neighbors_detail**  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_bgp_neighbors**          |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|
-**get_bgp_neighbors_detail**   |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_route_to**               |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_probes_config**          |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_probes_results**         |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
-**get_optics**                 |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|   |yes|      |no|
-============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
+.. note:: The following table is built automatically. Everytime there is a release of a supported driver a built is triggered. The result of the tests are aggreggated on the following table.
 
 .. include:: matrix.rst
 

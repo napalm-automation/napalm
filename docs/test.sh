@@ -1,7 +1,7 @@
 #!/bin/bash
 CWD=`pwd`
 BUILDPATH=../
-TEST_RESULTS_PATH="docs/support/tests"
+TEST_RESULTS_PATH="$CWD/support/tests"
 DRIVER=`/bin/cat ../requirements.txt | grep napalm | grep -v base | awk -F\- '{print $2}'`
 
 set -e
@@ -12,7 +12,11 @@ function process_driver {
 	cd ../$1
 	git checkout master
 	pip install -r requirements-dev.txt
-	py.test
+
+	set +e
+	py.test --cov=./ -vs --json=report.json
+	set -e
+
 	cp report.json $TEST_RESULTS_PATH/$1.json
 	cd $CWD
 }

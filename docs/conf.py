@@ -14,6 +14,7 @@
 # serve to show the default.
 from collections import defaultdict
 
+import glob
 import json
 import os
 import re
@@ -316,26 +317,25 @@ def build_getters_support_matrix(app):
               if not (m.startswith('_') or
                       m in EXCLUDE_METHODS)}
 
-    basepath = './support/tests/'
     regex_name = re.compile(r"::test_(\w+)\[")
 
+    for filename in glob.iglob('./support/tests/*.json'):
+        driver = filename.split('/')[-1].split('.')[0]
+        drivers.append(driver)
+        with open(filename, 'r') as f:
+            data = json.loads(f.read())
+            for test in data.get('included', {}):
+                method = regex_name.search(test['attributes']['name']).group(1)
+                result = test['attributes']['outcome']
+
+                if method in METHOD_ALIASES.keys():
+                    method = METHOD_ALIASES[method]
+
+                intermediate_result = matrix[method].get(driver, None)
+                matrix[method][driver] = _merge_results(result, intermediate_result)
+
     sorted_methods = sorted(matrix.keys())
-    for _, _, files in os.walk('./support/tests/'):
-        for filename in files:
-            driver = filename.split('.')[0]
-            drivers.append(driver)
-            with open('{}/{}'.format(basepath, filename), 'r') as f:
-                data = json.loads(f.read())
-                for test in data['included']:
-                    method = regex_name.search(test['attributes']['name']).group(1)
-                    result = test['attributes']['outcome']
-
-                    if method in METHOD_ALIASES.keys():
-                        method = METHOD_ALIASES[method]
-
-                    intermediate_result = matrix[method].get(driver, None)
-                    matrix[method][driver] = _merge_results(result, intermediate_result)
-
+    drivers = sorted(drivers)
     env = Environment(loader=FileSystemLoader("."))
     template_file = env.get_template("matrix.j2")
     rendered_template = template_file.render(matrix=matrix, drivers=drivers,
