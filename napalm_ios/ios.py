@@ -120,9 +120,9 @@ class IOSDriver(NetworkDriver):
     def _send_command(self, command):
         """Wrapper for self.device.send.command().
 
-        If command is an interable will iterate through commands until valid command.
+        If command is a list will iterate through commands until valid command.
         """
-        if hasattr(command, '__iter__'):
+        if isinstance(command, list):
             for cmd in command:
                 print(cmd)
                 output = self.device.send_command(cmd)
