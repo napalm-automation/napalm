@@ -34,6 +34,10 @@ YEAR_SECONDS = 365 * DAY_SECONDS
 IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 RE_IPADDR_STRIP = re.compile(r"({})\n".format(IP_ADDR_REGEX))
 
+IOS_COMMANDS = {
+   'show_mac_address': ['show mac-address table', 'show mac address-table'],
+}
+
 
 class IOSDriver(NetworkDriver):
     """NAPALM Cisco IOS Handler."""
@@ -114,8 +118,17 @@ class IOSDriver(NetworkDriver):
         self.device.disconnect()
 
     def _send_command(self, command):
-        """Wrapper for self.device.send.command()"""
-        output = self.device.send_command(command)
+        """Wrapper for self.device.send.command().
+
+        If command is an interable will iterate through commands until valid command.
+        """
+        if hasattr(command, '__iter__'):
+            for cmd in command:
+                output = self.device.send_command(cmd)
+                if "% Invalid" not in output:
+                    break
+        else:
+            output = self.device.send_command(command)
         return self.send_command_postprocess(output)
 
     def is_alive(self):
@@ -1309,7 +1322,7 @@ class IOSDriver(NetworkDriver):
             * last_move (float)
         """
         mac_address_table = []
-        command = 'show mac-address-table'
+        command = IOS_COMMANDS['show_mac_address']
         output = self._send_command(command)
         output = output.split('\n')
 
