@@ -13,7 +13,7 @@ function process_driver {
 	git checkout master
 	pip install -r requirements-dev.txt
 	py.test
-	cp report.json TEST_RESULTS_PATH/$1.json
+	cp report.json $TEST_RESULTS_PATH/$1.json
 	cd $CWD
 }
 
