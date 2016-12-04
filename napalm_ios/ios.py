@@ -961,6 +961,7 @@ class IOSDriver(NetworkDriver):
             fields = line.split()[:10]
             peer_id, bgp_version, remote_as, msg_rcvd, msg_sent, table_version, in_queue, \
                 out_queue, up_time, state_prefix = fields
+            peer_id = peer_id.replace('*', '')
 
             if '(Admin)' in state_prefix:
                 is_enabled = False
