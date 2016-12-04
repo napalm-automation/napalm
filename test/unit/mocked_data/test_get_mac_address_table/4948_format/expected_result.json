@@ -1,0 +1,9 @@
+[{
+	"static": false,
+	"active": true,
+	"vlan": 999,
+	"mac": "1111.2222.3333",
+	"interface": "Port-channel1",
+	"moves": -1,
+	"last_move": -1.0
+}]
