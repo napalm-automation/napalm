@@ -35,7 +35,7 @@ IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 RE_IPADDR_STRIP = re.compile(r"({})\n".format(IP_ADDR_REGEX))
 
 IOS_COMMANDS = {
-   'show_mac_address': ['show mac-address table', 'show mac address-table'],
+   'show_mac_address': ['show mac-address-table', 'show mac address-table'],
 }
 
 
