@@ -1012,7 +1012,7 @@ class EOSDriver(NetworkDriver):
             if prefix not in routes.keys():
                 routes[prefix] = list()
             route_protocol = route_details.get('routeType').upper()
-            preference = route_details.get('preference', '')
+            preference = route_details.get('preference', 0)
 
             route = {
                 'current_active': False,
