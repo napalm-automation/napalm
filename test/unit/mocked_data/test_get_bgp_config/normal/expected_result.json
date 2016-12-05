@@ -1,0 +1,54 @@
+{
+	"4-public-anycast-peers": {
+		"neighbors": {
+			"192.168.50.5": {
+				"export_policy": "",
+				"remote_as": 9009,
+				"description": "M247 Ltd [UK Hosting ANYCAST]",
+				"prefix_limit": {},
+				"local_as": 0,
+				"nhs": false,
+				"route_reflector_client": false,
+				"local_address": "",
+				"authentication_key": "",
+				"import_policy": ""
+			},
+			"192.168.20.3": {
+				"export_policy": "",
+				"remote_as": 9050,
+				"description": "Telekom Romania [RO ISP ANYCAST]",
+				"prefix_limit": {},
+				"local_as": 0,
+				"nhs": false,
+				"route_reflector_client": false,
+				"local_address": "",
+				"authentication_key": "",
+				"import_policy": ""
+			},
+			"172.17.17.50": {
+				"export_policy": "",
+				"remote_as": 48161,
+				"description": "NextGen [RO ISP ANYCAST]",
+				"prefix_limit": {},
+				"local_as": 0,
+				"nhs": false,
+				"route_reflector_client": false,
+				"local_address": "",
+				"authentication_key": "",
+				"import_policy": ""
+			}
+		},
+		"export_policy": "4-public-anycast-peers-out",
+		"prefix_limit": {},
+		"description": "",
+		"local_address": "",
+		"local_as": 0,
+		"multihop_ttl": 0,
+		"apply_groups": [],
+		"remote_as": 0,
+		"remove_private_as": true,
+		"multipath": false,
+		"type": "external",
+		"import_policy": "4-public-anycast-peers-in"
+	}
+}
