@@ -33,6 +33,7 @@ YEAR_SECONDS = 365 * DAY_SECONDS
 # STD REGEX PATTERNS
 IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
+VLAN_REGEX = r"\d{1,4}"
 RE_IPADDR = re.compile(r"{}".format(IP_ADDR_REGEX))
 RE_IPADDR_STRIP = re.compile(r"({})\n".format(IP_ADDR_REGEX))
 RE_MAC = re.compile(r"{}".format(MAC_REGEX))
@@ -1349,6 +1350,7 @@ class IOSDriver(NetworkDriver):
           vlan   mac address     type    learn     age              ports
         ------+----------------+--------+-----+----------+--------------------------
         *  999  1111.2222.3333   dynamic  Yes          0   Port-channel1
+           999  1111.2222.3333   dynamic  Yes          0   Port-channel1
 
         Cat 4948
         Unicast Entries
@@ -1365,10 +1367,21 @@ class IOSDriver(NetworkDriver):
         All    1111.2222.3333    STATIC      CPU
         """
 
+        RE_MACTABLE_DEFAULT = r"^" + MAC_REGEX
+        RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 7 fields
+        RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 6 fields
+        RE_MACTABLE_4500 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)     # 5 fields
+        RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
+        RE_MACTABLE_2960_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields
+
         def process_mac_fields(vlan, mac, mac_type, interface):
             """Return proper data for mac address fields."""
             if mac_type.lower() in ['self', 'static']:
                 static = True
+                if vlan.lower() == 'all':
+                    vlan = 0
+                if interface.lower() == 'cpu':
+                    interface = ''
             else:
                 static = False
             if mac_type.lower() in ['dynamic']:
@@ -1391,31 +1404,39 @@ class IOSDriver(NetworkDriver):
 
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
+        print(output)
         output = "\n".join(output).strip()
         for line in output.splitlines():
+            line = line.strip()
+            if line == '':
+                continue
             # Format1
-            if re.search(r"^" + MAC_REGEX, line):
+            elif re.search(RE_MACTABLE_DEFAULT, line):
                 if len(line.split()) == 4:
                     mac, mac_type, vlan, interface = line.split()
                     mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
                 else:
                     raise ValueError("Unexpected output from: {}".format(line.split()))
             # Cat6500 format
-            # *  999  1111.2222.3333   dynamic  Yes          0   Port-channel1
-            elif re.search(r"^\*\s+\d+\s+" + MAC_REGEX, line):
+            elif (re.search(RE_MACTABLE_6500_1, line) or re.search(RE_MACTABLE_6500_2, line)) and \
+                    len(line.split()) >= 6:
                 if len(line.split()) == 7:
                     _, vlan, mac, mac_type, _, _, interface = line.split()
-                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-                else:
-                    raise ValueError("Unexpected output from: {}".format(line.split()))
+                elif len(line.split()) == 6:
+                    vlan, mac, mac_type, _, _, interface = line.split()
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             # Cat4948 format
-            #  999    1111.2222.3333   dynamic ip                    Port-channel1
-            elif re.search(r"^\s+\d+\s+" + MAC_REGEX, line) or re.search(r"^\d+\s+" + MAC_REGEX, line):
-                if len(line.split()) == 5:
-                    vlan, mac, mac_type, _, interface = line.split()
-                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-                else:
-                    raise ValueError("Unexpected output from: {}".format(line.split()))
+            elif re.search(RE_MACTABLE_4500, line) and len(line.split()) == 5:
+                vlan, mac, mac_type, _, interface = line.split()
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            # Cat2960 format - ignore extra header line
+            elif re.search(r"^Vlan\s+Mac Address\s+", line):
+                continue
+            # Cat2960 format
+            elif (re.search(RE_MACTABLE_2960_1, line) or re.search(RE_MACTABLE_2960_2, line)) and \
+                    len(line.split()) == 4:
+                vlan, mac, mac_type, interface = line.split()
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
         return mac_address_table

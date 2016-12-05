@@ -5,3 +5,4 @@ Legend: * - primary entry
   vlan   mac address     type    learn     age              ports
 ------+----------------+--------+-----+----------+--------------------------
 *  999  1111.2222.3333   dynamic  Yes          0   Port-channel1
+  999  1111.2222.3333   dynamic  Yes          0   Port-channel2
