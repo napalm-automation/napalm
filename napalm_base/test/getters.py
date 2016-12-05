@@ -60,7 +60,7 @@ def dict_diff(prv, nxt):
 
 def wrap_test_cases(func):
     """Wrap test cases."""
-    func.func_dict['build_test_cases'] = True
+    func.__dict__['build_test_cases'] = True
 
     @functools.wraps(func)
     def wrapper(cls, test_case):
