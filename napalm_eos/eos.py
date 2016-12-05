@@ -1070,7 +1070,7 @@ class EOSDriver(NetworkDriver):
             else:
                 for next_hop in route_details.get('vias'):
                     route_next_hop = route.copy()
-                    if next_hop.get('nextHopAddr') is None:
+                    if next_hop.get('nexthopAddr') is None:
                         route_next_hop.update(
                             {
                                 'next_hop': '',
