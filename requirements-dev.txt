@@ -1,4 +1,5 @@
 coveralls
+future
 pytest
 pytest-cov
 pytest-json
