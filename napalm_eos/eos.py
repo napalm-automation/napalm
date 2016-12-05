@@ -43,6 +43,7 @@ from napalm_base.utils import py23_compat
 from napalm_base.exceptions import ConnectionException, MergeConfigException, \
                         ReplaceConfigException, SessionLockedException, CommandErrorException
 
+import napalm_base.constants as c
 # local modules
 # here add local imports
 # e.g. import napalm_eos.helpers etc.
@@ -540,7 +541,7 @@ class EOSDriver(NetworkDriver):
                 )
         return lldp_neighbors_out
 
-    def cli(self, commands=None):
+    def cli(self, commands):
         cli_output = dict()
 
         if type(commands) is not list:
@@ -1541,7 +1542,8 @@ class EOSDriver(NetworkDriver):
         else:
             return vrfs
 
-    def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
+    def ping(self, destination, source=c.PING_SOURCE, ttl=c.PING_TTL, timeout=c.PING_TIMEOUT,
+             size=c.PING_SIZE, count=c.PING_COUNT):
         """
         Execute ping on the device and returns a dictionary with the result.
         Output dictionary has one of following keys:
