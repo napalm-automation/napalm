@@ -10,12 +10,14 @@ try:
 except ImportError:
     from itertools import zip_longest
 
+import inspect
 import json
 import os
 
 import pytest
 from napalm_base.test import helpers
 from napalm_base.test import models
+from napalm_base import NetworkDriver
 
 # text_type is 'unicode' for py2 and 'str' for py3
 from napalm_base.utils.py23_compat import text_type
@@ -58,6 +60,8 @@ def dict_diff(prv, nxt):
 
 def wrap_test_cases(func):
     """Wrap test cases."""
+    func.func_dict['build_test_cases'] = True
+
     @functools.wraps(func)
     def wrapper(cls, test_case):
         for patched_attr in cls.device.patched_attrs:
@@ -107,6 +111,32 @@ def wrap_test_cases(func):
 
 class BaseTestGetters(object):
     """Base class for testing drivers."""
+
+    def test_method_signatures(self):
+        """Test that all methods have the same signature."""
+        errors = {}
+        cls = self.driver
+        attrs = [m for m in dir(cls)]
+        for attr in attrs:
+            func = getattr(cls, attr)
+            if attr.startswith('_') or not inspect.ismethod(func):
+                continue
+            orig = getattr(NetworkDriver, attr)
+
+            orig_spec = inspect.getargspec(orig)
+            func_spec = inspect.getargspec(func)
+            if orig_spec != func_spec:
+                errors[attr] = (orig_spec, func_spec)
+
+        EXTRA_METHODS = ['__init__', ]
+        for method in EXTRA_METHODS:
+            if not method.startswith('_'):
+                orig_spec = inspect.getargspec(getattr(NetworkDriver, method))
+                func_spec = inspect.getargspec(getattr(cls, method))
+                if orig_spec != func_spec:
+                    errors[attr] = (orig_spec, func_spec)
+
+        assert not errors, "Some method vary. \n{}".format(errors)
 
     @wrap_test_cases
     def test_is_alive(self, test_case):

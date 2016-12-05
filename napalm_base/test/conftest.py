@@ -31,19 +31,20 @@ def set_device_parameters(request):
 
 def pytest_generate_tests(metafunc, basefile):
     """Generate test cases dynamically."""
-    path = os.path.join(os.path.dirname(basefile), 'mocked_data', metafunc.function.__name__)
+    if metafunc.function.func_dict.get('build_test_cases', False):
+        path = os.path.join(os.path.dirname(basefile), 'mocked_data', metafunc.function.__name__)
 
-    if os.path.exists(path):
-        sub_folders = os.listdir(path)
-    else:
-        sub_folders = []
+        if os.path.exists(path):
+            sub_folders = os.listdir(path)
+        else:
+            sub_folders = []
 
-    test_cases = []
-    for test_case in sub_folders:
-        if os.path.isdir(os.path.join(path, test_case)):
-            test_cases.append(test_case)
+        test_cases = []
+        for test_case in sub_folders:
+            if os.path.isdir(os.path.join(path, test_case)):
+                test_cases.append(test_case)
 
-    if not test_cases:
-        test_cases.append("no_test_case_found")
+        if not test_cases:
+            test_cases.append("no_test_case_found")
 
-    metafunc.parametrize("test_case", test_cases)
+        metafunc.parametrize("test_case", test_cases)
