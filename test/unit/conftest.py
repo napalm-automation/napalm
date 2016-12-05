@@ -48,6 +48,8 @@ class PatchedIOSXRDriver(iosxr.IOSXRDriver):
 class FakeIOSXRDevice(BaseTestDouble):
     """IOSXR device test double."""
 
+    def close(self):
+        pass
 
     def make_rpc_call(self, rpc_call):
         filename = '{}.txt'.format(self.sanitize_text(rpc_call))
