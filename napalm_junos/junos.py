@@ -84,21 +84,21 @@ class JunOSDriver(NetworkDriver):
             del self.device.cu
         self.device.bind(cu=Config)
         if self.config_lock:
-            self.lock()
+            self._lock()
 
     def close(self):
         """Close the connection."""
         if self.config_lock:
-            self.unlock()
+            self._unlock()
         self.device.close()
 
-    def lock(self):
+    def _lock(self):
         """Lock the config DB."""
         if not self.locked:
             self.device.cu.lock()
             self.locked = True
 
-    def unlock(self):
+    def _unlock(self):
         """Unlock the config DB."""
         if self.locked:
             self.device.cu.unlock()
@@ -121,7 +121,7 @@ class JunOSDriver(NetworkDriver):
         if not self.config_lock:
             # if not locked during connection time
             # will try to lock it if not already aquired
-            self.lock()
+            self._lock()
             # and the device will be locked till first commit/rollback
 
         try:
@@ -155,13 +155,13 @@ class JunOSDriver(NetworkDriver):
         """Commit configuration."""
         self.device.cu.commit()
         if not self.config_lock:
-            self.unlock()
+            self._unlock()
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
         self.device.cu.rollback(rb_id=0)
         if not self.config_lock:
-            self.unlock()
+            self._unlock()
 
     def rollback(self):
         """Rollback to previous commit."""
