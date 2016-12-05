@@ -36,6 +36,7 @@ import napalm_base.helpers
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import string_parsers
 from napalm_base.utils import py23_compat
+# import napalm_base.constants as C
 from napalm_base.exceptions import ConnectionException
 from napalm_base.exceptions import MergeConfigException
 from napalm_base.exceptions import CommandErrorException
@@ -475,7 +476,7 @@ class JunOSDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def cli(self, commands=None):
+    def cli(self, commands):
         """Execute raw CLI commands and returns their output."""
         cli_output = {}
 
@@ -958,7 +959,7 @@ class JunOSDriver(NetworkDriver):
 
         return mac_address_table
 
-    def get_route_to(self, destination=None, protocol=None):
+    def get_route_to(self, destination='', protocol=''):
         """Return route details to a specific destination, learned from a certain protocol."""
         routes = {}
 
