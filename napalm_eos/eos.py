@@ -1135,7 +1135,11 @@ class EOSDriver(NetworkDriver):
 
         return users
 
-    def traceroute(self, destination, source='', ttl=0, timeout=0):
+    def traceroute(self,
+                   destination,
+                   source=c.TRACEROUTE_SOURCE,
+                   ttl=c.TRACEROUTE_TTL,
+                   timeout=c.TRACEROUTE_TIMEOUT):
 
         _HOP_ENTRY_PROBE = [
             '\s+',
