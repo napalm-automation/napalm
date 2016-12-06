@@ -36,7 +36,7 @@ import napalm_base.helpers
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import string_parsers
 from napalm_base.utils import py23_compat
-# import napalm_base.constants as C
+import napalm_base.constants as C
 from napalm_base.exceptions import ConnectionException
 from napalm_base.exceptions import MergeConfigException
 from napalm_base.exceptions import CommandErrorException
@@ -1178,7 +1178,11 @@ class JunOSDriver(NetworkDriver):
 
         return probes_results
 
-    def traceroute(self, destination, source='', ttl=0, timeout=0):
+    def traceroute(self,
+                   destination,
+                   source=C.TRACEROUTE_SOURCE,
+                   ttl=C.TRACEROUTE_TTL,
+                   timeout=C.TRACEROUTE_TIMEOUT):
         """Execute traceroute and return results."""
         traceroute_result = {}
 
