@@ -1,3 +1,3 @@
-{% for peer in template_vars %}
-no ntp server {{peer}}
+{% for server in servers %}
+no ntp server {{server}}
 {% endfor %}
