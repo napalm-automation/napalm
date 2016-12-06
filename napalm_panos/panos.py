@@ -11,6 +11,7 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
+from __future__ import unicode_literals
 
 # std libs
 import xmltodict
@@ -30,6 +31,9 @@ from napalm_base.exceptions import ConnectionException, ReplaceConfigException,\
                                    MergeConfigException
 
 from napalm_base.base import NetworkDriver
+
+from napalm_base.utils import py23_compat
+
 from netmiko import ConnectHandler
 from netmiko import __version__ as netmiko_version
 
@@ -222,17 +226,17 @@ class PANOSDriver(NetworkDriver):
 
     def get_config(self, retrieve='all'):
         configs = {}
-        running = ''
-        candidate = ''
-        startup = ''
+        running = py23_compat.text_type('')
+        candidate = py23_compat.text_type('')
+        startup = py23_compat.text_type('')
 
         if retrieve == 'all':
-            running = self._get_running()
-            candidate = self._get_candidate()
+            running = py23_compat.text_type(self._get_running())
+            candidate = py23_compat.text_type(self._get_candidate())
         elif retrieve == 'running':
-            running = self._get_running()
+            running = py23_compat.text_type(self._get_running())
         elif retrieve == 'candidate':
-            candidate = self._get_candidate()
+            candidate = py23_compat.text_type(self._get_candidate())
 
         configs['running'] = running
         configs['candidate'] = candidate

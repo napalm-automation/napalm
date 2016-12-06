@@ -18,11 +18,10 @@ deploy:
     branch: master
 
 script:
+- py.test
 - pylama .
-- cd test/unit
-- nosetests --with-coverage --cover-package napalm_panos -v TestDriver:TestGetterDriver.test_get_facts
-- nosetests --with-coverage --cover-package napalm_panos -v TestDriver:TestGetterDriver.test_get_interfaces
-- cd ../..
 - coverage combine test/unit/.coverage
 
-after_success: coveralls
+after_success:
+   - coveralls
+   - if [ $TRAVIS_TAG ]; then curl -X POST https://readthedocs.org/build/napalm; fi
