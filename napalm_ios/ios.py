@@ -30,6 +30,18 @@ DAY_SECONDS = 24 * HOUR_SECONDS
 WEEK_SECONDS = 7 * DAY_SECONDS
 YEAR_SECONDS = 365 * DAY_SECONDS
 
+# STD REGEX PATTERNS
+IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
+VLAN_REGEX = r"\d{1,4}"
+RE_IPADDR = re.compile(r"{}".format(IP_ADDR_REGEX))
+RE_IPADDR_STRIP = re.compile(r"({})\n".format(IP_ADDR_REGEX))
+RE_MAC = re.compile(r"{}".format(MAC_REGEX))
+
+IOS_COMMANDS = {
+   'show_mac_address': ['show mac-address-table', 'show mac address-table'],
+}
+
 
 class IOSDriver(NetworkDriver):
     """NAPALM Cisco IOS Handler."""
@@ -108,6 +120,20 @@ class IOSDriver(NetworkDriver):
     def close(self):
         """Close the connection to the device."""
         self.device.disconnect()
+
+    def _send_command(self, command):
+        """Wrapper for self.device.send.command().
+
+        If command is a list will iterate through commands until valid command.
+        """
+        if isinstance(command, list):
+            for cmd in command:
+                output = self.device.send_command(cmd)
+                if "% Invalid" not in output:
+                    break
+        else:
+            output = self.device.send_command(command)
+        return self.send_command_postprocess(output)
 
     def is_alive(self):
         """Returns a flag with the state of the SSH connection."""
@@ -387,8 +413,7 @@ class IOSDriver(NetworkDriver):
         if self.interface_map.get(interface_brief):
             return self.interface_map.get(interface_brief)
         command = 'show int {}'.format(interface_brief)
-        output = self.device.send_command(command)
-        output = output.strip()
+        output = self._send_command(command)
         first_line = output.splitlines()[0]
         if 'line protocol' in first_line:
             full_int_name = first_line.split()[0]
@@ -397,11 +422,23 @@ class IOSDriver(NetworkDriver):
         else:
             return interface_brief
 
+    @staticmethod
+    def send_command_postprocess(output):
+        """
+        Cleanup actions on send_command() for NAPALM getters.
+
+        Remove "Load for five sec; one minute if in output"
+        Remove "Time source is"
+        """
+        output = re.sub(r"^Load for five secs.*$", "", output, flags=re.M)
+        output = re.sub(r"^Time source is .*$", "", output, flags=re.M)
+        return output.strip()
+
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
         lldp = {}
         command = 'show lldp neighbors'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
 
         # Check if router supports the command
         if '% Invalid input' in output:
@@ -448,7 +485,7 @@ class IOSDriver(NetworkDriver):
 
         for interface in lldp_neighbors:
             command = "show lldp neighbors {} detail".format(interface)
-            output = self.device.send_command(command)
+            output = self._send_command(command)
 
             # Check if router supports the command
             if '% Invalid input' in output:
@@ -538,9 +575,9 @@ class IOSDriver(NetworkDriver):
         serial_number, fqdn, os_version, hostname = (u'Unknown', u'Unknown', u'Unknown', u'Unknown')
 
         # obtain output from device
-        show_ver = self.device.send_command('show version')
-        show_hosts = self.device.send_command('show hosts')
-        show_ip_int_br = self.device.send_command('show ip interface brief')
+        show_ver = self._send_command('show version')
+        show_hosts = self._send_command('show hosts')
+        show_ip_int_br = self._send_command('show ip interface brief')
 
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
@@ -637,7 +674,7 @@ class IOSDriver(NetworkDriver):
         speed_regex = r".*BW\s(?P<speed>\d+)\s(?P<speed_format>\S+).*"
 
         command = 'show ip interface brief'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
         for line in output.splitlines():
             if 'Interface' in line and 'Status' in line:
                 continue
@@ -683,7 +720,7 @@ class IOSDriver(NetworkDriver):
 
         for interface in interface_list:
             show_command = "show interface {0}".format(interface)
-            interface_output = self.device.send_command(show_command)
+            interface_output = self._send_command(show_command)
             try:
                 # description filter
                 description = re.search(r"  Description: (.+)", interface_output)
@@ -741,7 +778,7 @@ class IOSDriver(NetworkDriver):
         interfaces = {}
 
         command = 'show ip interface brief'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
         for line in output.splitlines():
             if 'Interface' in line and 'Status' in line:
                 continue
@@ -755,7 +792,7 @@ class IOSDriver(NetworkDriver):
         # Parse IP Address and Subnet Mask from Interfaces
         for interface in interfaces:
             show_command = "show run interface {0}".format(interface)
-            interface_output = self.device.send_command(show_command)
+            interface_output = self._send_command(show_command)
             for line in interface_output.splitlines():
                 if 'ip address ' in line and 'no ip address' not in line:
                     fields = line.split()
@@ -763,7 +800,7 @@ class IOSDriver(NetworkDriver):
                         # Check for 'ip address dhcp', convert to ip address and mask
                         if fields[2] == 'dhcp':
                             cmd = "show interface {} | in Internet address is".format(interface)
-                            show_int = self.device.send_command(cmd)
+                            show_int = self._send_command(cmd)
                             int_fields = show_int.split()
                             ip_address, subnet = int_fields[3].split(r'/')
                             interfaces[interface]['ipv4'] = {ip_address: {}}
@@ -898,7 +935,9 @@ class IOSDriver(NetworkDriver):
         bgp_neighbor_data = {}
         bgp_neighbor_data['global'] = {}
 
-        output = self.device.send_command(cmd_bgp_summary).strip()
+        output = self._send_command(cmd_bgp_summary).strip()
+        # Cisco issue where new lines are inserted after neighbor IP
+        output = re.sub(RE_IPADDR_STRIP, r"\1", output)
         if 'Neighbor' not in output:
             return {}
         for line in output.splitlines():
@@ -913,7 +952,9 @@ class IOSDriver(NetworkDriver):
         bgp_neighbor_data['global']['peers'] = {}
 
         cmd_neighbor_table = 'show ip bgp summary | begin Neighbor'
-        output = self.device.send_command(cmd_neighbor_table).strip()
+        output = self._send_command(cmd_neighbor_table).strip()
+        # Cisco issue where new lines are inserted after neighbor IP
+        output = re.sub(RE_IPADDR_STRIP, r"\1", output)
         for line in output.splitlines():
             line = line.strip()
             if 'Neighbor' in line or line == '':
@@ -921,6 +962,7 @@ class IOSDriver(NetworkDriver):
             fields = line.split()[:10]
             peer_id, bgp_version, remote_as, msg_rcvd, msg_sent, table_version, in_queue, \
                 out_queue, up_time, state_prefix = fields
+            peer_id = peer_id.replace('*', '')
 
             if '(Admin)' in state_prefix:
                 is_enabled = False
@@ -941,7 +983,7 @@ class IOSDriver(NetworkDriver):
 
             cmd_remote_rid = 'show ip bgp neighbors {} | inc router ID'.format(peer_id)
             # output: BGP version 4, remote router ID 1.1.1.1
-            remote_rid_out = self.device.send_command(cmd_remote_rid).strip()
+            remote_rid_out = self._send_command(cmd_remote_rid)
             remote_rid = remote_rid_out.split()[-1]
 
             bgp_neighbor_data['global']['peers'].setdefault(peer_id, {})
@@ -956,7 +998,7 @@ class IOSDriver(NetworkDriver):
 
             cmd_current_prefixes = 'show ip bgp neighbors {} | inc Prefixes Current'.format(peer_id)
             # output: Prefixes Current:               0          0
-            current_prefixes_out = self.device.send_command(cmd_current_prefixes).strip()
+            current_prefixes_out = self._send_command(cmd_current_prefixes)
             pattern = r'Prefixes Current:\s+(\d+)\s+(\d+).*'  # Prefixes Current:    0     0
             match = re.search(pattern, current_prefixes_out)
             if match:
@@ -970,7 +1012,7 @@ class IOSDriver(NetworkDriver):
             # Local Policy Denied Prefixes:    --------    -------
             # prefix-list                           0          2
             # Total:                                0          2
-            filtered_prefixes_out = self.device.send_command(cmd_filtered_prefix).strip()
+            filtered_prefixes_out = self._send_command(cmd_filtered_prefix)
             sent_prefixes = int(sent_prefixes)
             pattern = r'Total:\s+\d+\s+(\d+).*'  # Total:     0          2
             match = re.search(pattern, filtered_prefixes_out)
@@ -1014,8 +1056,7 @@ class IOSDriver(NetworkDriver):
         """
         counters = {}
         command = 'show interfaces'
-        output = self.device.send_command(command)
-        output = output.strip()
+        output = self._send_command(command)
 
         # Break output into per-interface sections
         interface_strings = re.split(r'.* line protocol is .*', output, flags=re.M)
@@ -1090,8 +1131,7 @@ class IOSDriver(NetworkDriver):
         cpu_cmd = 'show proc cpu'
         mem_cmd = 'show memory statistics'
 
-        output = self.device.send_command(cpu_cmd)
-        output = output.strip()
+        output = self._send_command(cpu_cmd)
         environment.setdefault('cpu', {})
         environment['cpu'][0] = {}
         environment['cpu'][0]['%usage'] = 0.0
@@ -1103,8 +1143,7 @@ class IOSDriver(NetworkDriver):
                 environment['cpu'][0]['%usage'] = float(match.group(1))
                 break
 
-        output = self.device.send_command(mem_cmd)
-        output = output.strip()
+        output = self._send_command(mem_cmd)
         for line in output.splitlines():
             if 'Processor' in line:
                 _, _, _, proc_used_mem, proc_free_mem = line.split()[:5]
@@ -1155,33 +1194,44 @@ class IOSDriver(NetworkDriver):
         arp_table = []
 
         command = 'show arp | exclude Incomplete'
-        output = self.device.send_command(command)
-        output = output.split('\n')
+        output = self._send_command(command)
 
         # Skip the first line which is a header
-        output = output[1:-1]
+        output = output.split('\n')
+        output = output[1:]
 
         for line in output:
             if len(line) == 0:
                 return {}
-            if len(line.split()) == 6:
+            if len(line.split()) == 5:
+                # Static ARP entries have no interface
+                # Internet  10.0.0.1                -   0010.2345.1cda  ARPA
+                interface = ''
+                protocol, address, age, mac, eth_type = line.split()
+            elif len(line.split()) == 6:
                 protocol, address, age, mac, eth_type, interface = line.split()
-                try:
-                    if age == '-':
-                        age = 0
-                    age = float(age)
-                except ValueError:
-                    print("Unable to convert age value to float: {}".format(age))
-                entry = {
-                    'interface': interface,
-                    'mac': mac,
-                    'ip': address,
-                    'age': age
-                }
-                arp_table.append(entry)
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
 
+            try:
+                if age == '-':
+                    age = 0
+                age = float(age)
+            except ValueError:
+                raise ValueError("Unable to convert age value to float: {}".format(age))
+
+            # Validate we matched correctly
+            if not re.search(RE_IPADDR, address):
+                raise ValueError("Invalid IP Address detected: {}".format(address))
+            if not re.search(RE_MAC, mac):
+                raise ValueError("Invalid MAC Address detected: {}".format(mac))
+            entry = {
+                'interface': interface,
+                'mac': mac,
+                'ip': address,
+                'age': age
+            }
+            arp_table.append(entry)
         return arp_table
 
     def cli(self, commands=None):
@@ -1203,7 +1253,7 @@ class IOSDriver(NetworkDriver):
             raise TypeError('Please enter a valid list of commands!')
 
         for command in commands:
-            output = self.device.send_command(command)
+            output = self._send_command(command)
             if 'Invalid input detected' in output:
                 raise ValueError('Unable to execute command "{}"'.format(command))
             cli_output.setdefault(command, {})
@@ -1227,7 +1277,7 @@ class IOSDriver(NetworkDriver):
         """
         ntp_servers = {}
         command = 'show run | include ntp server'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
 
         for line in output.splitlines():
             split_line = line.split()
@@ -1243,7 +1293,7 @@ class IOSDriver(NetworkDriver):
         ntp_stats = []
 
         command = 'show ntp associations'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
 
         for line in output.splitlines():
             # Skip first two lines and last line of command output
@@ -1286,39 +1336,109 @@ class IOSDriver(NetworkDriver):
             * static (boolean)
             * moves (int)
             * last_move (float)
-        """
-        mac_address_table = []
-        command = 'show mac-address-table'
-        output = self.device.send_command(command)
-        output = output.strip().split('\n')
 
-        # Skip the first two lines which are headers
-        output = output[2:]
-        for line in output:
-            if len(line) == 0:
-                return mac_address_table
-            elif len(line.split()) == 4:
-                mac, mac_type, vlan, interface = line.split()
-                if mac_type.lower() in ['self', 'static']:
-                    static = True
-                else:
-                    static = False
-                if mac_type.lower() in ['dynamic']:
-                    active = True
-                else:
-                    active = False
-                entry = {
-                    'mac': mac,
-                    'interface': interface,
-                    'vlan': int(vlan),
-                    'static': static,
-                    'active': active,
-                    'moves': -1,
-                    'last_move': -1.0
-                }
-                mac_address_table.append(entry)
+        Format1:
+        Destination Address  Address Type  VLAN  Destination Port
+        -------------------  ------------  ----  --------------------
+        6400.f1cf.2cc6          Dynamic       1     Wlan-GigabitEthernet0
+
+        Cat 6500:
+        Legend: * - primary entry
+                age - seconds since last seen
+                n/a - not available
+
+          vlan   mac address     type    learn     age              ports
+        ------+----------------+--------+-----+----------+--------------------------
+        *  999  1111.2222.3333   dynamic  Yes          0   Port-channel1
+           999  1111.2222.3333   dynamic  Yes          0   Port-channel1
+
+        Cat 4948
+        Unicast Entries
+         vlan   mac address     type        protocols               port
+        -------+---------------+--------+---------------------+--------------------
+         999    1111.2222.3333   dynamic ip                    Port-channel1
+
+        Cat 2960
+        Mac Address Table
+        -------------------------------------------
+
+        Vlan    Mac Address       Type        Ports
+        ----    -----------       --------    -----
+        All    1111.2222.3333    STATIC      CPU
+        """
+
+        RE_MACTABLE_DEFAULT = r"^" + MAC_REGEX
+        RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 7 fields
+        RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 6 fields
+        RE_MACTABLE_4500 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)     # 5 fields
+        RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
+        RE_MACTABLE_2960_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields
+
+        def process_mac_fields(vlan, mac, mac_type, interface):
+            """Return proper data for mac address fields."""
+            if mac_type.lower() in ['self', 'static']:
+                static = True
+                if vlan.lower() == 'all':
+                    vlan = 0
+                if interface.lower() == 'cpu':
+                    interface = ''
             else:
-                raise ValueError("Unexpected output from: {}".format(line.split()))
+                static = False
+            if mac_type.lower() in ['dynamic']:
+                active = True
+            else:
+                active = False
+            return {
+                'mac': mac,
+                'interface': interface,
+                'vlan': int(vlan),
+                'static': static,
+                'active': active,
+                'moves': -1,
+                'last_move': -1.0
+            }
+
+        mac_address_table = []
+        command = IOS_COMMANDS['show_mac_address']
+        output = self._send_command(command)
+
+        # Skip the header lines
+        output = re.split(r'^----.*', output, flags=re.M)[1:]
+        print(output)
+        output = "\n".join(output).strip()
+        for line in output.splitlines():
+            line = line.strip()
+            if line == '':
+                continue
+            # Format1
+            elif re.search(RE_MACTABLE_DEFAULT, line):
+                if len(line.split()) == 4:
+                    mac, mac_type, vlan, interface = line.split()
+                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                else:
+                    raise ValueError("Unexpected output from: {}".format(line.split()))
+            # Cat6500 format
+            elif (re.search(RE_MACTABLE_6500_1, line) or re.search(RE_MACTABLE_6500_2, line)) and \
+                    len(line.split()) >= 6:
+                if len(line.split()) == 7:
+                    _, vlan, mac, mac_type, _, _, interface = line.split()
+                elif len(line.split()) == 6:
+                    vlan, mac, mac_type, _, _, interface = line.split()
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            # Cat4948 format
+            elif re.search(RE_MACTABLE_4500, line) and len(line.split()) == 5:
+                vlan, mac, mac_type, _, interface = line.split()
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            # Cat2960 format - ignore extra header line
+            elif re.search(r"^Vlan\s+Mac Address\s+", line):
+                continue
+            # Cat2960 format
+            elif (re.search(RE_MACTABLE_2960_1, line) or re.search(RE_MACTABLE_2960_2, line)) and \
+                    len(line.split()) == 4:
+                vlan, mac, mac_type, interface = line.split()
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            else:
+                raise ValueError("Unexpected output from: {}".format(repr(line)))
         return mac_address_table
 
     def get_snmp_information(self):
@@ -1345,7 +1465,7 @@ class IOSDriver(NetworkDriver):
             'location': u'unknown'
         }
         command = 'show run | include snmp-server'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
         for line in output.splitlines():
             fields = line.split()
             if 'snmp-server community' in line:
@@ -1370,7 +1490,7 @@ class IOSDriver(NetworkDriver):
         # If SNMP Chassis wasn't found; obtain using direct command
         if snmp_dict['chassis_id'] == 'unknown':
             command = 'show snmp chassis'
-            snmp_chassis = self.device.send_command(command)
+            snmp_chassis = self._send_command(command)
             snmp_dict['chassis_id'] = snmp_chassis
         return snmp_dict
 
@@ -1401,8 +1521,7 @@ class IOSDriver(NetworkDriver):
         if source != '':
             command += ' source {}'.format(source)
 
-        output = self.device.send_command(command)
-
+        output = self._send_command(command)
         if '%' in output:
             ping_dict['error'] = output
         elif 'Sending' in output:
@@ -1462,12 +1581,12 @@ class IOSDriver(NetworkDriver):
 
         if retrieve in ('startup', 'all'):
             command = 'show startup-config'
-            output = self.device.send_command(command)
+            output = self._send_command(command)
             configs['startup'] = output
 
         if retrieve in ('running', 'all'):
             command = 'show running-config'
-            output = self.device.send_command(command)
+            output = self._send_command(command)
             configs['running'] = output
 
         return configs
