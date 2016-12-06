@@ -1172,7 +1172,11 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def traceroute(self, destination, source='', ttl=0, timeout=0):
+    def traceroute(self,
+                   destination,
+                   source=c.TRACEROUTE_SOURCE,
+                   ttl=c.TRACEROUTE_TTL,
+                   timeout=c.TRACEROUTE_TIMEOUT):
         """
         Executes traceroute on the device and returns a dictionary with the result.
 
