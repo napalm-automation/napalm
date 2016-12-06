@@ -36,6 +36,7 @@ import napalm_base.helpers
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import string_parsers
 from napalm_base.utils import py23_compat
+import napalm_base.constants as C
 from napalm_base.exceptions import ConnectionException
 from napalm_base.exceptions import MergeConfigException
 from napalm_base.exceptions import CommandErrorException
@@ -84,21 +85,21 @@ class JunOSDriver(NetworkDriver):
             del self.device.cu
         self.device.bind(cu=Config)
         if self.config_lock:
-            self.lock()
+            self._lock()
 
     def close(self):
         """Close the connection."""
         if self.config_lock:
-            self.unlock()
+            self._unlock()
         self.device.close()
 
-    def lock(self):
+    def _lock(self):
         """Lock the config DB."""
         if not self.locked:
             self.device.cu.lock()
             self.locked = True
 
-    def unlock(self):
+    def _unlock(self):
         """Unlock the config DB."""
         if self.locked:
             self.device.cu.unlock()
@@ -121,7 +122,7 @@ class JunOSDriver(NetworkDriver):
         if not self.config_lock:
             # if not locked during connection time
             # will try to lock it if not already aquired
-            self.lock()
+            self._lock()
             # and the device will be locked till first commit/rollback
 
         try:
@@ -155,13 +156,13 @@ class JunOSDriver(NetworkDriver):
         """Commit configuration."""
         self.device.cu.commit()
         if not self.config_lock:
-            self.unlock()
+            self._unlock()
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
         self.device.cu.rollback(rb_id=0)
         if not self.config_lock:
-            self.unlock()
+            self._unlock()
 
     def rollback(self):
         """Rollback to previous commit."""
@@ -475,7 +476,7 @@ class JunOSDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def cli(self, commands=None):
+    def cli(self, commands):
         """Execute raw CLI commands and returns their output."""
         cli_output = {}
 
@@ -958,7 +959,7 @@ class JunOSDriver(NetworkDriver):
 
         return mac_address_table
 
-    def get_route_to(self, destination=None, protocol=None):
+    def get_route_to(self, destination='', protocol=''):
         """Return route details to a specific destination, learned from a certain protocol."""
         routes = {}
 
@@ -1177,7 +1178,11 @@ class JunOSDriver(NetworkDriver):
 
         return probes_results
 
-    def traceroute(self, destination, source='', ttl=0, timeout=0):
+    def traceroute(self,
+                   destination,
+                   source=C.TRACEROUTE_SOURCE,
+                   ttl=C.TRACEROUTE_TTL,
+                   timeout=C.TRACEROUTE_TIMEOUT):
         """Execute traceroute and return results."""
         traceroute_result = {}
 

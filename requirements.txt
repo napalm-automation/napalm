@@ -1,2 +1,2 @@
-napalm-base>=0.19.1
+napalm-base>=0.20.3
 junos-eznc
