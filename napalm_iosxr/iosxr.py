@@ -650,7 +650,7 @@ class IOSXRDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def cli(self, commands=None):
+    def cli(self, commands):
 
         cli_output = {}
 
@@ -1204,7 +1204,7 @@ class IOSXRDriver(NetworkDriver):
 
         return mac_table
 
-    def get_route_to(self, destination=None, protocol=None):
+    def get_route_to(self, destination='', protocol=''):
 
         routes = {}
 
