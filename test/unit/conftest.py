@@ -18,7 +18,7 @@ from napalm_base.test.double import BaseTestDouble
 from napalm_ros import ros
 
 from struct import pack
-from rosapi import Api
+from librouteros import Api
 
 
 @pytest.fixture(scope='class')

@@ -1,8 +1,0 @@
-  SEQ HOST                                     SIZE TTL TIME  STATUS                                                                                  
-    0 8.8.8.8                                    56  60 21ms 
-    1 8.8.8.8                                    56  60 113ms
-    2 8.8.8.8                                    56  60 20ms 
-    3 8.8.8.8                                    56  60 88ms 
-    4 8.8.8.8                                    56  60 20ms 
-    sent=5 received=5 packet-loss=0% min-rtt=20ms avg-rtt=52ms max-rtt=113ms 
-

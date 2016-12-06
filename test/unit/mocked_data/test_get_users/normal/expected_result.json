@@ -1,1 +1,0 @@
-{"admin": {"password": "", "sshkeys": [], "level": 15}, "test1": {"password": "", "sshkeys": [{"index": "0", "key-owner": "test1@localdomain", "flags": "D", "user": "test1"}], "level": 0}, "test2": {"password": "", "sshkeys": [], "level": 0}}

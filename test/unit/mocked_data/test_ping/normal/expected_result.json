@@ -1,1 +1,0 @@
-{"success": {"packet_loss": 0, "rtt_stddev": -1.0, "rtt_min": 20.0, "results": [{"rtt": 21.0, "ip_address": "8.8.8.8"}, {"rtt": 113.0, "ip_address": "8.8.8.8"}, {"rtt": 20.0, "ip_address": "8.8.8.8"}, {"rtt": 88.0, "ip_address": "8.8.8.8"}, {"rtt": 20.0, "ip_address": "8.8.8.8"}], "rtt_avg": 52.0, "rtt_max": 113.0, "probes_sent": 5}}

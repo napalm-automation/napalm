@@ -1,4 +1,3 @@
 napalm-base>0.18.0
 chainmap
-mikoshell
-paramiko
+librouteros==1.*
