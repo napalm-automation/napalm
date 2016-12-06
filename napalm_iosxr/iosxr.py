@@ -33,6 +33,7 @@ from pyIOSXR.exceptions import InvalidInputError
 
 # import NAPALM base
 import napalm_base.helpers
+import napalm_base.constants as C
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import py23_compat
 from napalm_base.exceptions import ConnectionException
@@ -1552,7 +1553,11 @@ class IOSXRDriver(NetworkDriver):
 
         return sla_results
 
-    def traceroute(self, destination, source='', ttl=0, timeout=0):
+    def traceroute(self,
+                   destination,
+                   source=C.TRACEROUTE_SOURCE,
+                   ttl=C.TRACEROUTE_TTL,
+                   timeout=C.TRACEROUTE_TIMEOUT):
 
         traceroute_result = {}
 
