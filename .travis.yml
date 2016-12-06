@@ -18,10 +18,8 @@ deploy:
     branch: master
 
 script:
-- py.test
+- py.test --cov-report= --cov=napalm_panos test/
 - pylama .
-- coverage combine test/unit/.coverage
 
 after_success:
-   - coveralls
    - if [ $TRAVIS_TAG ]; then curl -X POST https://readthedocs.org/build/napalm; fi
