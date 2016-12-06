@@ -8,7 +8,6 @@ import pytest
 from napalm_base.test import conftest as parent_conftest
 
 from napalm_base.test.double import BaseTestDouble
-from napalm_base.utils import py23_compat
 
 from napalm_iosxr import iosxr
 
@@ -41,6 +40,11 @@ class PatchedIOSXRDriver(iosxr.IOSXRDriver):
         self.patched_attrs = ['device']
         self.device = FakeIOSXRDevice()
 
+    def is_alive(self):
+        return {
+            'is_alive': True  # In testing everything works..
+        }
+
     def open(self):
         pass
 
@@ -56,3 +60,15 @@ class FakeIOSXRDevice(BaseTestDouble):
         full_path = self.find_file(filename)
         result = self.read_txt_file(full_path)
         return result
+
+    def show_lldp_neighbors(self):
+        filename = 'show_lldp_neighbors.txt'
+        full_path = self.find_file(filename)
+        result = self.read_txt_file(full_path)
+        return result
+
+    def _execute_config_show(self, show_command):
+        rpc_request = '<CLI><Configuration>{show_command}</Configuration></CLI>'.format(
+            show_command=show_command
+        )
+        return self.make_rpc_call(rpc_request)
