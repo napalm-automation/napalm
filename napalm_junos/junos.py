@@ -36,7 +36,7 @@ import napalm_base.helpers
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import string_parsers
 from napalm_base.utils import py23_compat
-import napalm_base.constants as C
+import napalm_junos.constants as C
 from napalm_base.exceptions import ConnectionException
 from napalm_base.exceptions import MergeConfigException
 from napalm_base.exceptions import CommandErrorException
@@ -1366,3 +1366,56 @@ class JunOSDriver(NetworkDriver):
             rv['running'] = py23_compat.text_type(config.text.encode('ascii', 'replace'))
 
         return rv
+
+    def get_network_instances(self, name=''):
+
+        network_instances = {}
+
+        ri_table = junos_views.junos_nw_instances_table(self.device)
+        ri_table.get(name=name)
+        ri_entries = ri_table.items()
+
+        vrf_interfaces = []
+
+        for ri_entry in ri_entries:
+            ri_name = py23_compat.text_type(ri_entry[0])
+            ri_details = {
+                d[0]: d[1] for d in ri_entry[1]
+            }
+            ri_type = ri_details['instance_type']
+            if ri_type is None:
+                ri_type = 'default'
+            ri_rd = ri_details['route_distinguisher']
+            ri_interfaces = ri_details['interfaces']
+            network_instances[ri_name] = {
+                'name': ri_name,
+                'type': C.OC_NETWORK_INSTANCE_TYPE_MAP.get(ri_type, ri_type),  # default: return raw
+                'state': {
+                    'route_distinguisher': ri_rd if ri_rd else ''
+                },
+                'interfaces': {
+                    'interface': {
+                        intrf_name: {} for intrf_name in ri_interfaces if intrf_name
+                    }
+                }
+            }
+            vrf_interfaces.extend(network_instances[ri_name]['interfaces']['interface'].keys())
+
+        all_interfaces = self.get_interfaces().keys()
+        default_interfaces = list(set(all_interfaces) - set(vrf_interfaces))
+        if 'default' not in network_instances:
+            network_instances['default'] = {
+                'name': 'default',
+                'type': C.OC_NETWORK_INSTANCE_TYPE_MAP.get('default'),
+                'state': {
+                    'route_distinguisher': ''
+                },
+                'interfaces': {
+                    'interface': {
+                        py23_compat.text_type(intrf_name): {}
+                        for intrf_name in default_interfaces
+                    }
+                }
+            }
+
+        return network_instances

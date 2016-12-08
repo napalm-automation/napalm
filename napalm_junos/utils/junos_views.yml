@@ -608,3 +608,19 @@ junos_intf_optics_view:
     laser_bias_current: laser-bias-current
     output_power: laser-output-power-dbm
     input_power: rx-signal-avg-optical-power-dbm
+
+###
+### Get network instances
+###
+
+junos_nw_instances_table:
+  get: routing-instances/instance
+  view: junos_nw_instances_view
+  args_key:
+    name
+
+junos_nw_instances_view:
+  fields:
+    instance_type: {instance-type: unicode}
+    interfaces: {interface/name: unicode}
+    route_distinguisher: {route-distinguisher/rd-type: unicode}
