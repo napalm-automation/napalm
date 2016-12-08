@@ -56,7 +56,7 @@ class PatchedIOSDriver(ios.IOSDriver):
 class FakeIOSDevice(BaseTestDouble):
     """IOS device test double."""
 
-    def send_command(self, command):
+    def send_command(self, command, **kwargs):
         filename = '{}.txt'.format(self.sanitize_text(command))
         full_path = self.find_file(filename)
         result = self.read_txt_file(full_path)
