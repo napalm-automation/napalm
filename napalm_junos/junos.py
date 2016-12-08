@@ -1372,7 +1372,7 @@ class JunOSDriver(NetworkDriver):
         network_instances = {}
 
         ri_table = junos_views.junos_nw_instances_table(self.device)
-        ri_table.get(name=name)
+        ri_table.get()
         ri_entries = ri_table.items()
 
         vrf_interfaces = []
@@ -1418,4 +1418,8 @@ class JunOSDriver(NetworkDriver):
                 }
             }
 
-        return network_instances
+        if not name:
+            return network_instances
+        if name not in network_instances:
+            return {}
+        return {name: network_instances[name]}
