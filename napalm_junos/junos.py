@@ -966,8 +966,8 @@ class JunOSDriver(NetworkDriver):
         if not isinstance(destination, py23_compat.string_types):
             raise TypeError('Please specify a valid destination!')
 
-        if not isinstance(protocol, py23_compat.string_types) or \
-           protocol.lower() not in ('static', 'bgp', 'isis', 'connected', 'direct'):
+        if protocol and (not isinstance(protocol, py23_compat.string_types) or
+           protocol.lower() not in ('static', 'bgp', 'isis', 'connected', 'direct')):
             raise TypeError("Protocol not supported: {protocol}.".format(
                 protocol=protocol
             ))
@@ -1019,11 +1019,14 @@ class JunOSDriver(NetworkDriver):
 
         routes_table = junos_views.junos_protocol_route_table(self.device)
 
+        rt_kargs = {
+            'destination': destination
+        }
+        if protocol:
+            rt_kargs['protocol'] = protocol
+
         try:
-            routes_table.get(
-                destination=destination,
-                protocol=protocol
-            )
+            routes_table.get(**rt_kargs)
         except RpcTimeoutError:
             # on devices with milions of routes
             # in case the destination is too generic (e.g.: 10/8)
@@ -1057,6 +1060,9 @@ class JunOSDriver(NetworkDriver):
                 # to be sure that contains only AS Numbers
             if d.get('inactive_reason') is None:
                 d['inactive_reason'] = u''
+            route_protocol = d.get('protocol').lower()
+            if protocol and protocol != route_protocol:
+                continue
             communities = d.get('communities')
             if communities is not None and type(communities) is not list:
                 d['communities'] = [communities]
@@ -1070,7 +1076,7 @@ class JunOSDriver(NetworkDriver):
             }
             protocol_attributes = {
                 key: value for key, value in all_protocol_attributes.iteritems()
-                if key in _PROTOCOL_SPECIFIC_FIELDS_.get(protocol, [])
+                if key in _PROTOCOL_SPECIFIC_FIELDS_.get(route_protocol, [])
             }
             d['protocol_attributes'] = protocol_attributes
             if destination not in routes.keys():
