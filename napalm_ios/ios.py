@@ -1557,6 +1557,125 @@ class IOSDriver(NetworkDriver):
 
         return ping_dict
 
+    def traceroute(self, destination, source='', ttl=0, timeout=0):
+        """
+        Executes traceroute on the device and returns a dictionary with the result.
+
+        :param destination: Host or IP Address of the destination
+        :param source (optional): Use a specific IP Address to execute the traceroute
+        :param ttl (optional): Maimum number of hops -> int (0-255)
+        :param timeout (optional): Number of seconds to wait for response -> int (1-3600)
+
+        Output dictionary has one of the following keys:
+
+            * success
+            * error
+
+        In case of success, the keys of the dictionary represent the hop ID, while values are
+        dictionaries containing the probes results:
+            * rtt (float)
+            * ip_address (str)
+            * host_name (str)
+        """
+
+        command = "traceroute {}".format(destination)
+        if source:
+            command += " source {}".format(source)
+        if ttl:
+            if isinstance(ttl, int) and 0 <= timeout <= 255:
+                command += " ttl 0 {}".format(str(ttl))
+        if timeout:
+            # Timeout should be intiger between 1 and 3600
+            if isinstance(timeout, int) and 1 <= timeout <= 3600:
+                command += " timeout {}".format(str(timeout))
+        # Have to extend "send_command timeout" since traceroute can last for long time
+        # The formula to calculate the max_loops parameter is:
+        # (5 * expected_hops * timeout ) + 150
+        # 5 -> because the default sleep time in send_command is 0.2s
+        # ttl_value -> based on expected hops, 255 if not set
+        # timeout -> configured timeout, 10 is used when not configured
+        # 150 -> to make some buffer
+        ttl_value = 255
+        if ttl != 0:
+            ttl_value = ttl
+        timeout_value = 10
+        if timeout != 0:
+            timeout_value = timeout
+        max_loops = (5 * ttl_value * timeout_value) + 150
+        output = self.device.send_command(command, max_loops=max_loops)
+
+        # Prepare return dict
+        traceroute_dict = dict()
+        if re.search('Unrecognized host or address', output):
+            traceroute_dict['error'] = 'unknown host %s' % destination
+            return traceroute_dict
+        else:
+            traceroute_dict['success'] = dict()
+
+        results = dict()
+        # Find all hops
+        hops = re.findall('\\n\s+[0-9]{1,3}\s', output)
+        for hop in hops:
+            # Search for hop in the output
+            hop_match = re.search(hop, output)
+            # Find the start index for hop
+            start_index = hop_match.start()
+            # If this is last hop
+            if hops.index(hop) + 1 == len(hops):
+                # Set the stop index for hop to len of output
+                stop_index = len(output)
+            # else, find the start index for next hop
+            else:
+                next_hop_match = re.search(hops[hops.index(hop) + 1], output)
+                stop_index = next_hop_match.start()
+                # Now you have the start and stop index for each hop
+                # and you can parse the probes
+            # Set the hop_variable, and remove spaces between msec for easier matching
+            hop_string = output[start_index:stop_index].replace(' msec', 'msec')
+            hop_list = hop_string.split()
+            current_hop = int(hop_list.pop(0))
+            # Prepare dictionary for each hop (assuming there are 3 probes in each hop)
+            results[current_hop] = dict()
+            results[current_hop]['probes'] = dict()
+            results[current_hop]['probes'][1] = {'rtt': float(),
+                                                 'ip_address': '',
+                                                 'host_name': ''}
+            results[current_hop]['probes'][2] = {'rtt': float(),
+                                                 'ip_address': '',
+                                                 'host_name': ''}
+            results[current_hop]['probes'][3] = {'rtt': float(),
+                                                 'ip_address': '',
+                                                 'host_name': ''}
+            current_probe = 1
+            ip_address = ''
+            host_name = ''
+            while hop_list:
+                current_element = hop_list.pop(0)
+                # If current_element is * move index in dictionary to next probe
+                if current_element == '*':
+                    current_probe += 1
+                # If current_element contains msec record the entry for probe
+                elif 'msec' in current_element:
+                    ip_address = py23_compat.text_type(ip_address)
+                    host_name = py23_compat.text_type(host_name)
+                    rtt = float(current_element.replace('msec', ''))
+                    results[current_hop]['probes'][current_probe]['ip_address'] = ip_address
+                    results[current_hop]['probes'][current_probe]['host_name'] = host_name
+                    results[current_hop]['probes'][current_probe]['rtt'] = rtt
+                    # After recording the entry move the index to next probe
+                    current_probe += 1
+                # If element contains '(' and ')', the output format is 'FQDN (IP_ADDRESS)'
+                # Save the IP address
+                elif '(' in current_element:
+                    ip_address = current_element.replace('(', '').replace(')', '')
+                # Save the probe's ip_address and host_name
+                else:
+                    host_name = current_element
+                    ip_address = current_element
+
+        traceroute_dict['success'] = results
+        return traceroute_dict
+
     def get_config(self, retrieve='all'):
         """Implementation of get_config for IOS.
 
