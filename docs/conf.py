@@ -327,7 +327,7 @@ def build_getters_support_matrix(app):
             for test in data.get('included', {}):
                 try:
                     method = regex_name.search(test['attributes']['name']).group(1)
-                except AttributeError:
+                except:
                     print("Method name that failed to parse was: {}".format(test['attributes']['name']))
                     raise
                 result = test['attributes']['outcome']
