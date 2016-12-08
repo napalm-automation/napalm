@@ -288,6 +288,8 @@ EXCLUDE_METHODS = ('cli', 'close', 'commit_config', 'compare_config',
                    'load_replace_candidate', 'load_template', 'open',
                    'rollback')
 
+EXCLUDE_IN_REPORT = ('test_method_signatures')
+
 METHOD_ALIASES = {
     'get_config_filtered': 'get_config',
 }
@@ -317,7 +319,7 @@ def build_getters_support_matrix(app):
               if not (m.startswith('_') or
                       m in EXCLUDE_METHODS)}
 
-    regex_name = re.compile(r"::test_(\w+)\[")
+    regex_name = re.compile(r"::test_(\w+)")
 
     for filename in glob.iglob('./support/tests/*.json'):
         driver = filename.split('/')[-1].split('.')[0]
@@ -325,12 +327,13 @@ def build_getters_support_matrix(app):
         with open(filename, 'r') as f:
             data = json.loads(f.read())
             for test in data.get('included', {}):
-                print("Method name that failed to parse was: {}".format(test['attributes']['name']))
                 try:
                     method = regex_name.search(test['attributes']['name']).group(1)
                 except:
                     print("Method name that failed to parse was: {}".format(test['attributes']['name']))
                     raise
+                if method in EXCLUDE_IN_REPORT:
+                    continue
                 result = test['attributes']['outcome']
 
                 if method in METHOD_ALIASES.keys():
