@@ -23,6 +23,7 @@ from netmiko import __version__ as netmiko_version
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ReplaceConfigException, MergeConfigException
 from napalm_base.utils import py23_compat
+import napalm_base.constants as C
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
@@ -1397,7 +1398,6 @@ class IOSDriver(NetworkDriver):
 
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
-        print(output)
         output = "\n".join(output).strip()
         for line in output.splitlines():
             line = line.strip()
@@ -1557,7 +1557,8 @@ class IOSDriver(NetworkDriver):
 
         return ping_dict
 
-    def traceroute(self, destination, source='', ttl=0, timeout=0):
+    def traceroute(self, destination, source=C.TRACEROUTE_SOURCE,
+                   ttl=C.TRACEROUTE_TTL, timeout=C.TRACEROUTE_TIMEOUT):
         """
         Executes traceroute on the device and returns a dictionary with the result.
 
@@ -1585,23 +1586,15 @@ class IOSDriver(NetworkDriver):
             if isinstance(ttl, int) and 0 <= timeout <= 255:
                 command += " ttl 0 {}".format(str(ttl))
         if timeout:
-            # Timeout should be intiger between 1 and 3600
+            # Timeout should be an integer between 1 and 3600
             if isinstance(timeout, int) and 1 <= timeout <= 3600:
                 command += " timeout {}".format(str(timeout))
-        # Have to extend "send_command timeout" since traceroute can last for long time
-        # The formula to calculate the max_loops parameter is:
-        # (5 * expected_hops * timeout ) + 150
-        # 5 -> because the default sleep time in send_command is 0.2s
-        # ttl_value -> based on expected hops, 255 if not set
-        # timeout -> configured timeout, 10 is used when not configured
-        # 150 -> to make some buffer
-        ttl_value = 255
-        if ttl != 0:
-            ttl_value = ttl
-        timeout_value = 10
-        if timeout != 0:
-            timeout_value = timeout
-        max_loops = (5 * ttl_value * timeout_value) + 150
+
+        # Calculation to leave enough time for traceroute to complete assumes send_command
+        # delay of .2 seconds.
+        max_loops = (5 * ttl * timeout) + 150
+        if max_loops < 500:     # Make sure max_loops isn't set artificially low
+            max_loops = 500
         output = self.device.send_command(command, max_loops=max_loops)
 
         # Prepare return dict
