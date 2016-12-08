@@ -116,27 +116,30 @@ class BaseTestGetters(object):
         """Test that all methods have the same signature."""
         errors = {}
         cls = self.driver
-        attrs = [m for m in dir(cls)]
+        # Create fictional driver instance (py3 needs bound methods)
+        tmp_obj = cls(hostname='test', username='admin', password='pwd')
+        attrs = [m for m, v in inspect.getmembers(tmp_obj)]
         for attr in attrs:
-            func = getattr(cls, attr)
+            func = getattr(tmp_obj, attr)
             if attr.startswith('_') or not inspect.ismethod(func):
                 continue
-            orig = getattr(NetworkDriver, attr)
-
-            orig_spec = inspect.getargspec(orig)
+            try:
+                orig = getattr(NetworkDriver, attr)
+                orig_spec = inspect.getargspec(orig)
+            except AttributeError:
+                orig_spec = 'Method does not exist in napalm_base'
             func_spec = inspect.getargspec(func)
             if orig_spec != func_spec:
                 errors[attr] = (orig_spec, func_spec)
 
         EXTRA_METHODS = ['__init__', ]
         for method in EXTRA_METHODS:
-            if not method.startswith('_'):
-                orig_spec = inspect.getargspec(getattr(NetworkDriver, method))
-                func_spec = inspect.getargspec(getattr(cls, method))
-                if orig_spec != func_spec:
-                    errors[attr] = (orig_spec, func_spec)
+            orig_spec = inspect.getargspec(getattr(NetworkDriver, method))
+            func_spec = inspect.getargspec(getattr(cls, method))
+            if orig_spec != func_spec:
+                errors[attr] = (orig_spec, func_spec)
 
-        assert not errors, "Some method vary. \n{}".format(errors)
+        assert not errors, "Some methods vary. \n{}".format(errors.keys())
 
     @wrap_test_cases
     def test_is_alive(self, test_case):
