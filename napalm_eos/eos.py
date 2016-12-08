@@ -428,7 +428,7 @@ class EOSDriver(NetworkDriver):
     def get_environment(self):
         def extract_temperature_data(data):
             for s in data:
-                temp = s['currentTemperature']
+                temp = s['currentTemperature'] if 'currentTemperature' in s else 0.0
                 name = s['name']
                 values = {
                    'temperature': temp,
@@ -484,7 +484,7 @@ class EOSDriver(NetworkDriver):
         # Matches either of
         # Mem:   3844356k total,  3763184k used,    81172k free,    16732k buffers ( 4.16 > )
         # KiB Mem:  32472080 total,  5697604 used, 26774476 free,   372052 buffers ( 4.16 < )
-        mem_regex = '.*total,\s+ (?P<used>\d+)[k\s]+used,\s+(?P<free>\d+)[k\s]+free,.*'
+        mem_regex = '.*total,\s+(?P<used>\d+)[k\s]+used,\s+(?P<free>\d+)[k\s]+free,.*'
         m = re.match(mem_regex, cpu_lines[3])
         environment_counters['memory'] = {
             'available_ram': int(m.group('free')),
