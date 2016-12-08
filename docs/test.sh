@@ -5,6 +5,7 @@ TEST_RESULTS_PATH="$CWD/support/tests"
 DRIVER=`/bin/cat ../requirements.txt | grep napalm | grep -v base | awk -F\- '{print $2}'`
 
 set -e
+pip install -U napalm-base
 
 function process_driver {
 	echo PROCESSING $1
