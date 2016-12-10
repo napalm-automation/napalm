@@ -15,4 +15,6 @@ deploy:
 script:
   - py.test --cov-report= --cov=napalm_junos test/
   - pylama .
-after_success: coveralls
+after_success:
+- coveralls
+- if [ $TRAVIS_TAG ]; then curl -X POST https://readthedocs.org/build/napalm; fi
