@@ -13,3 +13,4 @@
 # the License.
 
 from napalm_base import get_network_driver
+from napalm_base import network_device
