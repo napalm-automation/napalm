@@ -59,4 +59,4 @@ env
 *.swp
 
 test/unit/test_devices.py
-
+report.json

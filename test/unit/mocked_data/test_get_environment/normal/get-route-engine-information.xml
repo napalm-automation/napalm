@@ -1,0 +1,24 @@
+<route-engine-information>
+  <route-engine>
+    <slot>0</slot>
+    <mastership-state>master</mastership-state>
+    <status>OK</status>
+    <temperature celsius="36">36 degrees C / 96 degrees F</temperature>
+    <cpu-temperature celsius="36">36 degrees C / 96 degrees F</cpu-temperature>
+    <memory-dram-size>1024</memory-dram-size>
+    <memory-buffer-utilization>55</memory-buffer-utilization>
+    <cpu-user>2</cpu-user>
+    <cpu-background>0</cpu-background>
+    <cpu-system>1</cpu-system>
+    <cpu-interrupt>0</cpu-interrupt>
+    <cpu-idle>97</cpu-idle>
+    <model>EX4200-48T, 8 POE</model>
+    <serial-number>BP0213023897</serial-number>
+    <start-time seconds="1400564493">2014-05-20 05:41:33 UTC</start-time>
+    <up-time seconds="45366685">525 days, 1 hour, 51 minutes, 25 seconds</up-time>
+    <last-reboot-reason>Router rebooted after a normal shutdown.</last-reboot-reason>
+    <load-average-one>0.13</load-average-one>
+    <load-average-five>0.17</load-average-five>
+    <load-average-fifteen>0.15</load-average-fifteen>
+  </route-engine>
+</route-engine-information>

@@ -1,0 +1,1 @@
+{"me0.0": [{"hostname": "lom-bjg61-r1-1", "port": "27"}], "xe-4/3/6": [{"hostname": "peer00.lab.demo", "port": "Ethernet1"}], "xe-0/1/0.0": [{"hostname": "spine00", "port": "xe-0/0/0"}], "ge-0/0/0.0": [{"hostname": "rtr00.demo", "port": "GigabitEthernet0/0/0/0"}]}

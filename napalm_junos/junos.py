@@ -36,6 +36,7 @@ import napalm_base.helpers
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import string_parsers
 from napalm_base.utils import py23_compat
+import napalm_junos.constants as C
 from napalm_base.exceptions import ConnectionException
 from napalm_base.exceptions import MergeConfigException
 from napalm_base.exceptions import CommandErrorException
@@ -84,25 +85,32 @@ class JunOSDriver(NetworkDriver):
             del self.device.cu
         self.device.bind(cu=Config)
         if self.config_lock:
-            self.lock()
+            self._lock()
 
     def close(self):
         """Close the connection."""
         if self.config_lock:
-            self.unlock()
+            self._unlock()
         self.device.close()
 
-    def lock(self):
+    def _lock(self):
         """Lock the config DB."""
         if not self.locked:
             self.device.cu.lock()
             self.locked = True
 
-    def unlock(self):
+    def _unlock(self):
         """Unlock the config DB."""
         if self.locked:
             self.device.cu.unlock()
             self.locked = False
+
+    def is_alive(self):
+        # evaluate the state of the underlying SSH connection
+        # and also the NETCONF status from PyEZ
+        return {
+            'is_alive': self.device._conn._session.transport.is_active() and self.device.connected
+        }
 
     def _load_candidate(self, filename, config, overwrite):
         if filename is None:
@@ -114,7 +122,7 @@ class JunOSDriver(NetworkDriver):
         if not self.config_lock:
             # if not locked during connection time
             # will try to lock it if not already aquired
-            self.lock()
+            self._lock()
             # and the device will be locked till first commit/rollback
 
         try:
@@ -148,13 +156,13 @@ class JunOSDriver(NetworkDriver):
         """Commit configuration."""
         self.device.cu.commit()
         if not self.config_lock:
-            self.unlock()
+            self._unlock()
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
         self.device.cu.rollback(rb_id=0)
         if not self.config_lock:
-            self.unlock()
+            self._unlock()
 
     def rollback(self):
         """Rollback to previous commit."""
@@ -468,7 +476,7 @@ class JunOSDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def cli(self, commands=None):
+    def cli(self, commands):
         """Execute raw CLI commands and returns their output."""
         cli_output = {}
 
@@ -951,20 +959,23 @@ class JunOSDriver(NetworkDriver):
 
         return mac_address_table
 
-    def get_route_to(self, destination=None, protocol=None):
+    def get_route_to(self, destination='', protocol=''):
         """Return route details to a specific destination, learned from a certain protocol."""
         routes = {}
 
         if not isinstance(destination, py23_compat.string_types):
             raise TypeError('Please specify a valid destination!')
 
-        if not isinstance(protocol, py23_compat.string_types) or \
-           protocol.lower() not in ('static', 'bgp', 'isis'):
+        if protocol and (not isinstance(protocol, py23_compat.string_types) or
+           protocol.lower() not in ('static', 'bgp', 'isis', 'connected', 'direct')):
             raise TypeError("Protocol not supported: {protocol}.".format(
                 protocol=protocol
             ))
 
         protocol = protocol.lower()
+
+        if protocol == 'connected':
+            protocol = 'direct'  # this is how is called on JunOS
 
         _COMMON_PROTOCOL_FIELDS_ = [
             'destination',
@@ -1003,18 +1014,19 @@ class JunOSDriver(NetworkDriver):
                 'level',
                 'metric',
                 'local_as'
-            ],
-            'static': [  # nothing specific to static routes
             ]
         }
 
         routes_table = junos_views.junos_protocol_route_table(self.device)
 
+        rt_kargs = {
+            'destination': destination
+        }
+        if protocol:
+            rt_kargs['protocol'] = protocol
+
         try:
-            routes_table.get(
-                destination=destination,
-                protocol=protocol
-            )
+            routes_table.get(**rt_kargs)
         except RpcTimeoutError:
             # on devices with milions of routes
             # in case the destination is too generic (e.g.: 10/8)
@@ -1030,7 +1042,7 @@ class JunOSDriver(NetworkDriver):
 
         for route in routes_items:
             d = {}
-            next_hop = route[0]
+            # next_hop = route[0]
             d = {elem[0]: elem[1] for elem in route[1]}
             destination = napalm_base.helpers.ip(d.pop('destination', ''))
             prefix_length = d.pop('prefix_length', 32)
@@ -1048,10 +1060,13 @@ class JunOSDriver(NetworkDriver):
                 # to be sure that contains only AS Numbers
             if d.get('inactive_reason') is None:
                 d['inactive_reason'] = u''
+            route_protocol = d.get('protocol').lower()
+            if protocol and protocol != route_protocol:
+                continue
             communities = d.get('communities')
             if communities is not None and type(communities) is not list:
                 d['communities'] = [communities]
-            d['next_hop'] = unicode(next_hop)
+            # d['next_hop'] = unicode(next_hop)
             d_keys = d.keys()
             # fields that are not in _COMMON_PROTOCOL_FIELDS_ are supposed to be protocol specific
             all_protocol_attributes = {
@@ -1061,7 +1076,7 @@ class JunOSDriver(NetworkDriver):
             }
             protocol_attributes = {
                 key: value for key, value in all_protocol_attributes.iteritems()
-                if key in _PROTOCOL_SPECIFIC_FIELDS_.get(protocol)
+                if key in _PROTOCOL_SPECIFIC_FIELDS_.get(route_protocol, [])
             }
             d['protocol_attributes'] = protocol_attributes
             if destination not in routes.keys():
@@ -1170,7 +1185,11 @@ class JunOSDriver(NetworkDriver):
 
         return probes_results
 
-    def traceroute(self, destination, source='', ttl=0, timeout=0):
+    def traceroute(self,
+                   destination,
+                   source=C.TRACEROUTE_SOURCE,
+                   ttl=C.TRACEROUTE_TTL,
+                   timeout=C.TRACEROUTE_TIMEOUT):
         """Execute traceroute and return results."""
         traceroute_result = {}
 
@@ -1285,9 +1304,10 @@ class JunOSDriver(NetworkDriver):
         # Formatting data into return data structure
         optics_detail = {}
         for intf_optic_item in optics_items:
+            interface_name = py23_compat.text_type(intf_optic_item[0])
             optics = dict(intf_optic_item[1])
-            if intf_optic_item[0] not in optics_detail:
-                optics_detail[intf_optic_item[0]] = {}
+            if interface_name not in optics_detail:
+                optics_detail[interface_name] = {}
 
             # Defaulting avg, min, max values to 0.0 since device does not
             # return these values
@@ -1327,7 +1347,7 @@ class JunOSDriver(NetworkDriver):
                         }]
                     }
                 }
-            optics_detail[intf_optic_item[0]] = intf_optics
+            optics_detail[interface_name] = intf_optics
 
         return optics_detail
 
@@ -1353,3 +1373,60 @@ class JunOSDriver(NetworkDriver):
             rv['running'] = py23_compat.text_type(config.text.encode('ascii', 'replace'))
 
         return rv
+
+    def get_network_instances(self, name=''):
+
+        network_instances = {}
+
+        ri_table = junos_views.junos_nw_instances_table(self.device)
+        ri_table.get()
+        ri_entries = ri_table.items()
+
+        vrf_interfaces = []
+
+        for ri_entry in ri_entries:
+            ri_name = py23_compat.text_type(ri_entry[0])
+            ri_details = {
+                d[0]: d[1] for d in ri_entry[1]
+            }
+            ri_type = ri_details['instance_type']
+            if ri_type is None:
+                ri_type = 'default'
+            ri_rd = ri_details['route_distinguisher']
+            ri_interfaces = ri_details['interfaces']
+            network_instances[ri_name] = {
+                'name': ri_name,
+                'type': C.OC_NETWORK_INSTANCE_TYPE_MAP.get(ri_type, ri_type),  # default: return raw
+                'state': {
+                    'route_distinguisher': ri_rd if ri_rd else ''
+                },
+                'interfaces': {
+                    'interface': {
+                        intrf_name: {} for intrf_name in ri_interfaces if intrf_name
+                    }
+                }
+            }
+            vrf_interfaces.extend(network_instances[ri_name]['interfaces']['interface'].keys())
+
+        all_interfaces = self.get_interfaces().keys()
+        default_interfaces = list(set(all_interfaces) - set(vrf_interfaces))
+        if 'default' not in network_instances:
+            network_instances['default'] = {
+                'name': 'default',
+                'type': C.OC_NETWORK_INSTANCE_TYPE_MAP.get('default'),
+                'state': {
+                    'route_distinguisher': ''
+                },
+                'interfaces': {
+                    'interface': {
+                        py23_compat.text_type(intrf_name): {}
+                        for intrf_name in default_interfaces
+                    }
+                }
+            }
+
+        if not name:
+            return network_instances
+        if name not in network_instances:
+            return {}
+        return {name: network_instances[name]}
