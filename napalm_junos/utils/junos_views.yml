@@ -476,7 +476,7 @@ junos_protocol_route_table:
     destination
     protocol
   item: route-table/rt/rt-entry/nh
-  key: to
+  key: via
   view: junos_route_table_view
 
 junos_route_table_view:
