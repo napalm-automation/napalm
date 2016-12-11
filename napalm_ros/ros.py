@@ -153,7 +153,7 @@ class ROSDriver(NetworkDriver):
             if len(router_ids) != 1:
                 raise ValueError('Multiple router-id values seen')
             bgp_neighbors[routing_table]['router_id'] = \
-                napalm_base.helpers.ip(router_ids.keys()[0])
+                napalm_base.helpers.ip(list(router_ids.keys())[0])  # list for py23 compatibility
         return bgp_neighbors
 
     def get_bgp_neighbors_detail(self, neighbor_address=''):
