@@ -14,7 +14,9 @@ import napalm_base.utils.string_parsers
 import paramiko
 import mikoshell
 
-from . import utils as ros_utils
+import napalm_ros.utils as ros_utils
+
+import napalm_base.constants as c
 
 
 class ROSDriver(NetworkDriver):
@@ -36,7 +38,10 @@ class ROSDriver(NetworkDriver):
         self.config_session = None
         self.merge_config = False
 
-    def cli(self, *commands):
+    def cli(self, commands):
+        if not isinstance(commands, list):
+            commands = [commands]
+
         cli_output = {}
         for command in commands:
             device_output = self.mikoshell.command(command)
@@ -398,10 +403,10 @@ class ROSDriver(NetworkDriver):
             raise NotImplementedError
         return self._get_mndp_neighbors()
 
-    def get_lldp_neighbors_detail(self, *args, **kwargs):
+    def get_lldp_neighbors_detail(self, interface=''):
         if not self._minimum_version(6, 38):
             raise NotImplementedError
-        return self._get_mndp_neighbors_detail(*args, **kwargs)
+        return self._get_mndp_neighbors_detail(interface)
 
 #   def get_mac_address_table(self):
 
@@ -600,7 +605,8 @@ class ROSDriver(NetworkDriver):
                 timeout=self.timeout
                 )
 
-    def ping(self, destination, source='', ttl=0, timeout=0, size=0, count=5):
+    def ping(self, destination, source=c.PING_SOURCE, ttl=c.PING_TTL, timeout=c.PING_TIMEOUT,
+             size=c.PING_SIZE, count=c.PING_COUNT):
         ping_command = '/ping {} count={}'.format(destination, 10 if count > 10 else count)
         if source != '':
             ping_command += ' src-address={}'.format(source)
@@ -645,7 +651,8 @@ class ROSDriver(NetworkDriver):
 
 #   def rollback(self):
 
-    def traceroute(self, destination, source='', ttl=0, timeout=0):
+    def traceroute(self, destination, source=c.TRACEROUTE_SOURCE, ttl=c.TRACEROUTE_TTL,
+                   timeout=c.TRACEROUTE_TIMEOUT):
         num_probes = 3
         traceroute_command = '/tool traceroute address={} count={}'.format(
             destination,
@@ -721,7 +728,7 @@ class ROSDriver(NetworkDriver):
             api_output = [ros_utils.print_to_values(cli_output)]
         return api_output
 
-    def X_api_get(self, command, **kwargs):
+    def _X_api_get(self, command, **kwargs):
         if not hasattr(self, 'command_cache'):
             self.command_cache = {}
         use_cache = kwargs.pop('use_cache', False)
