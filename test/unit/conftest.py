@@ -88,7 +88,7 @@ class FakeParamikoChannel(BaseTestDouble):
         self._exec_command = self.find_file(self.sanitize_text(command))
 
     def makefile(self, *args):
-        return StringIO.StringIO(self.read_txt_file(self._exec_command))
+        return StringIO(self.read_txt_file(self._exec_command))
 
     @staticmethod
     def set_combine_stderr(*args):
