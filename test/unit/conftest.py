@@ -1,7 +1,11 @@
 """Test fixtures."""
 from builtins import super
 
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
 import datetime
 
 import pytest
