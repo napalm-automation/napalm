@@ -1,9 +1,0 @@
-             enabled: yes
-    server-dns-names: time.aa.net.uk,time.google.com,uk.pool.ntp.org
-                mode: unicast
-       poll-interval: 32s
-       active-server: 151.236.222.81
-    last-update-from: 151.236.222.81
-  last-update-before: 7s260ms
-     last-adjustment: 909ms921us
-

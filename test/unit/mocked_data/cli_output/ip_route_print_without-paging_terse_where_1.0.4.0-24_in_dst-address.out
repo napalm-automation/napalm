@@ -1,4 +1,0 @@
- 0 A S  dst-address=0.0.0.0/0 gateway=192.168.144.1 gateway-status=192.168.144.1 reachable via  ether1 distance=1 scope=30 target-scope=10 
- 1 ADb  dst-address=1.0.4.0/24 gateway=192.168.144.220 gateway-status=192.168.144.220 reachable via  ether1 distance=20 scope=40 target-scope=10 bgp-as-path=64512 bgp-origin=incomplete bgp-communities=64512:123,64512:321 received-from=vEOS-1 
- 1 ADb  dst-address=1.0.0.0/8 gateway=192.168.144.220 gateway-status=192.168.144.220 reachable via  ether1 distance=20 scope=40 target-scope=10 bgp-as-path=64512 bgp-origin=incomplete bgp-communities=64512:123,64512:321 received-from=vEOS-1 
-

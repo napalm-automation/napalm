@@ -1,1 +1,2 @@
-../../cli_output/system_resource_cpu_print_without-paging_terse.out
+ 0 cpu=cpu0 load=3% irq=0% disk=0% 
+

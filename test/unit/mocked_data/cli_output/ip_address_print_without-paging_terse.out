@@ -1,4 +1,0 @@
- 0   address=192.168.144.222/24 network=192.168.144.0 interface=ether1 actual-interface=ether1 
- 1   address=10.192.0.5/24 network=10.192.0.0 interface=ether2 actual-interface=ether2 
- 2   address=10.64.0.255/32 network=10.64.0.255 interface=loop1 actual-interface=loop1 
-
