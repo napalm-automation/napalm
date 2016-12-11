@@ -115,7 +115,7 @@ class ROSDriver(NetworkDriver):
         for routing_table, bgp_peers in ros_utils.index_values(
                 self._get_bgp_peers(),
                 'routing-table'
-        ).iteritems():
+        ).items():
             routing_table = routing_table
             bgp_neighbors[routing_table] = {
                 'router_id': u'',
@@ -166,10 +166,10 @@ class ROSDriver(NetworkDriver):
         for routing_table, peers in ros_utils.index_values(
                 self._get_bgp_peers(neighbor_ip=neighbor_address),
                 'routing-table'
-        ).iteritems():
+        ).items():
             routing_table = routing_table
             bgp_neighbors_detail[routing_table] = {}
-            for remote_as, bgp_peers in ros_utils.index_values(peers, 'remote-as').iteritems():
+            for remote_as, bgp_peers in ros_utils.index_values(peers, 'remote-as').items():
                 remote_as = int(remote_as)
                 if remote_as not in bgp_neighbors_detail[routing_table]:
                     bgp_neighbors_detail[routing_table][remote_as] = []
@@ -368,7 +368,7 @@ class ROSDriver(NetworkDriver):
         for if_name, if_addresses in ros_utils.index_values(
                 self._api_get('/ip/address'),
                 'interface'
-        ).iteritems():
+        ).items():
             if_name = if_name
             if if_name not in interfaces_ip:
                 interfaces_ip[if_name] = {
@@ -385,7 +385,7 @@ class ROSDriver(NetworkDriver):
         for if_name, if_addresses in ros_utils.index_values(
                 self._api_get('/ipv6/address'),
                 'interface'
-        ).iteritems():
+        ).items():
             if_name = if_name
             if if_name not in interfaces_ip:
                 interfaces_ip[if_name] = {
@@ -817,7 +817,7 @@ class ROSDriver(NetworkDriver):
         for if_name, if_neighbors in ros_utils.index_values(
                 self._api_get('/ip/neighbor'),
                 'interface'
-        ).iteritems():
+        ).items():
             if_name = if_name
             if if_name not in mndp_neighbors:
                 mndp_neighbors[if_name] = []
@@ -839,7 +839,7 @@ class ROSDriver(NetworkDriver):
         for if_name, if_neighbors in ros_utils.index_values(
                 ros_utils.print_to_values_structured(self.cli(cli_command)[cli_command]),
                 'interface'
-        ).iteritems():
+        ).items():
             if_name = if_name
             if if_name not in mndp_neighbors_detail:
                 mndp_neighbors_detail[if_name] = []
