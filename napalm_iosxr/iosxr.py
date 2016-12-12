@@ -68,7 +68,7 @@ class IOSXRDriver(NetworkDriver):
         try:
             self.device.open()
         except ConnectError as conn_err:
-            raise ConnectionException(conn_err.message)
+            raise ConnectionException(conn_err.args[0])
 
     def close(self):
         self.device.close()
@@ -89,7 +89,7 @@ class IOSXRDriver(NetworkDriver):
         except InvalidInputError as e:
             self.pending_changes = False
             self.replace = False
-            raise ReplaceConfigException(e.message)
+            raise ReplaceConfigException(e.args[0])
 
     def load_merge_candidate(self, filename=None, config=None):
         self.pending_changes = True
@@ -102,7 +102,7 @@ class IOSXRDriver(NetworkDriver):
         except InvalidInputError as e:
             self.pending_changes = False
             self.replace = False
-            raise MergeConfigException(e.message)
+            raise MergeConfigException(e.args[0])
 
     def compare_config(self):
         if not self.pending_changes:
