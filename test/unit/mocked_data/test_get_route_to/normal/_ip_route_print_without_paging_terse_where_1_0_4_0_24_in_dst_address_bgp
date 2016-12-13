@@ -1,1 +1,2 @@
-../../cli_output/ip_route_print_without-paging_terse_where_1.0.4.0-24_in_dst-address_bgp.out
+ 0 ADb  dst-address=1.0.4.0/24 gateway=192.168.144.220 gateway-status=192.168.144.220 reachable via  ether1 distance=20 scope=40 target-scope=10 bgp-as-path=64512 bgp-origin=incomplete bgp-communities=64512:123,64512:321 received-from=vEOS-1 
+

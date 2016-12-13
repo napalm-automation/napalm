@@ -1,6 +1,0 @@
- 0 comment=ALL interface=wlan1 mac-address=B4:CE:F6:9D:E4:59 ap=no wds=no bridge=no 
- 1 comment=ALL interface=wlan1 mac-address=14:DD:A9:48:B0:8A ap=no wds=no bridge=no 
- 2 comment=ALL interface=wlan1 mac-address=F8:95:C7:FF:C3:38 ap=no wds=no bridge=no 
- 3 comment=ALL interface=wlan1 mac-address=A4:77:33:B0:38:40 ap=no wds=no bridge=no 
- 4 comment=ALL interface=wlan1 mac-address=AC:B5:7D:20:52:FA ap=no wds=no bridge=no 
-

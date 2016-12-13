@@ -1,4 +1,0 @@
- 0 * name=public addresses=0.0.0.0/0 security=none read-access=yes write-access=no authentication-protocol=MD5 encryption-protocol=DES authentication-password="" encryption-password="" 
- 1   name=testcomm addresses=10.11.12.0/25,10.12.13.0/24 security=none read-access=no write-access=no authentication-protocol=MD5 encryption-protocol=DES authentication-password="" encryption-password="" 
- 2   name=banana_ro addresses=0.0.0.0/0 security=none read-access=yes write-access=no authentication-protocol=MD5 encryption-protocol=DES authentication-password="" encryption-password="" 
-
