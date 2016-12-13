@@ -468,6 +468,14 @@ class IOSDriver(NetworkDriver):
         lldp = {}
         lldp_neighbors = self.get_lldp_neighbors()
 
+        # Filter to specific interface
+        if interface:
+            lldp_data = lldp_neighbors.get(interface)
+            if lldp_data:
+                lldp_neighbors = {interface: lldp_data}
+            else:
+                lldp_neighbors = {}
+
         for interface in lldp_neighbors:
             command = "show lldp neighbors {} detail".format(interface)
             output = self._send_command(command)
