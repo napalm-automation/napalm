@@ -11,12 +11,12 @@ snmp-server chassis-id "{{chassis_id}}"
 {% for comm_name, comm_details in community.iteritems() %}
 {% if (comm_details is defined) and comm_details %}
 {% if (comm_details.get('mode') is defined) and comm_details.get('mode') == 'rw' %}
-community {{comm_name}} rw
+community {{comm_name}} RW
 {% else %}
-community {{comm_name}} ro
+community {{comm_name}} RO
 {% endif %}
 {% else %}
-community {{comm_name}} ro
+community {{comm_name}} RO
 {% endif %}
 {% endfor %}
 {% endif %}
