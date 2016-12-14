@@ -67,7 +67,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_facts**                  |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|      |yes|
 **get_environment**            |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|
 **get_snmp_information**       |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_ntp_servers**            |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
+**get_ntp_servers**            |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
 **get_ntp_peers**              |no|   |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
 **get_ntp_stats**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
 **get_mac_address_table**      |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
@@ -85,7 +85,8 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
 **get_optics**                 |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|   |yes|      |no|
-**get_network_instances**      |yes|  |no|    |no|    |no|     |no|    |no|    |no|   |no|       |no|
+**get_network_instances**      |yes|  |yes|   |no|    |no|     |no|    |no|    |no|   |no|       |no|
+**get_firewall_policies**      |no|   |no|    |no|    |yes|    |no|    |no|    |no|   |no|       |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 
 Other methods
@@ -96,7 +97,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 **load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|   |yes|  |yes|      |yes|
 **ping**                       |no|   |no|    |no|    |no|     |no|    |no|    |yes|  |no|       |no|
-**traceroute**                 |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
+**traceroute**                 |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 
 Available configuration templates
@@ -142,7 +143,7 @@ ____________________________________
 * :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: True).
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: 'flash:').
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: True).
-* :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: .5).
+* :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: 1).
 * :code:`nxos_protocol` (nxos) - Protocol to connect with.  Only 'https' and 'http' allowed (default: 'http').
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: '').
 * :code:`allow_agent` (ios) - Paramiko argument, enable connecting to the SSH agent (default: 'False').
