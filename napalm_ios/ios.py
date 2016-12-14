@@ -465,18 +465,16 @@ class IOSDriver(NetworkDriver):
 
         Calls get_lldp_neighbors.
         """
-        def pad_list_entries(my_list, list_length):
-            """Normalize the length of all the LLDP fields."""
-            if len(my_list) < list_length:
-                for i in range(list_length):
-                    try:
-                        my_list[i]
-                    except IndexError:
-                        my_list[i] = u"N/A"
-            return my_list
-
         lldp = {}
         lldp_neighbors = self.get_lldp_neighbors()
+
+        # Filter to specific interface
+        if interface:
+            lldp_data = lldp_neighbors.get(interface)
+            if lldp_data:
+                lldp_neighbors = {interface: lldp_data}
+            else:
+                lldp_neighbors = {}
 
         for interface in lldp_neighbors:
             command = "show lldp neighbors {} detail".format(interface)
@@ -501,13 +499,10 @@ class IOSDriver(NetworkDriver):
             lldp_fields = [port_id, port_description, chassis_id, system_name, system_description,
                            system_capabilities, enabled_capabilities, remote_address]
 
-            # Check length of each list
+            # re.findall will return a list. Make sure same number of entries always returned.
             for test_list in lldp_fields:
-                if len(test_list) > number_entries:
+                if len(test_list) != number_entries:
                     raise ValueError("Failure processing show lldp neighbors detail")
-
-            # Pad any missing entries with "N/A"
-            lldp_fields = [pad_list_entries(field, number_entries) for field in lldp_fields]
 
             # Standardize the fields
             port_id, port_description, chassis_id, system_name, system_description, \
