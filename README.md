@@ -83,10 +83,10 @@ Ansible
 
 Please check [napalm-ansible](https://github.com/napalm-automation/napalm-ansible) for existing Ansible modules leveraging the NAPALM API. Make sure you read the documentation and you understand how it works before trying to use it.
 
-Salt
-----
+SaltStack
+---------
 
-NAPALM will be completely integrated in [Salt](https://saltstack.com/) beginning with the release code named `Carbon`. For usage examples, please check [napalm-salt](https://github.com/napalm-automation/napalm-salt).
+Beginning with release code named `Carbon` (2016.11), [NAPALM is fully integrated](https://mirceaulinic.net/2016-11-30-salt-carbon-released/) in SaltStack - no additional modules required. For setup recommendations, please see [napalm-salt](https://github.com/napalm-automation/napalm-salt). For documentation and usage examples, you can check the modules documentation, starting from the [release notes](https://docs.saltstack.com/en/develop/topics/releases/2016.11.0.html#network-automation-napalm) and [this blog post](https://mirceaulinic.net/2016-11-17-network-orchestration-with-salt-and-napalm/).
 
 
 Contact
