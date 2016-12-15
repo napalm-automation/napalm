@@ -1,14 +1,10 @@
-Value Location (\w+.*)
-Value Contact (\w+.*)
-Value Chassis_ID (\w+.*)
-Value Community (\w+.*)
-Value Mode (ro|rw)
-Value ACL (\w+.*)
+Value Location (\S+)
+Value Contact (\S+)
+Value Community (\S+)
+Value Mode (network\-admin|network\-operator)
+Value ACL (\S+)
 
 Start
-  ^snmp-server\slocation\s${Location}
-  ^snmp-server\scontact\s${Contact}
-  ^snmp-server\schassis-id\s${Chassis_ID}
-  ^snmp-server\scommunity\s${Community}\s((${Mode} ${ACL})|(group\s(.*))) -> Next.Record
-
-EOF
+  ^snmp-server\slocation\s${Location} -> Record
+  ^snmp-server\scontact\s${Contact} -> Record
+  ^snmp-server\scommunity\s${Community}\s((group\s+${Mode}|use\-.+\s+${ACL})) -> Next.Record

@@ -1,0 +1,12 @@
+[
+    {
+        "vlan": 0, 
+        "last_move": 0.0, 
+        "active": true, 
+        "mac": "50:87:89:A1:DE:75", 
+        "static": true, 
+        "interface": "SUP_INBAND_CFSOE(R)", 
+        "moves": 0
+    }
+]
+

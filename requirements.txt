@@ -1,4 +1,4 @@
 napalm-base>=0.18.0
-pycsco
-PyYAML  # this is a requirement for pycsco but seems to be missing
+pynxos
 netaddr
+future

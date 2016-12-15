@@ -1,0 +1,54 @@
+[
+    {
+        "jitter": 0.0, 
+        "synchronized": false, 
+        "offset": 0.0, 
+        "referenceid": "33.33.33.33", 
+        "remote": "33.33.33.33", 
+        "reachability": 0, 
+        "when": "", 
+        "delay": 0.0, 
+        "hostpoll": 64, 
+        "stratum": 16, 
+        "type": ""
+    }, 
+    {
+        "jitter": 0.0, 
+        "synchronized": false, 
+        "offset": 0.0, 
+        "referenceid": "2001:db8::4101", 
+        "remote": "2001:db8::4101", 
+        "reachability": 0, 
+        "when": "", 
+        "delay": 0.0, 
+        "hostpoll": 64, 
+        "stratum": 16, 
+        "type": ""
+    }, 
+    {
+        "jitter": 0.0, 
+        "synchronized": true, 
+        "offset": 0.0, 
+        "referenceid": "127.127.1.1", 
+        "remote": "127.127.1.1", 
+        "reachability": 377, 
+        "when": "", 
+        "delay": 0.0, 
+        "hostpoll": 16, 
+        "stratum": 5, 
+        "type": ""
+    }, 
+    {
+        "jitter": 0.0, 
+        "synchronized": false, 
+        "offset": 0.0, 
+        "referenceid": "192.0.2.10", 
+        "remote": "192.0.2.10", 
+        "reachability": 0, 
+        "when": "", 
+        "delay": 0.0, 
+        "hostpoll": 64, 
+        "stratum": 16, 
+        "type": ""
+    }
+]

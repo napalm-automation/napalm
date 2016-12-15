@@ -1,0 +1,15 @@
+{
+    "contact": "", 
+    "location": "", 
+    "community": {
+        "networktocode": {
+            "mode": "network-operator", 
+            "acl": ""
+        }, 
+        "public": {
+            "mode": "network-operator", 
+            "acl": ""
+        }
+    }
+}
+

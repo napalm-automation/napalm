@@ -1,0 +1,34 @@
+{"TABLE_vrf": [{"ROW_vrf": {"vrf-name-out": "default"}}, {"ROW_vrf": {"vrf-name-out": "default"}}, {"ROW_vrf":
+ {"vrf-name-out": "default"}}, {"ROW_vrf": {"vrf-name-out": "default"}}, {"ROW_vrf": {"vrf-name-out": "default
+"}}, {"ROW_vrf": {"vrf-name-out": "default"}}], "TABLE_intf": [{"ROW_intf": {"intf-name": "loopback100", "prot
+o-state": "up", "link-state": "up", "admin-state": "up", "iod": "82", "prefix": "10.0.0.100", "subnet": "10.0.
+0.0", "masklen": "24", "num-addr": "1", "ip-disabled": "FALSE", "bcast-addr": "255.255.255.255", "num-maddr":
+"0", "mtu": "1500", "pref": "0", "tag": "0", "proxy-arp": "disabled", "lcl-proxy-arp": "disabled", "mrouting":
+ "disabled", "icmp-redirect": "enabled", "dir-bcast": "disabled", "ip-unreach": "disabled", "port-unreach": "e
+nabled", "urpf-mode": "none", "ip-ls-type": "none"}}, {"ROW_intf": {"intf-name": "loopback101", "proto-state":
+ "up", "link-state": "up", "admin-state": "up", "iod": "83", "prefix": "192.168.1.100", "subnet": "192.168.1.0
+", "masklen": "24", "num-addr": "1", "ip-disabled": "FALSE", "bcast-addr": "255.255.255.255", "num-maddr": "0"
+, "mtu": "1500", "pref": "0", "tag": "0", "proxy-arp": "disabled", "lcl-proxy-arp": "disabled", "mrouting": "d
+isabled", "icmp-redirect": "enabled", "dir-bcast": "disabled", "ip-unreach": "disabled", "port-unreach": "enab
+led", "urpf-mode": "none", "ip-ls-type": "none"}}, {"ROW_intf": {"intf-name": "loopback102", "proto-state": "u
+p", "link-state": "up", "admin-state": "up", "iod": "84", "prefix": "192.168.2.100", "subnet": "192.168.2.0",
+"masklen": "24", "num-addr": "1", "ip-disabled": "FALSE", "bcast-addr": "255.255.255.255", "num-maddr": "0", "
+mtu": "1500", "pref": "0", "tag": "0", "proxy-arp": "disabled", "lcl-proxy-arp": "disabled", "mrouting": "disa
+bled", "icmp-redirect": "enabled", "dir-bcast": "disabled", "ip-unreach": "disabled", "port-unreach": "enabled
+", "urpf-mode": "none", "ip-ls-type": "none"}}, {"ROW_intf": {"intf-name": "loopback103", "proto-state": "up",
+ "link-state": "up", "admin-state": "up", "iod": "85", "prefix": "192.168.3.100", "subnet": "192.168.3.0", "ma
+sklen": "24", "num-addr": "1", "ip-disabled": "FALSE", "bcast-addr": "255.255.255.255", "num-maddr": "0", "mtu
+": "1500", "pref": "0", "tag": "0", "proxy-arp": "disabled", "lcl-proxy-arp": "disabled", "mrouting": "disable
+d", "icmp-redirect": "enabled", "dir-bcast": "disabled", "ip-unreach": "disabled", "port-unreach": "enabled",
+"urpf-mode": "none", "ip-ls-type": "none"}}, {"ROW_intf": {"intf-name": "Ethernet1/1", "proto-state": "up", "l
+ink-state": "up", "admin-state": "up", "iod": "5", "prefix": "172.16.100.1", "subnet": "172.16.100.0", "maskle
+n": "24", "num-addr": "1", "ip-disabled": "FALSE", "bcast-addr": "255.255.255.255", "num-maddr": "0", "mtu": "
+1500", "pref": "0", "tag": "0", "proxy-arp": "disabled", "lcl-proxy-arp": "disabled", "mrouting": "disabled",
+"icmp-redirect": "enabled", "dir-bcast": "disabled", "ip-unreach": "disabled", "port-unreach": "enabled", "urp
+f-mode": "none", "ip-ls-type": "none"}}, {"ROW_intf": {"intf-name": "Ethernet2/5", "proto-state": "down", "lin
+k-state": "down", "admin-state": "down", "iod": "57", "prefix": "1.1.1.1", "subnet": "1.1.1.0", "masklen": "24
+", "num-addr": "1", "ip-disabled": "FALSE", "bcast-addr": "255.255.255.255", "num-maddr": "0", "mtu": "1500",
+"pref": "0", "tag": "0", "proxy-arp": "disabled", "lcl-proxy-arp": "disabled", "mrouting": "disabled", "icmp-r
+edirect": "enabled", "dir-bcast": "disabled", "ip-unreach": "disabled", "port-unreach": "enabled", "urpf-mode"
+: "none", "ip-ls-type": "none"}}]}
+
