@@ -67,13 +67,6 @@ class FakeNXOSDevice(BaseTestDouble):
 
         return result
 
-    def cli(self, command):
-        """Fake cli."""
-        filename = '{}.json'.format(command.replace(' ', '_'))
-        full_path = self.find_file(filename)
-        result = self.read_text_file(full_path)
-        return result
-
     def config_list(self, command):
         """Fake config_list."""
         pass
