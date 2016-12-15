@@ -1,4 +1,3 @@
-future
 coveralls
 pytest
 pytest-cov
