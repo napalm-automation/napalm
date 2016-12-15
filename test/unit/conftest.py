@@ -51,7 +51,8 @@ class PatchedNXOSDriver(nxos.NXOSDriver):
 class FakeNXOSDevice(BaseTestDouble):
     """NXOS device test double."""
     def __init__(self):
-        full_path = self.find_file('facts.json')
+        super().__init__()
+        full_path = self.find_file('test_get_facts/normal/facts.json')
         self.facts = self.read_json_file(full_path)
 
     def show(self, command, raw_text=False):
@@ -60,9 +61,9 @@ class FakeNXOSDevice(BaseTestDouble):
         full_path = self.find_file(filename)
 
         if raw_text:
-            result = self.read_json_file(full_path)
+            result = self.read_txt_file(full_path)
         else:
-            result = {'output': self.read_txt_file(full_path)}
+            result = self.read_json_file(full_path)
 
         return result
 
@@ -70,7 +71,7 @@ class FakeNXOSDevice(BaseTestDouble):
         """Fake cli."""
         filename = '{}.json'.format(command.replace(' ', '_'))
         full_path = self.find_file(filename)
-        result = {'output': self.read_txt_file(full_path)}
+        result = self.read_text_file(full_path)
         return result
 
     def config_list(self, command):

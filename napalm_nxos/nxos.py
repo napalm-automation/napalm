@@ -400,10 +400,11 @@ class NXOSDriver(NetworkDriver):
             result_vrf_dict = {}
             result_vrf_dict['router_id'] = unicode(vrf_dict['router-id'])
             result_vrf_dict['peers'] = {}
-
             neighbors_list = vrf_dict.get('TABLE_neighbor', {}).get('ROW_neighbor', [])
+
             if isinstance(neighbors_list, dict):
                 neighbors_list = [neighbors_list]
+
             for neighbor_dict in neighbors_list:
                 neighborid = napalm_base.helpers.ip(neighbor_dict['neighbor-id'])
 
@@ -423,10 +424,12 @@ class NXOSDriver(NetworkDriver):
                         'received_prefixes': -1
                     }
                 }
-
                 result_vrf_dict['peers'][neighborid] = result_peer_dict
 
-            results[vrf_dict['vrf-name-out']] = result_vrf_dict
+            vrf_name = vrf_dict['vrf-name-out']
+            if vrf_name == 'default':
+                vrf_name = 'global'
+            results[vrf_name] = result_vrf_dict
         return results
 
     def _set_checkpoint(self, filename):
@@ -639,7 +642,11 @@ class NXOSDriver(NetworkDriver):
         for interface in ipv6_interf_table_vrf:
             interface_name = unicode(interface.get('intf-name', ''))
             address = napalm_base.helpers.ip(interface.get('addr', '').split('/')[0])
-            prefix = int(interface.get('prefix', '').split('/')[-1])
+            prefix = interface.get('prefix', '').split('/')[-1]
+            if prefix:
+                prefix = int(interface.get('prefix', '').split('/')[-1])
+            else:
+                prefix = 128
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = {}
             if u'ipv6' not in interfaces_ip[interface_name].keys():
@@ -701,7 +708,8 @@ class NXOSDriver(NetworkDriver):
         snmp_information = {
             'contact': unicode(''),
             'location': unicode(''),
-            'community': {}
+            'community': {},
+            'chassis_id': unicode('')
         }
 
         for snmp_entry in snmp_config:

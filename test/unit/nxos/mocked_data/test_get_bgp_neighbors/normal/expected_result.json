@@ -1,1 +1,0 @@
-{'default': {u'router_id': u'10.0.0.100', u'peers': {}}, 'management': {u'router_id': u'10.1.100.20', u'peers': {u'10.1.100.21': {u'is_enabled': True, u'uptime': -1, u'remote_as': 65535, u'description': u'', u'remote_id': u'10.1.100.21', u'local_as': 65535, u'is_up': True, u'address_family': {u'ipv4': {u'sent_prefixes': -1, u'accepted_prefixes': -1, u'received_prefixes': -1}}}}}}

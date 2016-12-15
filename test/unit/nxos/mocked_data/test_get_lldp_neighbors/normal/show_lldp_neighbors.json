@@ -1,7 +1,0 @@
-{"neigh_hdr": "neigh_hdr", "TABLE_nbor": {"ROW_nbor": [{"chassis_type": "7", "chassis_id": "PERIMETER.cisco.co
-m", "l_port_id": "mgmt0", "ttl": "120", "capability": "1310740", "port_type": "7", "port_id": "Fa1/0/9", "mgmt
-_addr_type": "0", "mgmt_addr": "mgmt_addr"}, {"chassis_type": "7", "chassis_id": "n9k2.ntc.com", "l_port_id":
-"Eth1/1", "ttl": "120", "capability": "1310740", "port_type": "5", "port_id": "Ethernet1/1", "mgmt_addr_type":
- "0", "mgmt_addr": "mgmt_addr"}, {"chassis_type": "7", "chassis_id": "n9k2.ntc.com", "l_port_id": "Eth1/2", "t
-tl": "120", "capability": "1310740", "port_type": "5", "port_id": "Ethernet1/2", "mgmt_addr_type": "0", "mgmt_
-addr": "mgmt_addr"}]}, "neigh_count": "3"}
