@@ -2,3 +2,4 @@ napalm-base>=0.18.0
 pynxos
 netaddr
 future
+scp

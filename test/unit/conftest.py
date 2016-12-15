@@ -8,8 +8,6 @@ from napalm_base.test.double import BaseTestDouble
 
 from napalm_nxos import nxos
 
-import scp
-
 
 @pytest.fixture(scope='class')
 def set_device_parameters(request):
