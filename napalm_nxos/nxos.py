@@ -39,6 +39,7 @@ from napalm_base.exceptions import ConnectionException
 from napalm_base.exceptions import MergeConfigException
 from napalm_base.exceptions import CommandErrorException
 from napalm_base.exceptions import ReplaceConfigException
+import napalm_base.constants as c
 
 
 class NXOSDriver(NetworkDriver):
@@ -277,7 +278,7 @@ class NXOSDriver(NetworkDriver):
         if not self.device.save():
             raise CommandErrorException('Unable to commit config!')
 
-    def save_config(self, filename):
+    def _save_config(self, filename):
         """Save the current running config to the given file."""
         self.device.show('checkpoint file {}'.format(filename), raw_text=True)
 
@@ -436,7 +437,7 @@ class NXOSDriver(NetworkDriver):
         commands = ['terminal dont-ask', 'checkpoint file {0}'.format(filename)]
         self.device.config_list(commands)
 
-    def get_checkpoint_file(self):
+    def _get_checkpoint_file(self):
         filename = 'temp_cp_file_from_napalm'
         self._set_checkpoint(filename)
         cp_out = self.device.show('show file {0}'.format(filename), raw_text=True)
@@ -520,7 +521,7 @@ class NXOSDriver(NetworkDriver):
                 lldp_neighbors[interface_name].append(lldp_neighbor)
         return lldp_neighbors
 
-    def cli(self, commands=None):
+    def cli(self, commands):
         cli_output = {}
         if type(commands) is not list:
             raise TypeError('Please enter a valid list of commands!')
@@ -786,7 +787,11 @@ class NXOSDriver(NetworkDriver):
                 users[username]['sshkeys'].append(py23_compat.text_type(sshkeyvalue))
         return users
 
-    def traceroute(self, destination, source='', ttl=0, timeout=0):
+    def traceroute(self,
+                   destination,
+                   source=c.TRACEROUTE_SOURCE,
+                   ttl=c.TRACEROUTE_TTL,
+                   timeout=c.TRACEROUTE_TIMEOUT):
         _HOP_ENTRY_PROBE = [
             '\s+',
             '(',  # beginning of host_name (ip_address) RTT group
