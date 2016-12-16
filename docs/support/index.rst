@@ -74,9 +74,9 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_arp_table**              |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|       |no|
 **get_interfaces**             |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|      |yes|
 **get_interfaces_ip**          |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |no|       |no|
-**get_lldp_neighbors**         |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |yes|      |no|
+**get_lldp_neighbors**         |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |yes|      |no|
 **get_lldp_neighbors_detail**  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|
-**get_bgp_neighbors**          |yes|  |yes|   |yes|   |yes|    |no|    |no|    |yes|  |no|       |no|
+**get_bgp_neighbors**          |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |yes|  |no|       |no|
 **get_bgp_neighbors_detail**   |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_bgp_config**             |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_route_to**               |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
@@ -84,7 +84,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_probes_results**         |no|   |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
 **get_users**                  |yes|  |yes|   |yes|   |no|     |no|    |yes|   |no|   |yes|      |no|
 **get_optics**                 |yes|  |yes|   |yes|   |no|     |no|    |no|    |no|   |no|       |no|
-**get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |no|    |no|   |yes|      |no|
+**get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |no|   |yes|      |no|
 **get_network_instances**      |yes|  |yes|   |no|    |no|     |no|    |no|    |no|   |no|       |no|
 **get_firewall_policies**      |no|   |no|    |no|    |yes|    |no|    |no|    |no|   |no|       |no|
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
