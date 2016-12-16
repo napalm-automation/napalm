@@ -104,7 +104,7 @@ class PANOSDriver(NetworkDriver):
                                              password=self.password,
                                              **self.netmiko_optional_args)
         except ConnectionException as e:
-            raise ConnectionException(str(e)
+            raise ConnectionException(str(e))
 
         self.ssh_connection = True
 
