@@ -2,7 +2,7 @@
     "uptime": 3670, 
     "vendor": "Cisco", 
     "hostname": "nxos-spine1", 
-    "fqdn": "N/A", 
+    "fqdn": "nxos-spine1", 
     "os_version": "7.3(1)D1(1) [build 7.3(1)D1(0.10)]", 
     "serial_number": "TM6017D760B", 
     "model": "NX-OSv Chassis", 

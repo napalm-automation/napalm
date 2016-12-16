@@ -338,8 +338,19 @@ class NXOSDriver(NetworkDriver):
         pynxos_facts = self.device.facts
         final_facts = {key: value for key, value in pynxos_facts.items() if
                        key not in ['interfaces', 'uptime_string', 'vlans']}
-        final_facts['interface_list'] = pynxos_facts['interfaces']
+
+        if pynxos_facts['interfaces']:
+            final_facts['interface_list'] = pynxos_facts['interfaces']
+        else:
+            final_facts['interface_list'] = self.get_interfaces().keys()
+        
         final_facts['vendor'] = 'Cisco'
+
+        hostname_cmd = 'show hostname'
+        hostname = self.device.show(hostname_cmd).get('hostname')
+        if hostname:
+            final_facts['fqdn'] = hostname
+
         return final_facts
 
     def get_interfaces(self):
@@ -354,12 +365,12 @@ class NXOSDriver(NetworkDriver):
             interface_speed = interface_details.get('eth_bw', 0)
             if isinstance(interface_speed, list):
                 interface_speed = interface_speed[0]
-            interface_speed = int(interface_speed * 1000)
+            interface_speed = int(interface_speed / 1000)
             interfaces[interface_name] = {
                 'is_up': (interface_details.get('admin_state', '') == 'up'),
                 'is_enabled': (interface_details.get('state') == 'up') or
                 (interface_details.get('admin_state', '') == 'up'),
-                'description': py23_compat.text_type(interface_details.get('desc', '')),
+                'description': py23_compat.text_type(interface_details.get('desc', '').strip('"')),
                 'last_flapped': self._compute_timestamp(
                     interface_details.get('eth_link_flapped', '')),
                 'speed': interface_speed,
@@ -371,20 +382,21 @@ class NXOSDriver(NetworkDriver):
     def get_lldp_neighbors(self):
         results = {}
         try:
-            neighbor_list = self.device.show('show lldp neighbors')
-            neighbor_list_body = neighbor_list['TABLE_nbor']['ROW_nbor']
+            command = 'show lldp neighbors'
+            lldp_raw_output = self.cli([command]).get(command, '')
+            lldp_neighbors = napalm_base.helpers.textfsm_extractor(self, 'lldp_neighbors', lldp_raw_output)
         except CLIError:
-            neighbor_list_body = []
-
-        for neighbor in neighbor_list_body:
-            local_iface = neighbor.get('l_port_id')
+            lldp_neighbors = []
+        print lldp_neighbors
+        for neighbor in lldp_neighbors:
+            local_iface = neighbor.get('local_interface')
             if neighbor.get(local_iface) is None:
                 if local_iface not in results:
                     results[local_iface] = []
 
             neighbor_dict = {}
-            neighbor_dict['hostname'] = py23_compat.text_type(neighbor.get('chassis_id'))
-            neighbor_dict['port'] = py23_compat.text_type(neighbor.get('port_id'))
+            neighbor_dict['hostname'] = py23_compat.text_type(neighbor.get('neighbor'))
+            neighbor_dict['port'] = py23_compat.text_type(neighbor.get('neighbor_interface'))
 
             results[local_iface].append(neighbor_dict)
         return results
