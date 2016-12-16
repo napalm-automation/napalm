@@ -28,9 +28,9 @@ class TestConfigVyOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         cls.vendor = 'vyos'
         cls.port = '2200'
 
-        optional_args = {'port': '2200' }
+        optional_args = {'port': '2200'}
         cls.device = vyos.VyOSDriver(hostname, username, password,
-                                   timeout=60, optional_args=optional_args)
+                                     timeout=60, optional_args=optional_args)
         cls.device.open()
 
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
