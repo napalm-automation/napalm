@@ -343,7 +343,7 @@ class NXOSDriver(NetworkDriver):
             final_facts['interface_list'] = pynxos_facts['interfaces']
         else:
             final_facts['interface_list'] = self.get_interfaces().keys()
-        
+
         final_facts['vendor'] = 'Cisco'
 
         hostname_cmd = 'show hostname'
@@ -384,7 +384,8 @@ class NXOSDriver(NetworkDriver):
         try:
             command = 'show lldp neighbors'
             lldp_raw_output = self.cli([command]).get(command, '')
-            lldp_neighbors = napalm_base.helpers.textfsm_extractor(self, 'lldp_neighbors', lldp_raw_output)
+            lldp_neighbors = napalm_base.helpers.textfsm_extractor(
+                                self, 'lldp_neighbors', lldp_raw_output)
         except CLIError:
             lldp_neighbors = []
         print lldp_neighbors
