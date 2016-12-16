@@ -388,7 +388,7 @@ class NXOSDriver(NetworkDriver):
                                 self, 'lldp_neighbors', lldp_raw_output)
         except CLIError:
             lldp_neighbors = []
-        print lldp_neighbors
+
         for neighbor in lldp_neighbors:
             local_iface = neighbor.get('local_interface')
             if neighbor.get(local_iface) is None:
