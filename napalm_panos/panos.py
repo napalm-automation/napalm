@@ -93,8 +93,8 @@ class PANOSDriver(NetworkDriver):
                 self.device = pan.xapi.PanXapi(hostname=self.hostname,
                                                api_username=self.username,
                                                api_password=self.password)
-        except ConnectionException, e:
-            raise ConnectionException(e.message)
+        except ConnectionException as e:
+            raise ConnectionException(str(e))
 
     def _open_ssh(self):
         try:
