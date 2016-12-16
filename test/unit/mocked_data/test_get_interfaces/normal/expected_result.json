@@ -1,0 +1,26 @@
+{
+	"GigabitEthernet3": {
+		"speed": 1000,
+		"mac_address": "0800.2782.516b",
+		"is_up": false,
+		"last_flapped": -1.0,
+		"description": "N/A",
+		"is_enabled": false
+	},
+	"GigabitEthernet2": {
+		"speed": 1000,
+		"mac_address": "0800.2779.e896",
+		"is_up": true,
+		"last_flapped": -1.0,
+		"description": "blah bleh",
+		"is_enabled": true
+	},
+	"GigabitEthernet1": {
+		"speed": 1000,
+		"mac_address": "0800.27f8.e842",
+		"is_up": true,
+		"last_flapped": -1.0,
+		"description": "N/A",
+		"is_enabled": true
+	}
+}
