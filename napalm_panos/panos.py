@@ -154,6 +154,12 @@ class PANOSDriver(NetworkDriver):
         else:
             return path
 
+    def is_alive(self):
+        if self.device:
+            return {'is_alive': True}
+        else:
+            return {'is_alive': False}
+
     def load_replace_candidate(self, filename=None, config=None):
         if config:
             raise ReplaceConfigException("This method requires a config file.")
@@ -205,8 +211,6 @@ class PANOSDriver(NetworkDriver):
                 config = config.splitlines()
         else:
             if isinstance(config, str):
-                config = config.split()
-            elif isinstance(config, unicode):
                 config = str(config).split()
 
         self.ssh_device.send_config_set(config)
@@ -354,12 +358,12 @@ class PANOSDriver(NetworkDriver):
 
         if system_info:
             facts['hostname'] = system_info['hostname']
-            facts['vendor'] = unicode('Palo Alto Networks')
+            facts['vendor'] = py23_compat.text_type('Palo Alto Networks')
             facts['uptime'] = int(convert_uptime_string_seconds(system_info['uptime']))
             facts['os_version'] = system_info['sw-version']
             facts['serial_number'] = system_info['serial']
             facts['model'] = system_info['model']
-            facts['fqdn'] = unicode('N/A')
+            facts['fqdn'] = py23_compat.text_type('N/A')
             facts['interface_list'] = []
 
         for element in interfaces:
@@ -403,7 +407,7 @@ class PANOSDriver(NetworkDriver):
             else:
                 interface['speed'] = int(interface['speed'])
             interface['mac_address'] = interface_info.get('mac')
-            interface['description'] = unicode('N/A')
+            interface['description'] = py23_compat.text_type('N/A')
             interface_dict[name] = interface
 
         return interface_dict
