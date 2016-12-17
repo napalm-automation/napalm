@@ -1,23 +1,19 @@
 language: python
-
 python:
 - 2.7
 - 3.4
 - 3.5
-
 install:
 - pip install -U -r requirements-dev.txt
 - pip install .
-
 deploy:
   provider: pypi
   user: dbarroso
   password:
-    secure: rc45r+LLfen9hE709M0voQ9bfyRbNE++lDVjuPG/qhVQHeYQnFijvT7c/ErFCkFdv+QzdvhM+8XLRYcQL98IJ+FvK7XFJdqZ26zNWKnyylLmT35FfNFOFsj95nitM3XO84es5PpOGZFINxUDg3QVHdN/jstzSJVSr7kHLlkvUFeFLUI5sDW0vlBIrSAs1bfL1ZFypkHnNyZPtvJn+Z4dkUw7Oe4+JfzEDBzKfs/cmxz7PpkSsKqmbYaFaCWTah3Sv7JAKFLEFYIVC19isj+ZGu4y6X1JDpe6OI2XBClpAeQRMO0Ae1RRuQTtmYcjzl55+RdKO3nP+cldSK3FoZbRvx36zv6zV9nD32MX+Jf3HhaHPWkolcLGmb4tiaKUfFuE/eEO3IPMP+5P+JqCn429h6MnP0xcggE9aKcSlcs5WWn69J29fkrvSrNIzuZcvjbGEqnGq8Wh6/RIOZbgE1jNlCjuKFtRLib9rQP0+RiUx7nOoakeul7PM5LpK+G9cPJKUPcATiI5d9VqspKsfsYeYSMpMSYNCRFz96W7b5JjwTKnZllHU2O3049WJPrnOvq9ZR2klbw5QGnfOV3RsdXv3FbV7eveXc3eeEXCok74CWmygAZ+OxHI6B0LRA35QRWRwjnyA4RVGvZjKusiJt+2HvQuyrURCieS58Wvl/81gwE=
+    secure: O7mKp1P700S7G7Qy+Wjr5j4tPnp1m02QmKHN9JVBsLY47xg8VztPi5fVmrdtAVQja9gcCdcHD7tGEniTpBCRnyTE1eCYPOMbx4DIdua8QYcYHMECUhOs9H/Ij1Miz4i7VEeXmTlanEABXRHVzwXTSiTJKh2cph6+Ib2wLpvXMpfcuPnC9/uukR8ZVvFUB5/37M/nJxaON+Y//j0/gy1whdVc09DRxIHqANUJQ4YJQ3O02CDvh+NyU/0z8U2SSAdQehgbCbjIfKbfaE5KLH3jLRs+isuunEVa2v9nFny+/TlGUt4nP8x96ILsVp/OkjQtjWGGmXq+4uN4XLUh10roO4KEm7ecODquuL/U2X1SaWwZmpya/4Loz+qyKFV0HsiE6JIWnibDjWEqr2qnOAa4S0FKg4oyD9jhCnXecRTSlaylAucGESsB9+Dq/XvokkssaDoLBtGYFD7zo9xSANTKzwkGCR8xnsgysX55DsC1m+eSocbPcyApSqjAnbMbUeqX9WUAZTo7luCeEJ3AkXkkJszXBIW2CX4xvfZvOxgMFMDoazOfyIK7ZwHMIQA+rRVPZkZB1N1XJ9ZtdGeCoJ9RD5bWeg+cGJgTLKOoSMa9RNKwC+m6TPJHqbPSCPPfkE62m0Qvme+a8O1pNyxxH4PpWPGrif+kvGvyFpZVB/9cpgY=
   on:
     tags: true
     branch: master
-
 script:
 - py.test --cov-report= test/
 - pylama .
