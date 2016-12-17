@@ -1,20 +1,21 @@
 language: python
 python:
 - 2.7
+- 3.4
+- 3.5
 install:
-- pip install -r requirements.txt
-- pip install .
+- pip install tox-travis
+- pip install coveralls
 deploy:
   provider: pypi
   user: dbarroso
   password:
-    secure: d9XnLqr0mmLiMONfoiSqShwQ761pD3THIwsEtllm1/1KknoFyOtyqYOfPvUIvy2wg7JGDYyRCfyj1j3SiYz1whmmtAmtOZYYB14wk3eftNBVHDERc1ROOVO2u3ahL6WwdZBhxjpuz6lXX0sSJtDxY2IBFGDy2cj2VzWyuiWKoS2YrQoLTLBt/FWPbHvVIIeUkQ1wZnZ/G0H45ZAntd9v9BCFkjKc2wEagPYv5Li+54Tet8nFiNFC/m+UBbcgtITFp5xNz0nbjMDTxKwIEgRNqXig/P/OOeh3aNtjPZtwLdeuJw/p4QBZ+eCnqD9paGcOdkCpK6b4i+8RV8n3/Dpz3qbyYBxpMqAn+JnOpVpWWnoARI3Kc+hHMpuT9fPLt+J5iqU/YZQhDRavmrggYWlnqWk67udFxDBec6BidQuZfksVhdT6CcD5cATRDrV0m7CchAQa0RDJ9NRUFu3L6h3vP5F49xzFPa87fG1s9l/Qccby5/rR3cryyHcnxsw1F1kPD1cpWbHwmkPnWYAqzYIso8rhJ8XjNj4Cw5/S4E1ri4e7fKRmYKYgB7Eq1QkefODAoDu6LBOkf2JtGOrSEa+bwLx2nnoGWfs6KkkRKzJNuNwBVYQYhfSRXLsXzWwfpYwqCuuEt/p4scgkqLtm5cGqZ5EG15g52N9gnQzpK8MK+uw=
+    secure: xfbyl+7EqXphy7DLIY1B9/IgecWX3IF0xKDnxJk3egJYKYvVT4thMGnBEAH4gKfVMU78LU6vyNr0g3kQT/AY1srRdG6gXjmUiwNQR/uwbpl3RBLFyRKUqiwNl/v3nFLmw/zmUhwtJKs1rVDqb7yvy6JzqhcBoFMNXSdf400QJzWzJS7VqMqXcdSUXHcPsVAzjYOWrKc0nuQsbFrYPwZNoskxzhxQfKTgZxtSEUCNLWWyQZv1xeywVq3HIjxwzP19b6phI14YnegQAtiPSQDRD+xYcL16lvWGIS+AW3K9Q8fk5UT7V8P41yarA0b0gL+rMlFTMpv+4zSSHus87R70EODC3LjYwOcGH81bw8Ctsm53/q7uPLJ8H4PDzc/No5MEbxsg0882CLLmkZXz35nGQQmvpv9DlyM4R3u2WhpFYxE/t/6uLOzhbt2QPcarZhrjJ/dkxN/H2xVuQJ1cM6+fG3MeTNI52n8kenl/97PSVcN7O+FZ2eGyVQOlNfVaPy3Qw57iSlMQWoUY7amh1/i488cXpLtt7fRFnB6bMeHKlxoh99DIH+pdRi25ltdAxQwLeitL6rCjYAEJqkKp3omTeV07+/oXB4L6ySVvFD/GZZy8H2Oi8ea75JOqyo9+WfsBT1sqsXIlCd12qHSiwANBiWira1T1GBUVXqkX5X6C8KY=
   on:
     tags: true
     branch: master
 script:
-- py.test --cov-report= --cov=napalm_vyos test/
-- pylama .
+- tox
 after_success:
 - coveralls
 - if [ $TRAVIS_TAG ]; then curl -X POST https://readthedocs.org/build/napalm; fi
