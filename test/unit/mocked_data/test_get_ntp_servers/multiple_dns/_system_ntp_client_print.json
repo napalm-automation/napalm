@@ -1,0 +1,15 @@
+{
+    "data":
+    [
+    {
+        "last-update-from": "91.212.242.21",
+        "last-adjustment": "-29ms481us",
+        "server-dns-names": "0.pl.pool.ntp.org,1.pl.pool.ntp.org,2.pl.pool.ntp.org,3.pl.pool.ntp.org",
+        "enabled": true,
+        "mode": "unicast",
+        "active-server": "91.212.242.21",
+        "last-update-before": "12m29s740ms",
+        "poll-interval": "15m"
+    }
+    ]
+}

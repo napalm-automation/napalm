@@ -1,1 +1,0 @@
-{"loop1": {"ipv4": {"10.64.0.255": {"prefix_length": 32}}}, "ether2": {"ipv4": {"10.192.0.5": {"prefix_length": 24}}}, "ether1": {"ipv4": {"192.168.144.222": {"prefix_length": 24}}}}

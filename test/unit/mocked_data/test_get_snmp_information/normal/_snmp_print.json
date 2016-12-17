@@ -1,0 +1,15 @@
+{
+    "data":
+    [
+    {
+        "trap-target": "",
+        "trap-generators": "",
+        "enabled": false,
+        "engine-id": "",
+        "contact": "contact name",
+        "location": "some location",
+        "trap-community": "public",
+        "trap-version": 1
+    }
+    ]
+}
