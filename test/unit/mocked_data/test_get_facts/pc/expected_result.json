@@ -1,0 +1,12 @@
+{
+    "os_version": "6.33.3 (stable)",
+    "uptime": 90,
+    "interface_list": [
+        "ether1"
+    ],
+    "vendor": "MikroTik",
+    "serial_number": "",
+    "model": "x86",
+    "hostname": "MikroTik",
+    "fqdn": ""
+}

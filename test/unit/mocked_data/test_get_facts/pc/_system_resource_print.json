@@ -1,0 +1,12 @@
+{
+    "data":
+    [
+        {
+            "uptime": "1m30s",
+            "version": "6.33.3 (stable)",
+            "platform": "MikroTik",
+            "serial_number": "",
+            "board-name": "x86"
+        }
+    ]
+}

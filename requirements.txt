@@ -1,0 +1,3 @@
+napalm-base>0.18.0
+chainmap
+librouteros==1.*

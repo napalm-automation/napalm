@@ -1,0 +1,11 @@
+{
+    "contact": "contact name",
+    "community": {
+        "public": {
+            "mode": "ro",
+            "acl": "0.0.0.0/0"
+        }
+    },
+    "chassis_id": "",
+    "location": "some location"
+}
