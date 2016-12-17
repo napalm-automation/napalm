@@ -27,7 +27,7 @@ You can select the driver you need by doing the following:
 
 .. code-block:: python
 
-   >>> from napalm import get_network_driver
+   >>> from napalm_base import get_network_driver
    >>> get_network_driver('eos')
    <class napalm_eos.eos.EOSDriver at 0x10ebad6d0>
    >>> get_network_driver('iosxr')
@@ -56,6 +56,7 @@ Documentation
 
    installation
    tutorials/index
+   validate/index
    support/index
    cli
    base
