@@ -7,8 +7,8 @@ retrieve the state of the device and build a compliance report for you.
 
 As always, with napalm, doing this is very easy even across multiple vendors : )
 
-.. note:: Note that this is meant to validate **state**, meaning live data, not
-    configuration. Because that something is configured doesn't mean it looks as you want.
+.. note:: Note that this is meant to validate **state**, meaning live data from the device, not
+    the configuration. Because that something is configured doesn't mean it looks as you want.
 
 
 Documentation
@@ -140,9 +140,9 @@ interfaces have only the IP we expect it to have. Now we can validate the device
 Let's take a look first to the report. The first thing we have to note is the first key
 ``complies`` which is telling us that overall, the device is not compliant. Now we can dig in on
 the rest of the report. The ``get_interfaces_ip`` part seems to be complying just fine, however,
-the ``get_facts`` is complying about something. If we keep digging we will see that the
-``os_version`` key we were looking for is present but it's not compliant because it's actual value
-is not the one we specified, it is ``4.15.2.1F-2759627.41521F``.
+the ``get_facts`` is complaining about something. If we keep digging we will see that the
+``os_version`` key we were looking for is present but it's not complying as its actual value
+is not the one we specified; it is ``4.15.2.1F-2759627.41521F``.
 
 Now let's do the same for junos::
 
