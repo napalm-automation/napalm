@@ -146,8 +146,9 @@ ____________________________________
 * :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: 1).
 * :code:`nxos_protocol` (nxos) - Protocol to connect with.  Only 'https' and 'http' allowed (default: 'http').
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: '').
-* :code:`allow_agent` (ios) - Paramiko argument, enable connecting to the SSH agent (default: 'False').
-* :code:`use_keys` (ios) - Paramiko argument, enable searching for discoverable private key files in ~/.ssh/ (default: 'False').
+* :code:`allow_agent` (ios, panos) - Paramiko argument, enable connecting to the SSH agent (default: 'False').
+* :code:`use_keys` (ios, panos) - Paramiko argument, enable searching for discoverable private key files in ~/.ssh/ (default: 'False').
+* :code:`api_key` (panos) - Allow to specify the API key instead of username/password (default: '').
 
 
 Adding optional arguments to NAPALM drivers
