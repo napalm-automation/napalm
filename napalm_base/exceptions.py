@@ -55,3 +55,7 @@ class TemplateNotImplemented(Exception):
 
 class TemplateRenderException(Exception):
     pass
+
+
+class ValidationException(Exception):
+    pass

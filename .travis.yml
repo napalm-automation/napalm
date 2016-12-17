@@ -24,4 +24,5 @@ script:
   - nosetests ./test/unit/TestGetNetworkDriver.py
   - nosetests ./test/unit/TestHelpers.py
   - nosetests ./test/unit/TestNapalmTestFramework.py
+  - py.test test/unit/validate/test_validate.py
   - pylama .

@@ -1,0 +1,48 @@
+---
+complies: false
+get_bgp_neighbors:
+  complies: false
+  extra: []
+  missing: []
+  present:
+    default:
+      complies: false
+      diff:
+        complies: false
+        extra: []
+        missing: []
+        present:
+          peers:
+            complies: false
+            diff:
+              complies: false
+              extra: [192.0.2.3]
+              missing: []
+              present:
+                192.0.2.2: {complies: true, nested: true}
+            nested: true
+          router_id: {complies: true, nested: false}
+      nested: true
+get_facts:
+  complies: false
+  extra: []
+  missing: []
+  present:
+    hostname: {complies: true, nested: false}
+    interface_list:
+      complies: false
+      diff:
+        complies: false
+        extra: [Vlan40, Vlan41, GigabitEthernet0/1, GigabitEthernet0/2, GigabitEthernet0/3,
+          GigabitEthernet0/4, GigabitEthernet0/5, GigabitEthernet0/6, GigabitEthernet0/7,
+          GigabitEthernet0/8, Port-channel1]
+        missing: []
+        present: [Vlan5, Vlan100]
+      nested: true
+    os_version: {complies: true, nested: false}
+get_interfaces_ip:
+  complies: true
+  extra: []
+  missing: []
+  present:
+    Ethernet2/1: {complies: true, nested: true}

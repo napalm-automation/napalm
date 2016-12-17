@@ -25,6 +25,8 @@ import napalm_base.helpers
 
 import napalm_base.constants as c
 
+from napalm_base import validate
+
 
 class NetworkDriver(object):
 
@@ -1488,3 +1490,12 @@ class NetworkDriver(object):
         }
         """
         raise NotImplementedError
+
+    def compliance_report(self, validation_file='validate.yml'):
+        """
+        Return a compliance report.
+
+        Verify that the device complies with the given validation file and writes a compliance
+        report file. See https://napalm.readthedocs.io/en/latest/validate.html.
+        """
+        return validate.compliance_report(self, validation_file=validation_file)
