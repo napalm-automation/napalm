@@ -56,6 +56,7 @@ Documentation
 
    installation
    tutorials/index
+   validate/index
    support/index
    cli
    base
