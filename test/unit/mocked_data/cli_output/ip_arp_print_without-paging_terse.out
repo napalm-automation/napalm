@@ -1,6 +1,0 @@
- 0 DC address=192.168.144.1 mac-address=AE:DE:48:00:00:01 interface=ether1 published=no 
- 1 DC address=192.168.144.4 mac-address=54:BE:F7:52:D4:C5 interface=ether1 published=no 
- 2 DC address=192.168.144.220 mac-address=00:92:04:67:B1:00 interface=ether1 published=no 
- 3 D  address=192.168.144.231 interface=ether1 published=no 
- 4 D  address=192.168.144.232 mac_address=00:00:00:00:00:00 interface=ether1 published=no 
-

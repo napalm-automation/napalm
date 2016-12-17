@@ -1,3 +1,5 @@
+MagicMock
+mock
 future
 pytest
 pytest-cov

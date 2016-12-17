@@ -33,6 +33,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+report.json
 
 # Translations
 *.mo
@@ -60,3 +61,4 @@ env
 
 test/unit/test_devices.py
 
+report.json

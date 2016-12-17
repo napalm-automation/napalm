@@ -1,2 +1,0 @@
- 0 interface=ether1 address=192.168.144.1 address4=192.168.144.1 address6=2001:8b0:1127:c9fa::1 mac-address=AE:DE:48:00:00:01 identity=gw.banana.org.uk platform=MikroTik version=6.35.4 (stable) unpack=none age=11s uptime=2w3d18h48m31s software-id=04JH-FME8 board=RB2011UAS-2HnD ipv6=yes interface-name=bridge1 
-

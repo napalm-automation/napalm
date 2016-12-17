@@ -1,0 +1,15 @@
+{
+    "data":
+    [
+    {
+        "network": "192.168.56.0",
+        "dynamic": true,
+        "invalid": false,
+        "disabled": false,
+        "actual-interface": "ether1",
+        ".id": "*1",
+        "address": "192.168.56.200/24",
+        "interface": "ether1"
+    }
+    ]
+}

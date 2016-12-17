@@ -1,1 +1,11 @@
-{"contact": "Matt Ryan <inetuid@gmail.com>", "chassis_id": "BLOB621", "community": {"testcomm": {"mode": "rw", "acl": "10.11.12.0/25,10.12.13.0/24"}, "public": {"mode": "ro", "acl": "0.0.0.0/0"}, "banana_ro": {"mode": "ro", "acl": "0.0.0.0/0"}}, "location": "Earth"}
+{
+    "contact": "contact name",
+    "community": {
+        "public": {
+            "mode": "ro",
+            "acl": "0.0.0.0/0"
+        }
+    },
+    "chassis_id": "",
+    "location": "some location"
+}
