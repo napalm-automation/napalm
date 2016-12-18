@@ -31,6 +31,7 @@ class PatchedVyOSDriver(vyos.VyOSDriver):
     """Patched VyOS Driver."""
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        optional_args = {'port': '12206'}
         super().__init__(hostname, username, password, timeout, optional_args)
 
         self.patched_attrs = ['device']
