@@ -367,7 +367,8 @@ class NXOSDriver(NetworkDriver):
                 interface_speed = interface_speed[0]
             interface_speed = int(interface_speed / 1000)
             interfaces[interface_name] = {
-                'is_up': (interface_details.get('admin_state', '') == 'up'),
+                'is_up': (interface_details.get('admin_state', '') == 'up') or
+                (interface_details.get('state', '') == 'up'),
                 'is_enabled': (interface_details.get('state') == 'up') or
                 (interface_details.get('admin_state', '') == 'up'),
                 'description': py23_compat.text_type(interface_details.get('desc', '').strip('"')),
