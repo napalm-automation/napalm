@@ -156,9 +156,13 @@ class PANOSDriver(NetworkDriver):
 
     def is_alive(self):
         if self.device:
-            return {'is_alive': True}
+            if self.ssh_connection:
+                is_alive = self.ssh_device.remote_conn.transport.is_active()
+            else:
+                is_alive = True
         else:
-            return {'is_alive': False}
+            is_alive = False
+        return {'is_alive': is_alive}
 
     def load_replace_candidate(self, filename=None, config=None):
         if config:
