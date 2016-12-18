@@ -36,7 +36,7 @@ def main():
                 args.user,
                 args.password,
                 optional_args=optional_args) as device:
-        logger.debug('Successfully connected to the device: {}'.format(args.hostname))
+        logger.debug('Successfully connected to the device: {}'.format(device.hostname))
         print('Successfully connected to the device')
     sys.exit(0)
 
