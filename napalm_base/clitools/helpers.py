@@ -16,7 +16,7 @@ import getpass
 import argparse
 
 
-def build_help(connect_test=False):
+def build_help(connect_test=False, validate=False, configure=False):
     parser = argparse.ArgumentParser(
         description='Command line tool to handle configuration on devices using NAPALM.'
                     'The script will print the diff on the screen',
@@ -60,7 +60,7 @@ def build_help(connect_test=False):
         action='store_true',
         help='Enables debug mode; more verbosity.'
     )
-    if not connect_test:
+    if configure:
         parser.add_argument(
             '--strategy', '-s',
             dest='strategy',
@@ -80,6 +80,13 @@ def build_help(connect_test=False):
             action='store_true',
             default=None,
             help='Only returns diff, it does not deploy the configuration.',
+        )
+    elif validate:
+        parser.add_argument(
+            '--validation_file', '-f',
+            dest='validation_file',
+            action='store',
+            help='Validation file containing resources derised states'
         )
     args = parser.parse_args()
 

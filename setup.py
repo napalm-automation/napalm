@@ -34,7 +34,8 @@ setup(
     entry_points={
         'console_scripts': [
             'cl_napalm_configure=napalm_base.clitools.cl_napalm_configure:main',
-            'cl_napalm_test=napalm_base.clitools.cl_napalm_test:main'
+            'cl_napalm_test=napalm_base.clitools.cl_napalm_test:main',
+            'cl_napalm_validate=napalm_base.clitools.cl_napalm_validate:main'
         ],
     }
 )

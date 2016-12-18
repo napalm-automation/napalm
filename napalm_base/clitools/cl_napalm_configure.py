@@ -52,7 +52,7 @@ def run(vendor, hostname, user, password, strategy, optional_args, config_file, 
 
 
 def main():
-    args = build_help()
+    args = build_help(configure=True)
     configure_logging(logger, args.debug)
 
     print(run(args.vendor, args.hostname, args.user, args.password, args.strategy,
