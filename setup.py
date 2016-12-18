@@ -12,7 +12,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-panos",
-    version="0.2.2",
+    version="0.3.0",
     packages=find_packages(),
     author="Gabriele Gerbino",
     author_email="gabriele@networktocode.com",
