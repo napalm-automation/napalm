@@ -88,7 +88,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **get_config**                 |yes|  |yes|   |yes|   |yes|    |no|    |yes|   |no|   |yes|      |no|      |no|
 **get_network_instances**      |yes|  |yes|   |no|    |no|     |no|    |no|    |no|   |no|       |no|      |yes|
 **get_firewall_policies**      |no|   |no|    |no|    |yes|    |no|    |no|    |no|   |no|       |no|      |no|
-============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
+============================== =====  =====   ======  =======  ======  ======  =====  =========  ========= =========
 
 Other methods
 -------------
@@ -99,7 +99,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 **load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|   |yes|  |yes|      |yes|     |no|
 **ping**                       |no|   |no|    |no|    |no|     |no|    |no|    |yes|  |no|       |no|      |yes|
 **traceroute**                 |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|      |no|
-============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
+============================== =====  =====   ======  =======  ======  ======  =====  =========  ========= =========
 
 Available configuration templates
 ---------------------------------
