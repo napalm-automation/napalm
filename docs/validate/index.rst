@@ -90,7 +90,7 @@ script could start like this::
     }
 
 Now, let's validate that the devices are running a specific version and that the management IP is
-the one I expect. Let's start by writing the validator files.
+the one we expect. Let's start by writing the validator files.
 
  * ``validate-eos.yml``::
 
@@ -99,7 +99,7 @@ the one I expect. Let's start by writing the validator files.
         os_version: 4.17.2F
     
     get_interfaces_ip:
-        ge-0/0/0.0:
+        Management1:
             ipv4:
                 10.0.2.14:
                     prefix_length: 24
@@ -217,7 +217,7 @@ Why this and what's next
 As mentioned in the introduction, this is interesting to validate state. You could, for example,
 very easily check that your BGP neigbors are configured and that the state is up. It becomes even more
 interesting if you can build the validator file from data from your inventory. That way you could
-deploy your network matches your expectations all the time without human intervention.
+deploy your network and verify it matches your expectations all the time without human intervention.
 
 Something else you could do is write the validation file manually prior to a maintenance based on
 some gathered data from the network and on your expectations. You could, then, perform your changs

@@ -13,15 +13,16 @@ NAPALM supports several methods to connect to the devices, to manipulate configu
 Supported Network Operating Systems:
 ------------------------------------
 
-* eos
-* junos
-* iosxr
-* fortios
-* ibm
-* nxos
-* ios
-* pluribus
-* panos
+* Arista EOS
+* Cisco IOS
+* Cisco IOS-XR
+* Cisco NX-OS
+* Fortinet Fortios
+* IBM
+* Juniper JunOS
+* Mikrotik RouterOS
+* Palo Alto NOS
+* Pluribus
 
 You can select the driver you need by doing the following:
 
