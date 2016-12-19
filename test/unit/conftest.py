@@ -37,6 +37,18 @@ class PatchedVyOSDriver(vyos.VyOSDriver):
         self.patched_attrs = ['device']
         self.device = FakeVyOSDevice()
 
+        def disconnect(self):
+            pass
+
+        def is_alive(self):
+            return {
+                'is_alive': True  # In testing everything works..
+            }
+
+        def open(self):
+            pass
+
+
 
 class FakeVyOSDevice(BaseTestDouble):
     """VyOS device test double."""
