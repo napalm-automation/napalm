@@ -21,7 +21,8 @@ Supported Network Operating Systems:
 * nxos
 * ios
 * pluribus
-* panos
+* pano
+* Mikrotik RouterOS
 
 You can select the driver you need by doing the following:
 
