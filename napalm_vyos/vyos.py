@@ -115,7 +115,7 @@ class VyOSDriver(NetworkDriver):
         if filename is not None:
             if os.path.exists(filename) is True:
                 self._scp_client.scp_transfer_file(filename, self._DEST_FILENAME)
-                print self._device.send_command("cp "+self._BOOT_FILENAME+" "+self._BACKUP_FILENAME)
+                self._device.send_command("cp "+self._BOOT_FILENAME+" "+self._BACKUP_FILENAME)
                 output_loadcmd = self._device.send_config_set(['load '+self._DEST_FILENAME])
                 match_loaded = re.findall("Load complete.", output_loadcmd)
                 match_notchanged = re.findall("No configuration changes to commit", output_loadcmd)
@@ -142,8 +142,8 @@ class VyOSDriver(NetworkDriver):
         if filename is not None:
             if os.path.exists(filename) is True:
                 with open(filename) as f:
-                    print self._device.send_command("cp "+self._BOOT_FILENAME+" "
-                                                    + self._BACKUP_FILENAME)
+                    self._device.send_command("cp "+self._BOOT_FILENAME+" "
+                                              + self._BACKUP_FILENAME)
                     self._new_config = f.read()
                     cfg = [x for x in self._new_config.split("\n") if x is not ""]
                     output_loadcmd = self._device.send_config_set(cfg)
