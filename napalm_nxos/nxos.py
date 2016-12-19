@@ -300,7 +300,7 @@ class NXOSDriver(NetworkDriver):
     def commit_config(self):
         if self.loaded:
             self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            self.save_config(self.backup_file)
+            self._save_config(self.backup_file)
             if self.replace:
                 if self._load_config() is False:
                     raise ReplaceConfigException
@@ -366,11 +366,13 @@ class NXOSDriver(NetworkDriver):
             if isinstance(interface_speed, list):
                 interface_speed = interface_speed[0]
             interface_speed = int(interface_speed / 1000)
+            if 'admin_state' in interface_details:
+                is_up = interface_details.get('admin_state', '') == 'up'
+            else:
+                is_up = interface_details.get('state', '') == 'up'
             interfaces[interface_name] = {
-                'is_up': (interface_details.get('admin_state', '') == 'up') or
-                (interface_details.get('state', '') == 'up'),
-                'is_enabled': (interface_details.get('state') == 'up') or
-                (interface_details.get('admin_state', '') == 'up'),
+                'is_up': is_up,
+                'is_enabled': (interface_details.get('state') == 'up'),
                 'description': py23_compat.text_type(interface_details.get('desc', '').strip('"')),
                 'last_flapped': self._compute_timestamp(
                     interface_details.get('eth_link_flapped', '')),
