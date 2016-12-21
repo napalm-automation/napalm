@@ -92,10 +92,10 @@ class VyOSDriver(NetworkDriver):
 
     def open(self):
         self.device = ConnectHandler(device_type='vyos',
-                                      host=self._hostname,
-                                      username=self._username,
-                                      password=self._password,
-                                      **self.netmiko_optional_args)
+                                     host=self._hostname,
+                                     username=self._username,
+                                     password=self._password,
+                                     **self.netmiko_optional_args)
 
         try:
             self._scp_client = SCPConn(self.device)
@@ -143,7 +143,7 @@ class VyOSDriver(NetworkDriver):
             if os.path.exists(filename) is True:
                 with open(filename) as f:
                     self.device.send_command("cp "+self._BOOT_FILENAME+" "
-                                              + self._BACKUP_FILENAME)
+                                             + self._BACKUP_FILENAME)
                     self._new_config = f.read()
                     cfg = [x for x in self._new_config.split("\n") if x is not ""]
                     output_loadcmd = self.device.send_config_set(cfg)

@@ -37,7 +37,6 @@ class PatchedVyOSDriver(vyos.VyOSDriver):
 
         self.patched_attrs = ['device']
         self.device = FakeVyOSDevice()
-        #self._device = FakeVyOSDevice()
 
     def close(self):
         pass
@@ -53,8 +52,6 @@ class PatchedVyOSDriver(vyos.VyOSDriver):
 
 class FakeVyOSDevice(BaseTestDouble):
     """VyOS device test double."""
-
-    
 
     def send_command(self, command, **kwargs):
         filename = '{}.text'.format(self.sanitize_text(command))
