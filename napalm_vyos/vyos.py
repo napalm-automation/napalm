@@ -198,8 +198,16 @@ class VyOSDriver(NetworkDriver):
         r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa
         0  0      0  61404 139624 139360    0    0     0     0    9   14  0  0 100  0
         """
-        output_cpu = self._device.send_command("vmstat").split("\n")[-1]
-        cpu = 100 - int(output_cpu.split()[-2])
+        output_cpu_list = list()
+        output_cpu = self._device.send_command("vmstat")
+        output_cpu = str(output_cpu)
+        output_cpu_list = output_cpu.split("\n")
+        if len(output_cpu_list[-1]) > 0:
+            output_cpu_list = output_cpu_list[-1]
+        else:
+            output_cpu_list = output_cpu_list[-2]
+        output_cpu_idle = output_cpu_list.split()[-2]
+        cpu = 100 - int(output_cpu_idle)
 
         """
         'free' output:
@@ -365,48 +373,50 @@ class VyOSDriver(NetworkDriver):
          133.130.120.204 133.243.238.164  2 u   46   64  377    7.717  987996. 1669.77
         """
 
-        output = self._device.send_command("ntpq -np").split("\n")[2:]
+        output = self._device.send_command("ntpq -np")
+        output = output.split("\n")[2:]
         ntp_stats = list()
 
         for ntp_info in output:
+            if len(ntp_info) > 0:
+                remote, refid, st, t, when, hostpoll, reachability, delay, offset, \
+                    jitter = ntp_info.split()
 
-            remote, refid, st, t, when, hostpoll, reachability, delay, offset, \
-                jitter = ntp_info.split()
+                # 'remote' contains '*' if the machine synchronized with NTP server
+                synchronized = "*" in remote
 
-            # 'remote' contains '*' if the machine synchronized with NTP server
-            synchronized = "*" in remote
+                match = re.search("(\d+\.\d+\.\d+\.\d+)", remote)
+                ip = match.group(1)
 
-            match = re.search("(\d+\.\d+\.\d+\.\d+)", remote)
-            ip = match.group(1)
+                when = when if when != '-' else 0
 
-            when = when if when != '-' else 0
-
-            ntp_stats.append({
-                "remote": unicode(ip),
-                "referenceid": unicode(refid),
-                "synchronized": bool(synchronized),
-                "stratum": int(st),
-                "type": unicode(t),
-                "when": unicode(when),
-                "hostpoll": int(hostpoll),
-                "reachability": int(reachability),
-                "delay": float(delay),
-                "offset": float(offset),
-                "jitter": float(jitter)
-            })
+                ntp_stats.append({
+                    "remote": unicode(ip),
+                    "referenceid": unicode(refid),
+                    "synchronized": bool(synchronized),
+                    "stratum": int(st),
+                    "type": unicode(t),
+                    "when": unicode(when),
+                    "hostpoll": int(hostpoll),
+                    "reachability": int(reachability),
+                    "delay": float(delay),
+                    "offset": float(offset),
+                    "jitter": float(jitter)
+                })
 
         return ntp_stats
 
     def get_ntp_peers(self):
-        output = self._device.send_command("ntpq -np").split("\n")[2:]
-
+        output = self._device.send_command("ntpq -np")
+        output_peers = output.split("\n")[2:]
         ntp_peers = dict()
 
-        for line in output:
-            match = re.search("(\d+\.\d+\.\d+\.\d+)\s+", line)
-            ntp_peers.update({
-                unicode(match.group(1)): {}
-            })
+        for line in output_peers:
+            if len(line) > 0:
+                match = re.search("(\d+\.\d+\.\d+\.\d+)\s+", line)
+                ntp_peers.update({
+                    unicode(match.group(1)): {}
+                })
 
         return ntp_peers
 
@@ -426,7 +436,8 @@ class VyOSDriver(NetworkDriver):
         192.168.1.4     4 64522       0       0        0    0    0 never    Active
         """
 
-        output = self._device.send_command("show ip bgp summary").split("\n")
+        output = self._device.send_command("show ip bgp summary")
+        output = output.split("\n")
 
         match = re.search(".* router identifier (\d+\.\d+\.\d+\.\d+), local AS number (\d+)",
                           output[0])
@@ -444,65 +455,66 @@ class VyOSDriver(NetworkDriver):
         bgp_info = [i.strip() for i in output[6:-2] if i is not ""]
 
         for i in bgp_info:
-            peer_id, bgp_version, remote_as, msg_rcvd, msg_sent, table_version, \
-                in_queue, out_queue, up_time, state_prefix = i.split()
+            if len(i) > 0:
+                peer_id, bgp_version, remote_as, msg_rcvd, msg_sent, table_version, \
+                    in_queue, out_queue, up_time, state_prefix = i.split()
 
-            is_enabled = "(Admin)" not in state_prefix
+                is_enabled = "(Admin)" not in state_prefix
 
-            received_prefixes = None
+                received_prefixes = None
 
-            try:
-                state_prefix = int(state_prefix)
-                received_prefixes = int(state_prefix)
-                is_up = True
-            except ValueError:
-                is_up = False
+                try:
+                    state_prefix = int(state_prefix)
+                    received_prefixes = int(state_prefix)
+                    is_up = True
+                except ValueError:
+                    is_up = False
 
-            if bgp_version == "4":
-                address_family = "ipv4"
-            elif bgp_version == "6":
-                address_family = "ipv6"
-            else:
-                raise ValueError("BGP neighbor parsing failed")
+                if bgp_version == "4":
+                    address_family = "ipv4"
+                elif bgp_version == "6":
+                    address_family = "ipv6"
+                else:
+                    raise ValueError("BGP neighbor parsing failed")
 
-            """
-            'show ip bgp neighbors 192.168.1.1' output example:
-            BGP neighbor is 192.168.1.1, remote AS 64519, local AS 64520, external link
-            BGP version 4, remote router ID 192.168.1.1
-            For address family: IPv4 Unicast
-            ~~~
-            Community attribute sent to this neighbor(both)
-            1 accepted prefixes
-            ~~~
-            """
-            bgp_detail = self._device.send_command("show ip bgp neighbors %s" % peer_id)
+                """
+                'show ip bgp neighbors 192.168.1.1' output example:
+                BGP neighbor is 192.168.1.1, remote AS 64519, local AS 64520, external link
+                BGP version 4, remote router ID 192.168.1.1
+                For address family: IPv4 Unicast
+                ~~~
+                Community attribute sent to this neighbor(both)
+                1 accepted prefixes
+                ~~~
+                """
+                bgp_detail = self._device.send_command("show ip bgp neighbors %s" % peer_id)
 
-            match_rid = re.search("remote router ID (\d+\.\d+\.\d+\.\d+).*", bgp_detail)
-            remote_rid = match_rid.group(1)
+                match_rid = re.search("remote router ID (\d+\.\d+\.\d+\.\d+).*", bgp_detail)
+                remote_rid = match_rid.group(1)
 
-            match_prefix_accepted = re.search("(\d+) accepted prefixes", bgp_detail)
-            accepted_prefixes = match_prefix_accepted.group(1)
+                match_prefix_accepted = re.search("(\d+) accepted prefixes", bgp_detail)
+                accepted_prefixes = match_prefix_accepted.group(1)
 
-            bgp_neighbor_data["global"]["peers"].setdefault(peer_id, {})
-            peer_dict = {
-                "description": unicode(""),
-                "is_enabled": bool(is_enabled),
-                "local_as": int(local_as),
-                "is_up": bool(is_up),
-                "remote_id": unicode(remote_rid),
-                "uptime": int(self._bgp_time_conversion(up_time)),
-                "remote_as": int(remote_as)
-            }
+                bgp_neighbor_data["global"]["peers"].setdefault(peer_id, {})
+                peer_dict = {
+                    "description": unicode(""),
+                    "is_enabled": bool(is_enabled),
+                    "local_as": int(local_as),
+                    "is_up": bool(is_up),
+                    "remote_id": unicode(remote_rid),
+                    "uptime": int(self._bgp_time_conversion(up_time)),
+                    "remote_as": int(remote_as)
+                }
 
-            af_dict = dict()
-            af_dict[address_family] = {
-                "sent_prefixes": int(-1),
-                "accepted_prefixes": int(accepted_prefixes),
-                "received_prefixes": int(received_prefixes)
-            }
+                af_dict = dict()
+                af_dict[address_family] = {
+                    "sent_prefixes": int(-1),
+                    "accepted_prefixes": int(accepted_prefixes),
+                    "received_prefixes": int(received_prefixes)
+                }
 
-            peer_dict["address_family"] = af_dict
-            bgp_neighbor_data["global"]["peers"][peer_id] = peer_dict
+                peer_dict["address_family"] = af_dict
+                bgp_neighbor_data["global"]["peers"][peer_id] = peer_dict
 
         return bgp_neighbor_data
 
@@ -553,8 +565,10 @@ class VyOSDriver(NetworkDriver):
         """
         output = self._device.send_command("show interfaces detail")
         interfaces = re.findall("(\S+): <.*", output)
-        count = re.findall("(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+", output)
+        # count = re.findall("(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+", output)
+        count = re.findall("(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)", output)
         counters = dict()
+
         j = 0
 
         for i in count:
@@ -681,13 +695,15 @@ class VyOSDriver(NetworkDriver):
         output = output.split("\n")
 
         # delete the header line and the interfaces which has no ip address
-        ifaces = [x for x in output[3:-1] if "-" not in x]
+        if len(output[-1]) > 0:
+            ifaces = [x for x in output[3:] if "-" not in x]
+        else:
+            ifaces = [x for x in output[3:-1] if "-" not in x]
 
         ifaces_ip = dict()
 
         for iface in ifaces:
             iface = iface.split()
-
             if len(iface) != 1:
 
                 iface_name = iface[0]
@@ -782,7 +798,12 @@ class VyOSDriver(NetworkDriver):
             # 'packet_info' example:
             # ['5', 'packets', 'transmitted,' '5', 'received,' '0%', 'packet',
             # 'loss,', 'time', '3997ms']
-            packet_info = output_ping.split("\n")[-2]
+            packet_info = output_ping.split("\n")
+
+            if len(packet_info[-1]) > 0:
+                packet_info = packet_info[-2]
+            else:
+                packet_info = packet_info[-3]
 
             packet_info = [x.strip() for x in packet_info.split()]
 
@@ -792,7 +813,13 @@ class VyOSDriver(NetworkDriver):
 
             # 'rtt_info' example:
             # ["0.307/0.396/0.480/0.061"]
-            rtt_info = output_ping.split("\n")[-1]
+            rtt_info = output_ping.split("\n")
+
+            if len(rtt_info[-1]) > 0:
+                rtt_info = rtt_info[-1]
+            else:
+                rtt_info = rtt_info[-2]
+
             match = re.search("([\d\.]+)/([\d\.]+)/([\d\.]+)/([\d\.]+)", rtt_info)
 
             if match is not None:

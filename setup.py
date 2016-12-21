@@ -14,8 +14,8 @@ setup(
     name="napalm-vyos",
     version="0.1.2",
     packages=find_packages(),
-    author="Piotr Pieprzycki, Shota Muto",
-    author_email="piotr.pieprzycki@dreamlab.pl, dos9954@gmail.com",
+    author="Piotr Pieprzycki",
+    author_email="piotr.pieprzycki@dreamlab.pl",
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
     classifiers=[
         'Topic :: Utilities',

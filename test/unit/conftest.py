@@ -5,6 +5,7 @@ import pytest
 from napalm_base.test import conftest as parent_conftest
 
 from napalm_base.test.double import BaseTestDouble
+from napalm_base.utils import py23_compat
 
 from napalm_vyos import vyos
 
@@ -36,34 +37,25 @@ class PatchedVyOSDriver(vyos.VyOSDriver):
 
         self.patched_attrs = ['device']
         self.device = FakeVyOSDevice()
+        self._device = FakeVyOSDevice()
 
-        def disconnect(self):
-            pass
+    def close(self):
+        pass
 
-        def is_alive(self):
-            return {
-                'is_alive': True  # In testing everything works..
-            }
+    def is_alive(self):
+        return {
+            'is_alive': True  # In testing everything works..
+        }
 
-        def open(self):
-            pass
-
+    def open(self):
+        pass
 
 
 class FakeVyOSDevice(BaseTestDouble):
     """VyOS device test double."""
 
-    def run_commands(self, command_list, encoding='json'):
-        """Fake run_commands."""
-        result = list()
-
-        for command in command_list:
-            filename = '{}.{}'.format(self.sanitize_text(command), encoding)
-            full_path = self.find_file(filename)
-
-            if encoding == 'json':
-                result.append(self.read_json_file(full_path))
-            else:
-                result.append({'output': self.read_txt_file(full_path)})
-
-        return result
+    def send_command(self, command, **kwargs):
+        filename = '{}.text'.format(self.sanitize_text(command))
+        full_path = self.find_file(filename)
+        result = self.read_txt_file(full_path)
+        return py23_compat.text_type(result)
