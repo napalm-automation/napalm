@@ -51,7 +51,7 @@ class VyOSDriver(NetworkDriver):
         self._username = username
         self._password = password
         self._timeout = timeout
-        self._device = None
+        self.device = None
         self._scp_client = None
         self._new_config = None
         self._old_config = None
@@ -91,19 +91,19 @@ class VyOSDriver(NetworkDriver):
         self.port = optional_args.get('port', 22)
 
     def open(self):
-        self._device = ConnectHandler(device_type='vyos',
+        self.device = ConnectHandler(device_type='vyos',
                                       host=self._hostname,
                                       username=self._username,
                                       password=self._password,
                                       **self.netmiko_optional_args)
 
         try:
-            self._scp_client = SCPConn(self._device)
+            self._scp_client = SCPConn(self.device)
         except:
             raise ConnectionException("Failed to open connection ")
 
     def close(self):
-        self._device.disconnect()
+        self.device.disconnect()
 
     def load_replace_candidate(self, filename=None, config=None):
         """
@@ -115,8 +115,8 @@ class VyOSDriver(NetworkDriver):
         if filename is not None:
             if os.path.exists(filename) is True:
                 self._scp_client.scp_transfer_file(filename, self._DEST_FILENAME)
-                self._device.send_command("cp "+self._BOOT_FILENAME+" "+self._BACKUP_FILENAME)
-                output_loadcmd = self._device.send_config_set(['load '+self._DEST_FILENAME])
+                self.device.send_command("cp "+self._BOOT_FILENAME+" "+self._BACKUP_FILENAME)
+                output_loadcmd = self.device.send_config_set(['load '+self._DEST_FILENAME])
                 match_loaded = re.findall("Load complete.", output_loadcmd)
                 match_notchanged = re.findall("No configuration changes to commit", output_loadcmd)
                 match_failed = re.findall("Failed to parse specified config file", output_loadcmd)
@@ -142,11 +142,11 @@ class VyOSDriver(NetworkDriver):
         if filename is not None:
             if os.path.exists(filename) is True:
                 with open(filename) as f:
-                    self._device.send_command("cp "+self._BOOT_FILENAME+" "
+                    self.device.send_command("cp "+self._BOOT_FILENAME+" "
                                               + self._BACKUP_FILENAME)
                     self._new_config = f.read()
                     cfg = [x for x in self._new_config.split("\n") if x is not ""]
-                    output_loadcmd = self._device.send_config_set(cfg)
+                    output_loadcmd = self.device.send_config_set(cfg)
                     match_setfailed = re.findall("Delete failed", output_loadcmd)
                     match_delfailed = re.findall("Set failed", output_loadcmd)
 
@@ -161,10 +161,10 @@ class VyOSDriver(NetworkDriver):
             raise MergeConfigException("no configuration found")
 
     def discard_config(self):
-        self._device.exit_config_mode()
+        self.device.exit_config_mode()
 
     def compare_config(self):
-        output_compare = self._device.send_config_set(['compare'])
+        output_compare = self.device.send_config_set(['compare'])
         match = re.findall("No changes between working and active configurations",
                            output_compare)
         if match:
@@ -174,22 +174,22 @@ class VyOSDriver(NetworkDriver):
             return diff
 
     def commit_config(self):
-        if self._device.commit():
-            self._device.send_config_set(['save'])
-        self._device.exit_config_mode()
+        if self.device.commit():
+            self.device.send_config_set(['save'])
+        self.device.exit_config_mode()
 
     def rollback(self, filename=None):
         """Rollback configuration to filename or to self.rollback_cfg file."""
         if filename is None:
             filename = self._BACKUP_FILENAME
 
-            output_loadcmd = self._device.send_config_set(['load '+filename])
+            output_loadcmd = self.device.send_config_set(['load '+filename])
             match = re.findall("Load complete.", output_loadcmd)
             if not match:
                 raise ReplaceConfigException("Failed rollback config: "
                                              + output_loadcmd)
             else:
-                self._device.send_config_set(['commit', 'save'])
+                self.device.send_config_set(['commit', 'save'])
 
     def get_environment(self):
         """
@@ -199,7 +199,7 @@ class VyOSDriver(NetworkDriver):
         0  0      0  61404 139624 139360    0    0     0     0    9   14  0  0 100  0
         """
         output_cpu_list = list()
-        output_cpu = self._device.send_command("vmstat")
+        output_cpu = self.device.send_command("vmstat")
         output_cpu = str(output_cpu)
         output_cpu_list = output_cpu.split("\n")
         if len(output_cpu_list[-1]) > 0:
@@ -216,7 +216,7 @@ class VyOSDriver(NetworkDriver):
         -/+ buffers/cache:     167800     340356
         Swap:            0          0          0
         """
-        output_ram = self._device.send_command("free").split("\n")[1]
+        output_ram = self.device.send_command("free").split("\n")[1]
         available_ram, used_ram = output_ram.split()[1:3]
 
         environment = {
@@ -265,7 +265,7 @@ class VyOSDriver(NetworkDriver):
         lo               127.0.0.1/8                       u/u
                          ::1/128
         """
-        output_iface = self._device.send_command("show interfaces")
+        output_iface = self.device.send_command("show interfaces")
 
         # Collect all interfaces' name and status
         match = re.findall("(\S+)\s+[:\-\d/\.]+\s+([uAD])/([uAD])", output_iface)
@@ -275,7 +275,7 @@ class VyOSDriver(NetworkDriver):
         iface_state = {iface_name: {"State": state, "Link": link} for iface_name,
                        state, link in match}
 
-        output_conf = self._device.send_command("show configuration")
+        output_conf = self.device.send_command("show configuration")
 
         # Convert the configuration to dictionary
         config = vyattaconfparser.parse_conf(output_conf)
@@ -334,7 +334,7 @@ class VyOSDriver(NetworkDriver):
         10.129.2.97              ether   00:50:56:9f:64:09   C                     eth0
         192.168.1.3              ether   00:50:56:86:7b:06   C                     eth1
         """
-        output = self._device.send_command("show arp")
+        output = self.device.send_command("show arp")
         output = output.split("\n")
 
         # Skip the header line
@@ -373,7 +373,7 @@ class VyOSDriver(NetworkDriver):
          133.130.120.204 133.243.238.164  2 u   46   64  377    7.717  987996. 1669.77
         """
 
-        output = self._device.send_command("ntpq -np")
+        output = self.device.send_command("ntpq -np")
         output = output.split("\n")[2:]
         ntp_stats = list()
 
@@ -407,7 +407,7 @@ class VyOSDriver(NetworkDriver):
         return ntp_stats
 
     def get_ntp_peers(self):
-        output = self._device.send_command("ntpq -np")
+        output = self.device.send_command("ntpq -np")
         output_peers = output.split("\n")[2:]
         ntp_peers = dict()
 
@@ -436,7 +436,7 @@ class VyOSDriver(NetworkDriver):
         192.168.1.4     4 64522       0       0        0    0    0 never    Active
         """
 
-        output = self._device.send_command("show ip bgp summary")
+        output = self.device.send_command("show ip bgp summary")
         output = output.split("\n")
 
         match = re.search(".* router identifier (\d+\.\d+\.\d+\.\d+), local AS number (\d+)",
@@ -487,7 +487,7 @@ class VyOSDriver(NetworkDriver):
                 1 accepted prefixes
                 ~~~
                 """
-                bgp_detail = self._device.send_command("show ip bgp neighbors %s" % peer_id)
+                bgp_detail = self.device.send_command("show ip bgp neighbors %s" % peer_id)
 
                 match_rid = re.search("remote router ID (\d+\.\d+\.\d+\.\d+).*", bgp_detail)
                 remote_rid = match_rid.group(1)
@@ -563,7 +563,7 @@ class VyOSDriver(NetworkDriver):
         TX:  bytes    packets     errors    dropped    carrier collisions
           32776498     279273          0          0          0          0
         """
-        output = self._device.send_command("show interfaces detail")
+        output = self.device.send_command("show interfaces detail")
         interfaces = re.findall("(\S+): <.*", output)
         # count = re.findall("(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+", output)
         count = re.findall("(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)", output)
@@ -603,7 +603,7 @@ class VyOSDriver(NetworkDriver):
     def get_snmp_information(self):
         # 'acl' is not implemented yet
 
-        output = self._device.send_command("show configuration")
+        output = self.device.send_command("show configuration")
         # convert the configuration to dictionary
         config = vyattaconfparser.parse_conf(output)
 
@@ -630,11 +630,11 @@ class VyOSDriver(NetworkDriver):
             return {}
 
     def get_facts(self):
-        output_uptime = self._device.send_command("cat /proc/uptime | awk '{print $1}'")
+        output_uptime = self.device.send_command("cat /proc/uptime | awk '{print $1}'")
 
         uptime = int(float(output_uptime))
 
-        output = self._device.send_command("show version").split("\n")
+        output = self.device.send_command("show version").split("\n")
         ver_str = [line for line in output if "Version" in line][0]
         version = self.parse_version(ver_str)
 
@@ -644,7 +644,7 @@ class VyOSDriver(NetworkDriver):
         hwmodel_str = [line for line in output if "HW model" in line][0]
         hwmodel = self.parse_hwmodel(hwmodel_str)
 
-        output = self._device.send_command("show configuration")
+        output = self.device.send_command("show configuration")
         config = vyattaconfparser.parse_conf(output)
 
         if "host-name" in config["system"]:
@@ -691,7 +691,7 @@ class VyOSDriver(NetworkDriver):
         return model[1].strip()
 
     def get_interfaces_ip(self):
-        output = self._device.send_command("show interfaces")
+        output = self.device.send_command("show interfaces")
         output = output.split("\n")
 
         # delete the header line and the interfaces which has no ip address
@@ -732,7 +732,7 @@ class VyOSDriver(NetworkDriver):
             return "ipv4"
 
     def get_users(self):
-        output = self._device.send_command("show configuration commands").split("\n")
+        output = self.device.send_command("show configuration commands").split("\n")
 
         user_conf = [x.split() for x in output if "login user" in x]
 
@@ -785,7 +785,7 @@ class VyOSDriver(NetworkDriver):
             command += "interface %s " % source
 
         ping_result = dict()
-        output_ping = self._device.send_command(command)
+        output_ping = self.device.send_command(command)
 
         if "Unknown host" in output_ping:
             err = "Unknown host"

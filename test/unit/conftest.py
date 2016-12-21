@@ -37,7 +37,7 @@ class PatchedVyOSDriver(vyos.VyOSDriver):
 
         self.patched_attrs = ['device']
         self.device = FakeVyOSDevice()
-        self._device = FakeVyOSDevice()
+        #self._device = FakeVyOSDevice()
 
     def close(self):
         pass
@@ -54,8 +54,11 @@ class PatchedVyOSDriver(vyos.VyOSDriver):
 class FakeVyOSDevice(BaseTestDouble):
     """VyOS device test double."""
 
+    
+
     def send_command(self, command, **kwargs):
         filename = '{}.text'.format(self.sanitize_text(command))
+        print filename
         full_path = self.find_file(filename)
         result = self.read_txt_file(full_path)
         return py23_compat.text_type(result)
