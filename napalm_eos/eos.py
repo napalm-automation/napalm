@@ -986,7 +986,7 @@ class EOSDriver(NetworkDriver):
         routes = dict()
 
         if protocol.lower() not in ['', 'bgp', 'connected', 'isis', 'ospf', 'rip', 'static']:
-            return 'Please specify a valid protocol!'
+            raise TypeError('Please specify a valid protocol!')
 
         try:
             ipv = ''
