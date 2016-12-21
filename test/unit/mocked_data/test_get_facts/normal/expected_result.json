@@ -1,1 +1,1 @@
-{"os_version": "1.1.7", "uptime": "...", "interface_list": ["eth1", "eth0", "lo"], "vendor": "VyOS", "serial_number": "0", "model": "VirtualBox", "hostname": "vyos2", "fqdn": ""}
+{"os_version": "1.1.7", "uptime": "...", "interface_list": "...", "vendor": "VyOS", "serial_number": "0", "model": "VirtualBox", "hostname": "vyos2", "fqdn": ""}

@@ -54,7 +54,6 @@ class FakeVyOSDevice(BaseTestDouble):
 
     def send_command(self, command, **kwargs):
         filename = '{}.text'.format(self.sanitize_text(command))
-        print filename
         full_path = self.find_file(filename)
         result = self.read_txt_file(full_path)
         return py23_compat.text_type(result)
