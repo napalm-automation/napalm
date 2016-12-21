@@ -47,10 +47,10 @@ class VyOSDriver(NetworkDriver):
     _BOOT_FILENAME = "/config/config.boot"
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
-        self._hostname = hostname
-        self._username = username
-        self._password = password
-        self._timeout = timeout
+        self.hostname = hostname
+        self.username = username
+        self.password = password
+        self.timeout = timeout
         self.device = None
         self._scp_client = None
         self._new_config = None
@@ -82,19 +82,20 @@ class VyOSDriver(NetworkDriver):
 
         # Build dict of any optional Netmiko args
         self.netmiko_optional_args = {}
-        for k, v in netmiko_argument_map.items():
-            try:
-                self.netmiko_optional_args[k] = optional_args[k]
-            except KeyError:
-                pass
-        self.global_delay_factor = optional_args.get('global_delay_factor', 1)
-        self.port = optional_args.get('port', 22)
+        if optional_args is not None:
+            for k, v in netmiko_argument_map.items():
+                try:
+                    self.netmiko_optional_args[k] = optional_args[k]
+                except KeyError:
+                    pass
+            self.global_delay_factor = optional_args.get('global_delay_factor', 1)
+            self.port = optional_args.get('port', 22)
 
     def open(self):
         self.device = ConnectHandler(device_type='vyos',
-                                     host=self._hostname,
-                                     username=self._username,
-                                     password=self._password,
+                                     host=self.hostname,
+                                     username=self.username,
+                                     password=self.password,
                                      **self.netmiko_optional_args)
 
         try:
@@ -104,6 +105,12 @@ class VyOSDriver(NetworkDriver):
 
     def close(self):
         self.device.disconnect()
+
+    def is_alive(self):
+        """Returns a flag with the state of the SSH connection."""
+        return {
+            'is_alive': self.device.remote_conn.transport.is_active()
+        }
 
     def load_replace_candidate(self, filename=None, config=None):
         """
@@ -178,8 +185,9 @@ class VyOSDriver(NetworkDriver):
             self.device.send_config_set(['save'])
         self.device.exit_config_mode()
 
-    def rollback(self, filename=None):
+    def rollback(self):
         """Rollback configuration to filename or to self.rollback_cfg file."""
+        filename = None
         if filename is None:
             filename = self._BACKUP_FILENAME
 
@@ -773,12 +781,14 @@ class VyOSDriver(NetworkDriver):
 
         return user_auth
 
-    def ping(self, destination, source="", ttl=255, timeout=5, size=100, count=5):
+    def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
         # does not support multiple destination yet
+
+        deadline = timeout * count
 
         command = "ping %s " % destination
         command += "ttl %d " % ttl
-        command += "deadline %d " % timeout
+        command += "deadline %d " % deadline
         command += "size %d " % size
         command += "count %d " % count
         if source != "":
