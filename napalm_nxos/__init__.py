@@ -19,7 +19,7 @@
 import pkg_resources
 
 # Import local modules
-from nxos import NXOSDriver  # noqa
+from napalm_nxos.nxos import NXOSDriver  # noqa
 
 try:
     __version__ = pkg_resources.get_distribution('napalm-nxos').version

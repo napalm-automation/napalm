@@ -1,7 +1,7 @@
+coveralls
 pytest
 pytest-cov
 pytest-json
 pytest-pythonpath
 pylama
-flake8-import-order
 -r requirements.txt

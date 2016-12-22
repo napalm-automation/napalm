@@ -1,1 +1,0 @@
-{'ins_api': {'outputs': {'output': {'msg': 'Success', 'input': 'show running-config | include domain-name', 'code': '200', 'body': 'ip domain-name fake.net\n'}}, 'version': '1.2', 'type': 'cli_show_ascii', 'sid': 'eoc'}}

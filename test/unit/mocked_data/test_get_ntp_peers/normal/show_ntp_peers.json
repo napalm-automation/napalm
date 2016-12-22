@@ -1,0 +1,1 @@
+{"TABLE_peers": {"ROW_peers": [{"PeerIPAddress": "33.33.33.33", "serv_peer": "Server", "conf_flag": "(configured)"}, {"PeerIPAddress": "2001:db8::4101", "serv_peer": "Peer", "conf_flag": "(configured)"}, {"PeerIPAddress": "127.127.1.1", "serv_peer": "Server", "conf_flag": "(configured)"}, {"PeerIPAddress": "192.0.2.10", "serv_peer": "Server", "conf_flag": "(configured)"}]}}

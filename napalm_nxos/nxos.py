@@ -17,23 +17,19 @@ from __future__ import unicode_literals
 
 # import stdlib
 import re
-import ssl
 import time
 import tempfile
-from urllib2 import URLError
 from datetime import datetime
+from requests.exceptions import ConnectionError
 
 # import third party lib
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 
-from pycsco.nxos.utils import nxapi_lib
-from pycsco.nxos.utils import install_config
-from pycsco.nxos.utils.file_copy import FileCopy
-from pycsco.nxos.device import Device as NXOSDevice
-
-from pycsco.nxos.error import CLIError
-from pycsco.nxos.error import FileTransferError
+from pynxos.device import Device as NXOSDevice
+from pynxos.features.file_copy import FileTransferError as NXOSFileTransferError
+from pynxos.features.file_copy import FileCopy
+from pynxos.errors import CLIError
 
 # import NAPALM Base
 import napalm_base.helpers
@@ -43,19 +39,10 @@ from napalm_base.exceptions import ConnectionException
 from napalm_base.exceptions import MergeConfigException
 from napalm_base.exceptions import CommandErrorException
 from napalm_base.exceptions import ReplaceConfigException
-
-
-# Allow untrusted SSL Certificates
-ssl._create_default_https_context = ssl._create_unverified_context
-
-
-def strip_trailing(string):
-    lines = list(x.rstrip(' ') for x in string.splitlines())
-    return '\n'.join(lines)
+import napalm_base.constants as c
 
 
 class NXOSDriver(NetworkDriver):
-
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -68,26 +55,34 @@ class NXOSDriver(NetworkDriver):
         self.loaded = False
         self.fc = None
         self.changed = False
-        self.port = optional_args.get('port', 80)
-        self.protocol = optional_args.get('nxos_protocol', 'http')
+        self.replace_file = None
+
+        if optional_args is None:
+            optional_args = {}
+
+        self.transport = optional_args.get('nxos_protocol', 'http')
+
+        if self.transport == 'https':
+            self.port = optional_args.get('port', 443)
+        elif self.transport == 'http':
+            self.port = optional_args.get('port', 80)
 
     def open(self):
         try:
-            self.device = NXOSDevice(username=self.username,
-                                     password=self.password,
-                                     ip=self.hostname,
+            self.device = NXOSDevice(self.hostname,
+                                     self.username,
+                                     self.password,
                                      timeout=self.timeout,
                                      port=self.port,
-                                     protocol=self.protocol)
-            self.device.show('show version', fmat='json')
-            # execute something easy
-            # something easier with XML format?
+                                     transport=self.transport)
+            self.device.show('show hostname')
             self.up = True
-        except URLError:
+        except (CLIError, ValueError):
             # unable to open connection
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
 
     def close(self):
+        self.device = None
         if self.changed:
             self._delete_file(self.backup_file)
 
@@ -98,8 +93,7 @@ class NXOSDriver(NetworkDriver):
         This method will determine the epoch of the event.
         e.g.: 23week(s) 3day(s) -> 1462248287
         """
-
-        if not stupid_cisco_output:
+        if not stupid_cisco_output or stupid_cisco_output == 'never':
             return -1.0
 
         things = {
@@ -113,13 +107,13 @@ class NXOSDriver(NetworkDriver):
                 'weight': 3600
             },
             'day(s)': {
-                'weight': 24*3600
+                'weight': 24 * 3600
             },
             'week(s)': {
-                'weight': 7*24*3600
+                'weight': 7 * 24 * 3600
             },
             'year(s)': {
-                'weight': 365.25*24*3600
+                'weight': 365.25 * 24 * 3600
             }
         }
 
@@ -130,8 +124,7 @@ class NXOSDriver(NetworkDriver):
                     things[key]['count'] = napalm_base.helpers.convert(
                         int, part.replace(key, ''), 0)
 
-        delta = sum([det.get('count', 0)*det.get('weight') for det in things.values()])
-
+        delta = sum([det.get('count', 0) * det.get('weight') for det in things.values()])
         return time.time() - delta
 
     @staticmethod
@@ -161,75 +154,155 @@ class NXOSDriver(NetworkDriver):
             _table_rows = [_table_rows]
         return _table_rows
 
+    @staticmethod
+    def fix_checkpoint_string(string, filename):
+        # used to generate checkpoint-like files
+        pattern = '''!Command: Checkpoint cmd vdc 1'''
+
+        if '!Command' in string:
+            return re.sub('!Command.*', pattern.format(filename), string)
+        else:
+            return "{0}\n{1}".format(pattern.format(filename), string)
+
     def _get_reply_table(self, result, table_name, row_name):
-        _table = self._get_reply_body(result)
-        return self._get_table_rows(_table, table_name, row_name)
+        return self._get_table_rows(result, table_name, row_name)
 
     def _get_command_table(self, command, table_name, row_name):
-
-        result = {}
-        result = self.device.show(command, fmat='json')
-        json_output = eval(result[1])
-
+        json_output = self.device.show(command)
         return self._get_reply_table(json_output, table_name, row_name)
+
+    def is_alive(self):
+        if self.device:
+            return {'is_alive': True}
+        else:
+            return {'is_alive': False}
 
     def load_replace_candidate(self, filename=None, config=None):
         self.replace = True
         self.loaded = True
 
+        if not filename and not config:
+            raise ReplaceConfigException('filename or config param must be provided.')
+
         if filename is None:
             temp_file = tempfile.NamedTemporaryFile()
             temp_file.write(config)
             temp_file.flush()
-            cfg_file_path = temp_file.name
+            cfg_filename = temp_file.name
         else:
-            cfg_file_path = filename
+            cfg_filename = filename
 
-        self.fc = FileCopy(self.device, cfg_file_path)
-        if not self.fc.file_already_exists():
-            try:
-                self.fc.transfer_file()
-            except FileTransferError as fte:
-                raise ReplaceConfigException(fte.message)
+        self.replace_file = cfg_filename
+
+        with open(self.replace_file, 'r') as f:
+            file_content = f.read()
+
+        file_content = self.fix_checkpoint_string(file_content, self.replace_file)
+        temp_file = tempfile.NamedTemporaryFile()
+        temp_file.write(file_content)
+        temp_file.flush()
+        self.replace_file = cfg_filename
+
+        self._send_file(temp_file.name, cfg_filename)
 
     def load_merge_candidate(self, filename=None, config=None):
         self.replace = False
         self.loaded = True
+
+        if not filename and not config:
+            raise MergeConfigException('filename or config param must be provided.')
+
         if filename is not None:
             with open(filename, "r") as f:
                 self.merge_candidate = f.read()
         else:
             self.merge_candidate = config
 
+    def _send_file(self, filename, dest):
+        self.fc = FileCopy(self.device, filename, dst=dest.split('/')[-1])
+        try:
+            if not self.fc.remote_file_exists():
+                self.fc.send()
+            elif not self.fc.file_already_exists():
+                self.fc.send()
+        except NXOSFileTransferError as fte:
+            raise ReplaceConfigException(fte.message)
+
+    def _create_sot_file(self):
+        """Create Source of Truth file to compare."""
+        commands = ['terminal dont-ask', 'checkpoint file sot_file']
+        self.device.config_list(commands)
+
+    def _get_diff(self, cp_file):
+        """Get a diff between running config and a proposed file."""
+        diff = []
+        self._create_sot_file()
+        diff_out = self.device.show(
+            'show diff rollback-patch file {0} file {1}'.format(
+                'sot_file', self.replace_file.split('/')[-1]), raw_text=True)
+        try:
+            diff_out = diff_out.split(
+                '#Generating Rollback Patch')[1].replace(
+                    'Rollback Patch is Empty', '').strip()
+            for line in diff_out.splitlines():
+                if line:
+                    if line[0].strip() != '!':
+                        diff.append(line.rstrip(' '))
+        except (AttributeError, KeyError):
+            raise ReplaceConfigException(
+                'Could not calculate diff. It\'s possible the given file doesn\'t exist.')
+        return '\n'.join(diff)
+
+    def _get_merge_diff(self):
+        diff = []
+        running_config = self.get_config(retrieve='running')['running']
+        running_lines = running_config.splitlines()
+        for line in self.merge_candidate.splitlines():
+            if line not in running_lines and line:
+                if line[0].strip() != '!':
+                    diff.append(line)
+        self.merge_candidate = '\n'.join(diff)
+
     def compare_config(self):
         if self.loaded:
             if not self.replace:
+                self._get_merge_diff()
                 return self.merge_candidate
-            messy_diff = install_config.get_diff(self.device, self.fc.dst)
-            clean_diff = strip_trailing(messy_diff)
-            return clean_diff
-
+            diff = self._get_diff(self.fc.dst)
+            return diff
         return ''
 
-    def _copy_run_start(self):
-        _save_startup_cmd = 'copy run start'
-        copy_output = self.cli([_save_startup_cmd])[_save_startup_cmd]  # exec copy run st
-        last_line = copy_output.splitlines()[-1]  # Should be `Copy complete.`
-        if 'copy complete' not in last_line.lower():  # weak?
+    def _commit_merge(self):
+        commands = [command for command in self.merge_candidate.splitlines() if command]
+        self.device.config_list(commands)
+        if not self.device.save():
             raise CommandErrorException('Unable to commit config!')
 
-    def _commit_merge(self):
-        commands = self.merge_candidate.splitlines()
-        command_string = ';'.join(list(' %s ' % x.strip() for x in commands))
-        self.device.config(command_string)  # this will load all lines in running config only
-        self._copy_run_start()
+    def _save_config(self, filename):
+        """Save the current running config to the given file."""
+        self.device.show('checkpoint file {}'.format(filename), raw_text=True)
+
+    def _disable_confirmation(self):
+        self.device.config('terminal dont-ask')
+
+    def _load_config(self):
+        cmd = 'rollback running file {0}'.format(self.replace_file.split('/')[-1])
+        self._disable_confirmation()
+        try:
+            self.device.config(cmd)
+        except ConnectionError:
+            # requests will raise an error with verbose warning output
+            return True
+        except:
+            return False
+        return True
 
     def commit_config(self):
         if self.loaded:
             self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            install_config.save_config(self.device, self.backup_file)
+            self._save_config(self.backup_file)
             if self.replace:
-                if install_config.rollback(self.device, self.fc.dst) is False:
+                if self._load_config() is False:
                     raise ReplaceConfigException
             else:
                 try:
@@ -243,9 +316,9 @@ class NXOSDriver(NetworkDriver):
             raise ReplaceConfigException('No config loaded.')
 
     def _delete_file(self, filename):
-        self.device.show('terminal dont-ask', text=True)
-        self.device.show('delete {}'.format(filename), text=True)
-        self.device.show('no terminal dont-ask', text=True)
+        self.device.show('terminal dont-ask', raw_text=True)
+        self.device.show('delete {}'.format(filename), raw_text=True)
+        self.device.show('no terminal dont-ask', raw_text=True)
 
     def discard_config(self):
         if self.loaded and self.replace:
@@ -253,110 +326,83 @@ class NXOSDriver(NetworkDriver):
                 self._delete_file(self.fc.dst)
             except CLIError:
                 pass
-
         self.loaded = False
 
     def rollback(self):
         if self.changed:
-            install_config.rollback(self.device, self.backup_file)
-            self._copy_run_start()
+            self.device.rollback(self.backup_file)
+            self.device.save()
             self.changed = False
 
     def get_facts(self):
-        facts = {
-            'vendor': u'Cisco'
-        }
+        pynxos_facts = self.device.facts
+        final_facts = {key: value for key, value in pynxos_facts.items() if
+                       key not in ['interfaces', 'uptime_string', 'vlans']}
 
-        sh_uptime_cmd = 'show system uptime'
-        sh_uptime = eval(self.device.show(sh_uptime_cmd, fmat='json')[1])
-        sh_uptime_body = self._get_reply_body(sh_uptime)
+        if pynxos_facts['interfaces']:
+            final_facts['interface_list'] = pynxos_facts['interfaces']
+        else:
+            final_facts['interface_list'] = self.get_interfaces().keys()
 
-        uptime_days = sh_uptime_body.get('sys_up_days', 0)
-        uptime_hrs = sh_uptime_body.get('sys_up_hrs', 0)
-        uptime_mins = sh_uptime_body.get('sys_up_mins', 0)
-        uptime_secs = sh_uptime_body.get('sys_up_secs', 0)
-        facts['uptime'] = (uptime_secs + uptime_mins * 60 + uptime_hrs * (60 * 60) +
-                           uptime_days * (60 * 60 * 24))
+        final_facts['vendor'] = 'Cisco'
 
-        sh_ver_cmd = 'show version'
-        sh_ver_json = eval(self.device.show(sh_ver_cmd, fmat='json')[1])
-        sh_ver_body = self._get_reply_body(sh_ver_json)
+        hostname_cmd = 'show hostname'
+        hostname = self.device.show(hostname_cmd).get('hostname')
+        if hostname:
+            final_facts['fqdn'] = hostname
 
-        sh_ver_json = eval(self.device.show(sh_ver_cmd, fmat='json')[1])
-        facts['serial_number'] = unicode(sh_ver_body.get('proc_board_id'))
-        facts['os_version'] = unicode(sh_ver_body.get('sys_ver_str'))
-        facts['model'] = unicode(sh_ver_body.get('chassis_id'))
-        host_name = unicode(sh_ver_body.get('host_name'))
-        facts['hostname'] = host_name
-
-        sh_domain_cmd = 'show running-config | include domain-name'
-        sh_domain_name_out = self.cli([sh_domain_cmd])[sh_domain_cmd]
-        if not sh_domain_name_out:
-            sh_domain_name_out = ''
-
-        domain_name = ''
-        for line in sh_domain_name_out.splitlines():
-            if line.startswith('ip domain-name'):
-                domain_name = line.replace('ip domain-name', '').strip()
-                break
-
-        facts['fqdn'] = unicode(
-            '{0}.{1}'.format(host_name, domain_name) if domain_name else host_name)
-
-        intrf_cmd = 'show interface status'
-        interfaces_status = self._get_command_table(intrf_cmd, 'TABLE_interface', 'ROW_interface')
-        facts['interface_list'] = [intrf.get('interface') for intrf in interfaces_status]
-
-        return facts
+        return final_facts
 
     def get_interfaces(self):
         interfaces = {}
-
         iface_cmd = 'show interface'
-        interfaces_out = self._get_command_table(iface_cmd, 'TABLE_interface', 'ROW_interface')
+        interfaces_out = self.device.show(iface_cmd)
+        interfaces_body = interfaces_out['TABLE_interface']['ROW_interface']
 
-        for interface_details in interfaces_out:
+        for interface_details in interfaces_body:
             interface_name = interface_details.get('interface')
             # Earlier version of Nexus returned a list for 'eth_bw' (observed on 7.1(0)N1(1a))
             interface_speed = interface_details.get('eth_bw', 0)
             if isinstance(interface_speed, list):
                 interface_speed = interface_speed[0]
-            interface_speed = int(interface_speed * 1000)
+            interface_speed = int(interface_speed / 1000)
+            if 'admin_state' in interface_details:
+                is_up = interface_details.get('admin_state', '') == 'up'
+            else:
+                is_up = interface_details.get('state', '') == 'up'
             interfaces[interface_name] = {
-                'is_up': (interface_details.get('admin_state', '') == 'up'),
-                'is_enabled': (interface_details.get('state') == 'up') or
-                (interface_details.get('admin_state', '') == 'up'),
-                'description': unicode(interface_details.get('desc', '')),
+                'is_up': is_up,
+                'is_enabled': (interface_details.get('state') == 'up'),
+                'description': py23_compat.text_type(interface_details.get('desc', '').strip('"')),
                 'last_flapped': self._compute_timestamp(
                     interface_details.get('eth_link_flapped', '')),
                 'speed': interface_speed,
                 'mac_address': napalm_base.helpers.convert(
                     napalm_base.helpers.mac, interface_details.get('eth_hw_addr')),
-
             }
-
         return interfaces
 
     def get_lldp_neighbors(self):
         results = {}
-
         try:
-            neighbor_list = nxapi_lib.get_neighbors(self.device, 'lldp')
+            command = 'show lldp neighbors'
+            lldp_raw_output = self.cli([command]).get(command, '')
+            lldp_neighbors = napalm_base.helpers.textfsm_extractor(
+                                self, 'lldp_neighbors', lldp_raw_output)
         except CLIError:
-            neighbor_list = []
+            lldp_neighbors = []
 
-        for neighbor in neighbor_list:
+        for neighbor in lldp_neighbors:
             local_iface = neighbor.get('local_interface')
             if neighbor.get(local_iface) is None:
                 if local_iface not in results:
                     results[local_iface] = []
 
             neighbor_dict = {}
-            neighbor_dict['hostname'] = unicode(neighbor.get('neighbor'))
-            neighbor_dict['port'] = unicode(neighbor.get('neighbor_interface'))
+            neighbor_dict['hostname'] = py23_compat.text_type(neighbor.get('neighbor'))
+            neighbor_dict['port'] = py23_compat.text_type(neighbor.get('neighbor_interface'))
 
             results[local_iface].append(neighbor_dict)
-
         return results
 
     def get_bgp_neighbors(self):
@@ -369,12 +415,13 @@ class NXOSDriver(NetworkDriver):
 
         for vrf_dict in vrf_list:
             result_vrf_dict = {}
-            result_vrf_dict['router_id'] = unicode(vrf_dict['router-id'])
+            result_vrf_dict['router_id'] = py23_compat.text_type(vrf_dict['router-id'])
             result_vrf_dict['peers'] = {}
-
             neighbors_list = vrf_dict.get('TABLE_neighbor', {}).get('ROW_neighbor', [])
+
             if isinstance(neighbors_list, dict):
                 neighbors_list = [neighbors_list]
+
             for neighbor_dict in neighbors_list:
                 neighborid = napalm_base.helpers.ip(neighbor_dict['neighbor-id'])
 
@@ -384,7 +431,7 @@ class NXOSDriver(NetworkDriver):
                     'remote_id': neighborid,
                     'is_enabled': True,
                     'uptime': -1,
-                    'description': unicode(''),
+                    'description': py23_compat.text_type(''),
                     'is_up': True
                 }
                 result_peer_dict['address_family'] = {
@@ -394,25 +441,33 @@ class NXOSDriver(NetworkDriver):
                         'received_prefixes': -1
                     }
                 }
-
                 result_vrf_dict['peers'][neighborid] = result_peer_dict
 
-            results[vrf_dict['vrf-name-out']] = result_vrf_dict
+            vrf_name = vrf_dict['vrf-name-out']
+            if vrf_name == 'default':
+                vrf_name = 'global'
+            results[vrf_name] = result_vrf_dict
         return results
 
-    def get_checkpoint_file(self):
-        return install_config.get_checkpoint(self.device)
+    def _set_checkpoint(self, filename):
+        commands = ['terminal dont-ask', 'checkpoint file {0}'.format(filename)]
+        self.device.config_list(commands)
+
+    def _get_checkpoint_file(self):
+        filename = 'temp_cp_file_from_napalm'
+        self._set_checkpoint(filename)
+        cp_out = self.device.show('show file {0}'.format(filename), raw_text=True)
+        self._delete_file(filename)
+        return cp_out
 
     def get_lldp_neighbors_detail(self, interface=''):
-
         lldp_neighbors = {}
-
         filter = ''
         if interface:
             filter = 'interface {name} '.format(name=interface)
 
         command = 'show lldp neighbors {filter}detail'.format(filter=filter)
-        # seems that show LLDP neighbors detail does not return JSON output...
+        # seems that some old devices may not return JSON output...
 
         try:
             lldp_neighbors_table_str = self.cli([command]).get(command)
@@ -444,35 +499,40 @@ class NXOSDriver(NetworkDriver):
                     'remote_chassis_id': napalm_base.helpers.mac(chassis_rgx.groups()[1])
                 }
                 continue
-            lldp_neighbor['parent_interface'] = u''
+            lldp_neighbor['parent_interface'] = ''
             port_rgx = re.search(PORT_REGEX, line, re.I)
             if port_rgx:
-                lldp_neighbor['parent_interface'] = unicode(port_rgx.groups()[1])
-                continue  # jump to next line
+                lldp_neighbor['parent_interface'] = py23_compat.text_type(port_rgx.groups()[1])
+                continue
             local_port_rgx = re.search(LOCAL_PORT_ID_REGEX, line, re.I)
             if local_port_rgx:
                 interface_name = local_port_rgx.groups()[1]
                 continue
             port_descr_rgx = re.search(PORT_DESCR_REGEX, line, re.I)
             if port_descr_rgx:
-                lldp_neighbor['remote_port'] = unicode(port_descr_rgx.groups()[1])
-                lldp_neighbor['remote_port_description'] = unicode(port_descr_rgx.groups()[1])
+                lldp_neighbor['remote_port'] = py23_compat.text_type(port_descr_rgx.groups()[1])
+                lldp_neighbor['remote_port_description'] = py23_compat.text_type(
+                                                            port_descr_rgx.groups()[1])
                 continue
             syst_name_rgx = re.search(SYSTEM_NAME_REGEX, line, re.I)
             if syst_name_rgx:
-                lldp_neighbor['remote_system_name'] = unicode(syst_name_rgx.groups()[1])
+                lldp_neighbor['remote_system_name'] = py23_compat.text_type(
+                                                        syst_name_rgx.groups()[1])
                 continue
             syst_descr_rgx = re.search(SYSTEM_DESCR_REGEX, line, re.I)
             if syst_descr_rgx:
-                lldp_neighbor['remote_system_description'] = unicode(syst_descr_rgx.groups()[1])
+                lldp_neighbor['remote_system_description'] = py23_compat.text_type(
+                                                                syst_descr_rgx.groups()[1])
                 continue
             syst_capab_rgx = re.search(SYST_CAPAB_REEGX, line, re.I)
             if syst_capab_rgx:
-                lldp_neighbor['remote_system_capab'] = unicode(syst_capab_rgx.groups()[1])
+                lldp_neighbor['remote_system_capab'] = py23_compat.text_type(
+                                                        syst_capab_rgx.groups()[1])
                 continue
             syst_enabled_rgx = re.search(ENABL_CAPAB_REGEX, line, re.I)
             if syst_enabled_rgx:
-                lldp_neighbor['remote_system_enable_capab'] = unicode(syst_enabled_rgx.groups()[1])
+                lldp_neighbor['remote_system_enable_capab'] = py23_compat.text_type(
+                                                                syst_enabled_rgx.groups()[1])
                 continue
             vlan_rgx = re.search(VLAN_ID_REGEX, line, re.I)
             if vlan_rgx:
@@ -480,31 +540,20 @@ class NXOSDriver(NetworkDriver):
                 if interface_name not in lldp_neighbors.keys():
                     lldp_neighbors[interface_name] = []
                 lldp_neighbors[interface_name].append(lldp_neighbor)
-
         return lldp_neighbors
 
-    def cli(self, commands=None):
-
+    def cli(self, commands):
         cli_output = {}
-
         if type(commands) is not list:
             raise TypeError('Please enter a valid list of commands!')
 
         for command in commands:
-            string_output = self.device.show(command, fmat='json', text=True)[1]
-            dict_output = eval(string_output)
-            command_output = dict_output.get('ins_api', {})\
-                                        .get('outputs', {})\
-                                        .get('output', {})\
-                                        .get('body', '')
-            cli_output[unicode(command)] = command_output
-
+            command_output = self.device.show(command, raw_text=True)
+            cli_output[py23_compat.text_type(command)] = command_output
         return cli_output
 
     def get_arp_table(self):
-
         arp_table = []
-
         command = 'show ip arp'
         arp_table_vrf = self._get_command_table(command, 'TABLE_vrf', 'ROW_vrf')
         arp_table_raw = self._get_table_rows(arp_table_vrf[0], 'TABLE_adj', 'ROW_adj')
@@ -513,9 +562,14 @@ class NXOSDriver(NetworkDriver):
             raw_ip = arp_table_entry.get('ip-addr-out')
             raw_mac = arp_table_entry.get('mac')
             age = arp_table_entry.get('time-stamp')
-            age_time = ''.join(age.split(':'))
-            age_sec = float(3600 * int(age_time[:2]) + 60 * int(age_time[2:4]) + int(age_time[4:]))
-            interface = unicode(arp_table_entry.get('intf-out'))
+            if age == '-':
+                age_sec = float(-1)
+            else:
+                age_time = ''.join(age.split(':'))
+                age_sec = float(
+                    3600 * int(age_time[:2]) + 60 * int(age_time[2:4]) + int(age_time[4:])
+                )
+            interface = py23_compat.text_type(arp_table_entry.get('intf-out'))
             arp_table.append({
                 'interface': interface,
                 'mac': napalm_base.helpers.convert(
@@ -523,13 +577,10 @@ class NXOSDriver(NetworkDriver):
                 'ip': napalm_base.helpers.ip(raw_ip),
                 'age': age_sec
             })
-
         return arp_table
 
     def _get_ntp_entity(self, peer_type):
-
         ntp_entities = {}
-
         command = 'show ntp peers'
         ntp_peers_table = self._get_command_table(command, 'TABLE_peers', 'ROW_peers')
 
@@ -548,14 +599,12 @@ class NXOSDriver(NetworkDriver):
         return self._get_ntp_entity('Server')
 
     def get_ntp_stats(self):
-
         ntp_stats = []
-
         command = 'show ntp peer-status'
         ntp_stats_table = self._get_command_table(command, 'TABLE_peersstatus', 'ROW_peersstatus')
 
         for ntp_peer in ntp_stats_table:
-            peer_address = napalm_base.helpers.ip(ntp_peer.get('remote'))
+            peer_address = napalm_base.helpers.ip(ntp_peer.get('remote').strip())
             syncmode = ntp_peer.get('syncmode')
             stratum = int(ntp_peer.get('st'))
             hostpoll = int(ntp_peer.get('poll'))
@@ -566,35 +615,32 @@ class NXOSDriver(NetworkDriver):
                 'synchronized': (syncmode == '*'),
                 'referenceid': peer_address,
                 'stratum': stratum,
-                'type': u'',
-                'when': u'',
+                'type': '',
+                'when': '',
                 'hostpoll': hostpoll,
                 'reachability': reachability,
                 'delay': delay,
                 'offset': 0.0,
                 'jitter': 0.0
             })
-
         return ntp_stats
 
     def get_interfaces_ip(self):
-
         interfaces_ip = {}
-
         ipv4_command = 'show ip interface'
         ipv4_interf_table_vrf = self._get_command_table(ipv4_command, 'TABLE_intf', 'ROW_intf')
 
         for interface in ipv4_interf_table_vrf:
-            interface_name = unicode(interface.get('intf-name', ''))
+            interface_name = py23_compat.text_type(interface.get('intf-name', ''))
             address = napalm_base.helpers.ip(interface.get('prefix'))
             prefix = int(interface.get('masklen', ''))
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = {}
-            if u'ipv4' not in interfaces_ip[interface_name].keys():
-                interfaces_ip[interface_name][u'ipv4'] = {}
-            if address not in interfaces_ip[interface_name].get(u'ipv4'):
-                interfaces_ip[interface_name][u'ipv4'][address] = {}
-            interfaces_ip[interface_name][u'ipv4'][address].update({
+            if 'ipv4' not in interfaces_ip[interface_name].keys():
+                interfaces_ip[interface_name]['ipv4'] = {}
+            if address not in interfaces_ip[interface_name].get('ipv4'):
+                interfaces_ip[interface_name]['ipv4'][address] = {}
+            interfaces_ip[interface_name]['ipv4'][address].update({
                 'prefix_length': prefix
             })
             secondary_addresses = interface.get('TABLE_secondary_address', {})\
@@ -604,11 +650,11 @@ class NXOSDriver(NetworkDriver):
             for secondary_address in secondary_addresses:
                 secondary_address_ip = napalm_base.helpers.ip(secondary_address.get('prefix1'))
                 secondary_address_prefix = int(secondary_address.get('masklen1', ''))
-                if u'ipv4' not in interfaces_ip[interface_name].keys():
-                    interfaces_ip[interface_name][u'ipv4'] = {}
-                if secondary_address_ip not in interfaces_ip[interface_name].get(u'ipv4'):
-                    interfaces_ip[interface_name][u'ipv4'][secondary_address_ip] = {}
-                interfaces_ip[interface_name][u'ipv4'][secondary_address_ip].update({
+                if 'ipv4' not in interfaces_ip[interface_name].keys():
+                    interfaces_ip[interface_name]['ipv4'] = {}
+                if secondary_address_ip not in interfaces_ip[interface_name].get('ipv4'):
+                    interfaces_ip[interface_name]['ipv4'][secondary_address_ip] = {}
+                interfaces_ip[interface_name]['ipv4'][secondary_address_ip].update({
                     'prefix_length': secondary_address_prefix
                 })
 
@@ -616,17 +662,21 @@ class NXOSDriver(NetworkDriver):
         ipv6_interf_table_vrf = self._get_command_table(ipv6_command, 'TABLE_intf', 'ROW_intf')
 
         for interface in ipv6_interf_table_vrf:
-            interface_name = unicode(interface.get('intf-name', ''))
+            interface_name = py23_compat.text_type(interface.get('intf-name', ''))
             address = napalm_base.helpers.ip(interface.get('addr', '').split('/')[0])
-            prefix = int(interface.get('prefix', '').split('/')[-1])
+            prefix = interface.get('prefix', '').split('/')[-1]
+            if prefix:
+                prefix = int(interface.get('prefix', '').split('/')[-1])
+            else:
+                prefix = 128
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = {}
-            if u'ipv6' not in interfaces_ip[interface_name].keys():
-                interfaces_ip[interface_name][u'ipv6'] = {}
+            if 'ipv6' not in interfaces_ip[interface_name].keys():
+                interfaces_ip[interface_name]['ipv6'] = {}
             if address not in interfaces_ip[interface_name].get('ipv6'):
-                interfaces_ip[interface_name][u'ipv6'][address] = {}
-            interfaces_ip[interface_name][u'ipv6'][address].update({
-                u'prefix_length': prefix
+                interfaces_ip[interface_name]['ipv6'][address] = {}
+            interfaces_ip[interface_name]['ipv6'][address].update({
+                'prefix_length': prefix
             })
             secondary_addresses = interface.get('TABLE_sec_addr', {}).get('ROW_sec_addr', [])
             if type(secondary_addresses) is dict:
@@ -635,27 +685,23 @@ class NXOSDriver(NetworkDriver):
                 sec_prefix = secondary_address.get('sec-prefix', '').split('/')
                 secondary_address_ip = napalm_base.helpers.ip(sec_prefix[0])
                 secondary_address_prefix = int(sec_prefix[-1])
-                if u'ipv6' not in interfaces_ip[interface_name].keys():
-                    interfaces_ip[interface_name][u'ipv6'] = {}
-                if secondary_address_ip not in interfaces_ip[interface_name].get(u'ipv6'):
-                    interfaces_ip[interface_name][u'ipv6'][secondary_address_ip] = {}
-                interfaces_ip[interface_name][u'ipv6'][secondary_address_ip].update({
-                    u'prefix_length': secondary_address_prefix
+                if 'ipv6' not in interfaces_ip[interface_name].keys():
+                    interfaces_ip[interface_name]['ipv6'] = {}
+                if secondary_address_ip not in interfaces_ip[interface_name].get('ipv6'):
+                    interfaces_ip[interface_name]['ipv6'][secondary_address_ip] = {}
+                interfaces_ip[interface_name]['ipv6'][secondary_address_ip].update({
+                    'prefix_length': secondary_address_prefix
                 })
-
         return interfaces_ip
 
     def get_mac_address_table(self):
-
         mac_table = []
-
         command = 'show mac address-table'
         mac_table_raw = self._get_command_table(command, 'TABLE_mac_address', 'ROW_mac_address')
 
         for mac_entry in mac_table_raw:
             raw_mac = mac_entry.get('disp_mac_addr')
-            interface = unicode(mac_entry.get('disp_port'))
-            # age = mac_entry.get('disp_age')
+            interface = py23_compat.text_type(mac_entry.get('disp_port'))
             vlan = int(mac_entry.get('disp_vlan'))
             active = True
             static = (mac_entry.get('disp_is_static') != '0')
@@ -670,14 +716,11 @@ class NXOSDriver(NetworkDriver):
                 'moves': moves,
                 'last_move': last_move
             })
-
         return mac_table
 
     def get_snmp_information(self):
-
         snmp_information = {}
-
-        snmp_command = 'show running-config | section snmp-server'
+        snmp_command = 'show running-config'
         snmp_raw_output = self.cli([snmp_command]).get(snmp_command, '')
         snmp_config = napalm_base.helpers.textfsm_extractor(self, 'snmp_config', snmp_raw_output)
 
@@ -685,25 +728,39 @@ class NXOSDriver(NetworkDriver):
             return snmp_information
 
         snmp_information = {
-            'contact': unicode(snmp_config[0].get('contact', '')),
-            'location': unicode(snmp_config[0].get('location', '')),
-            'chassis_id': unicode(snmp_config[0].get('chassis_id', '')),
-            'community': {}
+            'contact': py23_compat.text_type(''),
+            'location': py23_compat.text_type(''),
+            'community': {},
+            'chassis_id': py23_compat.text_type('')
         }
 
         for snmp_entry in snmp_config:
-            community_name = unicode(snmp_entry.get('community', ''))
+            contact = py23_compat.text_type(snmp_entry.get('contact', ''))
+            if contact:
+                snmp_information['contact'] = contact
+            location = py23_compat.text_type(snmp_entry.get('location', ''))
+            if location:
+                snmp_information['location'] = location
+
+            community_name = py23_compat.text_type(snmp_entry.get('community', ''))
             if not community_name:
                 continue
-            snmp_information['community'][community_name] = {
-                'acl': unicode(snmp_entry.get('acl', '')),
-                'mode': unicode(snmp_entry.get('mode', '').lower())
-            }
 
+            if community_name not in snmp_information['community'].keys():
+                snmp_information['community'][community_name] = {
+                    'acl': py23_compat.text_type(snmp_entry.get('acl', '')),
+                    'mode': py23_compat.text_type(snmp_entry.get('mode', '').lower())
+                }
+            else:
+                acl = py23_compat.text_type(snmp_entry.get('acl', ''))
+                if acl:
+                    snmp_information['community'][community_name]['acl'] = acl
+                mode = py23_compat.text_type(snmp_entry.get('mode', '').lower())
+                if mode:
+                    snmp_information['community'][community_name]['mode'] = mode
         return snmp_information
 
     def get_users(self):
-
         _CISCO_TO_CISCO_MAP = {
             'network-admin': 15,
             'network-operator': 5
@@ -716,8 +773,7 @@ class NXOSDriver(NetworkDriver):
         }
 
         users = {}
-
-        command = 'sh run | sec username'
+        command = 'show running-config'
         section_username_raw_output = self.cli([command]).get(command, '')
         section_username_tabled_output = napalm_base.helpers.textfsm_extractor(
             self, 'users', section_username_raw_output)
@@ -750,11 +806,13 @@ class NXOSDriver(NetworkDriver):
                 if sshkeytype not in ['ssh-rsa', 'ssh-dsa']:
                     continue
                 users[username]['sshkeys'].append(py23_compat.text_type(sshkeyvalue))
-
         return users
 
-    def traceroute(self, destination, source='', ttl=0, timeout=0):
-
+    def traceroute(self,
+                   destination,
+                   source=c.TRACEROUTE_SOURCE,
+                   ttl=c.TRACEROUTE_TTL,
+                   timeout=c.TRACEROUTE_TIMEOUT):
         _HOP_ENTRY_PROBE = [
             '\s+',
             '(',  # beginning of host_name (ip_address) RTT group
@@ -777,7 +835,6 @@ class NXOSDriver(NetworkDriver):
         ]
 
         traceroute_result = {}
-
         timeout = 5  # seconds
         probes = 3  # 3 probes/jop and this cannot be changed on NXOS!
 
@@ -804,46 +861,44 @@ class NXOSDriver(NetworkDriver):
             return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
 
         hop_regex = ''.join(_HOP_ENTRY + _HOP_ENTRY_PROBE * probes)
-
         traceroute_result['success'] = {}
-        for line in traceroute_raw_output.splitlines():
-            hop_search = re.search(hop_regex, line)
-            if not hop_search:
-                continue
-            hop_details = hop_search.groups()
-            hop_index = int(hop_details[0])
-            previous_probe_host_name = '*'
-            previous_probe_ip_address = '*'
-            traceroute_result['success'][hop_index] = {'probes': {}}
-            for probe_index in range(probes):
-                host_name = hop_details[3+probe_index*5]
-                ip_address_raw = hop_details[4+probe_index*5]
-                ip_address = napalm_base.helpers.convert(
-                    napalm_base.helpers.ip, ip_address_raw, ip_address_raw)
-                rtt = hop_details[5+probe_index*5]
-                if rtt:
-                    rtt = float(rtt)
-                else:
-                    rtt = timeout * 1000.0
-                if not host_name:
-                    host_name = previous_probe_host_name
-                if not ip_address:
-                    ip_address = previous_probe_ip_address
-                if hop_details[1+probe_index*5] == '*':
-                    host_name = '*'
-                    ip_address = '*'
-                traceroute_result['success'][hop_index]['probes'][probe_index+1] = {
-                    'host_name': unicode(host_name),
-                    'ip_address': unicode(ip_address),
-                    'rtt': rtt
-                }
-                previous_probe_host_name = host_name
-                previous_probe_ip_address = ip_address
-
+        if traceroute_raw_output:
+            for line in traceroute_raw_output.splitlines():
+                hop_search = re.search(hop_regex, line)
+                if not hop_search:
+                    continue
+                hop_details = hop_search.groups()
+                hop_index = int(hop_details[0])
+                previous_probe_host_name = '*'
+                previous_probe_ip_address = '*'
+                traceroute_result['success'][hop_index] = {'probes': {}}
+                for probe_index in range(probes):
+                    host_name = hop_details[3+probe_index*5]
+                    ip_address_raw = hop_details[4+probe_index*5]
+                    ip_address = napalm_base.helpers.convert(
+                        napalm_base.helpers.ip, ip_address_raw, ip_address_raw)
+                    rtt = hop_details[5+probe_index*5]
+                    if rtt:
+                        rtt = float(rtt)
+                    else:
+                        rtt = timeout * 1000.0
+                    if not host_name:
+                        host_name = previous_probe_host_name
+                    if not ip_address:
+                        ip_address = previous_probe_ip_address
+                    if hop_details[1+probe_index*5] == '*':
+                        host_name = '*'
+                        ip_address = '*'
+                    traceroute_result['success'][hop_index]['probes'][probe_index+1] = {
+                        'host_name': py23_compat.text_type(host_name),
+                        'ip_address': py23_compat.text_type(ip_address),
+                        'rtt': rtt
+                    }
+                    previous_probe_host_name = host_name
+                    previous_probe_ip_address = ip_address
         return traceroute_result
 
     def get_config(self, retrieve='all'):
-
         config = {
             'startup': '',
             'running': '',
@@ -856,5 +911,4 @@ class NXOSDriver(NetworkDriver):
         if retrieve.lower() in ('startup', 'all'):
             _cmd = 'show startup-config'
             config['startup'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
-
         return config

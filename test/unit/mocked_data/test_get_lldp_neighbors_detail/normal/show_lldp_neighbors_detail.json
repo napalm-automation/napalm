@@ -1,0 +1,51 @@
+
+Capability codes:
+  (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+  (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+Device ID            Local Intf      Hold-time  Capability  Port ID
+
+Chassis id: 0014.1c57.a48b
+Port id: Fa1/0/9
+Local Port id: mgmt0
+Port Description: FastEthernet1/0/9
+System Name: PERIMETER.cisco.com
+System Description: Cisco IOS Software, C3750 Software (C3750-IPBASEK9-M), Version 12.2(44)SE2, RELEASE SOFTWARE (fc2)
+Copyright (c) 1986-2008 by Cisco Systems, Inc.
+Compiled Thu 01-May-08 15:42 by antonino
+Time remaining: 92 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: 10.1.100.1
+Vlan ID: 100
+
+
+Chassis id: 5087.89a1.d8d6
+Port id: Ethernet1/1
+Local Port id: Eth1/1
+Port Description: Ethernet1/1
+System Name: n9k2.ntc.com
+System Description: Cisco Nexus Operating System (NX-OS) Software 7.0(3)I4(1)
+TAC support: http://www.cisco.com/tac
+Copyright (c) 2002-2016, Cisco Systems, Inc. All rights reserved.
+Time remaining: 103 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: 10.1.100.21
+Vlan ID: 1
+
+
+Chassis id: 5087.89a1.d8d7
+Port id: Ethernet1/2
+Local Port id: Eth1/2
+Port Description: Ethernet1/2
+System Name: n9k2.ntc.com
+System Description: Cisco Nexus Operating System (NX-OS) Software 7.0(3)I4(1)
+TAC support: http://www.cisco.com/tac
+Copyright (c) 2002-2016, Cisco Systems, Inc. All rights reserved.
+Time remaining: 103 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: 10.1.100.21
+Vlan ID: 1
+
+Total entries displayed: 3
