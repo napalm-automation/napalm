@@ -27,6 +27,7 @@ from lxml.builder import E
 
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
+from jnpr.junos.exception import RpcError
 from jnpr.junos.exception import ConfigLoadError
 from jnpr.junos.exception import RpcTimeoutError
 from jnpr.junos.exception import ConnectTimeoutError
@@ -966,13 +967,8 @@ class JunOSDriver(NetworkDriver):
         if not isinstance(destination, py23_compat.string_types):
             raise TypeError('Please specify a valid destination!')
 
-        if protocol and (not isinstance(protocol, py23_compat.string_types) or
-           protocol.lower() not in ('static', 'bgp', 'isis', 'connected', 'direct')):
-            raise TypeError("Protocol not supported: {protocol}.".format(
-                protocol=protocol
-            ))
-
-        protocol = protocol.lower()
+        if protocol and isinstance(destination, py23_compat.string_types):
+            protocol = protocol.lower()
 
         if protocol == 'connected':
             protocol = 'direct'  # this is how is called on JunOS
@@ -1022,7 +1018,7 @@ class JunOSDriver(NetworkDriver):
         rt_kargs = {
             'destination': destination
         }
-        if protocol:
+        if protocol and isinstance(destination, py23_compat.string_types):
             rt_kargs['protocol'] = protocol
 
         try:
@@ -1033,8 +1029,13 @@ class JunOSDriver(NetworkDriver):
             # will take very very long to determine all routes and
             # moreover will return a huge list
             raise CommandTimeoutException(
-                'Too many routes returned! Please try with a longer prefix!'
+                'Too many routes returned! Please try with a longer prefix or a specific protocol!'
             )
+        except RpcError as rpce:
+            if len(rpce.errs) > 0 and 'bad_element' in rpce.errs[0]:
+                raise CommandErrorException(
+                    'Unknown protocol: {proto}'.format(proto=rpce.errs[0]['bad_element']))
+            raise CommandErrorException(rpce)
         except Exception as err:
             raise CommandErrorException('Cannot retrieve routes! Reason: {err}'.format(err=err))
 
@@ -1089,11 +1090,6 @@ class JunOSDriver(NetworkDriver):
         """Return the SNMP configuration."""
         snmp_information = {}
 
-        _AUTHORIZATION_MODE_MAP_ = {
-            'read-only': u'ro',
-            'read-write': u'rw'
-        }
-
         snmp_config = junos_views.junos_snmp_config_table(self.device)
         snmp_config.get()
         snmp_items = snmp_config.items()
@@ -1101,27 +1097,28 @@ class JunOSDriver(NetworkDriver):
         if not snmp_items:
             return snmp_information
 
-        communities = []
-        for snmp_config_out in snmp_items:
-            community_details = snmp_config_out[1]
-            communities.append({
-                c[0]: c[1] for c in community_details
-            })
-
         snmp_information = {
-            'contact': napalm_base.helpers.convert(unicode, communities[0].get('contact')),
-            'location': napalm_base.helpers.convert(unicode, communities[0].get('location')),
-            'chassis_id': napalm_base.helpers.convert(unicode, communities[0].get('chassis')),
-            'community': {}
+            py23_compat.text_type(ele[0]): ele[1] if ele[1] else ''
+            for ele in snmp_items[0][1]
         }
 
-        for snmp_entry in communities:
-            name = napalm_base.helpers.convert(unicode, snmp_entry.get('name'))
-            authorization = napalm_base.helpers.convert(unicode, snmp_entry.get('authorization'))
-            snmp_information['community'][name] = {
-                'mode': _AUTHORIZATION_MODE_MAP_.get(authorization, u''),
-                'acl': u''
+        snmp_information['community'] = {}
+        communities_table = snmp_information.pop('communities_table')
+        if not communities_table:
+            return snmp_information
+
+        for community in communities_table.items():
+            community_name = py23_compat.text_type(community[0])
+            community_details = {
+                'acl': ''
             }
+            community_details.update({
+                py23_compat.text_type(ele[0]): py23_compat.text_type(
+                    ele[1] if ele[0] != 'mode'
+                    else C.SNMP_AUTHORIZATION_MODE_MAP.get(ele[1]))
+                for ele in community[1]
+            })
+            snmp_information['community'][community_name] = community_details
 
         return snmp_information
 
