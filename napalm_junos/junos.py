@@ -27,6 +27,7 @@ from lxml.builder import E
 
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
+from jnpr.junos.exception import RpcError
 from jnpr.junos.exception import ConfigLoadError
 from jnpr.junos.exception import RpcTimeoutError
 from jnpr.junos.exception import ConnectTimeoutError
@@ -966,13 +967,8 @@ class JunOSDriver(NetworkDriver):
         if not isinstance(destination, py23_compat.string_types):
             raise TypeError('Please specify a valid destination!')
 
-        if protocol and (not isinstance(protocol, py23_compat.string_types) or
-           protocol.lower() not in ('static', 'bgp', 'isis', 'connected', 'direct')):
-            raise TypeError("Protocol not supported: {protocol}.".format(
-                protocol=protocol
-            ))
-
-        protocol = protocol.lower()
+        if protocol and isinstance(destination, py23_compat.string_types):
+            protocol = protocol.lower()
 
         if protocol == 'connected':
             protocol = 'direct'  # this is how is called on JunOS
@@ -1022,7 +1018,7 @@ class JunOSDriver(NetworkDriver):
         rt_kargs = {
             'destination': destination
         }
-        if protocol:
+        if protocol and isinstance(destination, py23_compat.string_types):
             rt_kargs['protocol'] = protocol
 
         try:
@@ -1033,8 +1029,13 @@ class JunOSDriver(NetworkDriver):
             # will take very very long to determine all routes and
             # moreover will return a huge list
             raise CommandTimeoutException(
-                'Too many routes returned! Please try with a longer prefix!'
+                'Too many routes returned! Please try with a longer prefix or a specific protocol!'
             )
+        except RpcError as rpce:
+            if len(rpce.errs) > 0 and 'bad_element' in rpce.errs[0]:
+                raise CommandErrorException(
+                    'Unknown protocol: {proto}'.format(proto=rpce.errs[0]['bad_element']))
+            raise CommandErrorException(rpce)
         except Exception as err:
             raise CommandErrorException('Cannot retrieve routes! Reason: {err}'.format(err=err))
 
