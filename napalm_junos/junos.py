@@ -1096,27 +1096,28 @@ class JunOSDriver(NetworkDriver):
         if not snmp_items:
             return snmp_information
 
-        communities = []
-        for snmp_config_out in snmp_items:
-            community_details = snmp_config_out[1]
-            communities.append({
-                c[0]: c[1] for c in community_details
-            })
-
         snmp_information = {
-            'contact': napalm_base.helpers.convert(unicode, communities[0].get('contact')),
-            'location': napalm_base.helpers.convert(unicode, communities[0].get('location')),
-            'chassis_id': napalm_base.helpers.convert(unicode, communities[0].get('chassis')),
-            'community': {}
+            py23_compat.text_type(ele[0]): ele[1] if ele[1] else ''
+            for ele in snmp_items[0][1]
         }
 
-        for snmp_entry in communities:
-            name = napalm_base.helpers.convert(unicode, snmp_entry.get('name'))
-            authorization = napalm_base.helpers.convert(unicode, snmp_entry.get('authorization'))
-            snmp_information['community'][name] = {
-                'mode': C.SNMP_AUTHORIZATION_MODE_MAP.get(authorization, u''),
-                'acl': u''
+        snmp_information['communities'] = {}
+        communities_table = snmp_information.pop('communities_table')
+        if not communities_table:
+            return snmp_information
+
+        for community in communities_table.items():
+            community_name = py23_compat.text_type(community[0])
+            community_details = {
+                'acl': ''
             }
+            community_details.update({
+                py23_compat.text_type(ele[0]): py23_compat.text_type(
+                    ele[1] if ele[0] != 'authorization'
+                    else C.SNMP_AUTHORIZATION_MODE_MAP.get(ele[1]))
+                for ele in community[1]
+            })
+            snmp_information['communities'][community_name] = community_details
 
         return snmp_information
 
