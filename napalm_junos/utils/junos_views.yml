@@ -526,7 +526,7 @@ junos_snmp_config_view:
   fields:
     location: {location: unicode}
     contact: {contact: unicode}
-    chassis: {system-name: unicode}
+    chassis_id: {system-name: unicode}
     communities_table: junos_snmp_communities_table
 
 junos_snmp_communities_table:
@@ -536,7 +536,7 @@ junos_snmp_communities_table:
 
 junos_snmp_communities_view:
   fields:
-    authorization: authorization
+    mode: authorization
 
 ###
 ### RPM Probes Config

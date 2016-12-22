@@ -1101,7 +1101,7 @@ class JunOSDriver(NetworkDriver):
             for ele in snmp_items[0][1]
         }
 
-        snmp_information['communities'] = {}
+        snmp_information['community'] = {}
         communities_table = snmp_information.pop('communities_table')
         if not communities_table:
             return snmp_information
@@ -1113,11 +1113,11 @@ class JunOSDriver(NetworkDriver):
             }
             community_details.update({
                 py23_compat.text_type(ele[0]): py23_compat.text_type(
-                    ele[1] if ele[0] != 'authorization'
+                    ele[1] if ele[0] != 'mode'
                     else C.SNMP_AUTHORIZATION_MODE_MAP.get(ele[1]))
                 for ele in community[1]
             })
-            snmp_information['communities'][community_name] = community_details
+            snmp_information['community'][community_name] = community_details
 
         return snmp_information
 
