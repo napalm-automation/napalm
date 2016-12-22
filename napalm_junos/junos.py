@@ -1089,11 +1089,6 @@ class JunOSDriver(NetworkDriver):
         """Return the SNMP configuration."""
         snmp_information = {}
 
-        _AUTHORIZATION_MODE_MAP_ = {
-            'read-only': u'ro',
-            'read-write': u'rw'
-        }
-
         snmp_config = junos_views.junos_snmp_config_table(self.device)
         snmp_config.get()
         snmp_items = snmp_config.items()
@@ -1119,7 +1114,7 @@ class JunOSDriver(NetworkDriver):
             name = napalm_base.helpers.convert(unicode, snmp_entry.get('name'))
             authorization = napalm_base.helpers.convert(unicode, snmp_entry.get('authorization'))
             snmp_information['community'][name] = {
-                'mode': _AUTHORIZATION_MODE_MAP_.get(authorization, u''),
+                'mode': C.SNMP_AUTHORIZATION_MODE_MAP.get(authorization, u''),
                 'acl': u''
             }
 
