@@ -518,16 +518,25 @@ junos_route_table_view:
 ###
 
 junos_snmp_config_table:
-  get: snmp/community
+  get: snmp
   view: junos_snmp_config_view
+  key: contact
 
 junos_snmp_config_view:
   fields:
-    name: name
-    authorization: authorization
-    location: ../location
-    contact: ../contact
-    chassis: ../system-name
+    location: {location: unicode}
+    contact: {contact: unicode}
+    chassis_id: {system-name: unicode}
+    communities_table: junos_snmp_communities_table
+
+junos_snmp_communities_table:
+  item: community
+  key: name
+  view: junos_snmp_communities_view
+
+junos_snmp_communities_view:
+  fields:
+    mode: authorization
 
 ###
 ### RPM Probes Config
