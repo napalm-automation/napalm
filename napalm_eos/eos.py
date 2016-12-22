@@ -985,8 +985,8 @@ class EOSDriver(NetworkDriver):
     def get_route_to(self, destination='', protocol=''):
         routes = dict()
 
-        if protocol.lower() not in ['', 'bgp', 'connected', 'isis', 'ospf', 'rip', 'static']:
-            raise TypeError('Please specify a valid protocol!')
+        if protocol.lower() == 'direct':
+            protocol = 'connected'
 
         try:
             ipv = ''
