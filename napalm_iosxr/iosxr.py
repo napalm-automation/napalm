@@ -33,7 +33,7 @@ from pyIOSXR.exceptions import InvalidInputError
 
 # import NAPALM base
 import napalm_base.helpers
-import napalm_base.constants as C
+import napalm_iosxr.constants as C
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import py23_compat
 from napalm_base.exceptions import ConnectionException
@@ -1278,7 +1278,7 @@ class IOSXRDriver(NetworkDriver):
             }
 
             # from BGP will try to get some more information
-            if route_protocol == 'bgp':
+            if route_protocol == 'bgp' and C.SR_638170159_SOLVED:
                 # looks like IOS-XR does not filter correctly
                 # !IMPORTANT
                 bgp_route_info_rpc_command = '<Get><Operational><BGP><Active><DefaultVRF><AFTable>\
@@ -1352,7 +1352,7 @@ class IOSXRDriver(NetworkDriver):
                     # get all possible entries
                     next_hop = napalm_base.helpers.find_txt(route_entry, 'Address')
                     single_route_details = {}
-                    single_route_details.update(single_route_details)
+                    single_route_details.update(route_details)
                     single_route_details.update({
                         'current_active': first_route,
                         'next_hop': next_hop
