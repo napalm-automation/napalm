@@ -4,10 +4,12 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import ast
+
 import json
 import os
 
-NAPALM_TEST_MOCK = eval("{}".format(os.getenv('NAPALM_TEST_MOCK', default=True)))
+NAPALM_TEST_MOCK = ast.literal_eval(os.getenv('NAPALM_TEST_MOCK', default="1"))
 NAPALM_HOSTNAME = os.getenv('NAPALM_HOSTNAME', default='127.0.0.1')
 NAPALM_USERNAME = os.getenv('NAPALM_USERNAME', default='vagrant')
 NAPALM_PASSWORD = os.getenv('NAPALM_PASSWORD', default='vagrant')

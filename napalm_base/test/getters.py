@@ -12,7 +12,6 @@ except ImportError:
 
 import inspect
 import json
-import os
 
 import pytest
 from napalm_base.test import helpers
@@ -22,8 +21,7 @@ from napalm_base import NetworkDriver
 # text_type is 'unicode' for py2 and 'str' for py3
 from napalm_base.utils.py23_compat import text_type
 
-
-NAPALM_TEST_MOCK = os.getenv('NAPALM_TEST_MOCK', default=True)
+from napalm_base.test import conftest
 
 
 def list_dicts_diff(prv, nxt):
@@ -63,7 +61,7 @@ def wrap_test_cases(func):
     func.__dict__['build_test_cases'] = True
 
     @functools.wraps(func)
-    def wrapper(cls, test_case):
+    def mock_wrapper(cls, test_case):
         for patched_attr in cls.device.patched_attrs:
             attr = getattr(cls.device, patched_attr)
             attr.current_test = func.__name__
@@ -85,19 +83,18 @@ def wrap_test_cases(func):
         # This is an ugly, ugly, ugly hack because some python objects don't load
         # as expected. For example, dicts where integers are strings
 
-        if NAPALM_TEST_MOCK:
-            try:
-                expected_result = attr.expected_result
-            except IOError as e:
-                raise Exception("{}. Actual result was: {}".format(e, json.dumps(result)))
-            if isinstance(result, list):
-                diff = list_dicts_diff(result, expected_result)
-            else:
-                diff = dict_diff(result, expected_result)
-            if diff:
-                print("Resulting JSON object was: {}".format(json.dumps(result)))
-                raise AssertionError("Expected result varies on some keys {}".format(
-                                                                            json.dumps(diff)))
+        try:
+            expected_result = attr.expected_result
+        except IOError as e:
+            raise Exception("{}. Actual result was: {}".format(e, json.dumps(result)))
+        if isinstance(result, list):
+            diff = list_dicts_diff(result, expected_result)
+        else:
+            diff = dict_diff(result, expected_result)
+        if diff:
+            print("Resulting JSON object was: {}".format(json.dumps(result)))
+            raise AssertionError("Expected result varies on some keys {}".format(
+                                                                        json.dumps(diff)))
 
         for patched_attr in cls.device.patched_attrs:
             attr = getattr(cls.device, patched_attr)
@@ -106,7 +103,18 @@ def wrap_test_cases(func):
 
         return result
 
-    return wrapper
+    @functools.wraps(func)
+    def real_wrapper(cls, test_case):
+        try:
+            return func(cls, test_case)
+        except NotImplementedError:
+            pytest.skip("Method not implemented")
+            return
+
+    if conftest.NAPALM_TEST_MOCK:
+        return mock_wrapper
+    else:
+        return real_wrapper
 
 
 class BaseTestGetters(object):
