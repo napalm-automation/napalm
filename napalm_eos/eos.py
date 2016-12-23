@@ -986,6 +986,9 @@ class EOSDriver(NetworkDriver):
     def get_route_to(self, destination='', protocol=''):
         routes = dict()
 
+        if protocol.lower() == 'direct':
+            protocol = 'connected'
+
         try:
             ipv = ''
             if IPNetwork(destination).version == 6:
@@ -993,9 +996,10 @@ class EOSDriver(NetworkDriver):
         except AddrFormatError:
             return 'Please specify a valid destination!'
 
-        command = 'show ip{ipv} route {destination} detail'.format(
+        command = 'show ip{ipv} route {destination} {protocol} detail'.format(
             ipv=ipv,
-            destination=destination
+            destination=destination,
+            protocol=protocol,
         )
 
         command_output = self.device.run_commands([command])[0]
@@ -1009,7 +1013,7 @@ class EOSDriver(NetworkDriver):
             if prefix not in routes.keys():
                 routes[prefix] = list()
             route_protocol = route_details.get('routeType').upper()
-            preference = route_details.get('preference')
+            preference = route_details.get('preference', 0)
 
             route = {
                 'current_active': False,
@@ -1067,12 +1071,20 @@ class EOSDriver(NetworkDriver):
             else:
                 for next_hop in route_details.get('vias'):
                     route_next_hop = route.copy()
-                    route_next_hop.update(
-                        {
-                            'next_hop': napalm_base.helpers.ip(next_hop.get('nexthopAddr')),
-                            'outgoing_interface': next_hop.get('interface')
-                        }
-                    )
+                    if next_hop.get('nexthopAddr') is None:
+                        route_next_hop.update(
+                            {
+                                'next_hop': '',
+                                'outgoing_interface': next_hop.get('interface')
+                            }
+                        )
+                    else:
+                        route_next_hop.update(
+                            {
+                                'next_hop': napalm_base.helpers.ip(next_hop.get('nexthopAddr')),
+                                'outgoing_interface': next_hop.get('interface')
+                            }
+                        )
                     routes[prefix].append(route_next_hop)
 
         return routes
