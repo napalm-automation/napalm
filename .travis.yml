@@ -1,11 +1,13 @@
 language: python
 
 python:
-  - 2.7
+- 2.7
+- 3.4
+- 3.5
 
 install:
-- pip install -r requirements-dev.txt
 - pip install .
+- pip install -r requirements-dev.txt
 
 deploy:
   provider: pypi
@@ -17,11 +19,8 @@ deploy:
     branch: master
 
 script:
+- py.test --cov-report= --cov=napalm_nxos test/
 - pylama .
-- cd test/unit
-- nosetests --with-coverage --cover-package napalm_nxos -v TestNXOSDriver:TestGetterNXOSDriver
-- nosetests --with-coverage --cover-package napalm_nxos -v TestNXOSDriver:TestNXOSDriver_bgp_neighbors
-- nosetests --with-coverage --cover-package napalm_nxos -v TestNXOSDriver:TestNXOSDriver_get_interfaces_ip
-- cd ../..
-- coverage combine test/unit/.coverage
-after_success: coveralls
+after_success:
+- coveralls
+- if [ $TRAVIS_TAG ]; then curl -X POST https://readthedocs.org/build/napalm; fi

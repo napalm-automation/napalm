@@ -1,0 +1,8 @@
+Capability codes:
+  (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+  (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+Device ID            Local Intf      Hold-time  Capability  Port ID
+PERIMETER.cisco.com  mgmt0           120        BR          Fa1/0/9
+n9k2.ntc.com         Eth1/1          120        BR          Ethernet1/1
+n9k2.ntc.com         Eth1/2          120        BR          Ethernet1/2
+Total entries displayed: 3
