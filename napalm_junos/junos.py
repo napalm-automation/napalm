@@ -1246,6 +1246,98 @@ class JunOSDriver(NetworkDriver):
 
         return traceroute_result
 
+    def ping(self, destination, source=C.PING_SOURCE, ttl=C.PING_TTL,
+             timeout=C.PING_TIMEOUT, size=C.PING_SIZE, count=C.PING_COUNT):
+
+        ping_dict = {}
+
+        source_str = ''
+        maxttl_str = ''
+        timeout_str = ''
+        size_str = ''
+        count_str = ''
+
+        if source:
+            source_str = 'source {source}'.format(source=source)
+        if ttl:
+            maxttl_str = 'ttl {ttl}'.format(ttl=ttl)
+        if timeout:
+            timeout_str = 'wait {timeout}'.format(timeout=timeout)
+        if size:
+            size_str = 'size {size}'.format(size=size)
+        if count:
+            count_str = 'count {count}'.format(count=count)
+
+        ping_command = 'ping {destination} {source} {ttl} {timeout} {size} {count}'.format(
+            destination=destination,
+            source=source_str,
+            ttl=maxttl_str,
+            timeout=timeout_str,
+            size=size_str,
+            count=count_str
+        )
+
+        ping_rpc = E('command', ping_command)
+        rpc_reply = self.device._conn.rpc(ping_rpc)._NCElement__doc
+        # make direct RPC call via NETCONF
+        probe_summary = rpc_reply.find('.//probe-results-summary')
+
+        if probe_summary is None:
+            rpc_error = rpc_reply.find('.//rpc-error')
+            return {'error': '{}'.format(
+                napalm_base.helpers.find_txt(rpc_error, 'error-message'))}
+
+        packet_loss = napalm_base.helpers.convert(
+            int, napalm_base.helpers.find_txt(probe_summary, 'packet-loss'), 100)
+
+        # rtt values are valid only if a we get an ICMP reply
+        if packet_loss is not 100:
+            ping_dict['success'] = {}
+            ping_dict['success']['probes_sent'] = int(
+                probe_summary.findtext("probes-sent"))
+            ping_dict['success']['packet_loss'] = packet_loss
+            ping_dict['success'].update({
+
+                'rtt_min': round((napalm_base.helpers.convert(
+                    float, napalm_base.helpers.find_txt(
+                        probe_summary, 'rtt-minimum'), -1) * 1e-3), 3),
+
+                'rtt_max': round((napalm_base.helpers.convert(
+                    float, napalm_base.helpers.find_txt(
+                        probe_summary, 'rtt-maximum'), -1) * 1e-3), 3),
+
+                'rtt_avg': round((napalm_base.helpers.convert(
+                    float, napalm_base.helpers.find_txt(
+                        probe_summary, 'rtt-average'), -1) * 1e-3), 3),
+
+                'rtt_stddev': round((napalm_base.helpers.convert(
+                    float, napalm_base.helpers.find_txt(
+                        probe_summary, 'rtt-stddev'), -1) * 1e-3), 3)
+            })
+
+            tmp = rpc_reply.find('.//ping-results')
+
+            results_array = []
+            for probe_result in tmp.findall('probe-result'):
+
+                ip_address = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip,
+                    napalm_base.helpers.find_txt(probe_result, 'ip-address'), '*')
+
+                rtt = round(
+                    (napalm_base.helpers.convert(
+                        float, napalm_base.helpers.find_txt(
+                            probe_result, 'rtt'), -1) * 1e-3), 3)
+
+                results_array.append({'ip_address': ip_address,
+                                      'rtt': rtt})
+
+            ping_dict['success'].update({'results': results_array})
+        else:
+            return {'error': 'Packet loss {}'.format(packet_loss)}
+
+        return ping_dict
+
     def get_users(self):
         """Return the configuration of the users."""
         users = {}
