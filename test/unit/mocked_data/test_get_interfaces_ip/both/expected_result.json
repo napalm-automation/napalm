@@ -1,0 +1,14 @@
+{
+    "ether1": {
+        "ipv4": {
+            "192.168.56.200": {
+                "prefix_length": 24
+            }
+        },
+        "ipv6": {
+            "fe80::a00:27ff:fea9:3f55": {
+                "prefix_length": 64
+            }
+        }
+    }
+}
