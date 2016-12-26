@@ -138,6 +138,7 @@ interfaces have only the IP we expect it to have. Now we can validate the device
     ...     pprint.pprint(eos.compliance_report("validate-eos.yml"))
     ...
     {u'complies': False,
+     u'skipped': [],
      'get_facts': {u'complies': False,
                    u'extra': [],
                    u'missing': [],
@@ -163,6 +164,7 @@ Now let's do the same for junos::
     ...     pprint.pprint(junos.compliance_report("validate-junos.yml"))
     ...
     {u'complies': True,
+     u'skipped': [],
      'get_facts': {u'complies': True,
                    u'extra': [],
                    u'missing': [],
@@ -181,6 +183,7 @@ This is great, this device is fully compliant. We can check the outer ``complies
     ...     pprint.pprint(junos.compliance_report("validate-junos.yml"))
     ...
     {u'complies': False,
+     u'skipped': [],
      'get_facts': {u'complies': True,
                    u'extra': [],
                    u'missing': [],
@@ -214,6 +217,21 @@ After adding the extra IP it seems the device is not compliant anymore. Let's se
 The output might be a bit complex for humans but it's predictable and very easy to parse so it's
 great if you want to integrate it with your documentation/reports by using simple ``jinja2``
 templates.
+
+Skipped tasks
+_____________
+
+In cases where a method is not implemented, the validation will be skipped and the result will not count towards the result. The report will let you know a method wasn't executed in the following manner::
+
+    ...
+    "skipped": [ "method_not_implemented", ],
+    "method_not_implemented": {
+        "reason": "NotImplemented",
+        "skipped": True,
+        }
+    ...
+
+``skipped`` will report the list of methods that were skipped. For details about the reason you can dig into the method's report.
 
 CLI & Ansible
 -------------
