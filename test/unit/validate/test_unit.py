@@ -5,9 +5,9 @@ from napalm_base import validate
 
 _compare_getter = [
     (
-        {"list": [1, 2, 3]},
-        [1, 2, 3],
-        {u'complies': True, u'extra': [], u'missing': [], u'present': [1, 2, 3]}
+        {"list": ["\d{2}", 1, 2]},
+        [1, 2, 33],
+        {u'complies': True, u'extra': [], u'missing': [], u'present': ['\d{2}', 1, 2]}
     ),
     (
         {"list": [1, 2, 3]},
@@ -29,9 +29,9 @@ _compare_getter = [
          u'present': [1, 2, {'list': [1, 2]}]}
     ),
     (
-        {"list": [4, 3]},
+        {"list": ['\d{2}', 4, 3]},
         [1, 2, 3],
-        {u'complies': False, u'extra': [], u'missing': [4], u'present': [3]}
+        {u'complies': False, u'extra': [], u'missing': ['\d{2}', 4], u'present': [3]}
     ),
     (
         {"list": [{"list": [1, 2]}, 3]},

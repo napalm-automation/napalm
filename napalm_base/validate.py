@@ -8,6 +8,9 @@ from __future__ import unicode_literals
 import yaml
 
 from napalm_base.exceptions import ValidationException
+from napalm_base.utils import py23_compat
+
+import re
 
 
 def _get_validation_file(validation_file):
@@ -93,8 +96,8 @@ def _compare_getter_dict(src, dst, mode):
 
 
 def _compare_getter(src, dst):
-    if isinstance(src, str):
-        src = u'{}'.format(src)
+    if isinstance(src, py23_compat.string_types):
+        src = py23_compat.text_type(src)
 
     if isinstance(src, dict):
         mode = _mode(src.pop('_mode', ''))
@@ -106,7 +109,11 @@ def _compare_getter(src, dst):
             return _compare_getter_list(src['list'], dst, mode)
         return _compare_getter_dict(src, dst, mode)
     else:
-        return src == dst
+        if isinstance(src, py23_compat.string_types):
+            m = re.search(src, py23_compat.text_type(dst))
+            return m is not None
+        else:
+            return src == dst
 
 
 def compliance_report(cls, validation_file=None):

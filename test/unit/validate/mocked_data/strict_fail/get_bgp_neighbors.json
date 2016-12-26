@@ -28,7 +28,7 @@
         "is_up": false,
         "address_family": {
           "ipv4": {
-            "sent_prefixes": 5,
+            "sent_prefixes": 0,
             "accepted_prefixes": 0,
             "received_prefixes": 0
           },

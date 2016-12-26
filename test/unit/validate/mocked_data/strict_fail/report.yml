@@ -1,5 +1,6 @@
 ---
 complies: false
+
 get_bgp_neighbors:
   complies: false
   extra: []
@@ -19,10 +20,38 @@ get_bgp_neighbors:
               extra: [192.0.2.3]
               missing: []
               present:
-                192.0.2.2: {complies: true, nested: true}
+                192.0.2.2:
+                  complies: false
+                  diff:
+                    complies: false
+                    extra: []
+                    missing: []
+                    present:
+                      address_family:
+                        complies: false
+                        diff:
+                          complies: false
+                          extra: []
+                          missing: []
+                          present:
+                            ipv4:
+                              complies: false
+                              diff:
+                                complies: false
+                                extra: []
+                                missing: []
+                                present:
+                                  sent_prefixes: {actual_value: 0, complies: false,
+                                    nested: false}
+                              nested: true
+                            ipv6: {complies: true, nested: true}
+                        nested: true
+                      is_enabled: {complies: true, nested: false}
+                  nested: true
             nested: true
           router_id: {complies: true, nested: false}
       nested: true
+
 get_facts:
   complies: false
   extra: []
