@@ -125,7 +125,8 @@ def compliance_report(cls, validation_file=None):
             # TBD
             pass
         else:
-            actual_results = getattr(cls, getter)()
+            kwargs = expected_results.pop('_kwargs', {})
+            actual_results = getattr(cls, getter)(**kwargs)
             report[getter] = _compare_getter(expected_results, actual_results)
 
     report["complies"] = all([e["complies"] for e in report.values()])

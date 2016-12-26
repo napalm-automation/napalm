@@ -20,3 +20,9 @@ get_interfaces_ip:
   missing: []
   present:
     Ethernet2/1: {complies: true, nested: true}
+ping:
+  complies: true
+  extra: []
+  missing: []
+  present:
+    success: {complies: true, nested: true}

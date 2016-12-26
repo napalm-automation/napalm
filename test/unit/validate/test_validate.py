@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from napalm_base.base import NetworkDriver
-
+from napalm_base import constants as C
 import json
 
 import os
@@ -81,7 +81,7 @@ class FakeDriver(NetworkDriver):
                 with open(filename, 'r') as f:
                     return json.loads(f.read())
             return func
-        if name.startswith("get_"):
+        if name.startswith("get_") or name in C.ACTION_TYPE_METHODS:
             filename = os.path.join(self.path, "{}.json".format(name))
             return load_json(filename)
         else:

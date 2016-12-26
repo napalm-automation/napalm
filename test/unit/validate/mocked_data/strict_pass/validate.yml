@@ -8,6 +8,14 @@ get_facts:
              GigabitEthernet0/8, Port-channel1]
   hostname: n9k2
 
+ping:
+  _kwargs:
+      destination: 8.8.8.8
+      source: 192.168.1.1
+  success:
+      packet_loss: 0
+  _mode: strict
+
 get_bgp_neighbors:
   default:
     router_id: 192.0.2.2

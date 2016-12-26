@@ -26,3 +26,11 @@ get_interfaces_ip:
     ipv4:
       192.0.2.1:
         prefix_length: 30
+
+ping:
+  _kwargs:
+      destination: 8.8.8.8
+      source: 192.168.1.1
+  success:
+      packet_loss: 0
+  _mode: strict
