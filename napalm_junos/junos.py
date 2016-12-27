@@ -913,10 +913,14 @@ class JunOSDriver(NetworkDriver):
             address = napalm_base.helpers.convert(
                 napalm_base.helpers.ip, ip_address, ip_address)
             prefix = napalm_base.helpers.convert(int, ip_network.split('/')[-1], 0)
-            interface = py23_compat.text_type(interface_details[1][0][1])
-            family_raw = interface_details[1][1][1]
+            try:
+                interface_details_dict = dict(interface_details[1])
+                family_raw = interface_details_dict.get('family')
+                interface = py23_compat.text_type(interface_details_dict.get('interface'))
+            except ValueError:
+                continue
             family = _FAMILY_VMAP_.get(family_raw)
-            if not family:
+            if not family or not interface:
                 continue
             if interface not in interfaces_ip.keys():
                 interfaces_ip[interface] = {}
