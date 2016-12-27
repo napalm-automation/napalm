@@ -1,9 +1,9 @@
 <bgp-information>
   <bgp-peer style="detail">
     <peer-address>10.3.1.254+1048</peer-address>
-    <peer-as>4290029999</peer-as>
+    <peer-as>29999</peer-as>
     <local-address>10.3.1.1+179</local-address>
-    <local-as>4290030001</local-as>
+    <local-as>30001</local-as>
     <peer-type>External</peer-type>
     <peer-state>Established</peer-state>
     <peer-flags>Sync</peer-flags>
@@ -37,7 +37,7 @@
     <peer-stale-route-time-configured>300</peer-stale-route-time-configured>
     <peer-no-restart/>
     <peer-no-helper/>
-    <peer-4byte-as-capability-advertised>4290029999</peer-4byte-as-capability-advertised>
+    <peer-4byte-as-capability-advertised>29999</peer-4byte-as-capability-advertised>
     <peer-addpath-not-supported/>
     <bgp-rib style="detail">
       <name>backend.inet.0</name>
@@ -69,9 +69,9 @@
   </bgp-peer>
   <bgp-peer style="detail">
     <peer-address>192.168.0.0+179</peer-address>
-    <peer-as>4290030000</peer-as>
+    <peer-as>30000</peer-as>
     <local-address>192.168.0.1+56371</local-address>
-    <local-as>4290030001</local-as>
+    <local-as>30001</local-as>
     <peer-type>External</peer-type>
     <peer-state>Established</peer-state>
     <peer-flags>Sync</peer-flags>
@@ -114,7 +114,7 @@
     <peer-end-of-rib-received>inet-unicast</peer-end-of-rib-received>
     <peer-end-of-rib-sent>inet-unicast</peer-end-of-rib-sent>
     <peer-end-of-rib-scheduled/>
-    <peer-4byte-as-capability-advertised>4290030000</peer-4byte-as-capability-advertised>
+    <peer-4byte-as-capability-advertised>30000</peer-4byte-as-capability-advertised>
     <peer-addpath-not-supported/>
     <bgp-rib style="detail">
       <name>backend.inet.0</name>
@@ -146,9 +146,9 @@
   </bgp-peer>
   <bgp-peer style="detail">
     <peer-address>192.169.1.0</peer-address>
-    <peer-as>4290030000</peer-as>
+    <peer-as>30000</peer-as>
     <local-address>192.169.1.1</local-address>
-    <local-as>4290030001</local-as>
+    <local-as>30001</local-as>
     <peer-type>External</peer-type>
     <peer-state>Active</peer-state>
     <peer-flags/>
