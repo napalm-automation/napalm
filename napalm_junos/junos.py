@@ -1372,13 +1372,16 @@ class JunOSDriver(NetworkDriver):
 
         if retrieve in ('candidate', 'all'):
             config = self.device.rpc.get_config(filter_xml=None, options=options)
-            rv['candidate'] = py23_compat.text_type(config.text.encode('ascii', 'replace'))
+            rv['candidate'] = py23_compat.text_type(config.text)
+#            rv['candidate'] = py23_compat.text_type(config.text.encode('ascii', 'replace'))
 
         if retrieve in ('running', 'all'):
             options['database'] = 'committed'
             config = self.device.rpc.get_config(filter_xml=None, options=options)
-            rv['running'] = py23_compat.text_type(config.text.encode('ascii', 'replace'))
+            rv['running'] = py23_compat.text_type(config.text)
+#            rv['running'] = py23_compat.text_type(config.text.encode('ascii', 'replace'))
 
+        print(rv)
         return rv
 
     def get_network_instances(self, name=''):
