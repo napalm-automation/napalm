@@ -412,17 +412,18 @@ class JunOSDriver(NetworkDriver):
                         py23_compat.text_type(neighbor_data['local_id'])
                 peer = {
                     key: self._parse_value(value)
-                    for key, value in neighbor_data.iteritems()
+                    for key, value in neighbor_data.items()
                     if key in keys
                 }
                 peer['address_family'] = self._parse_route_stats(neighbor_data)
                 bgp_neighbor_data[instance_name]['peers'][peer_ip] = peer
             for neighbor, uptime in uptime_table.get(instance=instance).items():
                 bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
-        for key in bgp_neighbor_data.keys():
-            if not bgp_neighbor_data[key]['peers']:
-                del bgp_neighbor_data[key]
-        return bgp_neighbor_data
+        bgp_tmp_dict = {}
+        for k, v in bgp_neighbor_data.items():
+            if bgp_neighbor_data[k]['peers']:
+                bgp_tmp_dict[k] = v
+        return bgp_tmp_dict
 
     def get_lldp_neighbors(self):
         """Return LLDP neighbors details."""
@@ -493,7 +494,7 @@ class JunOSDriver(NetworkDriver):
     def get_bgp_config(self, group='', neighbor=''):
         """Return BGP configuration."""
         def update_dict(d, u):  # for deep dictionary update
-            for k, v in u.iteritems():
+            for k, v in u.items():
                 if isinstance(d, collections.Mapping):
                     if isinstance(v, collections.Mapping):
                         r = update_dict(d.get(k, {}), v)
@@ -531,7 +532,7 @@ class JunOSDriver(NetworkDriver):
             """
             prefix_limit = {}
 
-            for key, value in args.iteritems():
+            for key, value in args.items():
                 key_levels = key.split('_')
                 length = len(key_levels)-1
                 temp_dict = {
@@ -615,7 +616,7 @@ class JunOSDriver(NetworkDriver):
             bgp_group_details = bgp_group[1]
             bgp_config[bgp_group_name] = {
                 field: _DATATYPE_DEFAULT_.get(datatype)
-                for field, datatype in _GROUP_FIELDS_DATATYPE_MAP_.iteritems()
+                for field, datatype in _GROUP_FIELDS_DATATYPE_MAP_.items()
                 if '_prefix_limit' not in field
             }
             for elem in bgp_group_details:
@@ -656,7 +657,7 @@ class JunOSDriver(NetworkDriver):
                 bgp_group_details = bgp_group_neighbor[1]
                 bgp_peer_details = {
                     field: _DATATYPE_DEFAULT_.get(datatype)
-                    for field, datatype in _PEER_FIELDS_DATATYPE_MAP_.iteritems()
+                    for field, datatype in _PEER_FIELDS_DATATYPE_MAP_.items()
                     if '_prefix_limit' not in field
                 }
                 for elem in bgp_group_details:
@@ -1080,7 +1081,7 @@ class JunOSDriver(NetworkDriver):
                 if key not in _COMMON_PROTOCOL_FIELDS_
             }
             protocol_attributes = {
-                key: value for key, value in all_protocol_attributes.iteritems()
+                key: value for key, value in all_protocol_attributes.items()
                 if key in _PROTOCOL_SPECIFIC_FIELDS_.get(route_protocol, [])
             }
             d['protocol_attributes'] = protocol_attributes
@@ -1176,7 +1177,7 @@ class JunOSDriver(NetworkDriver):
             }
             test_results['last_test_loss'] = napalm_base.helpers.convert(
                 int, test_results.pop('last_test_loss'), 0)
-            for test_param_name, test_param_value in test_results.iteritems():
+            for test_param_name, test_param_value in test_results.items():
                 if isinstance(test_param_value, float):
                     test_results[test_param_name] = test_param_value * 1e-3
                     # convert from useconds to mseconds
