@@ -337,8 +337,8 @@ class JunOSDriver(NetworkDriver):
             # Junos gives us RAM in %, so calculation has to be made.
             # Sadly, bacause of this, results are not 100% accurate to the truth.
             environment_data['memory']['used_ram'] = \
-                (environment_data['memory']['available_ram'] / 100 *
-                    structured_routing_engine_data['memory-buffer-utilization'])
+                int(round(environment_data['memory']['available_ram'] / 100.0 *
+                    structured_routing_engine_data['memory-buffer-utilization']))
 
         return environment_data
 
@@ -1073,7 +1073,7 @@ class JunOSDriver(NetworkDriver):
             communities = d.get('communities')
             if communities is not None and type(communities) is not list:
                 d['communities'] = [communities]
-            d_keys = d.keys()
+            d_keys = list(d.keys())
             # fields that are not in _COMMON_PROTOCOL_FIELDS_ are supposed to be protocol specific
             all_protocol_attributes = {
                 key: d.pop(key)
