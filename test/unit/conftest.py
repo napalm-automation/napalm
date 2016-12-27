@@ -117,7 +117,7 @@ class FakeRPCObject:
         # E.g.: <configuration><protocols><bgp><group/></bgp></protocols></configuration>
 
         if get_cmd is not None:
-            get_cmd_str = lxml.etree.tostring(get_cmd)
+            get_cmd_str = lxml.etree.tostring(get_cmd).decode('utf-8')
             filename = self._device.sanitize_text(get_cmd_str)
 
         # no get_cmd means it should mock the eznc get_config
