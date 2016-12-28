@@ -705,9 +705,6 @@ class IOSXRDriver(NetworkDriver):
         <InstanceName>default</InstanceName></Naming></Instance></BGP></Configuration></Get>'
         result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
-        group = group.lower()
-        neighbor = neighbor.lower()
-
         if not group:
             neighbor = ''
 
