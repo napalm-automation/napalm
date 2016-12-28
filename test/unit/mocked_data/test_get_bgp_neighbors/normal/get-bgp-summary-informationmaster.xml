@@ -46,7 +46,7 @@
   </bgp-rib>
   <bgp-peer style="terse" heading="Peer                     AS      InPkt     OutPkt    OutQ   Flaps Last Up/Dwn State|#Active/Received/Accepted/Damped...">
     <peer-address>10.3.1.254</peer-address>
-    <peer-as>4290029999</peer-as>
+    <peer-as>29999</peer-as>
     <input-messages>483718</input-messages>
     <output-messages>463556</output-messages>
     <route-queue-count>0</route-queue-count>
@@ -63,7 +63,7 @@
   </bgp-peer>
   <bgp-peer style="terse">
     <peer-address>192.168.0.0</peer-address>
-    <peer-as>4290030000</peer-as>
+    <peer-as>30000</peer-as>
     <input-messages>464786</input-messages>
     <output-messages>463581</output-messages>
     <route-queue-count>0</route-queue-count>
@@ -80,7 +80,7 @@
   </bgp-peer>
   <bgp-peer style="terse">
     <peer-address>192.169.1.0</peer-address>
-    <peer-as>4290030000</peer-as>
+    <peer-as>30000</peer-as>
     <input-messages>42</input-messages>
     <output-messages>47</output-messages>
     <route-queue-count>0</route-queue-count>

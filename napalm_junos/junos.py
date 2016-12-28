@@ -184,11 +184,11 @@ class JunOSDriver(NetworkDriver):
 
         return {
             'vendor': u'Juniper',
-            'model': unicode(output['model']),
-            'serial_number': unicode(output['serialnumber']),
-            'os_version': unicode(output['version']),
-            'hostname': unicode(output['hostname']),
-            'fqdn': unicode(output['fqdn']),
+            'model': py23_compat.text_type(output['model']),
+            'serial_number': py23_compat.text_type(output['serialnumber']),
+            'os_version': py23_compat.text_type(output['version']),
+            'hostname': py23_compat.text_type(output['hostname']),
+            'fqdn': py23_compat.text_type(output['fqdn']),
             'uptime': string_parsers.convert_uptime_string_seconds(uptime),
             'interface_list': interface_list
         }
@@ -210,7 +210,7 @@ class JunOSDriver(NetworkDriver):
                 'mac_address': napalm_base.helpers.convert(
                     napalm_base.helpers.mac,
                     interfaces[iface]['mac_address'],
-                    unicode(interfaces[iface]['mac_address'])),
+                    py23_compat.text_type(interfaces[iface]['mac_address'])),
                 'speed': -1
             }
             # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
@@ -337,8 +337,8 @@ class JunOSDriver(NetworkDriver):
             # Junos gives us RAM in %, so calculation has to be made.
             # Sadly, bacause of this, results are not 100% accurate to the truth.
             environment_data['memory']['used_ram'] = \
-                (environment_data['memory']['available_ram'] / 100 *
-                    structured_routing_engine_data['memory-buffer-utilization'])
+                int(round(environment_data['memory']['available_ram'] / 100.0 *
+                    structured_routing_engine_data['memory-buffer-utilization']))
 
         return environment_data
 
@@ -383,8 +383,8 @@ class JunOSDriver(NetworkDriver):
 
     @staticmethod
     def _parse_value(value):
-        if isinstance(value, basestring):
-            return unicode(value)
+        if isinstance(value, py23_compat.string_types):
+            return py23_compat.text_type(value)
         elif value is None:
             return u''
         else:
@@ -409,20 +409,21 @@ class JunOSDriver(NetworkDriver):
                 if 'router_id' not in bgp_neighbor_data[instance_name]:
                     # we only need to set this once
                     bgp_neighbor_data[instance_name]['router_id'] = \
-                        unicode(neighbor_data['local_id'])
+                        py23_compat.text_type(neighbor_data['local_id'])
                 peer = {
                     key: self._parse_value(value)
-                    for key, value in neighbor_data.iteritems()
+                    for key, value in neighbor_data.items()
                     if key in keys
                 }
                 peer['address_family'] = self._parse_route_stats(neighbor_data)
                 bgp_neighbor_data[instance_name]['peers'][peer_ip] = peer
             for neighbor, uptime in uptime_table.get(instance=instance).items():
                 bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
-        for key in bgp_neighbor_data.keys():
-            if not bgp_neighbor_data[key]['peers']:
-                del bgp_neighbor_data[key]
-        return bgp_neighbor_data
+        bgp_tmp_dict = {}
+        for k, v in bgp_neighbor_data.items():
+            if bgp_neighbor_data[k]['peers']:
+                bgp_tmp_dict[k] = v
+        return bgp_tmp_dict
 
     def get_lldp_neighbors(self):
         """Return LLDP neighbors details."""
@@ -435,7 +436,7 @@ class JunOSDriver(NetworkDriver):
         for neigh in result:
             if neigh[0] not in neighbors.keys():
                 neighbors[neigh[0]] = []
-            neighbors[neigh[0]].append({x[0]: unicode(x[1]) for x in neigh[1]})
+            neighbors[neigh[0]].append({x[0]: py23_compat.text_type(x[1]) for x in neigh[1]})
 
         return neighbors
 
@@ -468,7 +469,7 @@ class JunOSDriver(NetworkDriver):
                     'remote_chassis_id': napalm_base.helpers.convert(
                         napalm_base.helpers.mac, item.remote_chassis_id, item.remote_chassis_id),
                     'remote_port_description': napalm_base.helpers.convert(
-                        unicode, item.remote_port_description),
+                        py23_compat.text_type, item.remote_port_description),
                     'remote_system_name': item.remote_system_name,
                     'remote_system_description': item.remote_system_description,
                     'remote_system_capab': item.remote_system_capab,
@@ -485,14 +486,15 @@ class JunOSDriver(NetworkDriver):
             raise TypeError('Please enter a valid list of commands!')
 
         for command in commands:
-            cli_output[unicode(command)] = unicode(self.device.cli(command))
+            cli_output[py23_compat.text_type(command)] = py23_compat.text_type(
+                self.device.cli(command))
 
         return cli_output
 
     def get_bgp_config(self, group='', neighbor=''):
         """Return BGP configuration."""
         def update_dict(d, u):  # for deep dictionary update
-            for k, v in u.iteritems():
+            for k, v in u.items():
                 if isinstance(d, collections.Mapping):
                     if isinstance(v, collections.Mapping):
                         r = update_dict(d.get(k, {}), v)
@@ -530,7 +532,7 @@ class JunOSDriver(NetworkDriver):
             """
             prefix_limit = {}
 
-            for key, value in args.iteritems():
+            for key, value in args.items():
                 key_levels = key.split('_')
                 length = len(key_levels)-1
                 temp_dict = {
@@ -544,12 +546,12 @@ class JunOSDriver(NetworkDriver):
             return prefix_limit
 
         _COMMON_FIELDS_DATATYPE_ = {
-            'description': unicode,
-            'local_address': unicode,
+            'description': py23_compat.text_type,
+            'local_address': py23_compat.text_type,
             'local_as': int,
             'remote_as': int,
-            'import_policy': unicode,
-            'export_policy': unicode,
+            'import_policy': py23_compat.text_type,
+            'export_policy': py23_compat.text_type,
             'inet_unicast_limit_prefix_limit': int,
             'inet_unicast_teardown_threshold_prefix_limit': int,
             'inet_unicast_teardown_timeout_prefix_limit': int,
@@ -557,7 +559,7 @@ class JunOSDriver(NetworkDriver):
             'inet_flow_limit_prefix_limit': int,
             'inet_flow_teardown_threshold_prefix_limit': int,
             'inet_flow_teardown_timeout_prefix_limit': int,
-            'inet_flow_novalidate_prefix_limit': unicode,
+            'inet_flow_novalidate_prefix_limit': py23_compat.text_type,
             'inet6_unicast_limit_prefix_limit': int,
             'inet6_unicast_teardown_threshold_prefix_limit': int,
             'inet6_unicast_teardown_timeout_prefix_limit': int,
@@ -565,11 +567,11 @@ class JunOSDriver(NetworkDriver):
             'inet6_flow_limit_prefix_limit': int,
             'inet6_flow_teardown_threshold_prefix_limit': int,
             'inet6_flow_teardown_timeout_prefix_limit': int,
-            'inet6_flow_novalidate_prefix_limit': unicode,
+            'inet6_flow_novalidate_prefix_limit': py23_compat.text_type,
         }
 
         _PEER_FIELDS_DATATYPE_MAP_ = {
-            'authentication_key': unicode,
+            'authentication_key': py23_compat.text_type,
             'route_reflector_client': bool,
             'nhs': bool
         }
@@ -578,7 +580,7 @@ class JunOSDriver(NetworkDriver):
         )
 
         _GROUP_FIELDS_DATATYPE_MAP_ = {
-            'type': unicode,
+            'type': py23_compat.text_type,
             'apply_groups': list,
             'remove_private_as': bool,
             'multipath': bool,
@@ -589,7 +591,7 @@ class JunOSDriver(NetworkDriver):
         )
 
         _DATATYPE_DEFAULT_ = {
-            unicode: u'',
+            py23_compat.text_type: '',
             int: 0,
             bool: False,
             list: []
@@ -614,7 +616,7 @@ class JunOSDriver(NetworkDriver):
             bgp_group_details = bgp_group[1]
             bgp_config[bgp_group_name] = {
                 field: _DATATYPE_DEFAULT_.get(datatype)
-                for field, datatype in _GROUP_FIELDS_DATATYPE_MAP_.iteritems()
+                for field, datatype in _GROUP_FIELDS_DATATYPE_MAP_.items()
                 if '_prefix_limit' not in field
             }
             for elem in bgp_group_details:
@@ -655,7 +657,7 @@ class JunOSDriver(NetworkDriver):
                 bgp_group_details = bgp_group_neighbor[1]
                 bgp_peer_details = {
                     field: _DATATYPE_DEFAULT_.get(datatype)
-                    for field, datatype in _PEER_FIELDS_DATATYPE_MAP_.iteritems()
+                    for field, datatype in _PEER_FIELDS_DATATYPE_MAP_.items()
                     if '_prefix_limit' not in field
                 }
                 for elem in bgp_group_details:
@@ -784,7 +786,7 @@ class JunOSDriver(NetworkDriver):
             neighbors_rib = neighbor_details.pop('rib')
             neighbors_rib_items = neighbors_rib.items()
             for rib_entry in neighbors_rib_items:
-                _table = unicode(rib_entry[0])
+                _table = py23_compat.text_type(rib_entry[0])
                 if _table not in bgp_neighbors.keys():
                     bgp_neighbors[_table] = {}
                 if remote_as not in bgp_neighbors[_table].keys():
@@ -793,7 +795,7 @@ class JunOSDriver(NetworkDriver):
                 neighbor_rib_details.update({
                     elem[0]: elem[1] for elem in rib_entry[1]
                 })
-                neighbor_rib_details['routing_table'] = unicode(_table)
+                neighbor_rib_details['routing_table'] = py23_compat.text_type(_table)
                 bgp_neighbors[_table][remote_as].append(neighbor_rib_details)
 
         return bgp_neighbors
@@ -877,10 +879,10 @@ class JunOSDriver(NetworkDriver):
                 ntp_stats.append({
                     'remote': napalm_base.helpers.ip(line_groups[1]),
                     'synchronized': (line_groups[0] == '*'),
-                    'referenceid': unicode(line_groups[2]),
+                    'referenceid': py23_compat.text_type(line_groups[2]),
                     'stratum': int(line_groups[3]),
-                    'type': unicode(line_groups[4]),
-                    'when': unicode(line_groups[5]),
+                    'type': py23_compat.text_type(line_groups[4]),
+                    'when': py23_compat.text_type(line_groups[5]),
                     'hostpoll': int(line_groups[6]),
                     'reachability': int(line_groups[7]),
                     'delay': float(line_groups[8]),
@@ -912,10 +914,14 @@ class JunOSDriver(NetworkDriver):
             address = napalm_base.helpers.convert(
                 napalm_base.helpers.ip, ip_address, ip_address)
             prefix = napalm_base.helpers.convert(int, ip_network.split('/')[-1], 0)
-            interface = unicode(interface_details[1][0][1])
-            family_raw = interface_details[1][1][1]
+            try:
+                interface_details_dict = dict(interface_details[1])
+                family_raw = interface_details_dict.get('family')
+                interface = py23_compat.text_type(interface_details_dict.get('interface'))
+            except ValueError:
+                continue
             family = _FAMILY_VMAP_.get(family_raw)
-            if not family:
+            if not family or not interface:
                 continue
             if interface not in interfaces_ip.keys():
                 interfaces_ip[interface] = {}
@@ -1067,8 +1073,7 @@ class JunOSDriver(NetworkDriver):
             communities = d.get('communities')
             if communities is not None and type(communities) is not list:
                 d['communities'] = [communities]
-            # d['next_hop'] = unicode(next_hop)
-            d_keys = d.keys()
+            d_keys = list(d.keys())
             # fields that are not in _COMMON_PROTOCOL_FIELDS_ are supposed to be protocol specific
             all_protocol_attributes = {
                 key: d.pop(key)
@@ -1076,7 +1081,7 @@ class JunOSDriver(NetworkDriver):
                 if key not in _COMMON_PROTOCOL_FIELDS_
             }
             protocol_attributes = {
-                key: value for key, value in all_protocol_attributes.iteritems()
+                key: value for key, value in all_protocol_attributes.items()
                 if key in _PROTOCOL_SPECIFIC_FIELDS_.get(route_protocol, [])
             }
             d['protocol_attributes'] = protocol_attributes
@@ -1131,16 +1136,20 @@ class JunOSDriver(NetworkDriver):
         probes_table_items = probes_table.items()
 
         for probe_test in probes_table_items:
-            test_name = unicode(probe_test[0])
+            test_name = py23_compat.text_type(probe_test[0])
             test_details = {
                 p[0]: p[1] for p in probe_test[1]
             }
-            probe_name = napalm_base.helpers.convert(unicode, test_details.pop('probe_name'))
-            target = napalm_base.helpers.convert(unicode, test_details.pop('target', ''))
+            probe_name = napalm_base.helpers.convert(
+                py23_compat.text_type, test_details.pop('probe_name'))
+            target = napalm_base.helpers.convert(
+                py23_compat.text_type, test_details.pop('target', ''))
             test_interval = napalm_base.helpers.convert(int, test_details.pop('test_interval', '0'))
             probe_count = napalm_base.helpers.convert(int, test_details.pop('probe_count', '0'))
-            probe_type = napalm_base.helpers.convert(unicode, test_details.pop('probe_type', ''))
-            source = napalm_base.helpers.convert(unicode, test_details.pop('source_address', ''))
+            probe_type = napalm_base.helpers.convert(
+                py23_compat.text_type, test_details.pop('probe_type', ''))
+            source = napalm_base.helpers.convert(
+                py23_compat.text_type, test_details.pop('source_address', ''))
             if probe_name not in probes.keys():
                 probes[probe_name] = {}
             probes[probe_name][test_name] = {
@@ -1162,13 +1171,13 @@ class JunOSDriver(NetworkDriver):
         probes_results_items = probes_results_table.items()
 
         for probe_result in probes_results_items:
-            probe_name = unicode(probe_result[0])
+            probe_name = py23_compat.text_type(probe_result[0])
             test_results = {
                 p[0]: p[1] for p in probe_result[1]
             }
             test_results['last_test_loss'] = napalm_base.helpers.convert(
                 int, test_results.pop('last_test_loss'), 0)
-            for test_param_name, test_param_value in test_results.iteritems():
+            for test_param_name, test_param_value in test_results.items():
                 if isinstance(test_param_value, float):
                     test_results[test_param_name] = test_param_value * 1e-3
                     # convert from useconds to mseconds
@@ -1234,8 +1243,9 @@ class JunOSDriver(NetworkDriver):
                 probe_index = napalm_base.helpers.convert(
                     int, napalm_base.helpers.find_txt(probe, 'probe-index'), 0)
                 ip_address = napalm_base.helpers.convert(
-                    napalm_base.helpers.ip, napalm_base.helpers.find_txt(probe, 'ip-address'), u'*')
-                host_name = unicode(napalm_base.helpers.find_txt(probe, 'host-name', u'*'))
+                    napalm_base.helpers.ip, napalm_base.helpers.find_txt(probe, 'ip-address'), '*')
+                host_name = py23_compat.text_type(
+                    napalm_base.helpers.find_txt(probe, 'host-name', '*'))
                 rtt = napalm_base.helpers.convert(
                     float, napalm_base.helpers.find_txt(probe, 'rtt'), 0) * 1e-3  # ms
                 traceroute_result['success'][ttl_value]['probes'][probe_index] = {
@@ -1454,13 +1464,11 @@ class JunOSDriver(NetworkDriver):
 
         if retrieve in ('candidate', 'all'):
             config = self.device.rpc.get_config(filter_xml=None, options=options)
-            rv['candidate'] = py23_compat.text_type(config.text.encode('ascii', 'replace'))
-
+            rv['candidate'] = py23_compat.text_type(config.text)
         if retrieve in ('running', 'all'):
             options['database'] = 'committed'
             config = self.device.rpc.get_config(filter_xml=None, options=options)
-            rv['running'] = py23_compat.text_type(config.text.encode('ascii', 'replace'))
-
+            rv['running'] = py23_compat.text_type(config.text)
         return rv
 
     def get_network_instances(self, name=''):
