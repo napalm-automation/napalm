@@ -33,7 +33,7 @@ from pyIOSXR.exceptions import InvalidInputError
 
 # import NAPALM base
 import napalm_base.helpers
-import napalm_base.constants as C
+import napalm_iosxr.constants as C
 from napalm_base.base import NetworkDriver
 from napalm_base.utils import py23_compat
 from napalm_base.exceptions import ConnectionException
@@ -1216,13 +1216,10 @@ class IOSXRDriver(NetworkDriver):
         if not isinstance(destination, py23_compat.string_types):
             raise TypeError('Please specify a valid destination!')
 
-        if not isinstance(protocol, py23_compat.string_types) or \
-           protocol.lower() not in ('static', 'bgp', 'isis'):
-            raise TypeError("Protocol not supported: {protocol}.".format(
-                protocol=protocol
-            ))
-
         protocol = protocol.lower()
+        if protocol == 'direct':
+            protocol = 'connected'
+
         dest_split = destination.split('/')
         network = dest_split[0]
         prefix_tag = ''
@@ -1244,9 +1241,10 @@ class IOSXRDriver(NetworkDriver):
 
         for route in routes_tree.xpath('.//Route'):
             route_protocol = napalm_base.helpers.convert(
-                text_type, napalm_base.helpers.find_txt(route, 'ProtocolName').upper())
-            if route_protocol.lower() != protocol:
+                text_type, napalm_base.helpers.find_txt(route, 'ProtocolName').lower())
+            if protocol and route_protocol != protocol:
                 continue  # ignore routes learned via a different protocol
+                # only in case the user requested a certain protocol
             route_details = {}
             address = napalm_base.helpers.find_txt(route, 'Prefix')
             length = napalm_base.helpers.find_txt(route, 'PrefixLength')
@@ -1280,7 +1278,7 @@ class IOSXRDriver(NetworkDriver):
             }
 
             # from BGP will try to get some more information
-            if protocol.lower() == 'bgp':
+            if route_protocol == 'bgp' and C.SR_638170159_SOLVED:
                 # looks like IOS-XR does not filter correctly
                 # !IMPORTANT
                 bgp_route_info_rpc_command = '<Get><Operational><BGP><Active><DefaultVRF><AFTable>\
@@ -1348,13 +1346,13 @@ class IOSXRDriver(NetworkDriver):
                             'remote_address': remote_address
                         }
                     routes[destination].append(single_route_details)
-
             else:
                 first_route = True
                 for route_entry in route.xpath('RoutePath/Entry'):
                     # get all possible entries
                     next_hop = napalm_base.helpers.find_txt(route_entry, 'Address')
-                    single_route_details = route_details.copy()
+                    single_route_details = {}
+                    single_route_details.update(route_details)
                     single_route_details.update({
                         'current_active': first_route,
                         'next_hop': next_hop
