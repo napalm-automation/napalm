@@ -1,0 +1,1 @@
+{"1.0.4.0/24": [{"protocol": "bgp", "outgoing_interface": "", "age": 1804805, "current_active": true, "routing_table": "default", "last_active": false, "protocol_attributes": {}, "next_hop": "37.49.232.13", "selected_next_hop": false, "inactive_reason": "", "preference": 12}]}

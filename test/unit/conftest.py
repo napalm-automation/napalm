@@ -55,11 +55,14 @@ class FakeIOSXRDevice(BaseTestDouble):
     def close(self):
         pass
 
-    def make_rpc_call(self, rpc_call):
+    def make_rpc_call(self, rpc_call, encoded=True):
         filename = '{}.txt'.format(self.sanitize_text(rpc_call))
         full_path = self.find_file(filename)
         result = self.read_txt_file(full_path)
-        return result
+        if encoded:
+            return str.encode(result)
+        else:
+            return result
 
     def show_lldp_neighbors(self):
         filename = 'show_lldp_neighbors.txt'
@@ -71,4 +74,4 @@ class FakeIOSXRDevice(BaseTestDouble):
         rpc_request = '<CLI><Configuration>{show_command}</Configuration></CLI>'.format(
             show_command=show_command
         )
-        return self.make_rpc_call(rpc_request)
+        return self.make_rpc_call(rpc_request, encoded=False)
