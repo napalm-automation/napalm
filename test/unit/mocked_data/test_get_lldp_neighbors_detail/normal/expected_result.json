@@ -1,0 +1,314 @@
+{
+  "10": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:59:B6",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:21:ff:20",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m34"
+    }
+  ],
+  "11": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:58:62",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:21:fe:15",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m52"
+    }
+  ],
+  "12": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:58:62",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:21:fe:14",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m52"
+    }
+  ],
+  "17": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:58:60",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:60:59",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m81"
+    }
+  ],
+  "18": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:58:60",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:60:58",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m81"
+    }
+  ],
+  "19": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:5A:7A",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:22:00:c5",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m35"
+    }
+  ],
+  "20": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:5A:7A",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:22:00:c4",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m35"
+    }
+  ],
+  "21": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:57:52",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:22:03:1d",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m39"
+    }
+  ],
+  "22": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:57:52",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:22:03:1c",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m39"
+    }
+  ],
+  "23": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:58:F2",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:22:05:71",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m37"
+    }
+  ],
+  "24": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:58:F2",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:22:05:70",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m37"
+    }
+  ],
+  "25": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:58:28",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:22:00:85",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m36"
+    }
+  ],
+  "26": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:58:28",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:22:00:84",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m36"
+    }
+  ],
+  "27": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:57:6E",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:22:05:55",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m38"
+    }
+  ],
+  "28": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:57:6E",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:22:05:54",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m38"
+    }
+  ],
+  "29": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:57:64",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:5e:7d",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m46"
+    }
+  ],
+  "30": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:57:64",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:5e:7c",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m46"
+    }
+  ],
+  "31": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:57:7A",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:5e:b1",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m51"
+    }
+  ],
+  "32": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:57:7A",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:5e:b0",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m51"
+    }
+  ],
+  "41": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:5A:4E",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:5e:91",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m48"
+    }
+  ],
+  "42": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:5A:4E",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:5e:90",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m48"
+    }
+  ],
+  "51": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:59:74",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:5f:69",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m54"
+    }
+  ],
+  "52": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:59:74",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:5f:68",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m54"
+    }
+  ],
+  "53": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:5A:3E",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:5f:7d",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m42"
+    }
+  ],
+  "54": [
+    {
+      "remote_chassis_id": "C4:54:44:5D:5A:3E",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:5f:7c",
+      "remote_system_capab": "",
+      "remote_port_description": "eth2",
+      "remote_system_description": "",
+      "remote_system_name": "m42"
+    }
+  ],
+  "55": [
+    {
+      "remote_chassis_id": "C4:54:44:72:C3:CC",
+      "parent_interface": "",
+      "remote_system_enable_capab": "",
+      "remote_port": "00:0f:53:20:60:39",
+      "remote_system_capab": "",
+      "remote_port_description": "eth3",
+      "remote_system_description": "",
+      "remote_system_name": "m56"
+    }
+  ]
+}
