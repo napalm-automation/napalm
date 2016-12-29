@@ -5,16 +5,17 @@ General support matrix
 ----------------------
 
 
-=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============	==============
-_                       EOS         JunOS           IOS-XR       FortiOS         IBM            NXOS          IOS           Pluribus         PANOS                      MikroTik	      VyOS
-=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============	==============
-**Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-fortios  napalm-ibm     napalm-nxos   napalm-ios    napalm-pluribus  napalm-panos               napalm-ros	    napalm-vyos
-**Driver Name**         eos         junos           iosxr        fortios         ibm            nxos          ios           pluribus         panos                      ros	            vyos
-**Structured data**     Yes         Yes             No           No              Yes            Yes           No            No               Yes                        Yes	            Yes
-**Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           ???            6.1 [#g1]_    12.4(20)T     N/A              7.0                        3.30	          1.1.6
-**Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_         `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_    `netmiko`_, `pan-python`_  `librouteros`_	`netmiko`_
-**Caveats**             :doc:`eos`                               :doc:`fortios`  :doc:`ibm`     :doc:`nxos`   :doc:`ios`                     :doc:`panos`	:doc:`vyos`
-=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============	==============
+
+  =====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============  ==============
+  _                       EOS         JunOS           IOS-XR       FortiOS         IBM            NXOS          IOS           Pluribus         PANOS                      MikroTik        MikroTik
+  =====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============  ==============
+  **Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-fortios  napalm-ibm     napalm-nxos   napalm-ios    napalm-pluribus  napalm-panos               napalm-ros      napalm-vyos
+  **Driver Name**         eos         junos           iosxr        fortios         ibm            nxos          ios           pluribus         panos                      ros             vyos
+  **Structured data**     Yes         Yes             No           No              Yes            Yes           No            No               Yes                        Yes             Yes
+  **Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           ???            6.1 [#g1]_    12.4(20)T     N/A              7.0                        3.30            1.1.6
+  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_         `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_    `netmiko`_, `pan-python`_  `librouteros`_  `netmiko`_
+  **Caveats**             :doc:`eos`                               :doc:`fortios`  :doc:`ibm`     :doc:`nxos`   :doc:`ios`                     :doc:`panos`                               doc:`vyos`
+  =====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============  ==============
 
 .. _pyeapi: https://github.com/arista-eosplus/pyeapi
 .. _junos-eznc: https://github.com/Juniper/py-junos-eznc
