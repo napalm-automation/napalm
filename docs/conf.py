@@ -286,7 +286,7 @@ enable_epub_build = False
 EXCLUDE_METHODS = ('cli', 'close', 'commit_config', 'compare_config',
                    'discard_config', 'load_merge_candidate',
                    'load_replace_candidate', 'load_template', 'open',
-                   'rollback')
+                   'rollback', 'compliance_report')
 
 EXCLUDE_IN_REPORT = ('test_method_signatures')
 
