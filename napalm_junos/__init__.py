@@ -18,7 +18,7 @@
 import pkg_resources
 
 # Import local modules
-from junos import JunOSDriver  # noqa
+from napalm_junos.junos import JunOSDriver  # noqa
 
 try:
     __version__ = pkg_resources.get_distribution('napalm-junos').version

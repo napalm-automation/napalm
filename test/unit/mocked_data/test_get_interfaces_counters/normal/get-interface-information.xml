@@ -10097,7 +10097,7 @@
     <statistics-cleared>Never</statistics-cleared>
     <traffic-statistics style="verbose">
       <input-bytes>0</input-bytes>
-      <output-bytes>7019456938</output-bytes>
+      <output-bytes>456938</output-bytes>
       <input-packets>0</input-packets>
       <output-packets>38263963</output-packets>
       <ipv6-transit-statistics>
@@ -10477,8 +10477,8 @@
     <interface-flapped seconds="0">Never</interface-flapped>
     <statistics-cleared>Never</statistics-cleared>
     <traffic-statistics style="verbose">
-      <input-bytes>38011610476</input-bytes>
-      <output-bytes>38011610476</output-bytes>
+      <input-bytes>610476</input-bytes>
+      <output-bytes>610476</output-bytes>
       <input-packets>683308268</input-packets>
       <output-packets>683308268</output-packets>
       <ipv6-transit-statistics>

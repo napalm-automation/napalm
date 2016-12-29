@@ -1,9 +1,9 @@
 <bgp-information>
   <bgp-peer style="detail">
     <peer-address>10.2.1.253+179</peer-address>
-    <peer-as>4290029998</peer-as>
+    <peer-as>29998</peer-as>
     <local-address>10.2.1.1+49228</local-address>
-    <local-as>4290020001</local-as>
+    <local-as>20001</local-as>
     <peer-type>External</peer-type>
     <peer-state>Established</peer-state>
     <peer-flags>Sync</peer-flags>
@@ -37,7 +37,7 @@
     <peer-stale-route-time-configured>300</peer-stale-route-time-configured>
     <peer-no-restart/>
     <peer-no-helper/>
-    <peer-4byte-as-capability-advertised>4290029998</peer-4byte-as-capability-advertised>
+    <peer-4byte-as-capability-advertised>29998</peer-4byte-as-capability-advertised>
     <peer-addpath-not-supported/>
     <bgp-rib style="detail">
       <name>frontend.inet.0</name>
@@ -69,9 +69,9 @@
   </bgp-peer>
   <bgp-peer style="detail">
     <peer-address>10.2.1.254+1047</peer-address>
-    <peer-as>4290029999</peer-as>
+    <peer-as>29999</peer-as>
     <local-address>10.2.1.1+179</local-address>
-    <local-as>4290020001</local-as>
+    <local-as>20001</local-as>
     <peer-type>External</peer-type>
     <peer-state>Established</peer-state>
     <peer-flags>Sync</peer-flags>
@@ -105,7 +105,7 @@
     <peer-stale-route-time-configured>300</peer-stale-route-time-configured>
     <peer-no-restart/>
     <peer-no-helper/>
-    <peer-4byte-as-capability-advertised>4290029999</peer-4byte-as-capability-advertised>
+    <peer-4byte-as-capability-advertised>29999</peer-4byte-as-capability-advertised>
     <peer-addpath-not-supported/>
     <bgp-rib style="detail">
       <name>frontend.inet.0</name>
@@ -137,9 +137,9 @@
   </bgp-peer>
   <bgp-peer style="detail">
     <peer-address>192.168.0.0+57256</peer-address>
-    <peer-as>4290020000</peer-as>
+    <peer-as>20000</peer-as>
     <local-address>192.168.0.1+179</local-address>
-    <local-as>4290020001</local-as>
+    <local-as>20001</local-as>
     <peer-type>External</peer-type>
     <peer-state>Established</peer-state>
     <peer-flags>Sync</peer-flags>
@@ -183,7 +183,7 @@
     <peer-end-of-rib-received>inet-unicast inet6-unicast</peer-end-of-rib-received>
     <peer-end-of-rib-sent>inet-unicast inet6-unicast</peer-end-of-rib-sent>
     <peer-end-of-rib-scheduled/>
-    <peer-4byte-as-capability-advertised>4290020000</peer-4byte-as-capability-advertised>
+    <peer-4byte-as-capability-advertised>20000</peer-4byte-as-capability-advertised>
     <peer-addpath-not-supported/>
     <bgp-rib style="detail">
       <name>frontend.inet.0</name>
@@ -231,9 +231,9 @@
   </bgp-peer>
   <bgp-peer style="detail">
     <peer-address>192.169.1.0</peer-address>
-    <peer-as>4290020000</peer-as>
+    <peer-as>20000</peer-as>
     <local-address>192.169.1.1</local-address>
-    <local-as>4290020001</local-as>
+    <local-as>20001</local-as>
     <peer-type>External</peer-type>
     <peer-state>Active</peer-state>
     <peer-flags/>
@@ -252,9 +252,9 @@
   </bgp-peer>
   <bgp-peer style="detail">
     <peer-address>2a01:280:100::1</peer-address>
-    <peer-as>4290020000</peer-as>
+    <peer-as>20000</peer-as>
     <local-address>2a01:280:100::</local-address>
-    <local-as>4290020001</local-as>
+    <local-as>20001</local-as>
     <peer-type>External</peer-type>
     <peer-state>Idle</peer-state>
     <peer-flags>PeerInterfaceError</peer-flags>
