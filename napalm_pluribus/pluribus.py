@@ -27,6 +27,7 @@ from pyPluribus import PluribusDevice
 # NAPALM base
 import napalm_base.helpers
 import napalm_base.exceptions
+import napalm_base.constants as C
 from napalm_base.utils import py23_compat
 from napalm_base.base import NetworkDriver
 
@@ -67,7 +68,7 @@ class PluribusDriver(NetworkDriver):
     def load_merge_candidate(self, filename=None, config=None):
         return self.device.config.load_candidate(filename=filename, config=config)
 
-    def config_compare(self):
+    def compare_config(self):
         return self.device.config.compare()
 
     def commit_config(self):
@@ -126,7 +127,7 @@ class PluribusDriver(NetworkDriver):
 
         return facts
 
-    def cli(self, commands=None):
+    def cli(self, commands):
 
         cli_output = {}
 
@@ -216,7 +217,7 @@ class PluribusDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def get_lldp_neighbors_detail(self):
+    def get_lldp_neighbors_detail(self, interface=''):
 
         lldp_neighbors = {}
 
@@ -226,6 +227,8 @@ class PluribusDriver(NetworkDriver):
         for line in lines:
             neighbor_details = line.split('@$@')
             port = py23_compat.text_type(neighbor_details[1].strip())
+            if interface and port != interface:
+                continue
             chassis = napalm_base.helpers.convert(
                     napalm_base.helpers.mac, neighbor_details[2].strip())
             port_id = py23_compat.text_type(neighbor_details[3].strip())
@@ -353,8 +356,11 @@ class PluribusDriver(NetworkDriver):
 
         return users
 
-    def traceroute(self, destination, source='', ttl=0, timeout=0):
-
+    def traceroute(self,
+                   destination,
+                   source=C.TRACEROUTE_SOURCE,
+                   ttl=C.TRACEROUTE_TTL,
+                   timeout=C.TRACEROUTE_TIMEOUT):
         # same method as on EOS, different command send to CLI
 
         _HOP_ENTRY_PROBE = [
