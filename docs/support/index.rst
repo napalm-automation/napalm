@@ -5,16 +5,16 @@ General support matrix
 ----------------------
 
 
-=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============
-_                       EOS         JunOS           IOS-XR       FortiOS         IBM            NXOS          IOS           Pluribus         PANOS                      MikroTik
-=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============
-**Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-fortios  napalm-ibm     napalm-nxos   napalm-ios    napalm-pluribus  napalm-panos               napalm-ros
-**Driver Name**         eos         junos           iosxr        fortios         ibm            nxos          ios           pluribus         panos                      ros
-**Structured data**     Yes         Yes             No           No              Yes            Yes           No            No               Yes                        Yes
-**Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           ???            6.1 [#g1]_    12.4(20)T     N/A              7.0                        3.30
-**Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_         `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_    `netmiko`_, `pan-python`_  `librouteros`_
-**Caveats**             :doc:`eos`                               :doc:`fortios`  :doc:`ibm`     :doc:`nxos`   :doc:`ios`                     :doc:`panos`
-=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============
+=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ============== ==============
+_                       EOS         JunOS           IOS-XR       FortiOS         IBM            NXOS          IOS           Pluribus         PANOS                      MikroTik	VyOS
+=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ============== ==============
+**Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-fortios  napalm-ibm     napalm-nxos   napalm-ios    napalm-pluribus  napalm-panos               napalm-ros	napalm-vyos
+**Driver Name**         eos         junos           iosxr        fortios         ibm            nxos          ios           pluribus         panos                      ros	vyos
+**Structured data**     Yes         Yes             No           No              Yes            Yes           No            No               Yes                        Yes	Yes
+**Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           ???            6.1 [#g1]_    12.4(20)T     N/A              7.0                        3.30	1.1.6
+**Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_         `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_    `netmiko`_, `pan-python`_  `librouteros`_	`netmiko`_
+**Caveats**             :doc:`eos`                               :doc:`fortios`  :doc:`ibm`     :doc:`nxos`   :doc:`ios`                     :doc:`panos`	:doc:`vyos`
+=====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ============== ==============
 
 .. _pyeapi: https://github.com/arista-eosplus/pyeapi
 .. _junos-eznc: https://github.com/Juniper/py-junos-eznc
@@ -35,15 +35,15 @@ _                       EOS         JunOS           IOS-XR       FortiOS        
 Configuration support matrix
 ----------------------------
 
-=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ============== ========
-_                       EOS         JunOS   IOS-XR      FortiOS         IBM            NXOS            IOS             Pluribus        PANOS          MikroTik
-=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ============== ========
-**Config. replace**     Yes         Yes     Yes         Yes             Yes [#c3]_     Yes             Yes             No              Yes            No
-**Config. merge**       Yes         Yes     Yes         Yes             Yes            Yes             Yes             No              Yes            No
-**Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c1]_     Yes [#c4]_      Yes             No              Yes            No
-**Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_  No
-**Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes [#c2]_     Yes/No [#c5]_   Yes             No              Yes            No
-=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ============== ========
+=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ============== ======== ========
+_                       EOS         JunOS   IOS-XR      FortiOS         IBM            NXOS            IOS             Pluribus        PANOS          MikroTik	VyOS
+=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ============== ========	========
+**Config. replace**     Yes         Yes     Yes         Yes             Yes [#c3]_     Yes             Yes             No              Yes            No	Yes
+**Config. merge**       Yes         Yes     Yes         Yes             Yes            Yes             Yes             No              Yes            No	Yes
+**Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c1]_     Yes [#c4]_      Yes             No              Yes            No	Yes
+**Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_  No	Yes
+**Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes [#c2]_     Yes/No [#c5]_   Yes             No              Yes            No	Yes
+=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ============== ======== ========
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
@@ -93,13 +93,13 @@ _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    I
 Other methods
 -------------
 
-============================== =====  =====   ======  =======  ======  ======  =====  =========  ========= ========
-_                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus   PANOS     MikroTik
-============================== =====  =====   ======  =======  ======  ======  =====  =========  ========= ========
-**load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|   |yes|  |yes|      |yes|     |no|
-**ping**                       |no|   |no|    |no|    |no|     |no|    |no|    |yes|  |no|       |no|      |yes|
-**traceroute**                 |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|      |no|
-============================== =====  =====   ======  =======  ======  ======  =====  =========  ========= ========
+============================== =====  =====   ======  =======  ======  ======  =====  =========  ========= ======== ========
+_                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus   PANOS     MikroTik VyOS
+============================== =====  =====   ======  =======  ======  ======  =====  =========  ========= ======== ========
+**load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|   |yes|  |yes|      |yes|     |no|	    |yes|
+**ping**                       |no|   |no|    |no|    |no|     |no|    |no|    |yes|  |no|       |no|      |yes|    |yes|
+**traceroute**                 |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|      |no|     |no|
+============================== =====  =====   ======  =======  ======  ======  =====  =========  ========= ======== ========
 
 Available configuration templates
 ---------------------------------
@@ -123,6 +123,7 @@ Caveats
    nxos
    ios
    panos
+   vyos
 
 Optional arguments
 ------------------
@@ -140,7 +141,7 @@ List of supported optional arguments
 ____________________________________
 
 * :code:`fortios_vdom` (fortios) - VDOM to connect to.
-* :code:`port` (eos, iosxr, junos, ios, ros) - Allows you to specify a port other than the default.
+* :code:`port` (eos, iosxr, junos, ios, ros, vyos) - Allows you to specify a port other than the default.
 * :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: True).
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: 'flash:').
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: True).
@@ -149,6 +150,7 @@ ____________________________________
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: '').
 * :code:`allow_agent` (ios, panos) - Paramiko argument, enable connecting to the SSH agent (default: 'False').
 * :code:`use_keys` (ios, panos) - Paramiko argument, enable searching for discoverable private key files in ~/.ssh/ (default: 'False').
+* :code:`key_file` (vyos) - Netmiko/Paramiko argument, path to a private key file (default: 'False').
 * :code:`api_key` (panos) - Allow to specify the API key instead of username/password (default: '').
 
 
