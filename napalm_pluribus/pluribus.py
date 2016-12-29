@@ -56,6 +56,11 @@ class PluribusDriver(NetworkDriver):
         except pyPluribus.exceptions.ConnectionError as connerr:
             raise napalm_base.exceptions.ConnectionException(connerr.message)
 
+    def is_alive(self):
+        return{
+            'is_alive': self.device._connection.transport.is_alive()
+        }
+
     def close(self):
         self.device.close()
 
