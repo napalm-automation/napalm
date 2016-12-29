@@ -331,6 +331,7 @@ def build_getters_support_matrix(app):
                     method = regex_name.search(test['attributes']['name']).group(1)
                 except:
                     print("Method name that failed to parse was: {}".format(test['attributes']['name']))
+                    print(json.dumps(data))
                     raise
                 if method in EXCLUDE_IN_REPORT:
                     continue
