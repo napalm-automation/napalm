@@ -327,12 +327,11 @@ def build_getters_support_matrix(app):
         with open(filename, 'r') as f:
             data = json.loads(f.read())
             for test in data.get('included', {}):
-                try:
-                    method = regex_name.search(test['attributes']['name']).group(1)
-                except:
-                    print("Method name that failed to parse was: {}".format(test['attributes']['name']))
-                    print(json.dumps(data))
-                    raise
+                match = regex_name.search(test['attributes']['name'])
+                if match:
+                    method = match.group(1)
+                else:
+                    continue
                 if method in EXCLUDE_IN_REPORT:
                     continue
                 result = test['attributes']['outcome']
