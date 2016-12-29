@@ -13,21 +13,22 @@ NAPALM supports several methods to connect to the devices, to manipulate configu
 Supported Network Operating Systems:
 ------------------------------------
 
-* eos
-* junos
-* iosxr
-* fortios
-* ibm
-* nxos
-* ios
-* pluribus
-* panos
+* Arista EOS
+* Cisco IOS
+* Cisco IOS-XR
+* Cisco NX-OS
+* Fortinet Fortios
+* IBM
+* Juniper JunOS
+* Mikrotik RouterOS
+* Palo Alto NOS
+* Pluribus
 
 You can select the driver you need by doing the following:
 
 .. code-block:: python
 
-   >>> from napalm import get_network_driver
+   >>> from napalm_base import get_network_driver
    >>> get_network_driver('eos')
    <class napalm_eos.eos.EOSDriver at 0x10ebad6d0>
    >>> get_network_driver('iosxr')
@@ -56,6 +57,7 @@ Documentation
 
    installation
    tutorials/index
+   validate/index
    support/index
    cli
    base
