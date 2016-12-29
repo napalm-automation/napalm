@@ -115,11 +115,11 @@ class PluribusDriver(NetworkDriver):
 
         facts = {
             'vendor': u'Pluribus',
-            'os_version': unicode(os_ver),
-            'hostname': unicode(hostname),
+            'os_version': py23_compat.text_type(os_ver),
+            'hostname': py23_compat.text_type(hostname),
             'uptime': uptime,
-            'model': unicode(model),
-            'serial_number': unicode(serial),
+            'model': py23_compat.text_type(model),
+            'serial_number': py23_compat.text_type(serial),
             'interface_list': interfaces,
             'fqdn': u''
         }
@@ -134,7 +134,7 @@ class PluribusDriver(NetworkDriver):
             raise TypeError('Please provide a valid list of commands!')
 
         for command in commands:
-            cli_output[unicode(command)] = self.device.cli(command)
+            cli_output[py23_compat.text_type(command)] = self.device.cli(command)
 
         return cli_output
 
@@ -147,7 +147,7 @@ class PluribusDriver(NetworkDriver):
 
         for line in interfaces_lines:
             interface_details = line.split('@$@')
-            interface_name = unicode(interface_details[1])
+            interface_name = py23_compat.text_type(interface_details[1])
             up = (interface_details[4] != 'disable')
             enabled = (interface_details[8] == 'on')
             speed = 0
@@ -155,8 +155,8 @@ class PluribusDriver(NetworkDriver):
                 speed = int(1e3 * int(interface_details[4].replace('g', '')))
                 # > 1G interfaces
             last_flap = 0.0
-            description = unicode(interface_details[17])
-            mac_address = unicode(interface_details[28])
+            description = py23_compat.text_type(interface_details[17])
+            mac_address = py23_compat.text_type(interface_details[28])
             interfaces[interface_name] = {
                 'is_up': up,
                 'is_enabled': enabled,
@@ -180,7 +180,7 @@ class PluribusDriver(NetworkDriver):
             mac_details = line.split('@$@')
             mac_raw = mac_details[2].strip()
             vlan = int(mac_details[3].strip())
-            ports = unicode(mac_details[8].strip())
+            ports = py23_compat.text_type(mac_details[8].strip())
             active = (mac_details[9].strip == 'active')
             mac_table.append({
                 'mac': napalm_base.helpers.convert(
@@ -204,9 +204,9 @@ class PluribusDriver(NetworkDriver):
 
         for line in lines:
             neighbor_details = line.split('@$@')
-            port = unicode(neighbor_details[1].strip())
-            port_id = unicode(neighbor_details[3].strip())
-            system_name = unicode(neighbor_details[6].strip())
+            port = py23_compat.text_type(neighbor_details[1].strip())
+            port_id = py23_compat.text_type(neighbor_details[3].strip())
+            system_name = py23_compat.text_type(neighbor_details[6].strip())
             if port_id not in lldp_neighbors.keys():
                 lldp_neighbors[port_id] = []
             lldp_neighbors[port_id].append({
@@ -225,12 +225,12 @@ class PluribusDriver(NetworkDriver):
 
         for line in lines:
             neighbor_details = line.split('@$@')
-            port = unicode(neighbor_details[1].strip())
+            port = py23_compat.text_type(neighbor_details[1].strip())
             chassis = napalm_base.helpers.convert(
                     napalm_base.helpers.mac, neighbor_details[2].strip())
-            port_id = unicode(neighbor_details[3].strip())
-            port_descr = unicode(neighbor_details[4].strip())
-            system_name = unicode(neighbor_details[6].strip())
+            port_id = py23_compat.text_type(neighbor_details[3].strip())
+            port_descr = py23_compat.text_type(neighbor_details[4].strip())
+            system_name = py23_compat.text_type(neighbor_details[6].strip())
             if port not in lldp_neighbors.keys():
                 lldp_neighbors[port] = []
             lldp_neighbors[port].append({
@@ -259,7 +259,7 @@ class PluribusDriver(NetworkDriver):
         ntp_stats = []
 
         sw_setup_show = self.device.show('switch setup', delim='@$@')
-        ntp_server = unicode(sw_setup_show.splitlines()[9].split('@$@')[-1])
+        ntp_server = py23_compat.text_type(sw_setup_show.splitlines()[9].split('@$@')[-1])
 
         ntp_stats.append({
             'remote': ntp_server,
@@ -289,7 +289,7 @@ class PluribusDriver(NetworkDriver):
         switch_info = self.device.show('switch info', delim='@$@')
         chassis_id = switch_info.splitlines()[2].split('@$@')[-1]
 
-        snmp_information['chassis_id'] = unicode(chassis_id)
+        snmp_information['chassis_id'] = py23_compat.text_type(chassis_id)
         snmp_information['contact'] = u''
         snmp_information['location'] = u''
         snmp_information['community'] = {}
@@ -299,7 +299,7 @@ class PluribusDriver(NetworkDriver):
 
         for snmp_line in snmp_lines:
             snmp_line_details = snmp_line.split('@$@')
-            snmp_community = unicode(snmp_line_details[1])
+            snmp_community = py23_compat.text_type(snmp_line_details[1])
             snmp_mode = _SNMP_MODE_MAP_.get(snmp_line_details[2], u'ro')
             snmp_acl = u''
             snmp_information['community'][snmp_community] = {
@@ -434,8 +434,8 @@ class PluribusDriver(NetworkDriver):
                     host_name = '*'
                     ip_address = '*'
                 traceroute_result['success'][hop_index]['probes'][probe_index+1] = {
-                    'host_name': unicode(host_name),
-                    'ip_address': unicode(ip_address),
+                    'host_name': py23_compat.text_type(host_name),
+                    'ip_address': py23_compat.text_type(ip_address),
                     'rtt': rtt
                 }
                 previous_probe_host_name = host_name
