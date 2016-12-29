@@ -65,6 +65,9 @@ Getters support matrix
 Other methods
 -------------
 
+.. |yes|   unicode:: U+02705 .. Yes
+.. |no|    unicode:: U+0274C .. No
+
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
 _                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus   PANOS
 ============================== =====  =====   ======  =======  ======  ======  =====  =========  =========
