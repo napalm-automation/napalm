@@ -13,7 +13,7 @@
 # the License.
 
 """napalm_vyos package."""
-from vyos import VyOSDriver
+from napalm_vyos.vyos import VyOSDriver
 import pkg_resources
 
 try:

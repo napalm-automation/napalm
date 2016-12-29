@@ -1,1 +1,1 @@
-{"lo": {"ipv4": {"8.8.8.8": {"prefix_length": 32}, "127.0.0.1": {"prefix_length": 8}, "10.2.2.2": {"prefix_length": 32}}}, "eth1": {"ipv4": {"10.0.1.222": {"prefix_length": 24}}}, "eth0": {"ipv4": {"10.0.2.15": {"prefix_length": 24}}}}
+{"lo": {"ipv4": {"8.8.8.8": {"prefix_length": 32}, "127.0.0.1": {"prefix_length": 8}, "10.2.2.2": {"prefix_length": 32}}, "ipv6": {"::1": {"prefix_length": 128}}}, "eth1": {"ipv4": {"10.0.1.222": {"prefix_length": 24}}}, "eth0": {"ipv4": {"10.0.2.15": {"prefix_length": 24}}}}

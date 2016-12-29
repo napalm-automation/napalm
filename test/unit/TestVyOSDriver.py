@@ -26,7 +26,7 @@ class TestConfigVyOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         username = 'vagrant'
         password = 'vagrant'
         cls.vendor = 'vyos'
-        cls.port = '2200'
+        cls.port = '12206'
 
         optional_args = {'port': '12206'}
         cls.device = vyos.VyOSDriver(hostname, username, password,

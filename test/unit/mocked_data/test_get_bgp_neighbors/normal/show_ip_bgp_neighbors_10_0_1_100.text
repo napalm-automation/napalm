@@ -1,0 +1,36 @@
+BGP neighbor is 10.0.1.100, remote AS 65001, local AS 65002, external link
+  BGP version 4, remote router ID 10.0.2.100
+  BGP state = Established, up for 03w0d00h
+  Last read 11:37:17, hold time is 180, keepalive interval is 60 seconds
+  Neighbor capabilities:
+    4 Byte AS: advertised and received
+    Route refresh: advertised and received(old & new)
+    Address family IPv4 Unicast: advertised and received
+  Message statistics:
+    Inq depth is 0
+    Outq depth is 0
+                         Sent       Rcvd
+    Opens:                  2          0
+    Notifications:          0          0
+    Updates:                1          0
+    Keepalives:         30257      30255
+    Route Refresh:          0          0
+    Capability:             0          0
+    Total:              30260      30255
+  Minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv4 Unicast
+  Community attribute sent to this neighbor(both)
+  Outbound path policy configured
+  Route map for outgoing advertisements is *EXPORT-POLICY
+  0 accepted prefixes
+
+  Connections established 1; dropped 0
+  Last reset never
+Local host: 10.0.1.222, Local port: 179
+Foreign host: 10.0.1.100, Foreign port: 44363
+Nexthop: 10.0.1.222
+Nexthop global: fe80::a00:27ff:feeb:7af9
+Nexthop local: ::
+BGP connection: non shared network
+Read thread: on  Write thread: off
