@@ -326,15 +326,15 @@ def build_getters_support_matrix(app):
         drivers.append(driver)
         with open(filename, 'r') as f:
             data = json.loads(f.read())
-            for test in data.get('included', {}):
-                match = regex_name.search(test['attributes']['name'])
+            for test in data["report"]["tests"]:
+                match = regex_name.search(test['name'])
                 if match:
                     method = match.group(1)
                 else:
                     continue
                 if method in EXCLUDE_IN_REPORT:
                     continue
-                result = test['attributes']['outcome']
+                result = test['outcome']
 
                 if method in METHOD_ALIASES.keys():
                     method = METHOD_ALIASES[method]

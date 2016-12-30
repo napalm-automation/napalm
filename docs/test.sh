@@ -15,7 +15,7 @@ function process_driver {
 	pip install -r requirements-dev.txt
 
 	set +e
-	py.test --cov=./ -vs --json=report.json test/unit/test_getters.py
+	py.test -c /dev/null --cov=./ -vs --json=report.json test/unit/test_getters.py
 	set -e
 
 	cp report.json $TEST_RESULTS_PATH/$1.json

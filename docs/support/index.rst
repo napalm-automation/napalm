@@ -45,6 +45,7 @@ _                       EOS         JunOS   IOS-XR      FortiOS         IBM     
 **Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_  No       Yes
 **Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes [#c2]_     Yes/No [#c5]_   Yes             No              Yes            No       Yes
 =====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ============== ======== ======== 
+
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
 .. [#c3] Check the caveats, this is a dangerous operation in this device.
