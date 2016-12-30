@@ -23,6 +23,7 @@ Supported Network Operating Systems:
 * Mikrotik RouterOS
 * Palo Alto NOS
 * Pluribus
+* Vyos 
 
 You can select the driver you need by doing the following:
 
