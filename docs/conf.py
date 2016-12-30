@@ -319,7 +319,7 @@ def build_getters_support_matrix(app):
               if not (m.startswith('_') or
                       m in EXCLUDE_METHODS)}
 
-    regex_name = re.compile(r"::test_(\w+)")
+    regex_name = re.compile(r"TestGetter::test_(\w+)")
 
     for filename in glob.iglob('./support/tests/*.json'):
         driver = filename.split('/')[-1].split('.')[0]
