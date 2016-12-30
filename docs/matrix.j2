@@ -1,0 +1,22 @@
+{%- macro parse(text) -%}
+{%- if text == "passed" -%}&#x2705;
+{%- elif text == "failed" -%}&#x2620;
+{%- elif text == "skipped" -%}&#x274c;
+{%- else -%}{{ text }}
+{%- endif -%}
+{%- endmacro -%}
+
+.. raw:: html
+
+	<table border="1" class="docutils">
+		<th></th>{% for driver in drivers %}<th>{{driver|upper}}</th>{% endfor %}
+		{% for method in sorted_methods %}
+		<tr>
+			<td><strong>{{ method }}</strong></td>{% for driver in drivers %}<td>{{ parse(matrix[method][driver]) }}</td>{% endfor %}
+		</tr>{% endfor %}
+	</table>
+	<ul>
+		<li>{{ parse("passed") }} - supported</li>
+		<li>{{ parse("skipped") }} - not supported</li>
+		<li>{{ parse("failed") }} - broken</li>
+	</ul>
