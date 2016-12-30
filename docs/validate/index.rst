@@ -47,6 +47,15 @@ then write the desired state using the same format the getter would retrieve it.
           192.0.2.1:
             prefix_length: 30
 
+    ping:
+      _kwargs:
+          destination: 8.8.8.8
+          source: 192.168.1.1
+      success:
+          packet_loss: 0
+      _mode: strict
+
+
 A few notes:
 
     * You don't have to validate the entire state of the device, you might want to validate certain
@@ -63,6 +72,8 @@ A few notes:
     * Lists of objects to be validated require an extra key ``list``. You can see an example with
       the ``get_facts`` getter. Lists can be strict as well. In this case, we want to make sure the
       device has only those two interfaces.
+    * Some methods require extra arguments, for example ``ping``. You can pass arguments to those
+      methods using the magic keyword ``_kwargs``.
 
 Example
 -------
@@ -96,7 +107,7 @@ the one we expect. Let's start by writing the validator files.
 
     ---
     get_facts:
-        os_version: 4.17.2F
+        os_version: 4.17
     
     get_interfaces_ip:
         Management1:
@@ -109,7 +120,7 @@ the one we expect. Let's start by writing the validator files.
 
     ---
     get_facts:
-        os_version: 12.1X47-D20.7
+        os_version: 12.1X47
     
     get_interfaces_ip:
         ge-0/0/0.0:
@@ -118,6 +129,8 @@ the one we expect. Let's start by writing the validator files.
                     prefix_length: 24
                 _mode: strict
 
+.. note:: You can use regular expressions to validate values.
+
 As you can see we are validating that the OS running is the one we want and that the management
 interfaces have only the IP we expect it to have. Now we can validate the devices like this::
 
@@ -125,6 +138,7 @@ interfaces have only the IP we expect it to have. Now we can validate the device
     ...     pprint.pprint(eos.compliance_report("validate-eos.yml"))
     ...
     {u'complies': False,
+     u'skipped': [],
      'get_facts': {u'complies': False,
                    u'extra': [],
                    u'missing': [],
@@ -150,6 +164,7 @@ Now let's do the same for junos::
     ...     pprint.pprint(junos.compliance_report("validate-junos.yml"))
     ...
     {u'complies': True,
+     u'skipped': [],
      'get_facts': {u'complies': True,
                    u'extra': [],
                    u'missing': [],
@@ -168,6 +183,7 @@ This is great, this device is fully compliant. We can check the outer ``complies
     ...     pprint.pprint(junos.compliance_report("validate-junos.yml"))
     ...
     {u'complies': False,
+     u'skipped': [],
      'get_facts': {u'complies': True,
                    u'extra': [],
                    u'missing': [],
@@ -201,6 +217,21 @@ After adding the extra IP it seems the device is not compliant anymore. Let's se
 The output might be a bit complex for humans but it's predictable and very easy to parse so it's
 great if you want to integrate it with your documentation/reports by using simple ``jinja2``
 templates.
+
+Skipped tasks
+_____________
+
+In cases where a method is not implemented, the validation will be skipped and the result will not count towards the result. The report will let you know a method wasn't executed in the following manner::
+
+    ...
+    "skipped": [ "method_not_implemented", ],
+    "method_not_implemented": {
+        "reason": "NotImplemented",
+        "skipped": True,
+        }
+    ...
+
+``skipped`` will report the list of methods that were skipped. For details about the reason you can dig into the method's report.
 
 CLI & Ansible
 -------------
