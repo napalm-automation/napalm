@@ -56,6 +56,7 @@ class NXOSDriver(NetworkDriver):
         self.fc = None
         self.changed = False
         self.replace_file = None
+        self.merge_candidate = ''
 
         if optional_args is None:
             optional_args = {}
@@ -212,11 +213,12 @@ class NXOSDriver(NetworkDriver):
         if not filename and not config:
             raise MergeConfigException('filename or config param must be provided.')
 
+        self.merge_candidate += '\n'  # insert one extra line
         if filename is not None:
             with open(filename, "r") as f:
-                self.merge_candidate = f.read()
+                self.merge_candidate += f.read()
         else:
-            self.merge_candidate = config
+            self.merge_candidate += config
 
     def _send_file(self, filename, dest):
         self.fc = FileCopy(self.device, filename, dst=dest.split('/')[-1])
@@ -261,13 +263,21 @@ class NXOSDriver(NetworkDriver):
             if line not in running_lines and line:
                 if line[0].strip() != '!':
                     diff.append(line)
-        self.merge_candidate = '\n'.join(diff)
+        return '\n'.join(diff)
+        # the merge diff is not necessarily what needs to be loaded
+        # for example under NTP, as the `ntp commit` command might be
+        # alread configured, it is mandatory to be sent
+        # otherwise it won't take the new configuration - see #59
+        # https://github.com/napalm-automation/napalm-nxos/issues/59
+        # therefore this method will return the real diff
+        # but the merge_candidate will remain unchanged
+        # previously: self.merge_candidate = '\n'.join(diff)
 
     def compare_config(self):
         if self.loaded:
             if not self.replace:
-                self._get_merge_diff()
-                return self.merge_candidate
+                return self._get_merge_diff()
+                # return self.merge_candidate
             diff = self._get_diff(self.fc.dst)
             return diff
         return ''
@@ -307,6 +317,7 @@ class NXOSDriver(NetworkDriver):
             else:
                 try:
                     self._commit_merge()
+                    self.merge_candidate = ''  # clear the merge buffer
                 except Exception as e:
                     raise MergeConfigException(str(e))
 
@@ -321,6 +332,8 @@ class NXOSDriver(NetworkDriver):
         self.device.show('no terminal dont-ask', raw_text=True)
 
     def discard_config(self):
+        if self.loaded:
+            self.merge_candidate = ''  # clear the buffer
         if self.loaded and self.replace:
             try:
                 self._delete_file(self.fc.dst)
