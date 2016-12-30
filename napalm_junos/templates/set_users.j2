@@ -1,0 +1,28 @@
+system {
+  login {
+    {%- for user_name, user_details in users.iteritems() -%}
+    user {{user_name}} {
+      authentication {
+        {%- if user_details.password -%}
+        plain-text-password "{{user_details.password}}";
+        {%- endif -%}
+        {%- if user_details.sshkeys -%}
+          {%- for sshkey in user_details.sshkeys -%}
+            {{ sshkey.split()[0] }} "{{ sshkey }}";
+          {%- endfor -%}
+        {%- endif -%}
+      }
+      {% set user_level = user_details.level|default(0) -%}
+      {%- if user_level == 15 -%}
+        class super-user;
+      {%- elif user_level == 5 -%}
+        class operator;
+      {%- elif user_level == 1 -%}
+        class read-only;
+      {% elif user_level == 0 -%}
+        class unauthorized;
+      {% endif -%}
+    }
+    {%- endfor -%}
+  }
+}
