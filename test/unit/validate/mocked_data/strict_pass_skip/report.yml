@@ -1,6 +1,10 @@
 ---
 complies: true
-skipped: []
+method_not_implemented:
+    reason: NotImplemented
+    skipped: true
+skipped:
+    - method_not_implemented
 get_bgp_neighbors:
   complies: true
   extra: []
@@ -21,9 +25,3 @@ get_interfaces_ip:
   missing: []
   present:
     Ethernet2/1: {complies: true, nested: true}
-ping:
-  complies: true
-  extra: []
-  missing: []
-  present:
-    success: {complies: true, nested: true}

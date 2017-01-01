@@ -1,5 +1,6 @@
 ---
 complies: true
+skipped: []
 get_bgp_neighbors:
   complies: true
   extra: []

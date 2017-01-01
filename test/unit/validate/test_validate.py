@@ -68,6 +68,16 @@ class TestValidate:
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
+    def test_strict_pass_skip(self):
+        """A simple test."""
+        mocked_data = os.path.join(BASEPATH, "mocked_data", "strict_pass_skip")
+        expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
+
+        device = FakeDriver(mocked_data)
+        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
+
+        assert expected_report == actual_report, yaml.safe_dump(actual_report)
+
 
 class FakeDriver(NetworkDriver):
     """This is a fake NetworkDriver."""
@@ -84,5 +94,7 @@ class FakeDriver(NetworkDriver):
         if name.startswith("get_") or name in C.ACTION_TYPE_METHODS:
             filename = os.path.join(self.path, "{}.json".format(name))
             return load_json(filename)
+        elif name == "method_not_implemented":
+            raise NotImplementedError
         else:
             return object.__getattribute__(self, name)
