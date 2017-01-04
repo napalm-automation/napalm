@@ -1369,7 +1369,7 @@ class IOSDriver(NetworkDriver):
                 static = True
                 if vlan.lower() == 'all':
                     vlan = 0
-                if interface.lower() == 'cpu':
+                if interface.lower() == 'cpu' or interface.lower() == 'router':
                     interface = ''
             else:
                 static = False
@@ -1394,6 +1394,7 @@ class IOSDriver(NetworkDriver):
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
+        output = re.split(r'Multicast Entries.*', output)[0]
         for line in output.splitlines():
             line = line.strip()
             if line == '':
@@ -1427,6 +1428,7 @@ class IOSDriver(NetworkDriver):
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
+
         return mac_address_table
 
     def get_snmp_information(self):

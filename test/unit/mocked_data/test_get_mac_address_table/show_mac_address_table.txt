@@ -1,0 +1,18 @@
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+ All    0100.0ccc.cccc    STATIC      CPU
+ All    0100.0ccc.cccd    STATIC      CPU
+ All    0100.0ccc.ccce    STATIC      CPU
+ All    0180.c200.0000    STATIC      CPU
+ All    0180.c200.0001    STATIC      CPU
+   1    30a3.30a3.a1c3    DYNAMIC     Po1
+   1    30a3.30a3.a1c4    DYNAMIC     Po1
+   1    30a3.30a3.a1c5    DYNAMIC     Po1
+   1    30a3.30a3.a1c6    DYNAMIC     Po1
+   1    30a3.30a3.a1c7    DYNAMIC     Te1/1/3
+  99    30a3.30a3.a1c8    DYNAMIC     Te1/1/3
+  99    30a3.30a3.a1c9    DYNAMIC     Te1/1/3
+  99    30a3.30a3.a1ca    DYNAMIC     Te1/1/3
+  99    30a3.30a3.a1cb    DYNAMIC     Te1/1/3
+  99    30a3.30a3.a1cc    STATIC      Vl99
+  99    30a3.30a3.a1cd    DYNAMIC     Po6
