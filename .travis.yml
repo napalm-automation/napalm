@@ -6,8 +6,7 @@ python:
 - 3.5
 
 install:
-- pip install -r requirements-dev.txt
-- pip install .
+- pip install tox-travis
 - pip install coveralls
 
 deploy:
@@ -20,8 +19,7 @@ deploy:
     branch: master
 
 script:
-- py.test --cov-report= --cov=napalm_panos test/
-- pylama .
+- tox
 
 after_success:
    - coveralls
