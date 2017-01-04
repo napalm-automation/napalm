@@ -1361,15 +1361,16 @@ class IOSDriver(NetworkDriver):
         RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 6 fields
         RE_MACTABLE_4500 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)     # 5 fields
         RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
-        RE_MACTABLE_2960_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields
+        RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields (2960/4500)
 
         def process_mac_fields(vlan, mac, mac_type, interface):
             """Return proper data for mac address fields."""
-            if mac_type.lower() in ['self', 'static']:
+            if mac_type.lower() in ['self', 'static', 'system']:
                 static = True
                 if vlan.lower() == 'all':
                     vlan = 0
-                if interface.lower() == 'cpu' or interface.lower() == 'router':
+                if interface.lower() == 'cpu' or re.search(r'router', interface.lower()) or \
+                        re.search(r'switch', interface.lower()):
                     interface = ''
             else:
                 static = False
@@ -1394,7 +1395,6 @@ class IOSDriver(NetworkDriver):
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
-        output = re.split(r'Multicast Entries.*', output)[0]
         for line in output.splitlines():
             line = line.strip()
             if line == '':
@@ -1414,21 +1414,29 @@ class IOSDriver(NetworkDriver):
                 elif len(line.split()) == 6:
                     vlan, mac, mac_type, _, _, interface = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            # Cat4948 format
+            # Cat4500 format
             elif re.search(RE_MACTABLE_4500, line) and len(line.split()) == 5:
                 vlan, mac, mac_type, _, interface = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             # Cat2960 format - ignore extra header line
             elif re.search(r"^Vlan\s+Mac Address\s+", line):
                 continue
-            # Cat2960 format
-            elif (re.search(RE_MACTABLE_2960_1, line) or re.search(RE_MACTABLE_2960_2, line)) and \
+            # Cat2960 format (Cat4500 format multicast entries)
+            elif (re.search(RE_MACTABLE_2960_1, line) or re.search(RE_MACTABLE_GEN_1, line)) and \
                     len(line.split()) == 4:
                 vlan, mac, mac_type, interface = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            elif re.search(r"Total Mac Addresses", line):
+                continue
+            elif re.search(r"Multicast Entries", line):
+                continue
+            elif re.search(r"vlan.*mac.*address.*type.*", line):
+                continue
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
+        from pprint import pprint as pp
+        pp(mac_address_table)
         return mac_address_table
 
     def get_snmp_information(self):
