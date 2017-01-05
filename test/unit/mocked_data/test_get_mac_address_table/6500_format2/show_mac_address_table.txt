@@ -1,0 +1,15 @@
+Legend: * - primary entry
+        age - seconds since last seen
+        n/a - not available
+
+  vlan   mac address     type    learn     age              ports
+------+----------------+--------+-----+----------+--------------------------
+   666  30a3.30a3.a1c3   dynamic  Yes       1200   Te1/30
+   666  30a3.30a3.5ab8   dynamic  Yes          0   Po3
+    60  30a3.30a3.4d54   dynamic  Yes       3600   Te1/21
+*  777  0000.30a3.0167    static  No           -   Router
+   664  30a3.30a3.58b5   dynamic  Yes        180   Po6
+   667  30a3.30a3.daf5   dynamic  Yes          0   Te3/20
+   668  30a3.30a3.e401   dynamic  Yes        600   Po6
+   669  30a3.30a3.5a22   dynamic  Yes        300   Te3/20
+*  ---  0000.0000.0000   static   No           -   Router
