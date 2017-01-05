@@ -195,17 +195,41 @@ class IOSDriver(NetworkDriver):
 
     @staticmethod
     def _normalize_merge_diff(diff):
-        """Make compare_config() for merge look similar to replace config diff."""
+        """Make compare_config() for merge look similar to replace config diff.
+
+        Cisco IOS incremental-diff output
+
+        No changes:
+        !List of Commands:
+        end
+        !No changes were found
+        """
         new_diff = []
+        changes_found = False
         for line in diff.splitlines():
+            if re.search(r'order-dependent line.*re-ordered', line):
+                changes_found = True
+            elif 'No changes were found' in line:
+                # IOS in the re-order case still claims "No changes were found"
+                if not changes_found:
+                    return ''
+                else:
+                    continue
+
+            if line.strip() == 'end':
+                continue
+            elif 'List of Commands' in line:
+                continue
             # Filter blank lines and prepend +sign
-            if line.strip():
-                new_diff.append('+' + line)
-        if new_diff:
-            new_diff.insert(0, '! Cisco IOS does not support true compare_config() for merge: '
-                            'echo merge file.')
-        else:
-            new_diff.append('! No changes specified in merge file.')
+            elif line.strip():
+                if re.search(r"^no\s+", line.strip()):
+                    new_diff.append('-' + line)
+                else:
+                    new_diff.append('+' + line)
+        #if new_diff:
+        #    new_diff.insert(0, '! incremental-diff failed; falling back to showing merge file')
+        #else:
+        #    new_diff.append('! No changes specified in merge file.')
         return "\n".join(new_diff)
 
     def compare_config(self):
@@ -231,8 +255,10 @@ class IOSDriver(NetworkDriver):
             diff = self.device.send_command_expect(cmd)
             diff = self._normalize_compare_config(diff)
         else:
-            cmd = 'more {}'.format(new_file_full)
+            cmd = 'show archive config incremental-diffs {} ignorecase'.format(new_file_full)
             diff = self.device.send_command_expect(cmd)
+            if '% Invalid' in diff:
+                cmd = 'more {}'.format(new_file_full)
             diff = self._normalize_merge_diff(diff)
         return diff.strip()
 
