@@ -1395,12 +1395,18 @@ class IOSDriver(NetworkDriver):
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
+        # Strip any leading astericks
+        output = re.sub(r"^\*", "", output, flags=re.M)
         for line in output.splitlines():
             line = line.strip()
             if line == '':
                 continue
+            if re.search(r"^---", line):
+                # Convert any '---' to VLAN 0
+                line = re.sub(r"^---", "0", line, flags=re.M)
+
             # Format1
-            elif re.search(RE_MACTABLE_DEFAULT, line):
+            if re.search(RE_MACTABLE_DEFAULT, line):
                 if len(line.split()) == 4:
                     mac, mac_type, vlan, interface = line.split()
                     mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
@@ -1435,8 +1441,6 @@ class IOSDriver(NetworkDriver):
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
-        from pprint import pprint as pp
-        pp(mac_address_table)
         return mac_address_table
 
     def get_snmp_information(self):
