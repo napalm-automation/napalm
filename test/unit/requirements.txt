@@ -8,3 +8,5 @@ napalm-junos
 napalm-nxos
 napalm-pluribus
 napalm-panos
+napalm-ros
+napalm-vyos

@@ -1,3 +1,11 @@
 ddt
 lxml
+napalm-eos
 napalm-ios
+napalm-iosxr
+napalm-junos
+napalm-nxos
+napalm-panos
+napalm-pluribus
+napalm-ros
+napalm-vyos
