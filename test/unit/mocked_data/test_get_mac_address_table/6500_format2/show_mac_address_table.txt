@@ -12,3 +12,4 @@ Legend: * - primary entry
    667  30a3.30a3.daf5   dynamic  Yes          0   Te3/20
    668  30a3.30a3.e401   dynamic  Yes        600   Po6
    669  30a3.30a3.5a22   dynamic  Yes        300   Te3/20
+*  ---  0000.0000.0000   static   No           -   Router
