@@ -1,13 +1,13 @@
 system {
   login {
-    {%- for user_name, user_details in users.iteritems() -%}
+    {%- for user_name, user_details in users.items() -%}
       {%- if user_details -%}
       user {{user_name}} {
           authentication {
-            {%- if user_details.password -%}
+            {%- if user_details.get('password') -%}
             delete: encrypted-password "{{user_details.password}}";
             {%- endif -%}
-            {%- if user_details.sshkeys -%}
+            {%- if user_details.get('sshkeys') -%}
               {%- for sshkey in user_details.sshkeys -%}
                 delete: {{ sshkey.split()[0] }} "{{ sshkey }}";
               {%- endfor -%}
