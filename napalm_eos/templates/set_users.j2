@@ -1,15 +1,15 @@
-{%- for user_name, user_details in users.iteritems() %}
-{%- if user_details.password %}
-username {{user_name}} secret 5 {{user_details.password}}
+{%- for user_name, user_details in users.items() %}
+{%- if user_details.get('password') %}
+username {{ user_name }} secret {{ user_details.password }}
 {%- else %}
-username {{user_name}} nopassword
+username {{ user_name }} nopassword
 {%- endif %}
-{%- if user_details.level %}
-username {{user_name}} privilege {{user_details.level}}
+{%- if user_details.get('level') %}
+username {{ user_name }} privilege {{ user_details.level }}
 {%- endif %}
-{%- if user_details.sshkeys %}
+{%- if user_details.get('sshkeys') %}
 {%- for sshkey in user_details.sshkeys %}
-username {{user_name}} sshkey {{ sshkey }}
+username {{ user_name }} sshkey {{ sshkey }}
 {%- endfor %}
 {%- endif %}
 {%- endfor %}
