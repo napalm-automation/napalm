@@ -135,9 +135,16 @@ class ROSDriver(NetworkDriver):
 
     def get_interfaces_ip(self):
         interfaces_ip = {}
+
         ipv4_addresses = self.api('/ip/address/print')
         for ifname in (row['interface'] for row in ipv4_addresses):
-            interfaces_ip[ifname] = dict(ipv4=iface_addresses(ipv4_addresses, ifname))
+            interfaces_ip.setdefault(ifname, dict())
+            interfaces_ip[ifname]['ipv4'] = iface_addresses(ipv4_addresses, ifname)
+
+        ipv6_addresses = self.api('/ip6/address/print')
+        for ifname in (row['interface'] for row in ipv6_addresses):
+            interfaces_ip.setdefault(ifname, dict())
+            interfaces_ip[ifname]['ipv6'] = iface_addresses(ipv6_addresses, ifname)
 
         return interfaces_ip
 
