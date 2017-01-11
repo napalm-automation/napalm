@@ -1,1 +1,1 @@
-{"community": {"tryagain": {"mode": "", "acl": ""}, "hackme": {"mode": "ro", "acl": "ifyoucan"}}, "contact": "noc@cloudflare.com", "location": "Marseille, France", "chassis_id": "edge02.mrs01"}
+{"community": {"basic": {"mode": "ro", "acl": ""}, "private": {"mode": "rw", "acl": ""}, "test-view": {"mode": "ro", "acl": ""}, "test-ipv4-acl": {"mode": "ro", "acl": "ipv4-ext-acl"}, "test-num-acl": {"mode": "ro", "acl": "11"}, "complex": {"mode": "ro", "acl": "ipv4-std-acl"}}, "contact": "noc@cloudflare.com", "location": "Marseille, France", "chassis_id": "edge02.mrs01"}

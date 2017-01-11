@@ -1114,7 +1114,8 @@ class EOSDriver(NetworkDriver):
                 if k == 'chassisId':
                     snmp_dict['chassis_id'] = v
                 else:
-                    snmp_dict[k] = v
+                    # Some EOS versions add extra quotes
+                    snmp_dict[k] = v.strip('"')
 
         commands = ['show running-config | section snmp-server community']
         raw_snmp_config = self.device.run_commands(commands, encoding='text')[0].get('output', '')
@@ -1122,11 +1123,9 @@ class EOSDriver(NetworkDriver):
             match = self._RE_SNMP_COMM.search(line)
             if match:
                 matches = match.groupdict('')
-                if matches['access'] == '':
-                    matches['access'] = 'ro'
                 snmp_dict['community'][match.group('community')] = {
-                    'acl': matches['v4_acl'],
-                    'mode': matches['access']
+                    'acl': py23_compat.text_type(matches['v4_acl']),
+                    'mode': py23_compat.text_type(matches['access'])
                 }
 
         return snmp_dict
