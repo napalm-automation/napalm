@@ -328,7 +328,7 @@ class FortiOSDriver(NetworkDriver):
 
         self.device.load_config('router bgp')
 
-        for neighbor, parameters in neighbors.iteritems():
+        for neighbor, parameters in neighbors.items():
             logger.debug('NEW PEER')
             neigh_conf = self.device.running_config['router bgp']['neighbor']['{}'.format(neighbor)]
 
@@ -358,7 +358,7 @@ class FortiOSDriver(NetworkDriver):
                 x = detail_output.index(' for address family: {} unicast'.format(family))
                 block = detail_output[x:]
 
-                for term, fortiname in terms.iteritems():
+                for term, fortiname in terms.items():
                     text = self._search_line_in_lines('%s prefixes' % fortiname, block)
                     t = [int(s) for s in text.split() if s.isdigit()][0]
                     neighbor_dict['address_family'][family][term] = t
