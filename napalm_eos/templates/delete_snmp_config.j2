@@ -8,7 +8,11 @@ no snmp-server contact "{{contact}}"
 no snmp-server chassis-id "{{chassis_id}}"
 {% endif %}
 {% if (community is defined) and community %}
+{%- if community is mapping -%}
 {% for comm_name, comm_details in community.iteritems() %}
-no community {{comm_name}}
+no snmp-server community {{comm_name}}
 {% endfor %}
+{%- elif community is string -%}
+no snmp-server community {{community}}
+{%- endif -%}
 {% endif %}
