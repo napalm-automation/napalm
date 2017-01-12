@@ -468,9 +468,10 @@ class FortiOSDriver(NetworkDriver):
 
                 v = int(self._search_line_in_lines('upper_non_recoverable',
                                                    sensor_block).split('=')[1])
+                temp_value = int(temp_value)
 
                 output[sensor_name] = dict(temperature=float(temp_value), is_alert=is_alert,
-                                           is_critical=True if v > temp_value else False)
+                                           is_critical=True if temp_value > v else False)
 
             return output
 
