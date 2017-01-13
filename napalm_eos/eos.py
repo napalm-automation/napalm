@@ -59,6 +59,9 @@ class EOSDriver(NetworkDriver):
     _RE_BGP_DESC = re.compile('\s+Description: (?P<description>.*?)')
     _RE_BGP_LOCAL = re.compile('Local AS is (?P<as>.*?),.*')
     _RE_BGP_PREFIX = re.compile('(\s*?)(?P<af>IPv[46]) Unicast:\s*(?P<sent>\d+)\s*(?P<received>\d+)') # noqa
+    _RE_SNMP_COMM = re.compile(r"""^snmp-server\s+community\s+(?P<community>\S+)
+                                (\s+view\s+(?P<view>\S+))?(\s+(?P<access>ro|rw)?)
+                                (\s+ipv6\s+(?P<v6_acl>\S+))?(\s+(?P<v4_acl>\S+))?$""", re.VERBOSE)
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         """Constructor."""
@@ -1090,35 +1093,42 @@ class EOSDriver(NetworkDriver):
         return routes
 
     def get_snmp_information(self):
+        """get_snmp_information() for EOS.  Re-written to not use TextFSM"""
 
-        snmp_information = dict()
-
-        commands = list()
-        commands.append('show running-config | section snmp-server')
-        raw_snmp_config = self.device.run_commands(commands, encoding='text')[0].get('output', '')
-
-        snmp_config = napalm_base.helpers.textfsm_extractor(self, 'snmp_config', raw_snmp_config)
-
-        if not snmp_config:
-            return snmp_information
-
-        snmp_information = {
-            'contact': py23_compat.text_type(snmp_config[0].get('contact', '')),
-            'location': py23_compat.text_type(snmp_config[0].get('location', '')),
-            'chassis_id': py23_compat.text_type(snmp_config[0].get('chassis_id', '')),
+        # Default values
+        snmp_dict = {
+            'chassis_id': '',
+            'location': '',
+            'contact': '',
             'community': {}
         }
 
-        for snmp_entry in snmp_config:
-            community_name = py23_compat.text_type(snmp_entry.get('community', ''))
-            if not community_name:
-                continue
-            snmp_information['community'][community_name] = {
-                'acl': py23_compat.text_type(snmp_entry.get('acl', '')),
-                'mode': py23_compat.text_type(snmp_entry.get('mode', 'ro').lower())
-            }
+        commands = [
+            'show snmp chassis',
+            'show snmp location',
+            'show snmp contact'
+        ]
+        snmp_config = self.device.run_commands(commands, encoding='json')
+        for line in snmp_config:
+            for k, v in line.items():
+                if k == 'chassisId':
+                    snmp_dict['chassis_id'] = v
+                else:
+                    # Some EOS versions add extra quotes
+                    snmp_dict[k] = v.strip('"')
 
-        return snmp_information
+        commands = ['show running-config | section snmp-server community']
+        raw_snmp_config = self.device.run_commands(commands, encoding='text')[0].get('output', '')
+        for line in raw_snmp_config.splitlines():
+            match = self._RE_SNMP_COMM.search(line)
+            if match:
+                matches = match.groupdict('')
+                snmp_dict['community'][match.group('community')] = {
+                    'acl': py23_compat.text_type(matches['v4_acl']),
+                    'mode': py23_compat.text_type(matches['access'])
+                }
+
+        return snmp_dict
 
     def get_users(self):
 
