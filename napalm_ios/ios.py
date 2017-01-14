@@ -194,8 +194,8 @@ class IOSDriver(NetworkDriver):
         return "\n".join(new_list)
 
     @staticmethod
-    def _normalize_merge_diff(diff):
-        """Make compare_config() for merge look similar to replace config diff.
+    def _normalize_merge_diff_incr(diff):
+        """Make the compare config output look better.
 
         Cisco IOS incremental-diff output
 
@@ -205,6 +205,7 @@ class IOSDriver(NetworkDriver):
         !No changes were found
         """
         new_diff = []
+
         changes_found = False
         for line in diff.splitlines():
             if re.search(r'order-dependent line.*re-ordered', line):
@@ -226,10 +227,20 @@ class IOSDriver(NetworkDriver):
                     new_diff.append('-' + line)
                 else:
                     new_diff.append('+' + line)
-        #if new_diff:
-        #    new_diff.insert(0, '! incremental-diff failed; falling back to showing merge file')
-        #else:
-        #    new_diff.append('! No changes specified in merge file.')
+        return "\n".join(new_diff)
+
+    @staticmethod
+    def _normalize_merge_diff(diff):
+        """Make compare_config() for merge look similar to replace config diff."""
+        new_diff = []
+        for line in diff.splitlines():
+            # Filter blank lines and prepend +sign
+            if line.strip():
+                new_diff.append('+' + line)
+        if new_diff:
+            new_diff.insert(0, '! incremental-diff failed; falling back to echo of merge file')
+        else:
+            new_diff.append('! No changes specified in merge file.')
         return "\n".join(new_diff)
 
     def compare_config(self):
@@ -255,11 +266,16 @@ class IOSDriver(NetworkDriver):
             diff = self.device.send_command_expect(cmd)
             diff = self._normalize_compare_config(diff)
         else:
+            # merge
             cmd = 'show archive config incremental-diffs {} ignorecase'.format(new_file_full)
             diff = self.device.send_command_expect(cmd)
-            if '% Invalid' in diff:
+            if '% Invalid' not in diff:
+                diff = self._normalize_merge_diff_incr(diff)
+            else:
                 cmd = 'more {}'.format(new_file_full)
-            diff = self._normalize_merge_diff(diff)
+                diff = self.device.send_command_expect(cmd)
+                diff = self._normalize_merge_diff(diff)
+
         return diff.strip()
 
     def _commit_hostname_handler(self, cmd):
@@ -1467,6 +1483,7 @@ class IOSDriver(NetworkDriver):
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
+        print(mac_address_table)
         return mac_address_table
 
     def get_snmp_information(self):
