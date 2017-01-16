@@ -62,7 +62,7 @@ class IOSDriver(NetworkDriver):
         self.candidate_cfg = optional_args.get('candidate_cfg', 'candidate_config.txt')
         self.merge_cfg = optional_args.get('merge_cfg', 'merge_config.txt')
         self.rollback_cfg = optional_args.get('rollback_cfg', 'rollback_config.txt')
-        self.inline_transfer = optionals_args.get('inline_transfer', False)
+        self.inline_transfer = optional_args.get('inline_transfer', False)
 
         # None will cause autodetection of dest_file_system
         self.dest_file_system = optional_args.get('dest_file_system', None)
@@ -145,19 +145,15 @@ class IOSDriver(NetworkDriver):
             'is_alive': self.device.remote_conn.transport.is_active()
         }
 
-    def _scp_tmp_file(self, config):
+    @staticmethod
+    def _create_tmp_file(config):
         """Write temp file and for use with inline config and SCP."""
         tmp_dir = '/tmp/'
         rand_fname = py23_compat.text_type(uuid.uuid4())
         filename = os.path.join(tmp_dir, rand_fname)
         with open(filename, 'wt') as fobj:
             fobj.write(config)
-            (return_status, msg) = self._scp_file(source_file=filename,
-                                                   dest_file=self.merge_cfg,
-                                                   file_system=self.dest_file_system)
-            # removing the temp file
-            os.remove(filename)
-            return (return_status, msg)
+        return filename
 
     def _load_candidate_wrapper(self, source_file=None, source_config=None, dest_file=None,
                                 file_system=None):
@@ -170,15 +166,22 @@ class IOSDriver(NetworkDriver):
         msg = ''
         if source_file and source_config:
             raise ValueError("Cannot simultaneously set source_file and source_config")
-        if config:
+        if source_config:
             if self.inline_transfer:
-                (return_status, msg) = self._inline_tcl_xfer(source_config=source_config, dest_file=dest_file,
+                (return_status, msg) = self._inline_tcl_xfer(source_config=source_config,
+                                                             dest_file=dest_file,
                                                              file_system=file_system)
             else:
-                (return_status, msg) = self._scp_tmp_file(self, config)
-        if filename:
-            (return_status, msg) = self._scp_file(source_file=filename, dest_file=self.candidate_cfg,
-                                                  file_system=self.dest_file_system)
+                tmp_file = self._create_tmp_file(source_config)
+                (return_status, msg) = self._scp_file(source_file=tmp_file, dest_file=dest_file,
+                                                      file_system=file_system)
+                if os.path.isfile(tmp_file):
+                    pass
+                    # os.remove(tmp_file)
+
+        if source_file:
+            (return_status, msg) = self._scp_file(source_file=source_file, dest_file=dest_file,
+                                                  file_system=file_system)
         if not return_status:
             if msg == '':
                 msg = "Transfer to remote device failed"
@@ -192,7 +195,7 @@ class IOSDriver(NetworkDriver):
         """
         self.config_replace = True
         return_status, msg = self._load_candidate_wrapper(source_file=filename,
-                                                          source_config=config
+                                                          source_config=config,
                                                           dest_file=self.candidate_cfg,
                                                           file_system=self.dest_file_system)
         if not return_status:
@@ -206,7 +209,7 @@ class IOSDriver(NetworkDriver):
         """
         self.config_replace = False
         return_status, msg = self._load_candidate_wrapper(source_file=filename,
-                                                          source_config=config
+                                                          source_config=config,
                                                           dest_file=self.merge_cfg,
                                                           file_system=self.dest_file_system)
         if not return_status:
@@ -398,7 +401,7 @@ class IOSDriver(NetworkDriver):
         if source_file:
             return self._xfer_file(source_file=source_file, dest_file=dest_file,
                                    file_system=file_system, TransferClass=InLineTransfer)
-        if source_config: 
+        if source_config:
             return self._xfer_file(source_config=source_config, dest_file=dest_file,
                                    file_system=file_system, TransferClass=InLineTransfer)
         raise ValueError("File source not specified for transfer.")
