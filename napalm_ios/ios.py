@@ -17,8 +17,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
+import os
+import uuid
 
-from netmiko import ConnectHandler, FileTransfer
+from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from netmiko import __version__ as netmiko_version
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ReplaceConfigException, MergeConfigException
@@ -60,6 +62,7 @@ class IOSDriver(NetworkDriver):
         self.candidate_cfg = optional_args.get('candidate_cfg', 'candidate_config.txt')
         self.merge_cfg = optional_args.get('merge_cfg', 'merge_config.txt')
         self.rollback_cfg = optional_args.get('rollback_cfg', 'rollback_config.txt')
+        self.inline_transfer = optionals_args.get('inline_transfer', False)
 
         # None will cause autodetection of dest_file_system
         self.dest_file_system = optional_args.get('dest_file_system', None)
@@ -142,6 +145,45 @@ class IOSDriver(NetworkDriver):
             'is_alive': self.device.remote_conn.transport.is_active()
         }
 
+    def _scp_tmp_file(self, config):
+        """Write temp file and for use with inline config and SCP."""
+        tmp_dir = '/tmp/'
+        rand_fname = py23_compat.text_type(uuid.uuid4())
+        filename = os.path.join(tmp_dir, rand_fname)
+        with open(filename, 'wt') as fobj:
+            fobj.write(config)
+            (return_status, msg) = self._scp_file(source_file=filename,
+                                                   dest_file=self.merge_cfg,
+                                                   file_system=self.dest_file_system)
+            # removing the temp file
+            os.remove(filename)
+            return (return_status, msg)
+
+    def _load_candidate_wrapper(self, source_file=None, source_config=None, dest_file=None,
+                                file_system=None):
+        """
+        Transfer file to remote device for either merge or replace operations
+
+        Returns (return_status, msg)
+        """
+        return_status = False
+        msg = ''
+        if source_file and source_config:
+            raise ValueError("Cannot simultaneously set source_file and source_config")
+        if config:
+            if self.inline_transfer:
+                (return_status, msg) = self._inline_tcl_xfer(source_config=source_config, dest_file=dest_file,
+                                                             file_system=file_system)
+            else:
+                (return_status, msg) = self._scp_tmp_file(self, config)
+        if filename:
+            (return_status, msg) = self._scp_file(source_file=filename, dest_file=self.candidate_cfg,
+                                                  file_system=self.dest_file_system)
+        if not return_status:
+            if msg == '':
+                msg = "Transfer to remote device failed"
+        return (return_status, msg)
+
     def load_replace_candidate(self, filename=None, config=None):
         """
         SCP file to device filesystem, defaults to candidate_config.
@@ -149,16 +191,12 @@ class IOSDriver(NetworkDriver):
         Return None or raise exception
         """
         self.config_replace = True
-        if config:
-            raise NotImplementedError
-        if filename:
-            (return_status, msg) = self._scp_file(source_file=filename,
-                                                  dest_file=self.candidate_cfg,
-                                                  file_system=self.dest_file_system)
-            if not return_status:
-                if msg == '':
-                    msg = "SCP transfer to remote device failed"
-                raise ReplaceConfigException(msg)
+        return_status, msg = self._load_candidate_wrapper(source_file=filename,
+                                                          source_config=config
+                                                          dest_file=self.candidate_cfg,
+                                                          file_system=self.dest_file_system)
+        if not return_status:
+            raise ReplaceConfigException(msg)
 
     def load_merge_candidate(self, filename=None, config=None):
         """
@@ -167,16 +205,12 @@ class IOSDriver(NetworkDriver):
         Merge configuration in: copy <file> running-config
         """
         self.config_replace = False
-        if config:
-            raise NotImplementedError
-        if filename:
-            (return_status, msg) = self._scp_file(source_file=filename,
-                                                  dest_file=self.merge_cfg,
-                                                  file_system=self.dest_file_system)
-            if not return_status:
-                if msg == '':
-                    msg = "SCP transfer to remote device failed"
-                raise MergeConfigException(msg)
+        return_status, msg = self._load_candidate_wrapper(source_file=filename,
+                                                          source_config=config
+                                                          dest_file=self.merge_cfg,
+                                                          file_system=self.dest_file_system)
+        if not return_status:
+            raise MergeConfigException(msg)
 
     @staticmethod
     def _normalize_compare_config(diff):
@@ -352,6 +386,23 @@ class IOSDriver(NetworkDriver):
         cmd = 'configure replace {} force'.format(cfg_file)
         self.device.send_command_expect(cmd)
 
+    def _inline_tcl_xfer(self, source_file=None, source_config=None, dest_file=None,
+                         file_system=None):
+        """
+        Use Netmiko InlineFileTransfer (TCL) to transfer file or config to remote device.
+
+        Return (status, msg)
+        status = boolean
+        msg = details on what happened
+        """
+        if source_file:
+            return self._xfer_file(source_file=source_file, dest_file=dest_file,
+                                   file_system=file_system, TransferClass=InLineTransfer)
+        if source_config: 
+            return self._xfer_file(source_config=source_config, dest_file=dest_file,
+                                   file_system=file_system, TransferClass=InLineTransfer)
+        raise ValueError("File source not specified for transfer.")
+
     def _scp_file(self, source_file, dest_file, file_system):
         """
         SCP file to remote device.
@@ -360,30 +411,51 @@ class IOSDriver(NetworkDriver):
         status = boolean
         msg = details on what happened
         """
-        # Will automaticall enable SCP on remote device
-        enable_scp = True
+        return self._xfer_file(source_file=source_file, dest_file=dest_file,
+                               file_system=file_system, TransferClass=FileTransfer)
 
-        with FileTransfer(self.device,
-                          source_file=source_file,
-                          dest_file=dest_file,
-                          file_system=file_system) as scp_transfer:
+    def _xfer_file(self, source_file=None, source_config=None, dest_file=None, file_system=None,
+                   TransferClass=FileTransfer):
+        """Transfer file to remote device.
+
+        By default, this will use Secure Copy if self.inline_transfer is set, then will use
+        Netmiko InlineTransfer method to transfer inline using either SSH or telnet (plus TCL
+        onbox).
+
+        Return (status, msg)
+        status = boolean
+        msg = details on what happened
+        """
+        if not source_file and not source_config:
+            raise ValueError("File source not specified for transfer.")
+        if not dest_file or not file_system:
+            raise ValueError("Destination file or file system not specified.")
+
+        enable_scp = True
+        if not self.inline_transfer:
+            enable_scp = False
+        with TransferClass(self.device,
+                           source_file=source_file,
+                           dest_file=dest_file,
+                           direction='put',
+                           file_system=file_system) as transfer:
 
             # Check if file already exists and has correct MD5
-            if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
+            if transfer.check_file_exists() and transfer.compare_md5():
                 msg = "File already exists and has correct MD5: no SCP needed"
                 return (True, msg)
-            if not scp_transfer.verify_space_available():
+            if not transfer.verify_space_available():
                 msg = "Insufficient space available on remote device"
                 return (False, msg)
 
             if enable_scp:
-                scp_transfer.enable_scp()
+                transfer.enable_scp()
 
             # Transfer file
-            scp_transfer.transfer_file()
+            transfer.transfer_file()
 
             # Compares MD5 between local-remote files
-            if scp_transfer.verify_file():
+            if transfer.verify_file():
                 msg = "File successfully transferred to remote device"
                 return (True, msg)
             else:
