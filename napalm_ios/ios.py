@@ -148,7 +148,7 @@ class IOSDriver(NetworkDriver):
     @staticmethod
     def _create_tmp_file(config):
         """Write temp file and for use with inline config and SCP."""
-        tmp_dir = '/tmp/'
+        tmp_dir = os.getcwd()
         rand_fname = py23_compat.text_type(uuid.uuid4())
         filename = os.path.join(tmp_dir, rand_fname)
         with open(filename, 'wt') as fobj:
@@ -167,21 +167,26 @@ class IOSDriver(NetworkDriver):
         if source_file and source_config:
             raise ValueError("Cannot simultaneously set source_file and source_config")
         if source_config:
+            # Currently always have to create a temp file.
+            tmp_file = self._create_tmp_file(source_config)
             if self.inline_transfer:
-                (return_status, msg) = self._inline_tcl_xfer(source_config=source_config,
+                (return_status, msg) = self._inline_tcl_xfer(source_file=tmp_file,
                                                              dest_file=dest_file,
                                                              file_system=file_system)
             else:
-                tmp_file = self._create_tmp_file(source_config)
                 (return_status, msg) = self._scp_file(source_file=tmp_file, dest_file=dest_file,
                                                       file_system=file_system)
-                if os.path.isfile(tmp_file):
-                    pass
-                    # os.remove(tmp_file)
+            if os.path.isfile(tmp_file):
+                os.remove(tmp_file)
 
         if source_file:
-            (return_status, msg) = self._scp_file(source_file=source_file, dest_file=dest_file,
-                                                  file_system=file_system)
+            if self.inline_transfer:
+                (return_status, msg) = self._inline_tcl_xfer(source_file=source_file,
+                                                             dest_file=dest_file,
+                                                             file_system=file_system)
+            else:
+                (return_status, msg) = self._scp_file(source_file=source_file, dest_file=dest_file,
+                                                      file_system=file_system)
         if not return_status:
             if msg == '':
                 msg = "Transfer to remote device failed"
@@ -435,7 +440,7 @@ class IOSDriver(NetworkDriver):
             raise ValueError("Destination file or file system not specified.")
 
         enable_scp = True
-        if not self.inline_transfer:
+        if self.inline_transfer:
             enable_scp = False
         with TransferClass(self.device,
                            source_file=source_file,
