@@ -166,19 +166,11 @@ class IOSDriver(NetworkDriver):
         msg = ''
         if source_file and source_config:
             raise ValueError("Cannot simultaneously set source_file and source_config")
+        tmp_file = ""
         if source_config:
             # Currently always have to create a temp file.
             tmp_file = self._create_tmp_file(source_config)
-            if self.inline_transfer:
-                (return_status, msg) = self._inline_tcl_xfer(source_file=tmp_file,
-                                                             dest_file=dest_file,
-                                                             file_system=file_system)
-            else:
-                (return_status, msg) = self._scp_file(source_file=tmp_file, dest_file=dest_file,
-                                                      file_system=file_system)
-            if os.path.isfile(tmp_file):
-                os.remove(tmp_file)
-
+            source_file = tmp_file
         if source_file:
             if self.inline_transfer:
                 (return_status, msg) = self._inline_tcl_xfer(source_file=source_file,
@@ -187,6 +179,8 @@ class IOSDriver(NetworkDriver):
             else:
                 (return_status, msg) = self._scp_file(source_file=source_file, dest_file=dest_file,
                                                       file_system=file_system)
+        if tmp_file and os.path.isfile(tmp_file):
+            os.remove(tmp_file)
         if not return_status:
             if msg == '':
                 msg = "Transfer to remote device failed"
