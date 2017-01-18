@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 import re
 import os
 import uuid
+import tempfile
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from netmiko import __version__ as netmiko_version
@@ -148,7 +149,7 @@ class IOSDriver(NetworkDriver):
     @staticmethod
     def _create_tmp_file(config):
         """Write temp file and for use with inline config and SCP."""
-        tmp_dir = os.getcwd()
+        tmp_dir = tempfile.gettempdir()
         rand_fname = py23_compat.text_type(uuid.uuid4())
         filename = os.path.join(tmp_dir, rand_fname)
         with open(filename, 'wt') as fobj:
