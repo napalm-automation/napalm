@@ -166,11 +166,19 @@ class IOSDriver(NetworkDriver):
         msg = ''
         if source_file and source_config:
             raise ValueError("Cannot simultaneously set source_file and source_config")
-        tmp_file = ""
+
         if source_config:
-            # Currently always have to create a temp file.
-            tmp_file = self._create_tmp_file(source_config)
-            source_file = tmp_file
+            if self.inline_transfer:
+                (return_status, msg) = self._inline_tcl_xfer(source_config=source_config,
+                                                             dest_file=dest_file,
+                                                             file_system=file_system)
+            else:
+                # Use SCP
+                tmp_file = self._create_tmp_file(source_config)
+                (return_status, msg) = self._scp_file(source_file=tmp_file, dest_file=dest_file,
+                                                      file_system=file_system)
+                if tmp_file and os.path.isfile(tmp_file):
+                    os.remove(tmp_file)
         if source_file:
             if self.inline_transfer:
                 (return_status, msg) = self._inline_tcl_xfer(source_file=source_file,
@@ -179,8 +187,6 @@ class IOSDriver(NetworkDriver):
             else:
                 (return_status, msg) = self._scp_file(source_file=source_file, dest_file=dest_file,
                                                       file_system=file_system)
-        if tmp_file and os.path.isfile(tmp_file):
-            os.remove(tmp_file)
         if not return_status:
             if msg == '':
                 msg = "Transfer to remote device failed"
@@ -433,14 +439,16 @@ class IOSDriver(NetworkDriver):
         if not dest_file or not file_system:
             raise ValueError("Destination file or file system not specified.")
 
+        if source_file:
+            kwargs = dict(ssh_conn=self.device, source_file=source_file, dest_file=dest_file,
+                          direction='put', file_system=file_system)
+        elif source_config:
+            kwargs = dict(ssh_conn=self.device, source_config=source_config, dest_file=dest_file,
+                          direction='put', file_system=file_system)
         enable_scp = True
         if self.inline_transfer:
             enable_scp = False
-        with TransferClass(self.device,
-                           source_file=source_file,
-                           dest_file=dest_file,
-                           direction='put',
-                           file_system=file_system) as transfer:
+        with TransferClass(**kwargs) as transfer:
 
             # Check if file already exists and has correct MD5
             if transfer.check_file_exists() and transfer.compare_md5():
@@ -1557,7 +1565,6 @@ class IOSDriver(NetworkDriver):
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
-        print(mac_address_table)
         return mac_address_table
 
     def get_snmp_information(self):
