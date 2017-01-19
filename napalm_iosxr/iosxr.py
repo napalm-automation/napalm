@@ -820,6 +820,22 @@ class IOSXRDriver(NetworkDriver):
             }
             if group and group == group_name:
                 break
+        if '' in bgp_group_neighbors.keys():
+            bgp_config['_'] = {
+                'apply_groups': [],
+                'description': '',
+                'local_as': 0,
+                'type': '',
+                'import_policy': '',
+                'export_policy': '',
+                'local_address': '',
+                'multipath': False,
+                'multihop_ttl': 0,
+                'remote_as': 0,
+                'remove_private_as': False,
+                'prefix_limit': {},
+                'neighbors': bgp_group_neighbors.get('', {})
+            }
 
         return bgp_config
 
