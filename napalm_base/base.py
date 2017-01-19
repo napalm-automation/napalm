@@ -1179,7 +1179,7 @@ class NetworkDriver(object):
                    source=c.TRACEROUTE_SOURCE,
                    ttl=c.TRACEROUTE_TTL,
                    timeout=c.TRACEROUTE_TIMEOUT,
-                   vrf=C.TRACEROUTE_VRF):
+                   vrf=c.TRACEROUTE_VRF):
         """
         Executes traceroute on the device and returns a dictionary with the result.
 
