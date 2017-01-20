@@ -1,4 +1,5 @@
-future >= 0.13.1, <1
+future
+coveralls
 pytest
 pytest-cov
 pytest-json
