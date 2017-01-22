@@ -24,17 +24,16 @@ from __future__ import unicode_literals
 import re
 import json
 
-from netmiko import ConnectHandler, FileTransfer
+from netmiko import ConnectHandler
 from netmiko import __version__ as netmiko_version
+from netmiko.ssh_exception import NetMikoTimeoutException
 from napalm_base.utils import py23_compat
 from napalm_base.utils import string_parsers
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import (
     ConnectionException,
-    SessionLockedException,
     MergeConfigException,
-    ReplaceConfigException,
-    CommandErrorException,
+    ReplaceConfigException
     )
 
 
@@ -48,6 +47,8 @@ class CumulusDriver(NetworkDriver):
         self.username = username
         self.password = password
         self.timeout = timeout
+        self.loaded = False
+        self.changed = False
 
         if optional_args is None:
             optional_args = {}
@@ -83,13 +84,17 @@ class CumulusDriver(NetworkDriver):
                 pass
         self.global_delay_factor = optional_args.get('global_delay_factor', 1)
         self.port = optional_args.get('port', 22)
+        self.sudo_pwd = optional_args.get('sudo_pwd', self.password)
 
     def open(self):
-        self.device = ConnectHandler(device_type='linux',
-                                     host=self.hostname,
-                                     username=self.username,
-                                     password=self.password,
-                                     **self.netmiko_optional_args)
+        try:
+            self.device = ConnectHandler(device_type='linux',
+                                         host=self.hostname,
+                                         username=self.username,
+                                         password=self.password,
+                                         **self.netmiko_optional_args)
+        except NetMikoTimeoutException:
+            raise ConnectionException('Cannot connect to {}'.format(self.hostname))
 
     def close(self):
         self.device.disconnect()
@@ -99,16 +104,66 @@ class CumulusDriver(NetworkDriver):
             'is_alive': self.device.remote_conn.transport.is_active()
         }
 
+    def load_merge_candidate(self, filename=None, config=None):
+        if not filename and not config:
+            raise MergeConfigException('filename or config param must be provided.')
+
+        self.loaded = True
+
+        if filename is not None:
+            with open(filename, 'r') as f:
+                candidate = f.readlines()
+        else:
+            candidate = config
+
+        if not isinstance(candidate, list):
+            candidate = [candidate]
+
+        candidate = [line for line in candidate if line]
+        for command in candidate:
+            if 'sudo' not in command:
+                command = 'sudo {0}'.format(command)
+            self._send_command(command)
+
+    def discard_config(self):
+        if self.loaded:
+            self._send_command('sudo net abort')
+            self.loaded = False
+
+    def compare_config(self):
+        if self.loaded:
+            diff = self._send_command('sudo net pending')
+            return re.sub('\x1b\[\d+m', '', diff)
+        return ''
+
+    def commit_config(self):
+        if self.loaded:
+            self._send_command('sudo net commit')
+            self.changed = True
+            self.loaded = False
+        
+
+    def rollback(self):
+        if self.changed:
+            self._send_command('sudo net rollback last')
+            self.changed = False
+
+    def _send_command(self, command, compare=False):
+        response = self.device.send_command_timing(command)
+        if '[sudo]' in response:
+            response = self.device.send_command_timing(self.sudo_pwd)
+        return response
+
     def get_facts(self):
         facts = {
             'vendor': py23_compat.text_type('Cumulus')
         }
 
         # Get "net show hostname" output.
-        hostname = self.device.send_command('net show hostname')
+        hostname = self.device.send_command('hostname')
 
         # Get "net show system" output.
-        show_system_output = self.device.send_command('net show system')
+        show_system_output = self._send_command('sudo net show system')
         for line in show_system_output.splitlines():
             if 'build' in line.lower():
                 os_version = line.split()[-1]
@@ -123,7 +178,7 @@ class CumulusDriver(NetworkDriver):
                 serial_number = line.split()[-1]
 
         # Get "net show interface all json" output.
-        interfaces = self.device.send_command('net show interface all json')
+        interfaces = self._send_command('sudo net show interface all json')
         interfaces = json.loads(interfaces)
 
         facts['hostname'] = facts['fqdn'] = py23_compat.text_type(hostname)
