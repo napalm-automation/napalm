@@ -141,7 +141,6 @@ class CumulusDriver(NetworkDriver):
             self._send_command('sudo net commit')
             self.changed = True
             self.loaded = False
-        
 
     def rollback(self):
         if self.changed:
@@ -179,7 +178,11 @@ class CumulusDriver(NetworkDriver):
 
         # Get "net show interface all json" output.
         interfaces = self._send_command('sudo net show interface all json')
-        interfaces = json.loads(interfaces)
+        # Handling bad send_command_timing return output.
+        try:
+            interfaces = json.loads(interfaces)
+        except ValueError:
+            interfaces = json.loads(self.device.send_command('sudo net show interface all json'))
 
         facts['hostname'] = facts['fqdn'] = py23_compat.text_type(hostname)
         facts['os_version'] = py23_compat.text_type(os_version)
