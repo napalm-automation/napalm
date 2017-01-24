@@ -1,0 +1,82 @@
+{
+	"RR": {
+		"neighbors": {
+			"10.255.255.12": {
+				"local_address": "",
+				"export_policy": "",
+				"route_reflector_client": false,
+				"remote_as": 0,
+				"authentication_key": "",
+				"import_policy": "RP-SPECIAL-SNOWFLAKE-IN",
+				"nhs": false,
+				"prefix_limit": {},
+				"local_as": 0,
+				"description": ""
+			},
+			"10.255.255.3": {
+				"local_address": "",
+				"export_policy": "",
+				"route_reflector_client": false,
+				"remote_as": 0,
+				"authentication_key": "",
+				"import_policy": "",
+				"nhs": false,
+				"prefix_limit": {},
+				"local_as": 0,
+				"description": ""
+			}
+		},
+		"remote_as": 65900,
+		"multipath": false,
+		"export_policy": "",
+		"prefix_limit": {},
+		"description": "",
+		"local_address": "",
+		"apply_groups": [],
+		"remove_private_as": true,
+		"import_policy": "RP-RR-IN",
+		"type": "external",
+		"local_as": 0,
+		"multihop_ttl": 0
+	},
+	"_": {
+		"neighbors": {
+			"10.255.255.2": {
+				"local_address": "",
+				"export_policy": "pass-all",
+				"route_reflector_client": false,
+				"remote_as": 65900,
+				"authentication_key": "",
+				"import_policy": "pass-all",
+				"nhs": false,
+				"prefix_limit": {},
+				"local_as": 0,
+				"description": ""
+			},
+			"10.255.255.220": {
+				"local_address": "",
+				"export_policy": "pass-all",
+				"route_reflector_client": false,
+				"remote_as": 65900,
+				"authentication_key": "",
+				"import_policy": "pass-all",
+				"nhs": false,
+				"prefix_limit": {},
+				"local_as": 0,
+				"description": ""
+			}
+		},
+		"remote_as": 0,
+		"multipath": false,
+		"export_policy": "",
+		"prefix_limit": {},
+		"description": "",
+		"local_address": "",
+		"apply_groups": [],
+		"remove_private_as": false,
+		"import_policy": "",
+		"type": "",
+		"local_as": 0,
+		"multihop_ttl": 0
+	}
+}
