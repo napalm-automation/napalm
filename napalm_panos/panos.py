@@ -378,6 +378,96 @@ class PANOSDriver(NetworkDriver):
         facts['interface_list'].sort()
         return facts
 
+    def get_lldp_neighbors(self):
+        """Return LLDP neighbors details."""
+
+        neighbors = {}
+
+        cmd = '<show><lldp><neighbors>all</neighbors></lldp></show>'
+        try:
+            self.device.op(cmd=cmd)
+            lldp_table_xml = xmltodict.parse(self.device.xml_root())
+            lldp_table_json = json.dumps(lldp_table_xml['response']['result']['entry'])
+            lldp_table = json.loads(lldp_table_json)
+        except AttributeError:
+            lldp_table = []
+
+        for lldp_item in lldp_table:
+
+            local_int = lldp_item['@name']
+
+            if local_int not in neighbors.keys():
+                neighbors[local_int] = []
+
+            if isinstance(lldp_item['neighbors']['entry'], dict):
+                n = {}
+                n['hostname'] = lldp_item['neighbors']['entry']['system-name']
+                n['port'] = lldp_item['neighbors']['entry']['port-id']
+                neighbors[local_int].append(n)
+            # Not tested. I believe lldp_item['neighbors']['entry'] is a list
+            # of dicts when several neighbors are on a single local interface,
+            # and a dict when there is only one neighbor
+            elif isinstance(lldp_item['neighbors']['entry'], list):
+                for neighbor in lldp_item['neighbors']['entry']:
+                    n = {}
+                    n['hostname'] = neighbor['system-name']
+                    n['port'] = neighbor['port-id']
+                    neighbors[local_int].append(n)
+
+        return neighbors
+
+    def get_route_to(self, destination='', protocol=''):
+        """Return route details to a specific destination, learned from a certain protocol."""
+
+        routes = {}
+
+        if destination:
+            destination = "<destination>{0}</destination>".format(destination)
+        if protocol:
+            protocol = "<type>{0}</type>".format(protocol)
+
+        cmd = "<show><routing><route>{0}{1}</route></routing></show>".format(protocol, destination)
+        try:
+            self.device.op(cmd=cmd)
+            routes_table_xml = xmltodict.parse(self.device.xml_root())
+            routes_table_json = json.dumps(routes_table_xml['response']['result']['entry'])
+            routes_table = json.loads(routes_table_json)
+        except AttributeError:
+            routes_table = []
+
+        for route in routes_table:
+            d = {}
+            destination = route['destination']
+            flags = route['flags']
+
+            if 'A' in flags:
+                d['current_active'] = True
+            else:
+                d['current_active'] = False
+            if 'C' in flags:
+                d['protocol'] = "connect"
+            if 'S' in flags:
+                d['protocol'] = "static"
+            if 'R' in flags:
+                d['protocol'] = "rip"
+            if 'R' in flags:
+                d['protocol'] = "rip"
+            if 'O' in flags:
+                d['protocol'] = "ospf"
+            if 'B' in flags:
+                d['protocol'] = "bgp"
+            d['age'] = route['age']
+            d['next_hop'] = route['nexthop']
+            d['outgoing_interface'] = route['interface']
+            d['preference'] = route['metric']
+            d['routing_table'] = route['virtual-router']
+
+            if destination not in routes.keys():
+                routes[destination] = []
+            routes[destination].append(d)
+
+        return routes
+
     def get_interfaces(self):
         interface_dict = {}
         interface_list = self.get_facts()['interface_list']
