@@ -471,7 +471,7 @@ class NetworkDriver(object):
         :param neighbor: Returns the configuration of a specific BGP neighbor.
 
         Main dictionary keys represent the group name and the values represent a dictionary having
-        the following keys:
+        the keys below. Neighbors which aren't members of a group will be stored in a key named "_":
             * type (string)
             * description (string)
             * apply_groups (string list)
