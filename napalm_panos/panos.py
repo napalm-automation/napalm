@@ -399,21 +399,17 @@ class PANOSDriver(NetworkDriver):
             if local_int not in neighbors.keys():
                 neighbors[local_int] = []
 
-            if isinstance(lldp_item['neighbors']['entry'], dict):
-                n = {}
-                n['hostname'] = lldp_item['neighbors']['entry']['system-name']
-                n['port'] = lldp_item['neighbors']['entry']['port-id']
-                neighbors[local_int].append(n)
-            # Not tested. I believe lldp_item['neighbors']['entry'] is a list
-            # of dicts when several neighbors are on a single local interface,
-            # and a dict when there is only one neighbor
-            elif isinstance(lldp_item['neighbors']['entry'], list):
-                for neighbor in lldp_item['neighbors']['entry']:
-                    n = {}
-                    n['hostname'] = neighbor['system-name']
-                    n['port'] = neighbor['port-id']
-                    neighbors[local_int].append(n)
+            lldp_neighs = lldp_item['neighbors']['entry']
+            if isinstance(lldp_neighs, dict):
+                single_item_list = []
+                single_item_list.append(lldp_neighs)
+                lldp_neighs = single_item_list
 
+            for neighbor in lldp_neighs:
+                n = {}
+                n['hostname'] = neighbor['system-name']
+                n['port'] = neighbor['port-id']
+                neighbors[local_int].append(n)
         return neighbors
 
     def get_route_to(self, destination='', protocol=''):
@@ -434,6 +430,11 @@ class PANOSDriver(NetworkDriver):
             routes_table = json.loads(routes_table_json)
         except AttributeError:
             routes_table = []
+
+        if isinstance(routes_table, dict):
+            single_item_list = []
+            single_item_list.append(routes_table)
+            routes_table = single_item_list
 
         for route in routes_table:
             d = {}
