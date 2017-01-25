@@ -460,9 +460,15 @@ class PANOSDriver(NetworkDriver):
             d['age'] = route['age']
             d['next_hop'] = route['nexthop']
             d['outgoing_interface'] = route['interface']
-            d['preference'] = route['metric']
+            if route['metric'] == None:
+                d['preference'] = 0
+            else:
+                d['preference'] = route['metric']
             d['routing_table'] = route['virtual-router']
             d['protocol_attributes'] = {}
+            d['inactive_reason'] = ""
+            d['last_active'] = None
+            d['selected_next_hop'] = None
 
             if destination not in routes.keys():
                 routes[destination] = []
