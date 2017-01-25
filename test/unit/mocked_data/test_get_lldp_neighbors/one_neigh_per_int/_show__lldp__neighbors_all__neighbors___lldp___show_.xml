@@ -102,7 +102,7 @@
                     <port-id>518</port-id>
                     <port-description>mockdescription</port-description>
                     <ttl>110</ttl>
-                    <system-name>border2.private.lon2.mozilla.net</system-name>
+                    <system-name>peer02.lab.demo</system-name>
                     <system-description>mock system description
                     </system-description>
                     <system-capabilities>B, R,
