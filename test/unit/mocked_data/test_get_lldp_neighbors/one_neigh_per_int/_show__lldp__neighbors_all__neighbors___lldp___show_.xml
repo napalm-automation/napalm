@@ -1,0 +1,124 @@
+<response status="success">
+    <result>
+        <entry name="ethernet1/15">
+            <local>
+                <index>30</index>
+                <port-id>15</port-id>
+            </local>
+            <neighbors>
+                <entry name="006cbc0000004769312f302f32">
+                    <chassis-type>MAC address</chassis-type>
+                    <chassis-id>00:6c:bc:00:00:00</chassis-id>
+                    <port-type>Interface name</port-type>
+                    <port-id>Gi1/0/2</port-id>
+                    <port-description>GigabitEthernet1/0/2</port-description>
+                    <ttl>116</ttl>
+                    <system-name>peer00.lab.demo</system-name>
+                    <system-description>mock system description</system-description>
+                    <system-capabilities>B, R,
+                    </system-capabilities>
+                    <enabled-capabilities>B, R,
+                    </enabled-capabilities>
+                    <management-address>
+                        <entry name="10.0.0.1">
+                            <address-type>ipv4</address-type>
+                            <interface-number>0</interface-number>
+                            <interface-type>System Port Number</interface-type>
+                        </entry>
+                    </management-address>
+                </entry>
+            </neighbors>
+        </entry>
+        <entry name="ethernet1/16">
+            <local>
+                <index>31</index>
+                <port-id>16</port-id>
+            </local>
+            <neighbors>
+                <entry name="006cbc0000014769322f302f32">
+                    <chassis-type>MAC address</chassis-type>
+                    <chassis-id>00:6c:bc:00:00:00</chassis-id>
+                    <port-type>Interface name</port-type>
+                    <port-id>Gi2/0/2</port-id>
+                    <port-description>GigabitEthernet2/0/2</port-description>
+                    <ttl>107</ttl>
+                    <system-name>peer01.lab.demo</system-name>
+                    <system-description>mock system description</system-description>
+                    <system-capabilities>B, R,
+                    </system-capabilities>
+                    <enabled-capabilities>B, R,
+                    </enabled-capabilities>
+                    <management-address>
+                        <entry name="10.0.0.1">
+                            <address-type>ipv4</address-type>
+                            <interface-number>0</interface-number>
+                            <interface-type>System Port Number</interface-type>
+                        </entry>
+                    </management-address>
+                </entry>
+            </neighbors>
+        </entry>
+        <entry name="ethernet1/13">
+            <local>
+                <index>28</index>
+                <port-id>13</port-id>
+            </local>
+            <neighbors>
+                <entry name="44f477000000353138">
+                    <chassis-type>MAC address</chassis-type>
+                    <chassis-id>44:f4:77:00:00:00</chassis-id>
+                    <port-type>Locally assigned</port-type>
+                    <port-id>518</port-id>
+                    <port-description>mockdescription</port-description>
+                    <ttl>92</ttl>
+                    <system-name>peer01.lab.demo</system-name>
+                    <system-description>mock system description
+                    </system-description>
+                    <system-capabilities>B, R,
+                    </system-capabilities>
+                    <enabled-capabilities>B, R,
+                    </enabled-capabilities>
+                    <management-address>
+                        <entry name="10.0.0.2">
+                            <address-type>ipv4</address-type>
+                            <interface-number>1</interface-number>
+                            <interface-type>Ifindex</interface-type>
+                            <oid>0.1.3.6.1.2.1.31.1.1.1.1.1.</oid>
+                        </entry>
+                    </management-address>
+                </entry>
+            </neighbors>
+        </entry>
+        <entry name="ethernet1/14">
+            <local>
+                <index>29</index>
+                <port-id>14</port-id>
+            </local>
+            <neighbors>
+                <entry name="44f477000001353138">
+                    <chassis-type>MAC address</chassis-type>
+                    <chassis-id>44:f4:77:00:00:01</chassis-id>
+                    <port-type>Locally assigned</port-type>
+                    <port-id>518</port-id>
+                    <port-description>mockdescription</port-description>
+                    <ttl>110</ttl>
+                    <system-name>border2.private.lon2.mozilla.net</system-name>
+                    <system-description>mock system description
+                    </system-description>
+                    <system-capabilities>B, R,
+                    </system-capabilities>
+                    <enabled-capabilities>B, R,
+                    </enabled-capabilities>
+                    <management-address>
+                        <entry name="10.0.0.3">
+                            <address-type>ipv4</address-type>
+                            <interface-number>1</interface-number>
+                            <interface-type>Ifindex</interface-type>
+                            <oid>0.1.3.6.1.2.1.31.1.1.1.1.1.</oid>
+                        </entry>
+                    </management-address>
+                </entry>
+            </neighbors>
+        </entry>
+    </result>
+</response>

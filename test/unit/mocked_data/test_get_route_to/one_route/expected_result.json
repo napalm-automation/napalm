@@ -1,0 +1,1 @@
+{u'10.22.0.0/16': [{u'protocol': u'bgp', u'current_active': True, u'age': u'2832970', u'routing_table': u'default', u'next_hop': u'10.0.0.1', u'outgoing_interface': None, u'preference': None}]}

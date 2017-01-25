@@ -1,0 +1,1 @@
+{u'ethernet1/13': [{u'hostname': u'peer01.lab.demo', u'port': u'518'}], u'ethernet1/16': [{u'hostname': u'peer00.lab.demo', u'port': u'Gi2/0/2'}], u'ethernet1/14': [{u'hostname': u'peer02.lab.demo', u'port': u'518'}], u'ethernet1/15': [{u'hostname': u'peer00.lab.demo', u'port': u'Gi1/0/2'}]}

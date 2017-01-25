@@ -1,0 +1,34 @@
+<response status="success">
+    <result>
+        <flags>flags: A:active, ?:loose, C:connect, H:host, S:static, ~:internal, R:rip, O:ospf, B:bgp, Oi:ospf intra-area, Oo:ospf inter-area, O1:ospf ext-type-1, O2:ospf ext-type-2, E:ecmp</flags>
+        <entry>
+            <virtual-router>default</virtual-router>
+            <destination>10.0.0.128/30</destination>
+            <nexthop>10.0.0.1</nexthop>
+            <metric>0</metric>
+            <flags>A C
+            </flags>
+            <age/>
+            <interface>tunnel.34</interface>
+        </entry>
+        <entry>
+            <virtual-router>default</virtual-router>
+            <destination>10.0.0.132/30</destination>
+            <nexthop>10.0.0.2</nexthop>
+            <metric>0</metric>
+            <flags>A C
+            </flags>
+            <age/>
+            <interface>tunnel.35</interface>
+        </entry>
+        <entry>
+            <virtual-router>default</virtual-router>
+            <destination>192.168.1.1/32</destination>
+            <nexthop>0.0.0.0</nexthop>
+            <metric>0</metric>
+            <flags>A H
+            </flags>
+            <age/>
+            <interface/></entry>
+    </result>
+</response>
