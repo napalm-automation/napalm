@@ -479,7 +479,7 @@ class PANOSDriver(NetworkDriver):
             if route['interface'] is not None:
                 d['outgoing_interface'] = route['interface']
             if route['metric'] is not None:
-                d['preference'] = route['metric']
+                d['preference'] = int(route['metric'])
             if route['virtual-router'] is not None:
                 d['routing_table'] = route['virtual-router']
 
