@@ -472,6 +472,8 @@ class PANOSDriver(NetworkDriver):
                 d['protocol'] = "ospf"
             if 'B' in flags:
                 d['protocol'] = "bgp"
+            if 'H' in flags:
+                d['protocol'] = "host"
             if route['age'] is not None:
                 d['age'] = int(route['age'])
             if route['nexthop'] is not None:
