@@ -1,1 +1,1 @@
-{"10.22.0.0/16": [{"protocol": "bgp", "last_active": false, "next_hop": "10.0.0.1", "outgoing_interface": "", "preference": -1, "inactive_reason": "", "current_active": true, "age": "2878517", "routing_table": "default", "selected_next_hop": false, "protocol_attributes": {}}]
+{"10.22.0.0/16": [{"protocol": "bgp", "last_active": false, "next_hop": "10.0.0.1", "outgoing_interface": "", "preference": -1, "inactive_reason": "", "current_active": true, "age": 2878517, "routing_table": "default", "selected_next_hop": false, "protocol_attributes": {}}]

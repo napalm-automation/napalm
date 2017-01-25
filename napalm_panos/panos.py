@@ -473,7 +473,7 @@ class PANOSDriver(NetworkDriver):
             if 'B' in flags:
                 d['protocol'] = "bgp"
             if route['age'] is not None:
-                d['age'] = route['age']
+                d['age'] = int(route['age'])
             if route['nexthop'] is not None:
                 d['next_hop'] = route['nexthop']
             if route['interface'] is not None:
