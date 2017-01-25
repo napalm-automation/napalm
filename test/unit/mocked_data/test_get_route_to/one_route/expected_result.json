@@ -1,1 +1,1 @@
-{'10.22.0.0/16': [{'protocol': 'bgp', 'current_active': True, 'age': '2832970', 'routing_table': 'default', 'next_hop': '10.0.0.1', 'outgoing_interface': None, 'preference': None}]}
+{"10.22.0.0/16": [{"protocol": "bgp", "current_active": true, "age": "2832970", "routing_table": "default", "next_hop": "10.0.0.1", "outgoing_interface": null, "preference": null}]}

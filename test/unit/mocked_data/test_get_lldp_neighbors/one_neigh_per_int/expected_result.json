@@ -1,1 +1,1 @@
-{'ethernet1/13': [{'hostname': 'peer01.lab.demo', 'port': '518'}], 'ethernet1/16': [{'hostname': 'peer00.lab.demo', 'port': 'Gi2/0/2'}], 'ethernet1/14': [{'hostname': 'peer02.lab.demo', 'port': '518'}], 'ethernet1/15': [{'hostname': 'peer00.lab.demo', 'port': 'Gi1/0/2'}]}
+{"ethernet1/13": [{"hostname": "peer01.lab.demo", "port": "518"}], "ethernet1/16": [{"hostname": "peer00.lab.demo", "port": "Gi2/0/2"}], "ethernet1/14": [{"hostname": "peer02.lab.demo", "port": "518"}], "ethernet1/15": [{"hostname": "peer00.lab.demo", "port": "Gi1/0/2"}]}
