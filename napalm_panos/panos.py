@@ -415,6 +415,9 @@ class PANOSDriver(NetworkDriver):
     def get_route_to(self, destination='', protocol=''):
         """Return route details to a specific destination, learned from a certain protocol."""
 
+        # Note, it should be possible to query the FIB:
+        # "<show><routing><fib></fib></routing></show>"
+        # To add informations to this getter
         routes = {}
 
         if destination:
@@ -437,7 +440,19 @@ class PANOSDriver(NetworkDriver):
             routes_table = single_item_list
 
         for route in routes_table:
-            d = {}
+            d = {
+                'current_active': False,
+                'last_active': False,
+                'age': -1,
+                'next_hop': u'',
+                'protocol': u'',
+                'outgoing_interface': u'',
+                'preference': -1,
+                'inactive_reason': u'',
+                'routing_table': u'default',
+                'selected_next_hop': False,
+                'protocol_attributes': {}
+            }
             destination = route['destination']
             flags = route['flags']
 
@@ -457,18 +472,16 @@ class PANOSDriver(NetworkDriver):
                 d['protocol'] = "ospf"
             if 'B' in flags:
                 d['protocol'] = "bgp"
-            d['age'] = route['age']
-            d['next_hop'] = route['nexthop']
-            d['outgoing_interface'] = route['interface']
-            if route['metric'] == None:
-                d['preference'] = 0
-            else:
+            if route['age'] is not None:
+                d['age'] = route['age']
+            if route['nexthop'] is not None:
+                d['next_hop'] = route['nexthop']
+            if route['interface'] is not None:
+                d['outgoing_interface'] = route['interface']
+            if route['metric'] is not None:
                 d['preference'] = route['metric']
-            d['routing_table'] = route['virtual-router']
-            d['protocol_attributes'] = {}
-            d['inactive_reason'] = ""
-            d['last_active'] = None
-            d['selected_next_hop'] = None
+            if route['virtual-router'] is not None:
+                d['routing_table'] = route['virtual-router']
 
             if destination not in routes.keys():
                 routes[destination] = []
