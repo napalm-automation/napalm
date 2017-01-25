@@ -462,6 +462,7 @@ class PANOSDriver(NetworkDriver):
             d['outgoing_interface'] = route['interface']
             d['preference'] = route['metric']
             d['routing_table'] = route['virtual-router']
+            d['protocol_attributes'] = {}
 
             if destination not in routes.keys():
                 routes[destination] = []
