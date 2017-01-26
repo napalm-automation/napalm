@@ -1015,12 +1015,12 @@ class EOSDriver(NetworkDriver):
         for prefix, route_details in routes_out.items():
             if prefix not in routes.keys():
                 routes[prefix] = []
-            route_protocol = route_details.get('routeType').upper()
+            route_protocol = route_details.get('routeType')
             preference = route_details.get('preference', 0)
 
             route = {
-                'current_active': False,
-                'last_active': False,
+                'current_active': True,
+                'last_active': True,
                 'age': 0,
                 'next_hop': u'',
                 'protocol': route_protocol,
@@ -1028,10 +1028,14 @@ class EOSDriver(NetworkDriver):
                 'preference': preference,
                 'inactive_reason': u'',
                 'routing_table': u'default',
-                'selected_next_hop': False,
+                'selected_next_hop': True,
                 'protocol_attributes': {}
             }
-            if protocol == 'bgp':
+            if protocol == 'bgp' or route_protocol.lower() in ('ebgp', 'ibgp'):
+                nexthop_interface_map = {}
+                for next_hop in route_details.get('vias'):
+                    nexthop_ip = napalm_base.helpers.ip(next_hop.get('nexthopAddr'))
+                    nexthop_interface_map[nexthop_ip] = next_hop.get('interface')
                 metric = route_details.get('metric')
                 command = 'show ip{ipv} bgp {destination} detail'.format(
                     ipv=ipv,
@@ -1054,10 +1058,13 @@ class EOSDriver(NetworkDriver):
                     last_active = active_route  # should find smth better
                     communities = bgp_route_details.get('routeDetail', {}).get('communityList', [])
                     preference2 = bgp_route_details.get('weight')
+                    inactive_reason = bgp_route_details.get('reasonNotBestpath')
                     bgp_route.update({
                         'current_active': active_route,
+                        'inactive_reason': inactive_reason,
                         'last_active': last_active,
                         'next_hop': next_hop,
+                        'outgoing_interface': nexthop_interface_map.get(next_hop),
                         'selected_next_hop': active_route,
                         'protocol_attributes': {
                             'metric': metric,
@@ -1072,6 +1079,11 @@ class EOSDriver(NetworkDriver):
                     })
                     routes[prefix].append(bgp_route)
             else:
+                if route_details.get('routeAction') in ('drop',):
+                    route['next_hop'] = 'NULL'
+                if route_details.get('routingDisabled') is True:
+                    route['last_active'] = False
+                    route['current_active'] = False
                 for next_hop in route_details.get('vias'):
                     route_next_hop = route.copy()
                     if next_hop.get('nexthopAddr') is None:
@@ -1089,7 +1101,8 @@ class EOSDriver(NetworkDriver):
                             }
                         )
                     routes[prefix].append(route_next_hop)
-
+                if route_details.get('vias') == []:  # empty list
+                    routes[prefix].append(route)
         return routes
 
     def get_snmp_information(self):
