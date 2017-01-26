@@ -1161,8 +1161,17 @@ class EOSDriver(NetworkDriver):
                    destination,
                    source=c.TRACEROUTE_SOURCE,
                    ttl=c.TRACEROUTE_TTL,
-                   timeout=c.TRACEROUTE_TIMEOUT):
+                   timeout=c.TRACEROUTE_TIMEOUT,
+                   vrf=c.TRACEROUTE_VRF):
+        '''
+        .. note:
 
+            `vrf` is partially supported by eOS: if the user
+            want to execute a traceroute from a certain VRF, the rest
+            of the arguments will be ignored.
+            So one can either request a traceroute using `source`, `ttl` or `timeout`,
+            either using the `vrf` argument.
+        '''
         _HOP_ENTRY_PROBE = [
             '\s+',
             '(',  # beginning of host_name (ip_address) RTT group
@@ -1196,25 +1205,36 @@ class EOSDriver(NetworkDriver):
         probes = 3
         # in case will be added one further param to adjust the number of probes/hop
 
-        if source:
-            source_opt = '-s {source}'.format(source=source)
-        if ttl:
-            ttl_opt = '-m {ttl}'.format(ttl=ttl)
-        if timeout:
-            timeout_opt = '-w {timeout}'.format(timeout=timeout)
+        if not vrf:
+            if source:
+                source_opt = '-s {source}'.format(source=source)
+            if ttl:
+                ttl_opt = '-m {ttl}'.format(ttl=ttl)
+            if timeout:
+                timeout_opt = '-w {timeout}'.format(timeout=timeout)
+            total_timeout = timeout * ttl
+            # `ttl`, `source` and `timeout` are not supported by default CLI
+            # so we need to go through the bash and set a specific timeout
+            commands = [
+                'bash timeout {total_timeout} traceroute {destination} {source_opt} {ttl_opt} {timeout_opt}'.format(
+                    total_timeout=total_timeout,
+                    destination=destination,
+                    source_opt=source_opt,
+                    ttl_opt=ttl_opt,
+                    timeout_opt=timeout_opt
+                )
+            ]
         else:
-            timeout = 5
-
-        command = 'traceroute {destination} {source_opt} {ttl_opt} {timeout_opt}'.format(
-            destination=destination,
-            source_opt=source_opt,
-            ttl_opt=ttl_opt,
-            timeout_opt=timeout_opt
-        )
+            commands = [
+                'traceroute {vrf} {destination}'.format(
+                    vrf=vrf,
+                    destination=destination
+                )
+            ]
 
         try:
             traceroute_raw_output = self.device.run_commands(
-                [command], encoding='text')[0].get('output')
+                commands, encoding='text')[0].get('output')
         except CommandErrorException:
             return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
 
@@ -1569,7 +1589,7 @@ class EOSDriver(NetworkDriver):
             return vrfs
 
     def ping(self, destination, source=c.PING_SOURCE, ttl=c.PING_TTL, timeout=c.PING_TIMEOUT,
-             size=c.PING_SIZE, count=c.PING_COUNT):
+             size=c.PING_SIZE, count=c.PING_COUNT, vrf=c.PING_VRF):
         """
         Execute ping on the device and returns a dictionary with the result.
         Output dictionary has one of following keys:
@@ -1586,6 +1606,12 @@ class EOSDriver(NetworkDriver):
         'results' is a list of dictionaries with the following keys:
             * ip_address (str)
             * rtt (float)
+
+        .. note:
+
+            `vrf` is not supported on eOS. Although the user is able
+            to set this argument, it will not be interepreted by the
+            operating system.
         """
         ping_dict = {}
         command = 'ping {}'.format(destination)
