@@ -632,6 +632,32 @@ class EOSDriver(NetworkDriver):
             list: []
         }
 
+        def default_group_dict(local_as):
+            group_dict = {}
+            group_dict.update({
+                key: _DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop))
+                for prop, key in _GROUP_FIELD_MAP_.items()
+            })
+            group_dict.update({
+                'prefix_limit': {},
+                'neighbors': {},
+                'local_as': local_as
+            })  # few more default values
+            return group_dict
+
+        def default_neighbor_dict(local_as):
+            neighbor_dict = {}
+            neighbor_dict.update({
+                key: _DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop))
+                for prop, key in _PEER_FIELD_MAP_.items()
+            })  # populating with default values
+            neighbor_dict.update({
+                'prefix_limit': {},
+                'local_as': local_as,
+                'authentication_key': u''
+            })  # few more default values
+            return neighbor_dict
+
         def parse_options(options, default_value=False):
 
             if not options:
@@ -648,7 +674,9 @@ class EOSDriver(NetworkDriver):
 
             if not default_value:
                 if len(options) > 1:
-                    field_value = field_type(options[1])
+                    field_value = napalm_base.helpers.convert(field_type,
+                                                              options[1],
+                                                              _DATATYPE_DEFAULT_.get(field_type))
                 else:
                     if field_type is bool:
                         field_value = True
@@ -680,15 +708,15 @@ class EOSDriver(NetworkDriver):
         commands = []
         commands.append('show running-config | section router bgp')
         bgp_conf = self.device.run_commands(commands, encoding='text')[0].get('output', '\n\n')
-        bgp_conf_lines = bgp_conf.splitlines()[2:]
+        bgp_conf_lines = bgp_conf.splitlines()
 
         bgp_neighbors = {}
 
         if not group:
-            neighbor = ''
+            neighbor = ''  # noqa
 
-        last_peer_group = ''
         local_as = 0
+        bgp_neighbors = {}
         for bgp_conf_line in bgp_conf_lines:
             default_value = False
             bgp_conf_line = bgp_conf_line.strip()
@@ -711,18 +739,10 @@ class EOSDriver(NetworkDriver):
                 IPAddress(group_or_neighbor)
                 # if passes the test => it is an IP Address, thus a Neighbor!
                 peer_address = group_or_neighbor
-
+                if peer_address not in bgp_neighbors:
+                    bgp_neighbors[peer_address] = default_neighbor_dict(local_as)
                 if options[0] == 'peer-group':
-                    last_peer_group = options[1]
-
-                # if looking for a specific group
-                if group and last_peer_group != group:
-                    continue
-
-                # or even more. a specific neighbor within a group
-                if neighbor and peer_address != neighbor:
-                    continue
-                # skip all other except the target
+                    bgp_neighbors[peer_address]['__group'] = options[1]
 
                 # in the config, neighbor details are lister after
                 # the group is specified for the neighbor:
@@ -736,20 +756,8 @@ class EOSDriver(NetworkDriver):
                 # that way we avoid one more loop to
                 # match the neighbors with the group they belong to
                 # directly will apend the neighbor in the neighbor list of the group at the end
-                if last_peer_group not in bgp_neighbors.keys():
-                    bgp_neighbors[last_peer_group] = {}
-                if peer_address not in bgp_neighbors[last_peer_group]:
-                    bgp_neighbors[last_peer_group][peer_address] = {}
-                    bgp_neighbors[last_peer_group][peer_address].update({
-                        key: _DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop))
-                        for prop, key in _PEER_FIELD_MAP_.items()
-                    })  # populating with default values
-                    bgp_neighbors[last_peer_group][peer_address].update({
-                        'prefix_limit': {},
-                        'local_as': local_as,
-                        'authentication_key': u''
-                    })  # few more default values
-                bgp_neighbors[last_peer_group][peer_address].update(
+
+                bgp_neighbors[peer_address].update(
                     parse_options(options, default_value)
                 )
             except AddrFormatError:
@@ -759,16 +767,7 @@ class EOSDriver(NetworkDriver):
                 if group and group_name != group:
                     continue
                 if group_name not in bgp_config.keys():
-                    bgp_config[group_name] = {}
-                    bgp_config[group_name].update({
-                        key: _DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop))
-                        for prop, key in _GROUP_FIELD_MAP_.items()
-                    })
-                    bgp_config[group_name].update({
-                        'prefix_limit': {},
-                        'neighbors': {},
-                        'local_as': local_as
-                    })  # few more default values
+                    bgp_config[group_name] = default_group_dict(local_as)
                 bgp_config[group_name].update(
                     parse_options(options, default_value)
                 )
@@ -776,10 +775,13 @@ class EOSDriver(NetworkDriver):
                 # for other kind of exception pass to next line
                 continue
 
-        for group, peers in bgp_neighbors.items():
-            if group not in bgp_config.keys():
-                continue
-            bgp_config[group]['neighbors'] = peers
+        for peer, peer_details in bgp_neighbors.items():
+            peer_group = peer_details.pop('__group', None)
+            if not peer_group:
+                peer_group = '_'
+            if peer_group not in bgp_config:
+                bgp_config[peer_group] = default_group_dict(local_as)
+            bgp_config[peer_group]['neighbors'][peer] = peer_details
 
         return bgp_config
 
