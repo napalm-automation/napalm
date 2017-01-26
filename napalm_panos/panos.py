@@ -401,9 +401,7 @@ class PANOSDriver(NetworkDriver):
 
             lldp_neighs = lldp_item['neighbors']['entry']
             if isinstance(lldp_neighs, dict):
-                single_item_list = []
-                single_item_list.append(lldp_neighs)
-                lldp_neighs = single_item_list
+                lldp_neighs = [lldp_neighs]
 
             for neighbor in lldp_neighs:
                 n = {}
@@ -435,9 +433,7 @@ class PANOSDriver(NetworkDriver):
             routes_table = []
 
         if isinstance(routes_table, dict):
-            single_item_list = []
-            single_item_list.append(routes_table)
-            routes_table = single_item_list
+            routes_table = [routes_table]
 
         for route in routes_table:
             d = {
