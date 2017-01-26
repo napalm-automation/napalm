@@ -1587,7 +1587,7 @@ class IOSXRDriver(NetworkDriver):
         </Set>'.format(
             version=ipv,
             destination=destination,
-            vrf_tag=vrf_tag
+            vrf_tag=vrf_tag,
             source_tag=source_tag,
             ttl_tag=ttl_tag,
             timeout_tag=timeout_tag
