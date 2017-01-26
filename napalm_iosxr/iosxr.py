@@ -1558,7 +1558,8 @@ class IOSXRDriver(NetworkDriver):
                    destination,
                    source=C.TRACEROUTE_SOURCE,
                    ttl=C.TRACEROUTE_TTL,
-                   timeout=C.TRACEROUTE_TIMEOUT):
+                   timeout=C.TRACEROUTE_TIMEOUT,
+                   vrf=C.TRACEROUTE_VRF):
 
         traceroute_result = {}
 
@@ -1571,20 +1572,22 @@ class IOSXRDriver(NetworkDriver):
         source_tag = ''
         ttl_tag = ''
         timeout_tag = ''
+        vrf_tag = ''
         if source:
             source_tag = '<Source>{source}</Source>'.format(source=source)
         if ttl:
             ttl_tag = '<MaxTTL>{maxttl}</MaxTTL>'.format(maxttl=ttl)
         if timeout:
             timeout_tag = '<Timeout>{timeout}</Timeout>'.format(timeout=timeout)
-        else:
-            timeout = 5  # seconds
+        if vrf:
+            vrf_tag = '<VRFName>{vrf}</VRFName>'.format(vrf=vrf)
 
         traceroute_rpc_command = '<Set><Action><TraceRoute><IPV{version}><Destination>{destination}\
-        </Destination>{source_tag}{ttl_tag}{timeout_tag}</IPV{version}></TraceRoute></Action>\
+        </Destination>{vrf_tag}{source_tag}{ttl_tag}{timeout_tag}</IPV{version}></TraceRoute></Action>\
         </Set>'.format(
             version=ipv,
             destination=destination,
+            vrf_tag=vrf_tag
             source_tag=source_tag,
             ttl_tag=ttl_tag,
             timeout_tag=timeout_tag
