@@ -925,19 +925,25 @@ class JunOSDriver(NetworkDriver):
             'inet6': u'ipv6'
             # can add more mappings
         }
+        _FAMILY_MAX_PREFIXLEN = {
+            'inet': 32,
+            'inet6': 128
+        }
 
         for interface_details in interface_table_items:
             ip_network = interface_details[0]
             ip_address = ip_network.split('/')[0]
             address = napalm_base.helpers.convert(
                 napalm_base.helpers.ip, ip_address, ip_address)
-            prefix = napalm_base.helpers.convert(int, ip_network.split('/')[-1], 0)
             try:
                 interface_details_dict = dict(interface_details[1])
                 family_raw = interface_details_dict.get('family')
                 interface = py23_compat.text_type(interface_details_dict.get('interface'))
             except ValueError:
                 continue
+            prefix = napalm_base.helpers.convert(int,
+                                                 ip_network.split('/')[-1],
+                                                 _FAMILY_MAX_PREFIXLEN.get(family_raw))
             family = _FAMILY_VMAP_.get(family_raw)
             if not family or not interface:
                 continue
