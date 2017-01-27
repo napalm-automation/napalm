@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 # import stdlib
 import re
+import logging
 import collections
 from copy import deepcopy
 
@@ -46,6 +47,8 @@ from napalm_base.exceptions import CommandTimeoutException
 
 # import local modules
 from napalm_junos.utils import junos_views
+
+log = logging.getLogger(__file__)
 
 
 class JunOSDriver(NetworkDriver):
@@ -428,8 +431,15 @@ class JunOSDriver(NetworkDriver):
     def get_lldp_neighbors(self):
         """Return LLDP neighbors details."""
         lldp = junos_views.junos_lldp_table(self.device)
-        lldp.get()
-
+        try:
+            lldp.get()
+        except RpcError as rpcerr:
+            # this assumes the library runs in an environment
+            # able to handle logs
+            # otherwise, the user just won't see this happening
+            log.error('Unable to retrieve the LLDP neighbors information:')
+            log.error(rpcerr.message)
+            return {}
         result = lldp.items()
 
         neighbors = {}
@@ -445,7 +455,15 @@ class JunOSDriver(NetworkDriver):
         lldp_neighbors = {}
 
         lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
-        lldp_table.get()
+        try:
+            lldp_table.get()
+        except RpcError as rpcerr:
+            # this assumes the library runs in an environment
+            # able to handle logs
+            # otherwise, the user just won't see this happening
+            log.error('Unable to retrieve the LLDP neighbors information:')
+            log.error(rpcerr.message)
+            return {}
         interfaces = lldp_table.get().keys()
 
         old_junos = napalm_base.helpers.convert(
@@ -907,19 +925,25 @@ class JunOSDriver(NetworkDriver):
             'inet6': u'ipv6'
             # can add more mappings
         }
+        _FAMILY_MAX_PREFIXLEN = {
+            'inet': 32,
+            'inet6': 128
+        }
 
         for interface_details in interface_table_items:
             ip_network = interface_details[0]
             ip_address = ip_network.split('/')[0]
             address = napalm_base.helpers.convert(
                 napalm_base.helpers.ip, ip_address, ip_address)
-            prefix = napalm_base.helpers.convert(int, ip_network.split('/')[-1], 0)
             try:
                 interface_details_dict = dict(interface_details[1])
                 family_raw = interface_details_dict.get('family')
                 interface = py23_compat.text_type(interface_details_dict.get('interface'))
             except ValueError:
                 continue
+            prefix = napalm_base.helpers.convert(int,
+                                                 ip_network.split('/')[-1],
+                                                 _FAMILY_MAX_PREFIXLEN.get(family_raw))
             family = _FAMILY_VMAP_.get(family_raw)
             if not family or not interface:
                 continue
@@ -1418,7 +1442,7 @@ class JunOSDriver(NetworkDriver):
                                 'input_power': {
                                     'instant': (
                                         float(optics['input_power'])
-                                        if optics['input_power'] != '- Inf'
+                                        if optics['input_power'] not in [None, C.OPTICS_NO_POWER]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1427,7 +1451,7 @@ class JunOSDriver(NetworkDriver):
                                 'output_power': {
                                     'instant': (
                                         float(optics['output_power'])
-                                        if optics['output_power'] != '- Inf'
+                                        if optics['output_power'] not in [None, C.OPTICS_NO_POWER]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1436,7 +1460,8 @@ class JunOSDriver(NetworkDriver):
                                 'laser_bias_current': {
                                     'instant': (
                                         float(optics['laser_bias_current'])
-                                        if optics['laser_bias_current'] != '- Inf'
+                                        if optics['laser_bias_current'] not in
+                                        [None, C.OPTICS_NO_POWER]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
