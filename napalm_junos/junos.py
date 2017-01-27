@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 # import stdlib
 import re
+import logging
 import collections
 from copy import deepcopy
 
@@ -46,6 +47,8 @@ from napalm_base.exceptions import CommandTimeoutException
 
 # import local modules
 from napalm_junos.utils import junos_views
+
+log = logging.getLogger(__file__)
 
 
 class JunOSDriver(NetworkDriver):
@@ -428,8 +431,15 @@ class JunOSDriver(NetworkDriver):
     def get_lldp_neighbors(self):
         """Return LLDP neighbors details."""
         lldp = junos_views.junos_lldp_table(self.device)
-        lldp.get()
-
+        try:
+            lldp.get()
+        except RpcError as rpcerr:
+            # this assumes the library runs in an environment
+            # able to handle logs
+            # otherwise, the user just won't see this happening
+            log.error('Unable to retrieve the LLDP neighbors information:')
+            log.error(rpcerr.message)
+            return {}
         result = lldp.items()
 
         neighbors = {}
@@ -445,7 +455,15 @@ class JunOSDriver(NetworkDriver):
         lldp_neighbors = {}
 
         lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
-        lldp_table.get()
+        try:
+            lldp_table.get()
+        except RpcError as rpcerr:
+            # this assumes the library runs in an environment
+            # able to handle logs
+            # otherwise, the user just won't see this happening
+            log.error('Unable to retrieve the LLDP neighbors information:')
+            log.error(rpcerr.message)
+            return {}
         interfaces = lldp_table.get().keys()
 
         old_junos = napalm_base.helpers.convert(
