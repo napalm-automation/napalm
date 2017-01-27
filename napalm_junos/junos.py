@@ -1436,7 +1436,8 @@ class JunOSDriver(NetworkDriver):
                                 'laser_bias_current': {
                                     'instant': (
                                         float(optics['laser_bias_current'])
-                                        if optics['laser_bias_current'] not in [None, C.OPTICS_NO_POWER]
+                                        if optics['laser_bias_current'] not in
+                                        [None, C.OPTICS_NO_POWER]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
