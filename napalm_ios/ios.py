@@ -485,16 +485,15 @@ class IOSDriver(NetworkDriver):
                 return {}
 
             local_port = interface
-            port_id = re.findall(r"Port id: (.+)", output)
-            port_description = re.findall(r"Port Description: (.+)", output)
-            chassis_id = re.findall(r"Chassis id: (.+)", output)
-            system_name = re.findall(r"System Name: (.+)", output)
-            system_description = re.findall(r"System Description: \n(.+)", output)
-            system_capabilities = re.findall(r"System Capabilities: (.+)", output)
-            enabled_capabilities = re.findall(r"Enabled Capabilities: (.+)", output)
-            remote_address = re.findall(r"Management Addresses:\n    IP: (.+)", output)
-            if not remote_address:
-                remote_address = re.findall(r"Management Addresses:\n    Other: (.+)", output)
+            port_id = re.findall(r"Port id:\s+(.+)", output)
+            port_description = re.findall(r"Port Description(?:\s\-|:)\s+(.+)", output)
+            chassis_id = re.findall(r"Chassis id:\s+(.+)", output)
+            system_name = re.findall(r"System Name:\s+(.+)", output)
+            system_description = re.findall(r"System Description:\s*\n(.+)", output)
+            system_capabilities = re.findall(r"System Capabilities:\s+(.+)", output)
+            enabled_capabilities = re.findall(r"Enabled Capabilities:\s+(.+)", output)
+            remote_address = re.findall(r"Management Addresses:\n\s+(?:IP|Other)(?::\s+?)(.+)",
+                                        output)
             number_entries = len(port_id)
             lldp_fields = [port_id, port_description, chassis_id, system_name, system_description,
                            system_capabilities, enabled_capabilities, remote_address]
