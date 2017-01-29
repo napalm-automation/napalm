@@ -375,6 +375,7 @@ class CumulusDriver(NetworkDriver):
             neighbors.append(temp)
         return neighbors
 
+
     def get_lldp_neighbors(self):
         """Cumulus get_lldp_neighbors."""
         lldp = {}
@@ -416,10 +417,14 @@ class CumulusDriver(NetworkDriver):
             
             interfaces[interface]['description'] = py23_compat.text_type(output_json[interface]['iface_obj']['description'])
 
+            # The last flapped information is not provided in Cumulus NCLU so setting this to -1
+            interfaces[interface]['last_flapped'] = -1
+
             
             if output_json[interface]['iface_obj']['speed'] is None:
                 interfaces[interface]['speed'] = -1
             else:
+
                 interfaces[interface]['speed'] = output_json[interface]['iface_obj']['speed']
                 
             interfaces[interface]['mac_address'] = py23_compat.text_type(output_json[interface]['iface_obj']['mac'])
@@ -490,6 +495,11 @@ class CumulusDriver(NetworkDriver):
             for interface in interfaces.keys():
                 interfaces[interface]['last_flapped']=-1
                                
+
+                interfaces[interface]['speed'] = py23_compat.text_type(output_json[interface]['iface_obj']['speed'])
+                
+            interfaces[interface]['mac_address'] = py23_compat.text_type(output_json[interface]['iface_obj']['mac'])
+         
         
         return interfaces
         
