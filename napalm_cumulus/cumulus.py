@@ -388,3 +388,43 @@ class CumulusDriver(NetworkDriver):
             lldp[interface] = self._get_interface_neighbors(
                                     lldp_output[interface]['iface_obj']['lldp'])
         return lldp
+    
+    def get_interfaces(self):
+        
+        interfaces = {}
+        # Get 'net show interface all json' output.
+        output = self._send_command('sudo net show interface all json')
+        # Handling bad send_command_timing return output.        
+        try:
+            output_json = json.loads(output)
+        except ValueError:
+            output_json = json.loads(self.device.send_command('sudo net show interface all json'))
+            
+        for interface in output_json:
+            interfaces[interface] = {}
+            
+            if output_json[interface]['iface_obj']['linkstate'] is 0:
+                interfaces[interface]['is_enabled'] = False
+            else:
+                interfaces[interface]['is_enabled'] = True
+                
+            if output_json[interface]['iface_obj']['linkstate'] is 2:
+                interfaces[interface]['is_up'] = True
+            else:
+                interfaces[interface]['is_up'] = False 
+            
+            interfaces[interface]['description'] = py23_compat.text_type(output_json[interface]['iface_obj']['description'])
+            # The last flapped information is not provided in Cumulus NCLU so setting this to -1
+            interfaces[interface]['last_flapped'] = -1
+            
+            if output_json[interface]['iface_obj']['speed'] is None:
+                interfaces[interface]['speed'] = -1
+            else:
+                interfaces[interface]['speed'] = py23_compat.text_type(output_json[interface]['iface_obj']['speed'])
+                
+            interfaces[interface]['mac_address'] = py23_compat.text_type(output_json[interface]['iface_obj']['mac'])
+         
+        
+        return interfaces
+        
+        
