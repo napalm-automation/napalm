@@ -1,6 +1,6 @@
 napalm-base>=0.18.0
 pan-python
-netmiko>=0.5.0
+netmiko>=1.0.0
 requests-toolbelt
 xmltodict
 future

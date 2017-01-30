@@ -302,7 +302,7 @@ class PANOSDriver(NetworkDriver):
                 time.sleep(3)
                 self.loaded = False
                 self.changed = True
-            except:
+            except:   # noqa
                 if self.merge_config:
                     raise MergeConfigException('Error while commiting config')
                 else:
@@ -338,7 +338,7 @@ class PANOSDriver(NetworkDriver):
                 self.loaded = False
                 self.changed = False
                 self.merge_config = False
-            except:
+            except:    # noqa
                 ReplaceConfigException("Error while loading backup config")
 
     def get_facts(self):
