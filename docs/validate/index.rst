@@ -46,10 +46,20 @@ then write the desired state using the same format the getter would retrieve it.
         ipv4:
           192.0.2.1:
             prefix_length: 30
-
+    
     ping:
+      _name: ping_google
       _kwargs:
           destination: 8.8.8.8
+          source: 192.168.1.1
+      success:
+          packet_loss: 0
+      _mode: strict
+    
+    ping:
+      _name: something_else
+      _kwargs:
+          destination: 10.8.2.8
           source: 192.168.1.1
       success:
           packet_loss: 0
@@ -73,7 +83,9 @@ A few notes:
       the ``get_facts`` getter. Lists can be strict as well. In this case, we want to make sure the
       device has only those two interfaces.
     * Some methods require extra arguments, for example ``ping``. You can pass arguments to those
-      methods using the magic keyword ``_kwargs``.
+      methods using the magic keyword ``_kwargs``. In addition, an optional keyword ``_name`` can
+      be specified to override the name in the report. Useful for having a more descriptive report
+      or for getters than can be run multiple times
 
 Example
 -------
