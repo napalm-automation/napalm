@@ -49,7 +49,7 @@ class NetworkDriver(object):
     def __enter__(self):
         try:
             self.open()
-        except:
+        except:  # noqa
             exc_info = sys.exc_info()
             self.__raise_clean_exception(exc_info[0], exc_info[1], exc_info[2])
         return self

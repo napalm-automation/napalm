@@ -136,12 +136,14 @@ def compliance_report(cls, validation_file=None):
             # TBD
             pass
         else:
+            key = expected_results.pop("_name", "") or getter
+
             try:
                 kwargs = expected_results.pop('_kwargs', {})
                 actual_results = getattr(cls, getter)(**kwargs)
-                report[getter] = _compare_getter(expected_results, actual_results)
+                report[key] = _compare_getter(expected_results, actual_results)
             except NotImplementedError:
-                report[getter] = {"skipped": True, "reason": "NotImplemented"}
+                report[key] = {"skipped": True, "reason": "NotImplemented"}
 
     complies = all([e.get("complies", True) for e in report.values()])
     report["skipped"] = [k for k, v in report.items() if v.get("skipped", False)]

@@ -177,7 +177,7 @@ def convert(to, who, default=u''):
         return default
     try:
         return to(who)
-    except:
+    except:  # noqa
         return default
 
 

@@ -5,7 +5,7 @@ method_not_implemented:
     skipped: true
 skipped:
     - method_not_implemented
-get_bgp_neighbors:
+check_bgp_neighbors_have_prefixes:
   complies: true
   extra: []
   missing: []

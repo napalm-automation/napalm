@@ -12,6 +12,7 @@ method_not_implemented:
     something: asd
 
 get_bgp_neighbors:
+  _name: "check_bgp_neighbors_have_prefixes"
   default:
     router_id: 192.0.2.2
     peers:
