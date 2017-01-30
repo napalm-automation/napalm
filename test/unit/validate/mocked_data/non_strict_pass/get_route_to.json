@@ -1,0 +1,65 @@
+{
+	"10.155.180.192/26": [
+		{
+			"protocol": "BGP",
+			"last_active": true,
+			"next_hop": "10.155.180.22",
+			"outgoing_interface": "irb.0",
+			"preference": 170,
+			"inactive_reason": "",
+			"current_active": true,
+			"age": 2222132,
+			"routing_table": "inet.0",
+			"selected_next_hop": true,
+			"protocol_attributes": {
+				"metric2": null,
+				"local_preference": 100,
+				"preference2": -101,
+				"communities": null,
+				"remote_as": 65239,
+				"metric": null,
+				"local_as": 202751,
+				"as_path": "65239 ?",
+				"remote_address": "10.239.254.3"
+			}
+		},
+		{
+			"protocol": "BGP",
+			"last_active": false,
+			"next_hop": "10.155.180.18",
+			"outgoing_interface": "ge-1/0/0.0",
+			"preference": 170,
+			"inactive_reason": "Not Best in its group - Interior > Exterior > Exterior via Interior",
+			"current_active": false,
+			"age": 2222365,
+			"routing_table": "inet.0",
+			"selected_next_hop": true,
+			"protocol_attributes": {
+				"metric2": 0,
+				"local_preference": 100,
+				"preference2": -101,
+				"communities": null,
+				"remote_as": 202751,
+				"metric": null,
+				"local_as": 202751,
+				"as_path": "65239 ?",
+				"remote_address": "10.155.180.2"
+			}
+		}
+	],
+	"10.155.180.206/32": [
+		{
+			"protocol": "Static",
+			"last_active": true,
+			"next_hop": "10.155.180.22",
+			"outgoing_interface": "irb.0",
+			"preference": 5,
+			"inactive_reason": "",
+			"current_active": true,
+			"age": 15970899,
+			"routing_table": "inet.0",
+			"selected_next_hop": true,
+			"protocol_attributes": {}
+		}
+	]
+}

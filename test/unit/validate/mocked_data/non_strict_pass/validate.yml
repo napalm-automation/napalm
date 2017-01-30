@@ -26,3 +26,12 @@ get_interfaces_ip:
     ipv4:
       192.0.2.1:
         prefix_length: 30
+
+get_route_to:
+  _kwargs:
+    destination: 185.155.180.192/26
+  "10.155.180.192/26":
+    list:
+     - next_hop: 10.155.180.22
+       outgoing_interface: "irb.0"
+       protocol: "BGP"

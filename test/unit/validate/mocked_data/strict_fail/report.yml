@@ -70,12 +70,14 @@ get_facts:
         present: [Vlan5, Vlan100]
       nested: true
     os_version: {complies: true, nested: false}
+
 get_interfaces_ip:
   complies: true
   extra: []
   missing: []
   present:
     Ethernet2/1: {complies: true, nested: true}
+
 ping:
   complies: false
   extra: []
@@ -89,4 +91,33 @@ ping:
         missing: []
         present:
           packet_loss: {actual_value: 1, complies: false, nested: false}
+      nested: true
+
+get_route_to:
+  complies: false
+  extra: []
+  missing: []
+  present:
+    10.155.180.192/26:
+      complies: false
+      diff:
+        complies: false
+        extra:
+        - age: 2222365
+          current_active: false
+          inactive_reason: Not Best in its group - Interior > Exterior > Exterior
+            via Interior
+          last_active: false
+          next_hop: 10.155.180.18
+          outgoing_interface: ge-1/0/0.0
+          preference: 170
+          protocol: BGP
+          protocol_attributes: {as_path: '65239 ?', communities: null, local_as: 202751,
+            local_preference: 100, metric: null, metric2: 0, preference2: -101, remote_address: 10.155.180.2,
+            remote_as: 202751}
+          routing_table: inet.0
+          selected_next_hop: true
+        missing: []
+        present:
+        - {next_hop: 10.155.180.22, outgoing_interface: irb.0, protocol: BGP}
       nested: true

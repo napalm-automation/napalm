@@ -21,6 +21,16 @@ get_bgp_neighbors:
           ipv6:
             sent_prefixes: ^[1-9]
 
+get_route_to:
+  _kwargs:
+    destination: 185.155.180.192/26
+  "10.155.180.192/26":
+    list:
+     - next_hop: 10.155.180.22
+       outgoing_interface: "irb.0"
+       protocol: "BGP"
+    _mode: strict
+
 get_interfaces_ip:
   Ethernet2/1:
     ipv4:

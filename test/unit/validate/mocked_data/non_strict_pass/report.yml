@@ -21,3 +21,9 @@ get_interfaces_ip:
   missing: []
   present:
     Ethernet2/1: {complies: true, nested: true}
+get_route_to:
+  complies: true
+  extra: []
+  missing: []
+  present:
+    10.155.180.192/26: {complies: true, nested: true}

@@ -73,3 +73,18 @@ get_interfaces_ip:
   missing: []
   present:
     Ethernet2/1: {complies: true, nested: true}
+get_route_to:
+  complies: false
+  extra: []
+  missing: []
+  present:
+    10.155.180.192/26:
+      complies: false
+      diff:
+        complies: false
+        extra: []
+        missing:
+        - {next_hop: 10.155.180.22, outgoing_interface: irb.0, protocol: OSPF}
+        present: []
+      nested: true
+skipped: []
