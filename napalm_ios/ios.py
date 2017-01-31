@@ -17,8 +17,11 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
+import os
+import uuid
+import tempfile
 
-from netmiko import ConnectHandler, FileTransfer
+from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from netmiko import __version__ as netmiko_version
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ReplaceConfigException, MergeConfigException
@@ -60,6 +63,7 @@ class IOSDriver(NetworkDriver):
         self.candidate_cfg = optional_args.get('candidate_cfg', 'candidate_config.txt')
         self.merge_cfg = optional_args.get('merge_cfg', 'merge_config.txt')
         self.rollback_cfg = optional_args.get('rollback_cfg', 'rollback_config.txt')
+        self.inline_transfer = optional_args.get('inline_transfer', False)
 
         # None will cause autodetection of dest_file_system
         self.dest_file_system = optional_args.get('dest_file_system', None)
@@ -142,6 +146,53 @@ class IOSDriver(NetworkDriver):
             'is_alive': self.device.remote_conn.transport.is_active()
         }
 
+    @staticmethod
+    def _create_tmp_file(config):
+        """Write temp file and for use with inline config and SCP."""
+        tmp_dir = tempfile.gettempdir()
+        rand_fname = py23_compat.text_type(uuid.uuid4())
+        filename = os.path.join(tmp_dir, rand_fname)
+        with open(filename, 'wt') as fobj:
+            fobj.write(config)
+        return filename
+
+    def _load_candidate_wrapper(self, source_file=None, source_config=None, dest_file=None,
+                                file_system=None):
+        """
+        Transfer file to remote device for either merge or replace operations
+
+        Returns (return_status, msg)
+        """
+        return_status = False
+        msg = ''
+        if source_file and source_config:
+            raise ValueError("Cannot simultaneously set source_file and source_config")
+
+        if source_config:
+            if self.inline_transfer:
+                (return_status, msg) = self._inline_tcl_xfer(source_config=source_config,
+                                                             dest_file=dest_file,
+                                                             file_system=file_system)
+            else:
+                # Use SCP
+                tmp_file = self._create_tmp_file(source_config)
+                (return_status, msg) = self._scp_file(source_file=tmp_file, dest_file=dest_file,
+                                                      file_system=file_system)
+                if tmp_file and os.path.isfile(tmp_file):
+                    os.remove(tmp_file)
+        if source_file:
+            if self.inline_transfer:
+                (return_status, msg) = self._inline_tcl_xfer(source_file=source_file,
+                                                             dest_file=dest_file,
+                                                             file_system=file_system)
+            else:
+                (return_status, msg) = self._scp_file(source_file=source_file, dest_file=dest_file,
+                                                      file_system=file_system)
+        if not return_status:
+            if msg == '':
+                msg = "Transfer to remote device failed"
+        return (return_status, msg)
+
     def load_replace_candidate(self, filename=None, config=None):
         """
         SCP file to device filesystem, defaults to candidate_config.
@@ -149,16 +200,12 @@ class IOSDriver(NetworkDriver):
         Return None or raise exception
         """
         self.config_replace = True
-        if config:
-            raise NotImplementedError
-        if filename:
-            (return_status, msg) = self._scp_file(source_file=filename,
-                                                  dest_file=self.candidate_cfg,
-                                                  file_system=self.dest_file_system)
-            if not return_status:
-                if msg == '':
-                    msg = "SCP transfer to remote device failed"
-                raise ReplaceConfigException(msg)
+        return_status, msg = self._load_candidate_wrapper(source_file=filename,
+                                                          source_config=config,
+                                                          dest_file=self.candidate_cfg,
+                                                          file_system=self.dest_file_system)
+        if not return_status:
+            raise ReplaceConfigException(msg)
 
     def load_merge_candidate(self, filename=None, config=None):
         """
@@ -167,16 +214,12 @@ class IOSDriver(NetworkDriver):
         Merge configuration in: copy <file> running-config
         """
         self.config_replace = False
-        if config:
-            raise NotImplementedError
-        if filename:
-            (return_status, msg) = self._scp_file(source_file=filename,
-                                                  dest_file=self.merge_cfg,
-                                                  file_system=self.dest_file_system)
-            if not return_status:
-                if msg == '':
-                    msg = "SCP transfer to remote device failed"
-                raise MergeConfigException(msg)
+        return_status, msg = self._load_candidate_wrapper(source_file=filename,
+                                                          source_config=config,
+                                                          dest_file=self.merge_cfg,
+                                                          file_system=self.dest_file_system)
+        if not return_status:
+            raise MergeConfigException(msg)
 
     @staticmethod
     def _normalize_compare_config(diff):
@@ -194,6 +237,42 @@ class IOSDriver(NetworkDriver):
         return "\n".join(new_list)
 
     @staticmethod
+    def _normalize_merge_diff_incr(diff):
+        """Make the compare config output look better.
+
+        Cisco IOS incremental-diff output
+
+        No changes:
+        !List of Commands:
+        end
+        !No changes were found
+        """
+        new_diff = []
+
+        changes_found = False
+        for line in diff.splitlines():
+            if re.search(r'order-dependent line.*re-ordered', line):
+                changes_found = True
+            elif 'No changes were found' in line:
+                # IOS in the re-order case still claims "No changes were found"
+                if not changes_found:
+                    return ''
+                else:
+                    continue
+
+            if line.strip() == 'end':
+                continue
+            elif 'List of Commands' in line:
+                continue
+            # Filter blank lines and prepend +sign
+            elif line.strip():
+                if re.search(r"^no\s+", line.strip()):
+                    new_diff.append('-' + line)
+                else:
+                    new_diff.append('+' + line)
+        return "\n".join(new_diff)
+
+    @staticmethod
     def _normalize_merge_diff(diff):
         """Make compare_config() for merge look similar to replace config diff."""
         new_diff = []
@@ -202,8 +281,7 @@ class IOSDriver(NetworkDriver):
             if line.strip():
                 new_diff.append('+' + line)
         if new_diff:
-            new_diff.insert(0, '! Cisco IOS does not support true compare_config() for merge: '
-                            'echo merge file.')
+            new_diff.insert(0, '! incremental-diff failed; falling back to echo of merge file')
         else:
             new_diff.append('! No changes specified in merge file.')
         return "\n".join(new_diff)
@@ -231,9 +309,16 @@ class IOSDriver(NetworkDriver):
             diff = self.device.send_command_expect(cmd)
             diff = self._normalize_compare_config(diff)
         else:
-            cmd = 'more {}'.format(new_file_full)
+            # merge
+            cmd = 'show archive config incremental-diffs {} ignorecase'.format(new_file_full)
             diff = self.device.send_command_expect(cmd)
-            diff = self._normalize_merge_diff(diff)
+            if '% Invalid' not in diff:
+                diff = self._normalize_merge_diff_incr(diff)
+            else:
+                cmd = 'more {}'.format(new_file_full)
+                diff = self.device.send_command_expect(cmd)
+                diff = self._normalize_merge_diff(diff)
+
         return diff.strip()
 
     def _commit_hostname_handler(self, cmd):
@@ -310,6 +395,23 @@ class IOSDriver(NetworkDriver):
         cmd = 'configure replace {} force'.format(cfg_file)
         self.device.send_command_expect(cmd)
 
+    def _inline_tcl_xfer(self, source_file=None, source_config=None, dest_file=None,
+                         file_system=None):
+        """
+        Use Netmiko InlineFileTransfer (TCL) to transfer file or config to remote device.
+
+        Return (status, msg)
+        status = boolean
+        msg = details on what happened
+        """
+        if source_file:
+            return self._xfer_file(source_file=source_file, dest_file=dest_file,
+                                   file_system=file_system, TransferClass=InLineTransfer)
+        if source_config:
+            return self._xfer_file(source_config=source_config, dest_file=dest_file,
+                                   file_system=file_system, TransferClass=InLineTransfer)
+        raise ValueError("File source not specified for transfer.")
+
     def _scp_file(self, source_file, dest_file, file_system):
         """
         SCP file to remote device.
@@ -318,30 +420,53 @@ class IOSDriver(NetworkDriver):
         status = boolean
         msg = details on what happened
         """
-        # Will automaticall enable SCP on remote device
-        enable_scp = True
+        return self._xfer_file(source_file=source_file, dest_file=dest_file,
+                               file_system=file_system, TransferClass=FileTransfer)
 
-        with FileTransfer(self.device,
-                          source_file=source_file,
-                          dest_file=dest_file,
-                          file_system=file_system) as scp_transfer:
+    def _xfer_file(self, source_file=None, source_config=None, dest_file=None, file_system=None,
+                   TransferClass=FileTransfer):
+        """Transfer file to remote device.
+
+        By default, this will use Secure Copy if self.inline_transfer is set, then will use
+        Netmiko InlineTransfer method to transfer inline using either SSH or telnet (plus TCL
+        onbox).
+
+        Return (status, msg)
+        status = boolean
+        msg = details on what happened
+        """
+        if not source_file and not source_config:
+            raise ValueError("File source not specified for transfer.")
+        if not dest_file or not file_system:
+            raise ValueError("Destination file or file system not specified.")
+
+        if source_file:
+            kwargs = dict(ssh_conn=self.device, source_file=source_file, dest_file=dest_file,
+                          direction='put', file_system=file_system)
+        elif source_config:
+            kwargs = dict(ssh_conn=self.device, source_config=source_config, dest_file=dest_file,
+                          direction='put', file_system=file_system)
+        enable_scp = True
+        if self.inline_transfer:
+            enable_scp = False
+        with TransferClass(**kwargs) as transfer:
 
             # Check if file already exists and has correct MD5
-            if scp_transfer.check_file_exists() and scp_transfer.compare_md5():
+            if transfer.check_file_exists() and transfer.compare_md5():
                 msg = "File already exists and has correct MD5: no SCP needed"
                 return (True, msg)
-            if not scp_transfer.verify_space_available():
+            if not transfer.verify_space_available():
                 msg = "Insufficient space available on remote device"
                 return (False, msg)
 
             if enable_scp:
-                scp_transfer.enable_scp()
+                transfer.enable_scp()
 
             # Transfer file
-            scp_transfer.transfer_file()
+            transfer.transfer_file()
 
             # Compares MD5 between local-remote files
-            if scp_transfer.verify_file():
+            if transfer.verify_file():
                 msg = "File successfully transferred to remote device"
                 return (True, msg)
             else:
@@ -485,16 +610,15 @@ class IOSDriver(NetworkDriver):
                 return {}
 
             local_port = interface
-            port_id = re.findall(r"Port id: (.+)", output)
-            port_description = re.findall(r"Port Description: (.+)", output)
-            chassis_id = re.findall(r"Chassis id: (.+)", output)
-            system_name = re.findall(r"System Name: (.+)", output)
-            system_description = re.findall(r"System Description: \n(.+)", output)
-            system_capabilities = re.findall(r"System Capabilities: (.+)", output)
-            enabled_capabilities = re.findall(r"Enabled Capabilities: (.+)", output)
-            remote_address = re.findall(r"Management Addresses:\n    IP: (.+)", output)
-            if not remote_address:
-                remote_address = re.findall(r"Management Addresses:\n    Other: (.+)", output)
+            port_id = re.findall(r"Port id:\s+(.+)", output)
+            port_description = re.findall(r"Port Description(?:\s\-|:)\s+(.+)", output)
+            chassis_id = re.findall(r"Chassis id:\s+(.+)", output)
+            system_name = re.findall(r"System Name:\s+(.+)", output)
+            system_description = re.findall(r"System Description:\s*\n(.+)", output)
+            system_capabilities = re.findall(r"System Capabilities:\s+(.+)", output)
+            enabled_capabilities = re.findall(r"Enabled Capabilities:\s+(.+)", output)
+            remote_address = re.findall(r"Management Addresses:\n\s+(?:IP|Other)(?::\s+?)(.+)",
+                                        output)
             number_entries = len(port_id)
             lldp_fields = [port_id, port_description, chassis_id, system_name, system_description,
                            system_capabilities, enabled_capabilities, remote_address]
@@ -1361,15 +1485,16 @@ class IOSDriver(NetworkDriver):
         RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 6 fields
         RE_MACTABLE_4500 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)     # 5 fields
         RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
-        RE_MACTABLE_2960_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields
+        RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields (2960/4500)
 
         def process_mac_fields(vlan, mac, mac_type, interface):
             """Return proper data for mac address fields."""
-            if mac_type.lower() in ['self', 'static']:
+            if mac_type.lower() in ['self', 'static', 'system']:
                 static = True
                 if vlan.lower() == 'all':
                     vlan = 0
-                if interface.lower() == 'cpu':
+                if interface.lower() == 'cpu' or re.search(r'router', interface.lower()) or \
+                        re.search(r'switch', interface.lower()):
                     interface = ''
             else:
                 static = False
@@ -1394,12 +1519,18 @@ class IOSDriver(NetworkDriver):
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
+        # Strip any leading astericks
+        output = re.sub(r"^\*", "", output, flags=re.M)
         for line in output.splitlines():
             line = line.strip()
             if line == '':
                 continue
+            if re.search(r"^---", line):
+                # Convert any '---' to VLAN 0
+                line = re.sub(r"^---", "0", line, flags=re.M)
+
             # Format1
-            elif re.search(RE_MACTABLE_DEFAULT, line):
+            if re.search(RE_MACTABLE_DEFAULT, line):
                 if len(line.split()) == 4:
                     mac, mac_type, vlan, interface = line.split()
                     mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
@@ -1413,20 +1544,27 @@ class IOSDriver(NetworkDriver):
                 elif len(line.split()) == 6:
                     vlan, mac, mac_type, _, _, interface = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            # Cat4948 format
+            # Cat4500 format
             elif re.search(RE_MACTABLE_4500, line) and len(line.split()) == 5:
                 vlan, mac, mac_type, _, interface = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             # Cat2960 format - ignore extra header line
             elif re.search(r"^Vlan\s+Mac Address\s+", line):
                 continue
-            # Cat2960 format
-            elif (re.search(RE_MACTABLE_2960_1, line) or re.search(RE_MACTABLE_2960_2, line)) and \
+            # Cat2960 format (Cat4500 format multicast entries)
+            elif (re.search(RE_MACTABLE_2960_1, line) or re.search(RE_MACTABLE_GEN_1, line)) and \
                     len(line.split()) == 4:
                 vlan, mac, mac_type, interface = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            elif re.search(r"Total Mac Addresses", line):
+                continue
+            elif re.search(r"Multicast Entries", line):
+                continue
+            elif re.search(r"vlan.*mac.*address.*type.*", line):
+                continue
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
+
         return mac_address_table
 
     def get_snmp_information(self):

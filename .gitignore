@@ -60,6 +60,7 @@ env
 
 test/unit/test_devices.py
 test/unit/TestIOSDriverKB.py
+test/unit/TestIOSDriverKB.py_safe
 #test/unit/ios/*.conf
 #test/unit/ios/*.diff
 test/unit/ios/cleanup.sh
