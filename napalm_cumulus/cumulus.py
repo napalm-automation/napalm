@@ -424,7 +424,6 @@ class CumulusDriver(NetworkDriver):
             if output_json[interface]['iface_obj']['speed'] is None:
                 interfaces[interface]['speed'] = -1
             else:
-
                 interfaces[interface]['speed'] = output_json[interface]['iface_obj']['speed']
                 
             interfaces[interface]['mac_address'] = py23_compat.text_type(output_json[interface]['iface_obj']['mac'])
@@ -495,10 +494,6 @@ class CumulusDriver(NetworkDriver):
             for interface in interfaces.keys():
                 interfaces[interface]['last_flapped']=-1
                                
-
-                interfaces[interface]['speed'] = py23_compat.text_type(output_json[interface]['iface_obj']['speed'])
-                
-            interfaces[interface]['mac_address'] = py23_compat.text_type(output_json[interface]['iface_obj']['mac'])
          
         
         return interfaces
