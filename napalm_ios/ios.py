@@ -848,7 +848,7 @@ class IOSDriver(NetworkDriver):
                 match_mac = re.match(mac_regex, interface_output, flags=re.DOTALL)
                 group_mac = match_mac.groupdict()
                 mac_address = group_mac["mac_address"]
-                mac_address = napalm_base.helpers.convert(napalm_base.helpers.mac, mac_address)
+                mac_address = napalm_base.helpers.mac(mac_address)
                 interface_list[interface]['mac_address'] = py23_compat.text_type(mac_address)
             except AttributeError:
                 interface_list[interface]['mac_address'] = u'N/A'
@@ -1343,7 +1343,7 @@ class IOSDriver(NetworkDriver):
                 raise ValueError("Invalid MAC Address detected: {}".format(mac))
             entry = {
                 'interface': interface,
-                'mac': napalm_base.helpers.convert(napalm_base.helpers.mac, mac),
+                'mac': napalm_base.helpers.mac(mac),
                 'ip': address,
                 'age': age
             }
@@ -1505,7 +1505,7 @@ class IOSDriver(NetworkDriver):
             else:
                 active = False
             return {
-                'mac': napalm_base.helpers.convert(napalm_base.helpers.mac, mac),
+                'mac': napalm_base.helpers.mac(mac),
                 'interface': interface,
                 'vlan': int(vlan),
                 'static': static,
