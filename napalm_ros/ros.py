@@ -197,7 +197,8 @@ class ROSDriver(NetworkDriver):
              ttl=C.PING_TTL,
              timeout=C.PING_TIMEOUT,
              size=C.PING_SIZE,
-             count=C.PING_COUNT):
+             count=C.PING_COUNT,
+             vrf=C.PING_VRF):
         params = {
                 'count': count,
                 'address': destination,
@@ -207,6 +208,8 @@ class ROSDriver(NetworkDriver):
         }
         if source:
             params['src-address'] = source
+        if vrf:
+            params['routing-instance'] = vrf
 
         results = self.api('/ping', **params)
 
