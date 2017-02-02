@@ -771,9 +771,6 @@ class EOSDriver(NetworkDriver):
                 bgp_config[group_name].update(
                     parse_options(options, default_value)
                 )
-            except Exception:
-                # for other kind of exception pass to next line
-                continue
 
         for peer, peer_details in bgp_neighbors.items():
             peer_group = peer_details.pop('__group', None)
