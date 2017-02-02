@@ -1,28 +1,23 @@
 """NAPALM driver for Mikrotik RouterBoard OS (ROS)"""
 from __future__ import unicode_literals
+
+# Import third party libs
+from librouteros import connect
+from librouteros.exceptions import TrapError
+from librouteros.exceptions import FatalError
+from librouteros.exceptions import ConnectionError
+from librouteros.exceptions import MultiTrapError
+
+# Import NAPALM base
 from napalm_base import NetworkDriver
 import napalm_base.utils.string_parsers
-from napalm_base.helpers import (
-        ip as cast_ip,
-        mac as cast_mac,
-        )
+from napalm_base.helpers import ip as cast_ip
+from napalm_base.helpers import mac as cast_mac
+from napalm_base.exceptions import ConnectionException
 
-from napalm_base.exceptions import (
-        ConnectionException,
-        )
-
-from librouteros import connect
-from librouteros.exceptions import (
-        TrapError,
-        FatalError,
-        ConnectionError,
-        MultiTrapError,
-        )
-
-from napalm_ros.utils import (
-        to_seconds,
-        iface_addresses,
-        )
+# Import local modules
+from napalm_ros.utils import to_seconds
+from napalm_ros.utils import iface_addresses
 
 
 class ROSDriver(NetworkDriver):
