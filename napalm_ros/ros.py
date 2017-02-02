@@ -11,6 +11,7 @@ from librouteros.exceptions import MultiTrapError
 # Import NAPALM base
 from napalm_base import NetworkDriver
 import napalm_base.utils.string_parsers
+import napalm_base.constants as C
 from napalm_base.helpers import ip as cast_ip
 from napalm_base.helpers import mac as cast_mac
 from napalm_base.exceptions import ConnectionException
@@ -190,7 +191,13 @@ class ROSDriver(NetworkDriver):
                 'Could not connect to {}:{} - [{!r}]'.format(self.hostname, self.port, exc)
             )
 
-    def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
+    def ping(self,
+             destination,
+             source=C.PING_SOURCE,
+             ttl=C.PING_TTL,
+             timeout=C.PING_TIMEOUT,
+             size=C.PING_SIZE,
+             count=C.PING_COUNT):
         params = {
                 'count': count,
                 'address': destination,
