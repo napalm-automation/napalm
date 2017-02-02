@@ -123,14 +123,13 @@ class EOSDriver(NetworkDriver):
         }
 
     def _load_config(self, filename=None, config=None, replace=True):
-        if self.config_session is not None:
-            raise SessionLockedException('Session is already in use by napalm')
-        else:
-            self.config_session = 'napalm_{}'.format(datetime.now().microsecond)
-
         commands = []
-        commands.append('configure session {}'.format(self.config_session))
 
+        if self.config_session is None:
+            # create a new session
+            # otherwise will preserve the previous configuration session
+            self.config_session = 'napalm_{}'.format(datetime.now().microsecond)
+        commands.append('configure session {}'.format(self.config_session))
         if replace:
             commands.append('rollback clean-config')
 
