@@ -1058,7 +1058,7 @@ class EOSDriver(NetworkDriver):
                     last_active = active_route  # should find smth better
                     communities = bgp_route_details.get('routeDetail', {}).get('communityList', [])
                     preference2 = bgp_route_details.get('weight')
-                    inactive_reason = bgp_route_details.get('reasonNotBestpath')
+                    inactive_reason = bgp_route_details.get('reasonNotBestpath', '')
                     bgp_route.update({
                         'current_active': active_route,
                         'inactive_reason': inactive_reason,
