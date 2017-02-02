@@ -128,7 +128,7 @@ class EOSDriver(NetworkDriver):
         else:
             self.config_session = 'napalm_{}'.format(datetime.now().microsecond)
 
-        commands = list()
+        commands = []
         commands.append('configure session {}'.format(self.config_session))
 
         if replace:
@@ -183,7 +183,7 @@ class EOSDriver(NetworkDriver):
 
     def commit_config(self):
         """Implementation of NAPALM method commit_config."""
-        commands = list()
+        commands = []
         commands.append('copy startup-config flash:rollback-0')
         commands.append('configure session {}'.format(self.config_session))
         commands.append('commit')
@@ -195,7 +195,7 @@ class EOSDriver(NetworkDriver):
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
-            commands = list()
+            commands = []
             commands.append('configure session {}'.format(self.config_session))
             commands.append('abort')
             self.device.run_commands(commands)
@@ -203,7 +203,7 @@ class EOSDriver(NetworkDriver):
 
     def rollback(self):
         """Implementation of NAPALM method rollback."""
-        commands = list()
+        commands = []
         commands.append('configure replace flash:rollback-0')
         commands.append('write memory')
         self.device.run_commands(commands)
@@ -238,14 +238,14 @@ class EOSDriver(NetworkDriver):
         }
 
     def get_interfaces(self):
-        commands = list()
+        commands = []
         commands.append('show interfaces')
         output = self.device.run_commands(commands)[0]
 
-        interfaces = dict()
+        interfaces = {}
 
         for interface, values in output['interfaces'].items():
-            interfaces[interface] = dict()
+            interfaces[interface] = {}
 
             if values['lineProtocolStatus'] == 'up':
                 interfaces[interface]['is_up'] = True
@@ -268,15 +268,15 @@ class EOSDriver(NetworkDriver):
         return interfaces
 
     def get_lldp_neighbors(self):
-        commands = list()
+        commands = []
         commands.append('show lldp neighbors')
         output = self.device.run_commands(commands)[0]['lldpNeighbors']
 
-        lldp = dict()
+        lldp = {}
 
         for n in output:
             if n['port'] not in lldp.keys():
-                lldp[n['port']] = list()
+                lldp[n['port']] = []
 
             lldp[n['port']].append(
                 {
@@ -329,7 +329,7 @@ class EOSDriver(NetworkDriver):
             ['show ip ' + NEIGHBOR_FILTER, 'show ipv6 ' + NEIGHBOR_FILTER],
             encoding='text')
 
-        bgp_counters = defaultdict(lambda: dict(peers=dict()))
+        bgp_counters = defaultdict(lambda: dict(peers={}))
         for summary in output_summary_cmds:
             """
             Json output looks as follows
@@ -497,13 +497,13 @@ class EOSDriver(NetworkDriver):
 
     def get_lldp_neighbors_detail(self, interface=''):
 
-        lldp_neighbors_out = dict()
+        lldp_neighbors_out = {}
 
-        filters = list()
+        filters = []
         if interface:
             filters.append(interface)
 
-        commands = list()
+        commands = []
         commands.append(
             'show lldp neighbors {filters} detail'.format(
                 filters=' '.join(filters)
@@ -522,7 +522,7 @@ class EOSDriver(NetworkDriver):
             # it is provided a list of neighbors per interface
             for neighbor in interface_neighbors:
                 if interface not in lldp_neighbors_out.keys():
-                    lldp_neighbors_out[interface] = list()
+                    lldp_neighbors_out[interface] = []
                 capabilities = neighbor.get('systemCapabilities')
                 capabilities_list = list(capabilities.keys())
                 capabilities_list.sort()
@@ -545,7 +545,7 @@ class EOSDriver(NetworkDriver):
         return lldp_neighbors_out
 
     def cli(self, commands):
-        cli_output = dict()
+        cli_output = {}
 
         if type(commands) is not list:
             raise TypeError('Please enter a valid list of commands!')
@@ -635,7 +635,7 @@ class EOSDriver(NetworkDriver):
         def parse_options(options, default_value=False):
 
             if not options:
-                return dict()
+                return {}
 
             config_property = options[0]
             field_name = _PROPERTY_FIELD_MAP_.get(config_property)
@@ -644,7 +644,7 @@ class EOSDriver(NetworkDriver):
 
             if not field_type:
                 # no type specified at all => return empty dictionary
-                return dict()
+                return {}
 
             if not default_value:
                 if len(options) > 1:
@@ -673,16 +673,16 @@ class EOSDriver(NetworkDriver):
                         field_name = 'export_policy'
                     return {field_name: field_value}
 
-            return dict()
+            return {}
 
-        bgp_config = dict()
+        bgp_config = {}
 
-        commands = list()
+        commands = []
         commands.append('show running-config | section router bgp')
         bgp_conf = self.device.run_commands(commands, encoding='text')[0].get('output', '\n\n')
         bgp_conf_lines = bgp_conf.splitlines()[2:]
 
-        bgp_neighbors = dict()
+        bgp_neighbors = {}
 
         if not group:
             neighbor = ''
@@ -737,9 +737,9 @@ class EOSDriver(NetworkDriver):
                 # match the neighbors with the group they belong to
                 # directly will apend the neighbor in the neighbor list of the group at the end
                 if last_peer_group not in bgp_neighbors.keys():
-                    bgp_neighbors[last_peer_group] = dict()
+                    bgp_neighbors[last_peer_group] = {}
                 if peer_address not in bgp_neighbors[last_peer_group]:
-                    bgp_neighbors[last_peer_group][peer_address] = dict()
+                    bgp_neighbors[last_peer_group][peer_address] = {}
                     bgp_neighbors[last_peer_group][peer_address].update({
                         key: _DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop))
                         for prop, key in _PEER_FIELD_MAP_.items()
@@ -759,7 +759,7 @@ class EOSDriver(NetworkDriver):
                 if group and group_name != group:
                     continue
                 if group_name not in bgp_config.keys():
-                    bgp_config[group_name] = dict()
+                    bgp_config[group_name] = {}
                     bgp_config[group_name].update({
                         key: _DATATYPE_DEFAULT_.get(_PROPERTY_TYPE_MAP_.get(prop))
                         for prop, key in _GROUP_FIELD_MAP_.items()
@@ -785,7 +785,7 @@ class EOSDriver(NetworkDriver):
 
     def get_arp_table(self):
 
-        arp_table = list()
+        arp_table = []
 
         commands = ['show arp']
 
@@ -822,7 +822,7 @@ class EOSDriver(NetworkDriver):
                 for ntp_peer in ntp_config if ntp_peer.get('ntppeer', '')}
 
     def get_ntp_stats(self):
-        ntp_stats = list()
+        ntp_stats = []
 
         REGEX = (
             '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
@@ -832,7 +832,7 @@ class EOSDriver(NetworkDriver):
             '\s+([0-9\.]+)\s?$'
         )
 
-        commands = list()
+        commands = []
         commands.append('show ntp associations')
 
         # output = self.device.run_commands(commands)
@@ -869,7 +869,7 @@ class EOSDriver(NetworkDriver):
 
     def get_interfaces_ip(self):
 
-        interfaces_ip = dict()
+        interfaces_ip = {}
 
         interfaces_ipv4_out = self.device.run_commands(['show ip interface'])[0]['interfaces']
         try:
@@ -881,14 +881,14 @@ class EOSDriver(NetworkDriver):
                 raise
 
         for interface_name, interface_details in interfaces_ipv4_out.items():
-            ipv4_list = list()
+            ipv4_list = []
             if interface_name not in interfaces_ip.keys():
-                interfaces_ip[interface_name] = dict()
+                interfaces_ip[interface_name] = {}
 
             if u'ipv4' not in interfaces_ip.get(interface_name):
-                interfaces_ip[interface_name][u'ipv4'] = dict()
+                interfaces_ip[interface_name][u'ipv4'] = {}
             if u'ipv6' not in interfaces_ip.get(interface_name):
-                interfaces_ip[interface_name][u'ipv6'] = dict()
+                interfaces_ip[interface_name][u'ipv6'] = {}
 
             iface_details = interface_details.get('interfaceAddress', {})
             if iface_details.get('primaryIp', {}).get('address') != '0.0.0.0':
@@ -916,14 +916,14 @@ class EOSDriver(NetworkDriver):
                     }
 
         for interface_name, interface_details in interfaces_ipv6_out.items():
-            ipv6_list = list()
+            ipv6_list = []
             if interface_name not in interfaces_ip.keys():
-                interfaces_ip[interface_name] = dict()
+                interfaces_ip[interface_name] = {}
 
             if u'ipv4' not in interfaces_ip.get(interface_name):
-                interfaces_ip[interface_name][u'ipv4'] = dict()
+                interfaces_ip[interface_name][u'ipv4'] = {}
             if u'ipv6' not in interfaces_ip.get(interface_name):
-                interfaces_ip[interface_name][u'ipv6'] = dict()
+                interfaces_ip[interface_name][u'ipv6'] = {}
 
             ipv6_list.append(
                 {
@@ -954,7 +954,7 @@ class EOSDriver(NetworkDriver):
 
     def get_mac_address_table(self):
 
-        mac_table = list()
+        mac_table = []
 
         commands = ['show mac address-table']
 
@@ -987,7 +987,7 @@ class EOSDriver(NetworkDriver):
         return mac_table
 
     def get_route_to(self, destination='', protocol=''):
-        routes = dict()
+        routes = {}
 
         if protocol.lower() == 'direct':
             protocol = 'connected'
@@ -1014,13 +1014,13 @@ class EOSDriver(NetworkDriver):
 
         for prefix, route_details in routes_out.items():
             if prefix not in routes.keys():
-                routes[prefix] = list()
-            route_protocol = route_details.get('routeType').upper()
+                routes[prefix] = []
+            route_protocol = route_details.get('routeType')
             preference = route_details.get('preference', 0)
 
             route = {
-                'current_active': False,
-                'last_active': False,
+                'current_active': True,
+                'last_active': True,
                 'age': 0,
                 'next_hop': u'',
                 'protocol': route_protocol,
@@ -1028,10 +1028,14 @@ class EOSDriver(NetworkDriver):
                 'preference': preference,
                 'inactive_reason': u'',
                 'routing_table': u'default',
-                'selected_next_hop': False,
+                'selected_next_hop': True,
                 'protocol_attributes': {}
             }
-            if protocol == 'bgp':
+            if protocol == 'bgp' or route_protocol.lower() in ('ebgp', 'ibgp'):
+                nexthop_interface_map = {}
+                for next_hop in route_details.get('vias'):
+                    nexthop_ip = napalm_base.helpers.ip(next_hop.get('nexthopAddr'))
+                    nexthop_interface_map[nexthop_ip] = next_hop.get('interface')
                 metric = route_details.get('metric')
                 command = 'show ip{ipv} bgp {destination} detail'.format(
                     ipv=ipv,
@@ -1054,10 +1058,13 @@ class EOSDriver(NetworkDriver):
                     last_active = active_route  # should find smth better
                     communities = bgp_route_details.get('routeDetail', {}).get('communityList', [])
                     preference2 = bgp_route_details.get('weight')
+                    inactive_reason = bgp_route_details.get('reasonNotBestpath', '')
                     bgp_route.update({
                         'current_active': active_route,
+                        'inactive_reason': inactive_reason,
                         'last_active': last_active,
                         'next_hop': next_hop,
+                        'outgoing_interface': nexthop_interface_map.get(next_hop),
                         'selected_next_hop': active_route,
                         'protocol_attributes': {
                             'metric': metric,
@@ -1072,6 +1079,11 @@ class EOSDriver(NetworkDriver):
                     })
                     routes[prefix].append(bgp_route)
             else:
+                if route_details.get('routeAction') in ('drop',):
+                    route['next_hop'] = 'NULL'
+                if route_details.get('routingDisabled') is True:
+                    route['last_active'] = False
+                    route['current_active'] = False
                 for next_hop in route_details.get('vias'):
                     route_next_hop = route.copy()
                     if next_hop.get('nexthopAddr') is None:
@@ -1089,7 +1101,8 @@ class EOSDriver(NetworkDriver):
                             }
                         )
                     routes[prefix].append(route_next_hop)
-
+                if route_details.get('vias') == []:  # empty list
+                    routes[prefix].append(route)
         return routes
 
     def get_snmp_information(self):
@@ -1139,7 +1152,7 @@ class EOSDriver(NetworkDriver):
                 return u'ssh_dsa', py23_compat.text_type(sshkey)
             return u'ssh_rsa', u''
 
-        users = dict()
+        users = {}
 
         commands = ['show user-account']
         user_items = self.device.run_commands(commands)[0].get('users', {})
@@ -1521,15 +1534,15 @@ class EOSDriver(NetworkDriver):
         raw_output = self.device.run_commands(commands, encoding='text')[0].get('output', '')
 
         output = napalm_base.helpers.textfsm_extractor(self, 'vrf', raw_output)
-        vrfs = dict()
-        all_vrf_interfaces = dict()
+        vrfs = {}
+        all_vrf_interfaces = {}
         for vrf in output:
             if (vrf.get('route_distinguisher', '') == "<not set>" or
                     vrf.get('route_distinguisher', '') == 'None'):
                 vrf['route_distinguisher'] = u''
             else:
                 vrf['route_distinguisher'] = py23_compat.text_type(vrf['route_distinguisher'])
-            interfaces = dict()
+            interfaces = {}
             for interface_raw in vrf.get('interfaces', []):
                 interface = interface_raw.split(',')
                 for line in interface:
