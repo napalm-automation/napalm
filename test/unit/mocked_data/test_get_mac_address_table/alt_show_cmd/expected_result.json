@@ -2,7 +2,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 1,
-	"mac": "6400.f1cf.2cc6",
+	"mac": "64:00:F1:CF:2C:C6",
 	"interface": "Wlan-GigabitEthernet0",
 	"moves": -1,
 	"last_move": -1.0
@@ -10,7 +10,7 @@
 	"static": true,
 	"active": false,
 	"vlan": 1,
-	"mac": "a493.4cc1.67a7",
+	"mac": "A4:93:4C:C1:67:A7",
 	"interface": "Vlan1",
 	"moves": -1,
 	"last_move": -1.0
@@ -18,7 +18,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "000c.2906.17d6",
+	"mac": "00:0C:29:06:17:D6",
 	"interface": "FastEthernet7",
 	"moves": -1,
 	"last_move": -1.0
@@ -26,7 +26,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "000c.2913.421b",
+	"mac": "00:0C:29:13:42:1B",
 	"interface": "FastEthernet7",
 	"moves": -1,
 	"last_move": -1.0
@@ -34,7 +34,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "0018.0ab3.59f1",
+	"mac": "00:18:0A:B3:59:F1",
 	"interface": "FastEthernet7",
 	"moves": -1,
 	"last_move": -1.0
@@ -42,7 +42,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "0018.dd32.1f7c",
+	"mac": "00:18:DD:32:1F:7C",
 	"interface": "FastEthernet6",
 	"moves": -1,
 	"last_move": -1.0
@@ -50,7 +50,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "0025.64f5.d352",
+	"mac": "00:25:64:F5:D3:52",
 	"interface": "FastEthernet7",
 	"moves": -1,
 	"last_move": -1.0
@@ -58,7 +58,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "0026.abb9.a503",
+	"mac": "00:26:AB:B9:A5:03",
 	"interface": "FastEthernet4",
 	"moves": -1,
 	"last_move": -1.0
@@ -66,7 +66,7 @@
 	"static": true,
 	"active": false,
 	"vlan": 100,
-	"mac": "a493.4cc1.67a7",
+	"mac": "A4:93:4C:C1:67:A7",
 	"interface": "Vlan100",
 	"moves": -1,
 	"last_move": -1.0
@@ -74,7 +74,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "ac3a.7a1a.ba4b",
+	"mac": "AC:3A:7A:1A:BA:4B",
 	"interface": "Wlan-GigabitEthernet0",
 	"moves": -1,
 	"last_move": -1.0
@@ -82,7 +82,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "b0a7.376f.b3b4",
+	"mac": "B0:A7:37:6F:B3:B4",
 	"interface": "FastEthernet7",
 	"moves": -1,
 	"last_move": -1.0
@@ -90,7 +90,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "bc5f.f435.fa0e",
+	"mac": "BC:5F:F4:35:FA:0E",
 	"interface": "FastEthernet7",
 	"moves": -1,
 	"last_move": -1.0
@@ -98,7 +98,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "dc3a.5e67.1a98",
+	"mac": "DC:3A:5E:67:1A:98",
 	"interface": "FastEthernet7",
 	"moves": -1,
 	"last_move": -1.0
@@ -106,7 +106,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "dc3a.5ee2.6a95",
+	"mac": "DC:3A:5E:E2:6A:95",
 	"interface": "Wlan-GigabitEthernet0",
 	"moves": -1,
 	"last_move": -1.0
@@ -114,7 +114,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 100,
-	"mac": "f04f.7c92.5a45",
+	"mac": "F0:4F:7C:92:5A:45",
 	"interface": "Wlan-GigabitEthernet0",
 	"moves": -1,
 	"last_move": -1.0
@@ -122,7 +122,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 200,
-	"mac": "0009.b754.1a88",
+	"mac": "00:09:B7:54:1A:88",
 	"interface": "FastEthernet7",
 	"moves": -1,
 	"last_move": -1.0
@@ -130,7 +130,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 200,
-	"mac": "10bd.1801.a0b4",
+	"mac": "10:BD:18:01:A0:B4",
 	"interface": "FastEthernet3",
 	"moves": -1,
 	"last_move": -1.0
@@ -138,7 +138,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 200,
-	"mac": "204c.9ed7.cb80",
+	"mac": "20:4C:9E:D7:CB:80",
 	"interface": "FastEthernet2",
 	"moves": -1,
 	"last_move": -1.0
@@ -146,7 +146,7 @@
 	"static": true,
 	"active": false,
 	"vlan": 200,
-	"mac": "a493.4cc1.67a7",
+	"mac": "A4:93:4C:C1:67:A7",
 	"interface": "Vlan200",
 	"moves": -1,
 	"last_move": -1.0
