@@ -582,19 +582,24 @@ class IOSDriver(NetworkDriver):
             try:
                 device_id, local_int_brief, hold_time, capability, remote_port = lldp_entry.split()
             except ValueError:
-                # Check for long names (device_id is 20 chars long)
                 if len(lldp_entry.split()) == 4:
-                    tmp_field, hold_time, capability, remote_port = lldp_entry.split()
-                    device_id = tmp_field[:20]
-                    local_int_brief = tmp_field[20:]
-                    # device_id might be abbreviated, try to get full name
-                    lldp_tmp = self._lldp_detail_parser(local_int_brief)
-                    device_id_new = lldp_tmp[3][0]
-                    # Verify abbreviated and full name are consistent
-                    if device_id_new[:20] == device_id:
-                        device_id = device_id_new
+                    # Four fields might be long_name or missing capability
+                    capability_missing = True if lldp_entry[46] == ' ' else False
+                    if capability_missing:
+                        device_id, local_int_brief, hold_time, remote_port = lldp_entry.split()
                     else:
-                        raise ValueError("Unable to obtain remote device name")
+                        # Might be long_name issue
+                        tmp_field, hold_time, capability, remote_port = lldp_entry.split()
+                        device_id = tmp_field[:20]
+                        local_int_brief = tmp_field[20:]
+                        # device_id might be abbreviated, try to get full name
+                        lldp_tmp = self._lldp_detail_parser(local_int_brief)
+                        device_id_new = lldp_tmp[3][0]
+                        # Verify abbreviated and full name are consistent
+                        if device_id_new[:20] == device_id:
+                            device_id = device_id_new
+                        else:
+                            raise ValueError("Unable to obtain remote device name")
             local_port = self._expand_interface_name(local_int_brief)
 
             entry = {'port': remote_port, 'hostname': device_id}
