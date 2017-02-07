@@ -360,6 +360,9 @@ class IOSDriver(NetworkDriver):
             if ('Failed to apply command' in output) or \
                ('original configuration has been successfully restored' in output):
                 raise ReplaceConfigException("Candidate config could not be applied")
+            elif '%Please turn config archive on' in output:
+                msg = "napalm-ios replace() requires Cisco 'archive' feature to be enabled."
+                raise ReplaceConfigException(msg)
         else:
             # Merge operation
             filename = self.merge_cfg
