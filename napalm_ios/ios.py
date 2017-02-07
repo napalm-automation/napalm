@@ -579,7 +579,27 @@ class IOSDriver(NetworkDriver):
 
         for lldp_entry in split_output.splitlines():
             # Example, twb-sf-hpsw1    Fa4   120   B   17
-            device_id, local_int_brief, hold_time, capability, remote_port = lldp_entry.split()
+            try:
+                device_id, local_int_brief, hold_time, capability, remote_port = lldp_entry.split()
+            except ValueError:
+                if len(lldp_entry.split()) == 4:
+                    # Four fields might be long_name or missing capability
+                    capability_missing = True if lldp_entry[46] == ' ' else False
+                    if capability_missing:
+                        device_id, local_int_brief, hold_time, remote_port = lldp_entry.split()
+                    else:
+                        # Might be long_name issue
+                        tmp_field, hold_time, capability, remote_port = lldp_entry.split()
+                        device_id = tmp_field[:20]
+                        local_int_brief = tmp_field[20:]
+                        # device_id might be abbreviated, try to get full name
+                        lldp_tmp = self._lldp_detail_parser(local_int_brief)
+                        device_id_new = lldp_tmp[3][0]
+                        # Verify abbreviated and full name are consistent
+                        if device_id_new[:20] == device_id:
+                            device_id = device_id_new
+                        else:
+                            raise ValueError("Unable to obtain remote device name")
             local_port = self._expand_interface_name(local_int_brief)
 
             entry = {'port': remote_port, 'hostname': device_id}
@@ -587,6 +607,26 @@ class IOSDriver(NetworkDriver):
             lldp[local_port].append(entry)
 
         return lldp
+
+    def _lldp_detail_parser(self, interface):
+        command = "show lldp neighbors {} detail".format(interface)
+        output = self._send_command(command)
+
+        # Check if router supports the command
+        if '% Invalid input' in output:
+            raise ValueError("Command not supported by network device")
+
+        port_id = re.findall(r"Port id:\s+(.+)", output)
+        port_description = re.findall(r"Port Description(?:\s\-|:)\s+(.+)", output)
+        chassis_id = re.findall(r"Chassis id:\s+(.+)", output)
+        system_name = re.findall(r"System Name:\s+(.+)", output)
+        system_description = re.findall(r"System Description:\s*\n(.+)", output)
+        system_capabilities = re.findall(r"System Capabilities:\s+(.+)", output)
+        enabled_capabilities = re.findall(r"Enabled Capabilities:\s+(.+)", output)
+        remote_address = re.findall(r"Management Addresses:\n\s+(?:IP|Other)(?::\s+?)(.+)",
+                                    output)
+        return [port_id, port_description, chassis_id, system_name, system_description,
+                system_capabilities, enabled_capabilities, remote_address]
 
     def get_lldp_neighbors_detail(self, interface=''):
         """
@@ -606,26 +646,9 @@ class IOSDriver(NetworkDriver):
                 lldp_neighbors = {}
 
         for interface in lldp_neighbors:
-            command = "show lldp neighbors {} detail".format(interface)
-            output = self._send_command(command)
-
-            # Check if router supports the command
-            if '% Invalid input' in output:
-                return {}
-
             local_port = interface
-            port_id = re.findall(r"Port id:\s+(.+)", output)
-            port_description = re.findall(r"Port Description(?:\s\-|:)\s+(.+)", output)
-            chassis_id = re.findall(r"Chassis id:\s+(.+)", output)
-            system_name = re.findall(r"System Name:\s+(.+)", output)
-            system_description = re.findall(r"System Description:\s*\n(.+)", output)
-            system_capabilities = re.findall(r"System Capabilities:\s+(.+)", output)
-            enabled_capabilities = re.findall(r"Enabled Capabilities:\s+(.+)", output)
-            remote_address = re.findall(r"Management Addresses:\n\s+(?:IP|Other)(?::\s+?)(.+)",
-                                        output)
-            number_entries = len(port_id)
-            lldp_fields = [port_id, port_description, chassis_id, system_name, system_description,
-                           system_capabilities, enabled_capabilities, remote_address]
+            lldp_fields = self._lldp_detail_parser(interface)
+            number_entries = len(lldp_fields[0])
 
             # re.findall will return a list. Make sure same number of entries always returned.
             for test_list in lldp_fields:
