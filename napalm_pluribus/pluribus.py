@@ -360,7 +360,8 @@ class PluribusDriver(NetworkDriver):
                    destination,
                    source=C.TRACEROUTE_SOURCE,
                    ttl=C.TRACEROUTE_TTL,
-                   timeout=C.TRACEROUTE_TIMEOUT):
+                   timeout=C.TRACEROUTE_TIMEOUT,
+                   vrf=C.TRACEROUTE_VRF):
         # same method as on EOS, different command send to CLI
 
         _HOP_ENTRY_PROBE = [
