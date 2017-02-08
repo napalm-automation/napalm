@@ -1496,7 +1496,8 @@ class IOSDriver(NetworkDriver):
             snmp_dict['chassis_id'] = snmp_chassis
         return snmp_dict
 
-    def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5, vrf=''):
+    def ping(self, destination, source=C.PING_SOURCE, ttl=C.PING_TTL, timeout=C.PING_TIMEOUT,
+             size=C.PING_SIZE, count=C.PING_COUNT, vrf=C.PING_VRF):
         """
         Execute ping on the device and returns a dictionary with the result.
 
@@ -1594,9 +1595,9 @@ class IOSDriver(NetworkDriver):
 
         # vrf needs to be right after the traceroute command
         if vrf:
-           command = "traceroute vrf {} {}".format(vrf, destination)
+            command = "traceroute vrf {} {}".format(vrf, destination)
         else:
-           command = "traceroute {}".format(destination)
+            command = "traceroute {}".format(destination)
         if source:
             command += " source {}".format(source)
         if ttl:
