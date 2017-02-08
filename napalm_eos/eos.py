@@ -1216,7 +1216,8 @@ class EOSDriver(NetworkDriver):
             # `ttl`, `source` and `timeout` are not supported by default CLI
             # so we need to go through the bash and set a specific timeout
             commands = [
-                'bash timeout {total_timeout} traceroute {destination} {source_opt} {ttl_opt} {timeout_opt}'.format(
+                ('bash timeout {total_timeout} traceroute {destination} '
+                 '{source_opt} {ttl_opt} {timeout_opt}').format(
                     total_timeout=total_timeout,
                     destination=destination,
                     source_opt=source_opt,
@@ -1236,7 +1237,7 @@ class EOSDriver(NetworkDriver):
             traceroute_raw_output = self.device.run_commands(
                 commands, encoding='text')[0].get('output')
         except CommandErrorException:
-            return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
+            return {'error': 'Cannot execute traceroute on the device: {}'.format(commands[0])}
 
         hop_regex = ''.join(_HOP_ENTRY + _HOP_ENTRY_PROBE * probes)
 
