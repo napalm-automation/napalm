@@ -1,28 +1,24 @@
 """NAPALM driver for Mikrotik RouterBoard OS (ROS)"""
 from __future__ import unicode_literals
+
+# Import third party libs
+from librouteros import connect
+from librouteros.exceptions import TrapError
+from librouteros.exceptions import FatalError
+from librouteros.exceptions import ConnectionError
+from librouteros.exceptions import MultiTrapError
+
+# Import NAPALM base
 from napalm_base import NetworkDriver
 import napalm_base.utils.string_parsers
-from napalm_base.helpers import (
-        ip as cast_ip,
-        mac as cast_mac,
-        )
+import napalm_base.constants as C
+from napalm_base.helpers import ip as cast_ip
+from napalm_base.helpers import mac as cast_mac
+from napalm_base.exceptions import ConnectionException
 
-from napalm_base.exceptions import (
-        ConnectionException,
-        )
-
-from librouteros import connect
-from librouteros.exceptions import (
-        TrapError,
-        FatalError,
-        ConnectionError,
-        MultiTrapError,
-        )
-
-from napalm_ros.utils import (
-        to_seconds,
-        iface_addresses,
-        )
+# Import local modules
+from napalm_ros.utils import to_seconds
+from napalm_ros.utils import iface_addresses
 
 
 class ROSDriver(NetworkDriver):
@@ -195,7 +191,14 @@ class ROSDriver(NetworkDriver):
                 'Could not connect to {}:{} - [{!r}]'.format(self.hostname, self.port, exc)
             )
 
-    def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
+    def ping(self,
+             destination,
+             source=C.PING_SOURCE,
+             ttl=C.PING_TTL,
+             timeout=C.PING_TIMEOUT,
+             size=C.PING_SIZE,
+             count=C.PING_COUNT,
+             vrf=C.PING_VRF):
         params = {
                 'count': count,
                 'address': destination,
@@ -205,6 +208,8 @@ class ROSDriver(NetworkDriver):
         }
         if source:
             params['src-address'] = source
+        if vrf:
+            params['routing-instance'] = vrf
 
         results = self.api('/ping', **params)
 
