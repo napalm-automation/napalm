@@ -1219,7 +1219,8 @@ class JunOSDriver(NetworkDriver):
                    destination,
                    source=C.TRACEROUTE_SOURCE,
                    ttl=C.TRACEROUTE_TTL,
-                   timeout=C.TRACEROUTE_TIMEOUT):
+                   timeout=C.TRACEROUTE_TIMEOUT,
+                   vrf=C.TRACEROUTE_VRF):
         """Execute traceroute and return results."""
         traceroute_result = {}
 
@@ -1229,19 +1230,23 @@ class JunOSDriver(NetworkDriver):
         source_str = ''
         maxttl_str = ''
         wait_str = ''
+        vrf_str = ''
 
         if source:
-            source_str = 'source {source}'.format(source=source)
+            source_str = ' source {source}'.format(source=source)
         if ttl:
-            maxttl_str = 'ttl {ttl}'.format(ttl=ttl)
+            maxttl_str = ' ttl {ttl}'.format(ttl=ttl)
         if timeout:
-            wait_str = 'wait {timeout}'.format(timeout=timeout)
+            wait_str = ' wait {timeout}'.format(timeout=timeout)
+        if vrf:
+            vrf_str = ' routing-instance {vrf}'.format(vrf=vrf)
 
-        traceroute_command = 'traceroute {destination} {source} {maxttl} {wait}'.format(
+        traceroute_command = 'traceroute {destination}{source}{maxttl}{wait}{vrf}'.format(
             destination=destination,
             source=source_str,
             maxttl=maxttl_str,
-            wait=wait_str
+            wait=wait_str,
+            vrf=vrf_str
         )
 
         traceroute_rpc = E('command', traceroute_command)
@@ -1281,7 +1286,7 @@ class JunOSDriver(NetworkDriver):
         return traceroute_result
 
     def ping(self, destination, source=C.PING_SOURCE, ttl=C.PING_TTL,
-             timeout=C.PING_TIMEOUT, size=C.PING_SIZE, count=C.PING_COUNT):
+             timeout=C.PING_TIMEOUT, size=C.PING_SIZE, count=C.PING_COUNT, vrf=C.PING_VRF):
 
         ping_dict = {}
 
@@ -1290,25 +1295,29 @@ class JunOSDriver(NetworkDriver):
         timeout_str = ''
         size_str = ''
         count_str = ''
+        vrf_str = ''
 
         if source:
-            source_str = 'source {source}'.format(source=source)
+            source_str = ' source {source}'.format(source=source)
         if ttl:
-            maxttl_str = 'ttl {ttl}'.format(ttl=ttl)
+            maxttl_str = ' ttl {ttl}'.format(ttl=ttl)
         if timeout:
-            timeout_str = 'wait {timeout}'.format(timeout=timeout)
+            timeout_str = ' wait {timeout}'.format(timeout=timeout)
         if size:
-            size_str = 'size {size}'.format(size=size)
+            size_str = ' size {size}'.format(size=size)
         if count:
-            count_str = 'count {count}'.format(count=count)
+            count_str = ' count {count}'.format(count=count)
+        if vrf:
+            vrf_str = ' routing-instance {vrf}'.format(vrf=vrf)
 
-        ping_command = 'ping {destination} {source} {ttl} {timeout} {size} {count}'.format(
+        ping_command = 'ping {destination}{source}{ttl}{timeout}{size}{count}{vrf}'.format(
             destination=destination,
             source=source_str,
             ttl=maxttl_str,
             timeout=timeout_str,
             size=size_str,
-            count=count_str
+            count=count_str,
+            vrf=vrf_str
         )
 
         ping_rpc = E('command', ping_command)
@@ -1442,7 +1451,8 @@ class JunOSDriver(NetworkDriver):
                                 'input_power': {
                                     'instant': (
                                         float(optics['input_power'])
-                                        if optics['input_power'] not in [None, C.OPTICS_NO_POWER]
+                                        if optics['input_power'] not in
+                                        [None, C.OPTICS_NULL_LEVEL]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1451,7 +1461,8 @@ class JunOSDriver(NetworkDriver):
                                 'output_power': {
                                     'instant': (
                                         float(optics['output_power'])
-                                        if optics['output_power'] not in [None, C.OPTICS_NO_POWER]
+                                        if optics['output_power'] not in
+                                        [None, C.OPTICS_NULL_LEVEL]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1461,7 +1472,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['laser_bias_current'])
                                         if optics['laser_bias_current'] not in
-                                        [None, C.OPTICS_NO_POWER]
+                                        [None, C.OPTICS_NULL_LEVEL]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
