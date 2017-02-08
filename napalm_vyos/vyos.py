@@ -30,6 +30,7 @@ from netmiko import ConnectHandler
 from netmiko import SCPConn
 
 # NAPALM base
+import napalm_base.constants as C
 from napalm_base.utils import py23_compat
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ConnectionException, \
@@ -782,7 +783,14 @@ class VyOSDriver(NetworkDriver):
 
         return user_auth
 
-    def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
+    def ping(self,
+             destination,
+             source=C.PING_SOURCE,
+             ttl=C.PING_TTL,
+             timeout=C.PING_TIMEOUT,
+             size=C.PING_SIZE,
+             count=C.PING_COUNT,
+             vrf=C.PING_VRF):
         # does not support multiple destination yet
 
         deadline = timeout * count
