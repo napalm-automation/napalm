@@ -1111,7 +1111,7 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def ping(self, destination, source=c.PING_SOURCE, ttl=c.PING_TTL, timeout=c.PING_TIMEOUT,
-             size=c.PING_SIZE, count=c.PING_COUNT):
+             size=c.PING_SIZE, count=c.PING_COUNT, vrf=c.PING_VRF):
         """
         Executes ping on the device and returns a dictionary with the result
 
@@ -1178,7 +1178,8 @@ class NetworkDriver(object):
                    destination,
                    source=c.TRACEROUTE_SOURCE,
                    ttl=c.TRACEROUTE_TTL,
-                   timeout=c.TRACEROUTE_TIMEOUT):
+                   timeout=c.TRACEROUTE_TIMEOUT,
+                   vrf=c.TRACEROUTE_VRF):
         """
         Executes traceroute on the device and returns a dictionary with the result.
 
