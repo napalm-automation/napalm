@@ -1648,7 +1648,8 @@ class IOSDriver(NetworkDriver):
             snmp_dict['chassis_id'] = snmp_chassis
         return snmp_dict
 
-    def ping(self, destination, source='', ttl=255, timeout=2, size=100, count=5):
+    def ping(self, destination, source=C.PING_SOURCE, ttl=C.PING_TTL, timeout=C.PING_TIMEOUT,
+             size=C.PING_SIZE, count=C.PING_COUNT, vrf=C.PING_VRF):
         """
         Execute ping on the device and returns a dictionary with the result.
 
@@ -1668,7 +1669,11 @@ class IOSDriver(NetworkDriver):
             * rtt (float)
         """
         ping_dict = {}
-        command = 'ping {}'.format(destination)
+        # vrf needs to be right after the ping command
+        if vrf:
+            command = 'ping vrf {} {}'.format(vrf, destination)
+        else:
+            command = 'ping {}'.format(destination)
         command += ' timeout {}'.format(timeout)
         command += ' size {}'.format(size)
         command += ' repeat {}'.format(count)
@@ -1719,7 +1724,7 @@ class IOSDriver(NetworkDriver):
         return ping_dict
 
     def traceroute(self, destination, source=C.TRACEROUTE_SOURCE,
-                   ttl=C.TRACEROUTE_TTL, timeout=C.TRACEROUTE_TIMEOUT):
+                   ttl=C.TRACEROUTE_TTL, timeout=C.TRACEROUTE_TIMEOUT, vrf=C.TRACEROUTE_VRF):
         """
         Executes traceroute on the device and returns a dictionary with the result.
 
@@ -1740,7 +1745,11 @@ class IOSDriver(NetworkDriver):
             * host_name (str)
         """
 
-        command = "traceroute {}".format(destination)
+        # vrf needs to be right after the traceroute command
+        if vrf:
+            command = "traceroute vrf {} {}".format(vrf, destination)
+        else:
+            command = "traceroute {}".format(destination)
         if source:
             command += " source {}".format(source)
         if ttl:
