@@ -71,6 +71,7 @@ class EOSDriver(NetworkDriver):
         self.password = password
         self.timeout = timeout
         self.config_session = None
+        self.locked = False
 
         if optional_args is None:
             optional_args = {}
@@ -122,15 +123,26 @@ class EOSDriver(NetworkDriver):
             'is_alive': True  # always true as eAPI is HTTP-based
         }
 
-    def _load_config(self, filename=None, config=None, replace=True):
-        if self.config_session is not None:
-            raise SessionLockedException('Session is already in use by napalm')
+    def _lock(self):
+        if not self.locked:
+            self.locked = True
         else:
-            self.config_session = 'napalm_{}'.format(datetime.now().microsecond)
+            # already locked
+            raise SessionLockedException('Session is already in use by napalm')
 
+    def _unlock(self):
+        if self.locked:
+            self.locked = False
+
+    def _load_config(self, filename=None, config=None, replace=True):
         commands = []
-        commands.append('configure session {}'.format(self.config_session))
 
+        self._lock()
+        if self.config_session is None:
+            # create a new session
+            # otherwise will preserve the previous configuration session
+            self.config_session = 'napalm_{}'.format(datetime.now().microsecond)
+        commands.append('configure session {}'.format(self.config_session))
         if replace:
             commands.append('rollback clean-config')
 
@@ -155,11 +167,12 @@ class EOSDriver(NetworkDriver):
             self.device.run_commands(commands)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
-
             if replace:
                 raise ReplaceConfigException(e.message)
             else:
                 raise MergeConfigException(e.message)
+        finally:
+            self._unlock()
 
     def load_replace_candidate(self, filename=None, config=None):
         """Implementation of NAPALM method load_replace_candidate."""
