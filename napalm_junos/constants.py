@@ -14,5 +14,3 @@ OC_NETWORK_INSTANCE_TYPE_MAP = {
     'vpls': 'BGP_VPLS',
     'forwarding': 'L2P2P'
 }
-
-OPTICS_NO_POWER = '- Inf'

@@ -1451,7 +1451,8 @@ class JunOSDriver(NetworkDriver):
                                 'input_power': {
                                     'instant': (
                                         float(optics['input_power'])
-                                        if optics['input_power'] not in [None, C.OPTICS_NO_POWER]
+                                        if optics['input_power'] not in
+                                        [None, C.OPTICS_NULL_LEVEL]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1460,7 +1461,8 @@ class JunOSDriver(NetworkDriver):
                                 'output_power': {
                                     'instant': (
                                         float(optics['output_power'])
-                                        if optics['output_power'] not in [None, C.OPTICS_NO_POWER]
+                                        if optics['output_power'] not in
+                                        [None, C.OPTICS_NULL_LEVEL]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1470,7 +1472,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['laser_bias_current'])
                                         if optics['laser_bias_current'] not in
-                                        [None, C.OPTICS_NO_POWER]
+                                        [None, C.OPTICS_NULL_LEVEL]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
