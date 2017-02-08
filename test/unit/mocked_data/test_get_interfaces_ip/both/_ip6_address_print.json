@@ -1,0 +1,18 @@
+{
+    "data":
+    [
+        {
+            ".id": "*1",
+            "address": "fe80::a00:27ff:fea9:3f55/64",
+            "from-pool": "",
+            "interface": "ether1",
+            "actual-interface": "ether1",
+            "eui-64": false,
+            "advertise": false,
+            "invalid": false,
+            "dynamic": true,
+            "link-local": true,
+            "disabled": false
+        }
+    ]
+}
