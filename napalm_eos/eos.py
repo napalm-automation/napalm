@@ -536,7 +536,7 @@ class EOSDriver(NetworkDriver):
             for neighbor in interface_neighbors:
                 if interface not in lldp_neighbors_out.keys():
                     lldp_neighbors_out[interface] = []
-                capabilities = neighbor.get('systemCapabilities')
+                capabilities = neighbor.get('systemCapabilities', {})
                 capabilities_list = list(capabilities.keys())
                 capabilities_list.sort()
                 lldp_neighbors_out[interface].append(
