@@ -1,3 +1,3 @@
-napalm-base>=0.18.0
-pyFG
+napalm-base>=0.23.0
+pyFG>=0.48
 future
