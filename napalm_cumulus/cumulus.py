@@ -27,6 +27,7 @@ import json
 from netmiko import ConnectHandler
 from netmiko import __version__ as netmiko_version
 from netmiko.ssh_exception import NetMikoTimeoutException
+import napalm_base.constants as C
 from napalm_base.utils import py23_compat
 from napalm_base.utils import string_parsers
 from napalm_base.base import NetworkDriver
@@ -191,3 +192,190 @@ class CumulusDriver(NetworkDriver):
         facts['serial_number'] = py23_compat.text_type(serial_number)
         facts['interface_list'] = interfaces.keys()
         return facts
+
+    def get_arp_table(self):
+
+        """
+        'show arp' output example:
+        Address                  HWtype  HWaddress           Flags Mask            Iface
+        10.129.2.254             ether   00:50:56:97:af:b1   C                     eth0
+        192.168.1.134                    (incomplete)                              eth1
+        192.168.1.1              ether   00:50:56:ba:26:7f   C                     eth1
+        10.129.2.97              ether   00:50:56:9f:64:09   C                     eth0
+        192.168.1.3              ether   00:50:56:86:7b:06   C                     eth1
+        """
+        output = self.device.send_command('arp -n')
+        output = output.split("\n")
+        output = output[1:]
+        arp_table = list()
+
+        for line in output:
+            line = line.split()
+            if "incomplete" in line[1]:
+                macaddr = py23_compat.text_type("00:00:00:00:00:00")
+            else:
+                macaddr = py23_compat.text_type(line[2])
+
+            arp_table.append(
+                {
+                    'interface': py23_compat.text_type(line[-1]),
+                    'mac': macaddr,
+                    'ip': py23_compat.text_type(line[0]),
+                    'age': 0.0
+                }
+            )
+        return arp_table
+
+    def get_ntp_stats(self):
+        """
+        'ntpq -np' output example
+             remote           refid      st t when poll reach   delay   offset  jitter
+        ==============================================================================
+         116.91.118.97   133.243.238.244  2 u   51   64  377    5.436  987971. 1694.82
+         219.117.210.137 .GPS.            1 u   17   64  377   17.586  988068. 1652.00
+         133.130.120.204 133.243.238.164  2 u   46   64  377    7.717  987996. 1669.77
+        """
+
+        output = self.device.send_command("ntpq -np")
+        output = output.split("\n")[2:]
+        ntp_stats = list()
+
+        for ntp_info in output:
+            if len(ntp_info) > 0:
+                remote, refid, st, t, when, hostpoll, reachability, delay, offset, \
+                    jitter = ntp_info.split()
+
+                # 'remote' contains '*' if the machine synchronized with NTP server
+                synchronized = "*" in remote
+
+                match = re.search("(\d+\.\d+\.\d+\.\d+)", remote)
+                ip = match.group(1)
+
+                when = when if when != '-' else 0
+
+                ntp_stats.append({
+                    "remote": py23_compat.text_type(ip),
+                    "referenceid": py23_compat.text_type(refid),
+                    "synchronized": bool(synchronized),
+                    "stratum": int(st),
+                    "type": py23_compat.text_type(t),
+                    "when": py23_compat.text_type(when),
+                    "hostpoll": int(hostpoll),
+                    "reachability": int(reachability),
+                    "delay": float(delay),
+                    "offset": float(offset),
+                    "jitter": float(jitter)
+                })
+
+        return ntp_stats
+
+    def get_ntp_peers(self):
+        output = self.device.send_command("ntpq -np")
+        output_peers = output.split("\n")[2:]
+        ntp_peers = dict()
+
+        for line in output_peers:
+            if len(line) > 0:
+                match = re.search("(\d+\.\d+\.\d+\.\d+)\s+", line)
+                ntp_peers.update({
+                    py23_compat.text_type(match.group(1)): {}
+                })
+
+        return ntp_peers
+
+
+    def ping(self,
+             destination,
+             source=C.PING_SOURCE,
+             ttl=C.PING_TTL,
+             timeout=C.PING_TIMEOUT,
+             size=C.PING_SIZE,
+             count=C.PING_COUNT,
+             vrf=C.PING_VRF):
+
+
+        deadline = timeout * count
+
+        command = "ping %s " % destination
+        command += "-t %d " % int(ttl)
+        command += "-w %d " % int(deadline)
+        command += "-s %d " % int(size)
+        command += "-c %d " % int(count)
+        if source != "":
+            command += "interface %s " % source
+
+        ping_result = dict()
+        output_ping = self.device.send_command(command)
+
+        if "Unknown host" in output_ping:
+            err = "Unknown host"
+        else:
+            err = ""
+
+        if err is not "":
+            ping_result["error"] = err
+        else:
+            # 'packet_info' example:
+            # ['5', 'packets', 'transmitted,' '5', 'received,' '0%', 'packet',
+            # 'loss,', 'time', '3997ms']
+            packet_info = output_ping.split("\n")
+
+            if ('transmitted' in packet_info[-2]):
+                packet_info = packet_info[-2]
+            else:
+                packet_info = packet_info[-3]
+
+            packet_info = [x.strip() for x in packet_info.split()]
+
+            sent = int(packet_info[0])
+            received = int(packet_info[3])
+            lost = sent - received
+
+            # 'rtt_info' example:
+            # ["0.307/0.396/0.480/0.061"]
+            rtt_info = output_ping.split("\n")
+
+            if len(rtt_info[-1]) > 0:
+                rtt_info = rtt_info[-1]
+            else:
+                rtt_info = rtt_info[-2]
+
+            match = re.search("([\d\.]+)/([\d\.]+)/([\d\.]+)/([\d\.]+)", rtt_info)
+
+            if match is not None:
+                rtt_min = float(match.group(1))
+                rtt_avg = float(match.group(2))
+                rtt_max = float(match.group(3))
+                rtt_stddev = float(match.group(4))
+            else:
+                rtt_min = None
+                rtt_avg = None
+                rtt_max = None
+                rtt_stddev = None
+
+            ping_responses = list()
+            response_info = output_ping.split("\n")
+
+            for res in response_info:
+                match_res = re.search("from\s([\d\.]+).*time=([\d\.]+)", res)
+                if match_res is not None:
+                    ping_responses.append(
+                      {
+                        "ip_address": match_res.group(1),
+                        "rtt": match_res.group(2)
+                      }
+                    )
+
+            ping_result["success"] = dict()
+
+            ping_result["success"] = {
+                "probes_sent": sent,
+                "packet_loss": lost,
+                "rtt_min": rtt_min,
+                "rtt_max": rtt_max,
+                "rtt_avg": rtt_avg,
+                "rtt_stddev": rtt_stddev,
+                "results": ping_responses
+            }
+
+            return ping_result
