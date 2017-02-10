@@ -1,0 +1,10 @@
+{
+    "ge-1/0/2": [{
+        "hostname": "fw1b.private.lon2",
+        "port": "ethernet1/13"
+    }],
+    "ge-1/0/3": [{
+        "hostname": "border2.private.lon2",
+        "port": "519"
+    }]
+}

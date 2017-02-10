@@ -123,27 +123,42 @@ def _compare_getter(src, dst):
         if isinstance(src, py23_compat.string_types):
             m = re.search(src, py23_compat.text_type(dst))
             return m is not None
+        elif(type(src) == type(dst) == list):
+            pairs = zip(src, dst)
+            diff_lists = [[(k, x[k], y[k])
+                          for k in x if not re.search(x[k], y[k])]
+                          for x, y in pairs if x != y]
+            return empty_tree(diff_lists)
         else:
             return src == dst
+
+
+def empty_tree(input_list):
+    """Recursively iterate through values in nested lists."""
+    for item in input_list:
+        if not isinstance(item, list) or not empty_tree(item):
+            return False
+    return True
 
 
 def compliance_report(cls, validation_file=None):
     report = {}
     validation_source = _get_validation_file(validation_file)
 
-    for getter, expected_results in validation_source.items():
-        if getter == "get_config":
-            # TBD
-            pass
-        else:
-            key = expected_results.pop("_name", "") or getter
+    for validation_check in validation_source:
+        for getter, expected_results in validation_check.items():
+            if getter == "get_config":
+                # TBD
+                pass
+            else:
+                key = expected_results.pop("_name", "") or getter
 
-            try:
-                kwargs = expected_results.pop('_kwargs', {})
-                actual_results = getattr(cls, getter)(**kwargs)
-                report[key] = _compare_getter(expected_results, actual_results)
-            except NotImplementedError:
-                report[key] = {"skipped": True, "reason": "NotImplemented"}
+                try:
+                    kwargs = expected_results.pop('_kwargs', {})
+                    actual_results = getattr(cls, getter)(**kwargs)
+                    report[key] = _compare_getter(expected_results, actual_results)
+                except NotImplementedError:
+                    report[key] = {"skipped": True, "reason": "NotImplemented"}
 
     complies = all([e.get("complies", True) for e in report.values()])
     report["skipped"] = [k for k, v in report.items() if v.get("skipped", False)]

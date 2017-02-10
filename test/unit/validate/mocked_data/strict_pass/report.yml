@@ -27,9 +27,23 @@ get_interfaces_ip:
   missing: []
   present:
     Ethernet2/1: {complies: true, nested: true}
-ping:
+ping1:
   complies: true
   extra: []
   missing: []
   present:
     success: {complies: true, nested: true}
+ping2:
+  complies: true
+  extra: []
+  missing: []
+  present:
+    success: {complies: true, nested: true}
+
+get_lldp_neighbors:
+  complies: true
+  extra: []
+  missing: []
+  present:
+    ge-1/0/2: {complies: true, nested: false}
+    ge-1/0/3: {complies: true, nested: False}
