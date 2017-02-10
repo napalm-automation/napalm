@@ -9,15 +9,4 @@ config firewall policy
         set schedule "always"
         set service "ALL"
     next
-    edit 2
-        set name "bla"
-        set uuid de597b64-aca8-51e6-5d00-b7874e6b72b8
-        set srcintf "port3"
-        set dstintf "port2"
-        set srcaddr "all"
-        set dstaddr "all"
-        set schedule "always"
-        set service "ALL"
-        set logtraffic all
-    next
 end

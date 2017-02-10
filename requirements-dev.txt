@@ -5,5 +5,4 @@ pytest-json
 pytest-pythonpath
 pylama
 flake8-import-order
-coveralls
 -r requirements.txt
