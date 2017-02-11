@@ -1,0 +1,4 @@
+{
+  "napalm_cumulus/cumulus.py": true, 
+  "test/unit/test_getters.py::TestGetter::()::test_get_facts[no_test_case_found]": true
+}

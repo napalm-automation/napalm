@@ -37,6 +37,17 @@ class PatchedCumulusDriver(cumulus.CumulusDriver):
         self.patched_attrs = ['device']
         self.device = FakeCumulusDevice()
 
+    def close(self):
+        pass
+
+    def is_alive(self):
+        return {
+            'is_alive': True  # In testing everything works..
+        }
+
+    def open(self):
+        pass
+
 
 class FakeCumulusDevice(BaseTestDouble):
     """Cumulus device test double."""

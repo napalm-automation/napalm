@@ -33,7 +33,7 @@ class TestConfigCumulusDriver(unittest.TestCase, TestConfigNetworkDriver):
 
         optional_args = {'port': 12443, }
         cls.device = cumulus.CumulusDriver(hostname, username, password, timeout=60,
-                                             optional_args=optional_args)
+                                           optional_args=optional_args)
         cls.device.open()
 
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)

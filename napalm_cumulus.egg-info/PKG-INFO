@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: napalm-cumulus
+Version: 0.1.0
+Summary: Network Automation and Programmability Abstraction Layer with Multivendor support
+Home-page: https://github.com/napalm-automation/napalm-cumulus
+Author: Gabriele Gerbino
+Author-email: gabrielegerbino@gmail.com
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Topic :: Utilities
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Operating System :: MacOS
