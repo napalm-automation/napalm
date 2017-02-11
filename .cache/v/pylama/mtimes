@@ -1,8 +1,0 @@
-{
-  "/home/piotr/github/napalm-cumulus/napalm_cumulus/__init__.py": 1485892319.859755, 
-  "/home/piotr/github/napalm-cumulus/napalm_cumulus/utils/__init__.py": 1485892319.863755, 
-  "/home/piotr/github/napalm-cumulus/setup.py": 1485892319.863755, 
-  "/home/piotr/github/napalm-cumulus/test/unit/TestCumulusDriver.py": 1486818157.4359024, 
-  "/home/piotr/github/napalm-cumulus/test/unit/conftest.py": 1486817838.067887, 
-  "/home/piotr/github/napalm-cumulus/test/unit/test_getters.py": 1485892319.863755
-}
