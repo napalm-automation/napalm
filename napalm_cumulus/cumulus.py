@@ -376,3 +376,14 @@ class CumulusDriver(NetworkDriver):
             }
 
             return ping_result
+
+    def get_lldp_neighbors(self):
+        """Cumulus get_lldp_neighbors."""
+        lldp = {}
+        command = 'net show lldp json'
+        lldp_output = json.loads(self._send_command(command))
+        for interface in lldp_output:
+            hostname = lldp_output[interface]['iface_obj']['lldp'][0]['adj_hostname']
+            port = lldp_output[interface]['iface_obj']['lldp'][0]['adj_port']
+            lldp[interface] = dict([('hostname', hostname), ('port', port)])
+        return lldp
