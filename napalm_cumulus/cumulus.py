@@ -191,3 +191,14 @@ class CumulusDriver(NetworkDriver):
         facts['serial_number'] = py23_compat.text_type(serial_number)
         facts['interface_list'] = interfaces.keys()
         return facts
+
+    def get_lldp_neighbors(self):
+        """Cumulus get_lldp_neighbors."""
+        lldp = {}
+        command = 'net show lldp json'
+        lldp_output = json.loads(self._send_command(command))
+        for interface in lldp_output:
+            hostname = lldp_output[interface]['iface_obj']['lldp'][0]['adj_hostname']
+            port = lldp_output[interface]['iface_obj']['lldp'][0]['adj_port']
+            lldp[interface] = dict([('hostname', hostname), ('port', port)])
+        return lldp
