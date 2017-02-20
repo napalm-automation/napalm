@@ -303,7 +303,7 @@ class NXOSDriver(NetworkDriver):
         except ConnectionError:
             # requests will raise an error with verbose warning output
             return True
-        except:
+        except Exception:
             return False
         return True
 
@@ -825,7 +825,8 @@ class NXOSDriver(NetworkDriver):
                    destination,
                    source=c.TRACEROUTE_SOURCE,
                    ttl=c.TRACEROUTE_TTL,
-                   timeout=c.TRACEROUTE_TIMEOUT):
+                   timeout=c.TRACEROUTE_TIMEOUT,
+                   vrf=c.TRACEROUTE_VRF):
         _HOP_ENTRY_PROBE = [
             '\s+',
             '(',  # beginning of host_name (ip_address) RTT group
