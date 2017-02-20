@@ -83,9 +83,9 @@ class NXOSDriver(NetworkDriver):
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
 
     def close(self):
-        self.device = None
         if self.changed:
             self._delete_file(self.backup_file)
+        self.device = None
 
     @staticmethod
     def _compute_timestamp(stupid_cisco_output):
