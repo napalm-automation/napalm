@@ -303,7 +303,7 @@ class NXOSDriver(NetworkDriver):
         except ConnectionError:
             # requests will raise an error with verbose warning output
             return True
-        except:
+        except Exception:
             return False
         return True
 
