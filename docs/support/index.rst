@@ -6,22 +6,21 @@ General support matrix
 
 
 
-  =====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============  ==============
-  _                       EOS         JunOS           IOS-XR       FortiOS         IBM            NXOS          IOS           Pluribus         PANOS                      MikroTik        VyOS
-  =====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============  ==============
-  **Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-fortios  napalm-ibm     napalm-nxos   napalm-ios    napalm-pluribus  napalm-panos               napalm-ros      napalm-vyos
-  **Driver Name**         eos         junos           iosxr        fortios         ibm            nxos          ios           pluribus         panos                      ros             vyos
-  **Structured data**     Yes         Yes             No           No              Yes            Yes           No            No               Yes                        Yes             Yes
-  **Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           ???            6.1 [#g1]_    12.4(20)T     N/A              7.0                        3.30            1.1.6
-  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_         `bnclient`_    `pycsco`_     `netmiko`_    `pyPluribus`_    `netmiko`_, `pan-python`_  `librouteros`_  `netmiko`_
-  **Caveats**             :doc:`eos`                               :doc:`fortios`  :doc:`ibm`     :doc:`nxos`   :doc:`ios`                     :doc:`panos`                               :doc:`vyos`
-  =====================   ==========  =============   ============ ==============  =============  ============  ============  ===============  =========================  ==============  ==============
+  =====================   ==========  =============   ============ ==============  ============  ============  ===============  =========================  ==============  ==============
+  _                       EOS         JunOS           IOS-XR       FortiOS         NXOS          IOS           Pluribus         PANOS                      MikroTik        VyOS
+  =====================   ==========  =============   ============ ==============  ============  ============  ===============  =========================  ==============  ==============
+  **Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-fortios  napalm-nxos   napalm-ios    napalm-pluribus  napalm-panos               napalm-ros      napalm-vyos
+  **Driver Name**         eos         junos           iosxr        fortios         nxos          ios           pluribus         panos                      ros             vyos
+  **Structured data**     Yes         Yes             No           No              Yes           No            No               Yes                        Yes             Yes
+  **Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           6.1 [#g1]_    12.4(20)T     N/A              7.0                        3.30            1.1.6
+  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_         `pycsco`_     `netmiko`_    `pyPluribus`_    `netmiko`_, `pan-python`_  `librouteros`_  `netmiko`_
+  **Caveats**             :doc:`eos`                               :doc:`fortios`  :doc:`nxos`   :doc:`ios`                     :doc:`panos`                               :doc:`vyos`
+  =====================   ==========  =============   ============ ==============  ============  ============  ===============  =========================  ==============  ==============
 
 .. _pyeapi: https://github.com/arista-eosplus/pyeapi
 .. _junos-eznc: https://github.com/Juniper/py-junos-eznc
 .. _pyIOSXR: https://github.com/fooelisa/pyiosxr
 .. _pyFG: https://github.com/spotify/pyfg
-.. _bnclient: https://github.com/kderynski/blade-netconf-python-client
 .. _pycsco: https://github.com/jedelman8/pycsco
 .. _netmiko: https://github.com/ktbyers/netmiko
 .. _pyPluribus: https://github.com/mirceaulinic/pypluribus
@@ -36,15 +35,15 @@ General support matrix
 Configuration support matrix
 ----------------------------
 
-=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ============== ======== ========
-_                       EOS         JunOS   IOS-XR      FortiOS         IBM            NXOS            IOS             Pluribus        PANOS          MikroTik VyOS
-=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ============== ======== ========
-**Config. replace**     Yes         Yes     Yes         Yes             Yes [#c3]_     Yes             Yes             No              Yes            No       Yes
-**Config. merge**       Yes         Yes     Yes         Yes             Yes            Yes             Yes             No              Yes            No       Yes
-**Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c1]_     Yes [#c4]_      Yes             No              Yes            No       Yes
-**Atomic Changes**      Yes         Yes     Yes         No [#c2]_       No [#c2]_      Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_  No       Yes
-**Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes [#c2]_     Yes/No [#c5]_   Yes             No              Yes            No       Yes
-=====================   ==========  =====   ==========  ==============  =============  ==============  ==============  ==============  ============== ======== ======== 
+=====================   ==========  =====   ==========  ==============  ==============  ==============  ==============  ============== ======== ========
+_                       EOS         JunOS   IOS-XR      FortiOS         NXOS            IOS             Pluribus        PANOS          MikroTik VyOS
+=====================   ==========  =====   ==========  ==============  ==============  ==============  ==============  ============== ======== ========
+**Config. replace**     Yes         Yes     Yes         Yes             Yes             Yes             No              Yes            No       Yes
+**Config. merge**       Yes         Yes     Yes         Yes             Yes             Yes             No              Yes            No       Yes
+**Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c4]_      Yes             No              Yes            No       Yes
+**Atomic Changes**      Yes         Yes     Yes         No [#c2]_       Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_  No       Yes
+**Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes/No [#c5]_   Yes             No              Yes            No       Yes
+=====================   ==========  =====   ==========  ==============  ==============  ==============  ==============  ============== ======== ======== 
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
@@ -70,13 +69,13 @@ Other methods
 .. |yes|   unicode:: U+02705 .. Yes
 .. |no|    unicode:: U+0274C .. No
 
-============================== =====  =====   ======  =======  ======  ======  =====  =========  ========= ======== ========
-_                               EOS   JunOS   IOS-XR  FortiOS  IBM     NXOS    IOS    Pluribus   PANOS     MikroTik VyOS
-============================== =====  =====   ======  =======  ======  ======  =====  =========  ========= ======== ========
-**load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|   |yes|  |yes|      |yes|     |no|	    |yes|
-**ping**                       |no|   |no|    |no|    |no|     |no|    |no|    |yes|  |no|       |no|      |yes|    |yes|
-**traceroute**                 |yes|  |yes|   |yes|   |no|     |no|    |yes|   |yes|  |yes|      |no|      |no|     |no|
-============================== =====  =====   ======  =======  ======  ======  =====  =========  ========= ======== ========
+============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
+_                               EOS   JunOS   IOS-XR  FortiOS  NXOS    IOS    Pluribus   PANOS     MikroTik VyOS
+============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
+**load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|  |yes|      |yes|     |no|	    |yes|
+**ping**                       |no|   |no|    |no|    |no|     |no|    |yes|  |no|       |no|      |yes|    |yes|
+**traceroute**                 |yes|  |yes|   |yes|   |no|     |yes|   |yes|  |yes|      |no|      |no|     |no|
+============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
 
 Available configuration templates
 ---------------------------------
