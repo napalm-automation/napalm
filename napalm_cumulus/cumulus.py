@@ -416,8 +416,7 @@ class CumulusDriver(NetworkDriver):
                 interfaces[interface]['is_up'] = False 
             
             interfaces[interface]['description'] = py23_compat.text_type(output_json[interface]['iface_obj']['description'])
-            # The last flapped information is not provided in Cumulus NCLU so setting this to -1
-            interfaces[interface]['last_flapped'] = -1
+
             
             if output_json[interface]['iface_obj']['speed'] is None:
                 interfaces[interface]['speed'] = -1
