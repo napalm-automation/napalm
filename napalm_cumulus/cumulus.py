@@ -35,6 +35,7 @@ from napalm_base.exceptions import (
     MergeConfigException,
     ReplaceConfigException
     )
+from datetime import datetime
 
 
 class CumulusDriver(NetworkDriver):
@@ -217,8 +218,7 @@ class CumulusDriver(NetworkDriver):
                 interfaces[interface]['is_up'] = False 
             
             interfaces[interface]['description'] = py23_compat.text_type(output_json[interface]['iface_obj']['description'])
-            # The last flapped information is not provided in Cumulus NCLU so setting this to -1
-            interfaces[interface]['last_flapped'] = -1
+
             
             if output_json[interface]['iface_obj']['speed'] is None:
                 interfaces[interface]['speed'] = -1
@@ -226,7 +226,73 @@ class CumulusDriver(NetworkDriver):
                 interfaces[interface]['speed'] = output_json[interface]['iface_obj']['speed']
                 
             interfaces[interface]['mac_address'] = py23_compat.text_type(output_json[interface]['iface_obj']['mac'])
-         
+        
+        # Test if the quagga daemon is running.
+        quagga_test = self._send_command('service quagga status')
+        
+        for line in quagga_test.splitlines():
+            if 'Active:' in line:
+                status = line.split()[1]
+               
+                if 'inactive' in status:
+                    quagga_status = False
+                elif 'active' in status:
+                    quagga_status = True
+                else:
+                    quagga_status = False
+
+        # If the quagga daemon is running for each interface run the show interface command to get information about the most recent interface change.
+        if quagga_status is True:
+            for interface in interfaces.keys():
+                command = "sudo vtysh -c 'show interface %s'" % interface
+                quagga_show_int_output = self._send_command(command)
+                
+                # Get the link up and link down datetimes if available.
+                for line in quagga_show_int_output.splitlines():
+                    if 'Link ups' in line:
+                        if '(never)' in line.split()[4]:
+                            last_flapped_1 = False
+                        else:
+                            last_flapped_1 = True
+                            last_flapped_1_date = line.split()[4] + " " + line.split()[5]
+                            last_flapped_1_date = datetime.strptime(last_flapped_1_date,"%Y/%m/%d %H:%M:%S.%f")
+                        
+
+                    if 'Link downs' in line:
+                        if '(never)' in line.split()[4]:
+                            last_flapped_2 = False
+                        else:
+                            last_flapped_2 = True
+                            last_flapped_2_date = line.split()[4] + " " + line.split()[5]
+                            last_flapped_2_date = datetime.strptime(last_flapped_2_date,"%Y/%m/%d %H:%M:%S.%f")
+                
+                # Compare the link up and link down datetimes to determine the most recent and set that as the last flapped after converting to seconds.                        
+                if (last_flapped_1 and last_flapped_2) is True:
+                    last_delta = last_flapped_1_date - last_flapped_2_date
+                    if last_delta.days >= 0:
+                        last_flapped = last_flapped_1_date
+                    else:
+                        last_flapped = last_flapped_2_date
+                elif last_flapped_1 is True:
+                    last_flapped = last_flapped_1_date
+                elif last_flapped_2 is True:
+                    last_flapped = last_flapped_2_date
+                else:
+                    last_flapped = -1
+                
+                now = datetime.now()
+                if last_flapped == -1:
+                    pass
+                else:
+                    last_flapped = (now-last_flapped).total_seconds()
+                    
+                interfaces[interface]['last_flapped']=last_flapped
+        
+        # If quagga daemon isn't running set all last_flapped values to -1.                       
+        if quagga_status is False:
+            for interface in interfaces.keys():
+                interfaces[interface]['last_flapped']=-1
+                               
         
         return interfaces
         
