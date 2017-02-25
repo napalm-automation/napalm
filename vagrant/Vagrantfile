@@ -70,6 +70,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define "ros" do |ros|
+    # Download from https://drive.google.com/open?id=0B7lhzJhvsd-8dFB0NnNFUm52cjA
     ros.vm.box = "chr-6.37.4"
     ros.vm.network :forwarded_port, guest: 22, host: 12205, id: 'ssh'
     ros.vm.network :forwarded_port, guest: 8728, host: 8728, id: 'api'
