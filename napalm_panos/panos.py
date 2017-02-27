@@ -398,8 +398,10 @@ class PANOSDriver(NetworkDriver):
 
             if local_int not in neighbors.keys():
                 neighbors[local_int] = []
-
-            lldp_neighs = lldp_item['neighbors']['entry']
+            try:
+                lldp_neighs = lldp_item.get('neighbors').get('entry')
+            except AttributeError:
+                lldp_neighs = ''
             if isinstance(lldp_neighs, dict):
                 lldp_neighs = [lldp_neighs]
 
