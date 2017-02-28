@@ -1016,7 +1016,7 @@ class EOSDriver(NetworkDriver):
         if protocol.lower() == 'direct':
             protocol = 'connected'
 
-        for _vrf in vrfs:
+        for _vrf in sorted(vrfs):
             try:
                 ipv = ''
                 if IPNetwork(destination).version == 6:
