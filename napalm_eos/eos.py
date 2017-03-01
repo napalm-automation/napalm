@@ -1190,15 +1190,7 @@ class EOSDriver(NetworkDriver):
                    ttl=c.TRACEROUTE_TTL,
                    timeout=c.TRACEROUTE_TIMEOUT,
                    vrf=c.TRACEROUTE_VRF):
-        '''
-        .. note:
 
-            `vrf` is partially supported by eOS: if the user
-            want to execute a traceroute from a certain VRF, the rest
-            of the arguments will be ignored.
-            So one can either request a traceroute using `source`, `ttl` or `timeout`,
-            either using the `vrf` argument.
-        '''
         _HOP_ENTRY_PROBE = [
             '\s+',
             '(',  # beginning of host_name (ip_address) RTT group
@@ -1232,37 +1224,34 @@ class EOSDriver(NetworkDriver):
         probes = 3
         # in case will be added one further param to adjust the number of probes/hop
 
-        if not vrf:
-            if source:
-                source_opt = '-s {source}'.format(source=source)
-            if ttl:
-                ttl_opt = '-m {ttl}'.format(ttl=ttl)
-            if timeout:
-                timeout_opt = '-w {timeout}'.format(timeout=timeout)
-            total_timeout = timeout * ttl
-            # `ttl`, `source` and `timeout` are not supported by default CLI
-            # so we need to go through the bash and set a specific timeout
-            commands = [
-                ('bash timeout {total_timeout} traceroute {destination} '
-                 '{source_opt} {ttl_opt} {timeout_opt}').format(
-                    total_timeout=total_timeout,
-                    destination=destination,
-                    source_opt=source_opt,
-                    ttl_opt=ttl_opt,
-                    timeout_opt=timeout_opt
-                )
-            ]
-        else:
-            commands = [
-                'traceroute {vrf} {destination}'.format(
-                    vrf=vrf,
-                    destination=destination
-                )
-            ]
+        commands = []
+
+        if vrf:
+            commands.append('routing-context vrf {vrf}'.format(vrf=vrf))
+
+        if source:
+            source_opt = '-s {source}'.format(source=source)
+        if ttl:
+            ttl_opt = '-m {ttl}'.format(ttl=ttl)
+        if timeout:
+            timeout_opt = '-w {timeout}'.format(timeout=timeout)
+        total_timeout = timeout * ttl
+        # `ttl`, `source` and `timeout` are not supported by default CLI
+        # so we need to go through the bash and set a specific timeout
+        commands.append(
+            ('bash timeout {total_timeout} traceroute {destination} '
+             '{source_opt} {ttl_opt} {timeout_opt}').format(
+                total_timeout=total_timeout,
+                destination=destination,
+                source_opt=source_opt,
+                ttl_opt=ttl_opt,
+                timeout_opt=timeout_opt
+            )
+        )
 
         try:
             traceroute_raw_output = self.device.run_commands(
-                commands, encoding='text')[0].get('output')
+                commands, encoding='text')[-1].get('output')
         except CommandErrorException:
             return {'error': 'Cannot execute traceroute on the device: {}'.format(commands[0])}
 
