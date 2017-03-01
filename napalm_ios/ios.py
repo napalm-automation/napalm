@@ -1223,7 +1223,7 @@ class IOSDriver(NetworkDriver):
             for line in interface_str.splitlines():
                 if 'packets input' in line:
                     # '0 packets input, 0 bytes, 0 no buffer'
-                    match = re.search(r"(\d+) packets input.*(\d+) bytes", line)
+                    match = re.search(r"(\d+) packets input.* (\d+) bytes", line)
                     counters[interface]['rx_unicast_packets'] = int(match.group(1))
                     counters[interface]['rx_octets'] = int(match.group(2))
                 elif 'broadcast' in line:
@@ -1243,7 +1243,7 @@ class IOSDriver(NetworkDriver):
                         counters[interface]['rx_multicast_packets'] = -1
                 elif 'packets output' in line:
                     # '0 packets output, 0 bytes, 0 underruns'
-                    match = re.search(r"(\d+) packets output.*(\d+) bytes", line)
+                    match = re.search(r"(\d+) packets output.* (\d+) bytes", line)
                     counters[interface]['tx_unicast_packets'] = int(match.group(1))
                     counters[interface]['tx_octets'] = int(match.group(2))
                     counters[interface]['tx_broadcast_packets'] = -1
