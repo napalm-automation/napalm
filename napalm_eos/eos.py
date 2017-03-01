@@ -1623,21 +1623,23 @@ class EOSDriver(NetworkDriver):
         'results' is a list of dictionaries with the following keys:
             * ip_address (str)
             * rtt (float)
-
-        .. note:
-
-            `vrf` is not supported on eOS. Although the user is able
-            to set this argument, it will not be interepreted by the
-            operating system.
         """
         ping_dict = {}
+        commands = []
+
+        if vrf:
+            commands.append('routing-context vrf {vrf}'.format(vrf=vrf))
+
         command = 'ping {}'.format(destination)
         command += ' timeout {}'.format(timeout)
         command += ' size {}'.format(size)
         command += ' repeat {}'.format(count)
         if source != '':
             command += ' source {}'.format(source)
-        output = self.device.run_commands([command], encoding='text')[0]['output']
+
+        commands.append(command)
+        output = self.device.run_commands(commands, encoding='text')[-1]['output']
+
         if 'connect:' in output:
             ping_dict['error'] = output
         elif 'PING' in output:
