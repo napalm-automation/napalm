@@ -1194,11 +1194,13 @@ class IOSDriver(NetworkDriver):
         'rx_broadcast_packets': int,
 
         Currently doesn't determine output broadcasts, multicasts
-        Doesn't determine tx_discards or rx_discards
+        Doesn't determine tx_discards or rx_discards -> fixed with show interface summary
         """
         counters = {}
         command = 'show interfaces'
         output = self._send_command(command)
+        sh_int_sum_cmd = 'show interface summary'
+        sh_int_sum_cmd_out = self._send_command(sh_int_sum_cmd)
 
         # Break output into per-interface sections
         interface_strings = re.split(r'.* line protocol is .*', output, flags=re.M)
@@ -1258,6 +1260,15 @@ class IOSDriver(NetworkDriver):
                     match = re.search(r"(\d+) output errors", line)
                     counters[interface]['tx_errors'] = int(match.group(1))
                     counters[interface]['tx_discards'] = -1
+            for line in sh_int_sum_cmd_out.splitlines():
+                if interface in line:
+                    regex = r"\b" + interface + r"\b\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)"
+                    match = re.search(regex, line)
+                    if match:
+                        counters[interface]['rx_discards'] = int(match.group(2))
+                        counters[interface]['tx_discards'] = int(match.group(4))
+
+                    
 
         return counters
 
