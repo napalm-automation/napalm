@@ -1009,7 +1009,7 @@ class EOSDriver(NetworkDriver):
         # Right not iterating through vrfs is necessary
         # show ipv6 route doesn't support vrf 'all'
         if vrf == '':
-            vrfs = self.get_network_instances().keys()
+            vrfs = self._get_vrfs()
         else:
             vrfs = [vrf]
 
@@ -1573,15 +1573,29 @@ class EOSDriver(NetworkDriver):
         else:
             raise Exception("Wrong retrieve filter: {}".format(retrieve))
 
-    def get_network_instances(self, name=''):
-        """get_network_instances implementation for EOS."""
-
+    def _show_vrf(self):
         commands = ['show vrf']
 
         # This command has no JSON yet
         raw_output = self.device.run_commands(commands, encoding='text')[0].get('output', '')
 
         output = napalm_base.helpers.textfsm_extractor(self, 'vrf', raw_output)
+
+        return output
+
+    def _get_vrfs(self):
+        output = self._show_vrf()
+
+        vrfs = [py23_compat.text_type(vrf['name']) for vrf in output]
+
+        vrfs.append(u'default')
+
+        return vrfs
+
+    def get_network_instances(self, name=''):
+        """get_network_instances implementation for EOS."""
+
+        output = self._show_vrf()
         vrfs = {}
         all_vrf_interfaces = {}
         for vrf in output:
