@@ -1009,29 +1009,32 @@ class EOSDriver(NetworkDriver):
         # Right not iterating through vrfs is necessary
         # show ipv6 route doesn't support vrf 'all'
         if vrf == '':
-            vrfs = self._get_vrfs()
+            vrfs = sorted(self._get_vrfs())
         else:
             vrfs = [vrf]
 
         if protocol.lower() == 'direct':
             protocol = 'connected'
 
-        for _vrf in sorted(vrfs):
-            try:
-                ipv = ''
-                if IPNetwork(destination).version == 6:
-                    ipv = 'v6'
-            except AddrFormatError:
-                return 'Please specify a valid destination!'
+        try:
+            ipv = ''
+            if IPNetwork(destination).version == 6:
+                ipv = 'v6'
+        except AddrFormatError:
+            return 'Please specify a valid destination!'
 
-            command = 'show ip{ipv} route vrf {_vrf} {destination} {protocol} detail'.format(
+        commands = []
+        for _vrf in vrfs:
+            commands.append('show ip{ipv} route vrf {_vrf} {destination} {protocol} detail'.format(
                 ipv=ipv,
                 _vrf=_vrf,
                 destination=destination,
                 protocol=protocol,
-            )
+            ))
 
-            command_output = self.device.run_commands([command])[0]
+        commands_output = self.device.run_commands(commands)
+
+        for _vrf, command_output in zip(vrfs, commands_output):
             if ipv == 'v6':
                 routes_out = command_output.get('routes', {})
             else:
