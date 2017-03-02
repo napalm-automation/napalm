@@ -1263,7 +1263,8 @@ class IOSDriver(NetworkDriver):
             for line in sh_int_sum_cmd_out.splitlines():
                 if interface in line:
                     regex = r"\b" + interface +\
-                        r"\b\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)"
+                        r"\b\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)" + \
+                        r"\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)"
                     match = re.search(regex, line)
                     if match:
                         counters[interface]['rx_discards'] = int(match.group(2))
