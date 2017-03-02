@@ -1262,15 +1262,14 @@ class IOSDriver(NetworkDriver):
                     counters[interface]['tx_discards'] = -1
             for line in sh_int_sum_cmd_out.splitlines():
                 if interface in line:
-                    regex = r"\b" + interface + r"\b\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)"
+                    regex = r"\b" + interface +\
+                        r"\b\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)"
                     match = re.search(regex, line)
                     if match:
                         counters[interface]['rx_discards'] = int(match.group(2))
                         counters[interface]['tx_discards'] = int(match.group(4))
 
-                    
-
-        return counters
+            return counters
 
     def get_environment(self):
         """
