@@ -1270,7 +1270,7 @@ class IOSDriver(NetworkDriver):
                         counters[interface]['rx_discards'] = int(match.group(2))
                         counters[interface]['tx_discards'] = int(match.group(4))
 
-            return counters
+        return counters
 
     def get_environment(self):
         """
