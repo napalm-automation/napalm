@@ -1,7 +1,6 @@
 napalm-base
 napalm-eos
 napalm-fortios
-napalm-ibm
 napalm-ios
 napalm-iosxr
 napalm-junos
