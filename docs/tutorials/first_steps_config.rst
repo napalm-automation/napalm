@@ -79,6 +79,16 @@ If for some reason you committed the changes and you want to rollback::
 
     >>> device.rollback()
 
+Commit confirmed (auto rollback)
+--------------------------------
+
+If you are operating on remote devices without out of band network access and/or there is a risk that you could lose access to your device after commit, you can use commit confirmed functionality. You have to provide an additional argument (confirmed) to commit_config() method. It defines how long (in minutes) device will wait for your confirmation. You can confirm the change by executing commit_config() without additional argument. A device will rollback changes by itself if confirmation is not sent or confirmation message can not reach the device. For example, device will wait 5 minutes for confirmation, after that changes will be reverted::
+
+    >>> device.commit_config(confirmed=5)
+    >>> device.commit_config()
+
+.. note:: Not all devices support commit confirmed functionality. It may be dependent on device capabilities and/or support for commit confirmed inside particular napalm driver.
+
 Disconnecting
 -------------
 
