@@ -311,4 +311,3 @@ class CumulusDriver(NetworkDriver):
         return interfaces
         
         
-
