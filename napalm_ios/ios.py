@@ -1261,9 +1261,12 @@ class IOSDriver(NetworkDriver):
                     counters[interface]['tx_discards'] = -1
             for line in sh_int_sum_cmd_out.splitlines():
                 if interface in line:
-                    # '  Interface                   IHQ       IQD       OHQ       OQD      RXBS      RXPS      TXBS      TXPS      TRTL'
-                    # '-----------------------------------------------------------------------------------------------------------------'
-                    # '  FastEthernet0                 0         0         0         0         0         0         0         0         0'
+                    # '  Interface                   IHQ       IQD       OHQ       OQD' +\
+                    # '      RXBS      RXPS      TXBS      TXPS      TRTL'
+                    # '---------------------------------------------------------------' +\
+                    # '--------------------------------------------------'
+                    # '  FastEthernet0                 0         0         0         0' +\
+                    # '         0         0         0         0         0'
                     regex = r"\b" + interface +\
                         r"\b\s+(?P<IHQ>\d+)\s+(?P<IQD>\d+)\s+(?P<OHQ>\d+)" +\
                         r"\s+(?P<OQD>\d+)\s+(?P<RXBS>\d+)\s+(?P<RXPS>\d+)" + \
