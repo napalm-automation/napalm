@@ -1194,7 +1194,6 @@ class IOSDriver(NetworkDriver):
         'rx_broadcast_packets': int,
 
         Currently doesn't determine output broadcasts, multicasts
-        Doesn't determine tx_discards or rx_discards -> fixed with show interface summary
         """
         counters = {}
         command = 'show interfaces'
@@ -1262,13 +1261,17 @@ class IOSDriver(NetworkDriver):
                     counters[interface]['tx_discards'] = -1
             for line in sh_int_sum_cmd_out.splitlines():
                 if interface in line:
+                    # '  Interface                   IHQ       IQD       OHQ       OQD      RXBS      RXPS      TXBS      TXPS      TRTL'
+                    # '-----------------------------------------------------------------------------------------------------------------'
+                    # '  FastEthernet0                 0         0         0         0         0         0         0         0         0'
                     regex = r"\b" + interface +\
-                        r"\b\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)" + \
-                        r"\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)"
+                        r"\b\s+(?P<IHQ>\d+)\s+(?P<IQD>\d+)\s+(?P<OHQ>\d+)" +\
+                        r"\s+(?P<OQD>\d+)\s+(?P<RXBS>\d+)\s+(?P<RXPS>\d+)" + \
+                        r"\s+(?P<TXBS>\d+)\s+(?P<TXPS>\d+)\s+(?P<TRTL>\d+)"
                     match = re.search(regex, line)
                     if match:
-                        counters[interface]['rx_discards'] = int(match.group(2))
-                        counters[interface]['tx_discards'] = int(match.group(4))
+                        counters[interface]['rx_discards'] = int(match.group("IQD"))
+                        counters[interface]['tx_discards'] = int(match.group("OQD"))
 
         return counters
 
