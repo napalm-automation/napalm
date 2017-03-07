@@ -1194,11 +1194,12 @@ class IOSDriver(NetworkDriver):
         'rx_broadcast_packets': int,
 
         Currently doesn't determine output broadcasts, multicasts
-        Doesn't determine tx_discards or rx_discards
         """
         counters = {}
         command = 'show interfaces'
         output = self._send_command(command)
+        sh_int_sum_cmd = 'show interface summary'
+        sh_int_sum_cmd_out = self._send_command(sh_int_sum_cmd)
 
         # Break output into per-interface sections
         interface_strings = re.split(r'.* line protocol is .*', output, flags=re.M)
@@ -1223,7 +1224,7 @@ class IOSDriver(NetworkDriver):
             for line in interface_str.splitlines():
                 if 'packets input' in line:
                     # '0 packets input, 0 bytes, 0 no buffer'
-                    match = re.search(r"(\d+) packets input.*(\d+) bytes", line)
+                    match = re.search(r"(\d+) packets input.* (\d+) bytes", line)
                     counters[interface]['rx_unicast_packets'] = int(match.group(1))
                     counters[interface]['rx_octets'] = int(match.group(2))
                 elif 'broadcast' in line:
@@ -1243,7 +1244,7 @@ class IOSDriver(NetworkDriver):
                         counters[interface]['rx_multicast_packets'] = -1
                 elif 'packets output' in line:
                     # '0 packets output, 0 bytes, 0 underruns'
-                    match = re.search(r"(\d+) packets output.*(\d+) bytes", line)
+                    match = re.search(r"(\d+) packets output.* (\d+) bytes", line)
                     counters[interface]['tx_unicast_packets'] = int(match.group(1))
                     counters[interface]['tx_octets'] = int(match.group(2))
                     counters[interface]['tx_broadcast_packets'] = -1
@@ -1258,6 +1259,22 @@ class IOSDriver(NetworkDriver):
                     match = re.search(r"(\d+) output errors", line)
                     counters[interface]['tx_errors'] = int(match.group(1))
                     counters[interface]['tx_discards'] = -1
+            for line in sh_int_sum_cmd_out.splitlines():
+                if interface in line:
+                    # '  Interface                   IHQ       IQD       OHQ       OQD' +\
+                    # '      RXBS      RXPS      TXBS      TXPS      TRTL'
+                    # '---------------------------------------------------------------' +\
+                    # '--------------------------------------------------'
+                    # '  FastEthernet0                 0         0         0         0' +\
+                    # '         0         0         0         0         0'
+                    regex = r"\b" + interface +\
+                        r"\b\s+(?P<IHQ>\d+)\s+(?P<IQD>\d+)\s+(?P<OHQ>\d+)" +\
+                        r"\s+(?P<OQD>\d+)\s+(?P<RXBS>\d+)\s+(?P<RXPS>\d+)" + \
+                        r"\s+(?P<TXBS>\d+)\s+(?P<TXPS>\d+)\s+(?P<TRTL>\d+)"
+                    match = re.search(regex, line)
+                    if match:
+                        counters[interface]['rx_discards'] = int(match.group("IQD"))
+                        counters[interface]['tx_discards'] = int(match.group("OQD"))
 
         return counters
 
