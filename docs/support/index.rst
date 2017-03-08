@@ -43,7 +43,7 @@ _                       EOS         JunOS   IOS-XR      FortiOS         NXOS    
 **Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c4]_      Yes             No              Yes            No       Yes
 **Atomic Changes**      Yes         Yes     Yes         No [#c2]_       Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_  No       Yes
 **Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes/No [#c5]_   Yes             No              Yes            No       Yes
-=====================   ==========  =====   ==========  ==============  ==============  ==============  ==============  ============== ======== ======== 
+=====================   ==========  =====   ==========  ==============  ==============  ==============  ==============  ============== ======== ========
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
@@ -75,6 +75,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  NXOS    IOS    Pl
 **load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|  |yes|      |yes|     |no|	    |yes|
 **ping**                       |no|   |no|    |no|    |no|     |no|    |yes|  |no|       |no|      |yes|    |yes|
 **traceroute**                 |yes|  |yes|   |yes|   |no|     |yes|   |yes|  |yes|      |no|      |no|     |no|
+**commit_confirm**             |no|   |yes|   |no|    |no|     |no|    |no|   |no|       |no|      |no|     |no|
 ============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
 
 Available configuration templates
