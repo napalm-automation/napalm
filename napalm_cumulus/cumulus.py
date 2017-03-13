@@ -269,18 +269,8 @@ class CumulusDriver(NetworkDriver):
         return ntp_stats
 
     def get_ntp_peers(self):
-        output = self.device.send_command("ntpq -np")
-        output_peers = output.split("\n")[2:]
-        ntp_peers = dict()
 
-        for line in output_peers:
-            if len(line) > 0:
-                match = re.search("(\d+\.\d+\.\d+\.\d+)\s+", line)
-                ntp_peers.update({
-                    py23_compat.text_type(match.group(1)): {}
-                })
-
-        return ntp_peers
+        return {}
 
     def ping(self,
              destination,
