@@ -56,7 +56,7 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
-   installation
+   installation/index
    tutorials/index
    validate/index
    support/index
