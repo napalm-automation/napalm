@@ -299,12 +299,14 @@ class NXOSDriver(NetworkDriver):
         cmd = 'rollback running file {0}'.format(self.replace_file.split('/')[-1])
         self._disable_confirmation()
         try:
-            self.device.config(cmd)
+            rollback_result = self.device.config(cmd)
         except ConnectionError:
             # requests will raise an error with verbose warning output
             return True
         except Exception:
             return False
+        if 'Rollback failed.' in rollback_result['msg']:
+            raise ReplaceConfigException(rollback_result['msg'])
         return True
 
     def commit_config(self):
