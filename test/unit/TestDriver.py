@@ -27,11 +27,11 @@ class TestConfigCumulusDriver(unittest.TestCase, TestConfigNetworkDriver):
     def setUpClass(cls):
         """Run before starting the tests."""
         hostname = '127.0.0.1'
-        username = 'vagrant'
-        password = 'vagrant'
+        username = 'test'
+        password = 'test'
         cls.vendor = 'cumulus'
 
-        optional_args = {'port': 12443, }
+        optional_args = {"sudo_pwd": "test"}
         cls.device = cumulus.CumulusDriver(hostname, username, password, timeout=60,
                                            optional_args=optional_args)
         cls.device.open()

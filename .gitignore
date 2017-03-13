@@ -63,3 +63,5 @@ target/
 
 .DS_Store
 tags
+
+report.json

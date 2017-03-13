@@ -2,6 +2,7 @@
 from builtins import super
 
 import pytest
+import json
 from napalm_base.test import conftest as parent_conftest
 
 from napalm_base.test.double import BaseTestDouble
@@ -37,21 +38,42 @@ class PatchedCumulusDriver(cumulus.CumulusDriver):
         self.patched_attrs = ['device']
         self.device = FakeCumulusDevice()
 
+    def disconnect(self):
+        pass
+
+    def is_alive(self):
+        return {
+            'is_alive': True  # In testing everything works..
+        }
+
+    def open(self):
+        pass
+
 
 class FakeCumulusDevice(BaseTestDouble):
     """Cumulus device test double."""
 
-    def run_commands(self, command_list, encoding='json'):
+    def disconnect(self):
+        pass
+
+    def send_command(self, command):
         """Fake run_commands."""
-        result = list()
+        filename = '{}.json'.format(self.sanitize_text(command))
+        full_path = self.find_file(filename)
 
-        for command in command_list:
-            filename = '{}.{}'.format(self.sanitize_text(command), encoding)
-            full_path = self.find_file(filename)
+        if 'json' in command:
+            result = json.dumps(self.read_json_file(full_path))
+        else:
+            result = self.read_txt_file(full_path)
+        return result
 
-            if encoding == 'json':
-                result.append(self.read_json_file(full_path))
-            else:
-                result.append({'output': self.read_txt_file(full_path)})
+    def send_command_timing(self, command):
+        """Fake run_commands."""
+        filename = '{}.json'.format(self.sanitize_text(command))
+        full_path = self.find_file(filename)
 
+        if 'json' in command:
+            result = json.dumps(self.read_json_file(full_path))
+        else:
+            result = self.read_txt_file(full_path)
         return result

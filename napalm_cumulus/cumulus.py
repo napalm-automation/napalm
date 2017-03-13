@@ -363,13 +363,26 @@ class CumulusDriver(NetworkDriver):
 
             return ping_result
 
+    def _get_interface_neighbors(self, neighbors_list):
+        neighbors = []
+        for neighbor in neighbors_list:
+            temp = {}
+            temp['hostname'] = neighbor['adj_hostname']
+            temp['port'] = neighbor['adj_port']
+            neighbors.append(temp)
+        return neighbors
+
     def get_lldp_neighbors(self):
         """Cumulus get_lldp_neighbors."""
         lldp = {}
-        command = 'net show lldp json'
-        lldp_output = json.loads(self._send_command(command))
+        command = 'sudo net show lldp json'
+
+        try:
+            lldp_output = json.loads(self._send_command(command))
+        except ValueError:
+            lldp_output = json.loads(self.device.send_command(command))
+
         for interface in lldp_output:
-            hostname = lldp_output[interface]['iface_obj']['lldp'][0]['adj_hostname']
-            port = lldp_output[interface]['iface_obj']['lldp'][0]['adj_port']
-            lldp[interface] = dict([('hostname', hostname), ('port', port)])
+            lldp[interface] = self._get_interface_neighbors(
+                                    lldp_output[interface]['iface_obj']['lldp'])
         return lldp
