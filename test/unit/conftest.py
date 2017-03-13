@@ -53,11 +53,8 @@ class PatchedCumulusDriver(cumulus.CumulusDriver):
 class FakeCumulusDevice(BaseTestDouble):
     """Cumulus device test double."""
 
-    def disconnect(self):
-        pass
-
     def send_command(self, command):
-        """Fake run_commands."""
+        """Fake send_command."""
         filename = '{}.json'.format(self.sanitize_text(command))
         full_path = self.find_file(filename)
 
@@ -68,7 +65,7 @@ class FakeCumulusDevice(BaseTestDouble):
         return result
 
     def send_command_timing(self, command):
-        """Fake run_commands."""
+        """Fake send_command_timing."""
         filename = '{}.json'.format(self.sanitize_text(command))
         full_path = self.find_file(filename)
 
