@@ -268,10 +268,6 @@ class CumulusDriver(NetworkDriver):
 
         return ntp_stats
 
-    def get_ntp_peers(self):
-
-        return {}
-
     def ping(self,
              destination,
              source=C.PING_SOURCE,
