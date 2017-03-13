@@ -7,18 +7,10 @@
     "serial_number": "08:00:27:70:e6:e9", 
     "model": "Cumulus Linux", 
     "interface_list": [
-        "swp1.100",
-        "bridge",
-        "vlan10",
-        "lo",
-        "eth0.1",
-        "eth0",
-        "swp2",
-        "swp3",
-        "swp1",
-        "swp6",
-        "swp7",
-        "swp4",
-        "swp5"
+        "eth0", 
+        "lo", 
+        "swp1", 
+        "swp2", 
+        "swp3"
     ]
 }

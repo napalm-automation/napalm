@@ -184,12 +184,14 @@ class CumulusDriver(NetworkDriver):
         except ValueError:
             interfaces = json.loads(self.device.send_command('sudo net show interface all json'))
 
+        interface_list = interfaces.keys()
+        interface_list.sort()
         facts['hostname'] = facts['fqdn'] = py23_compat.text_type(hostname)
         facts['os_version'] = py23_compat.text_type(os_version)
         facts['model'] = py23_compat.text_type(model)
         facts['uptime'] = string_parsers.convert_uptime_string_seconds(uptime)
         facts['serial_number'] = py23_compat.text_type(serial_number)
-        facts['interface_list'] = interfaces.keys()
+        facts['interface_list'] = interface_list
         return facts
 
     def get_arp_table(self):
@@ -345,7 +347,7 @@ class CumulusDriver(NetworkDriver):
                     ping_responses.append(
                       {
                         "ip_address": match_res.group(1),
-                        "rtt": match_res.group(2)
+                        "rtt": float(match_res.group(2))
                       }
                     )
 

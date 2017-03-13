@@ -1,863 +1,297 @@
 {
-    "bridge": {
-        "iface_obj": {
-            "counters": null,
-            "description": "",
-            "ip_addr_assign": 0,
-            "ip_address": {
-                "allentries": []
-            },
-            "ip_neighbor": {
-                "allentries": {}
-            },
-            "linkstate": 2,
-            "lldp": null,
-            "mac": "08:00:27:18:ce:9c",
-            "members": {
-                "swp1": {
-                    "bridge_masters": [
-                        "bridge"
-                    ],
-                    "counters": {
-                        "rx": {},
-                        "tx": {}
-                    },
-                    "description": "",
-                    "ip_addr_assign": 0,
-                    "ip_address": {
-                        "allentries": []
-                    },
-                    "ip_neighbor": {
-                        "allentries": {}
-                    },
-                    "linkstate": 2,
-                    "lldp": [
-                        {
-                            "adj_hostname": "cumulus",
-                            "adj_mgmt_ip": "1.1.1.1",
-                            "adj_port": "swp2",
-                            "system_descr": "Cumulus Linux version 3.2.0 running on innotek GmbH VirtualBox"
-                        }
-                    ],
-                    "mac": "08:00:27:ab:49:f6",
-                    "mtu": 1500,
-                    "name": "swp1",
-                    "native_vlan": [
-                        "bridge"
-                    ],
-                    "speed": 1000,
-                    "stp": {
-                        "state": [
-                            "root",
-                            "forwarding",
-                            "blocking",
-                            "intransition",
-                            "disabled",
-                            "stp_disabled"
-                        ]
-                    },
-                    "vlan": [
-                        {
-                            "flags": [
-                                "PVID",
-                                "Egress Untagged"
-                            ],
-                            "vlan": 1
-                        },
-                        {
-                            "vlan": 10
-                        }
-                    ],
-                    "vlan_list": {
-                        "bridge": [
-                            "0"
-                        ]
-                    }
-                },
-                "swp2": {
-                    "bridge_masters": [
-                        "bridge"
-                    ],
-                    "counters": {
-                        "rx": {},
-                        "tx": {}
-                    },
-                    "description": "",
-                    "ip_addr_assign": 0,
-                    "ip_address": {
-                        "allentries": []
-                    },
-                    "ip_neighbor": {
-                        "allentries": {}
-                    },
-                    "linkstate": 2,
-                    "lldp": [
-                        {
-                            "adj_hostname": "cumulus",
-                            "adj_mgmt_ip": "1.1.1.1",
-                            "adj_port": "swp1",
-                            "system_descr": "Cumulus Linux version 3.2.0 running on innotek GmbH VirtualBox"
-                        }
-                    ],
-                    "mac": "08:00:27:18:ce:9c",
-                    "mtu": 1500,
-                    "name": "swp2",
-                    "native_vlan": [
-                        "bridge"
-                    ],
-                    "speed": 1000,
-                    "stp": {
-                        "state": [
-                            "root",
-                            "forwarding",
-                            "blocking",
-                            "intransition",
-                            "disabled",
-                            "stp_disabled"
-                        ]
-                    },
-                    "vlan": [
-                        {
-                            "flags": [
-                                "PVID",
-                                "Egress Untagged"
-                            ],
-                            "vlan": 1
-                        },
-                        {
-                            "vlan": 10
-                        }
-                    ],
-                    "vlan_list": {
-                        "bridge": [
-                            "0"
-                        ]
-                    }
-                }
-            },
-            "mtu": 1500,
-            "name": "bridge",
-            "native_vlan": [],
-            "speed": null,
-            "stp": {
-                "bridge_priority": 32768,
-                "member_state": {
-                    "alternate": [],
-                    "backup": [],
-                    "designated": [],
-                    "discarding": [],
-                    "forwarding": [],
-                    "network_port": [],
-                    "oper_edge_port": [],
-                    "root": []
-                },
-                "mode": 1,
-                "root_port": null,
-                "root_priority": 32768
-            },
-            "tagged_members": {},
-            "untagged_members": {
-                "swp1": {
-                    "bridge_masters": [
-                        "bridge"
-                    ],
-                    "counters": {
-                        "rx": {},
-                        "tx": {}
-                    },
-                    "description": "",
-                    "ip_addr_assign": 0,
-                    "ip_address": {
-                        "allentries": []
-                    },
-                    "ip_neighbor": {
-                        "allentries": {}
-                    },
-                    "linkstate": 2,
-                    "lldp": [
-                        {
-                            "adj_hostname": "cumulus",
-                            "adj_mgmt_ip": "1.1.1.1",
-                            "adj_port": "swp2",
-                            "system_descr": "Cumulus Linux version 3.2.0 running on innotek GmbH VirtualBox"
-                        }
-                    ],
-                    "mac": "08:00:27:ab:49:f6",
-                    "mtu": 1500,
-                    "name": "swp1",
-                    "native_vlan": [
-                        "bridge"
-                    ],
-                    "speed": 1000,
-                    "stp": {
-                        "state": [
-                            "root",
-                            "forwarding",
-                            "blocking",
-                            "intransition",
-                            "disabled",
-                            "stp_disabled"
-                        ]
-                    },
-                    "vlan": [
-                        {
-                            "flags": [
-                                "PVID",
-                                "Egress Untagged"
-                            ],
-                            "vlan": 1
-                        },
-                        {
-                            "vlan": 10
-                        }
-                    ],
-                    "vlan_list": {
-                        "bridge": [
-                            "0"
-                        ]
-                    }
-                },
-                "swp2": {
-                    "bridge_masters": [
-                        "bridge"
-                    ],
-                    "counters": {
-                        "rx": {},
-                        "tx": {}
-                    },
-                    "description": "",
-                    "ip_addr_assign": 0,
-                    "ip_address": {
-                        "allentries": []
-                    },
-                    "ip_neighbor": {
-                        "allentries": {}
-                    },
-                    "linkstate": 2,
-                    "lldp": [
-                        {
-                            "adj_hostname": "cumulus",
-                            "adj_mgmt_ip": "1.1.1.1",
-                            "adj_port": "swp1",
-                            "system_descr": "Cumulus Linux version 3.2.0 running on innotek GmbH VirtualBox"
-                        }
-                    ],
-                    "mac": "08:00:27:18:ce:9c",
-                    "mtu": 1500,
-                    "name": "swp2",
-                    "native_vlan": [
-                        "bridge"
-                    ],
-                    "speed": 1000,
-                    "stp": {
-                        "state": [
-                            "root",
-                            "forwarding",
-                            "blocking",
-                            "intransition",
-                            "disabled",
-                            "stp_disabled"
-                        ]
-                    },
-                    "vlan": [
-                        {
-                            "flags": [
-                                "PVID",
-                                "Egress Untagged"
-                            ],
-                            "vlan": 1
-                        },
-                        {
-                            "vlan": 10
-                        }
-                    ],
-                    "vlan_list": {
-                        "bridge": [
-                            "0"
-                        ]
-                    }
-                }
-            },
-            "vlan": [
-                {
-                    "vlan": 10
-                }
-            ],
-            "vlan_filtering": true,
-            "vlan_list": {},
-            "vlan_tag": []
-        },
-        "linkstate": "UP",
-        "name": "bridge",
-        "port_category": "Bridge/L2",
-        "speed": "N/A",
-        "summary": [
-            "Untagged Members: swp1-2",
-            "802.1q Tag: Untagged",
-            "STP: RootSwitch(32768)",
-            "Vlan Aware Bridge"
-        ]
-    },
     "eth0": {
-        "connector_type": null,
+        "connector_type": null, 
         "iface_obj": {
-            "asic": null,
-            "connector_type": 0,
-            "counters": null,
-            "description": "another test description",
-            "ip_addr_assign": 1,
+            "asic": null, 
+            "connector_type": 0, 
+            "counters": null, 
+            "description": "", 
+            "ip_addr_assign": 0, 
             "ip_address": {
                 "allentries": [
-                    "10.0.2.15/24"
+                    "10.1.100.115/24"
                 ]
-            },
+            }, 
             "ip_neighbor": {
                 "allentries": {
-                    "10.0.2.2": {
-                        "mac": "52:54:00:12:35:02"
+                    "10.1.100.1": {
+                        "mac": "00:14:1c:57:a4:c2"
+                    }, 
+                    "10.1.100.200": {
+                        "mac": "f4:4d:30:63:34:f3"
                     }
                 }
-            },
-            "linkstate": 2,
-            "lldp": null,
-            "mac": "08:00:27:70:e6:e9",
-            "mtu": 1500,
-            "name": "eth0",
-            "native_vlan": [],
-            "speed": 1000,
-            "vlan": null,
-            "vlan_filtering": false,
+            }, 
+            "linkstate": 2, 
+            "lldp": [
+                {
+                    "adj_hostname": "L2IOU1.ntc.com", 
+                    "adj_mgmt_ip": "192.168.100.104", 
+                    "adj_port": "Ethernet0/0", 
+                    "system_descr": "Cisco IOS Software, Linux Software (I86BI_LINUX_L2-ADVENTERPRISEK9-M), Version 15.6(0.9)S, EARLY DEPLOYMENT ENGINEERING WEEKLY BUILD, synced to  BLD_DARLING_122S_040709_1301\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2015 by Cisco Systems, Inc.\nCompiled Tue 14-Jul-15 11:02 by alnguyen running on Linux Unix"
+                }, 
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet0/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }, 
+                {
+                    "adj_hostname": "NXOS1(TB000D0000B)", 
+                    "adj_mgmt_ip": "192.168.100.105", 
+                    "adj_port": "mgmt0", 
+                    "system_descr": "Cisco Nexus Operating System (NX-OS) Software, Version 7.3(0)D1(1) running on N7K-C7018"
+                }, 
+                {
+                    "adj_hostname": "IOUL3-01.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.103", 
+                    "adj_port": "Ethernet0/0", 
+                    "system_descr": "Cisco IOS Software, Linux Software (I86BI_LINUX-ADVENTERPRISEK9-M), Version 15.4(2)T4, DEVELOPMENT TEST SOFTWARE\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2015 by Cisco Systems, Inc.\nCompiled Thu 08-Oct-15 21:21 by prod_rel_team running on Linux Unix"
+                }
+            ], 
+            "mac": "50:00:00:0b:00:00", 
+            "mtu": 1500, 
+            "name": "eth0", 
+            "native_vlan": [], 
+            "speed": 1000, 
+            "vlan": null, 
+            "vlan_filtering": false, 
             "vlan_list": {}
-        },
-        "linkstate": "UP",
-        "name": "eth0 (another test description)",
-        "port_category": "Mgmt",
-        "speed": "1G",
+        }, 
+        "linkstate": "UP", 
+        "name": "eth0", 
+        "port_category": "Mgmt", 
+        "speed": "1G", 
         "summary": [
-            "IP: 10.0.2.15/24(DHCP)"
+            "IP: 10.1.100.115/24"
         ]
-    },
-    "eth0.1": {
-        "connector_type": null,
-        "iface_obj": {
-            "asic": null,
-            "connector_type": 0,
-            "counters": null,
-            "description": "",
-            "ip_addr_assign": 0,
-            "ip_address": {
-                "allentries": []
-            },
-            "ip_neighbor": {
-                "allentries": {}
-            },
-            "linkstate": 2,
-            "lldp": null,
-            "mac": "08:00:27:70:e6:e9",
-            "mtu": 1500,
-            "name": "eth0.1",
-            "native_vlan": [],
-            "speed": 1000,
-            "vlan": null,
-            "vlan_filtering": false,
-            "vlan_list": {}
-        },
-        "linkstate": "UP",
-        "name": "eth0.1",
-        "port_category": "NotConfigured",
-        "speed": "1G",
-        "summary": [
-            ""
-        ]
-    },
+    }, 
     "lo": {
-        "connector_type": null,
+        "connector_type": null, 
         "iface_obj": {
-            "asic": null,
-            "connector_type": 0,
-            "counters": null,
-            "description": "test description",
-            "ip_addr_assign": 0,
+            "asic": null, 
+            "connector_type": 0, 
+            "counters": null, 
+            "description": "", 
+            "ip_addr_assign": 0, 
             "ip_address": {
                 "allentries": [
-                    "127.0.0.1/8",
-                    "1.1.1.1/32",
+                    "127.0.0.1/8", 
                     "::1/128"
                 ]
-            },
+            }, 
             "ip_neighbor": {
                 "allentries": {}
-            },
-            "linkstate": 2,
-            "lldp": null,
-            "mac": "00:00:00:00:00:00",
-            "mtu": 65536,
-            "name": "lo",
-            "native_vlan": [],
-            "speed": null,
-            "vlan": null,
-            "vlan_filtering": false,
+            }, 
+            "linkstate": 2, 
+            "lldp": null, 
+            "mac": "00:00:00:00:00:00", 
+            "mtu": 65536, 
+            "name": "lo", 
+            "native_vlan": [], 
+            "speed": null, 
+            "vlan": null, 
+            "vlan_filtering": false, 
             "vlan_list": {}
-        },
-        "linkstate": "UP",
-        "name": "lo (test description)",
-        "port_category": "Loopback",
-        "speed": "N/A",
+        }, 
+        "linkstate": "UP", 
+        "name": "lo", 
+        "port_category": "Loopback", 
+        "speed": "N/A", 
         "summary": [
-            "IP: 1.1.1.1/32, 127.0.0.1/8, ::1/128"
+            "IP: 127.0.0.1/8, ::1/128"
         ]
-    },
+    }, 
     "swp1": {
-        "connector_type": null,
+        "connector_type": null, 
         "iface_obj": {
-            "asic": null,
-            "bridge_masters": [
-                "bridge"
-            ],
-            "connector_type": null,
+            "asic": null, 
+            "connector_type": 0, 
             "counters": {
                 "all": {
-                    "rx": {
-                        "broadcast": 0,
-                        "errors": 0,
-                        "multicast": 0,
-                        "unicast": 0
-                    },
-                    "tx": {
-                        "broadcast": 0,
-                        "errors": 0,
-                        "multicast": 0,
-                        "unicast": 0
-                    }
-                },
-                "total_err": 0,
-                "total_rx": 0,
-                "total_tx": 0
-            },
-            "description": "",
-            "ip_addr_assign": 0,
-            "ip_address": {
-                "allentries": []
-            },
-            "ip_neighbor": {
-                "allentries": {}
-            },
-            "linkstate": 2,
-            "lldp": [
-                {
-                    "adj_hostname": "cumulus",
-                    "adj_mgmt_ip": "1.1.1.1",
-                    "adj_port": "swp2",
-                    "system_descr": "Cumulus Linux version 3.2.0 running on innotek GmbH VirtualBox"
-                }
-            ],
-            "mac": "08:00:27:ab:49:f6",
-            "mtu": 1500,
-            "name": "swp1",
-            "native_vlan": [
-                "1"
-            ],
-            "speed": 1000,
-            "stp": {
-                "state": [
-                    "root",
-                    "designated",
-                    "forwarding",
-                    "alternate",
-                    "discarding",
-                    "oper_edge_port",
-                    "network_port",
-                    "backup",
-                    "disabled"
-                ]
-            },
-            "vlan": [
-                {
-                    "flags": [
-                        "PVID",
-                        "Egress Untagged"
-                    ],
-                    "vlan": 1
-                },
-                {
-                    "vlan": 10
-                }
-            ],
-            "vlan_filtering": true,
-            "vlan_list": [
-                "10"
-            ]
-        },
-        "linkstate": "UP",
-        "name": "swp1",
-        "port_category": "Trunk/L2",
-        "speed": "1G",
-        "summary": [
-            "Untagged VLAN: 1",
-            "VLANS: 10 "
-        ]
-    },
-    "swp1.100": {
-        "connector_type": null,
-        "iface_obj": {
-            "asic": null,
-            "connector_type": 0,
-            "counters": null,
-            "description": "",
-            "ip_addr_assign": 0,
-            "ip_address": {
-                "allentries": []
-            },
-            "ip_neighbor": {
-                "allentries": {}
-            },
-            "linkstate": 2,
-            "lldp": null,
-            "mac": "08:00:27:ab:49:f6",
-            "mtu": 1500,
-            "name": "swp1.100",
-            "native_vlan": [],
-            "speed": 1000,
-            "vlan": null,
-            "vlan_filtering": false,
-            "vlan_list": {}
-        },
-        "linkstate": "UP",
-        "name": "swp1.100",
-        "port_category": "NotConfigured",
-        "speed": "1G",
-        "summary": [
-            ""
-        ]
-    },
-    "swp2": {
-        "connector_type": null,
-        "iface_obj": {
-            "asic": null,
-            "bridge_masters": [
-                "bridge"
-            ],
-            "connector_type": null,
-            "counters": {
-                "all": {
-                    "rx": {
-                        "broadcast": 0,
-                        "errors": 0,
-                        "multicast": 0,
-                        "unicast": 0
-                    },
-                    "tx": {
-                        "broadcast": 0,
-                        "errors": 0,
-                        "multicast": 0,
-                        "unicast": 0
-                    }
-                },
-                "total_err": 0,
-                "total_rx": 0,
-                "total_tx": 0
-            },
-            "description": "",
-            "ip_addr_assign": 0,
-            "ip_address": {
-                "allentries": []
-            },
-            "ip_neighbor": {
-                "allentries": {}
-            },
-            "linkstate": 2,
-            "lldp": [
-                {
-                    "adj_hostname": "cumulus",
-                    "adj_mgmt_ip": "1.1.1.1",
-                    "adj_port": "swp1",
-                    "system_descr": "Cumulus Linux version 3.2.0 running on innotek GmbH VirtualBox"
-                }
-            ],
-            "mac": "08:00:27:18:ce:9c",
-            "mtu": 1500,
-            "name": "swp2",
-            "native_vlan": [
-                "1"
-            ],
-            "speed": 1000,
-            "stp": {
-                "state": [
-                    "root",
-                    "designated",
-                    "forwarding",
-                    "alternate",
-                    "discarding",
-                    "oper_edge_port",
-                    "network_port",
-                    "backup",
-                    "disabled"
-                ]
-            },
-            "vlan": [
-                {
-                    "flags": [
-                        "PVID",
-                        "Egress Untagged"
-                    ],
-                    "vlan": 1
-                },
-                {
-                    "vlan": 10
-                }
-            ],
-            "vlan_filtering": true,
-            "vlan_list": [
-                "10"
-            ]
-        },
-        "linkstate": "UP",
-        "name": "swp2",
-        "port_category": "Trunk/L2",
-        "speed": "1G",
-        "summary": [
-            "Untagged VLAN: 1",
-            "VLANS: 10 "
-        ]
-    },
-    "swp3": {
-        "connector_type": null,
-        "iface_obj": {
-            "asic": null,
-            "connector_type": 0,
-            "counters": {
-                "all": {
-                    "rx": {},
+                    "rx": {}, 
                     "tx": {}
-                },
-                "total_err": null,
-                "total_rx": null,
+                }, 
+                "total_err": null, 
+                "total_rx": null, 
                 "total_tx": null
-            },
-            "description": "",
-            "ip_addr_assign": 0,
-            "ip_address": {
-                "allentries": []
-            },
-            "ip_neighbor": {
-                "allentries": {}
-            },
-            "linkstate": 0,
-            "lldp": null,
-            "mac": "08:00:27:55:83:2d",
-            "mtu": 1500,
-            "name": "swp3",
-            "native_vlan": [],
-            "speed": 0,
-            "vlan": null,
-            "vlan_filtering": false,
-            "vlan_list": {}
-        },
-        "linkstate": "ADMDN",
-        "name": "swp3",
-        "port_category": "NotConfigured",
-        "speed": "0M",
-        "summary": [
-            ""
-        ]
-    },
-    "swp4": {
-        "connector_type": null,
-        "iface_obj": {
-            "asic": null,
-            "connector_type": 0,
-            "counters": {
-                "all": {
-                    "rx": {},
-                    "tx": {}
-                },
-                "total_err": null,
-                "total_rx": null,
-                "total_tx": null
-            },
-            "description": "",
-            "ip_addr_assign": 0,
-            "ip_address": {
-                "allentries": []
-            },
-            "ip_neighbor": {
-                "allentries": {}
-            },
-            "linkstate": 0,
-            "lldp": null,
-            "mac": "08:00:27:cc:ee:f1",
-            "mtu": 1500,
-            "name": "swp4",
-            "native_vlan": [],
-            "speed": 0,
-            "vlan": null,
-            "vlan_filtering": false,
-            "vlan_list": {}
-        },
-        "linkstate": "ADMDN",
-        "name": "swp4",
-        "port_category": "NotConfigured",
-        "speed": "0M",
-        "summary": [
-            ""
-        ]
-    },
-    "swp5": {
-        "connector_type": null,
-        "iface_obj": {
-            "asic": null,
-            "connector_type": 0,
-            "counters": {
-                "all": {
-                    "rx": {},
-                    "tx": {}
-                },
-                "total_err": null,
-                "total_rx": null,
-                "total_tx": null
-            },
-            "description": "",
-            "ip_addr_assign": 0,
-            "ip_address": {
-                "allentries": []
-            },
-            "ip_neighbor": {
-                "allentries": {}
-            },
-            "linkstate": 0,
-            "lldp": null,
-            "mac": "08:00:27:5a:60:f3",
-            "mtu": 1500,
-            "name": "swp5",
-            "native_vlan": [],
-            "speed": 0,
-            "vlan": null,
-            "vlan_filtering": false,
-            "vlan_list": {}
-        },
-        "linkstate": "ADMDN",
-        "name": "swp5",
-        "port_category": "NotConfigured",
-        "speed": "0M",
-        "summary": [
-            ""
-        ]
-    },
-    "swp6": {
-        "connector_type": null,
-        "iface_obj": {
-            "asic": null,
-            "connector_type": 0,
-            "counters": {
-                "all": {
-                    "rx": {},
-                    "tx": {}
-                },
-                "total_err": null,
-                "total_rx": null,
-                "total_tx": null
-            },
-            "description": "",
-            "ip_addr_assign": 0,
-            "ip_address": {
-                "allentries": []
-            },
-            "ip_neighbor": {
-                "allentries": {}
-            },
-            "linkstate": 0,
-            "lldp": null,
-            "mac": "08:00:27:da:e4:9a",
-            "mtu": 1500,
-            "name": "swp6",
-            "native_vlan": [],
-            "speed": 0,
-            "vlan": null,
-            "vlan_filtering": false,
-            "vlan_list": {}
-        },
-        "linkstate": "ADMDN",
-        "name": "swp6",
-        "port_category": "NotConfigured",
-        "speed": "0M",
-        "summary": [
-            ""
-        ]
-    },
-    "swp7": {
-        "connector_type": null,
-        "iface_obj": {
-            "asic": null,
-            "connector_type": 0,
-            "counters": {
-                "all": {
-                    "rx": {},
-                    "tx": {}
-                },
-                "total_err": null,
-                "total_rx": null,
-                "total_tx": null
-            },
-            "description": "",
-            "ip_addr_assign": 0,
-            "ip_address": {
-                "allentries": []
-            },
-            "ip_neighbor": {
-                "allentries": {}
-            },
-            "linkstate": 0,
-            "lldp": null,
-            "mac": "08:00:27:be:47:af",
-            "mtu": 1500,
-            "name": "swp7",
-            "native_vlan": [],
-            "speed": 0,
-            "vlan": null,
-            "vlan_filtering": false,
-            "vlan_list": {}
-        },
-        "linkstate": "ADMDN",
-        "name": "swp7",
-        "port_category": "NotConfigured",
-        "speed": "0M",
-        "summary": [
-            ""
-        ]
-    },
-    "vlan10": {
-        "connector_type": null,
-        "iface_obj": {
-            "asic": null,
-            "connector_type": 0,
-            "counters": null,
-            "description": "",
-            "ip_addr_assign": 0,
+            }, 
+            "description": "", 
+            "ip_addr_assign": 0, 
             "ip_address": {
                 "allentries": [
-                    "10.100.100.1/24"
+                    "192.168.100.115/24"
                 ]
-            },
+            }, 
             "ip_neighbor": {
                 "allentries": {}
-            },
-            "linkstate": 2,
-            "lldp": null,
-            "mac": "08:00:27:18:ce:9c",
-            "mtu": 1500,
-            "name": "vlan10",
-            "native_vlan": [],
-            "speed": null,
-            "vlan": null,
-            "vlan_filtering": false,
+            }, 
+            "linkstate": 2, 
+            "lldp": [
+                {
+                    "adj_hostname": "NXOS1(TB000D0000B)", 
+                    "adj_mgmt_ip": "192.168.100.105", 
+                    "adj_port": "Ethernet2/1", 
+                    "system_descr": "Cisco Nexus Operating System (NX-OS) Software, Version 7.3(0)D1(1) running on N7K-C7018"
+                }, 
+                {
+                    "adj_hostname": "VIRL1.ntc.com", 
+                    "adj_mgmt_ip": "192.168.100.106", 
+                    "adj_port": "GigabitEthernet0/1", 
+                    "system_descr": "Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Experimental Version 15.4(20140730:011659) [lucylee-pi25-2 107]\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Tue 29-Jul-14 18:17 by lucylee running on Cisco IOSv"
+                }, 
+                {
+                    "adj_hostname": "L2IOU1.ntc.com", 
+                    "adj_mgmt_ip": "192.168.100.104", 
+                    "adj_port": "Ethernet0/1", 
+                    "system_descr": "Cisco IOS Software, Linux Software (I86BI_LINUX_L2-ADVENTERPRISEK9-M), Version 15.6(0.9)S, EARLY DEPLOYMENT ENGINEERING WEEKLY BUILD, synced to  BLD_DARLING_122S_040709_1301\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2015 by Cisco Systems, Inc.\nCompiled Tue 14-Jul-15 11:02 by alnguyen running on Linux Unix"
+                }, 
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet1/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }
+            ], 
+            "mac": "50:00:00:0b:00:01", 
+            "mtu": 1500, 
+            "name": "swp1", 
+            "native_vlan": [], 
+            "speed": 1000, 
+            "vlan": null, 
+            "vlan_filtering": false, 
             "vlan_list": {}
-        },
-        "linkstate": "UP",
-        "name": "vlan10",
-        "port_category": "Interface/L3",
-        "speed": "N/A",
+        }, 
+        "linkstate": "UP", 
+        "name": "swp1", 
+        "port_category": "Interface/L3", 
+        "speed": "1G", 
         "summary": [
-            "IP: 10.100.100.1/24"
+            "IP: 192.168.100.115/24"
+        ]
+    }, 
+    "swp2": {
+        "connector_type": null, 
+        "iface_obj": {
+            "asic": null, 
+            "connector_type": 0, 
+            "counters": {
+                "all": {
+                    "rx": {}, 
+                    "tx": {}
+                }, 
+                "total_err": null, 
+                "total_rx": null, 
+                "total_tx": null
+            }, 
+            "description": "", 
+            "ip_addr_assign": 0, 
+            "ip_address": {
+                "allentries": [
+                    "192.168.101.115/24"
+                ]
+            }, 
+            "ip_neighbor": {
+                "allentries": {}
+            }, 
+            "linkstate": 2, 
+            "lldp": [
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet2/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }, 
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet3/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }, 
+                {
+                    "adj_hostname": "cumulus", 
+                    "adj_mgmt_ip": "10.1.100.115", 
+                    "adj_port": "swp3", 
+                    "system_descr": "Cumulus Linux version 3.2.1 running on Linux"
+                }
+            ], 
+            "mac": "50:00:00:0b:00:02", 
+            "mtu": 1500, 
+            "name": "swp2", 
+            "native_vlan": [], 
+            "speed": 1000, 
+            "vlan": null, 
+            "vlan_filtering": false, 
+            "vlan_list": {}
+        }, 
+        "linkstate": "UP", 
+        "name": "swp2", 
+        "port_category": "Interface/L3", 
+        "speed": "1G", 
+        "summary": [
+            "IP: 192.168.101.115/24"
+        ]
+    }, 
+    "swp3": {
+        "connector_type": null, 
+        "iface_obj": {
+            "asic": null, 
+            "connector_type": 0, 
+            "counters": {
+                "all": {
+                    "rx": {}, 
+                    "tx": {}
+                }, 
+                "total_err": null, 
+                "total_rx": null, 
+                "total_tx": null
+            }, 
+            "description": "", 
+            "ip_addr_assign": 0, 
+            "ip_address": {
+                "allentries": [
+                    "192.168.102.115/24"
+                ]
+            }, 
+            "ip_neighbor": {
+                "allentries": {}
+            }, 
+            "linkstate": 2, 
+            "lldp": [
+                {
+                    "adj_hostname": "cumulus", 
+                    "adj_mgmt_ip": "10.1.100.115", 
+                    "adj_port": "swp2", 
+                    "system_descr": "Cumulus Linux version 3.2.1 running on Linux"
+                }, 
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet2/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }, 
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet3/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }
+            ], 
+            "mac": "50:00:00:0b:00:03", 
+            "mtu": 1500, 
+            "name": "swp3", 
+            "native_vlan": [], 
+            "speed": 1000, 
+            "vlan": null, 
+            "vlan_filtering": false, 
+            "vlan_list": {}
+        }, 
+        "linkstate": "UP", 
+        "name": "swp3", 
+        "port_category": "Interface/L3", 
+        "speed": "1G", 
+        "summary": [
+            "IP: 192.168.102.115/24"
         ]
     }
 }
