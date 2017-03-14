@@ -248,7 +248,7 @@ class NXOSDriver(NetworkDriver):
                     'Rollback Patch is Empty', '').strip()
             for line in diff_out.splitlines():
                 if line:
-                    if line[0].strip() != '!' and line[0] != '.':
+                    if line[0].strip() != '!':
                         diff.append(line.rstrip(' '))
         except (AttributeError, KeyError):
             raise ReplaceConfigException(
