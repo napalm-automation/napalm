@@ -12,7 +12,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-eos",
-    version="0.5.5",
+    version="0.5.6",
     packages=find_packages(),
     author="David Barroso, Mircea Ulinic",
     author_email="dbarrosop@dravetech.com, mircea@cloudflare.com",
