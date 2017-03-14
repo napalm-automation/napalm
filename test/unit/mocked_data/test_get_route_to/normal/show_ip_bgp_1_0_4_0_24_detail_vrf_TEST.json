@@ -1,6 +1,6 @@
 {
     "vrfs": {
-        "default": {
+        "TEST": {
             "routerId": "192.168.256.1",
             "vrf": "default",
             "bgpRouteEntries": {
@@ -53,5 +53,5 @@
             },
             "asn": 13335
         }
-    }
+	}
 }

@@ -1003,6 +1003,16 @@ class EOSDriver(NetworkDriver):
     def get_route_to(self, destination='', protocol=''):
         routes = {}
 
+        # Placeholder for vrf arg
+        vrf = ''
+
+        # Right not iterating through vrfs is necessary
+        # show ipv6 route doesn't support vrf 'all'
+        if vrf == '':
+            vrfs = sorted(self._get_vrfs())
+        else:
+            vrfs = [vrf]
+
         if protocol.lower() == 'direct':
             protocol = 'connected'
 
@@ -1013,110 +1023,116 @@ class EOSDriver(NetworkDriver):
         except AddrFormatError:
             return 'Please specify a valid destination!'
 
-        command = 'show ip{ipv} route {destination} {protocol} detail'.format(
-            ipv=ipv,
-            destination=destination,
-            protocol=protocol,
-        )
+        commands = []
+        for _vrf in vrfs:
+            commands.append('show ip{ipv} route vrf {_vrf} {destination} {protocol} detail'.format(
+                ipv=ipv,
+                _vrf=_vrf,
+                destination=destination,
+                protocol=protocol,
+            ))
 
-        command_output = self.device.run_commands([command])[0]
-        if ipv == 'v6':
-            routes_out = command_output.get('routes', {})
-        else:
-            # on a multi-VRF configured device need to go through a loop and get for each instance
-            routes_out = command_output.get('vrfs', {}).get('default', {}).get('routes', {})
+        commands_output = self.device.run_commands(commands)
 
-        for prefix, route_details in routes_out.items():
-            if prefix not in routes.keys():
-                routes[prefix] = []
-            route_protocol = route_details.get('routeType')
-            preference = route_details.get('preference', 0)
-
-            route = {
-                'current_active': True,
-                'last_active': True,
-                'age': 0,
-                'next_hop': u'',
-                'protocol': route_protocol,
-                'outgoing_interface': u'',
-                'preference': preference,
-                'inactive_reason': u'',
-                'routing_table': u'default',
-                'selected_next_hop': True,
-                'protocol_attributes': {}
-            }
-            if protocol == 'bgp' or route_protocol.lower() in ('ebgp', 'ibgp'):
-                nexthop_interface_map = {}
-                for next_hop in route_details.get('vias'):
-                    nexthop_ip = napalm_base.helpers.ip(next_hop.get('nexthopAddr'))
-                    nexthop_interface_map[nexthop_ip] = next_hop.get('interface')
-                metric = route_details.get('metric')
-                command = 'show ip{ipv} bgp {destination} detail'.format(
-                    ipv=ipv,
-                    destination=prefix
-                )
-                default_vrf_details = self.device.run_commands([command])[0].get(
-                    'vrfs', {}).get('default', {})
-                local_as = default_vrf_details.get('asn')
-                bgp_routes = default_vrf_details.get(
-                    'bgpRouteEntries', {}).get(prefix, {}).get('bgpRoutePaths', [])
-                for bgp_route_details in bgp_routes:
-                    bgp_route = route.copy()
-                    as_path = bgp_route_details.get('asPathEntry', {}).get('asPath', u'')
-                    remote_as = int(as_path.split()[-1])
-                    remote_address = napalm_base.helpers.ip(bgp_route_details.get(
-                        'routeDetail', {}).get('peerEntry', {}).get('peerAddr', ''))
-                    local_preference = bgp_route_details.get('localPreference')
-                    next_hop = napalm_base.helpers.ip(bgp_route_details.get('nextHop'))
-                    active_route = bgp_route_details.get('routeType', {}).get('active', False)
-                    last_active = active_route  # should find smth better
-                    communities = bgp_route_details.get('routeDetail', {}).get('communityList', [])
-                    preference2 = bgp_route_details.get('weight')
-                    inactive_reason = bgp_route_details.get('reasonNotBestpath', '')
-                    bgp_route.update({
-                        'current_active': active_route,
-                        'inactive_reason': inactive_reason,
-                        'last_active': last_active,
-                        'next_hop': next_hop,
-                        'outgoing_interface': nexthop_interface_map.get(next_hop),
-                        'selected_next_hop': active_route,
-                        'protocol_attributes': {
-                            'metric': metric,
-                            'as_path': as_path,
-                            'local_preference': local_preference,
-                            'local_as': local_as,
-                            'remote_as': remote_as,
-                            'remote_address': remote_address,
-                            'preference2': preference2,
-                            'communities': communities
-                        }
-                    })
-                    routes[prefix].append(bgp_route)
+        for _vrf, command_output in zip(vrfs, commands_output):
+            if ipv == 'v6':
+                routes_out = command_output.get('routes', {})
             else:
-                if route_details.get('routeAction') in ('drop',):
-                    route['next_hop'] = 'NULL'
-                if route_details.get('routingDisabled') is True:
-                    route['last_active'] = False
-                    route['current_active'] = False
-                for next_hop in route_details.get('vias'):
-                    route_next_hop = route.copy()
-                    if next_hop.get('nexthopAddr') is None:
-                        route_next_hop.update(
-                            {
-                                'next_hop': '',
-                                'outgoing_interface': next_hop.get('interface')
+                routes_out = command_output.get('vrfs', {}).get(_vrf, {}).get('routes', {})
+
+            for prefix, route_details in routes_out.items():
+                if prefix not in routes.keys():
+                    routes[prefix] = []
+                route_protocol = route_details.get('routeType')
+                preference = route_details.get('preference', 0)
+
+                route = {
+                    'current_active': True,
+                    'last_active': True,
+                    'age': 0,
+                    'next_hop': u'',
+                    'protocol': route_protocol,
+                    'outgoing_interface': u'',
+                    'preference': preference,
+                    'inactive_reason': u'',
+                    'routing_table': _vrf,
+                    'selected_next_hop': True,
+                    'protocol_attributes': {}
+                }
+                if protocol == 'bgp' or route_protocol.lower() in ('ebgp', 'ibgp'):
+                    nexthop_interface_map = {}
+                    for next_hop in route_details.get('vias'):
+                        nexthop_ip = napalm_base.helpers.ip(next_hop.get('nexthopAddr'))
+                        nexthop_interface_map[nexthop_ip] = next_hop.get('interface')
+                    metric = route_details.get('metric')
+                    command = 'show ip{ipv} bgp {destination} detail vrf {_vrf}'.format(
+                        ipv=ipv,
+                        destination=prefix,
+                        _vrf=_vrf
+                    )
+                    vrf_details = self.device.run_commands([command])[0].get(
+                        'vrfs', {}).get(_vrf, {})
+                    local_as = vrf_details.get('asn')
+                    bgp_routes = vrf_details.get(
+                        'bgpRouteEntries', {}).get(prefix, {}).get('bgpRoutePaths', [])
+                    for bgp_route_details in bgp_routes:
+                        bgp_route = route.copy()
+                        as_path = bgp_route_details.get('asPathEntry', {}).get('asPath', u'')
+                        remote_as = int(as_path.split()[-1])
+                        remote_address = napalm_base.helpers.ip(bgp_route_details.get(
+                            'routeDetail', {}).get('peerEntry', {}).get('peerAddr', ''))
+                        local_preference = bgp_route_details.get('localPreference')
+                        next_hop = napalm_base.helpers.ip(bgp_route_details.get('nextHop'))
+                        active_route = bgp_route_details.get('routeType', {}).get('active', False)
+                        last_active = active_route  # should find smth better
+                        communities = bgp_route_details.get('routeDetail', {}).get(
+                            'communityList', [])
+                        preference2 = bgp_route_details.get('weight')
+                        inactive_reason = bgp_route_details.get('reasonNotBestpath', '')
+                        bgp_route.update({
+                            'current_active': active_route,
+                            'inactive_reason': inactive_reason,
+                            'last_active': last_active,
+                            'next_hop': next_hop,
+                            'outgoing_interface': nexthop_interface_map.get(next_hop),
+                            'selected_next_hop': active_route,
+                            'protocol_attributes': {
+                                'metric': metric,
+                                'as_path': as_path,
+                                'local_preference': local_preference,
+                                'local_as': local_as,
+                                'remote_as': remote_as,
+                                'remote_address': remote_address,
+                                'preference2': preference2,
+                                'communities': communities
                             }
-                        )
-                    else:
-                        route_next_hop.update(
-                            {
-                                'next_hop': napalm_base.helpers.ip(next_hop.get('nexthopAddr')),
-                                'outgoing_interface': next_hop.get('interface')
-                            }
-                        )
-                    routes[prefix].append(route_next_hop)
-                if route_details.get('vias') == []:  # empty list
-                    routes[prefix].append(route)
+                        })
+                        routes[prefix].append(bgp_route)
+                else:
+                    if route_details.get('routeAction') in ('drop',):
+                        route['next_hop'] = 'NULL'
+                    if route_details.get('routingDisabled') is True:
+                        route['last_active'] = False
+                        route['current_active'] = False
+                    for next_hop in route_details.get('vias'):
+                        route_next_hop = route.copy()
+                        if next_hop.get('nexthopAddr') is None:
+                            route_next_hop.update(
+                                {
+                                    'next_hop': '',
+                                    'outgoing_interface': next_hop.get('interface')
+                                }
+                            )
+                        else:
+                            route_next_hop.update(
+                                {
+                                    'next_hop': napalm_base.helpers.ip(next_hop.get('nexthopAddr')),
+                                    'outgoing_interface': next_hop.get('interface')
+                                }
+                            )
+                        routes[prefix].append(route_next_hop)
+                    if route_details.get('vias') == []:  # empty list
+                        routes[prefix].append(route)
         return routes
 
     def get_snmp_information(self):
@@ -1549,15 +1565,29 @@ class EOSDriver(NetworkDriver):
         else:
             raise Exception("Wrong retrieve filter: {}".format(retrieve))
 
-    def get_network_instances(self, name=''):
-        """get_network_instances implementation for EOS."""
-
+    def _show_vrf(self):
         commands = ['show vrf']
 
         # This command has no JSON yet
         raw_output = self.device.run_commands(commands, encoding='text')[0].get('output', '')
 
         output = napalm_base.helpers.textfsm_extractor(self, 'vrf', raw_output)
+
+        return output
+
+    def _get_vrfs(self):
+        output = self._show_vrf()
+
+        vrfs = [py23_compat.text_type(vrf['name']) for vrf in output]
+
+        vrfs.append(u'default')
+
+        return vrfs
+
+    def get_network_instances(self, name=''):
+        """get_network_instances implementation for EOS."""
+
+        output = self._show_vrf()
         vrfs = {}
         all_vrf_interfaces = {}
         for vrf in output:
