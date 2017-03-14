@@ -85,6 +85,9 @@ class EOSDriver(NetworkDriver):
 
         self.enablepwd = optional_args.get('enable_password', '')
 
+    def __del__(self):
+        self.close()
+
     def open(self):
         """Implementation of NAPALM method open."""
         try:
@@ -124,24 +127,16 @@ class EOSDriver(NetworkDriver):
         }
 
     def _lock(self):
-        if not self.locked:
-            self.locked = True
-        else:
-            # already locked
-            raise SessionLockedException('Session is already in use by napalm')
-
-    def _unlock(self):
-        if self.locked:
-            self.locked = False
+        if self.config_session is None:
+            self.config_session = 'napalm_{}'.format(datetime.now().microsecond)
+        sess = self.device.run_commands(['show configuration sessions'])[0]['sessions']
+        if [k for k, v in sess.items() if v['state'] == 'pending' and k != self.config_session]:
+            raise SessionLockedException('Session is already in use')
 
     def _load_config(self, filename=None, config=None, replace=True):
         commands = []
 
         self._lock()
-        if self.config_session is None:
-            # create a new session
-            # otherwise will preserve the previous configuration session
-            self.config_session = 'napalm_{}'.format(datetime.now().microsecond)
         commands.append('configure session {}'.format(self.config_session))
         if replace:
             commands.append('rollback clean-config')
@@ -171,8 +166,6 @@ class EOSDriver(NetworkDriver):
                 raise ReplaceConfigException(e.message)
             else:
                 raise MergeConfigException(e.message)
-        finally:
-            self._unlock()
 
     def load_replace_candidate(self, filename=None, config=None):
         """Implementation of NAPALM method load_replace_candidate."""
