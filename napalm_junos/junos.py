@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 # import stdlib
 import re
+import json
 import logging
 import collections
 from copy import deepcopy
@@ -116,12 +117,22 @@ class JunOSDriver(NetworkDriver):
             'is_alive': self.device._conn._session.transport.is_active() and self.device.connected
         }
 
-    def _detect_config_format(config):
+    @staticmethod
+    def _is_json_format(config):
+        try:
+            _ = json.loads(config)  # noqa
+        except (TypeError, ValueError):
+            return False
+        return True
+
+    def _detect_config_format(self, config):
         fmt = 'text'
         if config.strip().startswith('<'):
             return 'xml'
         elif config.strip().startswith('set'):
             return 'set'
+        elif self._is_json_format(config):
+            return 'json'
         return fmt
 
     def _load_candidate(self, filename, config, overwrite):
