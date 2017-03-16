@@ -59,6 +59,14 @@ class NetworkDriver(object):
         if exc_type is not None:
             self.__raise_clean_exception(exc_type, exc_value, exc_traceback)
 
+    def __del__(self):
+        """
+        This method is used to cleanup when the program is terminated suddenly.
+        We need to make sure the connection is closed properly and the configuration DB
+        is released (unlocked).
+        """
+        self.close()
+
     @staticmethod
     def __raise_clean_exception(exc_type, exc_value, exc_traceback):
         """
