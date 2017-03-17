@@ -107,6 +107,7 @@ FAQ
 
 If you have any issues using NAPALM or encounter any errors, before submitting any questions (directly by email or on Slack), please go through the following checklist:
 
+- Make sure you have the latest release installed. We release very often, so upgrading to the latest version might help in many cases.
 - Double or triple check if you indeed are able to access the device using the credentials provided.
 - Does your device meet the minimum [requirements](http://napalm.readthedocs.io/en/latest/support/index.html#general-support-matrix)?
 - Some operating systems have some specific [constraints](http://napalm.readthedocs.io/en/latest/support/index.html#caveats). (e.g. have you enabled the XML agent on IOS-XR, or the NXAPI feature on NXOS?)
