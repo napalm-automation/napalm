@@ -1527,8 +1527,8 @@ class JunOSDriver(NetworkDriver):
                 ri_type = 'default'
             ri_rd = ri_details['route_distinguisher']
             ri_interfaces = ri_details['interfaces']
-            if ri_interfaces is None:
-                ri_interfaces = {}
+            if not isinstance(ri_interfaces,list):
+                ri_interfaces = [ri_interfaces]
             network_instances[ri_name] = {
                 'name': ri_name,
                 'type': C.OC_NETWORK_INSTANCE_TYPE_MAP.get(ri_type, ri_type),  # default: return raw
