@@ -1,1 +1,29 @@
-The diff when merging `merged_good.conf`
+ source /etc/network/interfaces.d/*.intf
+ 
+ # The loopback network interface
+ auto lo
+ iface lo inet loopback
+-    address 1.1.1.1/32
+ 
+ # The primary network interface
+ auto eth0
+ iface eth0
+     address 10.1.100.115/24
+     gateway 10.1.100.1
+ 
+ auto swp1
+ iface swp1
+     address 192.168.100.115/24
+@@ -21,12 +20,11 @@
+ auto swp2
+ iface swp2
+     address 192.168.101.115/24
+ 
+ auto swp3
+ iface swp3
+     address 192.168.102.115/24
+ 
+ auto bridge
+ iface bridge
+-    bridge-vids 10
+     bridge-vlan-aware yes

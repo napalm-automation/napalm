@@ -123,7 +123,9 @@ class CumulusDriver(NetworkDriver):
         for command in candidate:
             if 'sudo' not in command:
                 command = 'sudo {0}'.format(command)
-            self._send_command(command)
+            output = self._send_command(command)
+            if "error" in output or "not found" in output:
+                raise MergeConfigException("Command '{0}' cannot be applied.".format(command))
 
     def discard_config(self):
         if self.loaded:

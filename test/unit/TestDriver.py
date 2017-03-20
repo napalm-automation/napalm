@@ -17,6 +17,7 @@
 import unittest
 
 from napalm_cumulus import cumulus
+from napalm_base import exceptions
 from napalm_base.test.base import TestConfigNetworkDriver
 
 
@@ -36,5 +37,34 @@ class TestConfigCumulusDriver(unittest.TestCase, TestConfigNetworkDriver):
                                            optional_args=optional_args)
         cls.device.open()
 
-        cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
-        cls.device.commit_config()
+    def test_merge_configuration(self):
+        intended_diff = self.read_file('%s/merge_good.diff' % self.vendor)
+
+        self.device.load_merge_candidate(filename='%s/merge_good.conf' % self.vendor)
+        self.device.commit_config()
+
+        # Reverting changes
+        self.device.load_merge_candidate(filename='%s/revert_merge_good.conf' % self.vendor)
+        diff = self.device.compare_config()
+        # Removing timestamps
+        fixed_diff = diff.split("net add/del commands since the last 'net commit'")[0]
+        fixed_diff = fixed_diff.split(" # and how to activate them. For more information"
+                                      ", see interfaces(5).")[1].strip()
+
+        print(fixed_diff)
+        self.device.commit_config()
+
+        self.assertEqual(fixed_diff, intended_diff)
+
+    def test_merge_configuration_typo_and_rollback(self):
+        result = False
+        try:
+            self.device.load_merge_candidate(filename='%s/merge_typo.conf' % self.vendor)
+            self.device.compare_config()
+            self.device.commit_config()
+            raise Exception("We shouldn't be here")
+        except exceptions.MergeConfigException:
+            result = self.device.compare_config() == ''
+            self.device.discard_config()
+
+        self.assertTrue(result)
