@@ -1527,7 +1527,7 @@ class JunOSDriver(NetworkDriver):
                 ri_type = 'default'
             ri_rd = ri_details['route_distinguisher']
             ri_interfaces = ri_details['interfaces']
-            if not isinstance(ri_interfaces,list):
+            if not isinstance(ri_interfaces, list):
                 ri_interfaces = [ri_interfaces]
             network_instances[ri_name] = {
                 'name': ri_name,
