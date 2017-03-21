@@ -1,0 +1,13 @@
+Interface bridge is up, line protocol is up
+  Link ups:       0    last: (never)
+  Link downs:     0    last: (never)
+  PTM status: disabled
+  vrf: Default-IP-Routing-Table
+  index 6 metric 0 mtu 1500 
+  flags: <UP,BROADCAST,RUNNING,MULTICAST>
+  Type: Ethernet
+  HWaddr: 6e:d2:b8:b6:1a:89
+  inet6 fe80::6cd2:b8ff:feb6:1a89/64
+  Interface Type Bridge
+  Bridge VLAN-aware: yes
+

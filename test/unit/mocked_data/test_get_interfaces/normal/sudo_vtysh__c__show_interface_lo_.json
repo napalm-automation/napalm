@@ -1,0 +1,10 @@
+Interface lo is up, line protocol is up
+  Link ups:       0    last: (never)
+  Link downs:     0    last: (never)
+  PTM status: disabled
+  vrf: Default-IP-Routing-Table
+  index 1 metric 0 mtu 65536 
+  flags: <UP,LOOPBACK,RUNNING>
+  Type: Loopback
+  Interface Type Other
+
