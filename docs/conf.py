@@ -307,6 +307,7 @@ def _merge_results(last, intermediate):
 
 
 def build_getters_support_matrix(app):
+    return 
     """Build the getters support matrix."""
     status = subprocess.call("./test.sh", stdout=sys.stdout, stderr=sys.stderr)
 

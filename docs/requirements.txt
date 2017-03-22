@@ -3,3 +3,4 @@ sphinx-rtd-theme
 sphinxcontrib-napoleon
 invoke
 napalm
+napalm_yang
