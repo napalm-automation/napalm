@@ -23,9 +23,10 @@ from __future__ import unicode_literals
 
 import re
 import json
+from datetime import datetime
+from pytz import timezone
 
 from netmiko import ConnectHandler
-from netmiko import __version__ as netmiko_version
 from netmiko.ssh_exception import NetMikoTimeoutException
 import napalm_base.constants as C
 from napalm_base.utils import py23_compat
@@ -35,7 +36,6 @@ from napalm_base.exceptions import (
     ConnectionException,
     MergeConfigException,
     )
-from datetime import datetime
 
 
 class CumulusDriver(NetworkDriver):
@@ -66,24 +66,15 @@ class CumulusDriver(NetworkDriver):
             'alt_host_keys': False,
             'alt_key_file': '',
             'ssh_config_file': None,
+            'secret': None,
+            'allow_agent': False
         }
 
-        fields = netmiko_version.split('.')
-        fields = [int(x) for x in fields]
-        maj_ver, min_ver, bug_fix = fields
-        if maj_ver >= 2:
-            netmiko_argument_map['allow_agent'] = False
-        elif maj_ver == 1 and min_ver >= 1:
-            netmiko_argument_map['allow_agent'] = False
-
         # Build dict of any optional Netmiko args
-        self.netmiko_optional_args = {}
-        for k, v in netmiko_argument_map.items():
-            try:
-                self.netmiko_optional_args[k] = optional_args[k]
-            except KeyError:
-                pass
-        self.global_delay_factor = optional_args.get('global_delay_factor', 1)
+        self.netmiko_optional_args = {
+                k: optional_args.get(k, v)
+                for k, v in netmiko_argument_map.items()
+            }
         self.port = optional_args.get('port', 22)
         self.sudo_pwd = optional_args.get('sudo_pwd', self.password)
 
@@ -94,8 +85,13 @@ class CumulusDriver(NetworkDriver):
                                          username=self.username,
                                          password=self.password,
                                          **self.netmiko_optional_args)
+            # Enter root mode.
+            if self.netmiko_optional_args.get('secret'):
+                self.device.enable()
         except NetMikoTimeoutException:
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
+        except ValueError:
+            raise ConnectionException('Cannot become root.')
 
     def close(self):
         self.device.disconnect()
@@ -150,7 +146,7 @@ class CumulusDriver(NetworkDriver):
             self._send_command('sudo net rollback last')
             self.changed = False
 
-    def _send_command(self, command, compare=False):
+    def _send_command(self, command):
         response = self.device.send_command_timing(command)
         if '[sudo]' in response:
             response = self.device.send_command_timing(self.sudo_pwd)
@@ -472,10 +468,14 @@ class CumulusDriver(NetworkDriver):
                     last_flapped = last_flapped_2_date
                 else:
                     last_flapped = -1
-                now = datetime.now()
+
                 if last_flapped != -1:
-                    last_flapped = (now - last_flapped).total_seconds()
-                interfaces[interface]['last_flapped'] = last_flapped
+                    # Get remote timezone.
+                    tmz = self.device.send_command('date +"%Z"')
+                    now_time = datetime.now(timezone(tmz))
+                    last_flapped = last_flapped.replace(tzinfo=timezone(tmz))
+                    last_flapped = (now_time - last_flapped).total_seconds()
+                interfaces[interface]['last_flapped'] = float(last_flapped)
         # If quagga daemon isn't running set all last_flapped values to -1.
         if not quagga_status:
             for interface in interfaces.keys():

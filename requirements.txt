@@ -1,2 +1,3 @@
 napalm_base
-netmiko>=1.0.0
+netmiko>=1.1.0
+pytz
