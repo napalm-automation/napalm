@@ -77,7 +77,7 @@ def hyphen_range(string):
 def convert_uptime_string_seconds(uptime):
     '''Convert uptime strings to seconds. The string can be formatted various ways.'''
     regex_list = [
-        # n years, n weeks, n days, n hours, n minutes where each of the fields except minutes 
+        # n years, n weeks, n days, n hours, n minutes where each of the fields except minutes
         # is optional. Additionally, can be either singular or plural
         (r"((?P<years>\d+) year(s)?,\s+)?((?P<weeks>\d+) week(s)?,\s+)?"
          r"((?P<days>\d+) day(s)?,\s+)?((?P<hours>\d+) "
