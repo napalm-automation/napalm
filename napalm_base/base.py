@@ -65,7 +65,12 @@ class NetworkDriver(object):
         We need to make sure the connection is closed properly and the configuration DB
         is released (unlocked).
         """
-        self.close()
+        try:
+            self.close()
+        except OSError as e:
+            # Ignore if socket was already closed
+            if 'is closed' in str(e):
+                pass
 
     @staticmethod
     def __raise_clean_exception(exc_type, exc_value, exc_traceback):
