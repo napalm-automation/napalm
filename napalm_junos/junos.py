@@ -26,6 +26,7 @@ from copy import deepcopy
 
 # import third party lib
 from lxml.builder import E
+from lxml import etree
 
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
@@ -77,6 +78,8 @@ class JunOSDriver(NetworkDriver):
 
         self.device = Device(hostname, user=username, password=password, port=self.port)
 
+        self.profile = ["junos"]
+
     def open(self):
         """Open the connection wit the device."""
         try:
@@ -109,6 +112,23 @@ class JunOSDriver(NetworkDriver):
         if self.locked:
             self.device.cu.unlock()
             self.locked = False
+
+    def _rpc(self, get, child=None, **kwargs):
+        """
+        This allows you to construct an arbitrary RPC call to retreive common stuff. For example:
+        Configuration:  get: "<get-configuration/>"
+        Interface information:  get: "<get-interface-information/>"
+        A particular interfacece information:
+              get: "<get-interface-information/>"
+              child: "<interface-name>ge-0/0/0</interface-name>"
+        """
+        rpc = etree.fromstring(get)
+
+        if child:
+            rpc.append(etree.fromstring(child))
+
+        response = self.device.execute(rpc)
+        return etree.tostring(response)
 
     def is_alive(self):
         # evaluate the state of the underlying SSH connection
