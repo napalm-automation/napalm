@@ -170,6 +170,10 @@ class JunOSDriver(NetworkDriver):
 
         try:
             fmt = self._detect_config_format(configuration)
+
+            if fmt == "xml":
+                configuration = etree.XML(configuration)
+
             self.device.cu.load(configuration, format=fmt, overwrite=overwrite)
         except ConfigLoadError as e:
             if self.config_replace:
