@@ -1,7 +1,7 @@
 Parsers
 ^^^^^^^
 
-Parsers are responsible of mapping native configuration/show_commands to a YANG model.
+Parsers are responsible for mapping native configuration/show_commands to a YANG model.
 
 Special fields
 ==============

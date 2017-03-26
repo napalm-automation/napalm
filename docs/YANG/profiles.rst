@@ -3,7 +3,7 @@ Profiles
 
 In order to correctly map YANG objects to native configuration and vice versa, ``napalm-yang`` uses the concept of **profiles**. Profiles, identify the type of device you are dealing with, which can vary depending on the OS, version and/or platform you are using.
 
-If you are using a napalm driver and have access to your device, you will have access to the ``profile`` property which you can pass to any function that requires to know the profile. If you are not using a napalm driver or don't have access to the device, a profile is just a list of string so you can just specify it directly. For example::
+If you are using a napalm driver and have access to your device, you will have access to the ``profile`` property which you can pass to any function that requires to know the profile. If you are not using a napalm driver or don't have access to the device, a profile is just a list of strings so you can just specify it directly. For example::
 
     # Without access to the device
     model.parse_config(profile=["junos"], config=my_configuration)
