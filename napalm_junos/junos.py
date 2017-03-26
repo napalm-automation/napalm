@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 # import stdlib
 import re
+import json
 import logging
 import collections
 from copy import deepcopy
@@ -116,6 +117,24 @@ class JunOSDriver(NetworkDriver):
             'is_alive': self.device._conn._session.transport.is_active() and self.device.connected
         }
 
+    @staticmethod
+    def _is_json_format(config):
+        try:
+            _ = json.loads(config)  # noqa
+        except (TypeError, ValueError):
+            return False
+        return True
+
+    def _detect_config_format(self, config):
+        fmt = 'text'
+        if config.strip().startswith('<'):
+            return 'xml'
+        elif config.strip().startswith('set'):
+            return 'set'
+        elif self._is_json_format(config):
+            return 'json'
+        return fmt
+
     def _load_candidate(self, filename, config, overwrite):
         if filename is None:
             configuration = config
@@ -130,7 +149,8 @@ class JunOSDriver(NetworkDriver):
             # and the device will be locked till first commit/rollback
 
         try:
-            self.device.cu.load(configuration, format='text', overwrite=overwrite)
+            fmt = self._detect_config_format(configuration)
+            self.device.cu.load(configuration, format=fmt, overwrite=overwrite)
         except ConfigLoadError as e:
             if self.config_replace:
                 raise ReplaceConfigException(e.message)
