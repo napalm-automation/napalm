@@ -107,6 +107,8 @@ class IOSDriver(NetworkDriver):
         self.config_replace = False
         self.interface_map = {}
 
+        self.profile = ["ios"]
+
     def open(self):
         """Open a connection to the device."""
         self.device = ConnectHandler(device_type='cisco_ios',
