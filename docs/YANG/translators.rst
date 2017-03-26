@@ -1,7 +1,7 @@
 Translators
 ^^^^^^^^^^^
 
-Translators are responsible of transforming a model into native configuration.
+Translators are responsible for transforming a model into native configuration.
 
 Special fields
 ==============
