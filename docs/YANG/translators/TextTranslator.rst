@@ -17,8 +17,9 @@ Arguments:
 
  * **key_value** (mandatory): How to create the element.
  * **negate** (mandatory): How to eliminate/default the element.
+ * **replace** (optional): Whether the element has to be defaulted or not during the replace operation.
 
-Example:
+Example 1:
 
   Create/Default interfaces::
 
@@ -29,6 +30,17 @@ Example:
                 mode: container
                 key_value: "interface {{ interface_key }}\n"
                 negate: "{{ 'no' if interface_key[0:4] in ['Port', 'Loop'] else 'default' }} interface {{ interface_key }}\n"
+
+Example 2:
+
+  Configure IP addresses. As the parent interface is defaulted already, don't do it again::
+
+    address:
+        _translation:
+            mode: container
+            key_value: "    ip address {{ model.config.ip }} {{ model.config.prefix_length|cidr_to_netmask }}{{ ' secondary' if model.config.secondary else '' }}\n"
+            negate: "    default ip address {{ model.config.ip }} {{ model.config.prefix_length|cidr_to_netmask }}{{ ' secondary' if model.config.secondary else '' }}\n"
+            replace: false
 
 Leaf - element
 --------------
