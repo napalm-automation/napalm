@@ -15,3 +15,4 @@ YANG
    translators/XMLTranslator
    translators/TextTranslator
    api
+   jinja_filters
