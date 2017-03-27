@@ -67,3 +67,4 @@ test/unit/ios/cleanup.sh
 test/unit/ios/prep_test.sh
 
 report.json
+tags
