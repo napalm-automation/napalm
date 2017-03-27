@@ -17,7 +17,7 @@ To explain how this parser works, let's use the following configuration::
         ip address 192.168.1.1/24 secondary
     !
 
-.. note:: The regular expressions on this parser have the ``MULTILINE`` flag turned on.
+.. note:: The regular expressions on this parser have the ``MULTILINE`` and ``IGNORECASE`` flags turned on.
 
 List - block
 ------------
