@@ -65,6 +65,7 @@ Arguments:
 * **regexp** (optional): Apply regexp to the value of the element. Must capture ``value`` group.
   See "leaf - map" example for more details.
 * **default** (optional): Set this value if no element is found.
+* **attribute** (optional): Instead of the ``text`` of the element extracted, extract this attribute of the element.
 
 Example:
 
