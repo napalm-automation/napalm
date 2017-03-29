@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 # import stdlib
 import re
+import json
 import logging
 import collections
 from copy import deepcopy
@@ -116,6 +117,24 @@ class JunOSDriver(NetworkDriver):
             'is_alive': self.device._conn._session.transport.is_active() and self.device.connected
         }
 
+    @staticmethod
+    def _is_json_format(config):
+        try:
+            _ = json.loads(config)  # noqa
+        except (TypeError, ValueError):
+            return False
+        return True
+
+    def _detect_config_format(self, config):
+        fmt = 'text'
+        if config.strip().startswith('<'):
+            return 'xml'
+        elif config.strip().startswith('set'):
+            return 'set'
+        elif self._is_json_format(config):
+            return 'json'
+        return fmt
+
     def _load_candidate(self, filename, config, overwrite):
         if filename is None:
             configuration = config
@@ -130,7 +149,8 @@ class JunOSDriver(NetworkDriver):
             # and the device will be locked till first commit/rollback
 
         try:
-            self.device.cu.load(configuration, format='text', overwrite=overwrite)
+            fmt = self._detect_config_format(configuration)
+            self.device.cu.load(configuration, format=fmt, overwrite=overwrite)
         except ConfigLoadError as e:
             if self.config_replace:
                 raise ReplaceConfigException(e.message)
@@ -985,6 +1005,11 @@ class JunOSDriver(NetworkDriver):
                 {elem[0]: elem[1] for elem in mac_table_entry[1]}
             )
             mac = mac_entry.get('mac')
+
+            # JUNOS returns '*' for Type = Flood
+            if mac == '*':
+                continue
+
             mac_entry['mac'] = napalm_base.helpers.mac(mac)
             mac_address_table.append(mac_entry)
 
@@ -1527,6 +1552,8 @@ class JunOSDriver(NetworkDriver):
                 ri_type = 'default'
             ri_rd = ri_details['route_distinguisher']
             ri_interfaces = ri_details['interfaces']
+            if not isinstance(ri_interfaces, list):
+                ri_interfaces = [ri_interfaces]
             network_instances[ri_name] = {
                 'name': ri_name,
                 'type': C.OC_NETWORK_INSTANCE_TYPE_MAP.get(ri_type, ri_type),  # default: return raw
