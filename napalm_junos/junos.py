@@ -1005,6 +1005,11 @@ class JunOSDriver(NetworkDriver):
                 {elem[0]: elem[1] for elem in mac_table_entry[1]}
             )
             mac = mac_entry.get('mac')
+
+            # JUNOS returns '*' for Type = Flood
+            if mac == '*':
+                continue
+
             mac_entry['mac'] = napalm_base.helpers.mac(mac)
             mac_address_table.append(mac_entry)
 
