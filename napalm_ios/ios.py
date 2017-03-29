@@ -619,7 +619,7 @@ class IOSDriver(NetworkDriver):
         port_id = re.findall(r"Port id:\s+(.+)", output)
         port_description = re.findall(r"Port Description(?:\s\-|:)\s+(.+)", output)
         chassis_id = re.findall(r"Chassis id:\s+(.+)", output)
-        system_name = re.findall(r"System Name:\s+(.+)", output)
+        system_name = re.findall(r"System Name\s*[:-]\s+(.+)", output)
         system_description = re.findall(r"System Description:\s*\n(.+)", output)
         system_capabilities = re.findall(r"System Capabilities:\s+(.+)", output)
         enabled_capabilities = re.findall(r"Enabled Capabilities:\s+(.+)", output)
@@ -649,10 +649,15 @@ class IOSDriver(NetworkDriver):
             local_port = interface
             lldp_fields = self._lldp_detail_parser(interface)
             number_entries = len(lldp_fields[0])
+            from pprint import pprint
+            pprint(local_port)
+            pprint(lldp_fields)
+            pprint(number_entries)
 
             # re.findall will return a list. Make sure same number of entries always returned.
             for test_list in lldp_fields:
                 if len(test_list) != number_entries:
+                    print(test_list)
                     raise ValueError("Failure processing show lldp neighbors detail")
 
             # Standardize the fields
