@@ -616,15 +616,28 @@ class IOSDriver(NetworkDriver):
         if '% Invalid input' in output:
             raise ValueError("Command not supported by network device")
 
-        port_id = re.findall(r"Port id:\s+(.+)", output)
-        port_description = re.findall(r"Port Description(?:\s\-|:)\s+(.+)", output)
-        chassis_id = re.findall(r"Chassis id:\s+(.+)", output)
-        system_name = re.findall(r"System Name\s*[:-]\s+(.+)", output)
-        system_description = re.findall(r"System Description:\s*\n(.+)", output)
-        system_capabilities = re.findall(r"System Capabilities:\s+(.+)", output)
-        enabled_capabilities = re.findall(r"Enabled Capabilities:\s+(.+)", output)
-        remote_address = re.findall(r"Management Addresses:\n\s+(?:IP|Other)(?::\s+?)(.+)",
-                                    output)
+        # Cisco generally use : for string divider, but sometimes has ' - '
+        port_id = re.findall(r"Port id\s*?[:-]\s+(.+)", output)
+        port_description = re.findall(r"Port Description\s*?[:-]\s+(.+)", output)
+        chassis_id = re.findall(r"Chassis id\s*?[:-]\s+(.+)", output)
+        system_name = re.findall(r"System Name\s*?[:-]\s+(.+)", output)
+        system_description = re.findall(r"System Description\s*?[:-]\s*(not advertised|\s*\n.+)",
+                                        output)
+        system_description = [x.strip() for x in system_description]
+        system_capabilities = re.findall(r"System Capabilities\s*?[:-]\s+(.+)", output)
+        enabled_capabilities = re.findall(r"Enabled Capabilities\s*?[:-]\s+(.+)", output)
+        remote_address = re.findall(r"Management Addresses\s*[:-]\s*(not advertised|\n.+)", output)
+        # remote address had two possible patterns which required some secondary processing
+        new_remote_address = []
+        for val in remote_address:
+            val = val.strip()
+            pattern = r'(?:IP|Other)(?::\s+?)(.+)'
+            match = re.search(pattern, val)
+            if match:
+                new_remote_address.append(match.group(1))
+            else:
+                new_remote_address.append(val)
+        remote_address = new_remote_address
         return [port_id, port_description, chassis_id, system_name, system_description,
                 system_capabilities, enabled_capabilities, remote_address]
 
@@ -649,15 +662,10 @@ class IOSDriver(NetworkDriver):
             local_port = interface
             lldp_fields = self._lldp_detail_parser(interface)
             number_entries = len(lldp_fields[0])
-            from pprint import pprint
-            pprint(local_port)
-            pprint(lldp_fields)
-            pprint(number_entries)
 
             # re.findall will return a list. Make sure same number of entries always returned.
             for test_list in lldp_fields:
                 if len(test_list) != number_entries:
-                    print(test_list)
                     raise ValueError("Failure processing show lldp neighbors detail")
 
             # Standardize the fields
