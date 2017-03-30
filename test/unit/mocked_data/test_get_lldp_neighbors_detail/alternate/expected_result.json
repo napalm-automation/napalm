@@ -4,7 +4,7 @@
             "parent_interface": "N/A", 
             "remote_chassis_id": "2cc2.603e.363b", 
             "remote_port": "Management1", 
-            "remote_port_description": "not advertised", 
+            "remote_port_description": "N/A", 
             "remote_system_capab": "B,R", 
             "remote_system_description": "Arista Networks EOS version 4.15.2F running on an Arista Networks vEOS", 
             "remote_system_enable_capab": "B,R", 

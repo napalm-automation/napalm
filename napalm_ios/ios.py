@@ -661,6 +661,11 @@ class IOSDriver(NetworkDriver):
         for interface in lldp_neighbors:
             local_port = interface
             lldp_fields = self._lldp_detail_parser(interface)
+            # Convert any 'not advertised' to 'N/A'
+            for field in lldp_fields:
+                for i, value in enumerate(field):
+                    if 'not advertised' in value:
+                        field[i] = 'N/A'
             number_entries = len(lldp_fields[0])
 
             # re.findall will return a list. Make sure same number of entries always returned.
