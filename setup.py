@@ -24,5 +24,6 @@ setup(
     ],
     url="https://github.com/napalm-automation/napalm-ios",
     include_package_data=True,
+    zip_safe=False,
     install_requires=reqs,
 )

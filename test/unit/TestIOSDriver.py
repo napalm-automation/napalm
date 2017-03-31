@@ -91,16 +91,16 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
 
     def test_ios_only_gen_full_path(self):
         """Test gen_full_path() method."""
-        output = self.device.gen_full_path(self.device.candidate_cfg)
+        output = self.device._gen_full_path(self.device.candidate_cfg)
         self.assertEqual(output, self.device.dest_file_system + '/candidate_config.txt')
 
-        output = self.device.gen_full_path(self.device.rollback_cfg)
+        output = self.device._gen_full_path(self.device.rollback_cfg)
         self.assertEqual(output, self.device.dest_file_system + '/rollback_config.txt')
 
-        output = self.device.gen_full_path(self.device.merge_cfg)
+        output = self.device._gen_full_path(self.device.merge_cfg)
         self.assertEqual(output, self.device.dest_file_system + '/merge_config.txt')
 
-        output = self.device.gen_full_path(filename='running-config', file_system='system:')
+        output = self.device._gen_full_path(filename='running-config', file_system='system:')
         self.assertEqual(output, 'system:/running-config')
 
     def test_ios_only_check_file_exists(self):
