@@ -95,7 +95,7 @@ def convert_uptime_string_seconds(uptime):
     for regex in regex_list:
         match = regex.search(uptime)
         if match:
-            uptime_dict = uptime_dict.groupdict()
+            uptime_dict = match.groupdict()
             break
 
     uptime_seconds = 0
