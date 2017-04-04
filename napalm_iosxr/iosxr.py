@@ -1240,12 +1240,12 @@ class IOSXRDriver(NetworkDriver):
             prefix_tag = '<PrefixLength>{prefix_length}</PrefixLength>'.format(
                 prefix_length=dest_split[1])
 
-	ipv = 4
+        ipv = 4
         try:
-            ipv = IPAddress(destination).version
+            ipv = IPAddress(network).version
         except AddrFormatError:
             return {'error': 'Wrong destination IP Address!'}
-	
+
 	if ipv == 6:
             route_info_rpc_command = '<Get><Operational><IPV6_RIB><VRFTable><VRF><Naming><VRFName>default\
             </VRFName></Naming><AFTable><AF><Naming><AFName>IPv6</AFName></Naming><SAFTable><SAF>\
