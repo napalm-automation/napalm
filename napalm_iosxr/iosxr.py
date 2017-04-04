@@ -1252,8 +1252,8 @@ class IOSXRDriver(NetworkDriver):
             <Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><IP_RIBRoute><Naming>\
             <RouteTableName>default</RouteTableName></Naming><RouteTable><Route><Naming><Address>\
             {network}</Address>{prefix}</Naming></Route></RouteTable></IP_RIBRoute></IP_RIBRouteTable>\
-            </SAF></SAFTable></AF></AFTable></VRF></VRFTable></IPV6_RIB></Operational></Get>'
-            .format(network=network, prefix=prefix_tag)
+            </SAF></SAFTable></AF></AFTable></VRF></VRFTable></IPV6_RIB></Operational></Get>'.format(
+                network=network, prefix=prefix_tag)
         else:
             route_info_rpc_command = '<Get><Operational><RIB><VRFTable><VRF><Naming><VRFName>default\
             </VRFName></Naming><AFTable><AF><Naming><AFName>IPv4</AFName></Naming><SAFTable><SAF>\
