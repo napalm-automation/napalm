@@ -560,6 +560,69 @@ class IOSDriver(NetworkDriver):
         output = re.sub(r"^Time source is .*$", "", output, flags=re.M)
         return output.strip()
 
+    def get_optics(self):
+        command = 'show interfaces transceiver'
+        output = self._send_command(command)
+
+        # Check if router supports the command
+        if '% Invalid input' in output:
+            return {}
+
+        # Formatting data into return data structure
+        optics_detail = {}
+
+        try:
+            split_output = re.split(r'^---------.*$', output, flags=re.M)[1]
+        except IndexError:
+            return {}
+
+        split_output = split_output.strip()
+
+        for optics_entry in split_output.splitlines():
+            # Example, Te1/0/1      34.6       3.29      -2.0      -3.5
+            try:
+                int_brief, temperature, voltage, output_power, input_power = optics_entry.split()
+            except ValueError:
+                return {}
+
+            port = self._expand_interface_name(int_brief)
+
+            port_detail = {}
+
+            port_detail['physical_channels'] = {}
+            port_detail['physical_channels']['channel'] = []
+
+            # Defaulting avg, min, max values to 0.0 since device does not
+            # return these values
+            optic_states = {
+                'index': 0,
+                'state': {
+                    'input_power': {
+                        'instant': (float(input_power) if 'input_power' else 0.0),
+                        'avg': 0.0,
+                        'min': 0.0,
+                        'max': 0.0
+                    },
+                    'output_power': {
+                        'instant': (float(output_power) if 'output_power' else 0.0),
+                        'avg': 0.0,
+                        'min': 0.0,
+                        'max': 0.0
+                    },
+                    'laser_bias_current': {
+                        'instant': 0.0,
+                        'avg': 0.0,
+                        'min': 0.0,
+                        'max': 0.0
+                    }
+                }
+            }
+
+            port_detail['physical_channels']['channel'].append(optic_states)
+            optics_detail[port] = port_detail
+
+        return optics_detail
+
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
         lldp = {}
