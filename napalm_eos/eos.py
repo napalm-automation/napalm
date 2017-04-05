@@ -85,6 +85,8 @@ class EOSDriver(NetworkDriver):
 
         self.enablepwd = optional_args.get('enable_password', '')
 
+        self.profile = ["eos"]
+
     def open(self):
         """Implementation of NAPALM method open."""
         try:

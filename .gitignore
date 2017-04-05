@@ -64,3 +64,5 @@ report.json
 test/unit/TestEOSDriverKB2.py
 test/unit/eos/cleanup.sh
 test/unit/eos/prep_test.sh
+
+tags
