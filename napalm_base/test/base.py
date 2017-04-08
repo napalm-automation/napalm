@@ -28,6 +28,16 @@ from napalm_base.utils.py23_compat import text_type
 class TestConfigNetworkDriver(object):
 
     @classmethod
+    def setup_class(cls):
+        """Added for py.test/nosetests compatibility"""
+        cls.setUpClass()
+
+    @classmethod
+    def teardown_class(cls):
+        """Added for py.test/nosetests compatibility"""
+        cls.tearDownClass()
+
+    @classmethod
     def tearDownClass(cls):
         cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
         cls.device.commit_config()
