@@ -85,7 +85,7 @@ def convert_uptime_string_seconds(uptime):
         # n days, HH:MM:SS where each field is required (except for days)
         (r"((?P<days>\d+) day(s)?,\s+)?"
          r"((?P<hours>\d+)):((?P<minutes>\d+)):((?P<seconds>\d+))"),
-        # 7w6d5h4m3s where each field is uptional
+        # 7w6d5h4m3s where each field is optional
         (r"((?P<weeks>\d+)w)?((?P<days>\d+)d)?((?P<hours>\d+)h)?"
          r"((?P<minutes>\d+)m)?((?P<seconds>\d+)s)?"),
     ]
@@ -103,7 +103,7 @@ def convert_uptime_string_seconds(uptime):
         if value is not None:
             if unit == 'years':
                 uptime_seconds += int(value) * 31536000
-            if unit == 'weeks':
+            elif unit == 'weeks':
                 uptime_seconds += int(value) * 604800
             elif unit == 'days':
                 uptime_seconds += int(value) * 86400

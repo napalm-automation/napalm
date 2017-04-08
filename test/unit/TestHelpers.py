@@ -302,6 +302,31 @@ class TestBaseHelpers(unittest.TestCase):
           '2001:db8:85a3::8a2e:370:7334'
         )
 
+    def test_convert_uptime_string_seconds(self):
+        """
+        Tests the parser function ```convert_uptime_string_seconds```:
+
+            * check if all raw uptime strings passed return the expected uptime in seconds
+        """
+
+        # Regex 1
+        self.assertEqual(convert_uptime_string_seconds('24 days,  11 hours,  25 minutes'), 2114700)
+        self.assertEqual(convert_uptime_string_seconds('1 hour,  5 minutes'), 3900)
+        self.assertEqual(convert_uptime_string_seconds('1 year,  2 weeks, 5 minutes'), 32745900)
+        self.assertEqual(convert_uptime_string_seconds('95 weeks, 2 days, 10 hours, 58 minutes'), 57668280)
+
+        # Regex 2
+        self.assertEqual(convert_uptime_string_seconds('114 days, 22:27:32'), 9930452)
+        self.assertEqual(convert_uptime_string_seconds('0 days, 22:27:32'), 80852)
+        self.assertEqual(convert_uptime_string_seconds('365 days, 5:01:44'), 31554104)
+
+        # Regex 3
+        self.assertEqual(convert_uptime_string_seconds('7w6d5h4m3s'), 4770243)
+        self.assertEqual(convert_uptime_string_seconds('95w2d10h58m'), 57668280)
+        self.assertEqual(convert_uptime_string_seconds('1h5m'), 3900)
+
+  
+
 
 class FakeNetworkDriver(NetworkDriver):
 
