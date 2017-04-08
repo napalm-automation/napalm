@@ -40,6 +40,7 @@ except ImportError:
 import napalm_base.helpers
 import napalm_base.exceptions
 from napalm_base.base import NetworkDriver
+from napalm_base.utils.string_parsers import convert_uptime_string_seconds
 
 
 class TestBaseHelpers(unittest.TestCase):
@@ -325,7 +326,27 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertEqual(convert_uptime_string_seconds('95w2d10h58m'), 57668280)
         self.assertEqual(convert_uptime_string_seconds('1h5m'), 3900)
 
-  
+        # Additional tests from real devices
+###        self.assertEqual(convert_uptime_string_seconds('26 weeks, 2 days, 7 hours, 7 minutes',
+### 
+### 'Uptime = 
+###./jobmethods.py:            'Uptime = 19 weeks, 2 days, 2 hours, 2 minutes',
+###./jobmethods.py:            'Uptime = 15 weeks, 3 days, 5 hours, 57 minutes',
+###./jobmethods.py:            'Uptime = 1 year, 8 weeks, 15 minutes',
+###./jobmethods.py:            'Uptime = 8 weeks, 2 hours, 5 minutes',
+###./jobmethods.py:            'Uptime = 8 weeks, 2 hours, 1 minute',
+###./jobmethods.py:            'Uptime = 2 years, 40 weeks, 1 day, 22 hours, 3 minutes',
+###./jobmethods.py:            'Uptime = 2 years, 40 weeks, 1 day, 19 hours, 46 minutes',
+###./jobmethods.py:            'Uptime = 1 year, 39 weeks, 15 hours, 23 minutes',
+###./jobmethods.py:            'Uptime = 33 weeks, 19 hours, 12 minutes',
+###./jobmethods.py:            'Uptime = 33 weeks, 19 hours, 8 minutes',
+###./jobmethods.py:            'Uptime = 33 weeks, 19 hours, 10 minutes',
+###./jobmethods.py:            'Uptime = 51 weeks, 5 days, 13 hours, 0 minutes',
+###./jobmethods.py:            'Uptime = 51 weeks, 5 days, 12 hours, 57 minutes',
+###./jobmethods.py:            'Uptime = 51 weeks, 5 days, 12 hours, 55 minutes',
+###./jobmethods.py:            'Uptime = 51 weeks, 5 days, 12 hours, 58 minutes'
+###./jobmethods.py:    if DEBUG: print "Executing DEVICEUPTIMEREPORT"
+ 
 
 
 class FakeNetworkDriver(NetworkDriver):
