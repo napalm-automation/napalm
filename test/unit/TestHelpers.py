@@ -314,7 +314,42 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertEqual(convert_uptime_string_seconds('24 days,  11 hours,  25 minutes'), 2114700)
         self.assertEqual(convert_uptime_string_seconds('1 hour,  5 minutes'), 3900)
         self.assertEqual(convert_uptime_string_seconds('1 year,  2 weeks, 5 minutes'), 32745900)
-        self.assertEqual(convert_uptime_string_seconds('95 weeks, 2 days, 10 hours, 58 minutes'), 57668280)
+        self.assertEqual(
+            convert_uptime_string_seconds('95 weeks, 2 days, 10 hours, 58 minutes'), 57668280)
+        self.assertEqual(
+            convert_uptime_string_seconds('26 weeks, 2 days, 7 hours, 7 minutes'), 15923220)
+        self.assertEqual(
+            convert_uptime_string_seconds('19 weeks, 2 days, 2 hours, 2 minutes'), 11671320)
+        self.assertEqual(
+            convert_uptime_string_seconds('15 weeks, 3 days, 5 hours, 57 minutes'), 9352620)
+        self.assertEqual(
+            convert_uptime_string_seconds('1 year, 8 weeks, 15 minutes'), 36375300)
+        self.assertEqual(
+            convert_uptime_string_seconds('8 weeks, 2 hours, 5 minutes'), 4845900)
+        self.assertEqual(
+            convert_uptime_string_seconds('8 weeks, 2 hours, 1 minute'), 4845660)
+        self.assertEqual(
+            convert_uptime_string_seconds('2 years, 40 weeks, 1 day, 22 hours, 3 minutes'),
+            87429780)
+        self.assertEqual(
+            convert_uptime_string_seconds('2 years, 40 weeks, 1 day, 19 hours, 46 minutes'),
+            87421560)
+        self.assertEqual(
+            convert_uptime_string_seconds('1 year, 39 weeks, 15 hours, 23 minutes'), 55178580)
+        self.assertEqual(
+            convert_uptime_string_seconds('33 weeks, 19 hours, 12 minutes'), 20027520)
+        self.assertEqual(
+            convert_uptime_string_seconds('33 weeks, 19 hours, 8 minutes'), 20027280)
+        self.assertEqual(
+            convert_uptime_string_seconds('33 weeks, 19 hours, 10 minutes'), 20027400)
+        self.assertEqual(
+            convert_uptime_string_seconds('51 weeks, 5 days, 13 hours, 0 minutes'), 31323600)
+        self.assertEqual(
+            convert_uptime_string_seconds('51 weeks, 5 days, 12 hours, 57 minutes'), 31323420)
+        self.assertEqual(
+            convert_uptime_string_seconds('51 weeks, 5 days, 12 hours, 55 minutes'), 31323300)
+        self.assertEqual(
+            convert_uptime_string_seconds('51 weeks, 5 days, 12 hours, 58 minutes'), 31323480)
 
         # Regex 2
         self.assertEqual(convert_uptime_string_seconds('114 days, 22:27:32'), 9930452)
@@ -326,43 +361,17 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertEqual(convert_uptime_string_seconds('95w2d10h58m'), 57668280)
         self.assertEqual(convert_uptime_string_seconds('1h5m'), 3900)
 
-        # Additional tests from real devices
-###        self.assertEqual(convert_uptime_string_seconds('26 weeks, 2 days, 7 hours, 7 minutes',
-### 
-### 'Uptime = 
-###./jobmethods.py:            'Uptime = 19 weeks, 2 days, 2 hours, 2 minutes',
-###./jobmethods.py:            'Uptime = 15 weeks, 3 days, 5 hours, 57 minutes',
-###./jobmethods.py:            'Uptime = 1 year, 8 weeks, 15 minutes',
-###./jobmethods.py:            'Uptime = 8 weeks, 2 hours, 5 minutes',
-###./jobmethods.py:            'Uptime = 8 weeks, 2 hours, 1 minute',
-###./jobmethods.py:            'Uptime = 2 years, 40 weeks, 1 day, 22 hours, 3 minutes',
-###./jobmethods.py:            'Uptime = 2 years, 40 weeks, 1 day, 19 hours, 46 minutes',
-###./jobmethods.py:            'Uptime = 1 year, 39 weeks, 15 hours, 23 minutes',
-###./jobmethods.py:            'Uptime = 33 weeks, 19 hours, 12 minutes',
-###./jobmethods.py:            'Uptime = 33 weeks, 19 hours, 8 minutes',
-###./jobmethods.py:            'Uptime = 33 weeks, 19 hours, 10 minutes',
-###./jobmethods.py:            'Uptime = 51 weeks, 5 days, 13 hours, 0 minutes',
-###./jobmethods.py:            'Uptime = 51 weeks, 5 days, 12 hours, 57 minutes',
-###./jobmethods.py:            'Uptime = 51 weeks, 5 days, 12 hours, 55 minutes',
-###./jobmethods.py:            'Uptime = 51 weeks, 5 days, 12 hours, 58 minutes'
-###./jobmethods.py:    if DEBUG: print "Executing DEVICEUPTIMEREPORT"
- 
-
 
 class FakeNetworkDriver(NetworkDriver):
 
     def __init__(self):
-
         """Connection details not needed."""
-
         pass
 
     def load_merge_candidate(self, config=None):
-
         """
         This method is called at the end of the helper ```load_template```.
         To check whether the test arrives at the very end of the helper function,
         will return True instead of raising NotImplementedError exception.
         """
-
         return True
