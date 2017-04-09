@@ -19,7 +19,7 @@ telling napalm how to retrieve that piece of information by using as key the nam
 then write the desired state using the same format the getter would retrieve it. For example::
 
     ---
-    get_facts:
+    - get_facts:
       os_version: 7.0(3)I2(2d)
       interface_list:
           _mode: strict
@@ -28,7 +28,7 @@ then write the desired state using the same format the getter would retrieve it.
             - Vlan100
       hostname: n9k2
     
-    get_bgp_neighbors:
+    - get_bgp_neighbors:
       default:
         router_id: 192.0.2.2
         peers:
@@ -41,13 +41,13 @@ then write the desired state using the same format the getter would retrieve it.
               ipv6:
                 sent_prefixes: 2
     
-    get_interfaces_ip:
+    - get_interfaces_ip:
       Ethernet2/1:
         ipv4:
           192.0.2.1:
             prefix_length: 30
     
-    ping:
+    - ping:
       _name: ping_google
       _kwargs:
           destination: 8.8.8.8
@@ -56,7 +56,7 @@ then write the desired state using the same format the getter would retrieve it.
           packet_loss: 0
       _mode: strict
     
-    ping:
+    - ping:
       _name: something_else
       _kwargs:
           destination: 10.8.2.8
@@ -118,10 +118,10 @@ the one we expect. Let's start by writing the validator files.
  * ``validate-eos.yml``::
 
     ---
-    get_facts:
+    - get_facts:
         os_version: 4.17
     
-    get_interfaces_ip:
+    - get_interfaces_ip:
         Management1:
             ipv4:
                 10.0.2.14:
@@ -131,10 +131,10 @@ the one we expect. Let's start by writing the validator files.
  * ``validate-junos.yml``::
 
     ---
-    get_facts:
+    - get_facts:
         os_version: 12.1X47
     
-    get_interfaces_ip:
+    - get_interfaces_ip:
         ge-0/0/0.0:
             ipv4:
                 10.0.2.15:
