@@ -30,17 +30,17 @@ You can find the profiles `here <https://github.com/napalm-automation/napalm-yan
 For example, for a given interface, the snippet below specifies how to map configuration into the ``openconfig_interface`` model on EOS::
 
             enabled:
-                _parse:
+                _process:
                     mode: is_present
                     regexp: "(?P<value>no shutdown)"
                     from: "{{ parse_bookmarks.interface[interface_key] }}"
             description:
-                _parse:
+                _process:
                     mode: search
                     regexp: "description (?P<value>.*)"
                     from: "{{ parse_bookmarks.interface[interface_key] }}"
             mtu:
-                _parse:
+                _process:
                     mode: search
                     regexp: "mtu (?P<value>[0-9]+)"
                     from: "{{ parse_bookmarks.interface[interface_key] }}"
@@ -48,17 +48,17 @@ For example, for a given interface, the snippet below specifies how to map confi
 And the following snippet how to map the same attributes from the ``openconfig_interface`` to native configuration::
 
             enabled:
-                _translation:
+                _process:
                     - mode: element
                       value: "    shutdown\n"
                       when: "{{ not model }}"
             description:
-                _translation:
+                _process:
                     - mode: element
                       value: "    description {{ model }}\n"
                       negate: "    default description"
             mtu:
-                _translation:
+                _process:
                     - mode: element
                       value: "    mtu {{ model }}\n"
                       negate: "    default mtu\n"

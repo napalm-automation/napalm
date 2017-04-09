@@ -17,7 +17,7 @@ mode
 * **example**: Translate description attribute of an interface to native configuration::
 
     description:
-        _translation:
+        _process:
             - mode: element
               value: "    description {{ model }}\n"
               negate: "    default description"
@@ -32,11 +32,11 @@ when
   or a management interface::
 
     ipv4:
-        _translation: unnecessary
+        _process: unnecessary
         config:
-            _translation: unnecessary
+            _process: unnecessary
             enabled:
-                _translation:
+                _process:
                     - mode: element
                       value: "    no switchport\n"
                       negate: "    switchport\n"
@@ -54,11 +54,11 @@ in
   the root of the configuration and not as a child of the parent interface::
 
     vlan:
-        _translation: unnecessary
+        _process: unnecessary
         config:
-            _translation: unnecessary
+            _process: unnecessary
             vlan_id:
-                _translation:
+                _process:
                     - mode: element
                       element: "vlan-tagging"
                       in: "interface.{{ interface_key }}" # <--- add element to parent interface
@@ -70,7 +70,7 @@ in
 
     (...)
     subinterface:
-        _translation:
+        _process:
             mode: container
             key_value: "interface {{ interface_key}}.{{ subinterface_key }}\n"
             negate: "no interface {{ interface_key}}.{{ subinterface_key }}\n"
@@ -93,18 +93,18 @@ This is the current model/attribute being translated. You have the entire object
 not only it's value so you can do things like::
 
     vlan_id:
-        _translation:
+        _process:
             - mode: element
               value: "    encapsulation dot1q vlan {{ model }}\n"
 
 Or::
 
     config:
-        _translation: unnecessary
+        _process: unnecessary
         ip:
-            _translation: unnecessary
+            _process: unnecessary
         prefix_length:
-            _translation:
+            _process:
                 - mode: element
                   value: "    ip address {{ model._parent.ip }}/{{ model }} {{ 'secondary' if model._parent.secondary else '' }}\n"
                   negate: "    default ip address {{ model._parent.ip }}/{{ model }}\n"

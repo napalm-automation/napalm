@@ -34,7 +34,7 @@ Example:
   parse each interface individually::
 
     interface:
-        _parse:
+        _process:
             mode: xpath
             xpath: "interfaces/interface"
             key: name
@@ -72,7 +72,7 @@ Example:
   For each interface, read the element ``description`` and map it into the object::
 
     description:
-        _parse:
+        _process:
             mode: xpath
             xpath: description
             from: "{{ bookmarks['parent'] }}"
@@ -91,7 +91,7 @@ Example:
   In the following example we can assign a value we already have to the ``interface.name`` attribute::
 
     name:
-        _parse:
+        _process:
             mode: value
             value: "{{ interface_key }}"
 
@@ -113,7 +113,7 @@ Example:
   like this::
 
     type:
-        _parse:
+        _process:
             mode: map
             xpath: name
             regexp: "(?P<value>[a-z]+).*"
@@ -136,7 +136,7 @@ Example:
   We could check if an interface is enabled with this::
 
     enabled:
-        _parse:
+        _process:
             mode: is_absent
             xpath: "disable"
             from: "{{ bookmarks['parent'] }}"

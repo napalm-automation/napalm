@@ -16,7 +16,7 @@ mode
 * **Description**: Which parsing/translation action to use for this particular field.
 * **Example**: Parse the description field with a simple regular expression::
 
-    _parse:
+    _process:
         mode: search
         regexp: "description (?P<value>.*)"
         from: "{{ bookmarks.interface[interface_key] }}"
@@ -31,11 +31,11 @@ when
   or a Management interface::
 
     ipv4:
-        _translation: unnecessary
+        _process: unnecessary
         config:
-            _translation: unnecessary
+            _process: unnecessary
             enabled:
-                _translation:
+                _process:
                     - mode: element
                       value: "    no switchport\n"
                       negate: "    switchport\n"
@@ -51,7 +51,7 @@ from
 * **Example**: Get IP addresses from both both interfaces and subinterfaces::
 
     address:
-        _parse:
+        _process:
             mode: xpath
             xpath: "family/inet/address"
             key: name
@@ -111,14 +111,14 @@ Some actions let's you provide additional information for later use. Those will 
 ``extra_vars`` dictionary. For example::
 
     address:
-        _parse:
+        _process:
             mode: block
             regexp: "(?P<block>ip address (?P<key>(?P<ip>.*))\\/(?P<prefix>\\d+))(?P<secondary> secondary)*"
             from: "{{ bookmarks['parent'] }}"
         config:
-            _parse: unnecessary
+            _process: unnecessary
             ip:
-                _parse:
+                _process:
                     mode: value
                     value: "{{ extra_vars.ip }}"
 
