@@ -36,7 +36,7 @@ Example 1
 
   Capture the interfaces::
 
-    _parse:
+    _process:
         mode: block
         regexp: "(?P<block>interface (?P<key>(\\w|-)*\\d+)\n(?:.|\n)*?^!$)"
         from: "{{ bookmarks.interfaces }}"
@@ -65,7 +65,7 @@ Example 2
   of the regexp. We also have to make sure in the from we went back to the root of the config::
 
     subinterface:
-        _parse:
+        _process:
             mode: block
             regexp: "(?P<block>interface {{interface_key}}\\.(?P<key>\\d+)\\n(?:.|\\n)*?^!$)"
             from: "{{ bookmarks.interfaces }}"
@@ -77,7 +77,7 @@ Example 3.
   those cases we can capture more groups and they will be stored in the ``extra_vars`` dictionary::
 
         address:
-            _parse:
+            _process:
                 mode: block
                 regexp: "(?P<block>ip address (?P<key>(?P<ip>.*))\\/(?P<prefix>\\d+))(?P<secondary> secondary)*"
                 from: "{{ bookmarks['parent'] }}"
@@ -98,7 +98,7 @@ Example.
   Get the description of an interface::
 
     description:
-        _parse:
+        _process:
             mode: search
             regexp: "description (?P<value>.*)"
             from: "{{ bookmarks.interface[interface_key] }}"
@@ -117,7 +117,7 @@ Example.
   Evaluate a value we already extracted and set model to ``True`` if is not ``None``::
 
     secondary:
-        _parse:
+        _process:
             mode: value
             value: "{{ extra_vars.secondary != None }}"
 
@@ -131,11 +131,11 @@ Example.
   Check if an interface is an IP interface or not::
 
     ipv4:
-        _parse: unnecessary
+        _process: unnecessary
         config:
-            _parse: unnecessary
+            _process: unnecessary
             enabled:
-                _parse:
+                _process:
                     mode: is_absent
                     regexp: "(?P<value>^\\W*switchport$)"
                     from: "{{ bookmarks['parent'] }}"
@@ -150,7 +150,7 @@ Example.
   Check if an interface is enabled::
 
     enabled:
-        _parse:
+        _process:
             mode: is_present
             regexp: "(?P<value>no shutdown)"
             from: "{{ bookmarks.interface[interface_key] }}"
@@ -171,7 +171,7 @@ Example.
 
   Check type of interface by extracting the name and doing a lookup::
 
-    _parse:
+    _process:
         mode: map
         regexp: "(?P<value>(\\w|-)*)\\d+"
         from: "{{ interface_key }}"

@@ -24,9 +24,9 @@ Example 1:
   Create/Default interfaces::
 
     interfaces:
-        _translation: unnecessary
+        _process: unnecessary
         interface:
-            _translation:
+            _process:
                 mode: container
                 key_value: "interface {{ interface_key }}\n"
                 negate: "{{ 'no' if interface_key[0:4] in ['Port', 'Loop'] else 'default' }} interface {{ interface_key }}\n"
@@ -36,7 +36,7 @@ Example 2:
   Configure IP addresses. As the parent interface is defaulted already, don't do it again::
 
     address:
-        _translation:
+        _process:
             mode: container
             key_value: "    ip address {{ model.config.ip }} {{ model.config.prefix_length|cidr_to_netmask }}{{ ' secondary' if model.config.secondary else '' }}\n"
             negate: "    default ip address {{ model.config.ip }} {{ model.config.prefix_length|cidr_to_netmask }}{{ ' secondary' if model.config.secondary else '' }}\n"
@@ -57,7 +57,7 @@ Example 1:
   Configure description::
 
     description:
-        _translation:
+        _process:
             - mode: element
               value: "    description {{ model }}\n"
               negate: "    default description"
@@ -67,13 +67,13 @@ Example 2:
   Configure an IP address borrowing values from other fields::
 
     address:
-        _translation: unnecessary
+        _process: unnecessary
         config:
-            _translation: unnecessary
+            _process: unnecessary
             ip:
-                _translation: unnecessary
+                _process: unnecessary
             prefix_length:
-                _translation:
+                _process:
                     - mode: element
                       value: "    ip address {{ model._parent.ip }}/{{ model }} {{ 'secondary' if model._parent.secondary else '' }}\n"
                       negate: "    default ip address {{ model._parent.ip }}/{{ model }} {{ 'secondary' if model._parent.secondary else '' }}\n"
