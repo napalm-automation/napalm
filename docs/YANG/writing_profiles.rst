@@ -46,7 +46,7 @@ If we check the content of the file ``vlan.yaml`` we can clearly see two parts:
   parser/translator might need. For example::
 
     metadata:
-        parser: XMLParser
+        processor: XMLParser
         execute:
             - method: _rpc
               args:
@@ -63,19 +63,19 @@ RPC call for a junos device.
   example::
 
     vlan:
-        _parse: unnecessary
+        _process: unnecessary
         config:
-            _parse: unnecessary
+            _process: unnecessary
             vlan_id:
-                _parse:
+                _process:
                     mode: xpath
                     xpath: "vlan-id"
                     from: "{{ parse_bookmarks['parent'] }}"
 
-As we are dealing with a parser we have to specify the ``_parse`` attribute at each step (translators
-require the attribute ``_translation``). There are two special types of actions; ``unnecessary`` and
+As we are dealing with a parser we have to specify the ``_process`` attribute at each step (translators
+require the attribute ``_process``). There are two special types of actions; ``unnecessary`` and
 ``not_implemented``. Both do exactly the same, skip any action and move onto the next attribute. The
 only difference is purely aesthetically and for documentation purposes.
 
-Something else worth noting is that each attribute inside ``_parse/_translation`` is evaluated as a
+Something else worth noting is that each attribute inside ``_process/_process`` is evaluated as a
 ``jinja2`` template so you can do variable substitutions, evaluations, etc...

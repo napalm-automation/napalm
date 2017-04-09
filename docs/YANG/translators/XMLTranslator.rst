@@ -12,7 +12,7 @@ For example::
 
     ---
     metadata:
-        translator: XMLTranslator
+        processor: XMLTranslator
         xml_root: configuration
 
 This will instantiate the XML object ``<configuration/>``.
@@ -33,7 +33,7 @@ Example:
 
   Create the ``interfaces`` container::
 
-    _translation:
+    _process:
         mode: container
         container: interfaces
         replace: true
@@ -56,7 +56,7 @@ Example:
   Create interfaces::
 
     interface:
-        _translation:
+        _process:
             mode: container
             container: interface
             key_element: name
@@ -86,7 +86,7 @@ Example 1:
   Configure description::
 
     description:
-        _translation:
+        _process:
             - mode: element
               element: description
 
@@ -95,7 +95,7 @@ Example 2:
   Enable or disable an interface::
 
     enabled:
-        _translation:
+        _process:
             - mode: element
               element: "disable"
               when: "{{ not model }}"
@@ -109,11 +109,11 @@ Example 3:
   Configure an IP address borrowing values from other fields::
 
     config:
-        _translation: unnecessary
+        _process: unnecessary
         ip:
-            _translation: unnecessary
+            _process: unnecessary
         prefix_length:
-            _translation:
+            _process:
                 - mode: element
                   element: name
                   value: "{{ model._parent.ip }}/{{ model }}"
