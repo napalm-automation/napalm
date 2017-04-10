@@ -61,8 +61,9 @@ class JunOSDriver(NetworkDriver):
         Initialise JunOS driver.
 
         Optional args:
-            * port (int): custom port
             * config_lock (True/False): lock configuration DB after the connection is established.
+            * port (int): custom port
+            * key_file (string): SSH key file path
         """
         self.hostname = hostname
         self.username = username
@@ -71,12 +72,21 @@ class JunOSDriver(NetworkDriver):
         self.config_replace = False
         self.locked = False
 
+        # Get optional arguments
         if optional_args is None:
             optional_args = {}
-        self.port = optional_args.get('port', 22)
-        self.config_lock = optional_args.get('config_lock', True)
 
-        self.device = Device(hostname, user=username, password=password, port=self.port)
+        self.config_lock = optional_args.get('config_lock', True)
+        self.port = optional_args.get('port', 22)
+        self.key_file = optional_args.get('key_file', None)
+
+        if self.key_file:
+            self.device = Device(hostname,
+                                 user=username,
+                                 ssh_private_key_file=self.key_file,
+                                 port=self.port)
+        else:
+            self.device = Device(hostname, user=username, password=password, port=self.port)
 
         self.profile = ["junos"]
 
