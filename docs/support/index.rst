@@ -126,7 +126,9 @@ ____________________________________
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: '').
 * :code:`allow_agent` (ios, panos) - Paramiko argument, enable connecting to the SSH agent (default: 'False').
 * :code:`use_keys` (ios, panos) - Paramiko argument, enable searching for discoverable private key files in ~/.ssh/ (default: 'False').
-* :code:`key_file` (vyos) - Netmiko/Paramiko argument, path to a private key file (default: 'False').
+* :code:`key_file` (junos, vyos) - Path to a private key file.
+    * vyos: Netmiko/Paramiko argument, path to a private key file (default: 'False').
+    * junos: Junos PyEZ ssh_keyfile argument, path to a private key file (default: 'None').
 * :code:`api_key` (panos) - Allow to specify the API key instead of username/password (default: '').
 
 
