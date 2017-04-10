@@ -18,6 +18,7 @@ Arguments:
  * **key_value** (mandatory): How to create the element.
  * **negate** (mandatory): How to eliminate/default the element.
  * **replace** (optional): Whether the element has to be defaulted or not during the replace operation.
+ * **end** (optional): Closing command to signal end of element
 
 Example 1:
 
@@ -30,6 +31,7 @@ Example 1:
                 mode: container
                 key_value: "interface {{ interface_key }}\n"
                 negate: "{{ 'no' if interface_key[0:4] in ['Port', 'Loop'] else 'default' }} interface {{ interface_key }}\n"
+                end: "    exit\n"
 
 Example 2:
 
