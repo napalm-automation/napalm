@@ -1275,7 +1275,7 @@ class IOSDriver(NetworkDriver):
         output = self._send_command(cmd_bgp_all_sum).strip()
         # find textfsm template and parse output
         template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                     'templates', 'textfsm', 'bgp_summary.textfsm')
+                                     'textfsm', 'bgp_summary.textfsm')
         with open(template_path) as template:
             parser = textfsm.TextFSM(template)
         summary_head = parser.header
