@@ -1150,14 +1150,30 @@ class IOSDriver(NetworkDriver):
         # find textfsm template and parse output
         template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                      'textfsm', 'bgp_summary.textfsm')
+        assert os.path.isfile(template_path)
         with open(template_path) as template:
             parser = textfsm.TextFSM(template)
         summary_head = parser.header
         # process into a list of dicts - rather than default list of lists
         summary_data = [{h: d[i] for i, h in enumerate(summary_head)}
                         for d in parser.ParseText(output)]
-        # check that router_id looks sane
-        router_id = str(ipaddress.IPv4Network(summary_data[0]['router_id']))
+        router_id = None
+        # check that we got a list of dicts
+        assert summary_data and isinstance(summary_data, list)
+        for entry in summary_data:
+            assert isinstance(entry, dict)
+            assert 'router_id' in entry
+            # select the first router_id value
+            if not router_id:
+                router_id = entry['router_id']
+            # check that every other value matches
+            assert entry['router_id'] == router_id
+        # check the router_id looks like an ipv4 address
+        try:
+            ipaddress.IPv4Address(router_id)
+            router_id = py23_compat.text_type(router_id)
+        except ipaddress.AddressValueError:
+            raise
         # add parsed data to output dict
         bgp_neighbor_data['global']['router_id'] = router_id
         bgp_neighbor_data['global']['peers'] = {}
@@ -1195,7 +1211,7 @@ class IOSDriver(NetworkDriver):
                     'remote_id': None,
                     'is_up': is_up,
                     'is_enabled': is_enabled,
-                    'description': u'',
+                    'description': py23_compat.text_type(''),
                     'uptime': uptime,
                     'address_family': {
                         afi: {
