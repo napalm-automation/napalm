@@ -21,6 +21,7 @@ import os
 import uuid
 import tempfile
 
+import ipaddress
 import jtextfsm as textfsm
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
@@ -1286,28 +1287,41 @@ class IOSDriver(NetworkDriver):
         bgp_neighbor_data['global']['router_id'] = py23_compat.text_type(summary_data[0]['router_id'])
         bgp_neighbor_data['global']['peers'] = {}
         for entry in summary_data:
+            # check that remote_addr looks sane
+            remote_addr = str(ipaddress.ip_address(entry['remote_addr']))
+            # want lower case afi
+            afi = entry['afi'].lower()
+            # check for admin down state
             if "(Admin)" in entry['state']:
                 is_enabled = False
             else:
                 is_enabled = True
+            # check whether session is up for address family and get prefix count
             try:
                 accepted_prefixes = int(entry['accepted_prefixes'])
                 is_up = True
             except ValueError:
                 accepted_prefixes = 0
                 is_up = False
-            # TODO: syntax check 'remote_addr' using ipaddress module
-            remote_addr = entry['remote_addr']
-            bgp_neighbor_data['global']['peers'][remote_addr] = {
-                'local_as': int(entry['local_as']),
-                'remote_as': int(entry['remote_as']),
-                'remote_id': None,
-                'is_up': is_up,
-                'is_enabled': is_enabled,
-                'description': u'',
-                'uptime': self.bgp_time_conversion(entry['uptime']),
-                'address_family': {}
-            }
+            received_prefixes = accepted_prefixes
+            sent_prefixes = 0
+            if remote_addr not in bgp_neighbor_data['global']['peers']:
+                bgp_neighbor_data['global']['peers'][remote_addr] = {
+                    'local_as': int(entry['local_as']),
+                    'remote_as': int(entry['remote_as']),
+                    'remote_id': None,
+                    'is_up': is_up,
+                    'is_enabled': is_enabled,
+                    'description': u'',
+                    'uptime': self.bgp_time_conversion(entry['uptime']),
+                    'address_family': {
+                        afi: {
+                            'received_prefixes': received_prefixes,
+                            'accepted_prefixes': accepted_prefixes,
+                            'sent_prefixes': sent_prefixes
+                        }
+                    }
+                }
         return bgp_neighbor_data
 
     def get_interfaces_counters(self):

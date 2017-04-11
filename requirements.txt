@@ -1,2 +1,3 @@
 napalm_base>=0.23.2
 netmiko>=1.2.8
+ipaddress >= 1.0.16, < 2; python_version < '3.3'
