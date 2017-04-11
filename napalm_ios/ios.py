@@ -1178,7 +1178,12 @@ class IOSDriver(NetworkDriver):
                 is_up = False
             received_prefixes = accepted_prefixes
             sent_prefixes = 0
+            # parse uptime value
+            uptime = self.bgp_time_conversion(entry['uptime'])
+            # start adding data
             if remote_addr not in bgp_neighbor_data['global']['peers']:
+                # first record for remote_addr
+                # add directly into the results dict
                 bgp_neighbor_data['global']['peers'][remote_addr] = {
                     'local_as': int(entry['local_as']),
                     'remote_as': int(entry['remote_as']),
@@ -1186,7 +1191,7 @@ class IOSDriver(NetworkDriver):
                     'is_up': is_up,
                     'is_enabled': is_enabled,
                     'description': u'',
-                    'uptime': self.bgp_time_conversion(entry['uptime']),
+                    'uptime': uptime,
                     'address_family': {
                         afi: {
                             'received_prefixes': received_prefixes,
@@ -1195,6 +1200,26 @@ class IOSDriver(NetworkDriver):
                         }
                     }
                 }
+            else:
+                # found previous data for matching remote_addr
+                existing = bgp_neighbor_data['global']['peers'][remote_addr]
+                # compare with existing values and croak if they don't match
+                assert existing['local_as'] == int(entry['local_as'])
+                assert existing['remote_as'] == int(entry['remote_as'])
+                assert existing['remote_id'] is None
+                assert existing['is_enabled'] == is_enabled
+                assert existing['description'] == u''
+                # merge other values in a sane manner
+                existing['is_up'] = existing['is_up'] or is_up
+                existing['uptime'] = max(existing['uptime'], uptime)
+                # check that we don't have duplicate afi before adding stats
+                assert afi not in existing['address_family']
+                existing['address_family'][afi] = {
+                    'received_prefixes': received_prefixes,
+                    'accepted_prefixes': accepted_prefixes,
+                    'sent_prefixes': sent_prefixes
+                }
+
         return bgp_neighbor_data
 
     def get_interfaces_counters(self):

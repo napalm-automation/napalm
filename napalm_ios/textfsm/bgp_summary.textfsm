@@ -2,7 +2,7 @@
 # Carry down the local end information so that it is present on each row item.
 Value Filldown afi (\S+)
 Value Filldown safi (\S+)
-Value Filldown router_id (\S+)
+Value Filldown router_id (\d+(\.\d+){3})
 Value Filldown local_as (\d+)
 Value Required remote_addr ((\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))
 Value Required remote_as (\d+)
@@ -12,10 +12,10 @@ Value state (\D.*)
 
 Start
   ^For address family: ${afi} ${safi}
-  ^BGP router identifier ${router_id}, local AS number ${local_as}
-  ^${remote_addr}\s+\d+\s+${remote_as}(\s+\S+){5}\s+${uptime}\s+${accepted_prefixes} -> Record
-  ^${remote_addr}\s+\d+\s+${remote_as}(\s+\S+){5}\s+${uptime}\s+${state} -> Record
-  ^${remote_addr}
+  ^.* router identifier ${router_id}, local AS number ${local_as}
+  ^\*?${remote_addr}\s+\d+\s+${remote_as}(\s+\S+){5}\s+${uptime}\s+${accepted_prefixes} -> Record
+  ^\*?${remote_addr}\s+\d+\s+${remote_as}(\s+\S+){5}\s+${uptime}\s+${state} -> Record
+  ^\*?${remote_addr}
   ^\s+\d+\s+${remote_as}(\s+\S+){5}\s+${uptime}\s+${accepted_prefixes} -> Record
   ^\s+\d+\s+${remote_as}(\s+\S+){5}\s+${uptime}\s+${state} -> Record
 
