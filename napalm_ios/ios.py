@@ -1155,9 +1155,10 @@ class IOSDriver(NetworkDriver):
         # process into a list of dicts - rather than default list of lists
         summary_data = [{h: d[i] for i, h in enumerate(summary_head)}
                         for d in parser.ParseText(output)]
+        # check that router_id looks sane
+        router_id = str(ipaddress.IPv4Network(summary_data[0]['router_id']))
         # add parsed data to output dict
-        bgp_neighbor_data['global']['router_id'] = \
-            py23_compat.text_type(summary_data[0]['router_id'])
+        bgp_neighbor_data['global']['router_id'] = router_id
         bgp_neighbor_data['global']['peers'] = {}
         for entry in summary_data:
             # check that remote_addr looks sane
