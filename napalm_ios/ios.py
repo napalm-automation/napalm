@@ -1261,147 +1261,53 @@ class IOSDriver(NetworkDriver):
 
         return bgp_neighbor_data
 
-    def fsm_test(self):
-        bgp_neighbor_data = dict()
-        bgp_neighbor_data['global'] = {}
-        cmd_bgp_all_sum = 'show bgp all summary'
-        template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                     'templates', 'textfsm', 'bgp_summary.textfsm')
-        output = self._send_command(cmd_bgp_all_sum).strip()
-        with open(template_path) as template:
-            parser = textfsm.TextFSM(template)
-        summary_head = parser.header
-        summary_data = [{h: d[i] for i, h in enumerate(summary_head)} for d in parser.ParseText(output)]
-        bgp_neighbor_data['global']['router_id'] = py23_compat.text_type(summary_data[0]['router-id'])
-        bgp_neighbor_data['global']['peers'] = {}
-        return summary_data
-
     def get_bgp_neighbors_fsm(self):
         """
         BGP neighbor information.
-
         Currently, no VRF support
-        Not tested with IPv6
-
-        Example output of 'show ip bgp summary' only peer table
-        Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down State/PfxRcd
-        10.100.1.1      4   200      26      22      199    0    0 00:14:23 23
-        10.200.1.1      4   300      21      51      199    0    0 00:13:40 0
-        192.168.1.2     4   200      19      17        0    0    0 00:00:21 2
-        1.1.1.1         4     1       0       0        0    0    0 never    Active
-        3.3.3.3         4     2       0       0        0    0    0 never    Idle
-        1.1.1.2         4     1      11       9        0    0    0 00:00:13 Idle (Admin)
-        1.1.1.3         4 27506  256642   11327     2527    0    0 1w0d     519
-        1.1.1.4         4 46887 1015641   19982     2527    0    0 1w0d     365
-        192.168.1.237   4 60000    2139    2355 13683280    0    0 1d11h    4 (SE)
-        10.90.1.4       4 65015    2508    2502      170    0    0 1d17h    163
-        172.30.155.20   4   111       0       0        0    0    0 never    Active
-        1.1.1.5         4  6500      54      28        0    0    0 00:00:49 Idle (PfxCt)
-        10.1.4.46       4  3979   95244   98874   267067    0    0 8w5d     254
-        10.1.4.58       4  3979    2715    3045   267067    0    0 1d21h    2
-        10.1.1.85       4 65417 8344303 8343570      235    0    0 1y28w    2
+        Tested and working with IPv6
         """
-        cmd_bgp_summary = 'show ip bgp summary'
-        bgp_neighbor_data = {}
+        # start output dict structure
+        bgp_neighbor_data = dict()
         bgp_neighbor_data['global'] = {}
-
-        output = self._send_command(cmd_bgp_summary).strip()
-        # Cisco issue where new lines are inserted after neighbor IP
-        output = re.sub(RE_IPADDR_STRIP, r"\1", output)
-        if 'Neighbor' not in output:
-            return {}
-        for line in output.splitlines():
-            if 'router identifier' in line:
-                # BGP router identifier 172.16.1.1, local AS number 100
-                rid_regex = r'^.* router identifier (\d+\.\d+\.\d+\.\d+), local AS number (\d+)'
-                match = re.search(rid_regex, line)
-                router_id = match.group(1)
-                local_as = int(match.group(2))
-                break
-        bgp_neighbor_data['global']['router_id'] = py23_compat.text_type(router_id)
+        # get summary output from device
+        cmd_bgp_all_sum = 'show bgp all summary'
+        output = self._send_command(cmd_bgp_all_sum).strip()
+        # find textfsm template and parse output
+        template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                     'templates', 'textfsm', 'bgp_summary.textfsm')
+        with open(template_path) as template:
+            parser = textfsm.TextFSM(template)
+        summary_head = parser.header
+        # process into a list of dicts - rather than default list of lists
+        summary_data = [{h: d[i] for i, h in enumerate(summary_head)}
+                        for d in parser.ParseText(output)]
+        # add parsed data to output dict
+        bgp_neighbor_data['global']['router_id'] = py23_compat.text_type(summary_data[0]['router_id'])
         bgp_neighbor_data['global']['peers'] = {}
-
-        cmd_neighbor_table = 'show ip bgp summary | begin Neighbor'
-        output = self._send_command(cmd_neighbor_table).strip()
-        # Cisco issue where new lines are inserted after neighbor IP
-        output = re.sub(RE_IPADDR_STRIP, r"\1", output)
-        for line in output.splitlines():
-            line = line.strip()
-            if 'Neighbor' in line or line == '':
-                continue
-            fields = line.split()[:10]
-            peer_id, bgp_version, remote_as, msg_rcvd, msg_sent, table_version, in_queue, \
-                out_queue, up_time, state_prefix = fields
-            peer_id = peer_id.replace('*', '')
-
-            if '(Admin)' in state_prefix:
+        for entry in summary_data:
+            if "(Admin)" in entry['state']:
                 is_enabled = False
             else:
                 is_enabled = True
             try:
-                state_prefix = int(state_prefix)
+                accepted_prefixes = int(entry['accepted_prefixes'])
                 is_up = True
             except ValueError:
+                accepted_prefixes = 0
                 is_up = False
-
-            if bgp_version == '4':
-                address_family = 'ipv4'
-            elif bgp_version == '6':
-                address_family = 'ipv6'
-            else:
-                raise ValueError("BGP neighbor parsing failed")
-
-            cmd_remote_rid = 'show ip bgp neighbors {} | inc router ID'.format(peer_id)
-            # output: BGP version 4, remote router ID 1.1.1.1
-            remote_rid_out = self._send_command(cmd_remote_rid)
-            remote_rid = remote_rid_out.split()[-1]
-
-            bgp_neighbor_data['global']['peers'].setdefault(peer_id, {})
-            peer_dict = {}
-            peer_dict['uptime'] = self.bgp_time_conversion(up_time)
-            peer_dict['remote_as'] = int(remote_as)
-            peer_dict['description'] = u''
-            peer_dict['local_as'] = local_as
-            peer_dict['is_enabled'] = is_enabled
-            peer_dict['is_up'] = is_up
-            peer_dict['remote_id'] = py23_compat.text_type(remote_rid)
-
-            cmd_current_prefixes = 'show ip bgp neighbors {} | inc Prefixes Current'.format(peer_id)
-            # output: Prefixes Current:               0          0
-            current_prefixes_out = self._send_command(cmd_current_prefixes)
-            pattern = r'Prefixes Current:\s+(\d+)\s+(\d+).*'  # Prefixes Current:    0     0
-            match = re.search(pattern, current_prefixes_out)
-            if match:
-                sent_prefixes = int(match.group(1))
-                accepted_prefixes = int(match.group(2))
-            else:
-                sent_prefixes = accepted_prefixes = -1
-
-            cmd_filtered_prefix = 'show ip bgp neighbors {} | section Local Policy'.format(peer_id)
-            # output:
-            # Local Policy Denied Prefixes:    --------    -------
-            # prefix-list                           0          2
-            # Total:                                0          2
-            filtered_prefixes_out = self._send_command(cmd_filtered_prefix)
-            sent_prefixes = int(sent_prefixes)
-            pattern = r'Total:\s+\d+\s+(\d+).*'  # Total:     0          2
-            match = re.search(pattern, filtered_prefixes_out)
-            if match:
-                filtered_prefixes = int(match.group(1))
-                received_prefixes = filtered_prefixes + accepted_prefixes
-            else:
-                # If unable to determine filtered prefixes set received prefixes to accepted
-                received_prefixes = accepted_prefixes
-
-            af_dict = {}
-            af_dict.setdefault(address_family, {})
-            af_dict[address_family]['sent_prefixes'] = sent_prefixes
-            af_dict[address_family]['accepted_prefixes'] = accepted_prefixes
-            af_dict[address_family]['received_prefixes'] = received_prefixes
-
-            peer_dict['address_family'] = af_dict
-            bgp_neighbor_data['global']['peers'][peer_id] = peer_dict
-
+            # TODO: syntax check 'remote_addr' using ipaddress module
+            remote_addr = entry['remote_addr']
+            bgp_neighbor_data['global']['peers'][remote_addr] = {
+                'local_as': int(entry['local_as']),
+                'remote_as': int(entry['remote_as']),
+                'remote_id': None,
+                'is_up': is_up,
+                'is_enabled': is_enabled,
+                'description': u'',
+                'uptime': self.bgp_time_conversion(entry['uptime']),
+                'address_family': {}
+            }
         return bgp_neighbor_data
 
     def get_interfaces_counters(self):
