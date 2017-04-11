@@ -1146,17 +1146,31 @@ class IOSDriver(NetworkDriver):
         bgp_neighbor_data['global'] = {}
         # get summary output from device
         cmd_bgp_all_sum = 'show bgp all summary'
-        output = self._send_command(cmd_bgp_all_sum).strip()
-        # find textfsm template and parse output
-        template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                     'textfsm', 'bgp_summary.textfsm')
-        assert os.path.isfile(template_path)
-        with open(template_path) as template:
-            parser = textfsm.TextFSM(template)
-        summary_head = parser.header
+        summary_output = self._send_command(cmd_bgp_all_sum).strip()
+        # get neighbor output from device
+        neighbor_output = ''
+        for afi in supported_afi:
+            cmd_bgp_neighbor = 'show bgp %s unicast neighbors' % afi
+            neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
+        # find textfsm templates
+        summary_template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                             'textfsm', 'bgp_summary.textfsm')
+        assert os.path.isfile(summary_template_path)
+        neighbor_template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                              'textfsm', 'bgp_neighbor.textfsm')
+        assert os.path.isfile(neighbor_template_path)
+        # parse outputs
+        with open(summary_template_path) as template:
+            summary_parser = textfsm.TextFSM(template)
+            summary_head = summary_parser.header
+        with open(neighbor_template_path) as template:
+            neighbor_parser = textfsm.TextFSM(template)
+            neighbor_head = neighbor_parser.header
         # process into a list of dicts - rather than default list of lists
         summary_data = [{h: d[i] for i, h in enumerate(summary_head)}
-                        for d in parser.ParseText(output)]
+                        for d in summary_parser.ParseText(summary_output)]
+        neighbor_data = [{h: d[i] for i, h in enumerate(neighbor_head)}
+                         for d in neighbor_parser.ParseText(neighbor_output)]
         router_id = None
         # check that we got a list of dicts
         assert summary_data and isinstance(summary_data, list)
@@ -1168,6 +1182,9 @@ class IOSDriver(NetworkDriver):
                 router_id = entry['router_id']
             # check that every other value matches
             assert entry['router_id'] == router_id
+        assert neighbor_data and isinstance(neighbor_data, list)
+        for entry in neighbor_data:
+            assert isinstance(entry, dict)
         # check the router_id looks like an ipv4 address
         try:
             ipaddress.IPv4Address(router_id)
@@ -1185,6 +1202,14 @@ class IOSDriver(NetworkDriver):
             # check that we're looking at a supported afi
             if afi not in supported_afi:
                 continue
+            # get neighbor_entry out of neighbor data
+            neighbor_entry = None
+            for n in neighbor_data:
+                if (n['afi'].lower() == afi) and \
+                        (str(ipaddress.ip_address(n['remote_addr'])) == remote_addr):
+                    neighbor_entry = n
+                    break
+            assert isinstance(neighbor_entry, dict)
             # check for admin down state
             if "(Admin)" in entry['state']:
                 is_enabled = False
@@ -1197,10 +1222,25 @@ class IOSDriver(NetworkDriver):
             except ValueError:
                 accepted_prefixes = 0
                 is_up = False
-            received_prefixes = accepted_prefixes
-            sent_prefixes = 0
+            assert int(neighbor_entry['accepted_prefixes']) == accepted_prefixes
+            # try and get received prefix count, otherwise set to accepted_prefixes
+            try:
+                received_prefixes = int(neighbor_entry['received_prefixes'])
+            except ValueError:
+                received_prefixes = accepted_prefixes
+            try:
+                sent_prefixes = int(neighbor_entry['sent_prefixes'])
+            except ValueError:
+                sent_prefixes = -1
             # parse uptime value
             uptime = self.bgp_time_conversion(entry['uptime'])
+            # get description
+            description = py23_compat.text_type(neighbor_entry['description'])
+            # check the remote router_id looks like an ipv4 address
+            try:
+                remote_id = str(ipaddress.IPv4Address(neighbor_entry['remote_id']))
+            except ipaddress.AddressValueError:
+                raise
             # start adding data
             if remote_addr not in bgp_neighbor_data['global']['peers']:
                 # first record for remote_addr
@@ -1208,10 +1248,10 @@ class IOSDriver(NetworkDriver):
                 bgp_neighbor_data['global']['peers'][remote_addr] = {
                     'local_as': int(entry['local_as']),
                     'remote_as': int(entry['remote_as']),
-                    'remote_id': None,
+                    'remote_id': remote_id,
                     'is_up': is_up,
                     'is_enabled': is_enabled,
-                    'description': py23_compat.text_type(''),
+                    'description': description,
                     'uptime': uptime,
                     'address_family': {
                         afi: {
@@ -1227,9 +1267,9 @@ class IOSDriver(NetworkDriver):
                 # compare with existing values and croak if they don't match
                 assert existing['local_as'] == int(entry['local_as'])
                 assert existing['remote_as'] == int(entry['remote_as'])
-                assert existing['remote_id'] is None
+                assert existing['remote_id'] == remote_id
                 assert existing['is_enabled'] == is_enabled
-                assert existing['description'] == u''
+                assert existing['description'] == description
                 # merge other values in a sane manner
                 existing['is_up'] = existing['is_up'] or is_up
                 existing['uptime'] = max(existing['uptime'], uptime)
@@ -1240,7 +1280,6 @@ class IOSDriver(NetworkDriver):
                     'accepted_prefixes': accepted_prefixes,
                     'sent_prefixes': sent_prefixes
                 }
-
         return bgp_neighbor_data
 
     def get_interfaces_counters(self):

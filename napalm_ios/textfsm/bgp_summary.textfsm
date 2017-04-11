@@ -1,5 +1,5 @@
 # template for parsing `show bgp all summary` command output
-# Carry down the local end information so that it is present on each row item.
+# Carry down the local end and afi/safi information so that it is present on each row item.
 Value Filldown afi (\S+)
 Value Filldown safi (\S+)
 Value Filldown router_id (\d+(\.\d+){3})

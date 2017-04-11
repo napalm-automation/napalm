@@ -1,0 +1,22 @@
+# template for parsing `show bgp ipv[4|6] unicast neighbors` command output
+# Carry down the local end and afi/safi information so that it is present on each row item.
+Value Required,Filldown remote_addr ((\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))
+Value Required,Filldown remote_as (\d+)
+Value Required,Filldown remote_id (\d+(\.\d+){3})
+Value Filldown description (.+)
+Value afi (\S+)
+Value safi (\S+)
+Value sent_prefixes (\d+)
+Value accepted_prefixes (\d+)
+Value received_prefixes (\d+)
+
+Start
+  ^\s+BGP neighbor is ${remote_addr},\s+remote AS ${remote_as}.*
+  ^\s+Description: ${description}
+  ^\s+BGP version \d+, remote router ID ${remote_id}
+  ^\s+For address family: ${afi} ${safi}
+  ^\s+Prefixes Current:\s+${sent_prefixes}\s+${accepted_prefixes}.*
+  ^\s+Saved (soft-reconfig):.+${received_prefixes}.* -> Record
+
+# Last record is already recorded then skip doing so here.
+EOF
