@@ -1140,6 +1140,7 @@ class IOSDriver(NetworkDriver):
         Currently no VRF support
         Tested and working with IPv6
         """
+        supported_afi = ['ipv4', 'ipv6']
         # start output dict structure
         bgp_neighbor_data = dict()
         bgp_neighbor_data['global'] = {}
@@ -1165,6 +1166,9 @@ class IOSDriver(NetworkDriver):
             remote_addr = str(ipaddress.ip_address(entry['remote_addr']))
             # want lower case afi
             afi = entry['afi'].lower()
+            # check that we're looking at a supported afi
+            if afi not in supported_afi:
+                continue
             # check for admin down state
             if "(Admin)" in entry['state']:
                 is_enabled = False
