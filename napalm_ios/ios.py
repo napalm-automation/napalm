@@ -1152,6 +1152,7 @@ class IOSDriver(NetworkDriver):
         for afi in supported_afi:
             cmd_bgp_neighbor = 'show bgp %s unicast neighbors' % afi
             neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
+            neighbor_output += "\n"
         # find textfsm templates
         summary_template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                              'textfsm', 'bgp_summary.textfsm')
@@ -1209,7 +1210,10 @@ class IOSDriver(NetworkDriver):
                         (str(ipaddress.ip_address(n['remote_addr'])) == remote_addr):
                     neighbor_entry = n
                     break
-            assert isinstance(neighbor_entry, dict)
+            try:
+                assert isinstance(neighbor_entry, dict)
+            except AssertionError:
+                pass
             # check for admin down state
             if "(Admin)" in entry['state']:
                 is_enabled = False
@@ -1222,7 +1226,11 @@ class IOSDriver(NetworkDriver):
             except ValueError:
                 accepted_prefixes = 0
                 is_up = False
-            assert int(neighbor_entry['accepted_prefixes']) == accepted_prefixes
+            # overide accepted_prefixes with neighbor data if possible (since that's newer)
+            try:
+                accepted_prefixes = int(neighbor_entry['accepted_prefixes'])
+            except ValueError:
+                pass
             # try and get received prefix count, otherwise set to accepted_prefixes
             try:
                 received_prefixes = int(neighbor_entry['received_prefixes'])
