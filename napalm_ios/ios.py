@@ -1243,7 +1243,8 @@ class IOSDriver(NetworkDriver):
             description = py23_compat.text_type(neighbor_entry['description'])
             # check the remote router_id looks like an ipv4 address
             try:
-                remote_id = str(ipaddress.IPv4Address(neighbor_entry['remote_id']))
+                ipaddress.IPv4Address(neighbor_entry['remote_id'])
+                remote_id = py23_compat.text_type(neighbor_entry['remote_id'])
             except ipaddress.AddressValueError:
                 raise
             # start adding data
