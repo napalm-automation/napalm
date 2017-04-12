@@ -20,9 +20,8 @@ import re
 import os
 import uuid
 import tempfile
-
+import copy
 import ipaddress
-import jtextfsm as textfsm
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from netmiko import __version__ as netmiko_version
@@ -1153,23 +1152,87 @@ class IOSDriver(NetworkDriver):
             cmd_bgp_neighbor = 'show bgp %s unicast neighbors' % afi
             neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
             neighbor_output += "\n"
-        # find textfsm templates
-        summary_template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                             'textfsm', 'bgp_summary.textfsm')
-        neighbor_template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                              'textfsm', 'bgp_neighbor.textfsm')
-        # parse outputs
-        with open(summary_template_path) as template:
-            summary_parser = textfsm.TextFSM(template)
-            summary_head = summary_parser.header
-        with open(neighbor_template_path) as template:
-            neighbor_parser = textfsm.TextFSM(template)
-            neighbor_head = neighbor_parser.header
-        # process into a list of dicts - rather than default list of lists
-        summary_data = [{h: d[i] for i, h in enumerate(summary_head)}
-                        for d in summary_parser.ParseText(summary_output)]
-        neighbor_data = [{h: d[i] for i, h in enumerate(neighbor_head)}
-                         for d in neighbor_parser.ParseText(neighbor_output)]
+        # compile regexps
+        parse_summary = {
+            'patterns': [
+                {'regexp': re.compile(r'^For address family: (?P<afi>\S+) (?P<safi>\S+)'),
+                 'record': False},
+                {'regexp': re.compile(r'^.* router identifier (?P<router_id>\d+(\.\d+){3}), '
+                                      r'local AS number (?P<local_as>\d+)'),
+                 'record': False},
+                {'regexp': re.compile(r'^\*?(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))'
+                                      r'\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<accepted_prefixes>\d+)'),
+                 'record': True},
+                {'regexp': re.compile(r'^\*?(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))'
+                                      r'\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)'),
+                 'record': True},
+                {'regexp': re.compile(r'^\*?(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))'),
+                 'record': False},
+                {'regexp': re.compile(r'^\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<accepted_prefixes>\d+)'),
+                 'record': True},
+                {'regexp': re.compile(r'^\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)'),
+                 'record': True}
+            ],
+            'no_fill_fields': ['accepted_prefixes', 'state']
+        }
+        parse_neighbors = {
+            'patterns': [
+                {'regexp': re.compile(r'^BGP neighbor is '
+                                      r'(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40})),'
+                                      r'\s+remote AS (?P<remote_as>\d+).*'),
+                 'record': False},
+                {'regexp': re.compile(r'^\s+Description: (?P<description>.+)'),
+                 'record': False},
+                {'regexp': re.compile(r'^\s+BGP version \d+, remote router ID '
+                                      r'(?P<remote_id>\d+(\.\d+){3})'),
+                 'record': False},
+                {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) (?P<safi>\S+)'),
+                 'record': False},
+                {'regexp': re.compile(r'^\s+Prefixes Current:\s+(?P<sent_prefixes>\d+)\s+'
+                                      r'(?P<accepted_prefixes>\d+).*'),
+                 'record': False},
+                {'regexp': re.compile(r'^\s+Saved (soft-reconfig):.+(?P<received_prefixes>\d+).*'),
+                 'record': True},
+                {'regexp': re.compile(r'^\s+Local Policy Denied Prefixes:.+'),
+                 'record': True}
+            ],
+            'no_fill_fields': ['received_prefixes']
+        }
+        # parse outputs into a list of dicts
+        summary_data = []
+        summary_data_entry = {}
+        for line in summary_output.splitlines():
+            for item in parse_summary['patterns']:
+                match = item['regexp'].match(line)
+                if match:
+                    summary_data_entry.update(match.groupdict())
+                    if item['record']:
+                        summary_data.append(copy.deepcopy(summary_data_entry))
+                        for field in parse_summary['no_fill_fields']:
+                            try:
+                                del summary_data_entry[field]
+                            except KeyError:
+                                pass
+                    break
+        neighbor_data = []
+        neighbor_data_entry = {}
+        for line in neighbor_output.splitlines():
+            for item in parse_neighbors['patterns']:
+                match = item['regexp'].match(line)
+                if match:
+                    neighbor_data_entry.update(match.groupdict())
+                    if item['record']:
+                        neighbor_data.append(copy.deepcopy(neighbor_data_entry))
+                        for field in parse_neighbors['no_fill_fields']:
+                            try:
+                                del neighbor_data_entry[field]
+                            except KeyError:
+                                pass
+                    break
         router_id = None
         # check that we got a list of dicts
         assert summary_data and isinstance(summary_data, list)
@@ -1212,35 +1275,41 @@ class IOSDriver(NetworkDriver):
                 raise ValueError(msg="Couldn't find neighbor data for %s in afi %s" %
                                      (remote_addr, afi))
             # check for admin down state
-            if "(Admin)" in entry['state']:
-                is_enabled = False
-            else:
+            try:
+                if "(Admin)" in entry['state']:
+                    is_enabled = False
+                else:
+                    is_enabled = True
+            except KeyError:
                 is_enabled = True
             # check whether session is up for address family and get prefix count
             try:
                 accepted_prefixes = int(entry['accepted_prefixes'])
                 is_up = True
-            except ValueError:
+            except (ValueError, KeyError):
                 accepted_prefixes = 0
                 is_up = False
             # overide accepted_prefixes with neighbor data if possible (since that's newer)
             try:
                 accepted_prefixes = int(neighbor_entry['accepted_prefixes'])
-            except ValueError:
+            except (ValueError, KeyError):
                 pass
             # try and get received prefix count, otherwise set to accepted_prefixes
             try:
                 received_prefixes = int(neighbor_entry['received_prefixes'])
-            except ValueError:
+            except (ValueError, KeyError):
                 received_prefixes = accepted_prefixes
             try:
                 sent_prefixes = int(neighbor_entry['sent_prefixes'])
-            except ValueError:
+            except (ValueError, KeyError):
                 sent_prefixes = -1
             # parse uptime value
             uptime = self.bgp_time_conversion(entry['uptime'])
             # get description
-            description = py23_compat.text_type(neighbor_entry['description'])
+            try:
+                description = py23_compat.text_type(neighbor_entry['description'])
+            except KeyError:
+                description = ''
             # check the remote router_id looks like an ipv4 address
             try:
                 ipaddress.IPv4Address(neighbor_entry['remote_id'])
