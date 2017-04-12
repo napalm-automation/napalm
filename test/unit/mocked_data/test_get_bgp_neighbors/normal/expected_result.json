@@ -7,7 +7,7 @@
         "uptime": -1,
         "remote_as": 65001,
         "description": "",
-        "remote_id": null,
+        "remote_id": "0.0.0.0",
         "local_as": 65000,
         "is_up": false,
         "address_family": {
@@ -23,7 +23,7 @@
         "uptime": -1,
         "remote_as": 65010,
         "description": "",
-        "remote_id": null,
+        "remote_id": "192.168.0.3",
         "local_as": 65000,
         "is_up": false,
         "address_family": {

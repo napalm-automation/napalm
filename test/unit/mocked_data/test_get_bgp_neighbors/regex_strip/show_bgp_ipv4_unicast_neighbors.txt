@@ -1,0 +1,25 @@
+BGP neighbor is 192.168.0.2,  remote AS 65001, internal link
+ Inherits from template iBGP for session parameters
+  BGP version 4, remote router ID 0.0.0.0
+
+ For address family: IPv4 Unicast
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:               0          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Total:                                0          0
+
+BGP neighbor is 192.168.0.3,  remote AS 65010, internal link
+ Inherits from template iBGP for session parameters
+  BGP version 4, remote router ID 192.168.0.3
+
+ For address family: IPv4 Unicast
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:               0          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Total:                                0          0

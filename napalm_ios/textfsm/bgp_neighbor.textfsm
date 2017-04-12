@@ -11,12 +11,13 @@ Value accepted_prefixes (\d+)
 Value received_prefixes (\d+)
 
 Start
-  ^\s+BGP neighbor is ${remote_addr},\s+remote AS ${remote_as}.*
+  ^BGP neighbor is ${remote_addr},\s+remote AS ${remote_as}.*
   ^\s+Description: ${description}
   ^\s+BGP version \d+, remote router ID ${remote_id}
   ^\s+For address family: ${afi} ${safi}
   ^\s+Prefixes Current:\s+${sent_prefixes}\s+${accepted_prefixes}.*
   ^\s+Saved (soft-reconfig):.+${received_prefixes}.* -> Record
+  ^\s+Local Policy Denied Prefixes:.+ -> Record
 
 # Last record is already recorded then skip doing so here.
 EOF
