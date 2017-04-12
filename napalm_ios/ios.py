@@ -1156,10 +1156,8 @@ class IOSDriver(NetworkDriver):
         # find textfsm templates
         summary_template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                              'textfsm', 'bgp_summary.textfsm')
-        assert os.path.isfile(summary_template_path)
         neighbor_template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                               'textfsm', 'bgp_neighbor.textfsm')
-        assert os.path.isfile(neighbor_template_path)
         # parse outputs
         with open(summary_template_path) as template:
             summary_parser = textfsm.TextFSM(template)
@@ -1210,10 +1208,9 @@ class IOSDriver(NetworkDriver):
                         (str(ipaddress.ip_address(n['remote_addr'])) == remote_addr):
                     neighbor_entry = n
                     break
-            try:
-                assert isinstance(neighbor_entry, dict)
-            except AssertionError:
-                pass
+            if not isinstance(neighbor_entry, dict):
+                raise ValueError(msg="Couldn't find neighbor data for %s in afi %s" %
+                                     (remote_addr, afi))
             # check for admin down state
             if "(Admin)" in entry['state']:
                 is_enabled = False
