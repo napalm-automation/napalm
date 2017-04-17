@@ -12,4 +12,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+import sys
+
 from napalm_base import get_network_driver
+
+if not(sys.version_info.major == 2 and sys.version_info.minor == 7):
+    raise RuntimeError('You need Python 2.7 for NAPALM.')
