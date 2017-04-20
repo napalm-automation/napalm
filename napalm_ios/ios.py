@@ -593,11 +593,11 @@ class IOSDriver(NetworkDriver):
             port_detail['physical_channels']['channel'] = []
 
             # If interface is shutdown it returns "N/A" as output power.
-            # Converting that to -40.0 float
+            # Converting that to -100.0 float
             try:
                 float(output_power)
             except ValueError:
-                output_power = -40.0
+                output_power = -100.0
 
             # Defaulting avg, min, max values to 0.0 since device does not
             # return these values
