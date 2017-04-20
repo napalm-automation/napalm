@@ -34,7 +34,7 @@
 					"output_power": {
 						"max": 0.0,
 						"avg": 0.0,
-						"instant": -40.0,
+						"instant": -100.0,
 						"min": 0.0
 					},
 					"laser_bias_current": {
