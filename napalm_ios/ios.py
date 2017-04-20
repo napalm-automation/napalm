@@ -593,28 +593,28 @@ class IOSDriver(NetworkDriver):
             port_detail['physical_channels']['channel'] = []
 
             # If interface is shutdown it returns "N/A" as output power.
-            # Converting that to -40.0 float
+            # Converting that to -100.0 float
             try:
                 float(output_power)
             except ValueError:
-                output_power = -40.0
+                output_power = -100.0
 
-            # Defaulting avg, min, max values to 0.0 since device does not
+            # Defaulting avg, min, max values to -100.0 since device does not
             # return these values
             optic_states = {
                 'index': 0,
                 'state': {
                     'input_power': {
-                        'instant': (float(input_power) if 'input_power' else 0.0),
-                        'avg': 0.0,
-                        'min': 0.0,
-                        'max': 0.0
+                        'instant': (float(input_power) if 'input_power' else -100.0),
+                        'avg': -100.0,
+                        'min': -100.0,
+                        'max': -100.0
                     },
                     'output_power': {
-                        'instant': (float(output_power) if 'output_power' else 0.0),
-                        'avg': 0.0,
-                        'min': 0.0,
-                        'max': 0.0
+                        'instant': (float(output_power) if 'output_power' else -100.0),
+                        'avg': -100.0,
+                        'min': -100.0,
+                        'max': -100.0
                     },
                     'laser_bias_current': {
                         'instant': 0.0,
