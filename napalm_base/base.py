@@ -66,11 +66,10 @@ class NetworkDriver(object):
         is released (unlocked).
         """
         try:
-            self.close()
-        except OSError as e:
-            # Ignore if socket was already closed
-            if 'is closed' in str(e):
-                pass
+            if self.is_alive()["is_alive"]:
+                self.close()
+        except NotImplementedError:
+            pass
 
     @staticmethod
     def __raise_clean_exception(exc_type, exc_value, exc_traceback):
