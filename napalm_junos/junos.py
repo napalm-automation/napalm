@@ -64,6 +64,7 @@ class JunOSDriver(NetworkDriver):
             * config_lock (True/False): lock configuration DB after the connection is established.
             * port (int): custom port
             * key_file (string): SSH key file path
+            * keepalive (int): Keepalive interval
         """
         self.hostname = hostname
         self.username = username
