@@ -581,9 +581,13 @@ class IOSDriver(NetworkDriver):
         for optics_entry in split_output.splitlines():
             # Example, Te1/0/1      34.6       3.29      -2.0      -3.5
             try:
-                int_brief, temperature, voltage, output_power, input_power = optics_entry.split()
+                split_list = optics_entry.split()
             except ValueError:
                 return {}
+
+            int_brief = split_list[0]
+            output_power = split_list[3]
+            input_power = split_list[4]
 
             port = self._expand_interface_name(int_brief)
 
