@@ -1244,7 +1244,7 @@ class IOSXRDriver(NetworkDriver):
         try:
             ipv = IPAddress(network).version
         except AddrFormatError:
-            return {'error': 'Wrong destination IP Address!'}
+            raise TypeError('Wrong destination IP Address!')
 
         if ipv == 6:
             route_info_rpc_command = '<Get><Operational><IPV6_RIB><VRFTable><VRF><Naming><VRFName>\
