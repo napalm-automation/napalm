@@ -62,7 +62,7 @@ Documentation
    support/index
    cli
    base
-   YANG/index
+   yang
    contributing/index
    development/index
    hackathons/index
