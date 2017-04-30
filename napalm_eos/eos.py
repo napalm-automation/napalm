@@ -1679,11 +1679,34 @@ class EOSDriver(NetworkDriver):
                 fields = line.split()
                 if 'icmp' in line:
                     if 'Unreachable' in line:
-                        results_array.append({'ip_address': py23_compat.text_type(fields[1]),
-                                              'rtt': 0.0})
+                        if "(" in fields[2]:
+                            results_array.append(
+                                {
+                                    'ip_address': py23_compat.text_type(fields[2][1:-1]),
+                                    'rtt': 0.0,
+                                }
+                            )
+                        else:
+                            results_array.append({'ip_address': py23_compat.text_type(fields[1]),
+                                                  'rtt': 0.0})
+                    elif 'truncated' in line:
+                        if "(" in fields[4]:
+                            results_array.append(
+                                {
+                                    'ip_address': py23_compat.text_type(fields[4][1:-2]),
+                                    'rtt': 0.0,
+                                }
+                            )
+                        else:
+                            results_array.append(
+                                {
+                                    'ip_address': py23_compat.text_type(fields[3][:-1]),
+                                    'rtt': 0.0,
+                                }
+                            )
                     elif fields[1] == 'bytes':
                         m = fields[6][5:]
-                        results_array.append({'ip_address': py23_compat.text_type(fields[3]),
+                        results_array.append({'ip_address': py23_compat.text_type(fields[3][:-1]),
                                               'rtt': float(m)})
                 elif 'packets transmitted' in line:
                     ping_dict['success']['probes_sent'] = int(fields[0])
