@@ -107,6 +107,8 @@ class IOSDriver(NetworkDriver):
         self.config_replace = False
         self.interface_map = {}
 
+        self.profile = ["ios"]
+
     def open(self):
         """Open a connection to the device."""
         self.device = ConnectHandler(device_type='cisco_ios',
@@ -558,6 +560,80 @@ class IOSDriver(NetworkDriver):
         output = re.sub(r"^Time source is .*$", "", output, flags=re.M)
         return output.strip()
 
+    def get_optics(self):
+        command = 'show interfaces transceiver'
+        output = self._send_command(command)
+
+        # Check if router supports the command
+        if '% Invalid input' in output:
+            return {}
+
+        # Formatting data into return data structure
+        optics_detail = {}
+
+        try:
+            split_output = re.split(r'^---------.*$', output, flags=re.M)[1]
+        except IndexError:
+            return {}
+
+        split_output = split_output.strip()
+
+        for optics_entry in split_output.splitlines():
+            # Example, Te1/0/1      34.6       3.29      -2.0      -3.5
+            try:
+                split_list = optics_entry.split()
+            except ValueError:
+                return {}
+
+            int_brief = split_list[0]
+            output_power = split_list[3]
+            input_power = split_list[4]
+
+            port = self._expand_interface_name(int_brief)
+
+            port_detail = {}
+
+            port_detail['physical_channels'] = {}
+            port_detail['physical_channels']['channel'] = []
+
+            # If interface is shutdown it returns "N/A" as output power.
+            # Converting that to -100.0 float
+            try:
+                float(output_power)
+            except ValueError:
+                output_power = -100.0
+
+            # Defaulting avg, min, max values to -100.0 since device does not
+            # return these values
+            optic_states = {
+                'index': 0,
+                'state': {
+                    'input_power': {
+                        'instant': (float(input_power) if 'input_power' else -100.0),
+                        'avg': -100.0,
+                        'min': -100.0,
+                        'max': -100.0
+                    },
+                    'output_power': {
+                        'instant': (float(output_power) if 'output_power' else -100.0),
+                        'avg': -100.0,
+                        'min': -100.0,
+                        'max': -100.0
+                    },
+                    'laser_bias_current': {
+                        'instant': 0.0,
+                        'avg': 0.0,
+                        'min': 0.0,
+                        'max': 0.0
+                    }
+                }
+            }
+
+            port_detail['physical_channels']['channel'].append(optic_states)
+            optics_detail[port] = port_detail
+
+        return optics_detail
+
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
         lldp = {}
@@ -616,15 +692,28 @@ class IOSDriver(NetworkDriver):
         if '% Invalid input' in output:
             raise ValueError("Command not supported by network device")
 
-        port_id = re.findall(r"Port id:\s+(.+)", output)
-        port_description = re.findall(r"Port Description(?:\s\-|:)\s+(.+)", output)
-        chassis_id = re.findall(r"Chassis id:\s+(.+)", output)
-        system_name = re.findall(r"System Name:\s+(.+)", output)
-        system_description = re.findall(r"System Description:\s*\n(.+)", output)
-        system_capabilities = re.findall(r"System Capabilities:\s+(.+)", output)
-        enabled_capabilities = re.findall(r"Enabled Capabilities:\s+(.+)", output)
-        remote_address = re.findall(r"Management Addresses:\n\s+(?:IP|Other)(?::\s+?)(.+)",
-                                    output)
+        # Cisco generally use : for string divider, but sometimes has ' - '
+        port_id = re.findall(r"Port id\s*?[:-]\s+(.+)", output)
+        port_description = re.findall(r"Port Description\s*?[:-]\s+(.+)", output)
+        chassis_id = re.findall(r"Chassis id\s*?[:-]\s+(.+)", output)
+        system_name = re.findall(r"System Name\s*?[:-]\s+(.+)", output)
+        system_description = re.findall(r"System Description\s*?[:-]\s*(not advertised|\s*\n.+)",
+                                        output)
+        system_description = [x.strip() for x in system_description]
+        system_capabilities = re.findall(r"System Capabilities\s*?[:-]\s+(.+)", output)
+        enabled_capabilities = re.findall(r"Enabled Capabilities\s*?[:-]\s+(.+)", output)
+        remote_address = re.findall(r"Management Addresses\s*[:-]\s*(not advertised|\n.+)", output)
+        # remote address had two possible patterns which required some secondary processing
+        new_remote_address = []
+        for val in remote_address:
+            val = val.strip()
+            pattern = r'(?:IP|Other)(?::\s+?)(.+)'
+            match = re.search(pattern, val)
+            if match:
+                new_remote_address.append(match.group(1))
+            else:
+                new_remote_address.append(val)
+        remote_address = new_remote_address
         return [port_id, port_description, chassis_id, system_name, system_description,
                 system_capabilities, enabled_capabilities, remote_address]
 
@@ -648,6 +737,11 @@ class IOSDriver(NetworkDriver):
         for interface in lldp_neighbors:
             local_port = interface
             lldp_fields = self._lldp_detail_parser(interface)
+            # Convert any 'not advertised' to 'N/A'
+            for field in lldp_fields:
+                for i, value in enumerate(field):
+                    if 'not advertised' in value:
+                        field[i] = 'N/A'
             number_entries = len(lldp_fields[0])
 
             # re.findall will return a list. Make sure same number of entries always returned.
@@ -1194,11 +1288,12 @@ class IOSDriver(NetworkDriver):
         'rx_broadcast_packets': int,
 
         Currently doesn't determine output broadcasts, multicasts
-        Doesn't determine tx_discards or rx_discards
         """
         counters = {}
         command = 'show interfaces'
         output = self._send_command(command)
+        sh_int_sum_cmd = 'show interface summary'
+        sh_int_sum_cmd_out = self._send_command(sh_int_sum_cmd)
 
         # Break output into per-interface sections
         interface_strings = re.split(r'.* line protocol is .*', output, flags=re.M)
@@ -1223,7 +1318,7 @@ class IOSDriver(NetworkDriver):
             for line in interface_str.splitlines():
                 if 'packets input' in line:
                     # '0 packets input, 0 bytes, 0 no buffer'
-                    match = re.search(r"(\d+) packets input.*(\d+) bytes", line)
+                    match = re.search(r"(\d+) packets input.* (\d+) bytes", line)
                     counters[interface]['rx_unicast_packets'] = int(match.group(1))
                     counters[interface]['rx_octets'] = int(match.group(2))
                 elif 'broadcast' in line:
@@ -1243,7 +1338,7 @@ class IOSDriver(NetworkDriver):
                         counters[interface]['rx_multicast_packets'] = -1
                 elif 'packets output' in line:
                     # '0 packets output, 0 bytes, 0 underruns'
-                    match = re.search(r"(\d+) packets output.*(\d+) bytes", line)
+                    match = re.search(r"(\d+) packets output.* (\d+) bytes", line)
                     counters[interface]['tx_unicast_packets'] = int(match.group(1))
                     counters[interface]['tx_octets'] = int(match.group(2))
                     counters[interface]['tx_broadcast_packets'] = -1
@@ -1258,6 +1353,19 @@ class IOSDriver(NetworkDriver):
                     match = re.search(r"(\d+) output errors", line)
                     counters[interface]['tx_errors'] = int(match.group(1))
                     counters[interface]['tx_discards'] = -1
+            for line in sh_int_sum_cmd_out.splitlines():
+                if interface in line:
+                    # Line is tabular output with columns
+                    # Interface  IHQ  IQD  OHQ  OQD  RXBS  RXPS  TXBS  TXPS  TRTL
+                    # where columns (excluding interface) are integers
+                    regex = r"\b" + interface + \
+                        r"\b\s+(\d+)\s+(?P<IQD>\d+)\s+(\d+)" + \
+                        r"\s+(?P<OQD>\d+)\s+(\d+)\s+(\d+)" + \
+                        r"\s+(\d+)\s+(\d+)\s+(\d+)"
+                    match = re.search(regex, line)
+                    if match:
+                        counters[interface]['rx_discards'] = int(match.group("IQD"))
+                        counters[interface]['tx_discards'] = int(match.group("OQD"))
 
         return counters
 
