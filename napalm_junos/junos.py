@@ -895,7 +895,8 @@ class JunOSDriver(NetworkDriver):
                 })
                 if old_junos:
                     # in some cases this information might not exist at all...
-                    neighbor_rib_details['messages_queued_out'] = neighbor_queue_rib.get(str(rib_id), -1)
+                    neighbor_rib_details['messages_queued_out'] = \
+                        neighbor_queue_rib.get(str(rib_id), -1)
                 else:
                     neighbor_rib_details['messages_queued_out'] = neighbor_queue_rib[rib_entry[0]]
                 neighbor_rib_details['routing_table'] = py23_compat.text_type(rib_entry[0])
