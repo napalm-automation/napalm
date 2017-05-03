@@ -165,6 +165,7 @@ class FakeSession:
     def __init__(self):
         self.transport = FakeTransport()
 
+
 class FakeTransport:
     def set_keepalive(self, keepalive):
-       self.keepalive = keepalive
+        self.keepalive = keepalive
