@@ -830,6 +830,9 @@ class JunOSDriver(NetworkDriver):
             'inetflow.0'
         )
 
+        old_junos = napalm_base.helpers.convert(
+            int, self.device.facts.get('version', '0.0').split('.')[0], '0') < 13
+
         for bgp_neighbor in bgp_neighbors_items:
             remote_as = int(bgp_neighbor[0])
             neighbor_details = deepcopy(default_neighbor_details)
@@ -863,9 +866,22 @@ class JunOSDriver(NetworkDriver):
                 neighbor_details['remote_port'] = 179
             neighbors_rib = neighbor_details.pop('rib')
             neighbors_queue = neighbor_details.pop('queue')
+            if old_junos:
+                # anyway need to pop both
+                # for Junos < 13, under the bgp-output-queue hierarchy
+                # the table-name does not exist, hence we cannot match
+                # but each table has an index that we can use later
+                # the structure under old_queue is similar to queue,
+                # but the key is the integer representing the table ID
+                neighbors_queue = neighbor_details.pop('old_queue')
             neighbor_queue_rib = {}
             for queue_entry in neighbors_queue.items():
                 neighbor_queue_rib[queue_entry[0]] = queue_entry[1][0][1]
+            rib_id = 0
+            if not old_junos:
+                # for Junos >= 13, the table index starts from 1,
+                # while older versions have 0 as the first table
+                rib_id += 1
             for rib_entry in neighbors_rib.items():
                 _table = py23_compat.text_type(rib_entry[0])
                 if _table in JUNOS_DEFAULT_VRF_TABLES:
@@ -878,9 +894,13 @@ class JunOSDriver(NetworkDriver):
                 neighbor_rib_details.update({
                     elem[0]: elem[1] for elem in rib_entry[1]
                 })
-                neighbor_rib_details['messages_queued_out'] = neighbor_queue_rib[rib_entry[0]]
+                if old_junos:
+                    neighbor_rib_details['messages_queued_out'] = neighbor_queue_rib[str(rib_id)]
+                else:
+                    neighbor_rib_details['messages_queued_out'] = neighbor_queue_rib[rib_entry[0]]
                 neighbor_rib_details['routing_table'] = py23_compat.text_type(rib_entry[0])
                 bgp_neighbors[_table][remote_as].append(neighbor_rib_details)
+                rib_id += 1
         return bgp_neighbors
 
     def get_arp_table(self):
