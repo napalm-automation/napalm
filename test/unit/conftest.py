@@ -1,6 +1,7 @@
 """Test fixtures."""
 
 import lxml
+import yaml
 import pytest
 from napalm_base.test import conftest as parent_conftest
 
@@ -48,8 +49,9 @@ class FakeJunOSDevice(BaseTestDouble):
     def __init__(self):
         self.rpc = FakeRPCObject(self)
         self._conn = FakeConnection(self.rpc)
+        self.alternative_facts_file = 'facts.yml'
         self.ON_JUNOS = True  # necessary for fake devices
-        self.facts = {
+        self.default_facts = {
             'domain': None,
             'hostname': 'vsrx',
             'ifd_style': 'CLASSIC',
@@ -71,6 +73,20 @@ class FakeJunOSDevice(BaseTestDouble):
             'vc_capable': False,
             'personality': 'SRX_BRANCH'
         }
+
+    @property
+    def facts(self):
+        try:
+            alt_facts_filepath = self.find_file(self.alternative_facts_file)
+        except IOError:
+            self._facts = self.default_facts
+            return self._facts
+        with open(alt_facts_filepath, 'r') as alt_facts:
+            try:
+                self._facts.update(yaml.load(alt_facts))
+            except (yaml.YAMLError, AttributeError):
+                self._facts = self.default_facts
+        return self._facts
 
     def open(self):
         pass
