@@ -158,3 +158,13 @@ class FakeConnection:
 
     def __init__(self, rpc):
         self.rpc = FakeConnectionRPCObject(rpc)
+        self._session = FakeSession()
+
+
+class FakeSession:
+    def __init__(self):
+        self.transport = FakeTransport()
+
+class FakeTransport:
+    def set_keepalive(self, keepalive):
+       self.keepalive = keepalive
