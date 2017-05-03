@@ -64,7 +64,6 @@ class JunOSDriver(NetworkDriver):
             * config_lock (True/False): lock configuration DB after the connection is established.
             * port (int): custom port
             * key_file (string): SSH key file path
-            * keepalive (int): Keepalive interval
         """
         self.hostname = hostname
         self.username = username
@@ -80,7 +79,6 @@ class JunOSDriver(NetworkDriver):
         self.config_lock = optional_args.get('config_lock', True)
         self.port = optional_args.get('port', 22)
         self.key_file = optional_args.get('key_file', None)
-        self.keepalive = optional_args.get('keepalive', 30)
 
         if self.key_file:
             self.device = Device(hostname,
@@ -99,7 +97,6 @@ class JunOSDriver(NetworkDriver):
         except ConnectTimeoutError as cte:
             raise ConnectionException(cte.message)
         self.device.timeout = self.timeout
-        self.device._conn._session.transport.set_keepalive(self.keepalive)
         if hasattr(self.device, "cu"):
             # make sure to remove the cu attr from previous session
             # ValueError: requested attribute name cu already exists
@@ -874,6 +871,8 @@ class JunOSDriver(NetworkDriver):
                 # the structure under old_queue is similar to queue,
                 # but the key is the integer representing the table ID
                 neighbors_queue = neighbor_details.pop('old_queue')
+            else:
+                neighbor_details.pop('old_queue')
             neighbor_queue_rib = {}
             for queue_entry in neighbors_queue.items():
                 neighbor_queue_rib[queue_entry[0]] = queue_entry[1][0][1]
