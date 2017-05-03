@@ -160,9 +160,21 @@ class JunOSDriver(NetworkDriver):
 
     def _detect_config_format(self, config):
         fmt = 'text'
+        set_action_matches = [
+            'set',
+            'activate',
+            'deactivate',
+            'annotate',
+            'copy',
+            'delete',
+            'insert',
+            'protect',
+            'rename',
+            'unprotect',
+        ]
         if config.strip().startswith('<'):
             return 'xml'
-        elif config.strip().startswith('set'):
+        elif config.split(' ')[0] in set_action_matches:
             return 'set'
         elif self._is_json_format(config):
             return 'json'
