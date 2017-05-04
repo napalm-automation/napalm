@@ -350,7 +350,6 @@ junos_bgp_neighbors_view:
     output_messages: {output-messages: int}
     input_updates: {input-updates: int}
     output_updates: {output-updates: int}
-    messages_queued_out: {bgp-output-queue/count: int}
     connection_state: {peer-state: unicode}
     previous_connection_state: {last-state: unicode}
     last_event: {last-event: unicode}
@@ -361,7 +360,27 @@ junos_bgp_neighbors_view:
     keepalive: {keepalive-interval: int}
     configured_keepalive: {keepalive-interval: int}
     rib: junos_bgp_rib_table
+    queue: junos_bgp_queue_table
+    old_queue: junos_bgp_old_queue_table
     flap_count: {flap-count: int}
+
+junos_bgp_queue_table:
+  item: bgp-output-queue
+  key: table-name
+  view: junos_bgp_queue_view
+
+junos_bgp_queue_view:
+  fields:
+    messages_queued_out: {count: int}
+
+junos_bgp_old_queue_table:
+  item: bgp-output-queue
+  key: number
+  view: junos_bgp_old_queue_view
+
+junos_bgp_old_queue_view:
+  fields:
+    messages_queued_out: {count: int}
 
 junos_bgp_rib_table:
   item: bgp-rib
