@@ -360,8 +360,9 @@ class IOSDriver(NetworkDriver):
                 cmd = 'configure replace {} force'.format(cfg_file)
             output = self._commit_hostname_handler(cmd)
             if ('Failed to apply command' in output) or \
-               ('original configuration has been successfully restored' in output):
-                raise ReplaceConfigException("Candidate config could not be applied")
+               ('original configuration has been successfully restored' in output) or \
+               ('Error' in output):
+                raise ReplaceConfigException("Candidate config could not be applied\n{}".format(output))
             elif '%Please turn config archive on' in output:
                 msg = "napalm-ios replace() requires Cisco 'archive' feature to be enabled."
                 raise ReplaceConfigException(msg)
