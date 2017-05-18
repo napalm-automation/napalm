@@ -1155,24 +1155,44 @@ class IOSDriver(NetworkDriver):
         # compile regexps
         parse_summary = {
             'patterns': [
+                # match start line, capturing AFI and SAFI names, e.g.:
+                # For address family: IPv4 Unicast
                 {'regexp': re.compile(r'^For address family: (?P<afi>\S+) (?P<safi>\S+)'),
                  'record': False},
+                # capture router_id and local_as values, e.g.:
+                # BGP router identifier 10.0.1.1, local AS number 65000
                 {'regexp': re.compile(r'^.* router identifier (?P<router_id>\d+(\.\d+){3}), '
                                       r'local AS number (?P<local_as>\d+)'),
                  'record': False},
+                # match neighbor summary row, capturing useful details and
+                # discarding the 5 columns that we don't care about, e.g.:
+                # Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd # noqa
+                # 10.0.0.2        4        65000 1336020 64337701 1011343614    0    0 8w0d         3143  # noqa
                 {'regexp': re.compile(r'^\*?(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))'
                                       r'\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
                                       r'(?P<uptime>(never)|\d+\S+)\s+(?P<accepted_prefixes>\d+)'),
                  'record': True},
+                # as above, but for peerings that are not Established, e.g.:
+                # Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd # noqa
+                # 192.168.0.2     4        65002       0       0        1    0    0 never    Active       # noqa
                 {'regexp': re.compile(r'^\*?(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))'
                                       r'\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
                                       r'(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)'),
                  'record': True},
+                # ipv6 peerings often break accross rows because of the longer peer address,
+                # so match as above, but in separate expressions, e.g.:
+                # Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd # noqa
+                # 2001:DB8::4
+                #                 4        65004 9900690  612449 155362939    0    0 26w6d       36391    # noqa
                 {'regexp': re.compile(r'^\*?(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))'),
                  'record': False},
                 {'regexp': re.compile(r'^\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
                                       r'(?P<uptime>(never)|\d+\S+)\s+(?P<accepted_prefixes>\d+)'),
                  'record': True},
+                # as above, but for peerings that are not Established, e.g.:
+                # Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd # noqa
+                # 2001:DB8::3
+                #                 4        65003       0       0        1    0    0 never    Idle (Admin) # noqa
                 {'regexp': re.compile(r'^\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
                                       r'(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)'),
                  'record': True}
@@ -1181,22 +1201,34 @@ class IOSDriver(NetworkDriver):
         }
         parse_neighbors = {
             'patterns': [
+                # match start line, capturing remote_addr and remote_as, e.g.:
+                # BGP neighbor is 10.0.0.2,  remote AS 65000, internal link
                 {'regexp': re.compile(r'^BGP neighbor is '
                                       r'(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40})),'
                                       r'\s+remote AS (?P<remote_as>\d+).*'),
                  'record': False},
+                # capture description, e.g.:
+                #  Description: internal-2
                 {'regexp': re.compile(r'^\s+Description: (?P<description>.+)'),
                  'record': False},
+                # capture remote_id, e.g.:
+                #   BGP version 4, remote router ID 10.0.1.2
                 {'regexp': re.compile(r'^\s+BGP version \d+, remote router ID '
                                       r'(?P<remote_id>\d+(\.\d+){3})'),
                  'record': False},
+                # capture AFI and SAFI names, e.g.:
+                #  For address family: IPv4 Unicast
                 {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) (?P<safi>\S+)'),
                  'record': False},
+                # capture current sent and accepted prefixes, e.g.:
+                #     Prefixes Current:          637213       3142 (Consumes 377040 bytes)
                 {'regexp': re.compile(r'^\s+Prefixes Current:\s+(?P<sent_prefixes>\d+)\s+'
                                       r'(?P<accepted_prefixes>\d+).*'),
                  'record': False},
+                # capture received_prefixes if soft-reconfig is enabled for the peer
                 {'regexp': re.compile(r'^\s+Saved (soft-reconfig):.+(?P<received_prefixes>\d+).*'),
                  'record': True},
+                # otherwise, use the following as an end of row marker
                 {'regexp': re.compile(r'^\s+Local Policy Denied Prefixes:.+'),
                  'record': True}
             ],
