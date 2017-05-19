@@ -1330,10 +1330,11 @@ class IOSDriver(NetworkDriver):
                 continue
             # get neighbor_entry out of neighbor data
             neighbor_entry = None
-            for n in neighbor_data:
-                if (n['afi'].lower() == afi) and \
-                        (py23_compat.text_type(ipaddress.ip_address(n['remote_addr'])) == remote_addr): # noqa
-                    neighbor_entry = n
+            for neighbor in neighbor_data:
+                if (neighbor['afi'].lower() == afi) and \
+                        (py23_compat.text_type(
+                            ipaddress.ip_address(neighbor['remote_addr'])) == remote_addr):
+                    neighbor_entry = neighbor
                     break
             if not isinstance(neighbor_entry, dict):
                 raise ValueError(msg="Couldn't find neighbor data for %s in afi %s" %
