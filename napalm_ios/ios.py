@@ -1300,11 +1300,10 @@ class IOSDriver(NetworkDriver):
         router_id = None
         # sanity check the summary_data
         # first, check that we got a list of dicts
-        assert summary_data and isinstance(summary_data, list),
+        assert summary_data and isinstance(summary_data, list),\
             "expected a list, got %s" % summary_data
         for entry in summary_data:
-            assert isinstance(entry, dict),
-                "expected a dict, got %s" % entry
+            assert isinstance(entry, dict), "expected a dict, got %s" % entry
             # select the first router_id value
             if not router_id:
                 router_id = entry['router_id']
@@ -1313,11 +1312,10 @@ class IOSDriver(NetworkDriver):
                 raise ValueError
         # sanity check the neighbor_data
         # check that we got a list of dicts
-        assert neighbor_data and isinstance(neighbor_data, list),
+        assert neighbor_data and isinstance(neighbor_data, list),\
             "expected a list, got %s" % neighbor_data
         for entry in neighbor_data:
-            assert isinstance(entry, dict),
-                "expected a dict, got %s" % entry
+            assert isinstance(entry, dict), "expected a dict, got %s" % entry
         # check the router_id looks like an ipv4 address
         try:
             ipaddress.IPv4Address(router_id)
