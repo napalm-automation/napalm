@@ -770,11 +770,6 @@ class JunOSDriver(NetworkDriver):
     def get_bgp_neighbors_detail(self, neighbor_address=''):
         """Detailed view of the BGP neighbors operational data."""
         bgp_neighbors = {}
-        bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
-        bgp_neighbors_table.get(
-            neighbor_address=neighbor_address
-        )
-        bgp_neighbors_items = bgp_neighbors_table.items()
         default_neighbor_details = {
             'up': False,
             'local_as': 0,
@@ -812,7 +807,6 @@ class JunOSDriver(NetworkDriver):
             'advertised_prefix_count': -1,
             'flap_count': 0
         }
-
         OPTION_KEY_MAP = {
             'RemovePrivateAS': 'remove_private_as',
             'Multipath': 'multipath',
@@ -823,88 +817,98 @@ class JunOSDriver(NetworkDriver):
             # other options:
             # Preference, HoldTime, Ttl, LogUpDown, Refresh
         }
-
-        JUNOS_DEFAULT_VRF_TABLES = (
-            'inet.0',
-            'inet6.0',
-            'inetflow.0'
-        )
+        def _bgp_iter_core(neighbor_data, instance=None):
+            '''
+            Iterate over a list of neighbors.
+            For older junos, the routing instance is not specified inside the
+            BGP neighbors XML, therefore we need to use a super sub-optimal structure
+            as in get_bgp_neighbors: iterate through the list of network instances
+            then execute one request for each and every routing instance.
+            For newer junos, this is not necessary as the routing instance is available
+            and we can get everything solve in a single request.
+            '''
+            for bgp_neighbor in neighbor_data:
+                remote_as = int(bgp_neighbor[0])
+                neighbor_details = deepcopy(default_neighbor_details)
+                neighbor_details.update(
+                    {elem[0]: elem[1] for elem in bgp_neighbor[1] if elem[1] is not None}
+                )
+                if not instance:
+                    peer_fwd_rti = neighbor_details.pop('peer_fwd_rti')
+                    instance = peer_fwd_rti
+                else:
+                    peer_fwd_rti = neighbor_details.pop('peer_fwd_rti', '')
+                instance_name = 'global' if instance == 'master' else instance
+                options = neighbor_details.pop('options', '')
+                if isinstance(options, str):
+                    options_list = options.split()
+                    for option in options_list:
+                        key = OPTION_KEY_MAP.get(option)
+                        if key is not None:
+                            neighbor_details[key] = True
+                four_byte_as = neighbor_details.pop('4byte_as', 0)
+                local_address = neighbor_details.pop('local_address', '')
+                local_details = local_address.split('+')
+                neighbor_details['local_address'] = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip, local_details[0], local_details[0])
+                if len(local_details) == 2:
+                    neighbor_details['local_port'] = int(local_details[1])
+                else:
+                    neighbor_details['local_port'] = 179
+                neighbor_details['suppress_4byte_as'] = (remote_as != four_byte_as)
+                peer_address = neighbor_details.pop('peer_address', '')
+                remote_details = peer_address.split('+')
+                neighbor_details['remote_address'] = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip, remote_details[0], remote_details[0])
+                if len(remote_details) == 2:
+                    neighbor_details['remote_port'] = int(remote_details[1])
+                else:
+                    neighbor_details['remote_port'] = 179
+                neighbor_details['routing_table'] = instance_name
+                neighbors_rib = neighbor_details.pop('rib')
+                neighbors_queue = neighbor_details.pop('queue')
+                messages_queued_out = 0
+                for queue_entry in neighbors_queue.items():
+                    messages_queued_out += queue_entry[1][0][1]
+                neighbor_details['messages_queued_out'] = messages_queued_out
+                if instance_name not in bgp_neighbors.keys():
+                    bgp_neighbors[instance_name] = {}
+                if remote_as not in bgp_neighbors[instance_name].keys():
+                    bgp_neighbors[instance_name][remote_as] = []
+                neighbor_rib_stats = neighbors_rib.items()
+                if not neighbor_rib_stats:
+                    bgp_neighbors[instance_name][remote_as].append(neighbor_details)
+                    continue  # no RIBs available, pass default details
+                neighbor_rib_details = {
+                    'active_prefix_count': 0,
+                    'received_prefix_count': 0,
+                    'accepted_prefix_count': 0,
+                    'suppressed_prefix_count': 0,
+                    'advertised_prefix_count': 0
+                }
+                for rib_entry in neighbor_rib_stats:
+                    for elem in rib_entry[1]:
+                        neighbor_rib_details[elem[0]] += elem[1]
+                neighbor_details.update(neighbor_rib_details)
+                bgp_neighbors[instance_name][remote_as].append(neighbor_details)
 
         old_junos = napalm_base.helpers.convert(
             int, self.device.facts.get('version', '0.0').split('.')[0], '0') < 13
+        bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
 
-        for bgp_neighbor in bgp_neighbors_items:
-            remote_as = int(bgp_neighbor[0])
-            neighbor_details = deepcopy(default_neighbor_details)
-            neighbor_details.update(
-                {elem[0]: elem[1] for elem in bgp_neighbor[1] if elem[1] is not None}
-            )
-            options = neighbor_details.pop('options', '')
-            if isinstance(options, str):
-                options_list = options.split()
-                for option in options_list:
-                    key = OPTION_KEY_MAP.get(option)
-                    if key is not None:
-                        neighbor_details[key] = True
-            four_byte_as = neighbor_details.pop('4byte_as', 0)
-            local_address = neighbor_details.pop('local_address', '')
-            local_details = local_address.split('+')
-            neighbor_details['local_address'] = napalm_base.helpers.convert(
-                napalm_base.helpers.ip, local_details[0], local_details[0])
-            if len(local_details) == 2:
-                neighbor_details['local_port'] = int(local_details[1])
-            else:
-                neighbor_details['local_port'] = 179
-            neighbor_details['suppress_4byte_as'] = (remote_as != four_byte_as)
-            peer_address = neighbor_details.pop('peer_address', '')
-            remote_details = peer_address.split('+')
-            neighbor_details['remote_address'] = napalm_base.helpers.convert(
-                napalm_base.helpers.ip, remote_details[0], remote_details[0])
-            if len(remote_details) == 2:
-                neighbor_details['remote_port'] = int(remote_details[1])
-            else:
-                neighbor_details['remote_port'] = 179
-            neighbors_rib = neighbor_details.pop('rib')
-            neighbors_queue = neighbor_details.pop('queue')
-            if old_junos:
-                # anyway need to pop both
-                # for Junos < 13, under the bgp-output-queue hierarchy
-                # the table-name does not exist, hence we cannot match
-                # but each table has an index that we can use later
-                # the structure under old_queue is similar to queue,
-                # but the key is the integer representing the table ID
-                neighbors_queue = neighbor_details.pop('old_queue')
-            else:
-                neighbor_details.pop('old_queue')
-            neighbor_queue_rib = {}
-            for queue_entry in neighbors_queue.items():
-                neighbor_queue_rib[queue_entry[0]] = queue_entry[1][0][1]
-            rib_id = 0
-            if not old_junos:
-                # for Junos >= 13, the table index starts from 1,
-                # while older versions have 0 as the first table
-                rib_id += 1
-            for rib_entry in neighbors_rib.items():
-                _table = py23_compat.text_type(rib_entry[0])
-                if _table in JUNOS_DEFAULT_VRF_TABLES:
-                    _table = 'global'
-                if _table not in bgp_neighbors.keys():
-                    bgp_neighbors[_table] = {}
-                if remote_as not in bgp_neighbors[_table].keys():
-                    bgp_neighbors[_table][remote_as] = []
-                neighbor_rib_details = deepcopy(neighbor_details)
-                neighbor_rib_details.update({
-                    elem[0]: elem[1] for elem in rib_entry[1]
-                })
-                if old_junos:
-                    # in some cases this information might not exist at all...
-                    neighbor_rib_details['messages_queued_out'] = \
-                        neighbor_queue_rib.get(str(rib_id), -1)
-                else:
-                    neighbor_rib_details['messages_queued_out'] = neighbor_queue_rib[rib_entry[0]]
-                neighbor_rib_details['routing_table'] = py23_compat.text_type(rib_entry[0])
-                bgp_neighbors[_table][remote_as].append(neighbor_rib_details)
-                rib_id += 1
+        if old_junos:
+            instances = junos_views.junos_route_instance_table(self.device)
+            for instance, instance_data in instances.get().items():
+                if instance.startswith('__'):
+                    # junos internal instances
+                    continue
+                neighbor_data = bgp_neighbors_table.get(instance=instance,
+                                                        neighbor_address=neighbor_address).items()
+                _bgp_iter_core(neighbor_data, instance=instance)
+        else:
+            bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
+            neighbor_data = bgp_neighbors_table.get(neighbor_address=neighbor_address).items()
+            _bgp_iter_core(neighbor_data)
         return bgp_neighbors
 
     def get_arp_table(self):
