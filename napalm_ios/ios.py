@@ -1358,15 +1358,10 @@ class IOSDriver(NetworkDriver):
                 accepted_prefixes = int(neighbor_entry['accepted_prefixes'])
             except (ValueError, KeyError):
                 pass
-            # try and get received prefix count, otherwise set to accepted_prefixes
-            try:
-                received_prefixes = int(neighbor_entry['received_prefixes'])
-            except (ValueError, KeyError):
-                received_prefixes = accepted_prefixes
-            try:
-                sent_prefixes = int(neighbor_entry['sent_prefixes'])
-            except (ValueError, KeyError):
-                sent_prefixes = -1
+            # try to get received prefix count, otherwise set to accepted_prefixes
+            received_prefixes = neighbor_entry.get('received_prefixes', accepted_prefixes)
+            # try to get sent prefix count and convert to int, otherwise set to -1
+            sent_prefixes = int(neighbor_entry.get('sent_prefixes', -1))
             # parse uptime value
             uptime = self.bgp_time_conversion(entry['uptime'])
             # get description
