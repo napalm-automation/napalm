@@ -1151,6 +1151,7 @@ class IOSDriver(NetworkDriver):
         for afi in supported_afi:
             cmd_bgp_neighbor = 'show bgp %s unicast neighbors' % afi
             neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
+            # ensure we have a trailing newline. bit hacky?
             neighbor_output += "\n"
         # compile regexps
         parse_summary = {
