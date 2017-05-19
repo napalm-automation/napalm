@@ -1322,7 +1322,7 @@ class IOSDriver(NetworkDriver):
         bgp_neighbor_data['global']['peers'] = {}
         for entry in summary_data:
             # check that remote_addr looks sane
-            remote_addr = str(ipaddress.ip_address(entry['remote_addr']))
+            remote_addr = py23_compat.text_type(ipaddress.ip_address(entry['remote_addr']))
             # want lower case afi
             afi = entry['afi'].lower()
             # check that we're looking at a supported afi
@@ -1332,7 +1332,7 @@ class IOSDriver(NetworkDriver):
             neighbor_entry = None
             for n in neighbor_data:
                 if (n['afi'].lower() == afi) and \
-                        (str(ipaddress.ip_address(n['remote_addr'])) == remote_addr):
+                        (py23_compat.text_type(ipaddress.ip_address(n['remote_addr'])) == remote_addr): # noqa
                     neighbor_entry = n
                     break
             if not isinstance(neighbor_entry, dict):
