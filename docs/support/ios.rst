@@ -49,8 +49,9 @@ IOSDriver requires that the `archive` functionality be enabled to perform auto-r
 Configuration file
 ------------------
 
-IOS requires config file to begin with a `version` eg. `15.0` and `end` marker at the end of the file. Otherwise IOS will reject `configure replace` operation.
-
+* IOS requires config file to begin with a `version` eg. `15.0` and `end` marker at the end of the file. Otherwise IOS will reject `configure replace` operation.
+* For the diff to work properly, indentation of your candidate file has to exactly match the indentation in the running config.
+* Finish blocks with `!` as with the running config, otherweise, some IOS version might not be able to generate the diff properly.
 
 Notes
 _______
