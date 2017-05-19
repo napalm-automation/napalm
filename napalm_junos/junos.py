@@ -817,6 +817,7 @@ class JunOSDriver(NetworkDriver):
             # other options:
             # Preference, HoldTime, Ttl, LogUpDown, Refresh
         }
+
         def _bgp_iter_core(neighbor_data, instance=None):
             '''
             Iterate over a list of neighbors.
