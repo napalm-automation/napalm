@@ -1,0 +1,43 @@
+{
+  "global": {
+    "65002": [
+      {
+        "export_policy": "EXPORT-POLICY",
+        "import_policy": "IMPORT-POLICY",
+        "local_address_configured": true,
+        "remove_private_as": false,
+        "received_prefix_count": 656,
+        "local_port": 179,
+        "local_as_prepend": true,
+        "output_updates": 0,
+        "flap_count": 11,
+        "local_as": 65001,
+        "output_messages": 64234,
+        "input_updates": 6,
+        "last_event": "RecvKeepAlive",
+        "local_address": "f00b:a500:8:1024::1",
+        "keepalive": 30,
+        "active_prefix_count": 656,
+        "remote_port": 49379,
+        "configured_keepalive": 30,
+        "messages_queued_out": 0,
+        "remote_address": "f00b:a500:8:1024::face:b00c",
+        "configured_holdtime": 90,
+        "routing_table": "global",
+        "accepted_prefix_count": 656,
+        "remote_as": 65002,
+        "multipath": true,
+        "suppressed_prefix_count": 0,
+        "multihop": false,
+        "input_messages": 71599,
+        "router_id": "172.17.17.2",
+        "previous_connection_state": "EstabSync",
+        "holdtime": 90,
+        "up": true,
+        "connection_state": "Established",
+        "advertised_prefix_count": 0,
+        "suppress_4byte_as": true
+      }
+    ]
+  }
+}
