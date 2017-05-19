@@ -1298,19 +1298,26 @@ class IOSDriver(NetworkDriver):
                                 pass
                     break
         router_id = None
-        # check that we got a list of dicts
-        assert summary_data and isinstance(summary_data, list)
+        # sanity check the summary_data
+        # first, check that we got a list of dicts
+        assert summary_data and isinstance(summary_data, list),
+            "expected a list, got %s" % summary_data
         for entry in summary_data:
-            assert isinstance(entry, dict)
-            assert 'router_id' in entry
+            assert isinstance(entry, dict),
+                "expected a dict, got %s" % entry
             # select the first router_id value
             if not router_id:
                 router_id = entry['router_id']
-            # check that every other value matches
-            assert entry['router_id'] == router_id
-        assert neighbor_data and isinstance(neighbor_data, list)
+            elif entry['router_id'] != router_id:
+                # check that every other value matches
+                raise ValueError
+        # sanity check the neighbor_data
+        # check that we got a list of dicts
+        assert neighbor_data and isinstance(neighbor_data, list),
+            "expected a list, got %s" % neighbor_data
         for entry in neighbor_data:
-            assert isinstance(entry, dict)
+            assert isinstance(entry, dict),
+                "expected a dict, got %s" % entry
         # check the router_id looks like an ipv4 address
         try:
             ipaddress.IPv4Address(router_id)
