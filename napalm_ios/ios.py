@@ -39,8 +39,11 @@ YEAR_SECONDS = 365 * DAY_SECONDS
 
 # STD REGEX PATTERNS
 IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+IPV4_ADDR_REGEX = IP_ADDR_REGEX
+IPV6_ADDR_REGEX = r"[0-9a-fA-F:]{2,40}"
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
 VLAN_REGEX = r"\d{1,4}"
+ASN_REGEX = r"\d+"
 RE_IPADDR = re.compile(r"{}".format(IP_ADDR_REGEX))
 RE_IPADDR_STRIP = re.compile(r"({})\n".format(IP_ADDR_REGEX))
 RE_MAC = re.compile(r"{}".format(MAC_REGEX))
@@ -1162,40 +1165,54 @@ class IOSDriver(NetworkDriver):
                  'record': False},
                 # capture router_id and local_as values, e.g.:
                 # BGP router identifier 10.0.1.1, local AS number 65000
-                {'regexp': re.compile(r'^.* router identifier (?P<router_id>\d+(\.\d+){3}), '
-                                      r'local AS number (?P<local_as>\d+)'),
+                {'regexp': re.compile(r'^.* router identifier (?P<router_id>{}), '
+                                      r'local AS number (?P<local_as>{})'.format(
+                                            IPV4_ADDR_REGEX, ASN_REGEX
+                                      )),
                  'record': False},
                 # match neighbor summary row, capturing useful details and
                 # discarding the 5 columns that we don't care about, e.g.:
                 # Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd # noqa
                 # 10.0.0.2        4        65000 1336020 64337701 1011343614    0    0 8w0d         3143  # noqa
-                {'regexp': re.compile(r'^\*?(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))'
-                                      r'\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
-                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<accepted_prefixes>\d+)'),
+                {'regexp': re.compile(r'^\*?(?P<remote_addr>({})|({}))'
+                                      r'\s+\d+\s+(?P<remote_as>{})(\s+\S+){{5}}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)'
+                                      r'\s+(?P<accepted_prefixes>\d+)'.format(
+                                            IPV4_ADDR_REGEX, IPV6_ADDR_REGEX, ASN_REGEX
+                                      )),
                  'record': True},
                 # as above, but for peerings that are not Established, e.g.:
                 # Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd # noqa
                 # 192.168.0.2     4        65002       0       0        1    0    0 never    Active       # noqa
-                {'regexp': re.compile(r'^\*?(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))'
-                                      r'\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
-                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)'),
+                {'regexp': re.compile(r'^\*?(?P<remote_addr>({})|({}))'
+                                      r'\s+\d+\s+(?P<remote_as>{})(\s+\S+){{5}}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)'.format(
+                                            IPV4_ADDR_REGEX, IPV6_ADDR_REGEX, ASN_REGEX
+                                      )),
                  'record': True},
                 # ipv6 peerings often break accross rows because of the longer peer address,
                 # so match as above, but in separate expressions, e.g.:
                 # Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd # noqa
                 # 2001:DB8::4
                 #                 4        65004 9900690  612449 155362939    0    0 26w6d       36391    # noqa
-                {'regexp': re.compile(r'^\*?(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40}))'),
+                {'regexp': re.compile(r'^\*?(?P<remote_addr>({})|({}))'.format(
+                                            IPV4_ADDR_REGEX, IPV6_ADDR_REGEX
+                                     )),
                  'record': False},
-                {'regexp': re.compile(r'^\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
-                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<accepted_prefixes>\d+)'),
+                {'regexp': re.compile(r'^\s+\d+\s+(?P<remote_as>{})(\s+\S+){{5}}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)'
+                                      r'\s+(?P<accepted_prefixes>\d+)'.format(
+                                            ASN_REGEX
+                                      )),
                  'record': True},
                 # as above, but for peerings that are not Established, e.g.:
                 # Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd # noqa
                 # 2001:DB8::3
                 #                 4        65003       0       0        1    0    0 never    Idle (Admin) # noqa
-                {'regexp': re.compile(r'^\s+\d+\s+(?P<remote_as>\d+)(\s+\S+){5}\s+'
-                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)'),
+                {'regexp': re.compile(r'^\s+\d+\s+(?P<remote_as>{})(\s+\S+){{5}}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)'.format(
+                                            ASN_REGEX
+                                      )),
                  'record': True}
             ],
             'no_fill_fields': ['accepted_prefixes', 'state']
@@ -1204,9 +1221,10 @@ class IOSDriver(NetworkDriver):
             'patterns': [
                 # match start line, capturing remote_addr and remote_as, e.g.:
                 # BGP neighbor is 10.0.0.2,  remote AS 65000, internal link
-                {'regexp': re.compile(r'^BGP neighbor is '
-                                      r'(?P<remote_addr>(\d+(\.\d+){3})|([0-9a-fA-F:]{2,40})),'
-                                      r'\s+remote AS (?P<remote_as>\d+).*'),
+                {'regexp': re.compile(r'^BGP neighbor is (?P<remote_addr>({})|({})),'
+                                      r'\s+remote AS (?P<remote_as>{}).*'.format(
+                                            IPV4_ADDR_REGEX, IPV6_ADDR_REGEX, ASN_REGEX
+                                      )),
                  'record': False},
                 # capture description, e.g.:
                 #  Description: internal-2
@@ -1215,7 +1233,7 @@ class IOSDriver(NetworkDriver):
                 # capture remote_id, e.g.:
                 #   BGP version 4, remote router ID 10.0.1.2
                 {'regexp': re.compile(r'^\s+BGP version \d+, remote router ID '
-                                      r'(?P<remote_id>\d+(\.\d+){3})'),
+                                      r'(?P<remote_id>{})'.format(IPV4_ADDR_REGEX)),
                  'record': False},
                 # capture AFI and SAFI names, e.g.:
                 #  For address family: IPv4 Unicast
