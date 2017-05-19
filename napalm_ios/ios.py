@@ -1232,18 +1232,25 @@ class IOSDriver(NetworkDriver):
                 {'regexp': re.compile(r'^\s+Local Policy Denied Prefixes:.+'),
                  'record': True}
             ],
+            # fields that should not be "filled down" across table rows
             'no_fill_fields': ['received_prefixes']
         }
         # parse outputs into a list of dicts
         summary_data = []
         summary_data_entry = {}
+        # loop over lines in summary_output
         for line in summary_output.splitlines():
+            # check for matches against each pattern
             for item in parse_summary['patterns']:
                 match = item['regexp'].match(line)
                 if match:
+                    # a match was found, so update the temp entry with the match's groupdict
                     summary_data_entry.update(match.groupdict())
                     if item['record']:
+                        # 'record' indicates a row break in the logical table
+                        # so copy the temp entry into summary_data list
                         summary_data.append(copy.deepcopy(summary_data_entry))
+                        # remove keys that are listed in no_fill_fields before the next pass
                         for field in parse_summary['no_fill_fields']:
                             try:
                                 del summary_data_entry[field]
@@ -1252,13 +1259,19 @@ class IOSDriver(NetworkDriver):
                     break
         neighbor_data = []
         neighbor_data_entry = {}
+        # loop over lines in neighbor_output
         for line in neighbor_output.splitlines():
+            # check for matches against each pattern
             for item in parse_neighbors['patterns']:
                 match = item['regexp'].match(line)
                 if match:
+                    # a match was found, so update the temp entry with the match's groupdict
                     neighbor_data_entry.update(match.groupdict())
                     if item['record']:
+                        # 'record' indicates a row break in the logical table
+                        # so copy the temp entry into summary_data list
                         neighbor_data.append(copy.deepcopy(neighbor_data_entry))
+                        # remove keys that are listed in no_fill_fields before the next pass
                         for field in parse_neighbors['no_fill_fields']:
                             try:
                                 del neighbor_data_entry[field]
