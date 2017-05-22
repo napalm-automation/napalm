@@ -330,6 +330,8 @@ junos_bgp_tables_summary_view:
 
 junos_bgp_neighbors_table:
   rpc: get-bgp-neighbor-information
+  args:
+    instance: ''
   args_key: neighbor_address
   item: bgp-peer
   key: peer-as
@@ -341,6 +343,7 @@ junos_bgp_neighbors_view:
     local_as: {local-as: int}
     remote_as: {peer-as: int}
     router_id: {peer-id: unicode}
+    peer_fwd_rti: peer-fwd-rti
     local_address: local-address
     peer_address: peer-address
     options: bgp-option-information/bgp-options
@@ -361,7 +364,6 @@ junos_bgp_neighbors_view:
     configured_keepalive: {keepalive-interval: int}
     rib: junos_bgp_rib_table
     queue: junos_bgp_queue_table
-    old_queue: junos_bgp_old_queue_table
     flap_count: {flap-count: int}
 
 junos_bgp_queue_table:
@@ -370,15 +372,6 @@ junos_bgp_queue_table:
   view: junos_bgp_queue_view
 
 junos_bgp_queue_view:
-  fields:
-    messages_queued_out: {count: int}
-
-junos_bgp_old_queue_table:
-  item: bgp-output-queue
-  key: number
-  view: junos_bgp_old_queue_view
-
-junos_bgp_old_queue_view:
   fields:
     messages_queued_out: {count: int}
 
