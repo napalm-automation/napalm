@@ -21,7 +21,6 @@ import os
 import uuid
 import tempfile
 import copy
-import ipaddress
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from netmiko import __version__ as netmiko_version
@@ -1320,16 +1319,15 @@ class IOSDriver(NetworkDriver):
             assert isinstance(entry, dict), "expected a dict, got %s" % entry
         # check the router_id looks like an ipv4 address
         try:
-            ipaddress.IPv4Address(router_id)
-            router_id = py23_compat.text_type(router_id)
-        except ipaddress.AddressValueError:
+            router_id = ip(router_id, version=4)
+        except ValueError:
             raise
         # add parsed data to output dict
         bgp_neighbor_data['global']['router_id'] = router_id
         bgp_neighbor_data['global']['peers'] = {}
         for entry in summary_data:
             # check that remote_addr looks sane
-            remote_addr = py23_compat.text_type(ipaddress.ip_address(entry['remote_addr']))
+            remote_addr = ip(entry['remote_addr'])
             # want lower case afi
             afi = entry['afi'].lower()
             # check that we're looking at a supported afi
@@ -1339,8 +1337,7 @@ class IOSDriver(NetworkDriver):
             neighbor_entry = None
             for neighbor in neighbor_data:
                 if (neighbor['afi'].lower() == afi) and \
-                        (py23_compat.text_type(
-                            ipaddress.ip_address(neighbor['remote_addr'])) == remote_addr):
+                        (ip(neighbor['remote_addr']) == remote_addr):
                     neighbor_entry = neighbor
                     break
             if not isinstance(neighbor_entry, dict):
@@ -1379,9 +1376,8 @@ class IOSDriver(NetworkDriver):
                 description = ''
             # check the remote router_id looks like an ipv4 address
             try:
-                ipaddress.IPv4Address(neighbor_entry['remote_id'])
-                remote_id = py23_compat.text_type(neighbor_entry['remote_id'])
-            except ipaddress.AddressValueError:
+                remote_id = ip(neighbor_entry['remote_id'])
+            except ValueError:
                 raise
             # start adding data
             if remote_addr not in bgp_neighbor_data['global']['peers']:
