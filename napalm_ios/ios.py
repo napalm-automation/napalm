@@ -1376,7 +1376,7 @@ class IOSDriver(NetworkDriver):
                 description = ''
             # check the remote router_id looks like an ipv4 address
             try:
-                remote_id = ip(neighbor_entry['remote_id'])
+                remote_id = ip(neighbor_entry['remote_id'], version=4)
             except ValueError:
                 raise
             # start adding data
