@@ -19,7 +19,9 @@ def ip(addr, version=None):
     contain sometimes uppercase characters. E.g.: 2001:0dB8:85a3:0000:0000:8A2e:0370:7334 has \
     the same logical value as 2001:db8:85a3::8a2e:370:7334. However, their values as strings are \
     not the same.
-    :param raw: the raw string containing the value of the IP Address
+    :param addr: the raw string containing the value of the IP Address
+    :param version: (optional) insist on a specific IP address version.
+    :type version: int.
     :return: a string containing the IP Address in a standard format (no leading zeros, \
     zeros-grouping, lowercase)
     Example:
