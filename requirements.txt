@@ -1,3 +1,2 @@
 napalm_base>=0.23.2
 netmiko>=1.2.8
-netaddr

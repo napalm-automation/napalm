@@ -13,8 +13,8 @@ from napalm_base.utils import py23_compat
 
 def ip(addr, version=None):
     """
-    Converts a raw string to a valid IP address. This function overides napalm_base.ip() to \
-    provide support for IP version checking.
+    Converts a raw string to a valid IP address. This function replaces napalm_base.helpers.ip() \
+    to provide support for IP version checking.
     Motivation: the groups of the IP addreses may contain leading zeros. IPv6 addresses can \
     contain sometimes uppercase characters. E.g.: 2001:0dB8:85a3:0000:0000:8A2e:0370:7334 has \
     the same logical value as 2001:db8:85a3::8a2e:370:7334. However, their values as strings are \
