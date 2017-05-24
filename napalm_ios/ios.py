@@ -20,6 +20,7 @@ import re
 import os
 import uuid
 import tempfile
+import socket
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from netmiko import __version__ as netmiko_version
@@ -134,14 +135,18 @@ class IOSDriver(NetworkDriver):
 
         If command is a list will iterate through commands until valid command.
         """
-        if isinstance(command, list):
-            for cmd in command:
-                output = self.device.send_command(cmd)
-                if "% Invalid" not in output:
-                    break
-        else:
-            output = self.device.send_command(command)
-        return self._send_command_postprocess(output)
+        try:
+            if isinstance(command, list):
+                for cmd in command:
+                    output = self.device.send_command(cmd)
+                    if "% Invalid" not in output:
+                        break
+            else:
+                output = self.device.send_command(command)
+            return self._send_command_postprocess(output)
+        except socket.error:
+            self.open()
+            return self._send_command(command)
 
     def is_alive(self):
         """Returns a flag with the state of the SSH connection."""
