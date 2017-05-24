@@ -31,6 +31,8 @@ from napalm_base.utils import py23_compat
 import napalm_base.constants as C
 import napalm_base.helpers
 
+from napalm_ios.helpers import ip
+
 # Easier to store these as constants
 HOUR_SECONDS = 3600
 DAY_SECONDS = 24 * HOUR_SECONDS
