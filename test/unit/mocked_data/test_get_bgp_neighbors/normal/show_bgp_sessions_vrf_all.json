@@ -29,6 +29,26 @@
                     "state": "1"
                 }
             }
+        }, {
+            "vrf-name-out": "red",
+            "local-as": "65535",
+            "vrfpeers": "1",
+            "vrfestablishedpeers": "0",
+            "router-id": "10.1.100.20",
+            "TABLE_neighbor": {
+                "ROW_neighbor": {
+                    "neighbor-id": "10.1.100.21",
+                    "remoteas": "65030.100",
+                    "connectionsdropped": "7",
+                    "localport": "0/0",
+                    "notificationssent": "6",
+                    "notificationsreceived": "0",
+                    "lastflap": "P1M6DT17H23M26S",
+                    "lastread": "PT0S",
+                    "lastwrite": "PT0S",
+                    "state": "1"
+                }
+            }
         }]
     }
 }
