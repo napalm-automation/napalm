@@ -144,7 +144,7 @@ class IOSDriver(NetworkDriver):
             else:
                 output = self.device.send_command(command)
             return self._send_command_postprocess(output)
-        except socket.error:
+        except (socket.error, EOFError):
             self.open()
             return self._send_command(command)
 
