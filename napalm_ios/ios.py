@@ -41,7 +41,13 @@ YEAR_SECONDS = 365 * DAY_SECONDS
 # STD REGEX PATTERNS
 IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 IPV4_ADDR_REGEX = IP_ADDR_REGEX
-IPV6_ADDR_REGEX = r"[0-9a-fA-F:]{2,39}"
+IPV6_ADDR_REGEX_1 = r"::"
+IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
+IPV6_ADDR_REGEX_3 = r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:" \
+                     "[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}"
+# Should validate IPv6 address using an IP address library after matching with this regex
+IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
+
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
 VLAN_REGEX = r"\d{1,4}"
 RE_IPADDR = re.compile(r"{}".format(IP_ADDR_REGEX))
@@ -1304,8 +1310,8 @@ class IOSDriver(NetworkDriver):
                     # a match was found, so update the temp entry with the match's groupdict
                     summary_data_entry.update(match.groupdict())
                     if item['record']:
-                        # 'record' indicates a row break in the logical table
-                        # so copy the temp entry into summary_data list
+                        # Record indicates the last piece of data has been obtained; move
+                        # on to next entry
                         summary_data.append(copy.deepcopy(summary_data_entry))
                         # remove keys that are listed in no_fill_fields before the next pass
                         for field in parse_summary['no_fill_fields']:
