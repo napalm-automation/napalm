@@ -296,14 +296,26 @@ class TestBaseHelpers(unittest.TestCase):
 
         # test that raises AddrFormatError when wrong format
         self.assertRaises(AddrFormatError, napalm_base.helpers.ip, 'fake')
-#        self.assertRaises(ValueError, napalm_base.helpers.ip, '2001:db8:85a3::8a2e:370:7334',
-#                          version=4)
+        self.assertRaises(ValueError, napalm_base.helpers.ip, '2001:db8:85a3::8a2e:370:7334',
+                          version=4)
+        self.assertRaises(ValueError, napalm_base.helpers.ip, '192.168.17.1',
+                          version=6)
         self.assertEqual(
-          napalm_base.helpers.ip(
-            '2001:0dB8:85a3:0000:0000:8A2e:0370:7334'
-          ),
+          napalm_base.helpers.ip('2001:0dB8:85a3:0000:0000:8A2e:0370:7334'),
           '2001:db8:85a3::8a2e:370:7334'
         )
+        self.assertEqual(
+          napalm_base.helpers.ip('2001:0DB8::0003', version=6),
+          '2001:db8::3'
+        )
+
+    def test_ip(self):
+        """Test the as_number helper function."""
+        self.assertEqual(napalm_base.helpers.as_number('64001'), 64001)
+        self.assertEqual(napalm_base.helpers.as_number('1.0'), 65536)
+        self.assertEqual(napalm_base.helpers.as_number('1.100'), 65636)
+        self.assertEqual(napalm_base.helpers.as_number('1.65535'), 131071)
+        self.assertEqual(napalm_base.helpers.as_number('65535.65535'), 4294967295)
 
     def test_convert_uptime_string_seconds(self):
         """

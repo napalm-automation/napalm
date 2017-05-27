@@ -1,6 +1,7 @@
 ddt
 lxml
 napalm-eos
+napalm-fortios
 napalm-ios
 napalm-iosxr
 napalm-junos
