@@ -1296,7 +1296,7 @@ class IOSDriver(NetworkDriver):
                  'record': True}
             ],
             # fields that should not be "filled down" across table rows
-            'no_fill_fields': ['received_prefixes']
+            'no_fill_fields': ['received_prefixes', 'accepted_prefixes', 'sent_prefixes']
         }
 
         # Parse outputs into a list of dicts
@@ -1310,25 +1310,20 @@ class IOSDriver(NetworkDriver):
                 if match:
                     # a match was found, so update the temp entry with the match's groupdict
                     summary_data_entry.update(match.groupdict())
-                    print(summary_data_entry)
                     if item['record']:
                         # Record indicates the last piece of data has been obtained; move
                         # on to next entry
-                        print("RECORD")
                         summary_data.append(copy.deepcopy(summary_data_entry))
                         # remove keys that are listed in no_fill_fields before the next pass
-                        print(summary_data_entry)
                         for field in parse_summary['no_fill_fields']:
                             try:
                                 del summary_data_entry[field]
                             except KeyError:
                                 pass
-                        print("POST delete")
-                        print(summary_data_entry)
                     break
+
         neighbor_data = []
         neighbor_data_entry = {}
-        # loop over lines in neighbor_output
         for line in neighbor_output.splitlines():
             # check for matches against each pattern
             for item in parse_neighbors['patterns']:
@@ -1337,8 +1332,8 @@ class IOSDriver(NetworkDriver):
                     # a match was found, so update the temp entry with the match's groupdict
                     neighbor_data_entry.update(match.groupdict())
                     if item['record']:
-                        # 'record' indicates a row break in the logical table
-                        # so copy the temp entry into summary_data list
+                        # Record indicates the last piece of data has been obtained; move
+                        # on to next entry
                         neighbor_data.append(copy.deepcopy(neighbor_data_entry))
                         # remove keys that are listed in no_fill_fields before the next pass
                         for field in parse_neighbors['no_fill_fields']:
@@ -1347,33 +1342,23 @@ class IOSDriver(NetworkDriver):
                             except KeyError:
                                 pass
                     break
+
         router_id = None
-        # sanity check the summary_data
-        # first, check that we got a list of dicts
-        assert summary_data and isinstance(summary_data, list),\
-            "expected a list, got %s" % summary_data
+
         for entry in summary_data:
-            assert isinstance(entry, dict), "expected a dict, got %s" % entry
-            # select the first router_id value
             if not router_id:
                 router_id = entry['router_id']
             elif entry['router_id'] != router_id:
-                # check that every other value matches
                 raise ValueError
-        # sanity check the neighbor_data
-        # check that we got a list of dicts
-        assert neighbor_data and isinstance(neighbor_data, list),\
-            "expected a list, got %s" % neighbor_data
-        for entry in neighbor_data:
-            assert isinstance(entry, dict), "expected a dict, got %s" % entry
+
         # check the router_id looks like an ipv4 address
         router_id = _ip_valid(router_id, version=4)
+
         # add parsed data to output dict
         bgp_neighbor_data['global']['router_id'] = router_id
         bgp_neighbor_data['global']['peers'] = {}
         for entry in summary_data:
             remote_addr = _ip_valid(entry['remote_addr'])
-            # want lower case afi
             afi = entry['afi'].lower()
             # check that we're looking at a supported afi
             if afi not in supported_afi:
@@ -1381,13 +1366,14 @@ class IOSDriver(NetworkDriver):
             # get neighbor_entry out of neighbor data
             neighbor_entry = None
             for neighbor in neighbor_data:
-                if (neighbor['afi'].lower() == afi) and \
-                        (_ip_valid(neighbor['remote_addr']) == remote_addr):
+                if (neighbor['afi'].lower() == afi and
+                        _ip_valid(neighbor['remote_addr']) == remote_addr):
                     neighbor_entry = neighbor
                     break
             if not isinstance(neighbor_entry, dict):
                 raise ValueError(msg="Couldn't find neighbor data for %s in afi %s" %
                                      (remote_addr, afi))
+
             # check for admin down state
             try:
                 if "(Admin)" in entry['state']:
@@ -1396,6 +1382,7 @@ class IOSDriver(NetworkDriver):
                     is_enabled = True
             except KeyError:
                 is_enabled = True
+
             # check whether session is up for address family and get prefix count
             try:
                 accepted_prefixes = int(entry['accepted_prefixes'])
@@ -1403,28 +1390,32 @@ class IOSDriver(NetworkDriver):
             except (ValueError, KeyError):
                 accepted_prefixes = 0
                 is_up = False
+
             # overide accepted_prefixes with neighbor data if possible (since that's newer)
             try:
                 accepted_prefixes = int(neighbor_entry['accepted_prefixes'])
             except (ValueError, KeyError):
                 pass
+
             # try to get received prefix count, otherwise set to accepted_prefixes
             received_prefixes = neighbor_entry.get('received_prefixes', accepted_prefixes)
+
             # try to get sent prefix count and convert to int, otherwise set to -1
             sent_prefixes = int(neighbor_entry.get('sent_prefixes', -1))
+
             # parse uptime value
             uptime = self.bgp_time_conversion(entry['uptime'])
+
             # get description
             try:
                 description = py23_compat.text_type(neighbor_entry['description'])
             except KeyError:
                 description = ''
+
             # check the remote router_id looks like an ipv4 address
             remote_id = _ip_valid(neighbor_entry['remote_id'], version=4)
-            # start adding data
+
             if remote_addr not in bgp_neighbor_data['global']['peers']:
-                # first record for remote_addr
-                # add directly into the results dict
                 bgp_neighbor_data['global']['peers'][remote_addr] = {
                     'local_as': int(entry['local_as']),
                     'remote_as': int(entry['remote_as']),
@@ -1442,8 +1433,9 @@ class IOSDriver(NetworkDriver):
                     }
                 }
             else:
-                # found previous data for matching remote_addr
+                # found previous data for matching remote_addr, but for different afi
                 existing = bgp_neighbor_data['global']['peers'][remote_addr]
+                assert afi not in existing['address_family']
                 # compare with existing values and croak if they don't match
                 assert existing['local_as'] == int(entry['local_as'])
                 assert existing['remote_as'] == int(entry['remote_as'])
@@ -1451,10 +1443,8 @@ class IOSDriver(NetworkDriver):
                 assert existing['is_enabled'] == is_enabled
                 assert existing['description'] == description
                 # merge other values in a sane manner
-                existing['is_up'] = existing['is_up'] or is_up
-                existing['uptime'] = max(existing['uptime'], uptime)
-                # check that we don't have duplicate afi before adding stats
-                assert afi not in existing['address_family']
+                existing['is_up'] = existing['is_up'] and is_up
+                existing['uptime'] = min(existing['uptime'], uptime)
                 existing['address_family'][afi] = {
                     'received_prefixes': received_prefixes,
                     'accepted_prefixes': accepted_prefixes,
