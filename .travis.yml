@@ -2,14 +2,14 @@ language: python
 
 python:
   - 2.7
-  - 3.4 
+  - 3.4
+  - 3.5
 
 install:
   - pip install .
   - pip install -r requirements-dev.txt
   - pip install -r requirements.txt
-  - if [[ $TRAVIS_PYTHON_VERSION == 2.7 ]]; then pip install -r test/unit/requirements.txt; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.4 ]]; then pip install -r test/unit/requirements_py3.txt; fi
+  - pip install -r test/unit/requirements.txt
 
 deploy:
   provider: pypi

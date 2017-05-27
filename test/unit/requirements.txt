@@ -1,4 +1,5 @@
 ddt
+lxml
 napalm-eos
 napalm-fortios
 napalm-ios
