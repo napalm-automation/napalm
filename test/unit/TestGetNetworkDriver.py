@@ -8,7 +8,6 @@ from ddt import ddt, data
 from napalm_base import get_network_driver
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ModuleImportError
-from napalm_base.utils.py23_compat import PY2, PY3
 
 
 @ddt
