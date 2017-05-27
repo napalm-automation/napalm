@@ -84,6 +84,18 @@ def _ip_valid(addr, version=None):
     return py23_compat.text_type(obj)
 
 
+def _asn_convert(as_number):
+    """Convert AS Number from asdot notation to asplain notation.
+
+    This should be migrated to napalm-base helpers.
+    """
+    if '.' in as_number:
+        big, little = as_number.split('.')
+        return (int(big) << 16) + int(little)
+    else:
+        return int(as_number)
+
+
 class IOSDriver(NetworkDriver):
     """NAPALM Cisco IOS Handler."""
 
@@ -1417,8 +1429,8 @@ class IOSDriver(NetworkDriver):
 
             if remote_addr not in bgp_neighbor_data['global']['peers']:
                 bgp_neighbor_data['global']['peers'][remote_addr] = {
-                    'local_as': int(entry['local_as']),
-                    'remote_as': int(entry['remote_as']),
+                    'local_as': _asn_convert(entry['local_as']),
+                    'remote_as': _asn_convert(entry['remote_as']),
                     'remote_id': remote_id,
                     'is_up': is_up,
                     'is_enabled': is_enabled,
@@ -1437,8 +1449,8 @@ class IOSDriver(NetworkDriver):
                 existing = bgp_neighbor_data['global']['peers'][remote_addr]
                 assert afi not in existing['address_family']
                 # compare with existing values and croak if they don't match
-                assert existing['local_as'] == int(entry['local_as'])
-                assert existing['remote_as'] == int(entry['remote_as'])
+                assert existing['local_as'] == _asn_convert(entry['local_as'])
+                assert existing['remote_as'] == _asn_convert(entry['remote_as'])
                 assert existing['remote_id'] == remote_id
                 assert existing['is_enabled'] == is_enabled
                 assert existing['description'] == description
