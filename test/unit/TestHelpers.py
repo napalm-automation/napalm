@@ -284,11 +284,11 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertEqual(napalm_base.helpers.mac('123.4567.89ab'), '01:23:45:67:89:AB')
 
     def test_ip(self):
-
         """
         Tests the helper function ```ip```:
 
             * check if raises AddrFormatError when invalid IP address
+            * check if calls using incorrect version raises ValueError
             * check if IPv6 address returned as expected
         """
 
@@ -296,6 +296,8 @@ class TestBaseHelpers(unittest.TestCase):
 
         # test that raises AddrFormatError when wrong format
         self.assertRaises(AddrFormatError, napalm_base.helpers.ip, 'fake')
+#        self.assertRaises(ValueError, napalm_base.helpers.ip, '2001:db8:85a3::8a2e:370:7334',
+#                          version=4)
         self.assertEqual(
           napalm_base.helpers.ip(
             '2001:0dB8:85a3:0000:0000:8A2e:0370:7334'

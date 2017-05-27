@@ -34,6 +34,7 @@ def set_device_parameters(request):
 def pytest_generate_tests(metafunc, basefile):
     """Generate test cases dynamically."""
     if metafunc.function.__dict__.get('build_test_cases', False):
+        print(basefile)
         path = os.path.join(os.path.dirname(basefile), 'mocked_data', metafunc.function.__name__)
 
         if os.path.exists(path):

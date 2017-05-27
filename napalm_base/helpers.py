@@ -219,9 +219,10 @@ def mac(raw):
     return py23_compat.text_type(EUI(raw, dialect=_MACFormat))
 
 
-def ip(addr):
+def ip(addr, version=None):
     """
-    Converts a raw string to a valid IP address.
+    Converts a raw string to a valid IP address. Optional version argument will detect that \
+    object matches specified version.
 
     Motivation: the groups of the IP addreses may contain leading zeros. IPv6 addresses can \
     contain sometimes uppercase characters. E.g.: 2001:0dB8:85a3:0000:0000:8A2e:0370:7334 has \
@@ -229,6 +230,8 @@ def ip(addr):
     not the same.
 
     :param raw: the raw string containing the value of the IP Address
+    :param version: (optional) insist on a specific IP address version.
+    :type version: int.
     :return: a string containing the IP Address in a standard format (no leading zeros, \
     zeros-grouping, lowercase)
 
@@ -239,4 +242,16 @@ def ip(addr):
         >>> ip('2001:0dB8:85a3:0000:0000:8A2e:0370:7334')
         u'2001:db8:85a3::8a2e:370:7334'
     """
-    return py23_compat.text_type(IPAddress(addr))
+    addr_obj = IPAddress(addr)
+    if version and addr_obj.version != version:
+        raise ValueError("{} is not an ipv{} address".format(addr, version))
+    return py23_compat.text_type(addr_obj)
+
+
+def as_number(as_number):
+    """Convert AS Number to standardized asplain notation as an integer."""
+    if '.' in as_number:
+        big, little = as_number.split('.')
+        return (int(big) << 16) + int(little)
+    else:
+        return int(as_number)
