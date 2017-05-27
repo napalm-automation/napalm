@@ -1206,7 +1206,7 @@ class IOSDriver(NetworkDriver):
         parse_summary = {
             'patterns': [
                 # For address family: IPv4 Unicast
-                {'regexp': re.compile(r'^For address family: (?P<afi>\S+) (?P<safi>\S+)'),
+                {'regexp': re.compile(r'^For address family: (?P<afi>\S+) '),
                  'record': False},
                 # Capture router_id and local_as values, e.g.:
                 # BGP router identifier 10.0.1.1, local AS number 65000
@@ -1260,8 +1260,9 @@ class IOSDriver(NetworkDriver):
                                       )),
                  'record': True}
             ],
-            'no_fill_fields': ['accepted_prefixes', 'state']
+            'no_fill_fields': ['accepted_prefixes', 'state', 'uptime', 'remote_as', 'remote_addr']
         }
+
         parse_neighbors = {
             'patterns': [
                 # Capture BGP neighbor is 10.0.0.2,  remote AS 65000, internal link
@@ -1280,7 +1281,7 @@ class IOSDriver(NetworkDriver):
                  'record': False},
                 # Capture AFI and SAFI names, e.g.:
                 # For address family: IPv4 Unicast
-                {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) (?P<safi>\S+)'),
+                {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) '),
                  'record': False},
                 # Capture current sent and accepted prefixes, e.g.:
                 #     Prefixes Current:          637213       3142 (Consumes 377040 bytes)
@@ -1309,16 +1310,21 @@ class IOSDriver(NetworkDriver):
                 if match:
                     # a match was found, so update the temp entry with the match's groupdict
                     summary_data_entry.update(match.groupdict())
+                    print(summary_data_entry)
                     if item['record']:
                         # Record indicates the last piece of data has been obtained; move
                         # on to next entry
+                        print("RECORD")
                         summary_data.append(copy.deepcopy(summary_data_entry))
                         # remove keys that are listed in no_fill_fields before the next pass
+                        print(summary_data_entry)
                         for field in parse_summary['no_fill_fields']:
                             try:
                                 del summary_data_entry[field]
                             except KeyError:
                                 pass
+                        print("POST delete")
+                        print(summary_data_entry)
                     break
         neighbor_data = []
         neighbor_data_entry = {}
