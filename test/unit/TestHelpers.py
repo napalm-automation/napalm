@@ -309,7 +309,7 @@ class TestBaseHelpers(unittest.TestCase):
           '2001:db8::3'
         )
 
-    def test_ip(self):
+    def test_as_number(self):
         """Test the as_number helper function."""
         self.assertEqual(napalm_base.helpers.as_number('64001'), 64001)
         self.assertEqual(napalm_base.helpers.as_number('1.0'), 65536)
