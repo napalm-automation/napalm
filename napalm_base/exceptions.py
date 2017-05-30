@@ -24,7 +24,6 @@ class ModuleImportError(Exception):
 class ConnectionException(Exception):
     '''
     Unable to connect to the network device.
-    Raised by the ``open`` method.
     '''
     pass
 
@@ -39,7 +38,10 @@ class ConnectAuthError(ConnectionException):
 
 class ConnectTimeoutError(ConnectionException):
     '''
-    Connection to the network device takes too long.
+    Exception raised when the connection to the
+    network device takes too long.
+    This may be avoided by adjusting the `timeout`
+    argument.
     '''
     pass
 
@@ -48,8 +50,11 @@ class ConnectionClosedException(ConnectionException):
     '''
     The network device closed the connection.
     Raised whenever we try to execute a certain
-    function, but we detect that the device dropped
-    the connection.
+    function, but we detect that the connection
+    is not usable anymore. This can happen for
+    various reasons: the network device terminates the
+    session or it is dropped by a firewall or
+    the server.
     '''
     pass
 
