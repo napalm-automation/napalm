@@ -29,6 +29,21 @@ class ConnectionException(Exception):
     pass
 
 
+class ConnectAuthError(ConnectionException):
+    '''
+    Unable to connect to the network device
+    due to invalid credentials.
+    '''
+    pass
+
+
+class ConnectTimeoutError(ConnectionException):
+    '''
+    Connection to the network device takes too long.
+    '''
+    pass
+
+
 class ConnectionClosedException(ConnectionException):
     '''
     The network device closed the connection.
@@ -44,6 +59,28 @@ class ReplaceConfigException(Exception):
 
 
 class MergeConfigException(Exception):
+    pass
+
+
+class CommitError(Exception):
+    '''
+    Raised when unable to commit the candidate config
+    into the running config.
+    '''
+    pass
+
+
+class LockError(Exception):
+    '''
+    Unable to lock the candidate config.
+    '''
+    pass
+
+
+class UnlockError(Exception):
+    '''
+    Unable to unlock the candidate config.
+    '''
     pass
 
 
