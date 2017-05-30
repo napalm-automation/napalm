@@ -22,6 +22,20 @@ class ModuleImportError(Exception):
 
 
 class ConnectionException(Exception):
+    '''
+    Unable to connect to the network device.
+    Raised by the ``open`` method.
+    '''
+    pass
+
+
+class ConnectionClosedException(ConnectionException):
+    '''
+    The network device closed the connection.
+    Raised whenever we try to execute a certain
+    function, but we detect that the device dropped
+    the connection.
+    '''
     pass
 
 
