@@ -62,6 +62,7 @@ class IOSXRDriver(NetworkDriver):
         self.lock_on_connect = optional_args.get('config_lock', False)
         # Netmiko possible arguments
         netmiko_argument_map = {
+            'keepalive': 30,
             'verbose': False,
             'global_delay_factor': 1,
             'use_keys': False,
@@ -70,7 +71,7 @@ class IOSXRDriver(NetworkDriver):
             'system_host_keys': False,
             'alt_host_keys': False,
             'alt_key_file': '',
-            'ssh_config_file': None,
+            'ssh_config_file': None
         }
         fields = netmiko_version.split('.')
         fields = [int(x) for x in fields]
