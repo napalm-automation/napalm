@@ -514,9 +514,14 @@ class JunOSDriver(NetworkDriver):
                     {elem[0]: elem[1] for elem in bgp_neighbor[1] if elem[1] is not None}
                 )
                 if not instance:
+                    # not instance, means newer Junos version,
+                    # as we request everything in a single request
                     peer_fwd_rti = neighbor_details.pop('peer_fwd_rti')
                     instance = peer_fwd_rti
                 else:
+                    # instance is explicitly requests,
+                    # thus it's an old Junos, so we retrieve the BGP neighbors
+                    # under a certain routing instance
                     peer_fwd_rti = neighbor_details.pop('peer_fwd_rti', '')
                 instance_name = 'global' if instance == 'master' else instance
                 if instance_name not in bgp_neighbor_data:
@@ -542,15 +547,15 @@ class JunOSDriver(NetworkDriver):
                     bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
 
         old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], '0') < 13
+            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 13
 
         if old_junos:
-            instances = junos_views.junos_route_instance_table(self.device)
-            for instance, instance_data in instances.get().items():
+            instances = junos_views.junos_route_instance_table(self.device).get()
+            for instance, instance_data in instances.items():
                 if instance.startswith('__'):
                     # junos internal instances
                     continue
-                bgp_neighbor_data[instance_name] = {'peers': {}}
+                bgp_neighbor_data[instance] = {'peers': {}}
                 instance_neighbors = bgp_neighbors_table.get(instance=instance).items()
                 uptime_table_items = uptime_table.get(instance=instance).items()
                 _get_bgp_neighbors_core(instance_neighbors,
@@ -604,7 +609,7 @@ class JunOSDriver(NetworkDriver):
         interfaces = lldp_table.get().keys()
 
         old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], '0') < 13
+            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 13
 
         lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
         if old_junos:
@@ -974,7 +979,7 @@ class JunOSDriver(NetworkDriver):
                 bgp_neighbors[instance_name][remote_as].append(neighbor_details)
 
         old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], '0') < 13
+            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 13
         bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
 
         if old_junos:
