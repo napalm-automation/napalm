@@ -27,7 +27,14 @@ then write the desired state using the same format the getter would retrieve it.
             - Vlan5
             - Vlan100
       hostname: n9k2
-    
+
+    - get_environment:
+      memory:
+        used_ram: '<15.0'
+      cpu:
+        0/RP0/CPU0
+          '%usage': '<15.0'
+
     - get_bgp_neighbors:
       default:
         router_id: 192.0.2.2
@@ -38,9 +45,11 @@ then write the desired state using the same format the getter would retrieve it.
             address_family:
               ipv4:
                 sent_prefixes: 5
+                received_prefixes: '<10'
               ipv6:
                 sent_prefixes: 2
-    
+                received_prefixes: '<5'
+
     - get_interfaces_ip:
       Ethernet2/1:
         ipv4:
@@ -82,6 +91,9 @@ A few notes:
     * Lists of objects to be validated require an extra key ``list``. You can see an example with
       the ``get_facts`` getter. Lists can be strict as well. In this case, we want to make sure the
       device has only those two interfaces.
+    * We can also use comparison on the conditions of numerical validate. For example, if you want 
+      to validate there that the ``cpu``and ``memory`` into ``get_environment`` are ``15%`` or less.
+      We can use writing comparison operators such as ``<15.0`` or ``>10.0`` in this case.
     * Some methods require extra arguments, for example ``ping``. You can pass arguments to those
       methods using the magic keyword ``_kwargs``. In addition, an optional keyword ``_name`` can
       be specified to override the name in the report. Useful for having a more descriptive report
