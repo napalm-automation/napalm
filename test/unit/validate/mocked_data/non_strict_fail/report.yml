@@ -88,3 +88,41 @@ get_route_to:
         present: []
       nested: true
 skipped: []
+
+get_environment:
+  complies: false
+  extra: []
+  missing: []
+  present:
+    cpu: 
+      complies: False
+      diff: 
+        complies: False
+        extra: []
+        missing: []
+        present: 
+          0/RP0/CPU0:
+            complies: False
+            diff: 
+              complies: False
+              extra: []
+              missing: []
+              present: 
+                '%usage': 
+                  actual_value: 100.0
+                  complies: False
+                  nested: False
+            nested: True
+      nested: True
+    memory: 
+      complies: False
+      diff: 
+        complies: False
+        extra: []
+        missing: []
+        present: 
+          available_ram: 
+            actual_value: 90.0
+            complies: False
+            nested: False
+      nested: True

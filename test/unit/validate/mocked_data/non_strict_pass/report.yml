@@ -27,3 +27,10 @@ get_route_to:
   missing: []
   present:
     10.155.180.192/26: {complies: true, nested: true}
+get_environment:
+  complies: true
+  extra: []
+  missing: []
+  present:
+    cpu: {complies: true, nested: true}
+    memory: {complies: true, nested: true}

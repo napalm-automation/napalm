@@ -121,8 +121,12 @@ def _compare_getter(src, dst):
         return _compare_getter_dict(src, dst, mode)
     else:
         if isinstance(src, py23_compat.string_types):
-            m = re.search(src, py23_compat.text_type(dst))
-            return m is not None
+            if src.startswith('<') or src.startswith('>'):
+                cmp_result = compare_numeric(src, dst)
+                return cmp_result
+            else:
+                m = re.search(src, py23_compat.text_type(dst))
+                return m is not None
         elif(type(src) == type(dst) == list):
             pairs = zip(src, dst)
             diff_lists = [[(k, x[k], y[k])
@@ -131,6 +135,14 @@ def _compare_getter(src, dst):
             return empty_tree(diff_lists)
         else:
             return src == dst
+
+
+def compare_numeric(src_num, dst_num):
+    """Compare numerical values. You can use '<%d','>%d'."""
+    complies = eval(str(dst_num)+src_num)
+    if not isinstance(complies, bool):
+        return False
+    return complies
 
 
 def empty_tree(input_list):

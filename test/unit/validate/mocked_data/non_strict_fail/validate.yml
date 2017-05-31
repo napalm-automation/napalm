@@ -37,3 +37,10 @@
        - next_hop: 10.155.180.22
          outgoing_interface: "irb.0"
          protocol: "OSPF"
+
+- get_environment:
+    memory:
+      available_ram: "<20.0"
+    cpu:
+      0/RP0/CPU0:
+        "%usage": "<20.0"
