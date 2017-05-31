@@ -43,7 +43,7 @@ _                       EOS         JunOS   IOS-XR      FortiOS         NXOS    
 **Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c4]_      Yes             No              Yes            No       Yes
 **Atomic Changes**      Yes         Yes     Yes         No [#c2]_       Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_  No       Yes
 **Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes/No [#c5]_   Yes             No              Yes            No       Yes
-=====================   ==========  =====   ==========  ==============  ==============  ==============  ==============  ============== ======== ======== 
+=====================   ==========  =====   ==========  ==============  ==============  ==============  ==============  ============== ======== ========
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
@@ -118,17 +118,23 @@ ____________________________________
 
 * :code:`fortios_vdom` (fortios) - VDOM to connect to.
 * :code:`port` (eos, iosxr, junos, ios, ros, vyos) - Allows you to specify a port other than the default.
-* :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: True).
-* :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: 'flash:').
-* :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: True).
-* :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: 1).
-* :code:`nxos_protocol` (nxos) - Protocol to connect with.  Only 'https' and 'http' allowed (default: 'http').
-* :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: '').
-* :code:`allow_agent` (ios, panos) - Paramiko argument, enable connecting to the SSH agent (default: 'False').
-* :code:`use_keys` (ios, panos) - Paramiko argument, enable searching for discoverable private key files in ~/.ssh/ (default: 'False').
-* :code:`key_file` (junos, vyos) - Path to a private key file. (default: 'False').
-* :code:`api_key` (panos) - Allow to specify the API key instead of username/password (default: '').
-
+* :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: ``False``).
+* :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
+* :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
+* :code:`global_delay_factor` (ios, vyos) - Allow for additional delay in command execution (default: ``1``).
+* :code:`nxos_protocol` (nxos) - Protocol to connect with.  Only 'https' and 'http' allowed (default: ``http``).
+* :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
+* :code:`ssh_strict` (iosxr, ios, panos, vyos) - Automatically reject unknown SSH host keys
+(default: ``False``, which means unknown SSH host keys will be accepted).
+* :code:`allow_agent` (ios, iosxr, panos, vyos) - Paramiko argument, enable connecting to the SSH agent (default: ``False``).
+* :code:`use_keys` (iosxr, ios, panos, vyos) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
+* :code:`key_file` (junos, vyos, ios, iosxr, vyos) - Path to a private key file. (default: ``False``).
+* :code:`api_key` (panos) - Allow to specify the API key instead of username/password (default: ``''``).
+* :code:`ssh_config_file` (junos, ios, iosxr, panos, vyos) - File name of OpenSSH configuration file.
+* :code:`alt_host_keys` (ios, iosxr, panos, vyos) - If ``True``, host keys will
+be loaded from the file specified in ``alt_key_file``.
+* :code:`alt_key_file` (ios, iosxr, panos, vyos) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
+* :code:`keepalive` (junos, iosxr, ios) - SSH keepalive interval, in seconds (default: ``30`` seconds).
 
 Adding optional arguments to NAPALM drivers
 ___________________________________________
