@@ -124,15 +124,13 @@ ____________________________________
 * :code:`global_delay_factor` (ios, vyos) - Allow for additional delay in command execution (default: ``1``).
 * :code:`nxos_protocol` (nxos) - Protocol to connect with.  Only 'https' and 'http' allowed (default: ``http``).
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
-* :code:`ssh_strict` (iosxr, ios, panos, vyos) - Automatically reject unknown SSH host keys
-(default: ``False``, which means unknown SSH host keys will be accepted).
+* :code:`ssh_strict` (iosxr, ios, panos, vyos) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
 * :code:`allow_agent` (ios, iosxr, panos, vyos) - Paramiko argument, enable connecting to the SSH agent (default: ``False``).
 * :code:`use_keys` (iosxr, ios, panos, vyos) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
 * :code:`key_file` (junos, vyos, ios, iosxr, vyos) - Path to a private key file. (default: ``False``).
 * :code:`api_key` (panos) - Allow to specify the API key instead of username/password (default: ``''``).
 * :code:`ssh_config_file` (junos, ios, iosxr, panos, vyos) - File name of OpenSSH configuration file.
-* :code:`alt_host_keys` (ios, iosxr, panos, vyos) - If ``True``, host keys will
-be loaded from the file specified in ``alt_key_file``.
+* :code:`alt_host_keys` (ios, iosxr, panos, vyos) - If ``True``, host keys will be loaded from the file specified in ``alt_key_file``.
 * :code:`alt_key_file` (ios, iosxr, panos, vyos) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
 * :code:`keepalive` (junos, iosxr, ios) - SSH keepalive interval, in seconds (default: ``30`` seconds).
 
