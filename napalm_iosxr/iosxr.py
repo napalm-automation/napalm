@@ -26,6 +26,8 @@ from lxml import etree as ETREE
 from netaddr import IPAddress  # needed for traceroute, to check IP version
 from netaddr.core import AddrFormatError
 
+from netmiko import __version__ as netmiko_version
+
 from pyIOSXR import IOSXR
 from pyIOSXR.exceptions import ConnectError
 from pyIOSXR.exceptions import TimeoutError
@@ -58,12 +60,39 @@ class IOSXRDriver(NetworkDriver):
             optional_args = {}
         self.port = optional_args.get('port', 22)
         self.lock_on_connect = optional_args.get('config_lock', True)
+        # Netmiko possible arguments
+        netmiko_argument_map = {
+            'verbose': False,
+            'global_delay_factor': 1,
+            'use_keys': False,
+            'key_file': None,
+            'ssh_strict': False,
+            'system_host_keys': False,
+            'alt_host_keys': False,
+            'alt_key_file': '',
+            'ssh_config_file': None,
+        }
+        fields = netmiko_version.split('.')
+        fields = [int(x) for x in fields]
+        maj_ver, min_ver, bug_fix = fields
+        if maj_ver >= 2:
+            netmiko_argument_map['allow_agent'] = False
+        elif maj_ver == 1 and min_ver >= 1:
+            netmiko_argument_map['allow_agent'] = False
+        # Build dict of any optional Netmiko args
+        self.netmiko_optional_args = {}
+        for k, v in netmiko_argument_map.items():
+            try:
+                self.netmiko_optional_args[k] = optional_args[k]
+            except KeyError:
+                pass
         self.device = IOSXR(hostname,
                             username,
                             password,
                             timeout=timeout,
                             port=self.port,
-                            lock=self.lock_on_connect)
+                            lock=self.lock_on_connect,
+                            **self.netmiko_optional_args)
 
     def open(self):
         try:
