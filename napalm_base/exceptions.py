@@ -22,6 +22,40 @@ class ModuleImportError(Exception):
 
 
 class ConnectionException(Exception):
+    '''
+    Unable to connect to the network device.
+    '''
+    pass
+
+
+class ConnectAuthError(ConnectionException):
+    '''
+    Unable to connect to the network device
+    due to invalid credentials.
+    '''
+    pass
+
+
+class ConnectTimeoutError(ConnectionException):
+    '''
+    Exception raised when the connection to the
+    network device takes too long.
+    This may be avoided by adjusting the `timeout`
+    argument.
+    '''
+    pass
+
+
+class ConnectionClosedException(ConnectionException):
+    '''
+    The network device closed the connection.
+    Raised whenever we try to execute a certain
+    function, but we detect that the connection
+    is not usable anymore. This can happen for
+    various reasons: the network device terminates the
+    session or it is dropped by a firewall or
+    the server.
+    '''
     pass
 
 
@@ -30,6 +64,28 @@ class ReplaceConfigException(Exception):
 
 
 class MergeConfigException(Exception):
+    pass
+
+
+class CommitError(Exception):
+    '''
+    Raised when unable to commit the candidate config
+    into the running config.
+    '''
+    pass
+
+
+class LockError(Exception):
+    '''
+    Unable to lock the candidate config.
+    '''
+    pass
+
+
+class UnlockError(Exception):
+    '''
+    Unable to unlock the candidate config.
+    '''
     pass
 
 
