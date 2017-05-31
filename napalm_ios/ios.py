@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 import re
 import os
 import uuid
+import socket
 import tempfile
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
