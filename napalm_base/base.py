@@ -346,6 +346,8 @@ class NetworkDriver(object):
                 * accepted_prefixes (int)
                 * sent_prefixes (int)
 
+            Note, if is_up is False and uptime has a positive value then this indicates the
+            uptime of the last active BGP session.
 
             Example response:
             {
