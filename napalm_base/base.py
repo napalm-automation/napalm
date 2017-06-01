@@ -345,6 +345,40 @@ class NetworkDriver(object):
                 * received_prefixes (int)
                 * accepted_prefixes (int)
                 * sent_prefixes (int)
+
+            Note, if is_up is False and uptime has a positive value then this indicates the
+            uptime of the last active BGP session.
+
+            Example response:
+            {
+              "global": {
+                "router_id": "10.0.1.1",
+                "peers": {
+                  "10.0.0.2": {
+                    "local_as": 65000,
+                    "remote_as": 65000,
+                    "remote_id": "10.0.1.2",
+                    "is_up": True,
+                    "is_enabled": True,
+                    "description": "internal-2",
+                    "uptime": 4838400,
+                    "address_family": {
+                      "ipv4": {
+                        "sent_prefixes": 637213,
+                        "accepted_prefixes": 3142,
+                        "received_prefixes": 3142
+                      },
+                      "ipv6": {
+                        "sent_prefixes": 36714,
+                        "accepted_prefixes": 148,
+                        "received_prefixes": 148
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
         """
         raise NotImplementedError
 
