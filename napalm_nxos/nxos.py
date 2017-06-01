@@ -439,12 +439,7 @@ class NXOSDriver(NetworkDriver):
 
             for neighbor_dict in neighbors_list:
                 neighborid = napalm_base.helpers.ip(neighbor_dict['neighbor-id'])
-
-                if '.' in neighbor_dict['remoteas']:
-                    big, little = neighbor_dict['remoteas'].split('.')
-                    remoteas = (int(big) << 16) + int(little)
-                else:
-                    remoteas = int(neighbor_dict['remoteas'])
+                remoteas = napalm_base.helpers.as_number(neighbor_dict['remoteas'])
 
                 result_peer_dict = {
                     'local_as': int(vrf_dict['local-as']),
