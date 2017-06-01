@@ -1,4 +1,4 @@
-napalm-base>=0.18.0
+napalm-base>=0.24.0
 pynxos
 netaddr
 future
