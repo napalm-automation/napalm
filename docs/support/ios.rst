@@ -57,7 +57,7 @@ Configuration file
 Banner
 ------------------
 
-IOS requires that the banner use the EXT character (ASCII 3). This looks like a cntl-C in the file, but as a single character. It is NOT a separate '^' + 'C' character, but a ASCII3 character::
+IOS requires that the banner use the EXT character (ASCII 3). This looks like a cntl-C in the file, but as a single character. It is NOT a separate '^' + 'C' character, but an ASCII3 character::
 
     banner motd ^C
         my banner test
@@ -73,7 +73,7 @@ IOS requires that the banner use the EXT character (ASCII 3). This looks like a 
 
 Configure replace operations will reject a file with a banner unless it uses the ASCII character. Note, this likely also implies you cannot just copy-and-paste what you see on the screen.
 
-In vim insert, you can also type `<ctrl>+ V`, release only the V, then type `C`
+In vim insert, you can also type <ctrl>+V, release only the V, then type C
 
 
 
