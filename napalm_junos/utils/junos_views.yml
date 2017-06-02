@@ -51,8 +51,9 @@ junos_bgp_uptime_view:
 
 junos_bgp_table:
   rpc: get-bgp-neighbor-information
+  args:
+    instance: ''
   item: bgp-peer
-
   key: peer-address
   view: junos_bgp_view
 
@@ -60,6 +61,7 @@ junos_bgp_view:
   fields:
     remote_as: { peer-as: int }
     description: description
+    peer_fwd_rti: peer-fwd-rti
     is_up: { peer-state: True=Established }
     is_enabled: { peer-state: False=True }
     received_prefixes: { bgp-rib/received-prefix-count: int }
