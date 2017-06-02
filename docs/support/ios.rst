@@ -8,7 +8,7 @@ _____________
 IOS has no native API to play with, that's the reason why we used the Netmiko library to interact with it.
 Having Netmiko installed in your working box is a prerequisite.
 
-netmiko >= 1.4.1    (Check current napalm-ios/requirements.txt for latest Netmiko requirement)
+Check napalm-ios/requirements.txt for Netmiko version requirement   
 
 Full ios driver support requires configuration rollback on error::
 
