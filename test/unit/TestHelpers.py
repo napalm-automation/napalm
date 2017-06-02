@@ -316,6 +316,7 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertEqual(napalm_base.helpers.as_number('1.100'), 65636)
         self.assertEqual(napalm_base.helpers.as_number('1.65535'), 131071)
         self.assertEqual(napalm_base.helpers.as_number('65535.65535'), 4294967295)
+        self.assertEqual(napalm_base.helpers.as_number(64001), 64001)
 
     def test_convert_uptime_string_seconds(self):
         """
