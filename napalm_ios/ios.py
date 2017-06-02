@@ -1395,28 +1395,34 @@ class IOSDriver(NetworkDriver):
             except KeyError:
                 is_enabled = True
 
+            # parse uptime value
+            uptime = self.bgp_time_conversion(entry['uptime'])
+
+            # Uptime should be -1 if BGP session not up
+            is_up = True if uptime >= 0 else False
+
             # check whether session is up for address family and get prefix count
             try:
                 accepted_prefixes = int(entry['accepted_prefixes'])
-                is_up = True
             except (ValueError, KeyError):
-                accepted_prefixes = 0
-                is_up = False
+                accepted_prefixes = -1
 
-            # overide accepted_prefixes with neighbor data if possible (since that's newer)
-            try:
-                accepted_prefixes = int(neighbor_entry['accepted_prefixes'])
-            except (ValueError, KeyError):
-                pass
+            # Only parse neighbor detailed data if BGP session is-up
+            if is_up:
+                try:
+                    # overide accepted_prefixes with neighbor data if possible (since that's newer)
+                    accepted_prefixes = int(neighbor_entry['accepted_prefixes'])
+                except (ValueError, KeyError):
+                    pass
 
-            # try to get received prefix count, otherwise set to accepted_prefixes
-            received_prefixes = neighbor_entry.get('received_prefixes', accepted_prefixes)
+                # try to get received prefix count, otherwise set to accepted_prefixes
+                received_prefixes = neighbor_entry.get('received_prefixes', accepted_prefixes)
 
-            # try to get sent prefix count and convert to int, otherwise set to -1
-            sent_prefixes = int(neighbor_entry.get('sent_prefixes', -1))
-
-            # parse uptime value
-            uptime = self.bgp_time_conversion(entry['uptime'])
+                # try to get sent prefix count and convert to int, otherwise set to -1
+                sent_prefixes = int(neighbor_entry.get('sent_prefixes', -1))
+            else:
+                received_prefixes = -1
+                sent_prefixes = -1
 
             # get description
             try:
@@ -1455,8 +1461,8 @@ class IOSDriver(NetworkDriver):
                 assert existing['is_enabled'] == is_enabled
                 assert existing['description'] == description
                 # merge other values in a sane manner
-                existing['is_up'] = existing['is_up'] and is_up
-                existing['uptime'] = min(existing['uptime'], uptime)
+                existing['is_up'] = existing['is_up'] or is_up
+                existing['uptime'] = max(existing['uptime'], uptime)
                 existing['address_family'][afi] = {
                     'received_prefixes': received_prefixes,
                     'accepted_prefixes': accepted_prefixes,
