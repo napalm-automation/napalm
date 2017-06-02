@@ -153,9 +153,10 @@ def empty_tree(input_list):
     return True
 
 
-def compliance_report(cls, validation_file=None):
+def compliance_report(cls, validation_file=None, validation_source=None):
     report = {}
-    validation_source = _get_validation_file(validation_file)
+    if validation_file:
+        validation_source = _get_validation_file(validation_file)
 
     for validation_check in validation_source:
         for getter, expected_results in validation_check.items():
