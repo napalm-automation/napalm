@@ -39,10 +39,10 @@ Note, to disable auto rollback you must add the `auto_rollback_on_error=False` o
 Archive
 _______
 
-IOSDriver requires that the `archive` functionality be enabled to perform auto-rollback on error. Make sure it's enabled and set to local on device flash/hdd::
+IOSDriver requires that the `archive` functionality be enabled to perform auto-rollback on error. Make sure it's enabled and set to a local filesystem (for example 'flash:' or 'bootflash:'::
 
     archive
-      path bootflash:archive
+      path flash:archive
       write-memory
 
 
