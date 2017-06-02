@@ -248,10 +248,11 @@ def ip(addr, version=None):
     return py23_compat.text_type(addr_obj)
 
 
-def as_number(as_number):
+def as_number(as_number_val):
     """Convert AS Number to standardized asplain notation as an integer."""
-    if '.' in as_number:
-        big, little = as_number.split('.')
+    as_number_str = py23_compat.text_type(as_number_val)
+    if '.' in as_number_str:
+        big, little = as_number_str.split('.')
         return (int(big) << 16) + int(little)
     else:
-        return int(as_number)
+        return int(as_number_str)
