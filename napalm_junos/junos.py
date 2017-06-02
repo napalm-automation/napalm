@@ -535,6 +535,8 @@ class JunOSDriver(NetworkDriver):
                     for key, value in neighbor_details.items()
                     if key in keys
                 }
+                peer['local_as'] = napalm_base.helpers.as_number(peer['local_as'])
+                peer['remote_as'] = napalm_base.helpers.as_number(peer['remote_as'])
                 peer['address_family'] = self._parse_route_stats(neighbor_details)
                 if 'peers' not in bgp_neighbor_data[instance_name]:
                     bgp_neighbor_data[instance_name]['peers'] = {}
@@ -836,6 +838,10 @@ class JunOSDriver(NetworkDriver):
                     bgp_peer_details.update({
                         key: napalm_base.helpers.convert(datatype, value, default)
                     })
+                    bgp_peer_details['local_as'] = napalm_base.helpers.as_number(
+                        bgp_peer_details['local_as'])
+                    bgp_peer_details['remote_as'] = napalm_base.helpers.as_number(
+                        bgp_peer_details['remote_as'])
                 prefix_limit_fields = {}
                 for elem in bgp_group_details:
                     if '_prefix_limit' in elem[0] and elem[1] is not None:
@@ -951,6 +957,10 @@ class JunOSDriver(NetworkDriver):
                 else:
                     neighbor_details['remote_port'] = 179
                 neighbor_details['routing_table'] = instance_name
+                neighbor_details['local_as'] = napalm_base.helpers.as_number(
+                    neighbor_details['local_as'])
+                neighbor_details['remote_as'] = napalm_base.helpers.as_number(
+                    neighbor_details['remote_as'])
                 neighbors_rib = neighbor_details.pop('rib')
                 neighbors_queue = neighbor_details.pop('queue')
                 messages_queued_out = 0
