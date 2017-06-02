@@ -21,7 +21,6 @@ import os
 import uuid
 import tempfile
 import copy
-from netaddr import IPAddress
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from netmiko import __version__ as netmiko_version
@@ -60,40 +59,6 @@ ASN_REGEX = r"[\d\.]+"
 IOS_COMMANDS = {
    'show_mac_address': ['show mac-address-table', 'show mac address-table'],
 }
-
-
-def _ip_valid(addr, version=None):
-    """
-    Converts a raw string to a valid IP address; check IPv4/IPv6 version is correct.
-
-    :param addr: the raw string containing the value of the IP Address
-    :param version: (optional) insist on a specific IP address version.
-    :type version: int.
-    :return: a string containing the IP Address in a standard format (no leading zeros,
-    zeros-grouping, lowercase)
-
-    Example:
-
-    .. code-block:: python
-        >>> ip('2001:0dB8:85a3:0000:0000:8A2e:0370:7334')
-        u'2001:db8:85a3::8a2e:370:7334'
-    """
-    obj = IPAddress(addr)
-    if version and obj.version != version:
-        raise ValueError("{} is not an ipv{} address".format(addr, version))
-    return py23_compat.text_type(obj)
-
-
-def _asn_convert(as_number):
-    """Convert AS Number from asdot notation to asplain notation.
-
-    This should be migrated to napalm-base helpers.
-    """
-    if '.' in as_number:
-        big, little = as_number.split('.')
-        return (int(big) << 16) + int(little)
-    else:
-        return int(as_number)
 
 
 class IOSDriver(NetworkDriver):
@@ -1364,13 +1329,13 @@ class IOSDriver(NetworkDriver):
                 raise ValueError
 
         # check the router_id looks like an ipv4 address
-        router_id = _ip_valid(router_id, version=4)
+        router_id = napalm_base.helpers.ip(router_id, version=4)
 
         # add parsed data to output dict
         bgp_neighbor_data['global']['router_id'] = router_id
         bgp_neighbor_data['global']['peers'] = {}
         for entry in summary_data:
-            remote_addr = _ip_valid(entry['remote_addr'])
+            remote_addr = napalm_base.helpers.ip(entry['remote_addr'])
             afi = entry['afi'].lower()
             # check that we're looking at a supported afi
             if afi not in supported_afi:
@@ -1379,7 +1344,7 @@ class IOSDriver(NetworkDriver):
             neighbor_entry = None
             for neighbor in neighbor_data:
                 if (neighbor['afi'].lower() == afi and
-                        _ip_valid(neighbor['remote_addr']) == remote_addr):
+                        napalm_base.helpers.ip(neighbor['remote_addr']) == remote_addr):
                     neighbor_entry = neighbor
                     break
             if not isinstance(neighbor_entry, dict):
@@ -1431,12 +1396,12 @@ class IOSDriver(NetworkDriver):
                 description = ''
 
             # check the remote router_id looks like an ipv4 address
-            remote_id = _ip_valid(neighbor_entry['remote_id'], version=4)
+            remote_id = napalm_base.helpers.ip(neighbor_entry['remote_id'], version=4)
 
             if remote_addr not in bgp_neighbor_data['global']['peers']:
                 bgp_neighbor_data['global']['peers'][remote_addr] = {
-                    'local_as': _asn_convert(entry['local_as']),
-                    'remote_as': _asn_convert(entry['remote_as']),
+                    'local_as': napalm_base.helpers.as_number(entry['local_as']),
+                    'remote_as': napalm_base.helpers.as_number(entry['remote_as']),
                     'remote_id': remote_id,
                     'is_up': is_up,
                     'is_enabled': is_enabled,
@@ -1455,8 +1420,8 @@ class IOSDriver(NetworkDriver):
                 existing = bgp_neighbor_data['global']['peers'][remote_addr]
                 assert afi not in existing['address_family']
                 # compare with existing values and croak if they don't match
-                assert existing['local_as'] == _asn_convert(entry['local_as'])
-                assert existing['remote_as'] == _asn_convert(entry['remote_as'])
+                assert existing['local_as'] == napalm_base.helpers.as_number(entry['local_as'])
+                assert existing['remote_as'] == napalm_base.helpers.as_number(entry['remote_as'])
                 assert existing['remote_id'] == remote_id
                 assert existing['is_enabled'] == is_enabled
                 assert existing['description'] == description
