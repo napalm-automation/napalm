@@ -4,7 +4,7 @@
 		"mac_address": "08:00:27:82:51:6B",
 		"is_up": false,
 		"last_flapped": -1.0,
-		"description": "N/A",
+		"description": "",
 		"is_enabled": false
 	},
 	"GigabitEthernet2": {
@@ -20,7 +20,7 @@
 		"mac_address": "08:00:27:F8:E8:42",
 		"is_up": true,
 		"last_flapped": -1.0,
-		"description": "N/A",
+		"description": "",
 		"is_enabled": true
 	}
 }
