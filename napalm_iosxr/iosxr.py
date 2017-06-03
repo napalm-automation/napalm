@@ -18,6 +18,7 @@ from __future__ import unicode_literals
 # import stdlib
 import re
 import copy
+import socket
 from collections import defaultdict
 
 # import third party lib
@@ -75,6 +76,18 @@ class IOSXRDriver(NetworkDriver):
         self.device.close()
 
     def is_alive(self):
+        null = chr(0)
+        try:
+            # Try sending ASCII null byte to maintain
+            #   the connection alive
+            self.device.device.send_command(null)
+        except (socket.error, EOFError):
+            # If unable to send, we can tell for sure
+            #   that the connection is unusable,
+            #   hence return False.
+            return {
+                'is_alive': False
+            }
         return {
             'is_alive': self.device.device.remote_conn.transport.is_active()
         }
