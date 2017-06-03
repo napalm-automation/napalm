@@ -951,9 +951,9 @@ class IOSDriver(NetworkDriver):
                 speed = speed_match.groups()[0]
                 speedformat = speed_match.groups()[1]
                 speed = int(speed)
-                if speedfmt.startswith('Kb'):
+                if speedformat.startswith('Kb'):
                     speed /= 1000
-                elif speedfmt.startswith('Gb'):
+                elif speedformat.startswith('Gb'):
                     speed *= 1000
 
                 interface_dict[interface] = { 'is_enabled': is_enabled, 'is_up': is_up,
