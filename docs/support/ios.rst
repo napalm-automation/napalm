@@ -69,7 +69,7 @@ Cisco IOS adds a tab character (\t) into the self-signed certificate. This exist
       3C056A00 7E129168 F0CD3692 F53C62
       	quit
 
-The quit line reads '  \tquit\n'. Or in ASCII::
+The quit line reads as follows::
 
     >>> for char in line:
     ...   print("{}: {}".format(repr(char), ord(char)))
@@ -85,9 +85,9 @@ The quit line reads '  \tquit\n'. Or in ASCII::
 
 This implies that you will not generally be able to copy-and-paste the self-signed certificate. As when you copy-and-paste it, the tab character gets converted to spaces.
 
-You will need to transfer (for example, SCP the config file) or you will need to manually construct the last line exactly right.
+You will need to transfer the config file directly from the device (for example, SCP the config file) or you will need to manually construct the quit line exactly right.
 
-Cisco IOS is very particular about the self-signed certificate and will reject replace operations with invalid certificates and also will reject replace operations that are missing a certificate (when the current configuration has a self-signed certificate).
+Cisco IOS is very particular about the self-signed certificate and will reject replace operations with an invalid certificate. Cisco IOS will also reject replace operations that are missing a certificate (when the current configuration has a self-signed certificate).
 
 
 Banner
