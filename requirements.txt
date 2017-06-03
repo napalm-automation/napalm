@@ -1,2 +1,2 @@
-napalm_base>=0.23.2
-netmiko>=1.4.0
+napalm_base>=0.24.0
+netmiko>=1.4.1
