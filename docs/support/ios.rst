@@ -8,7 +8,7 @@ _____________
 IOS has no native API to play with, that's the reason why we used the Netmiko library to interact with it.
 Having Netmiko installed in your working box is a prerequisite.
 
-netmiko >= 1.0.0
+Check napalm-ios/requirements.txt for Netmiko version requirement   
 
 Full ios driver support requires configuration rollback on error::
 
@@ -39,10 +39,10 @@ Note, to disable auto rollback you must add the `auto_rollback_on_error=False` o
 Archive
 _______
 
-IOSDriver requires that the `archive` functionality be enabled to perform auto-rollback on error. Make sure it's enabled and set to local on device flash/hdd::
+IOSDriver requires that the `archive` functionality be enabled to perform auto-rollback on error. Make sure it's enabled and set to a local filesystem (for example 'flash:' or 'bootflash:'::
 
     archive
-      path bootflash:archive
+      path flash:archive
       write-memory
 
 
@@ -52,6 +52,30 @@ Configuration file
 * IOS requires config file to begin with a `version` eg. `15.0` and `end` marker at the end of the file. Otherwise IOS will reject `configure replace` operation.
 * For the diff to work properly, indentation of your candidate file has to exactly match the indentation in the running config.
 * Finish blocks with `!` as with the running config, otherweise, some IOS version might not be able to generate the diff properly.
+
+
+Banner
+------------------
+
+IOS requires that the banner use the EXT character (ASCII 3). This looks like a cntl-C in the file, but as a single character. It is NOT a separate '^' + 'C' character, but an ASCII3 character::
+
+    banner motd ^C
+        my banner test
+    ^C
+
+    >>> ext_char = chr(3)
+    >>> with open("my_config.conf", "a") as f:
+    ...   f.write("banner motd {}\n".format(ext_char))
+    ...   f.write("my banner test\n")
+    ...   f.write("{}\n".format(ext_char))
+    ... 
+    >>> quit()
+
+Configure replace operations will reject a file with a banner unless it uses the ASCII character. Note, this likely also implies you cannot just copy-and-paste what you see on the screen.
+
+In vim insert, you can also type <ctrl>+V, release only the V, then type C
+
+
 
 Notes
 _______
