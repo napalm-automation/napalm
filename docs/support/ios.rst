@@ -57,7 +57,7 @@ Configuration file
 Self-Signed Certificate (and the hidden tab character)
 ------------------
 
-Cisco IOS adds a tab character (\t) into the self-signed certificate. This exists on the quit line::
+Cisco IOS adds a tab character into the self-signed certificate. This exists on the quit line::
 
     crypto pki certificate chain TP-self-signed-1429897839
      certificate self-signed 01
