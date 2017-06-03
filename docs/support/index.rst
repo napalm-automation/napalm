@@ -128,6 +128,7 @@ ____________________________________
 * :code:`use_keys` (ios, panos) - Paramiko argument, enable searching for discoverable private key files in ~/.ssh/ (default: 'False').
 * :code:`key_file` (junos, vyos) - Path to a private key file. (default: 'False').
 * :code:`api_key` (panos) - Allow to specify the API key instead of username/password (default: '').
+* :code:`keepalive` (junos) - Specify a keepalive interval for the connection (default: 30).
 
 
 Adding optional arguments to NAPALM drivers
