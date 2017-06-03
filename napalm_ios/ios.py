@@ -958,8 +958,8 @@ class IOSDriver(NetworkDriver):
 
                 interface_dict[interface] = { 'is_enabled': is_enabled, 'is_up': is_up,
                                           'description':description,  'mac_address': mac_address,
-                                          'last_flapped': last_flapped, 'speed': speed + speedformat }
-                interface = is_enabled = is_up = description =  mac_address = speed = speedformat = ''
+                                          'last_flapped': last_flapped, 'speed': speed }
+                interface = is_enabled = is_up = description = mac_address = speed = speedformat = ''
 
         return interface_dict
 
