@@ -21,6 +21,7 @@ import os
 import uuid
 import tempfile
 import socket
+import copy
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from netmiko import __version__ as netmiko_version
@@ -32,6 +33,7 @@ from napalm_base.utils import py23_compat
 import napalm_base.constants as C
 import napalm_base.helpers
 
+
 # Easier to store these as constants
 HOUR_SECONDS = 3600
 DAY_SECONDS = 24 * HOUR_SECONDS
@@ -40,11 +42,22 @@ YEAR_SECONDS = 365 * DAY_SECONDS
 
 # STD REGEX PATTERNS
 IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+IPV4_ADDR_REGEX = IP_ADDR_REGEX
+IPV6_ADDR_REGEX_1 = r"::"
+IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
+IPV6_ADDR_REGEX_3 = r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:" \
+                     "[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}"
+# Should validate IPv6 address using an IP address library after matching with this regex
+IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
+
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
 VLAN_REGEX = r"\d{1,4}"
 RE_IPADDR = re.compile(r"{}".format(IP_ADDR_REGEX))
 RE_IPADDR_STRIP = re.compile(r"({})\n".format(IP_ADDR_REGEX))
 RE_MAC = re.compile(r"{}".format(MAC_REGEX))
+
+# Period needed for 32-bit AS Numbers
+ASN_REGEX = r"[\d\.]+"
 
 IOS_COMMANDS = {
    'show_mac_address': ['show mac-address-table', 'show mac address-table'],
@@ -1151,131 +1164,281 @@ class IOSDriver(NetworkDriver):
         raise ValueError("Unexpected value for BGP uptime string: {}".format(bgp_uptime))
 
     def get_bgp_neighbors(self):
-        """
-        BGP neighbor information.
+        """BGP neighbor information.
 
-        Currently, no VRF support
-        Not tested with IPv6
-
-        Example output of 'show ip bgp summary' only peer table
-        Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down State/PfxRcd
-        10.100.1.1      4   200      26      22      199    0    0 00:14:23 23
-        10.200.1.1      4   300      21      51      199    0    0 00:13:40 0
-        192.168.1.2     4   200      19      17        0    0    0 00:00:21 2
-        1.1.1.1         4     1       0       0        0    0    0 never    Active
-        3.3.3.3         4     2       0       0        0    0    0 never    Idle
-        1.1.1.2         4     1      11       9        0    0    0 00:00:13 Idle (Admin)
-        1.1.1.3         4 27506  256642   11327     2527    0    0 1w0d     519
-        1.1.1.4         4 46887 1015641   19982     2527    0    0 1w0d     365
-        192.168.1.237   4 60000    2139    2355 13683280    0    0 1d11h    4 (SE)
-        10.90.1.4       4 65015    2508    2502      170    0    0 1d17h    163
-        172.30.155.20   4   111       0       0        0    0    0 never    Active
-        1.1.1.5         4  6500      54      28        0    0    0 00:00:49 Idle (PfxCt)
-        10.1.4.46       4  3979   95244   98874   267067    0    0 8w5d     254
-        10.1.4.58       4  3979    2715    3045   267067    0    0 1d21h    2
-        10.1.1.85       4 65417 8344303 8343570      235    0    0 1y28w    2
+        Currently no VRF support. Supports both IPv4 and IPv6.
         """
-        cmd_bgp_summary = 'show ip bgp summary'
-        bgp_neighbor_data = {}
+        supported_afi = ['ipv4', 'ipv6']
+
+        bgp_neighbor_data = dict()
         bgp_neighbor_data['global'] = {}
 
-        output = self._send_command(cmd_bgp_summary).strip()
-        # Cisco issue where new lines are inserted after neighbor IP
-        output = re.sub(RE_IPADDR_STRIP, r"\1", output)
-        if 'Neighbor' not in output:
-            return {}
-        for line in output.splitlines():
-            if 'router identifier' in line:
-                # BGP router identifier 172.16.1.1, local AS number 100
-                rid_regex = r'^.* router identifier (\d+\.\d+\.\d+\.\d+), local AS number (\d+)'
-                match = re.search(rid_regex, line)
-                router_id = match.group(1)
-                local_as = int(match.group(2))
-                break
-        bgp_neighbor_data['global']['router_id'] = py23_compat.text_type(router_id)
+        # get summary output from device
+        cmd_bgp_all_sum = 'show bgp all summary'
+        summary_output = self._send_command(cmd_bgp_all_sum).strip()
+
+        # get neighbor output from device
+        neighbor_output = ''
+        for afi in supported_afi:
+            cmd_bgp_neighbor = 'show bgp %s unicast neighbors' % afi
+            neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
+            # trailing newline required for parsing
+            neighbor_output += "\n"
+
+        # Regular expressions used for parsing BGP summary
+        parse_summary = {
+            'patterns': [
+                # For address family: IPv4 Unicast
+                {'regexp': re.compile(r'^For address family: (?P<afi>\S+) '),
+                 'record': False},
+                # Capture router_id and local_as values, e.g.:
+                # BGP router identifier 10.0.1.1, local AS number 65000
+                {'regexp': re.compile(r'^.* router identifier (?P<router_id>{}), '
+                                      r'local AS number (?P<local_as>{})'.format(
+                                            IPV4_ADDR_REGEX, ASN_REGEX
+                                      )),
+                 'record': False},
+                # Match neighbor summary row, capturing useful details and
+                # discarding the 5 columns that we don't care about, e.g.:
+                # Neighbor   V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+                # 10.0.0.2   4       65000 1336020 64337701 1011343614    0    0 8w0d         3143
+                {'regexp': re.compile(r'^\*?(?P<remote_addr>({})|({}))'
+                                      r'\s+\d+\s+(?P<remote_as>{})(\s+\S+){{5}}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)'
+                                      r'\s+(?P<accepted_prefixes>\d+)'.format(
+                                            IPV4_ADDR_REGEX, IPV6_ADDR_REGEX, ASN_REGEX
+                                      )),
+                 'record': True},
+                # Same as above, but for peer that are not Established, e.g.:
+                # Neighbor      V       AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+                # 192.168.0.2   4    65002       0       0        1    0    0 never    Active
+                {'regexp': re.compile(r'^\*?(?P<remote_addr>({})|({}))'
+                                      r'\s+\d+\s+(?P<remote_as>{})(\s+\S+){{5}}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)'.format(
+                                            IPV4_ADDR_REGEX, IPV6_ADDR_REGEX, ASN_REGEX
+                                      )),
+                 'record': True},
+                # ipv6 peers often break accross rows because of the longer peer address,
+                # match as above, but in separate expressions, e.g.:
+                # Neighbor      V       AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+                # 2001:DB8::4
+                #               4    65004 9900690  612449 155362939    0    0 26w6d       36391
+                {'regexp': re.compile(r'^\*?(?P<remote_addr>({})|({}))'.format(
+                                            IPV4_ADDR_REGEX, IPV6_ADDR_REGEX
+                                     )),
+                 'record': False},
+                {'regexp': re.compile(r'^\s+\d+\s+(?P<remote_as>{})(\s+\S+){{5}}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)'
+                                      r'\s+(?P<accepted_prefixes>\d+)'.format(
+                                            ASN_REGEX
+                                      )),
+                 'record': True},
+                # Same as above, but for peers that are not Established, e.g.:
+                # Neighbor      V       AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+                # 2001:DB8::3
+                #               4    65003       0       0        1    0    0 never    Idle (Admin)
+                {'regexp': re.compile(r'^\s+\d+\s+(?P<remote_as>{})(\s+\S+){{5}}\s+'
+                                      r'(?P<uptime>(never)|\d+\S+)\s+(?P<state>\D.*)'.format(
+                                            ASN_REGEX
+                                      )),
+                 'record': True}
+            ],
+            'no_fill_fields': ['accepted_prefixes', 'state', 'uptime', 'remote_as', 'remote_addr']
+        }
+
+        parse_neighbors = {
+            'patterns': [
+                # Capture BGP neighbor is 10.0.0.2,  remote AS 65000, internal link
+                {'regexp': re.compile(r'^BGP neighbor is (?P<remote_addr>({})|({})),'
+                                      r'\s+remote AS (?P<remote_as>{}).*'.format(
+                                            IPV4_ADDR_REGEX, IPV6_ADDR_REGEX, ASN_REGEX
+                                      )),
+                 'record': False},
+                # Capture description
+                {'regexp': re.compile(r'^\s+Description: (?P<description>.+)'),
+                 'record': False},
+                # Capture remote_id, e.g.:
+                # BGP version 4, remote router ID 10.0.1.2
+                {'regexp': re.compile(r'^\s+BGP version \d+, remote router ID '
+                                      r'(?P<remote_id>{})'.format(IPV4_ADDR_REGEX)),
+                 'record': False},
+                # Capture AFI and SAFI names, e.g.:
+                # For address family: IPv4 Unicast
+                {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) '),
+                 'record': False},
+                # Capture current sent and accepted prefixes, e.g.:
+                #     Prefixes Current:          637213       3142 (Consumes 377040 bytes)
+                {'regexp': re.compile(r'^\s+Prefixes Current:\s+(?P<sent_prefixes>\d+)\s+'
+                                      r'(?P<accepted_prefixes>\d+).*'),
+                 'record': False},
+                # Capture received_prefixes if soft-reconfig is enabled for the peer
+                {'regexp': re.compile(r'^\s+Saved (soft-reconfig):.+(?P<received_prefixes>\d+).*'),
+                 'record': True},
+                # Otherwise, use the following as an end of row marker
+                {'regexp': re.compile(r'^\s+Local Policy Denied Prefixes:.+'),
+                 'record': True}
+            ],
+            # fields that should not be "filled down" across table rows
+            'no_fill_fields': ['received_prefixes', 'accepted_prefixes', 'sent_prefixes']
+        }
+
+        # Parse outputs into a list of dicts
+        summary_data = []
+        summary_data_entry = {}
+
+        for line in summary_output.splitlines():
+            # check for matches against each pattern
+            for item in parse_summary['patterns']:
+                match = item['regexp'].match(line)
+                if match:
+                    # a match was found, so update the temp entry with the match's groupdict
+                    summary_data_entry.update(match.groupdict())
+                    if item['record']:
+                        # Record indicates the last piece of data has been obtained; move
+                        # on to next entry
+                        summary_data.append(copy.deepcopy(summary_data_entry))
+                        # remove keys that are listed in no_fill_fields before the next pass
+                        for field in parse_summary['no_fill_fields']:
+                            try:
+                                del summary_data_entry[field]
+                            except KeyError:
+                                pass
+                    break
+
+        neighbor_data = []
+        neighbor_data_entry = {}
+        for line in neighbor_output.splitlines():
+            # check for matches against each pattern
+            for item in parse_neighbors['patterns']:
+                match = item['regexp'].match(line)
+                if match:
+                    # a match was found, so update the temp entry with the match's groupdict
+                    neighbor_data_entry.update(match.groupdict())
+                    if item['record']:
+                        # Record indicates the last piece of data has been obtained; move
+                        # on to next entry
+                        neighbor_data.append(copy.deepcopy(neighbor_data_entry))
+                        # remove keys that are listed in no_fill_fields before the next pass
+                        for field in parse_neighbors['no_fill_fields']:
+                            try:
+                                del neighbor_data_entry[field]
+                            except KeyError:
+                                pass
+                    break
+
+        router_id = None
+
+        for entry in summary_data:
+            if not router_id:
+                router_id = entry['router_id']
+            elif entry['router_id'] != router_id:
+                raise ValueError
+
+        # check the router_id looks like an ipv4 address
+        router_id = napalm_base.helpers.ip(router_id, version=4)
+
+        # add parsed data to output dict
+        bgp_neighbor_data['global']['router_id'] = router_id
         bgp_neighbor_data['global']['peers'] = {}
-
-        cmd_neighbor_table = 'show ip bgp summary | begin Neighbor'
-        output = self._send_command(cmd_neighbor_table).strip()
-        # Cisco issue where new lines are inserted after neighbor IP
-        output = re.sub(RE_IPADDR_STRIP, r"\1", output)
-        for line in output.splitlines():
-            line = line.strip()
-            if 'Neighbor' in line or line == '':
+        for entry in summary_data:
+            remote_addr = napalm_base.helpers.ip(entry['remote_addr'])
+            afi = entry['afi'].lower()
+            # check that we're looking at a supported afi
+            if afi not in supported_afi:
                 continue
-            fields = line.split()[:10]
-            peer_id, bgp_version, remote_as, msg_rcvd, msg_sent, table_version, in_queue, \
-                out_queue, up_time, state_prefix = fields
-            peer_id = peer_id.replace('*', '')
+            # get neighbor_entry out of neighbor data
+            neighbor_entry = None
+            for neighbor in neighbor_data:
+                if (neighbor['afi'].lower() == afi and
+                        napalm_base.helpers.ip(neighbor['remote_addr']) == remote_addr):
+                    neighbor_entry = neighbor
+                    break
+            if not isinstance(neighbor_entry, dict):
+                raise ValueError(msg="Couldn't find neighbor data for %s in afi %s" %
+                                     (remote_addr, afi))
 
-            if '(Admin)' in state_prefix:
-                is_enabled = False
-            else:
-                is_enabled = True
+            # check for admin down state
             try:
-                state_prefix = int(state_prefix)
-                is_up = True
-            except ValueError:
-                is_up = False
+                if "(Admin)" in entry['state']:
+                    is_enabled = False
+                else:
+                    is_enabled = True
+            except KeyError:
+                is_enabled = True
 
-            if bgp_version == '4':
-                address_family = 'ipv4'
-            elif bgp_version == '6':
-                address_family = 'ipv6'
+            # parse uptime value
+            uptime = self.bgp_time_conversion(entry['uptime'])
+
+            # Uptime should be -1 if BGP session not up
+            is_up = True if uptime >= 0 else False
+
+            # check whether session is up for address family and get prefix count
+            try:
+                accepted_prefixes = int(entry['accepted_prefixes'])
+            except (ValueError, KeyError):
+                accepted_prefixes = -1
+
+            # Only parse neighbor detailed data if BGP session is-up
+            if is_up:
+                try:
+                    # overide accepted_prefixes with neighbor data if possible (since that's newer)
+                    accepted_prefixes = int(neighbor_entry['accepted_prefixes'])
+                except (ValueError, KeyError):
+                    pass
+
+                # try to get received prefix count, otherwise set to accepted_prefixes
+                received_prefixes = neighbor_entry.get('received_prefixes', accepted_prefixes)
+
+                # try to get sent prefix count and convert to int, otherwise set to -1
+                sent_prefixes = int(neighbor_entry.get('sent_prefixes', -1))
             else:
-                raise ValueError("BGP neighbor parsing failed")
+                received_prefixes = -1
+                sent_prefixes = -1
 
-            cmd_remote_rid = 'show ip bgp neighbors {} | inc router ID'.format(peer_id)
-            # output: BGP version 4, remote router ID 1.1.1.1
-            remote_rid_out = self._send_command(cmd_remote_rid)
-            remote_rid = remote_rid_out.split()[-1]
+            # get description
+            try:
+                description = py23_compat.text_type(neighbor_entry['description'])
+            except KeyError:
+                description = ''
 
-            bgp_neighbor_data['global']['peers'].setdefault(peer_id, {})
-            peer_dict = {}
-            peer_dict['uptime'] = self.bgp_time_conversion(up_time)
-            peer_dict['remote_as'] = int(remote_as)
-            peer_dict['description'] = u''
-            peer_dict['local_as'] = local_as
-            peer_dict['is_enabled'] = is_enabled
-            peer_dict['is_up'] = is_up
-            peer_dict['remote_id'] = py23_compat.text_type(remote_rid)
+            # check the remote router_id looks like an ipv4 address
+            remote_id = napalm_base.helpers.ip(neighbor_entry['remote_id'], version=4)
 
-            cmd_current_prefixes = 'show ip bgp neighbors {} | inc Prefixes Current'.format(peer_id)
-            # output: Prefixes Current:               0          0
-            current_prefixes_out = self._send_command(cmd_current_prefixes)
-            pattern = r'Prefixes Current:\s+(\d+)\s+(\d+).*'  # Prefixes Current:    0     0
-            match = re.search(pattern, current_prefixes_out)
-            if match:
-                sent_prefixes = int(match.group(1))
-                accepted_prefixes = int(match.group(2))
+            if remote_addr not in bgp_neighbor_data['global']['peers']:
+                bgp_neighbor_data['global']['peers'][remote_addr] = {
+                    'local_as': napalm_base.helpers.as_number(entry['local_as']),
+                    'remote_as': napalm_base.helpers.as_number(entry['remote_as']),
+                    'remote_id': remote_id,
+                    'is_up': is_up,
+                    'is_enabled': is_enabled,
+                    'description': description,
+                    'uptime': uptime,
+                    'address_family': {
+                        afi: {
+                            'received_prefixes': received_prefixes,
+                            'accepted_prefixes': accepted_prefixes,
+                            'sent_prefixes': sent_prefixes
+                        }
+                    }
+                }
             else:
-                sent_prefixes = accepted_prefixes = -1
-
-            cmd_filtered_prefix = 'show ip bgp neighbors {} | section Local Policy'.format(peer_id)
-            # output:
-            # Local Policy Denied Prefixes:    --------    -------
-            # prefix-list                           0          2
-            # Total:                                0          2
-            filtered_prefixes_out = self._send_command(cmd_filtered_prefix)
-            sent_prefixes = int(sent_prefixes)
-            pattern = r'Total:\s+\d+\s+(\d+).*'  # Total:     0          2
-            match = re.search(pattern, filtered_prefixes_out)
-            if match:
-                filtered_prefixes = int(match.group(1))
-                received_prefixes = filtered_prefixes + accepted_prefixes
-            else:
-                # If unable to determine filtered prefixes set received prefixes to accepted
-                received_prefixes = accepted_prefixes
-
-            af_dict = {}
-            af_dict.setdefault(address_family, {})
-            af_dict[address_family]['sent_prefixes'] = sent_prefixes
-            af_dict[address_family]['accepted_prefixes'] = accepted_prefixes
-            af_dict[address_family]['received_prefixes'] = received_prefixes
-
-            peer_dict['address_family'] = af_dict
-            bgp_neighbor_data['global']['peers'][peer_id] = peer_dict
-
+                # found previous data for matching remote_addr, but for different afi
+                existing = bgp_neighbor_data['global']['peers'][remote_addr]
+                assert afi not in existing['address_family']
+                # compare with existing values and croak if they don't match
+                assert existing['local_as'] == napalm_base.helpers.as_number(entry['local_as'])
+                assert existing['remote_as'] == napalm_base.helpers.as_number(entry['remote_as'])
+                assert existing['remote_id'] == remote_id
+                assert existing['is_enabled'] == is_enabled
+                assert existing['description'] == description
+                # merge other values in a sane manner
+                existing['is_up'] = existing['is_up'] or is_up
+                existing['uptime'] = max(existing['uptime'], uptime)
+                existing['address_family'][afi] = {
+                    'received_prefixes': received_prefixes,
+                    'accepted_prefixes': accepted_prefixes,
+                    'sent_prefixes': sent_prefixes
+                }
         return bgp_neighbor_data
 
     def get_interfaces_counters(self):
