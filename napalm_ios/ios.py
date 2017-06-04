@@ -25,7 +25,9 @@ import socket
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from netmiko import __version__ as netmiko_version
 from napalm_base.base import NetworkDriver
-from napalm_base.exceptions import ReplaceConfigException, MergeConfigException
+from napalm_base.exceptions import ReplaceConfigException, MergeConfigException, \
+            ConnectionClosedException
+
 from napalm_base.utils import py23_compat
 import napalm_base.constants as C
 import napalm_base.helpers
@@ -144,9 +146,8 @@ class IOSDriver(NetworkDriver):
             else:
                 output = self.device.send_command(command)
             return self._send_command_postprocess(output)
-        except (socket.error, EOFError):
-            self.open()
-            return self._send_command(command)
+        except (socket.error, EOFError) as e:
+            raise ConnectionClosedException(str(e))
 
     def is_alive(self):
         """Returns a flag with the state of the SSH connection."""
