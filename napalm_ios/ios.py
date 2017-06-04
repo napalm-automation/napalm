@@ -914,38 +914,42 @@ class IOSDriver(NetworkDriver):
                         'mac_address': u'a493.4cc1.67a7',
                         'speed': 100}}
         """
-        interface_list = {}
-
         # default values.
         last_flapped = -1.0
 
         command = 'show interfaces'
         output = self._send_command(command)
 
-        interface = is_enabled = is_up = description =  mac_address = speed = speedformat = ''
-        last_flapped = -1
+        interface = description = mac_address = speed = speedformat = ''
+        is_enabled = is_up = None
 
         interface_dict = {}
         for line in output.splitlines():
 
-            interface_regex = r"^(\S+?) is (\S+), line protocol is (\S+)"
+            interface_regex = r"^(\S+?)\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
             if re.search(interface_regex, line):
                 interface_match = re.search(interface_regex, line)
                 interface = interface_match.groups()[0]
-                is_enabled = interface_match.groups()[0]
-                is_up = interface_match.groups()[0]
+                status = interface_match.groups()[1]
+                protocol = interface_match.groups()[2]
 
-            mac_addr_regex = r"^\s+Hardware.+address is ({})".format(MAC_REGEX)
+                if 'admin' in status:
+                    is_enabled = False
+                else:
+                    is_enabled = True
+                is_up = bool('up' in protocol)
+
+            mac_addr_regex = r"^\s+Hardware.+address\s+is\s+({})".format(MAC_REGEX)
             if re.search(mac_addr_regex, line):
                 mac_addr_match = re.search(mac_addr_regex, line)
-                mac_address = mac_addr_match.groups()[0]
+                mac_address = napalm_base.helpers.mac(mac_addr_match.groups()[0])
 
-            descr_regex = "^\s+Description: (.+?)$"
+            descr_regex = "^\s+Description:\s+(.+?)$"
             if re.search(descr_regex, line):
                 descr_match = re.search(descr_regex, line)
                 description = descr_match.groups()[0]
 
-            speed_regex = r"^\s+MTU \d+.+ BW (\d+) ([KMG]?b)"
+            speed_regex = r"^\s+MTU\s+\d+.+BW\s+(\d+)\s+([KMG]?b)"
             if re.search(speed_regex, line):
                 speed_match = re.search(speed_regex, line)
                 speed = speed_match.groups()[0]
@@ -956,10 +960,18 @@ class IOSDriver(NetworkDriver):
                 elif speedformat.startswith('Gb'):
                     speed *= 1000
 
-                interface_dict[interface] = { 'is_enabled': is_enabled, 'is_up': is_up,
-                                          'description':description,  'mac_address': mac_address,
-                                          'last_flapped': last_flapped, 'speed': speed }
-                interface = is_enabled = is_up = description = mac_address = speed = speedformat = ''
+                if interface == '':
+                    raise ValueError("Interface attributes were \
+                                      found without any known interface")
+                if not isinstance(is_up, bool) or not isinstance(is_enabled, bool):
+                    raise ValueError("Did not correctly find the interface status")
+
+                interface_dict[interface] = {'is_enabled': is_enabled, 'is_up': is_up,
+                                             'description': description, 'mac_address': mac_address,
+                                             'last_flapped': last_flapped, 'speed': speed}
+
+                interface = description = mac_address = speed = speedformat = ''
+                is_enabled = is_up = None
 
         return interface_dict
 
