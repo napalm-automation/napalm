@@ -1,5 +1,5 @@
 {
-	"default": {
+	"global": {
 		"7777": [{
 			"suppress_4byte_as": false,
 			"local_as_prepend": true,
