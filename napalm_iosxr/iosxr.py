@@ -1055,7 +1055,7 @@ class IOSXRDriver(NetworkDriver):
                     'advertised_prefix_count': advertised_prefix_count,
                     'flap_count': flap_count
                 })
-
+        bgp_neighbors_detail['global'] = bgp_neighbors_detail.pop('default')
         return bgp_neighbors_detail
 
     def get_arp_table(self):
