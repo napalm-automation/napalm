@@ -914,96 +914,66 @@ class IOSDriver(NetworkDriver):
                         'mac_address': u'a493.4cc1.67a7',
                         'speed': 100}}
         """
-        interface_list = {}
-
         # default values.
         last_flapped = -1.0
 
-        # creating the parsing regex.
-        mac_regex = r".*,\saddress\sis\s(?P<mac_address>\S+).*"
-        speed_regex = r".*BW\s(?P<speed>\d+)\s(?P<speed_format>\S+).*"
-
-        command = 'show ip interface brief'
+        command = 'show interfaces'
         output = self._send_command(command)
+
+        interface = description = mac_address = speed = speedformat = ''
+        is_enabled = is_up = None
+
+        interface_dict = {}
         for line in output.splitlines():
-            if 'Interface' in line and 'Status' in line:
-                continue
-            fields = line.split()
-            """
-            router#sh ip interface brief
-            Interface                  IP-Address      OK? Method Status                Protocol
-            FastEthernet8              10.65.43.169    YES DHCP   up                    up
-            GigabitEthernet0           unassigned      YES NVRAM  administratively down down
-            Loopback234                unassigned      YES unset  up                    up
-            Loopback555                unassigned      YES unset  up                    up
-            NVI0                       unassigned      YES unset  administratively down down
-            Tunnel0                    10.63.100.9     YES NVRAM  up                    up
-            Tunnel1                    10.63.101.9     YES NVRAM  up                    up
-            Vlan1                      unassigned      YES unset  up                    up
-            Vlan100                    10.40.0.1       YES NVRAM  up                    up
-            Vlan200                    10.63.176.57    YES NVRAM  up                    up
-            Wlan-GigabitEthernet0      unassigned      YES unset  up                    up
-            wlan-ap0                   10.40.0.1       YES unset  up                    up
-            """
 
-            # Check for administratively down
-            if len(fields) == 6:
-                interface, ip_address, ok, method, status, protocol = fields
-            elif len(fields) == 7:
-                # Administratively down is two fields in the output for status
-                interface, ip_address, ok, method, status, status2, protocol = fields
-            else:
-                raise ValueError(u"Unexpected Response from the device")
+            interface_regex = r"^(\S+?)\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
+            if re.search(interface_regex, line):
+                interface_match = re.search(interface_regex, line)
+                interface = interface_match.groups()[0]
+                status = interface_match.groups()[1]
+                protocol = interface_match.groups()[2]
 
-            status = status.lower()
-            protocol = protocol.lower()
-            if 'admin' in status:
-                is_enabled = False
-            else:
-                is_enabled = True
-            is_up = bool('up' in protocol)
-            interface_list[interface] = {
-                'is_up': is_up,
-                'is_enabled': is_enabled,
-                'last_flapped': last_flapped,
-            }
-
-        for interface in interface_list:
-            show_command = "show interface {0}".format(interface)
-            interface_output = self._send_command(show_command)
-            try:
-                # description filter
-                description = re.search(r"  Description: (.+)", interface_output)
-                interface_list[interface]['description'] = description.group(1).strip('\r')
-            except AttributeError:
-                interface_list[interface]['description'] = u'N/A'
-
-            try:
-                # mac_address filter.
-                match_mac = re.match(mac_regex, interface_output, flags=re.DOTALL)
-                group_mac = match_mac.groupdict()
-                mac_address = group_mac["mac_address"]
-                mac_address = napalm_base.helpers.mac(mac_address)
-                interface_list[interface]['mac_address'] = py23_compat.text_type(mac_address)
-            except AttributeError:
-                interface_list[interface]['mac_address'] = u'N/A'
-            try:
-                # BW filter.
-                match_speed = re.match(speed_regex, interface_output, flags=re.DOTALL)
-                group_speed = match_speed.groupdict()
-                speed = group_speed["speed"]
-                speed_format = group_speed["speed_format"]
-                if speed_format == 'Mbit':
-                    interface_list[interface]['speed'] = int(speed)
+                if 'admin' in status:
+                    is_enabled = False
                 else:
-                    speed = int(speed) / 1000
-                    interface_list[interface]['speed'] = int(speed)
-            except AttributeError:
-                interface_list[interface]['speed'] = -1
-            except ValueError:
-                interface_list[interface]['speed'] = -1
+                    is_enabled = True
+                is_up = bool('up' in protocol)
 
-        return interface_list
+            mac_addr_regex = r"^\s+Hardware.+address\s+is\s+({})".format(MAC_REGEX)
+            if re.search(mac_addr_regex, line):
+                mac_addr_match = re.search(mac_addr_regex, line)
+                mac_address = napalm_base.helpers.mac(mac_addr_match.groups()[0])
+
+            descr_regex = "^\s+Description:\s+(.+?)$"
+            if re.search(descr_regex, line):
+                descr_match = re.search(descr_regex, line)
+                description = descr_match.groups()[0]
+
+            speed_regex = r"^\s+MTU\s+\d+.+BW\s+(\d+)\s+([KMG]?b)"
+            if re.search(speed_regex, line):
+                speed_match = re.search(speed_regex, line)
+                speed = speed_match.groups()[0]
+                speedformat = speed_match.groups()[1]
+                speed = int(speed)
+                if speedformat.startswith('Kb'):
+                    speed /= 1000
+                elif speedformat.startswith('Gb'):
+                    speed *= 1000
+
+                if interface == '':
+                    raise ValueError("Interface attributes were \
+                                      found without any known interface")
+                if not isinstance(is_up, bool) or not isinstance(is_enabled, bool):
+                    raise ValueError("Did not correctly find the interface status")
+
+                interface_dict[interface] = {'is_enabled': is_enabled, 'is_up': is_up,
+                                             'description': description, 'mac_address': mac_address,
+                                             'last_flapped': last_flapped, 'speed': speed}
+
+                interface = description = mac_address = speed = speedformat = ''
+                is_enabled = is_up = None
+
+        return interface_dict
 
     def get_interfaces_ip(self):
         """

@@ -1,0 +1,66 @@
+{
+  "GigabitEthernet0/0": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 1000,
+    "mac_address": "FA:16:3E:57:33:6F",
+    "description": ""
+  },
+  "GigabitEthernet0/1": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 1000,
+    "mac_address": "FA:16:3E:4F:41:CC",
+    "description": "to iosvl2-2"
+  },
+  "Port-channel1": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 100,
+    "mac_address": "FA:16:3E:4F:41:CC",
+    "description": ""
+  },
+  "GigabitEthernet0/3": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 1000,
+    "mac_address": "FA:16:3E:31:2C:47",
+    "description": "to iosvl2-3"
+  },
+  "Loopback0": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 8000,
+    "mac_address": "",
+    "description": "Loopback"
+  },
+  "GigabitEthernet1/0": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 1000,
+    "mac_address": "FA:16:3E:C8:50:AB",
+    "description": "to iosvl2-3"
+  },
+  "Vlan1": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 1000,
+    "mac_address": "FA:16:3E:57:80:01",
+    "description": "OOB Management"
+  },
+  "GigabitEthernet0/2": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 1000,
+    "mac_address": "FA:16:3E:A3:3E:49",
+    "description": "to iosvl2-4"
+  }
+}
