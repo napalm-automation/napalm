@@ -247,6 +247,7 @@ class NetworkDriver(object):
                 'last_flapped': -1,
                 'speed': 1000,
                 'mac_address': u'dead:beef:dead',
+                'mac_address': u'FA:16:3E:57:33:61',
                 },
             u'Ethernet1':
                 {
@@ -255,7 +256,7 @@ class NetworkDriver(object):
                 'description': u'foo',
                 'last_flapped': 1429978575.1554043,
                 'speed': 1000,
-                'mac_address': u'beef:dead:beef',
+                'mac_address': u'FA:16:3E:57:33:62',
                 },
             u'Ethernet2':
                 {
@@ -264,7 +265,7 @@ class NetworkDriver(object):
                 'description': u'bla',
                 'last_flapped': 1429978575.1555667,
                 'speed': 1000,
-                'mac_address': u'beef:beef:beef',
+                'mac_address': u'FA:16:3E:57:33:63',
                 },
             u'Ethernet3':
                 {
@@ -273,7 +274,7 @@ class NetworkDriver(object):
                 'description': u'bar',
                 'last_flapped': -1,
                 'speed': 1000,
-                'mac_address': u'dead:dead:dead',
+                'mac_address': u'FA:16:3E:57:33:64',
                 }
             }
         """
