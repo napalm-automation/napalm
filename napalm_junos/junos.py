@@ -19,12 +19,14 @@ from __future__ import unicode_literals
 
 # import stdlib
 import re
+import json
 import logging
 import collections
 from copy import deepcopy
 
 # import third party lib
 from lxml.builder import E
+from lxml import etree
 
 from jnpr.junos import Device
 from jnpr.junos.utils.config import Config
@@ -59,8 +61,10 @@ class JunOSDriver(NetworkDriver):
         Initialise JunOS driver.
 
         Optional args:
-            * port (int): custom port
             * config_lock (True/False): lock configuration DB after the connection is established.
+            * port (int): custom port
+            * key_file (string): SSH key file path
+            * keepalive (int): Keepalive interval
         """
         self.hostname = hostname
         self.username = username
@@ -69,12 +73,30 @@ class JunOSDriver(NetworkDriver):
         self.config_replace = False
         self.locked = False
 
+        # Get optional arguments
         if optional_args is None:
             optional_args = {}
-        self.port = optional_args.get('port', 22)
-        self.config_lock = optional_args.get('config_lock', True)
 
-        self.device = Device(hostname, user=username, password=password, port=self.port)
+        self.config_lock = optional_args.get('config_lock', False)
+        self.port = optional_args.get('port', 22)
+        self.key_file = optional_args.get('key_file', None)
+        self.keepalive = optional_args.get('keepalive', 30)
+        self.ssh_config_file = optional_args.get('ssh_config_file', None)
+
+        if self.key_file:
+            self.device = Device(hostname,
+                                 user=username,
+                                 ssh_private_key_file=self.key_file,
+                                 ssh_config=self.ssh_config_file,
+                                 port=self.port)
+        else:
+            self.device = Device(hostname,
+                                 user=username,
+                                 password=password,
+                                 port=self.port,
+                                 ssh_config=self.ssh_config_file)
+
+        self.profile = ["junos"]
 
     def open(self):
         """Open the connection wit the device."""
@@ -83,6 +105,7 @@ class JunOSDriver(NetworkDriver):
         except ConnectTimeoutError as cte:
             raise ConnectionException(cte.message)
         self.device.timeout = self.timeout
+        self.device._conn._session.transport.set_keepalive(self.keepalive)
         if hasattr(self.device, "cu"):
             # make sure to remove the cu attr from previous session
             # ValueError: requested attribute name cu already exists
@@ -109,12 +132,59 @@ class JunOSDriver(NetworkDriver):
             self.device.cu.unlock()
             self.locked = False
 
+    def _rpc(self, get, child=None, **kwargs):
+        """
+        This allows you to construct an arbitrary RPC call to retreive common stuff. For example:
+        Configuration:  get: "<get-configuration/>"
+        Interface information:  get: "<get-interface-information/>"
+        A particular interfacece information:
+              get: "<get-interface-information/>"
+              child: "<interface-name>ge-0/0/0</interface-name>"
+        """
+        rpc = etree.fromstring(get)
+
+        if child:
+            rpc.append(etree.fromstring(child))
+
+        response = self.device.execute(rpc)
+        return etree.tostring(response)
+
     def is_alive(self):
         # evaluate the state of the underlying SSH connection
         # and also the NETCONF status from PyEZ
         return {
             'is_alive': self.device._conn._session.transport.is_active() and self.device.connected
         }
+
+    @staticmethod
+    def _is_json_format(config):
+        try:
+            _ = json.loads(config)  # noqa
+        except (TypeError, ValueError):
+            return False
+        return True
+
+    def _detect_config_format(self, config):
+        fmt = 'text'
+        set_action_matches = [
+            'set',
+            'activate',
+            'deactivate',
+            'annotate',
+            'copy',
+            'delete',
+            'insert',
+            'protect',
+            'rename',
+            'unprotect',
+        ]
+        if config.strip().startswith('<'):
+            return 'xml'
+        elif config.split(' ')[0] in set_action_matches:
+            return 'set'
+        elif self._is_json_format(config):
+            return 'json'
+        return fmt
 
     def _load_candidate(self, filename, config, overwrite):
         if filename is None:
@@ -130,7 +200,12 @@ class JunOSDriver(NetworkDriver):
             # and the device will be locked till first commit/rollback
 
         try:
-            self.device.cu.load(configuration, format='text', overwrite=overwrite)
+            fmt = self._detect_config_format(configuration)
+
+            if fmt == "xml":
+                configuration = etree.XML(configuration)
+
+            self.device.cu.load(configuration, format=fmt, overwrite=overwrite)
         except ConfigLoadError as e:
             if self.config_replace:
                 raise ReplaceConfigException(e.message)
@@ -366,9 +441,20 @@ class JunOSDriver(NetworkDriver):
         return address_family
 
     def _parse_route_stats(self, neighbor):
-        data = {}
+        data = {
+            'ipv4': {
+                'received_prefixes': -1,
+                'accepted_prefixes': -1,
+                'sent_prefixes': -1
+            },
+            'ipv6': {
+                'received_prefixes': -1,
+                'accepted_prefixes': -1,
+                'sent_prefixes': -1
+            }
+        }
         if not neighbor['is_up']:
-            pass
+            return data
         elif isinstance(neighbor['tables'], list):
             for idx, table in enumerate(neighbor['tables']):
                 family = self._get_address_family(table)
@@ -395,33 +481,97 @@ class JunOSDriver(NetworkDriver):
 
     def get_bgp_neighbors(self):
         """Return BGP neighbors details."""
-        instances = junos_views.junos_route_instance_table(self.device)
-        uptime_table = junos_views.junos_bgp_uptime_table(self.device)
-        bgp_neighbors = junos_views.junos_bgp_table(self.device)
-        keys = ['local_as', 'remote_as', 'is_up', 'is_enabled', 'description', 'remote_id']
         bgp_neighbor_data = {}
-        for instance, instance_data in instances.get().items():
-            if instance.startswith('__'):
-                # junos internal instances
-                continue
-            instance_name = "global" if instance == 'master' else instance
-            bgp_neighbor_data[instance_name] = {'peers': {}}
-            for neighbor, data in bgp_neighbors.get(instance=instance).items():
-                neighbor_data = {k: v for k, v in data}
-                peer_ip = napalm_base.helpers.ip(neighbor.split('+')[0])
+        default_neighbor_details = {
+            'local_as': 0,
+            'remote_as': 0,
+            'remote_id': '',
+            'is_up': False,
+            'is_enabled': False,
+            'description': '',
+            'uptime': 0,
+            'address_family': {}
+        }
+        keys = default_neighbor_details.keys()
+
+        uptime_table = junos_views.junos_bgp_uptime_table(self.device)
+        bgp_neighbors_table = junos_views.junos_bgp_table(self.device)
+
+        uptime_table_lookup = {}
+
+        def _get_uptime_table(instance):
+            if instance not in uptime_table_lookup:
+                uptime_table_lookup[instance] = uptime_table.get(instance=instance).items()
+            return uptime_table_lookup[instance]
+
+        def _get_bgp_neighbors_core(neighbor_data, instance=None, uptime_table_items=None):
+            '''
+            Make sure to execute a simple request whenever using
+            junos > 13. This is a helper used to avoid code redundancy
+            and reuse the function also when iterating through the list
+            BGP neighbors under a specific routing instance,
+            also when the device is capable to return the routing
+            instance name at the BGP neighbor level.
+            '''
+            for bgp_neighbor in neighbor_data:
+                peer_ip = napalm_base.helpers.ip(bgp_neighbor[0].split('+')[0])
+                neighbor_details = deepcopy(default_neighbor_details)
+                neighbor_details.update(
+                    {elem[0]: elem[1] for elem in bgp_neighbor[1] if elem[1] is not None}
+                )
+                if not instance:
+                    # not instance, means newer Junos version,
+                    # as we request everything in a single request
+                    peer_fwd_rti = neighbor_details.pop('peer_fwd_rti')
+                    instance = peer_fwd_rti
+                else:
+                    # instance is explicitly requests,
+                    # thus it's an old Junos, so we retrieve the BGP neighbors
+                    # under a certain routing instance
+                    peer_fwd_rti = neighbor_details.pop('peer_fwd_rti', '')
+                instance_name = 'global' if instance == 'master' else instance
+                if instance_name not in bgp_neighbor_data:
+                    bgp_neighbor_data[instance_name] = {}
                 if 'router_id' not in bgp_neighbor_data[instance_name]:
                     # we only need to set this once
                     bgp_neighbor_data[instance_name]['router_id'] = \
-                        py23_compat.text_type(neighbor_data['local_id'])
+                        py23_compat.text_type(neighbor_details['local_id'])
                 peer = {
                     key: self._parse_value(value)
-                    for key, value in neighbor_data.items()
+                    for key, value in neighbor_details.items()
                     if key in keys
                 }
-                peer['address_family'] = self._parse_route_stats(neighbor_data)
+                peer['local_as'] = napalm_base.helpers.as_number(peer['local_as'])
+                peer['remote_as'] = napalm_base.helpers.as_number(peer['remote_as'])
+                peer['address_family'] = self._parse_route_stats(neighbor_details)
+                if 'peers' not in bgp_neighbor_data[instance_name]:
+                    bgp_neighbor_data[instance_name]['peers'] = {}
                 bgp_neighbor_data[instance_name]['peers'][peer_ip] = peer
-            for neighbor, uptime in uptime_table.get(instance=instance).items():
-                bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
+                if not uptime_table_items:
+                    uptime_table_items = _get_uptime_table(instance)
+                for neighbor, uptime in uptime_table_items:
+                    if neighbor not in bgp_neighbor_data[instance_name]['peers']:
+                        bgp_neighbor_data[instance_name]['peers'][neighbor] = {}
+                    bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
+
+        old_junos = napalm_base.helpers.convert(
+            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 13
+
+        if old_junos:
+            instances = junos_views.junos_route_instance_table(self.device).get()
+            for instance, instance_data in instances.items():
+                if instance.startswith('__'):
+                    # junos internal instances
+                    continue
+                bgp_neighbor_data[instance] = {'peers': {}}
+                instance_neighbors = bgp_neighbors_table.get(instance=instance).items()
+                uptime_table_items = uptime_table.get(instance=instance).items()
+                _get_bgp_neighbors_core(instance_neighbors,
+                                        instance=instance,
+                                        uptime_table_items=uptime_table_items)
+        else:
+            instance_neighbors = bgp_neighbors_table.get().items()
+            _get_bgp_neighbors_core(instance_neighbors)
         bgp_tmp_dict = {}
         for k, v in bgp_neighbor_data.items():
             if bgp_neighbor_data[k]['peers']:
@@ -467,7 +617,7 @@ class JunOSDriver(NetworkDriver):
         interfaces = lldp_table.get().keys()
 
         old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], '0') < 13
+            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 13
 
         lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
         if old_junos:
@@ -694,6 +844,10 @@ class JunOSDriver(NetworkDriver):
                     bgp_peer_details.update({
                         key: napalm_base.helpers.convert(datatype, value, default)
                     })
+                    bgp_peer_details['local_as'] = napalm_base.helpers.as_number(
+                        bgp_peer_details['local_as'])
+                    bgp_peer_details['remote_as'] = napalm_base.helpers.as_number(
+                        bgp_peer_details['remote_as'])
                 prefix_limit_fields = {}
                 for elem in bgp_group_details:
                     if '_prefix_limit' in elem[0] and elem[1] is not None:
@@ -713,14 +867,6 @@ class JunOSDriver(NetworkDriver):
     def get_bgp_neighbors_detail(self, neighbor_address=''):
         """Detailed view of the BGP neighbors operational data."""
         bgp_neighbors = {}
-
-        bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
-
-        bgp_neighbors_table.get(
-            neighbor_address=neighbor_address
-        )
-        bgp_neighbors_items = bgp_neighbors_table.items()
-
         default_neighbor_details = {
             'up': False,
             'local_as': 0,
@@ -758,7 +904,6 @@ class JunOSDriver(NetworkDriver):
             'advertised_prefix_count': -1,
             'flap_count': 0
         }
-
         OPTION_KEY_MAP = {
             'RemovePrivateAS': 'remove_private_as',
             'Multipath': 'multipath',
@@ -770,52 +915,102 @@ class JunOSDriver(NetworkDriver):
             # Preference, HoldTime, Ttl, LogUpDown, Refresh
         }
 
-        for bgp_neighbor in bgp_neighbors_items:
-            remote_as = int(bgp_neighbor[0])
-            neighbor_details = deepcopy(default_neighbor_details)
-            neighbor_details.update(
-                {elem[0]: elem[1] for elem in bgp_neighbor[1] if elem[1] is not None}
-            )
-            options = neighbor_details.pop('options', '')
-            if isinstance(options, str):
-                options_list = options.split()
-                for option in options_list:
-                    key = OPTION_KEY_MAP.get(option)
-                    if key is not None:
-                        neighbor_details[key] = True
-            four_byte_as = neighbor_details.pop('4byte_as', 0)
-            local_address = neighbor_details.pop('local_address', '')
-            local_details = local_address.split('+')
-            neighbor_details['local_address'] = napalm_base.helpers.convert(
-                napalm_base.helpers.ip, local_details[0], local_details[0])
-            if len(local_details) == 2:
-                neighbor_details['local_port'] = int(local_details[1])
-            else:
-                neighbor_details['local_port'] = 179
-            neighbor_details['suppress_4byte_as'] = (remote_as != four_byte_as)
-            peer_address = neighbor_details.pop('peer_address', '')
-            remote_details = peer_address.split('+')
-            neighbor_details['remote_address'] = napalm_base.helpers.convert(
-                napalm_base.helpers.ip, remote_details[0], remote_details[0])
-            if len(remote_details) == 2:
-                neighbor_details['remote_port'] = int(remote_details[1])
-            else:
-                neighbor_details['remote_port'] = 179
-            neighbors_rib = neighbor_details.pop('rib')
-            neighbors_rib_items = neighbors_rib.items()
-            for rib_entry in neighbors_rib_items:
-                _table = py23_compat.text_type(rib_entry[0])
-                if _table not in bgp_neighbors.keys():
-                    bgp_neighbors[_table] = {}
-                if remote_as not in bgp_neighbors[_table].keys():
-                    bgp_neighbors[_table][remote_as] = []
-                neighbor_rib_details = deepcopy(neighbor_details)
-                neighbor_rib_details.update({
-                    elem[0]: elem[1] for elem in rib_entry[1]
-                })
-                neighbor_rib_details['routing_table'] = py23_compat.text_type(_table)
-                bgp_neighbors[_table][remote_as].append(neighbor_rib_details)
+        def _bgp_iter_core(neighbor_data, instance=None):
+            '''
+            Iterate over a list of neighbors.
+            For older junos, the routing instance is not specified inside the
+            BGP neighbors XML, therefore we need to use a super sub-optimal structure
+            as in get_bgp_neighbors: iterate through the list of network instances
+            then execute one request for each and every routing instance.
+            For newer junos, this is not necessary as the routing instance is available
+            and we can get everything solve in a single request.
+            '''
+            for bgp_neighbor in neighbor_data:
+                remote_as = int(bgp_neighbor[0])
+                neighbor_details = deepcopy(default_neighbor_details)
+                neighbor_details.update(
+                    {elem[0]: elem[1] for elem in bgp_neighbor[1] if elem[1] is not None}
+                )
+                if not instance:
+                    peer_fwd_rti = neighbor_details.pop('peer_fwd_rti')
+                    instance = peer_fwd_rti
+                else:
+                    peer_fwd_rti = neighbor_details.pop('peer_fwd_rti', '')
+                instance_name = 'global' if instance == 'master' else instance
+                options = neighbor_details.pop('options', '')
+                if isinstance(options, str):
+                    options_list = options.split()
+                    for option in options_list:
+                        key = OPTION_KEY_MAP.get(option)
+                        if key is not None:
+                            neighbor_details[key] = True
+                four_byte_as = neighbor_details.pop('4byte_as', 0)
+                local_address = neighbor_details.pop('local_address', '')
+                local_details = local_address.split('+')
+                neighbor_details['local_address'] = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip, local_details[0], local_details[0])
+                if len(local_details) == 2:
+                    neighbor_details['local_port'] = int(local_details[1])
+                else:
+                    neighbor_details['local_port'] = 179
+                neighbor_details['suppress_4byte_as'] = (remote_as != four_byte_as)
+                peer_address = neighbor_details.pop('peer_address', '')
+                remote_details = peer_address.split('+')
+                neighbor_details['remote_address'] = napalm_base.helpers.convert(
+                    napalm_base.helpers.ip, remote_details[0], remote_details[0])
+                if len(remote_details) == 2:
+                    neighbor_details['remote_port'] = int(remote_details[1])
+                else:
+                    neighbor_details['remote_port'] = 179
+                neighbor_details['routing_table'] = instance_name
+                neighbor_details['local_as'] = napalm_base.helpers.as_number(
+                    neighbor_details['local_as'])
+                neighbor_details['remote_as'] = napalm_base.helpers.as_number(
+                    neighbor_details['remote_as'])
+                neighbors_rib = neighbor_details.pop('rib')
+                neighbors_queue = neighbor_details.pop('queue')
+                messages_queued_out = 0
+                for queue_entry in neighbors_queue.items():
+                    messages_queued_out += queue_entry[1][0][1]
+                neighbor_details['messages_queued_out'] = messages_queued_out
+                if instance_name not in bgp_neighbors.keys():
+                    bgp_neighbors[instance_name] = {}
+                if remote_as not in bgp_neighbors[instance_name].keys():
+                    bgp_neighbors[instance_name][remote_as] = []
+                neighbor_rib_stats = neighbors_rib.items()
+                if not neighbor_rib_stats:
+                    bgp_neighbors[instance_name][remote_as].append(neighbor_details)
+                    continue  # no RIBs available, pass default details
+                neighbor_rib_details = {
+                    'active_prefix_count': 0,
+                    'received_prefix_count': 0,
+                    'accepted_prefix_count': 0,
+                    'suppressed_prefix_count': 0,
+                    'advertised_prefix_count': 0
+                }
+                for rib_entry in neighbor_rib_stats:
+                    for elem in rib_entry[1]:
+                        neighbor_rib_details[elem[0]] += elem[1]
+                neighbor_details.update(neighbor_rib_details)
+                bgp_neighbors[instance_name][remote_as].append(neighbor_details)
 
+        old_junos = napalm_base.helpers.convert(
+            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 13
+        bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
+
+        if old_junos:
+            instances = junos_views.junos_route_instance_table(self.device)
+            for instance, instance_data in instances.get().items():
+                if instance.startswith('__'):
+                    # junos internal instances
+                    continue
+                neighbor_data = bgp_neighbors_table.get(instance=instance,
+                                                        neighbor_address=neighbor_address).items()
+                _bgp_iter_core(neighbor_data, instance=instance)
+        else:
+            bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
+            neighbor_data = bgp_neighbors_table.get(neighbor_address=neighbor_address).items()
+            _bgp_iter_core(neighbor_data)
         return bgp_neighbors
 
     def get_arp_table(self):
@@ -985,6 +1180,11 @@ class JunOSDriver(NetworkDriver):
                 {elem[0]: elem[1] for elem in mac_table_entry[1]}
             )
             mac = mac_entry.get('mac')
+
+            # JUNOS returns '*' for Type = Flood
+            if mac == '*':
+                continue
+
             mac_entry['mac'] = napalm_base.helpers.mac(mac)
             mac_address_table.append(mac_entry)
 
