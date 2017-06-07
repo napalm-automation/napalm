@@ -243,37 +243,37 @@ class NetworkDriver(object):
                 {
                 'is_up': False,
                 'is_enabled': False,
-                'description': u'',
+                'description': '',
                 'last_flapped': -1,
                 'speed': 1000,
-                'mac_address': u'dead:beef:dead',
+                'mac_address': 'FA:16:3E:57:33:61',
                 },
             u'Ethernet1':
                 {
                 'is_up': True,
                 'is_enabled': True,
-                'description': u'foo',
+                'description': 'foo',
                 'last_flapped': 1429978575.1554043,
                 'speed': 1000,
-                'mac_address': u'beef:dead:beef',
+                'mac_address': 'FA:16:3E:57:33:62',
                 },
             u'Ethernet2':
                 {
                 'is_up': True,
                 'is_enabled': True,
-                'description': u'bla',
+                'description': 'bla',
                 'last_flapped': 1429978575.1555667,
                 'speed': 1000,
-                'mac_address': u'beef:beef:beef',
+                'mac_address': 'FA:16:3E:57:33:63',
                 },
             u'Ethernet3':
                 {
                 'is_up': False,
                 'is_enabled': True,
-                'description': u'bar',
+                'description': 'bar',
                 'last_flapped': -1,
                 'speed': 1000,
-                'mac_address': u'dead:dead:dead',
+                'mac_address': 'FA:16:3E:57:33:64',
                 }
             }
         """
@@ -740,13 +740,13 @@ class NetworkDriver(object):
             [
                 {
                     'interface' : 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '5c:5e:ab:da:3c:f0',
+                    'mac'       : '5C:5E:AB:DA:3C:F0',
                     'ip'        : '172.17.17.1',
                     'age'       : 1454496274.84
                 },
                 {
                     'interface' : 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '66:0e:94:96:e0:ff',
+                    'mac'       : '5C:5E:AB:DA:3C:FF',
                     'ip'        : '172.17.17.2',
                     'age'       : 1435641582.49
                 }
@@ -905,7 +905,7 @@ class NetworkDriver(object):
 
             [
                 {
-                    'mac'       : '00:1c:58:29:4a:71',
+                    'mac'       : '00:1C:58:29:4A:71',
                     'interface' : 'Ethernet47',
                     'vlan'      : 100,
                     'static'    : False,
@@ -914,7 +914,7 @@ class NetworkDriver(object):
                     'last_move' : 1454417742.58
                 },
                 {
-                    'mac'       : '8c:60:4f:58:e1:c1',
+                    'mac'       : '00:1C:58:29:4A:C1',
                     'interface' : 'xe-1/0/1',
                     'vlan'       : 100,
                     'static'    : False,
@@ -923,7 +923,7 @@ class NetworkDriver(object):
                     'last_move' : 1453191948.11
                 },
                 {
-                    'mac'       : 'f4:b5:2f:56:72:01',
+                    'mac'       : '00:1C:58:29:4A:C2',
                     'interface' : 'ae7.900',
                     'vlan'      : 900,
                     'static'    : False,
