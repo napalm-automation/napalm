@@ -995,7 +995,7 @@ class JunOSDriver(NetworkDriver):
                 bgp_neighbors[instance_name][remote_as].append(neighbor_details)
 
         old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 13
+            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 15
         bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
 
         if old_junos:
