@@ -555,7 +555,7 @@ class JunOSDriver(NetworkDriver):
                     bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
 
         old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 13
+            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 15
 
         if old_junos:
             instances = junos_views.junos_route_instance_table(self.device).get()
@@ -995,7 +995,7 @@ class JunOSDriver(NetworkDriver):
                 bgp_neighbors[instance_name][remote_as].append(neighbor_details)
 
         old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 13
+            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 15
         bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
 
         if old_junos:
