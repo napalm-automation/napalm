@@ -54,6 +54,42 @@ Configuration file
 * Finish blocks with `!` as with the running config, otherweise, some IOS version might not be able to generate the diff properly.
 
 
+Self-Signed Certificate (and the hidden tab character)
+------------------
+
+Cisco IOS adds a tab character into the self-signed certificate. This exists on the quit line::
+
+    crypto pki certificate chain TP-self-signed-1429897839
+     certificate self-signed 01
+      3082022B 30820194 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+      ...
+      ...
+      ...
+      9353BD17 C345E1D7 71AFD125 D23D7940 2DECBE8E 46553314 396ACC63 34839EF7 
+      3C056A00 7E129168 F0CD3692 F53C62
+      	quit
+
+The quit line reads as follows::
+
+    >>> for char in line:
+    ...   print("{}: {}".format(repr(char), ord(char)))
+    ... 
+    ' ': 32     # space
+    ' ': 32     # space
+    '\t': 9     # tab
+    'q': 113    
+    'u': 117
+    'i': 105
+    't': 116
+    '\n': 10
+
+This implies that you will not generally be able to copy-and-paste the self-signed certificate. As when you copy-and-paste it, the tab character gets converted to spaces.
+
+You will need to transfer the config file directly from the device (for example, SCP the config file) or you will need to manually construct the quit line exactly right.
+
+Cisco IOS is very particular about the self-signed certificate and will reject replace operations with an invalid certificate. Cisco IOS will also reject replace operations that are missing a certificate (when the current configuration has a self-signed certificate).
+
+
 Banner
 ------------------
 
