@@ -615,13 +615,12 @@ class JunOSDriver(NetworkDriver):
             log.error(rpcerr.message)
             return {}
         interfaces = lldp_table.get().keys()
-        
+
         # get lldp neighbor by interface rpc for EX Series, QFX Series, J Series
-        # and SRX Series is get-lldp-interface-neighbors-information, 
+        # and SRX Series is get-lldp-interface-neighbors-information,
         # and rpc for M, MX, and T Series is get-lldp-interface-neighbors
         # ref1: https://apps.juniper.net/xmlapi/operTags.jsp  (Junos 13.1 and later)
-        # ref2: https://www.juniper.net/documentation/en_US/junos12.3/information-products/topic-collections/junos-xml-ref-oper/index.html  (Junos 12.3)
-        
+        # ref2: https://www.juniper.net/documentation/en_US/junos12.3/information-products/topic-collections/junos-xml-ref-oper/index.html  (Junos 12.3) # noqa
         lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
         if self.device.facts.get('personality') not in ('MX', 'M', 'T'):
             lldp_table.GET_RPC = 'get-lldp-interface-neighbors-information'
