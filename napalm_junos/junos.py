@@ -616,8 +616,7 @@ class JunOSDriver(NetworkDriver):
             return {}
         interfaces = lldp_table.get().keys()
 
-        old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 13
+        old_junos = re.search('EX|QFX|J|SRX',self.device.facts.get('model'))
 
         lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
         if old_junos:
