@@ -1,0 +1,35 @@
+<lldp-neighbors-information style="brief">
+  <lldp-neighbor-information>
+    <lldp-local-port-id>xe-4/3/6</lldp-local-port-id>
+    <lldp-local-parent-interface-name>-</lldp-local-parent-interface-name>
+    <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
+    <lldp-remote-chassis-id>00:1c:73:8f:0a:ed</lldp-remote-chassis-id>
+    <lldp-remote-port-id-subtype>Interface name</lldp-remote-port-id-subtype>
+    <lldp-remote-port-id>Ethernet1</lldp-remote-port-id>
+    <lldp-remote-system-name>peer00.lab.demo</lldp-remote-system-name>
+  </lldp-neighbor-information>
+  <lldp-neighbor-information>
+    <lldp-local-interface>me0.0</lldp-local-interface>
+    <lldp-local-parent-interface-name>-</lldp-local-parent-interface-name>
+    <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
+    <lldp-remote-chassis-id>00:23:47:50:21:40</lldp-remote-chassis-id>
+    <lldp-remote-port-description>27</lldp-remote-port-description>
+    <lldp-remote-system-name>lom-bjg61-r1-1</lldp-remote-system-name>
+  </lldp-neighbor-information>
+  <lldp-neighbor-information>
+    <lldp-local-interface>ge-0/0/0.0</lldp-local-interface>
+    <lldp-local-parent-interface-name>-</lldp-local-parent-interface-name>
+    <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
+    <lldp-remote-chassis-id>02:e4:c8:6c:a4:00</lldp-remote-chassis-id>
+    <lldp-remote-port-description>GigabitEthernet0/0/0/0</lldp-remote-port-description>
+    <lldp-remote-system-name>rtr00.demo</lldp-remote-system-name>
+  </lldp-neighbor-information>
+  <lldp-neighbor-information>
+    <lldp-local-interface>xe-0/1/0.0</lldp-local-interface>
+    <lldp-local-parent-interface-name>-</lldp-local-parent-interface-name>
+    <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
+    <lldp-remote-chassis-id>dc:38:e1:b7:26:16</lldp-remote-chassis-id>
+    <lldp-remote-port-description>xe-0/0/0</lldp-remote-port-description>
+    <lldp-remote-system-name>spine00</lldp-remote-system-name>
+  </lldp-neighbor-information>
+</lldp-neighbors-information>
