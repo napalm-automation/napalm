@@ -70,13 +70,12 @@ class IOSDriver(NetworkDriver):
         self.dest_file_system = optional_args.get('dest_file_system', None)
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
 
-        self.keepalive = optional_args.get('keepalive', 30)
-
         # Netmiko possible arguments
         netmiko_argument_map = {
             'port': None,
             'secret': '',
             'verbose': False,
+            'keepalive': 30,
             'global_delay_factor': 1,
             'use_keys': False,
             'key_file': None,
@@ -118,7 +117,6 @@ class IOSDriver(NetworkDriver):
                                      username=self.username,
                                      password=self.password,
                                      **self.netmiko_optional_args)
-        self.device.remote_conn.transport.set_keepalive(self.keepalive)
         # ensure in enable mode
         self.device.enable()
         if not self.dest_file_system:
