@@ -91,6 +91,7 @@ class IOSDriver(NetworkDriver):
             'port': None,
             'secret': '',
             'verbose': False,
+            'keepalive': 30,
             'global_delay_factor': 1,
             'use_keys': False,
             'key_file': None,
