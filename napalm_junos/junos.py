@@ -180,7 +180,7 @@ class JunOSDriver(NetworkDriver):
         ]
         if config.strip().startswith('<'):
             return 'xml'
-        elif config.split(' ')[0] in set_action_matches:
+        elif config.strip().split(' ')[0] in set_action_matches:
             return 'set'
         elif self._is_json_format(config):
             return 'json'
