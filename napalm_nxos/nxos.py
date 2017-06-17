@@ -97,6 +97,16 @@ class NXOSDriver(NetworkDriver):
         if not stupid_cisco_output or stupid_cisco_output == 'never':
             return -1.0
 
+        if '(s)' in stupid_cisco_output:
+            pass
+        elif ':' in stupid_cisco_output:
+            stupid_cisco_output = stupid_cisco_output.replace(':', 'hour(s) ', 1)
+            stupid_cisco_output = stupid_cisco_output.replace(':', 'minute(s) ', 1)
+            stupid_cisco_output += 'second(s)'
+        else:
+            stupid_cisco_output = stupid_cisco_output.replace('d', 'day(s) ')
+            stupid_cisco_output = stupid_cisco_output.replace('h', 'hour(s)')
+
         things = {
             'second(s)': {
                 'weight': 1

@@ -5,5 +5,6 @@ pytest-json
 pytest-pythonpath
 pylama
 flake8-import-order
+mock
 -r requirements.txt
 
