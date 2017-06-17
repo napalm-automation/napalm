@@ -226,7 +226,7 @@ class NXOSDriver(NetworkDriver):
             if not self.fc.remote_file_exists():
                 self.fc.send()
             elif not self.fc.file_already_exists():
-                commands = ['terminal dont-ask', 
+                commands = ['terminal dont-ask',
                             'delete {0}'.format(self.fc.dst)]
                 self.device.config_list(commands)
                 self.fc.send()
