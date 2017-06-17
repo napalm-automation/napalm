@@ -330,8 +330,8 @@ class NXOSDriver(NetworkDriver):
 
     def _delete_file(self, filename):
         commands = ['terminal dont-ask',
-            'delete {}'.format(filename),
-            'no terminal dont-ask']
+                    'delete {}'.format(filename),
+                    'no terminal dont-ask']
         self.device.show_list(commands, raw_text=True)
 
     def discard_config(self):
