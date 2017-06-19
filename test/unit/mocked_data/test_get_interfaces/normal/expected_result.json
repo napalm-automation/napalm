@@ -394,7 +394,7 @@
     "Ethernet2/1": {
         "is_enabled": true, 
         "description": "", 
-        "last_flapped": -1.0, 
+        "last_flapped": 1498617600, 
         "is_up": true, 
         "mac_address": "2C:C2:60:4F:FE:B2", 
         "speed": 1000
@@ -810,7 +810,7 @@
     "Ethernet2/3": {
         "is_enabled": true, 
         "description": "", 
-        "last_flapped": -1.0, 
+        "last_flapped": 1499978034, 
         "is_up": true, 
         "mac_address": "2C:C2:60:4F:FE:B2", 
         "speed": 1000
@@ -818,7 +818,7 @@
     "Ethernet2/2": {
         "is_enabled": true, 
         "description": "", 
-        "last_flapped": -1.0, 
+        "last_flapped": 1499539200, 
         "is_up": true, 
         "mac_address": "2C:C2:60:4F:FE:B2", 
         "speed": 1000
