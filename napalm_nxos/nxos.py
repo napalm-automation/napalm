@@ -332,9 +332,10 @@ class NXOSDriver(NetworkDriver):
             raise ReplaceConfigException('No config loaded.')
 
     def _delete_file(self, filename):
-        self.device.show('terminal dont-ask', raw_text=True)
-        self.device.show('delete {}'.format(filename), raw_text=True)
-        self.device.show('no terminal dont-ask', raw_text=True)
+        commands = ['terminal dont-ask',
+                    'delete {}'.format(filename),
+                    'no terminal dont-ask']
+        self.device.show_list(commands, raw_text=True)
 
     def discard_config(self):
         if self.loaded:
