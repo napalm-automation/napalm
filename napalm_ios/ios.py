@@ -21,7 +21,6 @@ import os
 import uuid
 import socket
 import tempfile
-import socket
 import copy
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
