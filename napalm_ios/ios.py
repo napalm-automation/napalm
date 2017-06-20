@@ -973,11 +973,12 @@ class IOSDriver(NetworkDriver):
                 speed_match = re.search(speed_regex, line)
                 speed = speed_match.groups()[0]
                 speedformat = speed_match.groups()[1]
-                speed = int(speed)
+                speed = float(speed)
                 if speedformat.startswith('Kb'):
-                    speed /= 1000
+                    speed = speed / 1000.0
                 elif speedformat.startswith('Gb'):
-                    speed *= 1000
+                    speed = speed * 1000
+                speed = int(round(speed))
 
                 if interface == '':
                     raise ValueError("Interface attributes were \
