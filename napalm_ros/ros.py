@@ -109,7 +109,7 @@ class ROSDriver(NetworkDriver):
             'hostname': identity['name'],
             'fqdn': u'',
             'os_version': resource['version'],
-            'serial_number': routerboard.get('serial_number', ''),
+            'serial_number': routerboard.get('serial-number', ''),
             'interface_list': napalm_base.utils.string_parsers.sorted_nicely(
                 tuple(iface['name'] for iface in interfaces)
             ),
