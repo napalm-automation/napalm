@@ -122,7 +122,7 @@ ____________________________________
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
 * :code:`global_delay_factor` (ios, vyos) - Allow for additional delay in command execution (default: ``1``).
-* :code:`nxos_protocol` (nxos) - Protocol to connect with.  Only 'https' and 'http' allowed (default: ``http``).
+* :code:`transport` (eos, ios, nxos) - Protocol to connect with. Allowed transports depends on the underlying library, but typically ``http``/``https`` and/or ``telnet``/``ssh``. Defaults to ``https`` on EOS and NXOS and ``ssh`` on IOS.
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
 * :code:`ssh_strict` (iosxr, ios, panos, vyos) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
 * :code:`allow_agent` (ios, iosxr, panos, vyos) - Paramiko argument, enable connecting to the SSH agent (default: ``False``).
