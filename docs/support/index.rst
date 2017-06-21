@@ -113,6 +113,19 @@ NAPALM supports passing certain optional arguments to some drivers. To do that y
     >>> device = driver('192.168.76.10', 'dbarroso', 'this_is_not_a_secure_password', optional_args=optional_args)
     >>> device.open()
 
+
+The transport argument
+______________________
+
+Certain drivers support providing an alternate transport in the :code:`optional_args`, overriding the default protocol to connect with. Allowed transports are therefore device/library dependant:
+
+=============== ====================  ====================  ===================
+_               EOS                   NXOS                  IOS
+=============== ====================  ====================  ===================
+**Default**     ``https``             ``https``             ``ssh``
+**Supported**   ``http``, ``https``   ``http``, ``https``   ``telnet``, ``ssh``
+=============== ====================  ====================  ===================
+
 List of supported optional arguments
 ____________________________________
 
@@ -122,7 +135,7 @@ ____________________________________
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
 * :code:`global_delay_factor` (ios, vyos) - Allow for additional delay in command execution (default: ``1``).
-* :code:`transport` (eos, ios, nxos) - Protocol to connect with. Allowed transports depends on the underlying library, but typically ``http``/``https`` and/or ``telnet``/``ssh``. Defaults to ``https`` on EOS and NXOS and ``ssh`` on IOS.
+* :code:`transport` (eos, ios, nxos) - Protocol to connect with.
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
 * :code:`ssh_strict` (iosxr, ios, panos, vyos) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
 * :code:`allow_agent` (ios, iosxr, panos, vyos) - Paramiko argument, enable connecting to the SSH agent (default: ``False``).
