@@ -19,21 +19,35 @@ To install, clone napalm-ansible into your ansible module path. This will depend
 
 If your ansible.cfg looks like:
 
-```
+
 [defaults]
 library = ~/workspace/napalm-ansible
-```
+
 Then you can do the following:
 
-```
+
 cd ~/workspace
-```
 
-```
+
+git clone
+
+If your ansible.cfg looks like:
+
+
+[defaults]
+library = ~/workspace/napalm-ansible
+
+Then you can do the following:
+
+
+cd ~/workspace
+
+
+
 git clone https://github.com/napalm-automation/napalm-ansible.git
-```
 
-```
+
+
 user@hostname:~/workspace ls -la
 total 12
 drwxrwxr-x 3 user user 4096 Feb 26 12:51 .
