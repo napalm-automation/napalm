@@ -17,6 +17,7 @@ Install
 
 To install, clone napalm-ansible into your ansible module path. This will depend on your own setup and contents of your ansible.cfg file which tells ansible where to look for modules. For more in-depth explanation, see the `Ansible Docs <http://docs.ansible.com/ansible/intro_configuration.html#library>`_.
 
+
 | If your ansible.cfg looks like:
 
 
@@ -75,22 +76,22 @@ Dependencies
 Examples
 ========
 
-Example to retrieve facts from a device
-```
- - name: get facts from device
-   napalm_get_facts:
-     hostname={{ inventory_hostname }}
-     username={{ user }}
-     dev_os={{ os }}
-     password={{ passwd }}
-     filter='facts,interfaces,bgp_neighbors'
-   register: result
+Example to retrieve facts from a device::
 
- - name: print data
-   debug: var=result
-```
+     - name: get facts from device
+       napalm_get_facts:
+         hostname={{ inventory_hostname }}
+         username={{ user }}
+         dev_os={{ os }}
+         password={{ passwd }}
+         filter='facts,interfaces,bgp_neighbors'
+       register: result
+
+     - name: print data
+       debug: var=result
+
 Example to install config on a device
-```
+
 - assemble:
     src=../compiled/{{ inventory_hostname }}/
     dest=../compiled/{{ inventory_hostname }}/running.conf
@@ -105,10 +106,10 @@ Example to install config on a device
     replace_config={{ replace_config }}
     get_diffs=True
     diff_file=../compiled/{{ inventory_hostname }}/diff
-```
+
 
 Example to get compliance report
-```
+
 - name: GET VALIDATION REPORT
   napalm_validate:
     username: "{{ un }}"
@@ -116,7 +117,7 @@ Example to get compliance report
     hostname: "{{ inventory_hostname }}"
     dev_os: "{{ dev_os }}"
     validation_file: validate.yml
-```
+
 
 
 A More Detailed Example
@@ -127,7 +128,7 @@ Please review the `Ansible Documentation <http://docs.ansible.com/ansible/playbo
 It is also advised to have some kind of `yaml linter <https://pypi.python.org/pypi/yamllint>`_ or syntax checker available.
 
 Non parameterized example with comments to get you started
-```
+
 - name: Test Inventory #The Task Name
   hosts: cisco         #This will be in your ansible inventory file
   connection: local    #Required
@@ -146,29 +147,28 @@ Non parameterized example with comments to get you started
 
     - name: print results                    #Task Name
       debug: msg="{{ result }}"              #Display the collected output
-```
+
 
 Keeping with our example dir at the beginning of the Readme, we now have this layout
-```
+
 user@host ~/workspace/ansible-playbooks
 08:16 $ ls -la
 total 32
 drwxrwxr-x 3 user user 4096 Feb 26 07:24 .
 drwxrwxr-x 8 user user 4096 Feb 25 16:32 ..
 -rw-rw-r-- 1 user user  404 Feb 26 07:24 inventory.yaml
-```
+
 
 You would run this playbook like as
-```
+
 cd ~/workspace
-```
-```
+
 ansible-playbook ansible-playbooks/inventory.yaml
-```
+
 
 And it should produce output similar to this.
 
-```
+
 PLAY [Push config to switch group.] ********************************************
 
 TASK [get facts from device] ***************************************************
@@ -203,7 +203,7 @@ ok: [192.168.0.11] => {
 
 PLAY RECAP *********************************************************************
 192.168.0.11               : ok=2    changed=0    unreachable=0    failed=0
-```
+
 
 Copyright 2016-present Nike, Inc.
 
