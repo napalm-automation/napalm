@@ -6,13 +6,13 @@ Collection of ansible modules that use `napalm <https://github.com/napalm-automa
 Modules
 =======
 The following modules are currenty available:
-- napalm_get_facts
-- napalm_install_config
-- napalm_validate
+* napalm_get_facts
+* napalm_install_config
+* napalm_validate
 
 Install
 =======
-To install, clone napalm-ansible into your ansible module path. This will depend on your own setup and contents of your ansible.cfg file which tells ansible where to look for modules. For more in-depth explanation, see the [Ansible Docs](http://docs.ansible.com/ansible/intro_configuration.html#library).
+To install, clone napalm-ansible into your ansible module path. This will depend on your own setup and contents of your ansible.cfg file which tells ansible where to look for modules. For more in-depth explanation, see the `Ansible Docs <http://docs.ansible.com/ansible/intro_configuration.html#library>`_.
 
 If your ansible.cfg looks like:
 
