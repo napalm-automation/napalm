@@ -1,5 +1,5 @@
 napalm-ansible
-======
+==============
 
 Collection of ansible modules that use `napalm <https://github.com/napalm-automation/napalm>`_ to retrieve data or modify configuration on netwroking devices.
 
@@ -51,11 +51,11 @@ drwxrwxr-x 5 user user 4096 Feb 26 12:53 ansible-playbooks
 ```
 
 Dependencies
-=======
-* [napalm](https://github.com/napalm-automation/napalm) 1.00.0 or later
+============
+* `napalm <https://github.com/napalm-automation/napalm>`_ 1.00.0 or later
 
 Examples
-=======
+========
 Example to retrieve facts from a device
 ```
  - name: get facts from device
@@ -100,12 +100,12 @@ Example to get compliance report
 ```
 
 
-A More Detailed Examples
-=======
+A More Detailed Example
+=======================
 
  It's very oftern we come to these tools needing to know how to run before we can walk.
-Please review the [Ansible Documentation](http://docs.ansible.com/ansible/playbooks.html) as this will answer some basic questions.
-It is also advised to have some kind of [yaml linter](https://pypi.python.org/pypi/yamllint) or syntax checker available.
+Please review the `Ansible Documentation <http://docs.ansible.com/ansible/playbooks.html>`_ as this will answer some basic questions.
+It is also advised to have some kind of `yaml linter <https://pypi.python.org/pypi/yamllint>`_ or syntax checker available.
 
 Non parameterized example with comments to get you started
 ```
