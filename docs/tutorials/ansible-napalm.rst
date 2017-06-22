@@ -5,6 +5,7 @@ Collection of ansible modules that use `napalm <https://github.com/napalm-automa
 
 Modules
 =======
+
 The following modules are currenty available:
 * napalm_get_facts
 * napalm_install_config
@@ -12,6 +13,7 @@ The following modules are currenty available:
 
 Install
 =======
+
 To install, clone napalm-ansible into your ansible module path. This will depend on your own setup and contents of your ansible.cfg file which tells ansible where to look for modules. For more in-depth explanation, see the `Ansible Docs <http://docs.ansible.com/ansible/intro_configuration.html#library>`_.
 
 If your ansible.cfg looks like:
@@ -52,10 +54,12 @@ drwxrwxr-x 5 user user 4096 Feb 26 12:53 ansible-playbooks
 
 Dependencies
 ============
+
 * `napalm <https://github.com/napalm-automation/napalm>`_ 1.00.0 or later
 
 Examples
 ========
+
 Example to retrieve facts from a device
 ```
  - name: get facts from device
@@ -103,7 +107,7 @@ Example to get compliance report
 A More Detailed Example
 =======================
 
- It's very oftern we come to these tools needing to know how to run before we can walk.
+It's very oftern we come to these tools needing to know how to run before we can walk.
 Please review the `Ansible Documentation <http://docs.ansible.com/ansible/playbooks.html>`_ as this will answer some basic questions.
 It is also advised to have some kind of `yaml linter <https://pypi.python.org/pypi/yamllint>`_ or syntax checker available.
 
