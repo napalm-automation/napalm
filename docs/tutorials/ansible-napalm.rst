@@ -7,6 +7,7 @@ Modules
 =======
 
 The following modules are currenty available:
+
 * napalm_get_facts
 * napalm_install_config
 * napalm_validate
