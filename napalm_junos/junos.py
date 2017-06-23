@@ -535,7 +535,7 @@ class JunOSDriver(NetworkDriver):
                 if 'router_id' not in bgp_neighbor_data[instance_name]:
                     # we only need to set this once
                     bgp_neighbor_data[instance_name]['router_id'] = \
-                        py23_compat.text_type(neighbor_details['local_id'])
+                        py23_compat.text_type(neighbor_details.get('local_id', ''))
                 peer = {
                     key: self._parse_value(value)
                     for key, value in neighbor_details.items()
