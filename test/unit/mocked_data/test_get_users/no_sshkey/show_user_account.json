@@ -1,0 +1,13 @@
+{
+    "users": {
+        "dummy-test": {
+            "username": "dummy-test",
+            "privLevel": 15
+        },
+        "another-dummy-test": {
+            "username": "another-dummy-test",
+            "privLevel": 0,
+            "password": "$1$waUQAEpO$kSmdRL84F5sCoWKHZ8/kU1"
+        }
+    }
+}

@@ -1183,10 +1183,14 @@ class EOSDriver(NetworkDriver):
             user_details.pop('username', '')
             sshkey_value = user_details.pop('sshAuthorizedKey', '')
             sshkey_type, sshkey_value = _sshkey_type(sshkey_value)
+            if sshkey_value != '':
+                sshkey_list = [sshkey_value]
+            else:
+                sshkey_list = []
             user_details.update({
                 'level': user_details.pop('privLevel', 0),
                 'password': py23_compat.text_type(user_details.pop('secret', '')),
-                'sshkeys': [sshkey_value]
+                'sshkeys': sshkey_list
             })
             users[user] = user_details
 
