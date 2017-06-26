@@ -76,7 +76,8 @@ class EOSDriver(NetworkDriver):
         if optional_args is None:
             optional_args = {}
 
-        self.transport = optional_args.get('eos_transport', 'https')
+        # eos_transport is there for backwards compatibility, transport is the preferred method
+        self.transport = optional_args.get('transport', optional_args.get('eos_transport', 'https'))
 
         if self.transport == 'https':
             self.port = optional_args.get('port', 443)
