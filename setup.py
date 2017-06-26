@@ -13,7 +13,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 setup(
     name="napalm-nxos",
     version="0.5.3",
-    packages=find_packages(),
+    packages=find_packages(exclude=["test", "test.*"]),
     author="David Barroso",
     author_email="dbarrosop@dravetech.com",
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
