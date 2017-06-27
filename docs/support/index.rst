@@ -113,6 +113,7 @@ NAPALM supports passing certain optional arguments to some drivers. To do that y
     >>> device = driver('192.168.76.10', 'dbarroso', 'this_is_not_a_secure_password', optional_args=optional_args)
     >>> device.open()
 
+
 List of supported optional arguments
 ____________________________________
 
@@ -122,7 +123,7 @@ ____________________________________
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
 * :code:`global_delay_factor` (ios, vyos) - Allow for additional delay in command execution (default: ``1``).
-* :code:`nxos_protocol` (nxos) - Protocol to connect with.  Only 'https' and 'http' allowed (default: ``http``).
+* :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
 * :code:`ssh_strict` (iosxr, ios, panos, vyos) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
 * :code:`allow_agent` (ios, iosxr, panos, vyos) - Paramiko argument, enable connecting to the SSH agent (default: ``False``).
@@ -133,6 +134,18 @@ ____________________________________
 * :code:`alt_host_keys` (ios, iosxr, panos, vyos) - If ``True``, host keys will be loaded from the file specified in ``alt_key_file``.
 * :code:`alt_key_file` (ios, iosxr, panos, vyos) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
 * :code:`keepalive` (junos, iosxr, ios) - SSH keepalive interval, in seconds (default: ``30`` seconds).
+
+The transport argument
+______________________
+
+Certain drivers support providing an alternate transport in the :code:`optional_args`, overriding the default protocol to connect with. Allowed transports are therefore device/library dependant:
+
+=============== ====================  ====================  ===================
+_               EOS                   NXOS                  IOS
+=============== ====================  ====================  ===================
+**Default**     ``https``             ``https``             ``ssh``
+**Supported**   ``http``, ``https``   ``http``, ``https``   ``telnet``, ``ssh``
+=============== ====================  ====================  ===================
 
 Adding optional arguments to NAPALM drivers
 ___________________________________________
