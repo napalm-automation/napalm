@@ -49,7 +49,7 @@ __all__ = [
 ]
 
 
-def get_network_driver(module_name):
+def get_network_driver(module_name, prepend=True):
     """
     Searches for a class derived form the base NAPALM class NetworkDriver in a specific library.
     The library name must repect the following pattern: napalm_[DEVICE_OS].
@@ -91,7 +91,7 @@ def get_network_driver(module_name):
         # Try to not raise error when users requests IOS-XR for e.g.
         module_install_name = module_name.replace('-', '')
         # Can also request using napalm_[SOMETHING]
-        if 'napalm_' not in module_install_name:
+        if 'napalm_' not in module_install_name and prepend is True:
             module_install_name = 'napalm_{name}'.format(name=module_install_name)
         module = importlib.import_module(module_install_name)
     except ImportError:
