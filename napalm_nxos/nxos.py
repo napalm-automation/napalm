@@ -61,7 +61,8 @@ class NXOSDriver(NetworkDriver):
         if optional_args is None:
             optional_args = {}
 
-        self.transport = optional_args.get('nxos_protocol', 'http')
+        # nxos_protocol is there for backwards compatibility, transport is the preferred method
+        self.transport = optional_args.get('transport', optional_args.get('nxos_protocol', 'https'))
 
         if self.transport == 'https':
             self.port = optional_args.get('port', 443)
