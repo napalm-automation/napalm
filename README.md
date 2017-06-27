@@ -154,7 +154,7 @@ Podcasts
 
 Authors
 =======
- * David Barroso ([dbarrosop@dravetech.com](mailto:dbarroso@dravetech.com))
+ * David Barroso ([dbarrosop@dravetech.com](mailto:dbarrosop@dravetech.com))
  * Elisa Jasinska ([elisa@bigwaveit.org](mailto:elisa@bigwaveit.org))
  * Many others, check the [contributors](https://github.com/napalm-automation/napalm/graphs/contributors) page for details.
 
