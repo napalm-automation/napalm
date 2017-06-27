@@ -114,18 +114,6 @@ NAPALM supports passing certain optional arguments to some drivers. To do that y
     >>> device.open()
 
 
-The transport argument
-______________________
-
-Certain drivers support providing an alternate transport in the :code:`optional_args`, overriding the default protocol to connect with. Allowed transports are therefore device/library dependant:
-
-=============== ====================  ====================  ===================
-_               EOS                   NXOS                  IOS
-=============== ====================  ====================  ===================
-**Default**     ``https``             ``https``             ``ssh``
-**Supported**   ``http``, ``https``   ``http``, ``https``   ``telnet``, ``ssh``
-=============== ====================  ====================  ===================
-
 List of supported optional arguments
 ____________________________________
 
@@ -146,6 +134,18 @@ ____________________________________
 * :code:`alt_host_keys` (ios, iosxr, panos, vyos) - If ``True``, host keys will be loaded from the file specified in ``alt_key_file``.
 * :code:`alt_key_file` (ios, iosxr, panos, vyos) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
 * :code:`keepalive` (junos, iosxr, ios) - SSH keepalive interval, in seconds (default: ``30`` seconds).
+
+The transport argument
+______________________
+
+Certain drivers support providing an alternate transport in the :code:`optional_args`, overriding the default protocol to connect with. Allowed transports are therefore device/library dependant:
+
+=============== ====================  ====================  ===================
+_               EOS                   NXOS                  IOS
+=============== ====================  ====================  ===================
+**Default**     ``https``             ``https``             ``ssh``
+**Supported**   ``http``, ``https``   ``http``, ``https``   ``telnet``, ``ssh``
+=============== ====================  ====================  ===================
 
 Adding optional arguments to NAPALM drivers
 ___________________________________________
