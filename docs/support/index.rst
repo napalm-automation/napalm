@@ -118,7 +118,7 @@ List of supported optional arguments
 ____________________________________
 
 * :code:`fortios_vdom` (fortios) - VDOM to connect to.
-* :code:`port` (eos, iosxr, junos, ios, ros, vyos) - Allows you to specify a port other than the default.
+* :code:`port` (eos, iosxr, junos, ios, nxos, ros, vyos) - Allows you to specify a port other than the default.
 * :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: ``False``).
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
