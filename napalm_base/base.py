@@ -68,7 +68,7 @@ class NetworkDriver(object):
         try:
             if self.is_alive()["is_alive"]:
                 self.close()
-        except NotImplementedError:
+        except Exception:
             pass
 
     @staticmethod
