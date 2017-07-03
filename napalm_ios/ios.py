@@ -1774,6 +1774,7 @@ class IOSDriver(NetworkDriver):
         RE_MACTABLE_DEFAULT = r"^" + MAC_REGEX
         RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 7 fields
         RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 6 fields
+        RE_MACTABLE_6500_3 = r"^\s{51}\S+"                               # Fill down from prior
         RE_MACTABLE_4500 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)     # 5 fields
         RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
         RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields (2960/4500)
@@ -1812,7 +1813,21 @@ class IOSDriver(NetworkDriver):
         output = "\n".join(output).strip()
         # Strip any leading astericks
         output = re.sub(r"^\*", "", output, flags=re.M)
+        fill_down_vlan = fill_down_mac = fill_down_mac_type = ''
         for line in output.splitlines():
+            # Cat6500 one off format
+            if (re.search(RE_MACTABLE_6500_3, line)):
+                interface = line.strip()
+                if ',' in interface:
+                    interfaces = interface.split(',')
+                else:
+                    interfaces = []
+                    interfaces.append(interface)
+                for single_interface in interfaces:
+                    mac_address_table.append(process_mac_fields(fill_down_vlan, fill_down_mac,
+                                                                fill_down_mac_type,
+                                                                single_interface))
+                continue
             line = line.strip()
             if line == '':
                 continue
@@ -1834,7 +1849,16 @@ class IOSDriver(NetworkDriver):
                     _, vlan, mac, mac_type, _, _, interface = line.split()
                 elif len(line.split()) == 6:
                     vlan, mac, mac_type, _, _, interface = line.split()
-                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                if ',' in interface:
+                    interfaces = interface.split(',')
+                    fill_down_vlan = vlan
+                    fill_down_mac = mac
+                    fill_down_mac_type = mac_type
+                    for single_interface in interfaces:
+                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                    single_interface))
+                else:
+                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             # Cat4500 format
             elif re.search(RE_MACTABLE_4500, line) and len(line.split()) == 5:
                 vlan, mac, mac_type, _, interface = line.split()
