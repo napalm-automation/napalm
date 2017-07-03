@@ -236,7 +236,7 @@ class IOSDriver(NetworkDriver):
         Return None or raise exception
         """
         self.config_replace = True
-        if not self.dest_file_system or self.dest_file_system == None:
+        if not self.dest_file_system or self.dest_file_system is None:
             self.dest_file_system = self._autodetect()
         return_status, msg = self._load_candidate_wrapper(source_file=filename,
                                                           source_config=config,
@@ -253,7 +253,7 @@ class IOSDriver(NetworkDriver):
         """
         self.config_replace = False
 
-        if not self.dest_file_system or self.dest_file_system == None:
+        if not self.dest_file_system or self.dest_file_system is None:
             self.dest_file_system = self._autodetect()
         return_status, msg = self._load_candidate_wrapper(source_file=filename,
                                                           source_config=config,
