@@ -135,12 +135,13 @@ class IOSDriver(NetworkDriver):
                                      **self.netmiko_optional_args)
         # ensure in enable mode
         self.device.enable()
-        if not self.dest_file_system:
-            try:
-                self.dest_file_system = self.device._autodetect_fs()
-            except AttributeError:
-                raise AttributeError("Netmiko _autodetect_fs not found please upgrade Netmiko or "
-                                     "specify dest_file_system in optional_args.")
+
+    def _autodetect(self):
+        try:
+            return self.device._autodetect_fs()
+        except AttributeError:
+            raise AttributeError("Netmiko _autodetect_fs not found please upgrade Netmiko or "
+                                 "specify dest_file_system in optional_args.")
 
     def close(self):
         """Close the connection to the device."""
@@ -235,6 +236,8 @@ class IOSDriver(NetworkDriver):
         Return None or raise exception
         """
         self.config_replace = True
+        if not self.dest_file_system or self.dest_file_system == None:
+            self.dest_file_system = self._autodetect()
         return_status, msg = self._load_candidate_wrapper(source_file=filename,
                                                           source_config=config,
                                                           dest_file=self.candidate_cfg,
@@ -249,6 +252,9 @@ class IOSDriver(NetworkDriver):
         Merge configuration in: copy <file> running-config
         """
         self.config_replace = False
+
+        if not self.dest_file_system or self.dest_file_system == None:
+            self.dest_file_system = self._autodetect()
         return_status, msg = self._load_candidate_wrapper(source_file=filename,
                                                           source_config=config,
                                                           dest_file=self.merge_cfg,
