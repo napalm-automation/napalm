@@ -35,6 +35,7 @@ except AttributeError:
 # NAPALM base
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ModuleImportError
+from napalm_base.mock import MockDriver
 from napalm_base.utils import py23_compat
 
 try:
@@ -81,6 +82,8 @@ def get_network_driver(module_name, prepend=True):
         napalm_base.exceptions.ModuleImportError: Cannot import "napalm_wrong". Is the library \
         installed?
     """
+    if module_name == "mock":
+        return MockDriver
 
     if not (isinstance(module_name, py23_compat.string_types) and len(module_name) > 0):
         raise ModuleImportError('Please provide a valid driver name.')

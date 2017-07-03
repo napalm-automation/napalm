@@ -49,15 +49,15 @@ class NetworkDriver(object):
     def __enter__(self):
         try:
             self.open()
-        except:  # noqa
+        except Exception:  # noqa
             exc_info = sys.exc_info()
-            self.__raise_clean_exception(exc_info[0], exc_info[1], exc_info[2])
+            return self.__raise_clean_exception(exc_info[0], exc_info[1], exc_info[2])
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.close()
         if exc_type is not None:
-            self.__raise_clean_exception(exc_type, exc_value, exc_traceback)
+            return self.__raise_clean_exception(exc_type, exc_value, exc_traceback)
 
     def __del__(self):
         """
@@ -90,8 +90,7 @@ class NetworkDriver(object):
                       "https://github.com/napalm-automation/napalm/issues\n"
                       "Don't forget to include this traceback.")
             print(epilog)
-        # Traceback should already be attached to exception; no need to re-attach
-        raise exc_value
+        return False
 
     def open(self):
         """
