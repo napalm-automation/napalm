@@ -134,6 +134,7 @@ ____________________________________
 * :code:`alt_host_keys` (ios, iosxr, panos, vyos) - If ``True``, host keys will be loaded from the file specified in ``alt_key_file``.
 * :code:`alt_key_file` (ios, iosxr, panos, vyos) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
 * :code:`keepalive` (junos, iosxr, ios) - SSH keepalive interval, in seconds (default: ``30`` seconds).
+* :code:`ignore_warning` (junos) - ignore warning during configuration loading (default: ``False``).
 
 The transport argument
 ______________________
