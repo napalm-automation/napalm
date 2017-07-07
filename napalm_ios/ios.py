@@ -136,7 +136,7 @@ class IOSDriver(NetworkDriver):
         # ensure in enable mode
         self.device.enable()
 
-    def _autodetect(self):
+    def _discover_file_system(self):
         try:
             return self.device._autodetect_fs()
         except AttributeError:
@@ -236,8 +236,7 @@ class IOSDriver(NetworkDriver):
         Return None or raise exception
         """
         self.config_replace = True
-        if not self.dest_file_system or self.dest_file_system is None:
-            self.dest_file_system = self._autodetect()
+        self.dest_file_system = self.file_system
         return_status, msg = self._load_candidate_wrapper(source_file=filename,
                                                           source_config=config,
                                                           dest_file=self.candidate_cfg,
@@ -253,8 +252,7 @@ class IOSDriver(NetworkDriver):
         """
         self.config_replace = False
 
-        if not self.dest_file_system or self.dest_file_system is None:
-            self.dest_file_system = self._autodetect()
+        self.dest_file_system = self.file_system
         return_status, msg = self._load_candidate_wrapper(source_file=filename,
                                                           source_config=config,
                                                           dest_file=self.merge_cfg,
@@ -2134,3 +2132,7 @@ class IOSDriver(NetworkDriver):
             configs['running'] = output
 
         return configs
+
+    @property
+    def file_system(self):
+        return self.dest_file_system or self._discover_file_system()
