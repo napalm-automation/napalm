@@ -83,7 +83,7 @@ class IOSDriver(NetworkDriver):
         self.inline_transfer = optional_args.get('inline_transfer', False)
 
         # None will cause autodetection of dest_file_system
-        self.dest_file_system = optional_args.get('dest_file_system', None)
+        self._dest_file_system = optional_args.get('dest_file_system', None)
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
 
         # Netmiko possible arguments
@@ -135,12 +135,13 @@ class IOSDriver(NetworkDriver):
                                      **self.netmiko_optional_args)
         # ensure in enable mode
         self.device.enable()
-        if not self.dest_file_system:
-            try:
-                self.dest_file_system = self.device._autodetect_fs()
-            except AttributeError:
-                raise AttributeError("Netmiko _autodetect_fs not found please upgrade Netmiko or "
-                                     "specify dest_file_system in optional_args.")
+
+    def _discover_file_system(self):
+        try:
+            return self.device._autodetect_fs()
+        except Exception:
+            raise Exception("Netmiko _autodetect_fs failed to workaround specify "
+                                 "dest_file_system in optional_args.")
 
     def close(self):
         """Close the connection to the device."""
@@ -2162,3 +2163,9 @@ class IOSDriver(NetworkDriver):
             configs['running'] = output
 
         return configs
+
+    @property
+    def dest_file_system(self):
+        if self._dest_file_system is None:
+            self._dest_file_system = self._discover_file_system()
+        return self._dest_file_system
