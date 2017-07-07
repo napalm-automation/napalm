@@ -139,7 +139,7 @@ class IOSDriver(NetworkDriver):
     def _discover_file_system(self):
         try:
             return self.device._autodetect_fs()
-        except Exception as e:
+        except Exception:
             msg = "Netmiko _autodetect_fs failed (to workaround specify " \
                   "dest_file_system in optional_args.)"
             raise CommandErrorException(msg)
