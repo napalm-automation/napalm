@@ -83,7 +83,7 @@ class IOSDriver(NetworkDriver):
         self.inline_transfer = optional_args.get('inline_transfer', False)
 
         # None will cause autodetection of dest_file_system
-        self.dest_file_system = optional_args.get('dest_file_system', None)
+        self._dest_file_system = optional_args.get('dest_file_system', None)
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
 
         # Netmiko possible arguments
@@ -139,9 +139,9 @@ class IOSDriver(NetworkDriver):
     def _discover_file_system(self):
         try:
             return self.device._autodetect_fs()
-        except AttributeError:
-            raise AttributeError("Netmiko _autodetect_fs not found please upgrade Netmiko or "
-                                 "specify dest_file_system in optional_args.")
+        except Exception:
+            raise Exception("Netmiko _autodetect_fs failed to workaround specify "
+                                 "dest_file_system in optional_args.")
 
     def close(self):
         """Close the connection to the device."""
@@ -236,7 +236,6 @@ class IOSDriver(NetworkDriver):
         Return None or raise exception
         """
         self.config_replace = True
-        self.dest_file_system = self.file_system
         return_status, msg = self._load_candidate_wrapper(source_file=filename,
                                                           source_config=config,
                                                           dest_file=self.candidate_cfg,
@@ -251,8 +250,6 @@ class IOSDriver(NetworkDriver):
         Merge configuration in: copy <file> running-config
         """
         self.config_replace = False
-
-        self.dest_file_system = self.file_system
         return_status, msg = self._load_candidate_wrapper(source_file=filename,
                                                           source_config=config,
                                                           dest_file=self.merge_cfg,
@@ -2134,5 +2131,7 @@ class IOSDriver(NetworkDriver):
         return configs
 
     @property
-    def file_system(self):
-        return self.dest_file_system or self._discover_file_system()
+    def dest_file_system(self):
+        if self._dest_file_system is None:
+            self._dest_file_system = self._discover_file_system()
+        return self._dest_file_system
