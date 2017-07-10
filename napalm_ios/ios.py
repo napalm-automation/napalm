@@ -27,7 +27,7 @@ from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from netmiko import __version__ as netmiko_version
 from napalm_base.base import NetworkDriver
 from napalm_base.exceptions import ReplaceConfigException, MergeConfigException, \
-            ConnectionClosedException
+            ConnectionClosedException, CommandErrorException
 
 from napalm_base.utils import py23_compat
 import napalm_base.constants as C
@@ -83,7 +83,7 @@ class IOSDriver(NetworkDriver):
         self.inline_transfer = optional_args.get('inline_transfer', False)
 
         # None will cause autodetection of dest_file_system
-        self.dest_file_system = optional_args.get('dest_file_system', None)
+        self._dest_file_system = optional_args.get('dest_file_system', None)
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
 
         # Netmiko possible arguments
@@ -135,12 +135,14 @@ class IOSDriver(NetworkDriver):
                                      **self.netmiko_optional_args)
         # ensure in enable mode
         self.device.enable()
-        if not self.dest_file_system:
-            try:
-                self.dest_file_system = self.device._autodetect_fs()
-            except AttributeError:
-                raise AttributeError("Netmiko _autodetect_fs not found please upgrade Netmiko or "
-                                     "specify dest_file_system in optional_args.")
+
+    def _discover_file_system(self):
+        try:
+            return self.device._autodetect_fs()
+        except Exception:
+            msg = "Netmiko _autodetect_fs failed (to workaround specify " \
+                  "dest_file_system in optional_args.)"
+            raise CommandErrorException(msg)
 
     def close(self):
         """Close the connection to the device."""
@@ -167,16 +169,15 @@ class IOSDriver(NetworkDriver):
         """Returns a flag with the state of the SSH connection."""
         null = chr(0)
         try:
-            # Try sending ASCII null byte to maintain
-            #   the connection alive
-            self.device.send_command(null)
+            if self.device is None:
+                return {'is_alive': False}
+            else:
+                # Try sending ASCII null byte to maintain the connection alive
+                self.device.send_command(null)
         except (socket.error, EOFError):
-            # If unable to send, we can tell for sure
-            #   that the connection is unusable,
-            #   hence return False.
-            return {
-                'is_alive': False
-            }
+            # If unable to send, we can tell for sure that the connection is unusable,
+            # hence return False.
+            return {'is_alive': False}
         return {
             'is_alive': self.device.remote_conn.transport.is_active()
         }
@@ -2162,3 +2163,10 @@ class IOSDriver(NetworkDriver):
             configs['running'] = output
 
         return configs
+
+    @property
+    def dest_file_system(self):
+        # The self.device check ensures napalm has an open connection
+        if self.device and self._dest_file_system is None:
+            self._dest_file_system = self._discover_file_system()
+        return self._dest_file_system
