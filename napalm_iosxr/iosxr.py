@@ -1143,7 +1143,8 @@ class IOSXRDriver(NetworkDriver):
 
         xpath = './/NodeTable/Node/Associations/PeerSummaryInfo/Entry/PeerInfoCommon'
         for node in result_tree.xpath(xpath):
-            synchronized = ast.literal_eval(napalm_base.helpers.find_txt(node, 'IsSysPeer', 'false').title())
+            synchronized = ast.literal_eval(
+                napalm_base.helpers.find_txt(node, 'IsSysPeer', 'false').title())
             address = napalm_base.helpers.find_txt(node, 'Address')
             if address == 'DLRSC node':
                 continue
