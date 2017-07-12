@@ -17,7 +17,6 @@ from __future__ import unicode_literals
 
 # import stdlib
 import re
-import ast
 import copy
 import socket
 from collections import defaultdict
@@ -819,8 +818,8 @@ class IOSXRDriver(NetworkDriver):
                     bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/RoutePolicyIn')
             export_policy = napalm_base.helpers.find_txt(
                     bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/RoutePolicyOut')
-            multipath = ast.literal_eval((napalm_base.helpers.find_txt(
-                bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/Multipath') or 'false').title())
+            multipath = napalm_base.helpers.find_txt(
+                bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/Multipath') == 'true'
             peer_as = napalm_base.helpers.convert(
                 int, napalm_base.helpers.find_txt(bgp_group, 'RemoteAS/AS_YY'), 0)
             local_as = napalm_base.helpers.convert(
@@ -950,8 +949,8 @@ class IOSXRDriver(NetworkDriver):
                     napalm_base.helpers.find_txt(neighbor, 'Naming/NeighborAddress/IPV4Address') or
                     napalm_base.helpers.find_txt(neighbor, 'Naming/NeighborAddress/IPV6Address')
                 )
-                local_address_configured = ast.literal_eval(napalm_base.helpers.find_txt(
-                    neighbor, 'IsLocalAddressConfigured', 'false').title())
+                local_address_configured = napalm_base.helpers.find_txt(
+                    neighbor, 'IsLocalAddressConfigured') == 'true'
                 local_address = napalm_base.helpers.ip(
                     napalm_base.helpers.find_txt(neighbor, 'ConnectionLocalAddress/IPV4Address') or
                     napalm_base.helpers.find_txt(neighbor, 'ConnectionLocalAddress/IPV6Address')
@@ -964,12 +963,12 @@ class IOSXRDriver(NetworkDriver):
                 )
                 remote_port = napalm_base.helpers.convert(
                     int, napalm_base.helpers.find_txt(neighbor, 'ConnectionRemotePort'))
-                multihop = ast.literal_eval(napalm_base.helpers.find_txt(
-                    neighbor, 'IsExternalNeighborNotDirectlyConnected', 'false').title())
-                remove_private_as = ast.literal_eval(napalm_base.helpers.find_txt(
-                    neighbor, 'AFData/Entry/RemovePrivateASFromUpdates', 'false').title())
-                multipath = ast.literal_eval(napalm_base.helpers.find_txt(
-                    neighbor, 'AFData/Entry/SelectiveMultipathEligible', 'false').title())
+                multihop = napalm_base.helpers.find_txt(
+                    neighbor, 'IsExternalNeighborNotDirectlyConnected') == 'true'
+                remove_private_as = napalm_base.helpers.find_txt(
+                    neighbor, 'AFData/Entry/RemovePrivateASFromUpdates') == 'true'
+                multipath = napalm_base.helpers.find_txt(
+                    neighbor, 'AFData/Entry/SelectiveMultipathEligible') == 'true'
                 import_policy = napalm_base.helpers.find_txt(
                     neighbor, 'AFData/Entry/RoutePolicyIn')
                 export_policy = napalm_base.helpers.find_txt(
@@ -1001,10 +1000,10 @@ class IOSXRDriver(NetworkDriver):
                 advertised_prefix_count = napalm_base.helpers.convert(
                     int, napalm_base.helpers.find_txt(
                         neighbor, 'AFData/Entry/PrefixesAdvertised'), 0)
-                suppress_4byte_as = ast.literal_eval(napalm_base.helpers.find_txt(
-                    neighbor, 'Suppress4ByteAs', 'false').title())
-                local_as_prepend = not ast.literal_eval(napalm_base.helpers.find_txt(
-                    neighbor, 'LocalASNoPrepend', 'false').title())
+                suppress_4byte_as = napalm_base.helpers.find_txt(
+                    neighbor, 'Suppress4ByteAs') == 'true'
+                local_as_prepend = napalm_base.helpers.find_txt(
+                    neighbor, 'LocalASNoPrepend') != 'true'
                 holdtime = napalm_base.helpers.convert(
                     int, napalm_base.helpers.find_txt(neighbor, 'HoldTime'), 0) or vrf_holdtime
                 configured_holdtime = napalm_base.helpers.convert(
@@ -1143,8 +1142,7 @@ class IOSXRDriver(NetworkDriver):
 
         xpath = './/NodeTable/Node/Associations/PeerSummaryInfo/Entry/PeerInfoCommon'
         for node in result_tree.xpath(xpath):
-            synchronized = ast.literal_eval(
-                napalm_base.helpers.find_txt(node, 'IsSysPeer', 'false').title())
+            synchronized = napalm_base.helpers.find_txt(node, 'IsSysPeer') == 'true'
             address = napalm_base.helpers.find_txt(node, 'Address')
             if address == 'DLRSC node':
                 continue
@@ -1367,8 +1365,8 @@ class IOSXRDriver(NetworkDriver):
                 for bgp_path in bgp_route_tree.xpath('.//Path'):
                     single_route_details = route_details.copy()
                     if 'NotFound' not in bgp_path.keys():
-                        best_path = ast.literal_eval(napalm_base.helpers.find_txt(
-                            bgp_path, 'PathInformation/IsBestPath', 'false').title())
+                        best_path = napalm_base.helpers.find_txt(
+                            bgp_path, 'PathInformation/IsBestPath') == 'true'
                         local_preference = napalm_base.helpers.convert(
                             int,
                             napalm_base.helpers.find_txt(
