@@ -12,7 +12,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-base",
-    version='0.24.2',
+    version='0.24.3',
     packages=find_packages(),
     author="David Barroso, Kirk Byers, Mircea Ulinic",
     author_email="dbarrosop@dravetech.com, ping@mirceaulinic.net, ktbyers@twb-tech.com",
