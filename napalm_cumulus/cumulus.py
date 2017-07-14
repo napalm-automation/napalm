@@ -23,8 +23,10 @@ from __future__ import unicode_literals
 
 import re
 import json
+import ipaddress
 from datetime import datetime
 from pytz import timezone
+from collections import defaultdict
 
 from netmiko import ConnectHandler
 from netmiko.ssh_exception import NetMikoTimeoutException
@@ -481,3 +483,27 @@ class CumulusDriver(NetworkDriver):
             for interface in interfaces.keys():
                 interfaces[interface]['last_flapped'] = -1
         return interfaces
+
+    def get_interfaces_ip(self):
+        # Get net show interface all json output.
+        output = self._send_command('sudo net show interface all json')
+        # Handling bad send_command_timing return output.
+        try:
+            output_json = json.loads(output)
+        except ValueError:
+            output_json = json.loads(self.device.send_command('sudo net show interface all json'))
+
+        def rec_dd(): return defaultdict(rec_dd)
+        interfaces_ip = rec_dd()
+
+        for interface in output_json:
+            if not output_json[interface]['iface_obj']['ip_address']['allentries']:
+                interfaces_ip[interface]
+            else:
+                for ip_address in output_json[interface]['iface_obj']['ip_address']['allentries']:
+                    ip_ver = ipaddress.ip_interface(py23_compat.text_type(ip_address)).version
+                    ip_ver = 'ipv{}'.format(ip_ver)
+                    ip, prefix = ip_address.split('/')
+                    interfaces_ip[interface][ip_ver][ip] = {'prefix_length': int(prefix)}
+
+        return interfaces_ip

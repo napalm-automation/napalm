@@ -1,0 +1,120 @@
+{
+    "eth0": {
+        "connector_type": null, 
+        "iface_obj": {
+            "asic": null, 
+            "connector_type": 0, 
+            "counters": null, 
+            "description": "", 
+            "ip_addr_assign": 1, 
+            "ip_address": {
+                "allentries": [
+                    "192.168.0.136/24"
+                ]
+            }, 
+            "ip_neighbor": {
+                "allentries": {
+                    "192.168.0.115": {
+                        "mac": "52:54:00:f4:41:a1"
+                    }
+                }
+            }, 
+            "linkstate": 2, 
+            "lldp": null, 
+            "mac": "52:54:00:32:a5:a0", 
+            "mtu": 1500, 
+            "name": "eth0", 
+            "native_vlan": [], 
+            "speed": 1000, 
+            "vlan": null, 
+            "vlan_filtering": false, 
+            "vlan_list": {}
+        }, 
+        "linkstate": "UP", 
+        "name": "eth0", 
+        "port_category": "Mgmt", 
+        "speed": "1G", 
+        "summary": [
+            "IP: 192.168.0.136/24(DHCP)"
+        ]
+    }, 
+    "lo": {
+        "connector_type": null, 
+        "iface_obj": {
+            "asic": null, 
+            "connector_type": 0, 
+            "counters": null, 
+            "description": "", 
+            "ip_addr_assign": 0, 
+            "ip_address": {
+                "allentries": [
+                    "127.0.0.1/8", 
+                    "192.168.100.1/24", 
+                    "192.168.101.1/24", 
+                    "::1/128"
+                ]
+            }, 
+            "ip_neighbor": {
+                "allentries": {}
+            }, 
+            "linkstate": 2, 
+            "lldp": null, 
+            "mac": "00:00:00:00:00:00", 
+            "mtu": 65536, 
+            "name": "lo", 
+            "native_vlan": [], 
+            "speed": null, 
+            "vlan": null, 
+            "vlan_filtering": false, 
+            "vlan_list": {}
+        }, 
+        "linkstate": "UP", 
+        "name": "lo", 
+        "port_category": "Loopback", 
+        "speed": "N/A", 
+        "summary": [
+            "IP: 127.0.0.1/8, 192.168.100.1/24, 192.168.101.1/24, ::1/128"
+        ]
+    }, 
+    "swp1": {
+        "connector_type": null, 
+        "iface_obj": {
+            "asic": null, 
+            "connector_type": 0, 
+            "counters": {
+                "all": {
+                    "rx": {}, 
+                    "tx": {}
+                }, 
+                "total_err": null, 
+                "total_rx": null, 
+                "total_tx": null
+            }, 
+            "description": "", 
+            "ip_addr_assign": 0, 
+            "ip_address": {
+                "allentries": []
+            }, 
+            "ip_neighbor": {
+                "allentries": {}
+            }, 
+            "linkstate": 0, 
+            "lldp": null, 
+            "mac": "52:54:00:1f:5a:a7", 
+            "mtu": 1500, 
+            "name": "swp1", 
+            "native_vlan": [], 
+            "speed": 0, 
+            "vlan": null, 
+            "vlan_filtering": false, 
+            "vlan_list": {}
+        }, 
+        "linkstate": "ADMDN", 
+        "name": "swp1", 
+        "port_category": "NotConfigured", 
+        "speed": "0M", 
+        "summary": [
+            ""
+        ]
+    }
+}
