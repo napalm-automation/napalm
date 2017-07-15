@@ -202,9 +202,9 @@ class JunOSDriver(NetworkDriver):
             self.device.cu.load(configuration, format=fmt, overwrite=overwrite)
         except ConfigLoadError as e:
             if self.config_replace:
-                raise ReplaceConfigException(e.message)
+                raise ReplaceConfigException(e.errs)
             else:
-                raise MergeConfigException(e.message)
+                raise MergeConfigException(e.errs)
 
     def load_replace_candidate(self, filename=None, config=None):
         """Open the candidate config and merge."""
