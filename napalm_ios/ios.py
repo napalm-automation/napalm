@@ -412,7 +412,8 @@ class IOSDriver(NetworkDriver):
             self._enable_confirm()
             if 'Invalid input detected' in output:
                 self.rollback()
-                merge_error = "Configuration merge failed; automatic rollback attempted"
+                err_header = "Configuration merge failed; automatic rollback attempted"
+                merge_error = "{0}:\n{1}".format(err_header, output)
                 raise MergeConfigException(merge_error)
 
         # Save config to startup (both replace and merge)
