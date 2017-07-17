@@ -670,10 +670,13 @@ class JunOSDriver(NetworkDriver):
             '''
             Trim specified number of columns from start of line.
             '''
-            newlines = []
-            for line in txt.splitlines():
-                newlines.append(line[length:])
-            return newlines
+            try:
+                newlines = []
+                for line in txt.splitlines():
+                    newlines.append(line[int(length):])
+                return '\n'.join(newlines)
+            except ValueError:
+                return txt
 
         def _except(txt, pattern):
             '''
@@ -690,9 +693,12 @@ class JunOSDriver(NetworkDriver):
             '''
             Display end of output only.
             '''
-            return '\n'.join(
-                txt.splitlines()[(-1)*length:]
-            )
+            try:
+                return '\n'.join(
+                    txt.splitlines()[(-1)*int(length):]
+                )
+            except ValueError:
+                return txt
 
         def _match(txt, pattern):
             '''
