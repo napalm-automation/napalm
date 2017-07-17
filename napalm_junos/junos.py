@@ -660,7 +660,7 @@ class JunOSDriver(NetworkDriver):
 
         for command in commands:
             cli_output[py23_compat.text_type(command)] = py23_compat.text_type(
-                self.device.cli(command))
+                self.device.cli(command, warning=False))
 
         return cli_output
 
