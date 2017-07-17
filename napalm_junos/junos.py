@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import re
 import json
 import logging
+import tempfile
 import collections
 from copy import deepcopy
 from collections import OrderedDict
@@ -85,6 +86,7 @@ class JunOSDriver(NetworkDriver):
         self.keepalive = optional_args.get('keepalive', 30)
         self.ssh_config_file = optional_args.get('ssh_config_file', None)
         self.ignore_warning = optional_args.get('ignore_warning', False)
+        self.temp_dir = optional_args.get('temp_dir', tempfile.gettempdir())
 
         if self.key_file:
             self.device = Device(hostname,
@@ -742,8 +744,24 @@ class JunOSDriver(NetworkDriver):
 
         if not isinstance(commands, list):
             raise TypeError('Please enter a valid list of commands!')
+        _PIPE_BLACKLIST = ['save']
+        # Preprocessing to avoid forbidden commands
         for command in commands:
-            raw_txt = self.device.cli(command, warning=False)
+            exploded_cmd = command.split('|')
+            command_safe_parts = []
+            for pipe in exploded_cmd[1:]:
+                exploded_pipe = pipe.split()
+                pipe_oper = exploded_pipe[0]  # always there
+                if pipe_oper in _PIPE_BLACKLIST:
+                    continue
+                pipe_args = ''.join(exploded_pipe[1:2])
+                safe_pipe = pipe_oper if not pipe_args else '{fun} {args}'.format(fun=pipe_oper,
+                                                                                  args=pipe_args)
+                command_safe_parts.append(safe_pipe)
+            safe_command = exploded_cmd[0] if not command_safe_parts else\
+                           '{base} | {pipes}'.format(base=exploded_cmd[0],
+                                                     pipes=' | '.join(command_safe_parts))
+            raw_txt = self.device.cli(safe_command, warning=False)
             cli_output[py23_compat.text_type(command)] = py23_compat.text_type(
                 _process_pipe(command, raw_txt))
         return cli_output
