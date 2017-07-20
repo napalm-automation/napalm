@@ -558,24 +558,24 @@ class JunOSDriver(NetworkDriver):
                         bgp_neighbor_data[instance_name]['peers'][neighbor] = {}
                     bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
 
-        old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 15
+        # old_junos = napalm_base.helpers.convert(
+        #     int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 15
 
-        if old_junos:
-            instances = junos_views.junos_route_instance_table(self.device).get()
-            for instance, instance_data in instances.items():
-                if instance.startswith('__'):
-                    # junos internal instances
-                    continue
-                bgp_neighbor_data[instance] = {'peers': {}}
-                instance_neighbors = bgp_neighbors_table.get(instance=instance).items()
-                uptime_table_items = uptime_table.get(instance=instance).items()
-                _get_bgp_neighbors_core(instance_neighbors,
-                                        instance=instance,
-                                        uptime_table_items=uptime_table_items)
-        else:
-            instance_neighbors = bgp_neighbors_table.get().items()
-            _get_bgp_neighbors_core(instance_neighbors)
+        # if old_junos:
+        instances = junos_views.junos_route_instance_table(self.device).get()
+        for instance, instance_data in instances.items():
+            if instance.startswith('__'):
+                # junos internal instances
+                continue
+            bgp_neighbor_data[instance] = {'peers': {}}
+            instance_neighbors = bgp_neighbors_table.get(instance=instance).items()
+            uptime_table_items = uptime_table.get(instance=instance).items()
+            _get_bgp_neighbors_core(instance_neighbors,
+                                    instance=instance,
+                                    uptime_table_items=uptime_table_items)
+        # else:
+        #     instance_neighbors = bgp_neighbors_table.get().items()
+        #     _get_bgp_neighbors_core(instance_neighbors)
         bgp_tmp_dict = {}
         for k, v in bgp_neighbor_data.items():
             if bgp_neighbor_data[k]['peers']:
@@ -1099,23 +1099,23 @@ class JunOSDriver(NetworkDriver):
                 neighbor_details.update(neighbor_rib_details)
                 bgp_neighbors[instance_name][remote_as].append(neighbor_details)
 
-        old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 15
+        # old_junos = napalm_base.helpers.convert(
+        #     int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 15
         bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
 
-        if old_junos:
-            instances = junos_views.junos_route_instance_table(self.device)
-            for instance, instance_data in instances.get().items():
-                if instance.startswith('__'):
-                    # junos internal instances
-                    continue
-                neighbor_data = bgp_neighbors_table.get(instance=instance,
-                                                        neighbor_address=neighbor_address).items()
-                _bgp_iter_core(neighbor_data, instance=instance)
-        else:
-            bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
-            neighbor_data = bgp_neighbors_table.get(neighbor_address=neighbor_address).items()
-            _bgp_iter_core(neighbor_data)
+        # if old_junos:
+        instances = junos_views.junos_route_instance_table(self.device)
+        for instance, instance_data in instances.get().items():
+            if instance.startswith('__'):
+                # junos internal instances
+                continue
+            neighbor_data = bgp_neighbors_table.get(instance=instance,
+                                                    neighbor_address=neighbor_address).items()
+            _bgp_iter_core(neighbor_data, instance=instance)
+        # else:
+        #     bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
+        #     neighbor_data = bgp_neighbors_table.get(neighbor_address=neighbor_address).items()
+        #     _bgp_iter_core(neighbor_data)
         return bgp_neighbors
 
     def get_arp_table(self):
