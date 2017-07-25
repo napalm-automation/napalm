@@ -23,6 +23,7 @@ import json
 import logging
 import collections
 from copy import deepcopy
+from collections import OrderedDict
 
 # import third party lib
 from lxml.builder import E
@@ -655,13 +656,112 @@ class JunOSDriver(NetworkDriver):
         """Execute raw CLI commands and returns their output."""
         cli_output = {}
 
+        def _count(txt, none):  # Second arg for consistency only. noqa
+            '''
+            Return the exact output, as Junos displays
+            e.g.:
+            > show system processes extensive | match root | count
+            Count: 113 lines
+            '''
+            count = len(txt.splitlines())
+            return 'Count: {count} lines'.format(count=count)
+
+        def _trim(txt, length):
+            '''
+            Trim specified number of columns from start of line.
+            '''
+            try:
+                newlines = []
+                for line in txt.splitlines():
+                    newlines.append(line[int(length):])
+                return '\n'.join(newlines)
+            except ValueError:
+                return txt
+
+        def _except(txt, pattern):
+            '''
+            Show only text that does not match a pattern.
+            '''
+            rgx = '^.*({pattern}).*$'.format(pattern=pattern)
+            unmatched = [
+                line for line in txt.splitlines()
+                if not re.search(rgx, line, re.I)
+            ]
+            return '\n'.join(unmatched)
+
+        def _last(txt, length):
+            '''
+            Display end of output only.
+            '''
+            try:
+                return '\n'.join(
+                    txt.splitlines()[(-1)*int(length):]
+                )
+            except ValueError:
+                return txt
+
+        def _match(txt, pattern):
+            '''
+            Show only text that matches a pattern.
+            '''
+            rgx = '^.*({pattern}).*$'.format(pattern=pattern)
+            matched = [
+                line for line in txt.splitlines()
+                if re.search(rgx, line, re.I)
+            ]
+            return '\n'.join(matched)
+
+        def _process_pipe(cmd, txt):
+            '''
+            Process CLI output from Juniper device that
+            doesn't allow piping the output.
+            '''
+            if not txt:
+                return txt
+            _OF_MAP = OrderedDict()
+            _OF_MAP['except'] = _except
+            _OF_MAP['match'] = _match
+            _OF_MAP['last'] = _last
+            _OF_MAP['trim'] = _trim
+            _OF_MAP['count'] = _count
+            # the operations order matter in this case!
+            exploded_cmd = cmd.split('|')
+            pipe_oper_args = {}
+            for pipe in exploded_cmd[1:]:
+                exploded_pipe = pipe.split()
+                pipe_oper = exploded_pipe[0]  # always there
+                pipe_args = ''.join(exploded_pipe[1:2])
+                # will not throw error when there's no arg
+                pipe_oper_args[pipe_oper] = pipe_args
+            for oper in _OF_MAP.keys():
+                # to make sure the operation sequence is correct
+                if oper not in pipe_oper_args.keys():
+                    continue
+                txt = _OF_MAP[oper](txt, pipe_oper_args[oper])
+            return txt
+
         if not isinstance(commands, list):
             raise TypeError('Please enter a valid list of commands!')
-
+        _PIPE_BLACKLIST = ['save']
+        # Preprocessing to avoid forbidden commands
         for command in commands:
+            exploded_cmd = command.split('|')
+            command_safe_parts = []
+            for pipe in exploded_cmd[1:]:
+                exploded_pipe = pipe.split()
+                pipe_oper = exploded_pipe[0]  # always there
+                if pipe_oper in _PIPE_BLACKLIST:
+                    continue
+                pipe_args = ''.join(exploded_pipe[1:2])
+                safe_pipe = pipe_oper if not pipe_args else '{fun} {args}'.format(fun=pipe_oper,
+                                                                                  args=pipe_args)
+                command_safe_parts.append(safe_pipe)
+            safe_command = exploded_cmd[0] if not command_safe_parts else\
+                '{base} | {pipes}'.format(base=exploded_cmd[0],
+                                          pipes=' | '.join(command_safe_parts))
+            raw_txt = self.device.cli(safe_command, warning=False)
             cli_output[py23_compat.text_type(command)] = py23_compat.text_type(
-                self.device.cli(command, warning=False))
-
+                _process_pipe(command, raw_txt))
         return cli_output
 
     def get_bgp_config(self, group='', neighbor=''):
