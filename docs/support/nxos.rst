@@ -15,7 +15,7 @@ See the "Known gotchas" section below.
 Prerequisites
 _____________
 
-Your device must be running NXOS 6.1. The features ``nxapi`` server ``scp-server`` must be enabled.
+Your device must be running NXOS 7.2. The features ``nxapi`` server ``scp-server`` must be enabled.
 On the device and any checkpoint file you push, you must have the lines::
 
   feature scp-server
