@@ -1,0 +1,46 @@
+<route-engine-information>
+    <route-engine>
+        <slot>0</slot>
+        <mastership-state>master</mastership-state>
+        <status>OK</status>
+        <temperature celsius="36">36 degrees C / 96 degrees F</temperature>
+        <cpu-temperature celsius="36">36 degrees C / 96 degrees F</cpu-temperature>
+        <memory-dram-size>1951 MB</memory-dram-size>
+        <memory-buffer-utilization>16</memory-buffer-utilization>
+        <cpu-user>6</cpu-user>
+        <cpu-background>0</cpu-background>
+        <cpu-system>8</cpu-system>
+        <cpu-interrupt>1</cpu-interrupt>
+        <cpu-idle>85</cpu-idle>
+        <model>RE-EX2300-24P</model>
+        <serial-number>BUILTIN</serial-number>
+        <start-time seconds="1500886898">2017-07-24 05:01:38 EDT</start-time>
+        <up-time seconds="107935">1 day, 5 hours, 58 minutes, 55 seconds</up-time>
+        <last-reboot-reason>0x1:power cycle/failure</last-reboot-reason>
+        <load-average-one>0.47</load-average-one>
+        <load-average-five>0.40</load-average-five>
+        <load-average-fifteen>0.38</load-average-fifteen>
+    </route-engine>
+    <route-engine>
+        <slot>1</slot>
+        <mastership-state>backup</mastership-state>
+        <status>OK</status>
+        <temperature celsius="38">38 degrees C / 100 degrees F</temperature>
+        <cpu-temperature celsius="38">38 degrees C / 100 degrees F</cpu-temperature>
+        <memory-dram-size>1951 MB</memory-dram-size>
+        <memory-buffer-utilization>13</memory-buffer-utilization>
+        <cpu-user>6</cpu-user>
+        <cpu-background>0</cpu-background>
+        <cpu-system>5</cpu-system>
+        <cpu-interrupt>0</cpu-interrupt>
+        <cpu-idle>89</cpu-idle>
+        <model>RE-EX2300-24P</model>
+        <serial-number>BUILTIN</serial-number>
+        <start-time seconds="1500886898">2017-07-24 05:01:38 EDT</start-time>
+        <up-time seconds="107933">1 day, 5 hours, 58 minutes, 53 seconds</up-time>
+        <last-reboot-reason>0x1:power cycle/failure</last-reboot-reason>
+        <load-average-one>0.26</load-average-one>
+        <load-average-five>0.29</load-average-five>
+        <load-average-fifteen>0.26</load-average-fifteen>
+    </route-engine>
+</route-engine-information>

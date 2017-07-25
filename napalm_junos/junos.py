@@ -331,10 +331,7 @@ class JunOSDriver(NetworkDriver):
         for sensor_object, object_data in environment.items():
             structured_object_data = {k: v for k, v in object_data}
 
-            if structured_object_data['class']:
-                current_class = structured_object_data['class']
-            else:
-                structured_object_data['class'] = current_class
+            structured_object_data['class'] = structured_object_data['class'] or current_class
 
             if structured_object_data['class'] == 'Power':
                 # Create a dict for the 'power' key
