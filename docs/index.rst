@@ -63,6 +63,7 @@ Documentation
    cli
    base
    yang
+   logs
    contributing/index
    development/index
    hackathons/index
