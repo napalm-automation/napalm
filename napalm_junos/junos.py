@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 import re
 import json
 import logging
-import tempfile
 import collections
 from copy import deepcopy
 from collections import OrderedDict
@@ -86,7 +85,6 @@ class JunOSDriver(NetworkDriver):
         self.keepalive = optional_args.get('keepalive', 30)
         self.ssh_config_file = optional_args.get('ssh_config_file', None)
         self.ignore_warning = optional_args.get('ignore_warning', False)
-        self.temp_dir = optional_args.get('temp_dir', tempfile.gettempdir())
 
         if self.key_file:
             self.device = Device(hostname,
@@ -759,8 +757,8 @@ class JunOSDriver(NetworkDriver):
                                                                                   args=pipe_args)
                 command_safe_parts.append(safe_pipe)
             safe_command = exploded_cmd[0] if not command_safe_parts else\
-                           '{base} | {pipes}'.format(base=exploded_cmd[0],
-                                                     pipes=' | '.join(command_safe_parts))
+                '{base} | {pipes}'.format(base=exploded_cmd[0],
+                                          pipes=' | '.join(command_safe_parts))
             raw_txt = self.device.cli(safe_command, warning=False)
             cli_output[py23_compat.text_type(command)] = py23_compat.text_type(
                 _process_pipe(command, raw_txt))
