@@ -723,9 +723,9 @@ class IOSXRDriver(NetworkDriver):
             inet = False
             inet6 = False
             preifx_type = 'inet'
-            if 'IPV4' in af_table:
+            if 'ipv4' in af_table.lower():
                 inet = True
-            if 'IPv6' in af_table:
+            if 'ipv6' in af_table.lower():
                 inet6 = True
                 preifx_type = 'inet6'
             if inet or inet6:
