@@ -19,7 +19,7 @@
 import pkg_resources
 
 # Import local modules
-from napalm_nxos_ssh.nxos_ssh import NXOS_SSHDriver
+from napalm_nxos_ssh.nxos_ssh import NXOSSSHDriver
 
 
 try:
@@ -27,4 +27,4 @@ try:
 except pkg_resources.DistributionNotFound:
     __version__ = "Not installed"
 
-__all__ = ('NXOSDriver',)
+__all__ = ('NXOSSSHDriver',)

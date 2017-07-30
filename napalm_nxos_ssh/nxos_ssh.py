@@ -18,7 +18,6 @@ from __future__ import unicode_literals
 # import stdlib
 import re
 import os
-import json
 import time
 import uuid
 import tempfile
@@ -52,7 +51,7 @@ UPTIME_KEY_MAP = {
 }
 
 
-class NXOS_SSHDriver(NetworkDriver):
+class NXOSSSHDriver(NetworkDriver):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -153,7 +152,6 @@ class NXOS_SSHDriver(NetworkDriver):
 
         delta = sum([det.get('count', 0) * det.get('weight') for det in things.values()])
         return time.time() - delta
-
 
     @staticmethod
     def fix_checkpoint_string(string, filename):
@@ -592,7 +590,7 @@ class NXOS_SSHDriver(NetworkDriver):
                 peer_addr = line.split()[0]
                 ntp_entities[peer_addr] = {}
             else:
-               raise ValueError("Did not correctly find a Peer IP Address")
+                raise ValueError("Did not correctly find a Peer IP Address")
 
         return ntp_entities
 
@@ -754,13 +752,13 @@ class NXOS_SSHDriver(NetworkDriver):
         )
 
         try:
-            output = self.device.send_command(command)
+            traceroute_raw_output = self.device.send_command(command)
         except CommandErrorException:
             return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
 
         hop_regex = ''.join(_HOP_ENTRY + _HOP_ENTRY_PROBE * probes)
         traceroute_result['success'] = {}
-        if output:
+        if traceroute_raw_output:
             for line in traceroute_raw_output.splitlines():
                 hop_search = re.search(hop_regex, line)
                 if not hop_search:
