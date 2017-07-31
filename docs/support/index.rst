@@ -70,10 +70,10 @@ Other methods
 .. |no|    unicode:: U+0274C .. No
 
 ============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
-_                               EOS   JunOS   IOS-XR  FortiOS  NXOS    IOS    Pluribus   PANOS     MikroTik VyOS
+_                               EOS   JunOS   IOS-XR  FortiOS  NXOS    IOS    Pluribus   PANOS     ROS      VyOS
 ============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
 **load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|  |yes|      |yes|     |no|	    |yes|
-**ping**                       |no|   |no|    |no|    |no|     |no|    |yes|  |no|       |no|      |yes|    |yes|
+**ping**                       |yes|  |yes|   |no|    |no|     |no|    |yes|  |no|       |no|      |yes|    |yes|
 **traceroute**                 |yes|  |yes|   |yes|   |no|     |yes|   |yes|  |yes|      |no|      |no|     |no|
 ============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
 
