@@ -319,7 +319,7 @@ class NXOSDriver(NetworkDriver):
             return True
         except Exception:
             return False
-        if 'Rollback failed.' in rollback_result['msg']:
+        if 'Rollback failed.' in rollback_result['msg'] or 'ERROR' in output:
             raise ReplaceConfigException(rollback_result['msg'])
         return True
 
