@@ -366,8 +366,13 @@ class NXOSSSHDriver(NetworkDriver):
     def _load_config(self):
         command = 'rollback running file {0}'.format(self.replace_file.split('/')[-1])
         self._disable_confirmation()
-        output = self.device.send_command(command)
-        if 'Rollback failed' in output or output == []:
+        try:
+            rollback_result = self.device.send_command(command)
+        except Exception:
+            return False
+        if 'Rollback failed.' in rollback_result['msg'] or 'ERROR' in rollback_result:
+            raise ReplaceConfigException(rollback_result['msg'])
+        elif rollback_result == []:
             return False
         return True
 
