@@ -328,9 +328,19 @@ class JunOSDriver(NetworkDriver):
         routing_engine.get()
         temperature_thresholds.get()
         environment_data = {}
+        current_class = None
 
         for sensor_object, object_data in environment.items():
             structured_object_data = {k: v for k, v in object_data}
+
+            if structured_object_data['class']:
+                # If current object has a 'class' defined, store it for use
+                # on subsequent unlabeled lines.
+                current_class = structured_object_data['class']
+            else:
+                # Juniper doesn't label the 2nd+ lines of a given class with a
+                # class name.  In that case, we use the most recent class seen.
+                structured_object_data['class'] = current_class
 
             if structured_object_data['class'] == 'Power':
                 # Create a dict for the 'power' key
