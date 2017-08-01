@@ -70,10 +70,10 @@ Other methods
 .. |no|    unicode:: U+0274C .. No
 
 ============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
-_                               EOS   JunOS   IOS-XR  FortiOS  NXOS    IOS    Pluribus   PANOS     MikroTik VyOS
+_                               EOS   JunOS   IOS-XR  FortiOS  NXOS    IOS    Pluribus   PANOS     ROS      VyOS
 ============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
 **load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|  |yes|      |yes|     |no|	    |yes|
-**ping**                       |no|   |no|    |no|    |no|     |no|    |yes|  |no|       |no|      |yes|    |yes|
+**ping**                       |yes|  |yes|   |no|    |no|     |no|    |yes|  |no|       |no|      |yes|    |yes|
 **traceroute**                 |yes|  |yes|   |yes|   |no|     |yes|   |yes|  |yes|      |no|      |no|     |no|
 ============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
 
@@ -135,6 +135,18 @@ ____________________________________
 * :code:`alt_key_file` (ios, iosxr, panos, vyos) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
 * :code:`keepalive` (junos, iosxr, ios) - SSH keepalive interval, in seconds (default: ``30`` seconds).
 * :code:`ignore_warning` (junos) - Allows to set `ignore_warning` when loading configuration to avoid exceptions via junos-pyez. (default: ``False``).
+
+The transport argument
+______________________
+
+Certain drivers support providing an alternate transport in the :code:`optional_args`, overriding the default protocol to connect with. Allowed transports are therefore device/library dependant:
+
+=============== ====================  ====================  ===================
+_               EOS                   NXOS                  IOS
+=============== ====================  ====================  ===================
+**Default**     ``https``             ``https``             ``ssh``
+**Supported**   ``http``, ``https``   ``http``, ``https``   ``telnet``, ``ssh``
+=============== ====================  ====================  ===================
 
 The transport argument
 ______________________
