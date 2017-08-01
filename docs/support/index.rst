@@ -160,6 +160,18 @@ _               EOS                   NXOS                  IOS
 **Supported**   ``http``, ``https``   ``http``, ``https``   ``telnet``, ``ssh``
 =============== ====================  ====================  ===================
 
+The transport argument
+______________________
+
+Certain drivers support providing an alternate transport in the :code:`optional_args`, overriding the default protocol to connect with. Allowed transports are therefore device/library dependant:
+
+=============== ====================  ====================  ===================
+_               EOS                   NXOS                  IOS
+=============== ====================  ====================  ===================
+**Default**     ``https``             ``https``             ``ssh``
+**Supported**   ``http``, ``https``   ``http``, ``https``   ``telnet``, ``ssh``
+=============== ====================  ====================  ===================
+
 Adding optional arguments to NAPALM drivers
 ___________________________________________
 
