@@ -568,24 +568,39 @@ class JunOSDriver(NetworkDriver):
                         bgp_neighbor_data[instance_name]['peers'][neighbor] = {}
                     bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
 
-        old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 15
+        # Commenting out the following sections, till Junos
+        #   will provide a way to identify the routing instance name
+        #   from the details of the BGP neighbor
+        #   currently, there are Junos 15 version having a field called `peer_fwd_rti`
+        #   but unfortunately, this is not consistent.
+        # Junos 17 might have this fixed, but this needs to be revisited later.
+        # In the definition below, `old_junos` means a version that does not provide
+        #   the forwarding RTI information.
+        #
+        # old_junos = napalm_base.helpers.convert(
+        #     int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 15
 
-        if old_junos:
-            instances = junos_views.junos_route_instance_table(self.device).get()
-            for instance, instance_data in instances.items():
-                if instance.startswith('__'):
-                    # junos internal instances
-                    continue
-                bgp_neighbor_data[instance] = {'peers': {}}
-                instance_neighbors = bgp_neighbors_table.get(instance=instance).items()
-                uptime_table_items = uptime_table.get(instance=instance).items()
-                _get_bgp_neighbors_core(instance_neighbors,
-                                        instance=instance,
-                                        uptime_table_items=uptime_table_items)
-        else:
-            instance_neighbors = bgp_neighbors_table.get().items()
-            _get_bgp_neighbors_core(instance_neighbors)
+        # if old_junos:
+        instances = junos_views.junos_route_instance_table(self.device).get()
+        for instance, instance_data in instances.items():
+            if instance.startswith('__'):
+                # junos internal instances
+                continue
+            bgp_neighbor_data[instance] = {'peers': {}}
+            instance_neighbors = bgp_neighbors_table.get(instance=instance).items()
+            uptime_table_items = uptime_table.get(instance=instance).items()
+            _get_bgp_neighbors_core(instance_neighbors,
+                                    instance=instance,
+                                    uptime_table_items=uptime_table_items)
+        # If the OS provides the `peer_fwd_rti` or any way to identify the
+        #   rotuing instance name (see above), the performances of this getter
+        #   can be significantly improved, as we won't execute one request
+        #   for each an every RT.
+        # However, this improvement would only be beneficial for multi-VRF envs.
+        #
+        # else:
+        #     instance_neighbors = bgp_neighbors_table.get().items()
+        #     _get_bgp_neighbors_core(instance_neighbors)
         bgp_tmp_dict = {}
         for k, v in bgp_neighbor_data.items():
             if bgp_neighbor_data[k]['peers']:
@@ -1109,23 +1124,23 @@ class JunOSDriver(NetworkDriver):
                 neighbor_details.update(neighbor_rib_details)
                 bgp_neighbors[instance_name][remote_as].append(neighbor_details)
 
-        old_junos = napalm_base.helpers.convert(
-            int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 15
+        # old_junos = napalm_base.helpers.convert(
+        #     int, self.device.facts.get('version', '0.0').split('.')[0], 0) < 15
         bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
 
-        if old_junos:
-            instances = junos_views.junos_route_instance_table(self.device)
-            for instance, instance_data in instances.get().items():
-                if instance.startswith('__'):
-                    # junos internal instances
-                    continue
-                neighbor_data = bgp_neighbors_table.get(instance=instance,
-                                                        neighbor_address=neighbor_address).items()
-                _bgp_iter_core(neighbor_data, instance=instance)
-        else:
-            bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
-            neighbor_data = bgp_neighbors_table.get(neighbor_address=neighbor_address).items()
-            _bgp_iter_core(neighbor_data)
+        # if old_junos:
+        instances = junos_views.junos_route_instance_table(self.device)
+        for instance, instance_data in instances.get().items():
+            if instance.startswith('__'):
+                # junos internal instances
+                continue
+            neighbor_data = bgp_neighbors_table.get(instance=instance,
+                                                    neighbor_address=neighbor_address).items()
+            _bgp_iter_core(neighbor_data, instance=instance)
+        # else:
+        #     bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
+        #     neighbor_data = bgp_neighbors_table.get(neighbor_address=neighbor_address).items()
+        #     _bgp_iter_core(neighbor_data)
         return bgp_neighbors
 
     def get_arp_table(self):
