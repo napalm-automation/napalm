@@ -1542,6 +1542,6 @@ class NetworkDriver(object):
         Return a compliance report.
 
         Verify that the device complies with the given validation file and writes a compliance
-        report file. See https://napalm.readthedocs.io/en/latest/validate.html.
+        report file. See https://napalm.readthedocs.io/en/latest/validate/index.html.
         """
         return validate.compliance_report(self, validation_file=validation_file)
