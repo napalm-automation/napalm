@@ -123,22 +123,27 @@ def _compare_getter(src, dst):
 
             return _compare_getter_list(src['list'], dst, mode)
         return _compare_getter_dict(src, dst, mode)
-    else:
-        if isinstance(src, py23_compat.string_types):
-            if src.startswith('<') or src.startswith('>'):
-                cmp_result = compare_numeric(src, dst)
-                return cmp_result
-            else:
-                m = re.search(src, py23_compat.text_type(dst))
-                return m is not None
-        elif(type(src) == type(dst) == list):
-            pairs = zip(src, dst)
-            diff_lists = [[(k, x[k], y[k])
-                          for k in x if not re.search(x[k], y[k])]
-                          for x, y in pairs if x != y]
-            return empty_tree(diff_lists)
+
+    elif isinstance(src, py23_compat.string_types):
+        if src.startswith('<') or src.startswith('>'):
+            cmp_result = compare_numeric(src, dst)
+            return cmp_result
         else:
-            return src == dst
+            m = re.search(src, py23_compat.text_type(dst))
+            if m:
+                return bool(m)
+            else:
+                return src == dst
+
+    elif(type(src) == type(dst) == list):
+        pairs = zip(src, dst)
+        diff_lists = [[(k, x[k], y[k])
+                      for k in x if not re.search(x[k], y[k])]
+                      for x, y in pairs if x != y]
+        return empty_tree(diff_lists)
+
+    else:
+        return src == dst
 
 
 def compare_numeric(src_num, dst_num):
