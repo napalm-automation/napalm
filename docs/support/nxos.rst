@@ -26,8 +26,14 @@ Getting a base checkpoint file
 ______________________________
 
 An example of a checkpoint file can be seen in ``test/unit/nxos/new_good.conf``.
-You can get a checkpoint file representing your device's current config by running the ``get_checkpoint_file()``
-function in the ``napalm.nxos`` driver.
+You can get a checkpoint file representing your device's current config by running the ``_get_checkpoint_file()``
+function in the ``napalm.nxos`` driver::
+
+  device.open()
+  checkpoint = device._get_checkpoint_file()
+  print(checkpoint)
+  device.close()
+
 
 Known gotchas
 _____________
