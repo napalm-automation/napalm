@@ -2,7 +2,7 @@ Context Manager
 ===============
 
 In the previous tutorial we used the methods ``open()`` to connect to the device and ``close()`` to disconnect.
-Using those methods are useful if you want to do complex or asynchronous code. However, for most situations you should
+Using those methods is useful if you want to do complex or asynchronous code. However, for most situations you should
 try to stick with the context manager. It handles opening and closing the session automatically and it's the
 pythonic way:
 
