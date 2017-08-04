@@ -43,12 +43,11 @@ from napalm_base.exceptions import CommandErrorException
 from napalm_base.exceptions import ReplaceConfigException
 import napalm_base.constants as c
 
-UPTIME_KEY_MAP = {
-    'kern_uptm_days': 'up_days',
-    'kern_uptm_hrs': 'up_hours',
-    'kern_uptm_mins': 'up_mins',
-    'kern_uptm_secs': 'up_secs'
-}
+# Easier to store these as constants
+HOUR_SECONDS = 3600
+DAY_SECONDS = 24 * HOUR_SECONDS
+WEEK_SECONDS = 7 * DAY_SECONDS
+YEAR_SECONDS = 365 * DAY_SECONDS
 
 
 class NXOSSSHDriver(NetworkDriver):
@@ -113,45 +112,33 @@ class NXOSSSHDriver(NetworkDriver):
         self.device = None
 
     @staticmethod
-    def _compute_timestamp(stupid_cisco_output):
+    def parse_uptime(uptime_str):
         """
-        Some fields such `uptime` are returned as: 23week(s) 3day(s)
-        This method will determine the epoch of the event.
-        e.g.: 23week(s) 3day(s) -> 1462248287
+        Extract the uptime string from the given Cisco IOS Device.
+        Return the uptime in seconds as an integer
         """
-        if not stupid_cisco_output or stupid_cisco_output == 'never':
-            return -1.0
+        # Initialize to zero
+        (years, weeks, days, hours, minutes) = (0, 0, 0, 0, 0)
 
-        things = {
-            'second(s)': {
-                'weight': 1
-            },
-            'minute(s)': {
-                'weight': 60
-            },
-            'hour(s)': {
-                'weight': 3600
-            },
-            'day(s)': {
-                'weight': 24 * 3600
-            },
-            'week(s)': {
-                'weight': 7 * 24 * 3600
-            },
-            'year(s)': {
-                'weight': 365.25 * 24 * 3600
-            }
-        }
+        uptime_str = uptime_str.strip()
+        time_list = uptime_str.split(',')
+        for element in time_list:
+            if re.search("year", element):
+                years = int(element.split()[0])
+            elif re.search("week", element):
+                weeks = int(element.split()[0])
+            elif re.search("day", element):
+                days = int(element.split()[0])
+            elif re.search("hour", element):
+                hours = int(element.split()[0])
+            elif re.search("minute", element):
+                minutes = int(element.split()[0])
+            elif re.search("second", element):
+                seconds = int(element.split()[0])
 
-        things_keys = things.keys()
-        for part in stupid_cisco_output.split():
-            for key in things_keys:
-                if key in part:
-                    things[key]['count'] = napalm_base.helpers.convert(
-                        int, part.replace(key, ''), 0)
-
-        delta = sum([det.get('count', 0) * det.get('weight') for det in things.values()])
-        return time.time() - delta
+        uptime_sec = (years * YEAR_SECONDS) + (weeks * WEEK_SECONDS) + (days * DAY_SECONDS) + \
+                     (hours * 3600) + (minutes * 60) + seconds
+        return uptime_sec
 
     @staticmethod
     def fix_checkpoint_string(string, filename):
@@ -455,14 +442,16 @@ class NXOSSSHDriver(NetworkDriver):
         for line in show_ver.splitlines():
             if ' uptime is ' in line:
                 _, uptime_str = line.split(' uptime is ')
-                uptime = self._compute_timestamp(uptime_str)
+                print(uptime_str)
+                uptime = self.parse_uptime(uptime_str)
 
             if 'Processor Board ID' in line:
                 _, serial_number = line.split("Processor Board ID ")
                 serial_number = serial_number.strip()
 
-            if 'system: 'in line:
-                _, _, os_version = line.split()
+            if 'system: ' in line:
+                line = line.strip()
+                os_version = line.split()[2]
                 os_version = os_version.strip()
 
             if 'cisco' in line and 'Chassis' in line:
@@ -478,7 +467,10 @@ class NXOSSSHDriver(NetworkDriver):
                 domain_name = domain_name.strip()
                 break
         if domain_name != 'Unknown' and hostname != 'Unknown':
-            fqdn = u'{}.{}'.format(hostname, domain_name)
+            if hostname.count(".") >= 2:
+                fqdn = hostname
+            else:
+                fqdn = '{}.{}'.format(hostname, domain_name)
 
         # interface_list filter
         interface_list = []
@@ -490,7 +482,7 @@ class NXOSSSHDriver(NetworkDriver):
             interface_list.append(interface)
 
         return {
-            'uptime': uptime,
+            'uptime': int(uptime),
             'vendor': vendor,
             'os_version': py23_compat.text_type(os_version),
             'serial_number': py23_compat.text_type(serial_number),
