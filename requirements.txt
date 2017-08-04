@@ -1,5 +1,6 @@
 napalm-base>=0.24.0
 pynxos
+netmiko>=1.4.2
 netaddr
 future
 scp
