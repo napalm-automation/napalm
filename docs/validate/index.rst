@@ -16,7 +16,7 @@ Documentation
 
 Writing validators files that can be interpreted by napalm is very easy. You have to start by
 telling napalm how to retrieve that piece of information by using as key the name of the getter and
-then write the desired state using the same format the getter would retrieve it. For example::
+then write the desired state using the same format the getter would use to retrieve it. For example::
 
     ---
     - get_facts:
@@ -84,8 +84,8 @@ A few notes:
     * You can also have a more strict validation. For example, if we go to ``get_bgp_neighbors``,
       we want to validate there that the ``default`` vrf has *only* the BGP neighbor ``192.0.2.2``.
       We do that by specifying at that level ``_mode: strict``. Note that the strict mode is
-      specific to a level (you can add it to as many levels as you want). So, going back the the
-      example, we are validating that only that BGP neighbor is present on that vrf but we are not
+      specific to a level (you can add it to as many levels as you want). So, going back to the the
+      example, we are validating only that the BGP neighbor is present on that vrf, but we are not
       validating that other vrfs don't exist. We are not validating all the data inside the BGP
       neighbor either, we are only validating the ones we specified.
     * Lists of objects to be validated require an extra key ``list``. You can see an example with
@@ -97,7 +97,7 @@ A few notes:
     * Some methods require extra arguments, for example ``ping``. You can pass arguments to those
       methods using the magic keyword ``_kwargs``. In addition, an optional keyword ``_name`` can
       be specified to override the name in the report. Useful for having a more descriptive report
-      or for getters than can be run multiple times
+      or for getters that can be run multiple times
 
 Example
 -------
@@ -179,7 +179,7 @@ Let's take a look first to the report. The first thing we have to note is the fi
 ``complies`` which is telling us that overall, the device is not compliant. Now we can dig in on
 the rest of the report. The ``get_interfaces_ip`` part seems to be complying just fine, however,
 the ``get_facts`` is complaining about something. If we keep digging we will see that the
-``os_version`` key we were looking for is present but it's not complying as its actual value
+``os_version`` key we were looking for is present but not compliant as its actual value
 is not the one we specified; it is ``4.15.2.1F-2759627.41521F``.
 
 Now let's do the same for junos::
@@ -272,9 +272,9 @@ Why this and what's next
 As mentioned in the introduction, this is interesting to validate state. You could, for example,
 very easily check that your BGP neigbors are configured and that the state is up. It becomes even more
 interesting if you can build the validator file from data from your inventory. That way you could
-deploy your network and verify it matches your expectations all the time without human intervention.
+deploy your network and verify that it matches your expectations all the time without human intervention.
 
 Something else you could do is write the validation file manually prior to a maintenance based on
-some gathered data from the network and on your expectations. You could, then, perform your changs
-and use this tool to verify the state of the network is exactly the one you wanted. No more
-forgetting things or writing one-offs scripts to validate deployments.
+some gathered data from the network and on your expectations. You could, then, perform your changes
+and use this tool to verify that the state of the network is exactly the one you wanted. No more
+forgetting things or writing one-off scripts to validate deployments.
