@@ -59,7 +59,7 @@ class TestBaseHelpers(unittest.TestCase):
             * check if can load empty template
             * check if raises TemplateRenderException when template is not correctly formatted
             * check if can load correct template
-            * check if can load correct template even if wrong custom path specified
+            * check if raises IOError if invalid path is specified
             * check if raises TemplateNotImplemented when trying to use inexisting template in
               custom path
             * check if can load correct template from custom path
@@ -94,14 +94,16 @@ class TestBaseHelpers(unittest.TestCase):
                                                           '__a_very_nice_template__',
                                                           **_TEMPLATE_VARS))
 
-        self.assertTrue(napalm_base.helpers.load_template(self.network_driver,
-                                                          '__a_very_nice_template__',
-                                                          template_path='/this/path/does/not/exist',
-                                                          **_TEMPLATE_VARS))
+        self.assertRaises(IOError,
+                          napalm_base.helpers.load_template,
+                          self.network_driver,
+                          '__a_very_nice_template__',
+                          template_path='/this/path/does/not/exist',
+                          **_TEMPLATE_VARS)
 
         install_dir = os.path.dirname(
             os.path.abspath(sys.modules[self.network_driver.__module__].__file__))
-        custom_path = os.path.join(install_dir, 'test/custom/path/base')
+        custom_path = os.path.join(install_dir, '../custom/path/base')
 
         self.assertRaises(napalm_base.exceptions.TemplateNotImplemented,
                           napalm_base.helpers.load_template,

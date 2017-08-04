@@ -45,6 +45,7 @@ def load_template(cls, template_name, template_source=None, template_path=None,
                 if (isinstance(template_path, py23_compat.string_types) and
                         os.path.isdir(template_path) and os.path.isabs(template_path)):
                     # append driver name at the end of the custom path
+                    print(template_path)
                     search_path.append(os.path.join(template_path, cls.__module__.split('.')[-1]))
                 else:
                     raise IOError("Template path does not exist: {}".format(template_path))
