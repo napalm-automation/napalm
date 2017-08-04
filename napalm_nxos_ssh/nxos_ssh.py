@@ -503,7 +503,8 @@ class NXOSSSHDriver(NetworkDriver):
     def __get_interfaces(self):
         interfaces = {}
         command = 'show interface'
-        output = self.device.send_command(command)
+        output = self.device.send_command(command) # noqa
+        return interfaces
 
     def get_lldp_neighbors(self):
         results = {}
@@ -528,7 +529,8 @@ class NXOSSSHDriver(NetworkDriver):
     def __get_bgp_neighbors(self):
         results = {}
         command = 'show bgp sessions vrf all'
-        output = self.device.send_command(command)
+        output = self.device.send_command(command)  # noqa
+        return results
 
     def _send_config_commands(self, commands):
         for command in commands:
@@ -638,6 +640,8 @@ class NXOSSSHDriver(NetworkDriver):
     def __get_arp_table(self):
         arp_table = []
         command = 'show ip arp'
+        output = self.device.send_command(command) # noqa
+        return arp_table
 
     def _get_ntp_entity(self, peer_type):
         ntp_entities = {}
@@ -665,15 +669,22 @@ class NXOSSSHDriver(NetworkDriver):
     def __get_ntp_stats(self):
         ntp_stats = []
         command = 'show ntp peer-status'
+        output = self.device.send_command(command) # noqa
+        return ntp_stats
 
     def __get_interfaces_ip(self):
         interfaces_ip = {}
         ipv4_command = 'show ip interface'
         ipv6_command = 'show ipv6 interface'
+        output = self.device.send_command(ipv4_command) # noqa
+        output += self.device.send_command(ipv6_command) # noqa
+        return interfaces_ip
 
     def __get_mac_address_table(self):
         mac_table = []
         command = 'show mac address-table'
+        output = self.device.send_command(command) # noqa
+        return mac_table
 
     def get_snmp_information(self):
         snmp_information = {}
