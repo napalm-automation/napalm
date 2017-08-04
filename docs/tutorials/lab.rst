@@ -23,7 +23,7 @@ Add it to your vagrant box list, changing the `<version>`::
     $ vagrant box list
     vEOS-lab-quickstart (virtualbox, 0)
 
-You can delete the downloaded .box file once you have added it, as ``vagrant box add`` copies downloaded file to a designated directory (e.g., for Mac OS X and Linux: ``~/.vagrant.d/boxes``, Windows: ``C:/Users/USERNAME/.vagrant.d/boxes``).
+You can delete the downloaded .box file once you have added it, as ``vagrant box add`` copies the downloaded file to a designated directory (e.g., for Mac OS X and Linux: ``~/.vagrant.d/boxes``, Windows: ``C:/Users/USERNAME/.vagrant.d/boxes``).
 
 Starting Vagrant
 ----------------
