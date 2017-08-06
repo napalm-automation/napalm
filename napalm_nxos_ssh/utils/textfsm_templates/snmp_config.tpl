@@ -1,5 +1,5 @@
-Value Location (\S+)
-Value Contact (\S+)
+Value Location (.*)
+Value Contact (.*)
 Value Community (\S+)
 Value Mode (network\-admin|network\-operator)
 Value ACL (\S+)
