@@ -1044,6 +1044,8 @@ class IOSDriver(NetworkDriver):
                         if fields[2] == 'dhcp':
                             cmd = "show interface {} | in Internet address is".format(interface)
                             show_int = self._send_command(cmd)
+                            if not show_int:
+                                continue
                             int_fields = show_int.split()
                             ip_address, subnet = int_fields[3].split(r'/')
                             interfaces[interface]['ipv4'] = {ip_address: {}}
