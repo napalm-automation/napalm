@@ -67,8 +67,6 @@ class TestBaseHelpers(unittest.TestCase):
             * check if template passed as string can be loaded
             * check that the search path setup by MRO is correct when loading an incorrecet template
         """
-        class TestDriver(MockDriver):
-            pass
 
         self.assertTrue(HAS_JINJA)  # firstly check if jinja2 is installed
         _NTP_PEERS_LIST = [
