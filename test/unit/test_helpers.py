@@ -70,7 +70,6 @@ class TestBaseHelpers(unittest.TestCase):
         class TestDriver(MockDriver):
             pass
 
-
         self.assertTrue(HAS_JINJA)  # firstly check if jinja2 is installed
         _NTP_PEERS_LIST = [
             '172.17.17.1',
@@ -130,12 +129,11 @@ class TestBaseHelpers(unittest.TestCase):
                                                           template_source=template_source,
                                                           **_TEMPLATE_VARS))
         self.assertRaisesRegexp(napalm_base.exceptions.TemplateNotImplemented,
-                                "search path.*napalm-base/test/unit/templates',.*napalm-base/napalm_base/templates']",
+                                "path.*napalm-base/test/unit/templates',.*napalm-base/napalm_base/templates']",
                                 napalm_base.helpers.load_template,
                                 self.network_driver,
                                 '__this_template_does_not_exist__',
                                 **_TEMPLATE_VARS)
-
 
     def test_textfsm_extractor(self):
         """
