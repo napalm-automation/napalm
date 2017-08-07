@@ -518,7 +518,7 @@ class NXOSSSHDriver(NetworkDriver):
             results[local_iface].append(neighbor_dict)
         return results
 
-    def __get_bgp_neighbors(self):
+    def get_bgp_neighbors(self):
         results = {}
         command = 'show bgp sessions vrf all'
         output = self.device.send_command(command)  # noqa
