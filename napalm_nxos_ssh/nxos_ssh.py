@@ -492,7 +492,7 @@ class NXOSSSHDriver(NetworkDriver):
             'interface_list': interface_list
         }
 
-    def __get_interfaces(self):
+    def get_interfaces(self):
         interfaces = {}
         command = 'show interface'
         output = self.device.send_command(command) # noqa
@@ -664,7 +664,7 @@ class NXOSSSHDriver(NetworkDriver):
         output = self.device.send_command(command) # noqa
         return ntp_stats
 
-    def __get_interfaces_ip(self):
+    def get_interfaces_ip(self):
         interfaces_ip = {}
         ipv4_command = 'show ip interface'
         ipv6_command = 'show ipv6 interface'
