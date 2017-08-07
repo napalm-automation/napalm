@@ -40,6 +40,7 @@ except ImportError:
 import napalm_base.helpers
 import napalm_base.exceptions
 from napalm_base.base import NetworkDriver
+from napalm_base.mock import MockDriver
 from napalm_base.utils.string_parsers import convert_uptime_string_seconds
 
 
@@ -64,7 +65,12 @@ class TestBaseHelpers(unittest.TestCase):
               custom path
             * check if can load correct template from custom path
             * check if template passed as string can be loaded
+            * check that the search path setup by MRO is correct when loading an incorrecet template
         """
+        class TestDriver(MockDriver):
+            pass
+
+
         self.assertTrue(HAS_JINJA)  # firstly check if jinja2 is installed
         _NTP_PEERS_LIST = [
             '172.17.17.1',
@@ -123,6 +129,13 @@ class TestBaseHelpers(unittest.TestCase):
                                                           '_this_still_needs_a_name',
                                                           template_source=template_source,
                                                           **_TEMPLATE_VARS))
+        self.assertRaisesRegexp(napalm_base.exceptions.TemplateNotImplemented,
+                                "search path.*napalm-base/test/unit/templates',.*napalm-base/napalm_base/templates']",
+                                napalm_base.helpers.load_template,
+                                self.network_driver,
+                                '__this_template_does_not_exist__',
+                                **_TEMPLATE_VARS)
+
 
     def test_textfsm_extractor(self):
         """
