@@ -965,12 +965,8 @@ class EOSDriver(NetworkDriver):
 
         commands = ['show mac address-table']
 
-        mac_entries = []
-        try:
-            mac_entries = self.device.run_commands(commands)[0].get(
-                'unicastTable', {}).get('tableEntries', [])
-        except Exception:
-            return {}
+        mac_entries = self.device.run_commands(commands)[0].get(
+            'unicastTable', {}).get('tableEntries', [])
 
         for mac_entry in mac_entries:
             vlan = mac_entry.get('vlanId')
