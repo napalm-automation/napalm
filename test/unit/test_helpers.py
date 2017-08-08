@@ -40,7 +40,6 @@ except ImportError:
 import napalm_base.helpers
 import napalm_base.exceptions
 from napalm_base.base import NetworkDriver
-from napalm_base.mock import MockDriver
 from napalm_base.utils.string_parsers import convert_uptime_string_seconds
 
 
