@@ -4,13 +4,11 @@ python:
   - 2.7
   - 3.4
   - 3.5
+  - 3.6
 
 install:
-  - pip install .
-  - pip install -r requirements-dev.txt
-  - pip install -r requirements.txt
-  - pip install -r test/unit/requirements.txt
-
+  - pip install tox-travis
+  - pip install coveralls
 deploy:
   provider: pypi
   user: dbarroso
@@ -21,8 +19,7 @@ deploy:
     branch: master
 
 script:
-  - nosetests ./test/unit/TestGetNetworkDriver.py
-  - nosetests ./test/unit/TestHelpers.py
-  - nosetests ./test/unit/TestNapalmTestFramework.py
-  - py.test test/unit/validate
-  - pylama .
+  - tox
+after_success:
+  - coveralls
+  - if [ $TRAVIS_TAG ]; then curl -X POST https://readthedocs.org/build/napalm; fi
