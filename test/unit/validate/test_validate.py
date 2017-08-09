@@ -28,6 +28,16 @@ def _read_yaml(filename):
 class TestValidate:
     """Wraps tests."""
 
+    def test_simple_fail(self):
+        """A simple test."""
+        mocked_data = os.path.join(BASEPATH, "mocked_data", "simple_fail")
+        expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
+
+        device = FakeDriver(mocked_data)
+        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
+
+        assert expected_report == actual_report, yaml.safe_dump(actual_report)
+
     def test_non_strict_pass(self):
         """A simple test."""
         mocked_data = os.path.join(BASEPATH, "mocked_data", "non_strict_pass")

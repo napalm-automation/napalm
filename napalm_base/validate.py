@@ -92,6 +92,7 @@ def _compare_getter_dict(src, dst, mode):
                 complies = intermediate_result
                 nested = False
                 if not complies:
+                    result["present"][key]["expected_value"] = src_element
                     result["present"][key]["actual_value"] = dst_element
 
             if not complies:
