@@ -468,6 +468,25 @@ junos_mac_address_view_switch:
     vlan: {mac-vlan-tag: int}
     static: {mac-type: True=Static}
 
+# Yet another table struct & view for L2NG devices
+
+junos_mac_address_table_switch_l2ng:
+  rpc: get-ethernet-switching-table-information
+  item: l2ng-l2ald-mac-entry-vlan
+  args:
+    extensive: True
+  args_key:
+    - interface_name
+    - vlan
+  key: l2ng-l2-vlan-id
+  view: junos_mac_address_view_switch_l2ng
+
+junos_mac_address_view_switch_l2ng:
+  fields:
+    interface: {l2ng-l2-mac-logical-interface: unicode}
+    mac: {l2ng-l2-mac-address: unicode}
+    vlan: {l2ng-l2-vlan-id: int}
+
 ###
 ### Route Information
 ###
