@@ -45,17 +45,13 @@ def load_template(cls, template_name, template_source=None, template_path=None,
                 if (isinstance(template_path, py23_compat.string_types) and
                         os.path.isdir(template_path) and os.path.isabs(template_path)):
                     # append driver name at the end of the custom path
-                    print(template_path)
                     search_path.append(os.path.join(template_path, cls.__module__.split('.')[-1]))
                 else:
                     raise IOError("Template path does not exist: {}".format(template_path))
             else:
                 # Search modules for template paths
-                for parent in cls.__class__.mro():
-                    if parent is not object:
-                        search_path.append(
-                                os.path.dirname(
-                                    os.path.abspath(sys.modules[parent.__module__].__file__)))
+                search_path = [os.path.dirname(os.path.abspath(sys.modules[c.__module__].__file__))
+                               for c in cls.__class__.mro() if c is not object]
 
             if openconfig:
                 search_path = ['{}/oc_templates'.format(s) for s in search_path]
