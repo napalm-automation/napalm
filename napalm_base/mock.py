@@ -106,6 +106,7 @@ class MockDriver(NetworkDriver):
         self.password = password
         self.path = optional_args["path"]
         self.profile = optional_args.get("profile", [])
+        self.fail_on_open = optional_args.get("fail_on_open", False)
 
         self.opened = False
         self.calls = {}
@@ -126,6 +127,8 @@ class MockDriver(NetworkDriver):
             raise napalm_base.exceptions.ConnectionClosedException("connection closed")
 
     def open(self):
+        if self.fail_on_open:
+            raise napalm_base.exceptions.ConnectionException("You told me to do this")
         self.opened = True
 
     def close(self):
