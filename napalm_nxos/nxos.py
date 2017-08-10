@@ -458,12 +458,12 @@ class NXOSDriver(NetworkDriver):
                 state = py23_compat.text_type(neighbor_dict['state'])
 
                 bgp_state_dict = {
-                    'Idle': {'is_up': False, 'is_enabled': True, 'uptime': -1},
-                    'Active': {'is_up': False, 'is_enabled': True, 'uptime': -1},
-                    'Open': {'is_up': False, 'is_enabled': True, 'uptime': -1},
-                    'Established': {'is_up': True, 'is_enabled': True, 'uptime': 0},
-                    'Closing': {'is_up': True, 'is_enabled': True, 'uptime': 0},
-                    'Shutdown': {'is_up': False, 'is_enabled': False, 'uptime': -1},
+                    'Idle': {'is_up': False, 'is_enabled': True},
+                    'Active': {'is_up': False, 'is_enabled': True},
+                    'Open': {'is_up': False, 'is_enabled': True},
+                    'Established': {'is_up': True, 'is_enabled': True},
+                    'Closing': {'is_up': True, 'is_enabled': True},
+                    'Shutdown': {'is_up': False, 'is_enabled': False},
                 }
 
                 bgp_state = bgp_state_dict[state]
