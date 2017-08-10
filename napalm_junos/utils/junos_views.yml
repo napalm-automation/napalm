@@ -486,6 +486,7 @@ junos_mac_address_view_switch_l2ng:
     interface: {l2ng-l2-mac-logical-interface: unicode}
     mac: {l2ng-l2-mac-address: unicode}
     vlan: {l2ng-l2-vlan-id: int}
+    static: {mac-type: True=Static}
 
 ###
 ### Route Information
