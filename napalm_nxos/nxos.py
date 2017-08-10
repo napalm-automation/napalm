@@ -455,15 +455,27 @@ class NXOSDriver(NetworkDriver):
             for neighbor_dict in neighbors_list:
                 neighborid = napalm_base.helpers.ip(neighbor_dict['neighbor-id'])
                 remoteas = napalm_base.helpers.as_number(neighbor_dict['remoteas'])
+                state = py23_compat.text_type(neighbor_dict['state'])
+
+                bgp_state_dict = {
+                    'Idle': {'is_up': False, 'is_enabled': True, 'uptime': -1},
+                    'Active': {'is_up': False, 'is_enabled': True, 'uptime': -1},
+                    'Open': {'is_up': False, 'is_enabled': True, 'uptime': -1},
+                    'Established': {'is_up': True, 'is_enabled': True, 'uptime': 0},
+                    'Closing': {'is_up': True, 'is_enabled': True, 'uptime': 0},
+                    'Shutdown': {'is_up': False, 'is_enabled': False, 'uptime': -1},
+                }
+
+                bgp_state = bgp_state_dict[state]
 
                 result_peer_dict = {
                     'local_as': int(vrf_dict['local-as']),
                     'remote_as': remoteas,
                     'remote_id': neighborid,
-                    'is_enabled': True,
+                    'is_enabled': bgp_state['is_enabled'],
                     'uptime': -1,
-                    'description': py23_compat.text_type(''),
-                    'is_up': True
+                    'description': '',
+                    'is_up': bgp_state['is_up'],
                 }
                 result_peer_dict['address_family'] = {
                     'ipv4': {
