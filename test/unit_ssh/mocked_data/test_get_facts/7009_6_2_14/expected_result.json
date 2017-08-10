@@ -1,0 +1,24 @@
+{
+    "os_version": "6.2(14)", 
+    "uptime": 33162561, 
+    "interface_list": [
+        "mgmt0", 
+        "Eth1/1", 
+        "Eth1/2", 
+        "Eth1/3", 
+        "Eth1/4", 
+        "Eth1/5", 
+        "Eth1/6", 
+        "Eth1/7", 
+        "Eth1/8", 
+        "Eth51/1/1", 
+        "Eth51/1/2", 
+        "Eth51/1/3", 
+        "Eth51/1/4"
+    ], 
+    "vendor": "Cisco", 
+    "serial_number": "JAF1602BKEN", 
+    "model": "Nexus7000", 
+    "hostname": "EGGS-SW01.spam.com", 
+    "fqdn": "EGGS-SW01.spam.com"
+}

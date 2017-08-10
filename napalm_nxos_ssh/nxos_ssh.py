@@ -463,7 +463,7 @@ class NXOSSSHDriver(NetworkDriver):
         # Determine domain_name and fqdn
         for line in show_hosts.splitlines():
             if 'Default domain' in line:
-                _, domain_name = line.split("Default domain is")
+                _, domain_name = re.split(r".*Default domain.*is ", line)
                 domain_name = domain_name.strip()
                 break
         if domain_name != 'Unknown' and hostname != 'Unknown':
