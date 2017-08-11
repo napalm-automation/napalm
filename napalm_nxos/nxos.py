@@ -437,6 +437,15 @@ class NXOSDriver(NetworkDriver):
 
     def get_bgp_neighbors(self):
         results = {}
+        bgp_state_dict = {
+            'Idle': {'is_up': False, 'is_enabled': True},
+            'Active': {'is_up': False, 'is_enabled': True},
+            'Open': {'is_up': False, 'is_enabled': True},
+            'Established': {'is_up': True, 'is_enabled': True},
+            'Closing': {'is_up': True, 'is_enabled': True},
+            'Shutdown': {'is_up': False, 'is_enabled': False},
+        }
+
         try:
             cmd = 'show bgp sessions vrf all'
             vrf_list = self._get_command_table(cmd, 'TABLE_vrf', 'ROW_vrf')
@@ -456,15 +465,6 @@ class NXOSDriver(NetworkDriver):
                 neighborid = napalm_base.helpers.ip(neighbor_dict['neighbor-id'])
                 remoteas = napalm_base.helpers.as_number(neighbor_dict['remoteas'])
                 state = py23_compat.text_type(neighbor_dict['state'])
-
-                bgp_state_dict = {
-                    'Idle': {'is_up': False, 'is_enabled': True},
-                    'Active': {'is_up': False, 'is_enabled': True},
-                    'Open': {'is_up': False, 'is_enabled': True},
-                    'Established': {'is_up': True, 'is_enabled': True},
-                    'Closing': {'is_up': True, 'is_enabled': True},
-                    'Shutdown': {'is_up': False, 'is_enabled': False},
-                }
 
                 bgp_state = bgp_state_dict[state]
 
