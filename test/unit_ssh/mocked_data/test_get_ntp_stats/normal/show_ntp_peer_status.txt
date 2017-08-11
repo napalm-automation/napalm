@@ -1,0 +1,8 @@
+Total peers : 3
+* - selected for sync, + -  peer mode(active), 
+- - peer mode(passive), = - polled in client mode 
+    remote               local                 st   poll   reach delay   vrf
+-------------------------------------------------------------------------------
+=172.20.74.71           200.101.205.54          3   64     377   0.25079 management
+*172.24.176.244         200.101.205.54          3   64     377   0.10475 management
+=172.31.125.136         200.101.205.54          3   64     377   0.00081 management
