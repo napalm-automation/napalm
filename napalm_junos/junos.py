@@ -1135,7 +1135,7 @@ class JunOSDriver(NetworkDriver):
                 # junos internal instances
                 continue
             neighbor_data = bgp_neighbors_table.get(instance=instance,
-                                                    neighbor_address=neighbor_address).items()
+                                                    neighbor_address=str(neighbor_address)).items()
             _bgp_iter_core(neighbor_data, instance=instance)
         # else:
         #     bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
