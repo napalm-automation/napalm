@@ -1,0 +1,27 @@
+Legend: 
+        * - primary entry, G - Gateway MAC, (R) - Routed MAC, O - Overlay MAC
+        age - seconds since last seen,+ - primary entry using vPC Peer-Link
+   VLAN     MAC Address      Type      age     Secure NTFY   Ports/SWID.SSID.LID
+---------+-----------------+--------+---------+------+----+------------------
+* 110      0018.741c.4000    dynamic   0          F    F  Po28
+* 202      0050.569a.7b6b    dynamic   0          F    F  Eth51/1/11
+* 986      0000.0c07.acf0    dynamic   300        F    F  Po28
+* 989      0000.0c07.acef    dynamic   300        F    F  Po28
+* 989      0018.741c.4000    dynamic   10         F    F  Po28
+* 393      001b.4f03.5620    dynamic   70         F    F  Eth51/1/16
+* 393      001b.4f11.2c7c    dynamic   220        F    F  Eth51/1/16
+* 299      00ca.fe19.4776    dynamic   300        F    F  Eth52/1/29
+* 358      00ca.fe31.6882    dynamic   0          F    F  Eth52/1/4
+* 393      00ca.fe54.2107    dynamic   300        F    F  Eth51/1/16
+Legend: 
+        * - primary entry, G - Gateway MAC, (R) - Routed MAC, O - Overlay MAC
+        age - seconds since last seen,+ - primary entry using vPC Peer-Link
+   VLAN     MAC Address      Type      age     Secure NTFY   Ports/SWID.SSID.LID
+---------+-----------------+--------+---------+------+----+------------------
+* 388      0050.569f.7930    dynamic   10         F    F  Po28
+* 299      0050.569f.7a74    dynamic   10         F    F  Eth52/1/30
+* 388      0050.569f.7b98    dynamic   10         F    F  Po28
+* 299      0050.569f.7ba2    dynamic   300        F    F  Eth52/1/26
+* 388      0050.569f.7e9a    dynamic   30         F    F  Po28
+* 388      0050.569f.7ee5    dynamic   20         F    F  Po28
+* 388      0050.569f.7f02    dynamic   300        F    F  Po28
