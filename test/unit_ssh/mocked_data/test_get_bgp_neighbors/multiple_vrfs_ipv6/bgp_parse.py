@@ -127,6 +127,10 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
             bgp_summary_dict.update(match.groupdict(1))
 
     # Some post regex cleanup and validation
+    vrf = bgp_summary_dict['vrf']
+    if vrf.lower() == 'default':
+        bgp_summary_dict['vrf'] = 'global'
+
     afi = bgp_summary_dict['afi']
     afi = afi.split()[0].lower()
     if afi not in allowed_afi:
@@ -138,6 +142,14 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
         raise ValueError("BGP router_id ({}) is not valid".format(bgp_summary_dict['router_id']))
     print(bgp_summary_dict)
 
+    vrf = bgp_summary_dict['vrf']
+    bgp_return_dict = {
+        vrf: {
+            "router_id": bgp_summary_dict['router_id'],
+            "peers": {},
+        }
+    }
+
     # Extract and process the tabular data
     tabular_divider = r"^Neighbor\s+.*PfxRcd$"
     tabular_data = re.split(tabular_divider, bgp_summary, flags=re.M)
@@ -145,14 +157,59 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
         raise ValueError("Unexpected data processing BGP summary information:\n\n{}".format(bgp_summary))
     tabular_data = tabular_data[1]
     bgp_table = bgp_normalize_table_data(tabular_data)
-    print('-' * 80)
-    print(bgp_table)
-    print('-' * 80)
     for bgp_entry in bgp_table_parser(bgp_table):
-        print(bgp_entry)
+        bgp_return_dict[vrf]["peers"].update(bgp_entry)
 
+    bgp_new_dict = {}
+    for neighbor, bgp_data in bgp_return_dict[vrf]["peers"].items():
+        received_prefixes = bgp_data.pop("received_prefixes")
+        bgp_data["address_family"] = {}
+        prefixes_dict = {"sent_prefixes": -1, "accepted_prefixes": -1, "received_prefixes": received_prefixes}
+        bgp_data["address_family"][afi] = prefixes_dict
+        bgp_new_dict[neighbor] = bgp_data
+
+    bgp_return_dict = bgp_new_dict
+
+    print('-' * 80)
+    from pprint import pprint as pp
+    pp(bgp_return_dict)
+    print('-' * 80)
+
+
+"""
+{u'10.1.0.1': {u'description': u'',
+               u'is_enabled': True,
+               u'is_up': True,
+               u'received_prefixes': 4,
+               u'remote_as': u'65535',
+               u'uptime': True},
+ u'10.2.1.14': {u'description': u'',
+                u'is_enabled': True,
+                u'is_up': True,
+                u'received_prefixes': 9,
+                u'remote_as': u'10',
+                u'uptime': True},
+ u'afi': u'ipv4',
+ u'router_id': u'10.1.0.16',
+ u'vrf': u'RED1'}
+
+"""
+
+#{u'10.2.1.14': {u'is_enabled': True, u'uptime': True, u'remote_as': u'10', u'received_prefixes': 9, u'is_up': True, u'description': u''}}
+#{u'10.1.0.1': {u'is_enabled': True, u'uptime': True, u'remote_as': u'65535', u'received_prefixes': 4, u'is_up': True, u'description': u''}}
+#{u'router_id': u'10.1.0.17', u'vrf': u'RED2', u'afi': u'ipv4'}
     #bgp_tablular_dict = bgp_summary_table_parser(bgp_table)
 
+"""
+        {
+        "global": {
+            "router_id": "1.1.1.103", 
+            "peers": {
+                "10.99.99.2": {
+                    "is_enabled": true, 
+                    "uptime": -1, 
+                    "remote_as": 22, 
+"""
 
 f = open("show_bgp_all_summary_vrf_all.txt", "rt")
 
