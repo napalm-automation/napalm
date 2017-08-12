@@ -12,31 +12,6 @@ IPV6_ADDR_REGEX_3 = r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-f
 IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
 IPV4_OR_IPV6_REGEX = "(?:{}|{})".format(IPV4_ADDR_REGEX, IPV6_ADDR_REGEX)
 
-"""
-        {
-        "global": {
-            "router_id": "1.1.1.103", 
-            "peers": {
-                "10.99.99.2": {
-                    "is_enabled": true, 
-                    "uptime": -1, 
-                    "remote_as": 22, 
-                    "address_family": {
-                        "ipv4": {
-                            "sent_prefixes": -1, 
-                            "accepted_prefixes": -1, 
-                            "received_prefixes": -1
-                        }
-                    }, 
-                    "remote_id": "0.0.0.0", 
-                    "local_as": 22, 
-                    "is_up": false, 
-                    "description": ""
-                 }
-            }
-        }
-"""
-
 def bgp_normalize_table_data(bgp_table):
     """The 'show bgp all summary vrf all' table can have entries that wrap multiple lines.
 
@@ -176,40 +151,6 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
     print('-' * 80)
 
 
-"""
-{u'10.1.0.1': {u'description': u'',
-               u'is_enabled': True,
-               u'is_up': True,
-               u'received_prefixes': 4,
-               u'remote_as': u'65535',
-               u'uptime': True},
- u'10.2.1.14': {u'description': u'',
-                u'is_enabled': True,
-                u'is_up': True,
-                u'received_prefixes': 9,
-                u'remote_as': u'10',
-                u'uptime': True},
- u'afi': u'ipv4',
- u'router_id': u'10.1.0.16',
- u'vrf': u'RED1'}
-
-"""
-
-#{u'10.2.1.14': {u'is_enabled': True, u'uptime': True, u'remote_as': u'10', u'received_prefixes': 9, u'is_up': True, u'description': u''}}
-#{u'10.1.0.1': {u'is_enabled': True, u'uptime': True, u'remote_as': u'65535', u'received_prefixes': 4, u'is_up': True, u'description': u''}}
-#{u'router_id': u'10.1.0.17', u'vrf': u'RED2', u'afi': u'ipv4'}
-    #bgp_tablular_dict = bgp_summary_table_parser(bgp_table)
-
-"""
-        {
-        "global": {
-            "router_id": "1.1.1.103", 
-            "peers": {
-                "10.99.99.2": {
-                    "is_enabled": true, 
-                    "uptime": -1, 
-                    "remote_as": 22, 
-"""
 
 f = open("show_bgp_all_summary_vrf_all.txt", "rt")
 
@@ -222,7 +163,3 @@ if len(bgp_summary_sections):
 for bgp_section in bgp_summary_sections:
     bgp_section = section_separator + bgp_section
     bgp_summary_parser(bgp_section)
-#    break
-
-#print(bgp_summary_sections[-3])
-
