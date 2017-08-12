@@ -37,6 +37,42 @@ IPV4_OR_IPV6_REGEX = "(?:{}|{})".format(IPV4_ADDR_REGEX, IPV6_ADDR_REGEX)
         }
 """
 
+def bgp_normalize_table_data(bgp_table):
+    """The 'show bgp all summary vrf all' table can have entries that wrap multiple lines.
+
+    2001:db8:4:701::2
+                4 65535  163664  163693      145    0    0     3w2d 3
+    2001:db8:e0:dd::1
+                4    10  327491  327278      145    0    0     3w1d 4
+    
+    Normalize this so the line wrap doesn't exit.
+    """
+    bgp_table = bgp_table.strip()
+    bgp_multiline_pattern = r"({})\s*\n".format(IPV4_OR_IPV6_REGEX)
+    # Strip out the newline
+    re.sub(bgp_multiline_pattern, r'\1', bgp_table)
+    return bgp_table
+
+
+def bgp_summary_table_parser(bgp_table):
+    """Parse the show bgp all summary vrf all tabular data.
+
+    10.2.1.14       4    10  472516  472238      361    0    0     3w1d 9
+    10.1.0.1        4 65535  242485  242487      361    0    0    23w2d 4
+    """
+    bgp_table = bgp_normalize_table_data(bgp_table)
+    bgp_table = bgp_table.strip()
+    for bgp_entry in bgp_table.splitlines():
+        bgp_table_fields = bgp_entry.split()
+        print(bgp_table_fields)
+        try:
+            peer_ip, bgp_version, remote_as, msg_rcvd, msg_sent, _, _, _, uptime, state_pfxrcd = \
+                bgp_table_fields
+        except ValueError:
+            print(bgp_table)
+        print(bgp_table_fields)
+    
+
 def bgp_summary_parser(bgp_summary):
     """
 BGP summary information for VRF RED1, address family IPv4 Unicast
@@ -86,7 +122,7 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
     if len(tabular_data) != 2:
         raise ValueError("Unexpected data processing BGP summary information:\n\n{}".format(bgp_summary))
     tabular_data = tabular_data[1]
-    print(tabular_data)
+    bgp_tablular_dict = bgp_summary_table_parser(tabular_data)
 
 
 f = open("show_bgp_all_summary_vrf_all.txt", "rt")
