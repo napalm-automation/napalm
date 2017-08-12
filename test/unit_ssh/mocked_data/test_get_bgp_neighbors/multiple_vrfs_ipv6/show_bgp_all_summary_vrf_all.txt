@@ -1,4 +1,4 @@
-BGP summary information for VRF RED1, address family IPv4 Unicast
+BGP summary information for VRF default, address family IPv4 Unicast
 BGP router identifier 10.1.0.16, local AS number 65535
 BGP table version is 361, IPv4 Unicast config peers 2, capable peers 2
 13 network entries and 17 paths using 2224 bytes of memory
