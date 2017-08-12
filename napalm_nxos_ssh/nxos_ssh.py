@@ -25,6 +25,7 @@ from scp import SCPClient
 import paramiko
 import hashlib
 from datetime import datetime
+import copy
 
 # import third party lib
 from netaddr import IPAddress
@@ -49,8 +50,21 @@ DAY_SECONDS = 24 * HOUR_SECONDS
 WEEK_SECONDS = 7 * DAY_SECONDS
 YEAR_SECONDS = 365 * DAY_SECONDS
 
+# STD REGEX PATTERNS
+IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+IPV4_ADDR_REGEX = IP_ADDR_REGEX
+IPV6_ADDR_REGEX_1 = r"::"
+IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
+IPV6_ADDR_REGEX_3 = r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:" \
+                     "[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}"
+# Should validate IPv6 address using an IP address library after matching with this regex
+IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
+
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
 VLAN_REGEX = r"\d{1,4}"
+
+# Period needed for 32-bit AS Numbers
+ASN_REGEX = r"[\d\.]+"
 
 
 class NXOSSSHDriver(NetworkDriver):
@@ -428,6 +442,55 @@ class NXOSSSHDriver(NetworkDriver):
         seconds += int(uptime_facts['up_secs'])
         return seconds
 
+    @staticmethod
+    def bgp_time_conversion(bgp_uptime):
+        """Convert string time to seconds.
+
+        Examples
+        00:14:23
+        00:13:40
+        00:00:21
+        00:00:13
+        00:00:49
+        1d11h
+        1d17h
+        1w0d
+        8w5d
+        1y28w
+        never
+        """
+        bgp_uptime = bgp_uptime.strip()
+        uptime_letters = set(['w', 'h', 'd'])
+
+        if 'never' in bgp_uptime:
+            return -1
+        elif ':' in bgp_uptime:
+            times = bgp_uptime.split(":")
+            times = [int(x) for x in times]
+            hours, minutes, seconds = times
+            return (hours * 3600) + (minutes * 60) + seconds
+        # Check if any letters 'w', 'h', 'd' are in the time string
+        elif uptime_letters & set(bgp_uptime):
+            form1 = r'(\d+)d(\d+)h'  # 1d17h
+            form2 = r'(\d+)w(\d+)d'  # 8w5d
+            form3 = r'(\d+)y(\d+)w'  # 1y28w
+            match = re.search(form1, bgp_uptime)
+            if match:
+                days = int(match.group(1))
+                hours = int(match.group(2))
+                return (days * DAY_SECONDS) + (hours * 3600)
+            match = re.search(form2, bgp_uptime)
+            if match:
+                weeks = int(match.group(1))
+                days = int(match.group(2))
+                return (weeks * WEEK_SECONDS) + (days * DAY_SECONDS)
+            match = re.search(form3, bgp_uptime)
+            if match:
+                years = int(match.group(1))
+                weeks = int(match.group(2))
+                return (years * YEAR_SECONDS) + (weeks * WEEK_SECONDS)
+        raise ValueError("Unexpected value for BGP uptime string: {}".format(bgp_uptime))
+
     def get_facts(self):
         """Return a set of facts from the devices."""
         # default values.
@@ -522,10 +585,51 @@ class NXOSSSHDriver(NetworkDriver):
         return results
 
     def get_bgp_neighbors(self):
-        results = {}
-        command = 'show bgp sessions vrf all'
-        output = self.device.send_command(command)  # noqa
-        return results
+        """BGP neighbor information.
+
+        Currently no VRF support. Supports only IPv4.
+
+        {
+        "global": {
+            "router_id": "1.1.1.103", 
+            "peers": {
+                "10.99.99.2": {
+                    "is_enabled": true, 
+                    "uptime": -1, 
+                    "remote_as": 22, 
+                    "address_family": {
+                        "ipv4": {
+                            "sent_prefixes": -1, 
+                            "accepted_prefixes": -1, 
+                            "received_prefixes": -1
+                        }
+                    }, 
+                    "remote_id": "0.0.0.0", 
+                    "local_as": 22, 
+                    "is_up": false, 
+                    "description": ""
+                 }
+            }
+        }
+        """
+        supported_afi = ['ipv4']
+
+        bgp_neighbor_data = dict()
+        bgp_neighbor_data['global'] = {}
+
+        # get summary output from device
+        cmd_bgp_all_sum = 'show bgp all summary'
+        summary_output = self.device.send_command(cmd_bgp_all_sum).strip()
+
+        # get neighbor output from device
+        neighbor_output = ''
+        for afi in supported_afi:
+            cmd_bgp_neighbor = 'show bgp %s unicast neighbors' % afi
+            neighbor_output += self.device.send_command(cmd_bgp_neighbor).strip()
+            # trailing newline required for parsing
+            neighbor_output += "\n"
+
+        return bgp_neighbor_data
 
     def _send_config_commands(self, commands):
         for command in commands:
