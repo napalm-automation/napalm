@@ -210,12 +210,8 @@ def bgp_summary_parser(bgp_summary):
         raise ValueError("AFI ({}) is invalid and not supported.".format(afi))
     bgp_summary_dict['afi'] = afi
 
-    print("#####")
     local_as = bgp_summary_dict['local_as']
-    print(local_as)
     local_as = napalm_base.helpers.as_number(local_as)
-    print(local_as)
-    print("#####")
 
     match = re.search(IPV4_ADDR_REGEX, bgp_summary_dict['router_id'])
     if not match:
@@ -728,7 +724,7 @@ class NXOSSSHDriver(NetworkDriver):
     def get_bgp_neighbors(self):
         """BGP neighbor information.
 
-        Currently no VRF support. Supports only IPv4.
+        Supports VRFs and IPv4 and IPv6 AFIs
 
         {
         "global": {
@@ -770,11 +766,6 @@ class NXOSSSHDriver(NetworkDriver):
 
         # FIX -- look up logical or behavior we did in Cisco IOS bgp parser (make consistent here)
         # FIX -- need to merge IPv6 and IPv4 AFI for same neighbor
-        print('-' * 80)
-        from pprint import pprint as pp
-        pp(bgp_dict)
-        print('-' * 80)
-
         return bgp_dict
 
     def _send_config_commands(self, commands):
