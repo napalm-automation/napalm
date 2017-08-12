@@ -989,7 +989,7 @@ class NXOSSSHDriver(NetworkDriver):
 
         for line in output.splitlines():
 
-            # Every 500 Mac's Legend is reprinted, regardless of term len. 
+            # Every 500 Mac's Legend is reprinted, regardless of term len.
             # Above split will not help in this scenario
             if re.search('^Legend', line):
                 continue
