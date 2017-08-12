@@ -50,8 +50,7 @@ def bgp_normalize_table_data(bgp_table):
     bgp_table = bgp_table.strip()
     bgp_multiline_pattern = r"({})\s*\n".format(IPV4_OR_IPV6_REGEX)
     # Strip out the newline
-    re.sub(bgp_multiline_pattern, r'\1', bgp_table)
-    return bgp_table
+    return re.sub(bgp_multiline_pattern, r'\1', bgp_table)
 
 
 def bgp_table_parser(bgp_table):
@@ -60,9 +59,9 @@ def bgp_table_parser(bgp_table):
     Example line: 
     10.2.1.14       4    10  472516  472238      361    0    0     3w1d 9
     """
-#    bgp_dict = {}
-#    bgp_table = bgp_table.strip()
-#    for bgp_entry in bgp_table.splitlines():
+    bgp_dict = {}
+    bgp_table = bgp_table.strip()
+    for bgp_entry in bgp_table.splitlines():
         bgp_table_fields = bgp_entry.split()
         try:
             peer_ip, bgp_version, remote_as, msg_rcvd, msg_sent, _, _, _, uptime, state_pfxrcd = \
@@ -70,25 +69,31 @@ def bgp_table_parser(bgp_table):
         except ValueError:
             raise ValueError("Unexpected entry ({}) in BGP summary table".format(bgp_table_fields))
 
-    
-       
- 
-    
-                "10.99.99.2": {
-                    "is_enabled": true, 
-                    "uptime": -1, 
-                    "remote_as": 22, 
-                    "address_family": {
-                        "ipv4": {
-                            "sent_prefixes": -1, 
-                            "accepted_prefixes": -1, 
-                            "received_prefixes": -1
-                        }
-                    }, 
-                    "remote_id": "0.0.0.0", 
-                    "local_as": 22, 
-                    "is_up": false, 
-                    "description": ""
+        is_enabled = True
+        try:
+            received_prefixes = int(state_pfxrcd)
+            is_up = True
+        except ValueError:
+            received_prefixes = -1
+            is_up = False
+            if re.search(r'Shut.*Admin', state_pfxrcd):
+                is_enabled = False
+
+        # FIX -- look up logical or behavior we did in Cisco IOS bgp parser (make consistent here)
+        # FIX -- need to merge IPv6 and IPv4 AFI for same neighbor
+        if is_up == False:
+            uptime = -1
+
+        yield {
+            peer_ip: {
+                "is_enabled": is_enabled,
+                "uptime": is_up,
+                "remote_as": remote_as,
+                "is_up": is_up,
+                "description": "",
+                "received_prefixes": received_prefixes,
+            }
+        }
 
 def bgp_summary_parser(bgp_summary):
     """
@@ -140,10 +145,11 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
         raise ValueError("Unexpected data processing BGP summary information:\n\n{}".format(bgp_summary))
     tabular_data = tabular_data[1]
     bgp_table = bgp_normalize_table_data(tabular_data)
-    bgp_table = bgp_table.strip()
-
+    print('-' * 80)
+    print(bgp_table)
+    print('-' * 80)
     for bgp_entry in bgp_table_parser(bgp_table):
-        print bgp_entry
+        print(bgp_entry)
 
     #bgp_tablular_dict = bgp_summary_table_parser(bgp_table)
 
