@@ -54,24 +54,41 @@ def bgp_normalize_table_data(bgp_table):
     return bgp_table
 
 
-def bgp_summary_table_parser(bgp_table):
-    """Parse the show bgp all summary vrf all tabular data.
-
+def bgp_table_parser(bgp_table):
+    """Generator that parses a line of bgp summary table and returns a dict compatible with NAPALM
+   
+    Example line: 
     10.2.1.14       4    10  472516  472238      361    0    0     3w1d 9
-    10.1.0.1        4 65535  242485  242487      361    0    0    23w2d 4
     """
-    bgp_table = bgp_normalize_table_data(bgp_table)
-    bgp_table = bgp_table.strip()
-    for bgp_entry in bgp_table.splitlines():
+#    bgp_dict = {}
+#    bgp_table = bgp_table.strip()
+#    for bgp_entry in bgp_table.splitlines():
         bgp_table_fields = bgp_entry.split()
-        print(bgp_table_fields)
         try:
             peer_ip, bgp_version, remote_as, msg_rcvd, msg_sent, _, _, _, uptime, state_pfxrcd = \
                 bgp_table_fields
         except ValueError:
-            print(bgp_table)
-        print(bgp_table_fields)
+            raise ValueError("Unexpected entry ({}) in BGP summary table".format(bgp_table_fields))
+
     
+       
+ 
+    
+                "10.99.99.2": {
+                    "is_enabled": true, 
+                    "uptime": -1, 
+                    "remote_as": 22, 
+                    "address_family": {
+                        "ipv4": {
+                            "sent_prefixes": -1, 
+                            "accepted_prefixes": -1, 
+                            "received_prefixes": -1
+                        }
+                    }, 
+                    "remote_id": "0.0.0.0", 
+                    "local_as": 22, 
+                    "is_up": false, 
+                    "description": ""
 
 def bgp_summary_parser(bgp_summary):
     """
@@ -122,7 +139,13 @@ Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
     if len(tabular_data) != 2:
         raise ValueError("Unexpected data processing BGP summary information:\n\n{}".format(bgp_summary))
     tabular_data = tabular_data[1]
-    bgp_tablular_dict = bgp_summary_table_parser(tabular_data)
+    bgp_table = bgp_normalize_table_data(tabular_data)
+    bgp_table = bgp_table.strip()
+
+    for bgp_entry in bgp_table_parser(bgp_table):
+        print bgp_entry
+
+    #bgp_tablular_dict = bgp_summary_table_parser(bgp_table)
 
 
 f = open("show_bgp_all_summary_vrf_all.txt", "rt")
