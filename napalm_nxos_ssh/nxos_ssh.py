@@ -162,7 +162,7 @@ def bgp_summary_parser(bgp_summary):
     print("#####")
     local_as = bgp_summary_dict['local_as']
     print(local_as)
-    local_as = napalm_base.helpers.as_number(local_as),
+    local_as = napalm_base.helpers.as_number(local_as)
     print(local_as)
     print("#####")
 
@@ -198,6 +198,8 @@ def bgp_summary_parser(bgp_summary):
                          "received_prefixes": received_prefixes}
         bgp_data["address_family"][afi] = prefixes_dict
         bgp_data["local_as"] = local_as
+        # FIX, hard-coding
+        bgp_data["remote_id"] = "0.0.0.0"
         bgp_new_dict[neighbor] = bgp_data
 
     bgp_return_dict[vrf]["peers"] = bgp_new_dict
