@@ -49,8 +49,209 @@ DAY_SECONDS = 24 * HOUR_SECONDS
 WEEK_SECONDS = 7 * DAY_SECONDS
 YEAR_SECONDS = 365 * DAY_SECONDS
 
+# STD REGEX PATTERNS
+IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+IPV4_ADDR_REGEX = IP_ADDR_REGEX
+IPV6_ADDR_REGEX_1 = r"::"
+IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
+IPV6_ADDR_REGEX_3 = r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:" \
+                     "[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}"
+# Should validate IPv6 address using an IP address library after matching with this regex
+IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
+IPV4_OR_IPV6_REGEX = "(?:{}|{})".format(IPV4_ADDR_REGEX, IPV6_ADDR_REGEX)
+
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
 VLAN_REGEX = r"\d{1,4}"
+
+# Period needed for 32-bit AS Numbers
+ASN_REGEX = r"[\d\.]+"
+
+
+def bgp_time_conversion(bgp_uptime):
+    """Convert string time to seconds.
+
+    Examples
+    00:14:23
+    00:13:40
+    00:00:21
+    00:00:13
+    00:00:49
+    1d11h
+    1d17h
+    1w0d
+    8w5d
+    1y28w
+    never
+    """
+    bgp_uptime = bgp_uptime.strip()
+    uptime_letters = set(['w', 'h', 'd'])
+
+    if 'never' in bgp_uptime:
+        return -1
+    elif ':' in bgp_uptime:
+        times = bgp_uptime.split(":")
+        times = [int(x) for x in times]
+        hours, minutes, seconds = times
+        return (hours * 3600) + (minutes * 60) + seconds
+    # Check if any letters 'w', 'h', 'd' are in the time string
+    elif uptime_letters & set(bgp_uptime):
+        form1 = r'(\d+)d(\d+)h'  # 1d17h
+        form2 = r'(\d+)w(\d+)d'  # 8w5d
+        form3 = r'(\d+)y(\d+)w'  # 1y28w
+        match = re.search(form1, bgp_uptime)
+        if match:
+            days = int(match.group(1))
+            hours = int(match.group(2))
+            return (days * DAY_SECONDS) + (hours * 3600)
+        match = re.search(form2, bgp_uptime)
+        if match:
+            weeks = int(match.group(1))
+            days = int(match.group(2))
+            return (weeks * WEEK_SECONDS) + (days * DAY_SECONDS)
+        match = re.search(form3, bgp_uptime)
+        if match:
+            years = int(match.group(1))
+            weeks = int(match.group(2))
+            return (years * YEAR_SECONDS) + (weeks * WEEK_SECONDS)
+    raise ValueError("Unexpected value for BGP uptime string: {}".format(bgp_uptime))
+
+
+def bgp_normalize_table_data(bgp_table):
+    """The 'show bgp all summary vrf all' table can have entries that wrap multiple lines.
+
+    2001:db8:4:701::2
+                4 65535  163664  163693      145    0    0     3w2d 3
+    2001:db8:e0:dd::1
+                4    10  327491  327278      145    0    0     3w1d 4
+
+    Normalize this so the line wrap doesn't exit.
+    """
+    bgp_table = bgp_table.strip()
+    bgp_multiline_pattern = r"({})\s*\n".format(IPV4_OR_IPV6_REGEX)
+    # Strip out the newline
+    return re.sub(bgp_multiline_pattern, r'\1', bgp_table)
+
+
+def bgp_table_parser(bgp_table):
+    """Generator that parses a line of bgp summary table and returns a dict compatible with NAPALM
+
+    Example line:
+    10.2.1.14       4    10  472516  472238      361    0    0     3w1d 9
+    """
+    bgp_table = bgp_table.strip()
+    for bgp_entry in bgp_table.splitlines():
+        bgp_table_fields = bgp_entry.split()
+
+        try:
+            if re.search(r'Shut.*Admin', bgp_entry):
+                (peer_ip, bgp_version, remote_as, msg_rcvd, msg_sent, _, _, _,
+                    uptime, state_1, state_2) = bgp_table_fields
+                state_pfxrcd = "{} {}".format(state_1, state_2)
+            else:
+                (peer_ip, bgp_version, remote_as, msg_rcvd, msg_sent, _, _, _,
+                    uptime, state_pfxrcd) = bgp_table_fields
+        except ValueError:
+            raise ValueError("Unexpected entry ({}) in BGP summary table".format(bgp_table_fields))
+
+        is_enabled = True
+        try:
+            received_prefixes = int(state_pfxrcd)
+            is_up = True
+        except ValueError:
+            received_prefixes = -1
+            is_up = False
+            if re.search(r'Shut.*Admin', state_pfxrcd):
+                is_enabled = False
+
+        if not is_up:
+            uptime = -1
+        if uptime != -1:
+            uptime = bgp_time_conversion(uptime)
+
+        yield {
+            peer_ip: {
+                "is_enabled": is_enabled,
+                "uptime": uptime,
+                "remote_as": napalm_base.helpers.as_number(remote_as),
+                "is_up": is_up,
+                "description": "",
+                "received_prefixes": received_prefixes,
+            }
+        }
+
+
+def bgp_summary_parser(bgp_summary):
+    """Parse 'show bgp all summary vrf' output information from NX-OS devices."""
+
+    bgp_summary_dict = {}
+    # Check for BGP summary information lines that have no data
+    if len(bgp_summary.strip().splitlines()) <= 1:
+        return {}
+
+    allowed_afi = ['ipv4', 'ipv6']
+    vrf_regex = r"^BGP summary information for VRF\s+(?P<vrf>\S+),"
+    afi_regex = r"^BGP summary information.*address family (?P<afi>\S+ Unicast)"
+    local_router_regex = (r"^BGP router identifier\s+(?P<router_id>\S+)"
+                          r",\s+local AS number\s+(?P<local_as>\S+)")
+
+    for pattern in [vrf_regex, afi_regex, local_router_regex]:
+        match = re.search(pattern, bgp_summary, flags=re.M)
+        if match:
+            bgp_summary_dict.update(match.groupdict(1))
+
+    # Some post regex cleanup and validation
+    vrf = bgp_summary_dict['vrf']
+    if vrf.lower() == 'default':
+        bgp_summary_dict['vrf'] = 'global'
+
+    afi = bgp_summary_dict['afi']
+    afi = afi.split()[0].lower()
+    if afi not in allowed_afi:
+        raise ValueError("AFI ({}) is invalid and not supported.".format(afi))
+    bgp_summary_dict['afi'] = afi
+
+    local_as = bgp_summary_dict['local_as']
+    local_as = napalm_base.helpers.as_number(local_as)
+
+    match = re.search(IPV4_ADDR_REGEX, bgp_summary_dict['router_id'])
+    if not match:
+        raise ValueError("BGP router_id ({}) is not valid".format(bgp_summary_dict['router_id']))
+
+    vrf = bgp_summary_dict['vrf']
+    bgp_return_dict = {
+        vrf: {
+            "router_id": bgp_summary_dict['router_id'],
+            "peers": {},
+        }
+    }
+
+    # Extract and process the tabular data
+    tabular_divider = r"^Neighbor\s+.*PfxRcd$"
+    tabular_data = re.split(tabular_divider, bgp_summary, flags=re.M)
+    if len(tabular_data) != 2:
+        msg = "Unexpected data processing BGP summary information:\n\n{}".format(bgp_summary)
+        raise ValueError(msg)
+    tabular_data = tabular_data[1]
+    bgp_table = bgp_normalize_table_data(tabular_data)
+    for bgp_entry in bgp_table_parser(bgp_table):
+        bgp_return_dict[vrf]["peers"].update(bgp_entry)
+
+    bgp_new_dict = {}
+    for neighbor, bgp_data in bgp_return_dict[vrf]["peers"].items():
+        received_prefixes = bgp_data.pop("received_prefixes")
+        bgp_data["address_family"] = {}
+        prefixes_dict = {"sent_prefixes": -1,
+                         "accepted_prefixes": -1,
+                         "received_prefixes": received_prefixes}
+        bgp_data["address_family"][afi] = prefixes_dict
+        bgp_data["local_as"] = local_as
+        # FIX, hard-coding
+        bgp_data["remote_id"] = "0.0.0.0"
+        bgp_new_dict[neighbor] = bgp_data
+
+    bgp_return_dict[vrf]["peers"] = bgp_new_dict
+
+    return bgp_return_dict
 
 
 class NXOSSSHDriver(NetworkDriver):
@@ -445,7 +646,6 @@ class NXOSSSHDriver(NetworkDriver):
         for line in show_ver.splitlines():
             if ' uptime is ' in line:
                 _, uptime_str = line.split(' uptime is ')
-                print(uptime_str)
                 uptime = self.parse_uptime(uptime_str)
 
             if 'Processor Board ID' in line:
@@ -522,10 +722,51 @@ class NXOSSSHDriver(NetworkDriver):
         return results
 
     def get_bgp_neighbors(self):
-        results = {}
-        command = 'show bgp sessions vrf all'
-        output = self.device.send_command(command)  # noqa
-        return results
+        """BGP neighbor information.
+
+        Supports VRFs and IPv4 and IPv6 AFIs
+
+        {
+        "global": {
+            "router_id": "1.1.1.103",
+            "peers": {
+                "10.99.99.2": {
+                    "is_enabled": true,
+                    "uptime": -1,
+                    "remote_as": 22,
+                    "address_family": {
+                        "ipv4": {
+                            "sent_prefixes": -1,
+                            "accepted_prefixes": -1,
+                            "received_prefixes": -1
+                        }
+                    },
+                    "remote_id": "0.0.0.0",
+                    "local_as": 22,
+                    "is_up": false,
+                    "description": ""
+                 }
+            }
+        }
+        """
+        bgp_dict = {}
+
+        # get summary output from device
+        cmd_bgp_all_sum = 'show bgp all summary vrf all'
+        bgp_summary_output = self.device.send_command(cmd_bgp_all_sum).strip()
+
+        section_separator = r"BGP summary information for "
+        bgp_summary_sections = re.split(section_separator, bgp_summary_output)
+        if len(bgp_summary_sections):
+            bgp_summary_sections.pop(0)
+
+        for bgp_section in bgp_summary_sections:
+            bgp_section = section_separator + bgp_section
+            bgp_dict.update(bgp_summary_parser(bgp_section))
+
+        # FIX -- look up logical or behavior we did in Cisco IOS bgp parser (make consistent here)
+        # FIX -- need to merge IPv6 and IPv4 AFI for same neighbor
+        return bgp_dict
 
     def _send_config_commands(self, commands):
         for command in commands:
@@ -748,7 +989,7 @@ class NXOSSSHDriver(NetworkDriver):
 
         for line in output.splitlines():
 
-            # Every 500 Mac's Legend is reprinted, regardless of term len. 
+            # Every 500 Mac's Legend is reprinted, regardless of term len.
             # Above split will not help in this scenario
             if re.search('^Legend', line):
                 continue
