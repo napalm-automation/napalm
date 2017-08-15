@@ -220,4 +220,3 @@ The debugging mode is also quite useful and it's recommended you use it to repor
         raise MergeConfigException(e.message)
     napalm_base.exceptions.MergeConfigException: Error [1000]: CLI command 3 of 5 'hostname a_new-hostname' failed: could not run command [ Host name is invalid. Host name must contain only alphanumeric characters, '.' and '-'.
     It must begin and end with an alphanumeric character.]
-    (
