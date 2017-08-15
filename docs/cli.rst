@@ -67,7 +67,8 @@ Let's see a few examples:
      !
      interface Ethernet2
      !
-    $ napalm --user vagrant --password vagrant --vendor eos --optional_args "port=12443" localhost call get_interfaces{
+    $ napalm --user vagrant --password vagrant --vendor eos --optional_args "port=12443" localhost call get_interfaces
+    {
         "Ethernet2": {
             "is_enabled": true,
             "description": "",
