@@ -372,9 +372,13 @@ class PANOSDriver(NetworkDriver):
 
         for element in interfaces:
             for entry in interfaces[element]:
-                for intf in interfaces[element][entry]:
-                    if intf['name'] not in facts['interface_list']:
-                        facts['interface_list'].append(intf['name'])
+                if isinstance(interfaces[element][entry], list):
+                    for intf in interfaces[element][entry]:
+                        if intf['name'] not in facts['interface_list']:
+                            facts['interface_list'].append(intf['name'])
+                else:
+                    if interfaces[element][entry]['name'] not in facts['interface_list']:
+                        facts['interface_list'].append(interfaces[element][entry]['name'])
         facts['interface_list'].sort()
         return facts
 
