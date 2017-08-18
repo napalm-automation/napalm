@@ -437,6 +437,9 @@ class IOSDriver(NetworkDriver):
         cmd = 'configure replace {} force'.format(cfg_file)
         self.device.send_command_expect(cmd)
 
+        # Save config to startup
+        self.device.send_command_expect("write mem")
+
     def _inline_tcl_xfer(self, source_file=None, source_config=None, dest_file=None,
                          file_system=None):
         """
