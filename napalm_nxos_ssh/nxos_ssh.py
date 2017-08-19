@@ -73,17 +73,27 @@ ASN_REGEX = r"[\d\.]+"
 def parse_intf_section(interface):
     """Parse a single entry from show interfaces output."""
     interface = interface.strip()
+    print("Z" * 80)
+    print(interface)
+    print("Z" * 80)
     re_intf_name_state = r"^(?P<intf_name>\S+) is (?P<intf_state>\S+).*"
-    re_is_enabled = r"^admin state is (?P<is_enabled>\S+)\s*$"
+    re_is_enabled_1 = r"^admin state is (?P<is_enabled>\S+)$"
+    re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_mac = r"^\s+Hardware.*address:\s+(?P<mac_address>\S+) "
     re_speed = r"^\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
+
+    """
+    Ethernet2/1 is up
+    admin state is up, Dedicated Interface"""
 
     match = re.search(re_intf_name_state, interface)
     intf_name = match.group('intf_name')
     intf_state = match.group('intf_state').strip()
     is_up = True if intf_state == 'up' else False
 
-    match = re.search(re_is_enabled, interface, flags=re.M)
+    match = re.search(re_is_enabled_1, interface, flags=re.M)
+    if not match:
+        match = re.search(re_is_enabled_2, interface, flags=re.M)
     is_enabled = match.group('is_enabled').strip()
     is_enabled = True if is_enabled == 'up' else False
 
@@ -782,9 +792,14 @@ class NXOSSSHDriver(NetworkDriver):
         output = self.device.send_command(command)
         if not output:
             return {}
-        
+    
+        """
+        Ethernet4/48 is down (Administratively down)
+        admin state is down, Dedicated Interface
+        """
+    
         # Break output into per-interface sections (note, separator text is retained)
-        separator = r"(^\S+\s+is \S+\nadmin state is)"
+        separator = r"(^\S+\s+is \S+.*\nadmin state is)"
         interface_lines = re.split(separator, output, flags=re.M)
         print('-' * 80)
         print(len(interface_lines))
@@ -805,13 +820,11 @@ class NXOSSSHDriver(NetworkDriver):
         new_interfaces = [line + next(intf_iter, '') for line in intf_iter]
 
         for entry in new_interfaces:
+            interfaces.update(parse_intf_section(entry))
             print('-' * 80)
-            parse_intf_section(entry)
+            print(entry)
+            print(interfaces)
             print('-' * 80)
-            break
-
-        #print new_interfaces[0]
-        #print interface_lines[1]
 
         return interfaces
 
