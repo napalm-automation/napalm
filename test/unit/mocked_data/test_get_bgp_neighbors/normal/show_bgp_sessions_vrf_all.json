@@ -26,7 +26,7 @@
                     "lastflap": "P1M6DT17H23M26S",
                     "lastread": "PT0S",
                     "lastwrite": "PT0S",
-                    "state": "1"
+                    "state": "Established"
                 }
             }
         }, {
@@ -46,7 +46,7 @@
                     "lastflap": "P1M6DT17H23M26S",
                     "lastread": "PT0S",
                     "lastwrite": "PT0S",
-                    "state": "1"
+                    "state": "Established"
                 }
             }
         }]
