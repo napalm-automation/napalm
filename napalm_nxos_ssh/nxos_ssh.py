@@ -70,6 +70,48 @@ RE_MAC = re.compile(r"{}".format(MAC_REGEX))
 ASN_REGEX = r"[\d\.]+"
 
 
+def parse_intf_section(interface):
+    """Parse a single entry from show interfaces output."""
+    interface = interface.strip()
+    re_intf_name_state = r"^(?P<intf_name>\S+) is (?P<intf_state>\S+).*"
+    re_is_enabled = r"^admin state is (?P<is_enabled>\S+)\s*$"
+    re_mac = r"^\s+Hardware.*address:\s+(?P<mac_address>\S+) "
+    re_speed = r"^\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
+
+    match = re.search(re_intf_name_state, interface)
+    intf_name = match.group('intf_name')
+    intf_state = match.group('intf_state').strip()
+    is_up = True if intf_state == 'up' else False
+
+    match = re.search(re_is_enabled, interface, flags=re.M)
+    is_enabled = match.group('is_enabled').strip()
+    is_enabled = True if is_enabled == 'up' else False
+
+    match = re.search(re_mac, interface, flags=re.M)
+    if match:
+        mac_address = match.group('mac_address')
+        mac_address = napalm_base.helpers.mac(mac_address)
+    else:
+        mac_address = ""
+
+    match = re.search(re_speed, interface, flags=re.M)
+    speed = int(match.group('speed'))
+    speed_unit = match.group('speed_unit')
+    # This was alway in Kbit (in the data I saw)
+    if speed_unit != "Kbit":
+        raise ValueError("Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface))
+    speed = int(round(speed / 1000.0))
+
+    return { intf_name: {
+                'description': 'N/A',
+                'is_enabled': is_enabled,
+                'is_up': is_up,
+                'last_flapped': -1.0,
+                'mac_address': mac_address,
+                'speed': speed }
+            }
+
+
 def convert_hhmmss(hhmmss):
     """Convert hh:mm:ss to seconds."""
     fields = hhmmss.split(":")
@@ -709,9 +751,68 @@ class NXOSSSHDriver(NetworkDriver):
         }
 
     def get_interfaces(self):
+        """
+        Get interface details.
+
+        last_flapped is not implemented
+
+        Example Output:
+
+        {   u'Vlan1': {   'description': u'N/A',
+                      'is_enabled': True,
+                      'is_up': True,
+                      'last_flapped': -1.0,
+                      'mac_address': u'a493.4cc1.67a7',
+                      'speed': 100},
+        u'Vlan100': {   'description': u'Data Network',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'last_flapped': -1.0,
+                        'mac_address': u'a493.4cc1.67a7',
+                        'speed': 100},
+        u'Vlan200': {   'description': u'Voice Network',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'last_flapped': -1.0,
+                        'mac_address': u'a493.4cc1.67a7',
+                        'speed': 100}}
+        """
         interfaces = {}
         command = 'show interface'
-        output = self.device.send_command(command) # noqa
+        output = self.device.send_command(command)
+        if not output:
+            return {}
+        
+        # Break output into per-interface sections (note, separator text is retained)
+        separator = r"(^\S+\s+is \S+\nadmin state is)"
+        interface_lines = re.split(separator, output, flags=re.M)
+        print('-' * 80)
+        print(len(interface_lines))
+        print('-' * 80)
+
+        if len(interface_lines) == 1:
+            raise ValueError("Unexpected output data in '{}':\n\n{}".format(command, interface_lines))
+
+        # Get rid of the blank data at the beginning
+        interface_lines.pop(0)
+
+        # Must be pairs of data (the separator and section corresponding to it)
+        if len(interface_lines) % 2 != 0:
+            raise ValueError("Unexpected output data in '{}':\n\n{}".format(command, interface_lines))
+
+        # Combine the separator and section into one string
+        intf_iter = iter(interface_lines)
+        new_interfaces = [line + next(intf_iter, '') for line in intf_iter]
+
+        for entry in new_interfaces:
+            print('-' * 80)
+            parse_intf_section(entry)
+            print('-' * 80)
+            break
+
+        #print new_interfaces[0]
+        #print interface_lines[1]
+
         return interfaces
 
     def get_lldp_neighbors(self):
