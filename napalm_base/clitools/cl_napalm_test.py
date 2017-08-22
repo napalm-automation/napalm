@@ -14,11 +14,14 @@ from napalm_base import get_network_driver
 from napalm_base.clitools.helpers import build_help
 from napalm_base.clitools.helpers import configure_logging
 from napalm_base.clitools.helpers import parse_optional_args
+from napalm_base.clitools.helpers import warning
 
 # stdlib
 import sys
 import logging
+
 logger = logging.getLogger('cl_napalm_test.py')
+warning()
 
 
 def main():

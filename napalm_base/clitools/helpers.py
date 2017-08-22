@@ -10,13 +10,21 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 # stdlib
+import ast
 import sys
 import logging
 import getpass
 import argparse
+import warnings
 
 
-def build_help(connect_test=False, validate=False, configure=False):
+def warning():
+    warnings.simplefilter('always', DeprecationWarning)
+    warnings.warn("This tool has been deprecated, please use `napalm` instead\n",
+                  DeprecationWarning)
+
+
+def build_help(connect_test=False, validate=False, configure=False, napalm_cli=False):
     parser = argparse.ArgumentParser(
         description='Command line tool to handle configuration on devices using NAPALM.'
                     'The script will print the diff on the screen',
@@ -60,6 +68,7 @@ def build_help(connect_test=False, validate=False, configure=False):
         action='store_true',
         help='Enables debug mode; more verbosity.'
     )
+
     if configure:
         parser.add_argument(
             '--strategy', '-s',
@@ -111,7 +120,7 @@ def configure_logging(logger, debug):
 
 
 def parse_optional_args(optional_args):
-
     if optional_args is not None:
-        return {x.split('=')[0]: x.split('=')[1] for x in optional_args.replace(' ', '').split(',')}
+        return {x.split('=')[0]: ast.literal_eval(x.split('=')[1])
+                for x in optional_args.split(',')}
     return {}

@@ -15,10 +15,13 @@ from napalm_base import get_network_driver
 from napalm_base.clitools.helpers import build_help
 from napalm_base.clitools.helpers import configure_logging
 from napalm_base.clitools.helpers import parse_optional_args
+from napalm_base.clitools.helpers import warning
 
 import sys
 import logging
+
 logger = logging.getLogger('cl-napalm-config.py')
+warning()
 
 
 def run(vendor, hostname, user, password, strategy, optional_args, config_file, dry_run):
