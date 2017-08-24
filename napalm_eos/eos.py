@@ -535,12 +535,13 @@ class EOSDriver(NetworkDriver):
                 remote_chassis_id = neighbor.get('chassisId', u'')
                 if neighbor.get("chassisIdType", u'') == "macAddress":
                     remote_chassis_id = napalm_base.helpers.mac(remote_chassis_id)
+                neighbor_interface_info = neighbor.get('neighborInterfaceInfo', {})
                 lldp_neighbors_out[interface].append(
                     {
                         'parent_interface': interface,  # no parent interfaces
-                        'remote_port':
-                            neighbor.get('neighborInterfaceInfo', {}).get('interfaceId', u''),
-                        'remote_port_description': u'',
+                        'remote_port': neighbor_interface_info.get('interfaceId', u''),
+                        'remote_port_description': 
+                            neighbor_interface_info.get('interfaceDescription', u''),
                         'remote_system_name': neighbor.get('systemName', u''),
                         'remote_system_description': neighbor.get('systemDescription', u''),
                         'remote_chassis_id': remote_chassis_id,
