@@ -88,7 +88,7 @@ class MockDevice(object):
     def run_commands(self, commands):
         """Only useful for EOS"""
         if "eos" in self.profile:
-            return self.parent.cli(commands).values()[0]
+            return list(self.parent.cli(commands).values())[0]
         else:
             raise AttributeError("MockedDriver instance has not attribute '_rpc'")
 
@@ -187,7 +187,8 @@ class MockDriver(NetworkDriver):
         mocked_data(self.path, "discard_config", count)
 
     def _rpc(self, get):
-        return self.cli([get]).values()[0]
+        """This one is only useful for junos."""
+        return list(self.cli([get]).values())[0]
 
     def __getattribute__(self, name):
         if is_mocked_method(name):
