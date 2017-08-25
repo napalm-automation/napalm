@@ -540,7 +540,7 @@ class EOSDriver(NetworkDriver):
                     {
                         'parent_interface': interface,  # no parent interfaces
                         'remote_port': neighbor_interface_info.get('interfaceId', u''),
-                        'remote_port_description': 
+                        'remote_port_description':
                             neighbor_interface_info.get('interfaceDescription', u''),
                         'remote_system_name': neighbor.get('systemName', u''),
                         'remote_system_description': neighbor.get('systemDescription', u''),
