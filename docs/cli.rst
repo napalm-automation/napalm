@@ -1,9 +1,7 @@
 Command Line Tool
 =================
 
-NAPALM ships with a very simple cli tool so you can use napalm straight from the CLI. It's use is quite simple and you can see the help with ``--help``:
-
-.. code-block::
+NAPALM ships with a very simple cli tool so you can use napalm straight from the CLI. It's use is quite simple and you can see the help with ``--help``::
 
     $ napalm --help
     usage: napalm [-h] [--user USER] [--password PASSWORD] --vendor VENDOR
@@ -44,9 +42,7 @@ You can mostly do three things:
 2. Call any method (like ``get_interfaces`` or ``ping``)
 3. Validate configuration/state
 
-Let's see a few examples:
-
-.. code-block::
+Let's see a few examples::
 
     # napalm --user vagrant --password vagrant --vendor eos --optional_args "port=12443" localhost configure new_config.txt --strategy merge --dry-run
     @@ -8,7 +8,7 @@
@@ -135,9 +131,7 @@ Let's see a few examples:
 Debug Mode
 ----------
 
-The debugging mode is also quite useful and it's recommended you use it to report and issue.
-
-.. code-block::
+The debugging mode is also quite useful and it's recommended you use it to report and issue.::
 
     $ napalm --debug --user vagrant --password vagrant --vendor eos --optional_args "port=12443" localhost configure new_config.txt --strategy merge --dry-run
     2017-08-15 15:14:23,527 - napalm - DEBUG - Starting napalm's debugging tool

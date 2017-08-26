@@ -125,6 +125,7 @@ ____________________________________
 * :code:`global_delay_factor` (ios, vyos) - Allow for additional delay in command execution (default: ``1``).
 * :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
+* :code:`secret` (ios) - Password required to enter privileged exec (enable) (default: ``''``).
 * :code:`ssh_strict` (iosxr, ios, panos, vyos) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
 * :code:`allow_agent` (ios, iosxr, panos, vyos) - Paramiko argument, enable connecting to the SSH agent (default: ``False``).
 * :code:`use_keys` (iosxr, ios, panos, vyos) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
@@ -135,30 +136,6 @@ ____________________________________
 * :code:`alt_key_file` (ios, iosxr, panos, vyos) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
 * :code:`keepalive` (junos, iosxr, ios) - SSH keepalive interval, in seconds (default: ``30`` seconds).
 * :code:`ignore_warning` (junos) - Allows to set `ignore_warning` when loading configuration to avoid exceptions via junos-pyez. (default: ``False``).
-
-The transport argument
-______________________
-
-Certain drivers support providing an alternate transport in the :code:`optional_args`, overriding the default protocol to connect with. Allowed transports are therefore device/library dependant:
-
-=============== ====================  ====================  ===================
-_               EOS                   NXOS                  IOS
-=============== ====================  ====================  ===================
-**Default**     ``https``             ``https``             ``ssh``
-**Supported**   ``http``, ``https``   ``http``, ``https``   ``telnet``, ``ssh``
-=============== ====================  ====================  ===================
-
-The transport argument
-______________________
-
-Certain drivers support providing an alternate transport in the :code:`optional_args`, overriding the default protocol to connect with. Allowed transports are therefore device/library dependant:
-
-=============== ====================  ====================  ===================
-_               EOS                   NXOS                  IOS
-=============== ====================  ====================  ===================
-**Default**     ``https``             ``https``             ``ssh``
-**Supported**   ``http``, ``https``   ``http``, ``https``   ``telnet``, ``ssh``
-=============== ====================  ====================  ===================
 
 The transport argument
 ______________________
