@@ -1,114 +1,221 @@
 Command Line Tool
 =================
 
-NAPALM ships with a simple CLI tool to help you in deploying configuration to your devices directly from the shell.
-It might be convenient for simple bash scripts or provisioning tools that rely on a shell.
+NAPALM ships with a very simple cli tool so you can use napalm straight from the CLI. It's use is quite simple and you can see the help with ``--help``:
 
-The usage is very simple. For example, let's do a dry run (changes will not be applied) and check the changes between
-my current configuration and a new candidate configuration:
+.. code-block::
 
-.. code-block:: diff
+    $ napalm --help
+    usage: napalm [-h] [--user USER] [--password PASSWORD] --vendor VENDOR
+                  [--optional_args OPTIONAL_ARGS] [--debug]
+                  hostname {configure,call,validate} ...
 
-    # cl_napalm_configure --user vagrant --vendor eos --strategy replace --optional_args 'port=12443' --dry-run localhost new_good.conf
-    Enter password:
-    @@ -2,30 +2,38 @@
-     !
-     ! boot system flash:/vEOS-lab.swi
-     !
-    -event-handler dhclient
-    -   trigger on-boot
-    -   action bash sudo /mnt/flash/initialize_ma1.sh
-    +transceiver qsfp default-mode 4x10G
-     !
-    -transceiver qsfp default-mode 4x10G
-    +hostname pyeos-unittest-changed
-     !
-     spanning-tree mode mstp
-     !
-     aaa authorization exec default local
-     !
-    -aaa root secret 5 $1$b4KXboe4$yeTwqHOKscsF07WGoOnZ0.
-    +no aaa root
-     !
-    -username admin privilege 15 role network-admin secret 5 $1$nT3t1LkI$1f.SG5YaRo6h4LlhIKgTK.
-    -username vagrant privilege 15 role network-admin secret 5 $1$589CDTZ0$9S4LGAiCpxHCOC17jECxt1
-    +username admin privilege 15 role network-admin secret 5 $1$RT/92Zg9$J8wD1qPAdQBcOhv4fefyt.
-    +username vagrant privilege 15 role network-admin secret 5 $1$Lw2STh4k$bPEDVVTY2e7lf.vNlnNEO0
-     !
-     interface Ethernet1
-     !
-     interface Ethernet2
-    +   description ble
-     !
-     interface Management1
-        ip address 10.0.2.15/24
-     !
-     no ip routing
-     !
-    +router bgp 65000
-    +   vrf test
-    +      neighbor 1.1.1.2 remote-as 1
-    +      neighbor 1.1.1.2 maximum-routes 12000
-    +   !
-    +   vrf test2
-    +      neighbor 2.2.2.3 remote-as 2
-    +      neighbor 2.2.2.3 maximum-routes 12000
-    +!
-     management api http-commands
-        no shutdown
-     !
-    #
+    Command line tool to handle configuration on devices using NAPALM.The script
+    will print the diff on the screen
 
-We got the diff back. Now let's try a partial configuration instead. However, this time we will directly apply the
-configuration and we will also be passing the password directly as an argument:
+    positional arguments:
+      hostname              Host where you want to deploy the configuration.
 
-.. code-block:: diff
+    optional arguments:
+      -h, --help            show this help message and exit
+      --user USER, -u USER  User for authenticating to the host. Default: user
+                            running the script.
+      --password PASSWORD, -p PASSWORD
+                            Password for authenticating to the host.If you do not
+                            provide a password in the CLI you will be prompted.
+      --vendor VENDOR, -v VENDOR
+                            Host Operating System.
+      --optional_args OPTIONAL_ARGS, -o OPTIONAL_ARGS
+                            String with comma separated key=value pairs passed via
+                            optional_args to the driver.
+      --debug               Enables debug mode; more verbosity.
 
-    # cl_napalm_configure --user vagrant --password vagrant --vendor eos --strategy merge --optional_args 'port=12443' merge_good.conf localhost
-    @@ -7,6 +7,8 @@
-        action bash sudo /mnt/flash/initialize_ma1.sh
+    actions:
+      {configure,call,validate}
+        configure           Perform a configuration operation
+        call                Call a napalm method
+        validate            Validate configuration/state
+
+    Automate all the things!!!
+
+You can mostly do three things:
+
+1. Configure the device (dry-run with diff supported)
+2. Call any method (like ``get_interfaces`` or ``ping``)
+3. Validate configuration/state
+
+Let's see a few examples:
+
+.. code-block::
+
+    # napalm --user vagrant --password vagrant --vendor eos --optional_args "port=12443" localhost configure new_config.txt --strategy merge --dry-run
+    @@ -8,7 +8,7 @@
      !
      transceiver qsfp default-mode 4x10G
-    +!
-    +hostname NEWHOSTNAME
+     !
+    -hostname myhost
+    +hostname a-new-hostname
      !
      spanning-tree mode mstp
      !
-    @@ -20,6 +22,7 @@
+    @@ -20,6 +20,7 @@
+     username vagrant privilege 15 role network-admin secret 5 $1$gxUZF/4Q$FoUvji7hq0HpJGxc67PJM0
+     !
      interface Ethernet1
+    +   description "TBD"
      !
      interface Ethernet2
-    +   description BLALALAL
      !
-     interface Management1
-        ip address 10.0.2.15/24
-    #
+    $ napalm --user vagrant --password vagrant --vendor eos --optional_args "port=12443" localhost call get_interfaces
+    {
+        "Ethernet2": {
+            "is_enabled": true,
+            "description": "",
+            "last_flapped": 1502731278.4344141,
+            "is_up": true,
+            "mac_address": "08:00:27:3D:83:34",
+            "speed": 0
+        },
+        "Management1": {
+            "is_enabled": true,
+            "description": "",
+            "last_flapped": 1502731294.598835,
+            "is_up": true,
+            "mac_address": "08:00:27:7D:44:C1",
+            "speed": 1000
+        },
+        "Ethernet1": {
+            "is_enabled": true,
+            "description": "",
+            "last_flapped": 1502731278.4342606,
+            "is_up": true,
+            "mac_address": "08:00:27:E6:4C:E9",
+            "speed": 0
+        }
+    }
+    $ napalm --user vagrant --password vagrant --vendor eos --optional_args "port=12443" localhost call ping --method-kwargs "destination='127.0.0.1'"
+    {
+        "success": {
+            "packet_loss": 0,
+            "rtt_stddev": 0.011,
+            "rtt_min": 0.005,
+            "results": [
+                {
+                    "rtt": 0.035,
+                    "ip_address": "127.0.0.1"
+                },
+                {
+                    "rtt": 0.008,
+                    "ip_address": "127.0.0.1"
+                },
+                {
+                    "rtt": 0.006,
+                    "ip_address": "127.0.0.1"
+                },
+                {
+                    "rtt": 0.005,
+                    "ip_address": "127.0.0.1"
+                },
+                {
+                    "rtt": 0.007,
+                    "ip_address": "127.0.0.1"
+                }
+            ],
+            "rtt_avg": 0.012,
+            "rtt_max": 0.035,
+            "probes_sent": 5
+        }
+    }
+    $ napalm --user vagrant --password vagrant --vendor eos --optional_args "port=12443" localhost call cli --method-kwargs "commands=['show  version']"
+    {
+        "show  version": "Arista vEOS\nHardware version:    \nSerial number:       \nSystem MAC address:  0800.2761.b6ba\n\nSoftware image version: 4.15.2.1F\nArchitecture:           i386\nInternal build version: 4.15.2.1F-2759627.41521F\nInternal build ID:      8404cfa4-04c4-4008-838b-faf3f77ef6b8\n\nUptime:                 19 hours and 46 minutes\nTotal memory:           1897596 kB\nFree memory:            117196 kB\n\n"
+    }
 
-We got the diff back in the stdout. If we try to run the command we should get an empty string:
 
-.. code-block:: diff
+Debug Mode
+----------
 
-    # cl_napalm_configure --user vagrant --password vagrant --vendor eos --strategy merge --optional_args 'port=12443' merge_good.conf localhost
-    #
+The debugging mode is also quite useful and it's recommended you use it to report and issue.
 
-Errors are detected as well::
+.. code-block::
 
-    # cl_napalm_configure --user vagrant --password vagrant --vendor eos --strategy merge --optional_args 'port=12443' merge_typo.conf localhost
+    $ napalm --debug --user vagrant --password vagrant --vendor eos --optional_args "port=12443" localhost configure new_config.txt --strategy merge --dry-run
+    2017-08-15 15:14:23,527 - napalm - DEBUG - Starting napalm's debugging tool
+    2017-08-15 15:14:23,527 - napalm - DEBUG - Gathering napalm packages
+    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-ansible==0.7.0
+    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-base==0.24.3
+    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-eos==0.6.0
+    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-fortios==0.4.0
+    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-ios==0.7.0
+    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-iosxr==0.5.4
+    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-junos==0.12.0
+    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-nxos==0.6.0
+    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-panos==0.4.0
+    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-pluribus==0.5.1
+    2017-08-15 15:14:23,542 - napalm - DEBUG - napalm-ros==0.2.2
+    2017-08-15 15:14:23,542 - napalm - DEBUG - napalm-vyos==0.1.3
+    2017-08-15 15:14:23,542 - napalm - DEBUG - napalm==1.2.0
+    2017-08-15 15:14:23,542 - napalm - DEBUG - get_network_driver - Calling with args: ('eos',), {}
+    2017-08-15 15:14:23,551 - napalm - DEBUG - get_network_driver - Successful
+    2017-08-15 15:14:23,551 - napalm - DEBUG - __init__ - Calling with args: (<class 'napalm_eos.eos.EOSDriver'>, 'localhost', 'vagrant'), {'password': u'*******', 'optional_args': {u'port': 12443}, 'timeout': 60}
+    2017-08-15 15:14:23,551 - napalm - DEBUG - __init__ - Successful
+    2017-08-15 15:14:23,551 - napalm - DEBUG - pre_connection_tests - Calling with args: (<napalm_eos.eos.EOSDriver object at 0x105d58bd0>,), {}
+    2017-08-15 15:14:23,551 - napalm - DEBUG - open - Calling with args: (<napalm_eos.eos.EOSDriver object at 0x105d58bd0>,), {}
+    2017-08-15 15:14:23,586 - napalm - DEBUG - open - Successful
+    2017-08-15 15:14:23,586 - napalm - DEBUG - connection_tests - Calling with args: (<napalm_eos.eos.EOSDriver object at 0x105d58bd0>,), {}
+    2017-08-15 15:14:23,587 - napalm - DEBUG - get_facts - Calling with args: (<napalm_eos.eos.EOSDriver object at 0x105d58bd0>,), {}
+    2017-08-15 15:14:23,622 - napalm - DEBUG - Gathered facts:
+    {
+        "os_version": "4.15.2.1F-2759627.41521F",
+        "uptime": 71636,
+        "interface_list": [
+            "Ethernet1",
+            "Ethernet2",
+            "Management1"
+        ],
+        "vendor": "Arista",
+        "serial_number": "",
+        "model": "vEOS",
+        "hostname": "myhost",
+        "fqdn": "myhost"
+    }
+    {
+        "os_version": "4.15.2.1F-2759627.41521F",
+        "uptime": 71636,
+        "interface_list": [
+            "Ethernet1",
+            "Ethernet2",
+            "Management1"
+        ],
+        "vendor": "Arista",
+        "serial_number": "",
+        "model": "vEOS",
+        "hostname": "myhost",
+        "fqdn": "myhost"
+    }
+    2017-08-15 15:14:23,622 - napalm - DEBUG - get_facts - Successful
+    2017-08-15 15:14:23,622 - napalm - DEBUG - load_merge_candidate - Calling with args: (<napalm_eos.eos.EOSDriver object at 0x105d58bd0>,), {'filename': 'new_config.txt'}
+    2017-08-15 15:14:23,894 - napalm - ERROR - load_merge_candidate - Failed: Error [1000]: CLI command 3 of 5 'hostname a_new-hostname' failed: could not run command [ Host name is invalid. Host name must contain only alphanumeric characters, '.' and '-'.
+    It must begin and end with an alphanumeric character.]
+
+    ================= Traceback =================
+
     Traceback (most recent call last):
-      File "/Users/dbarroso/.virtualenvs/test/bin/cl_napalm_configure", line 9, in <module>
-        load_entry_point('napalm==0.50.3', 'console_scripts', 'cl_napalm_configure')()
-      File "/Users/dbarroso/.virtualenvs/test/lib/python2.7/site-packages/napalm-0.50.3-py2.7.egg/napalm/clitools/cl_napalm_configure.py", line 139, in main
-        args.optional_args, args.config_file, args.dry_run))
-      File "/Users/dbarroso/.virtualenvs/test/lib/python2.7/site-packages/napalm-0.50.3-py2.7.egg/napalm/clitools/cl_napalm_configure.py", line 131, in run
-        return diff
-      File "/Users/dbarroso/.virtualenvs/test/lib/python2.7/site-packages/napalm-0.50.3-py2.7.egg/napalm/base.py", line 46, in __exit__
-        self.__raise_clean_exception(exc_type, exc_value, exc_traceback)
-      File "/Users/dbarroso/.virtualenvs/test/lib/python2.7/site-packages/napalm-0.50.3-py2.7.egg/napalm/clitools/cl_napalm_configure.py", line 119, in run
-        strategy_method(filename=config_file)
-      File "/Users/dbarroso/.virtualenvs/test/lib/python2.7/site-packages/napalm-0.50.3-py2.7.egg/napalm/eos.py", line 95, in load_merge_candidate
+      File "/Users/dbarroso/.virtualenvs/napalm/bin/napalm", line 11, in <module>
+        load_entry_point('napalm-base', 'console_scripts', 'napalm')()
+      File "/Users/dbarroso/workspace/napalm/napalm-base/napalm_base/clitools/cl_napalm.py", line 285, in main
+        run_tests(args)
+      File "/Users/dbarroso/workspace/napalm/napalm-base/napalm_base/clitools/cl_napalm.py", line 270, in run_tests
+        configuration_change(device, args.config_file, args.strategy, args.dry_run)
+      File "/Users/dbarroso/workspace/napalm/napalm-base/napalm_base/clitools/cl_napalm.py", line 224, in configuration_change
+        strategy_method(device, filename=config_file)
+      File "/Users/dbarroso/workspace/napalm/napalm-base/napalm_base/clitools/cl_napalm.py", line 27, in wrapper
+        r = func(*args, **kwargs)
+      File "/Users/dbarroso/workspace/napalm/napalm-base/napalm_base/clitools/cl_napalm.py", line 202, in call_load_merge_candidate
+        return device.load_merge_candidate(*args, **kwargs)
+      File "/Users/dbarroso/workspace/napalm/napalm-eos/napalm_eos/eos.py", line 176, in load_merge_candidate
         self._load_config(filename, config, False)
-      File "/Users/dbarroso/.virtualenvs/test/lib/python2.7/site-packages/napalm-0.50.3-py2.7.egg/napalm/eos.py", line 89, in _load_config
+      File "/Users/dbarroso/workspace/napalm/napalm-eos/napalm_eos/eos.py", line 168, in _load_config
         raise MergeConfigException(e.message)
-    napalm.exceptions.MergeConfigException: Error [1002]: CLI command 5 of 5 'descriptin BLALALAL' failed: invalid command
-
-For more information, run ``cl_napalm_configure --help``.
+    napalm_base.exceptions.MergeConfigException: Error [1000]: CLI command 3 of 5 'hostname a_new-hostname' failed: could not run command [ Host name is invalid. Host name must contain only alphanumeric characters, '.' and '-'.
+    It must begin and end with an alphanumeric character.]
