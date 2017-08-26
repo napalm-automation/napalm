@@ -3,7 +3,6 @@ Command Line Tool
 
 NAPALM ships with a very simple cli tool so you can use napalm straight from the CLI. It's use is quite simple and you can see the help with ``--help``:
 
-
 .. code-block::
 
     $ napalm --help
