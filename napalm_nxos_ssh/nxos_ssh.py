@@ -71,31 +71,49 @@ ASN_REGEX = r"[\d\.]+"
 
 
 def parse_intf_section(interface):
-    """Parse a single entry from show interfaces output."""
+    """Parse a single entry from show interfaces output.
+
+    Different cases:
+    mgmt0 is up
+    admin state is up
+
+    Ethernet2/1 is up
+    admin state is up, Dedicated Interface
+
+    Vlan1 is down (Administratively down), line protocol is down, autostate enabled
+    """
     interface = interface.strip()
-    print("Z" * 80)
-    print(interface)
-    print("Z" * 80)
+    re_protocol = r"^(?P<intf_name>\S+?)\s+is\s+(?P<status>.+?),\s+line\s+protocol\s+is\s+(?P<protocol>\S+).*$"
     re_intf_name_state = r"^(?P<intf_name>\S+) is (?P<intf_state>\S+).*"
     re_is_enabled_1 = r"^admin state is (?P<is_enabled>\S+)$"
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_mac = r"^\s+Hardware.*address:\s+(?P<mac_address>\S+) "
     re_speed = r"^\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
 
-    """
-    Ethernet2/1 is up
-    admin state is up, Dedicated Interface"""
+    # Check for 'protocol is ' lines
+    match = re.search(re_protocol, interface, flags=re.M)
+    if match:
+        intf_name = match.group('intf_name')
+        status = match.group('status')
+        protocol = match.group('protocol')
 
-    match = re.search(re_intf_name_state, interface)
-    intf_name = match.group('intf_name')
-    intf_state = match.group('intf_state').strip()
-    is_up = True if intf_state == 'up' else False
+        if 'admin' in status.lower():
+            is_enabled = False
+        else:
+            is_enabled = True
+        is_up = bool('up' in protocol)
+    else:
+        # More standard is up, next line admin state is lines
+        match = re.search(re_intf_name_state, interface)
+        intf_name = match.group('intf_name')
+        intf_state = match.group('intf_state').strip()
+        is_up = True if intf_state == 'up' else False
 
-    match = re.search(re_is_enabled_1, interface, flags=re.M)
-    if not match:
-        match = re.search(re_is_enabled_2, interface, flags=re.M)
-    is_enabled = match.group('is_enabled').strip()
-    is_enabled = True if is_enabled == 'up' else False
+        match = re.search(re_is_enabled_1, interface, flags=re.M)
+        if not match:
+            match = re.search(re_is_enabled_2, interface, flags=re.M)
+        is_enabled = match.group('is_enabled').strip()
+        is_enabled = True if is_enabled == 'up' else False
 
     match = re.search(re_mac, interface, flags=re.M)
     if match:
@@ -112,14 +130,16 @@ def parse_intf_section(interface):
         raise ValueError("Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface))
     speed = int(round(speed / 1000.0))
 
-    return { intf_name: {
+    return { intf_name: 
+             {
                 'description': 'N/A',
                 'is_enabled': is_enabled,
                 'is_up': is_up,
                 'last_flapped': -1.0,
                 'mac_address': mac_address,
-                'speed': speed }
-            }
+                'speed': speed 
+             }
+           }
 
 
 def convert_hhmmss(hhmmss):
@@ -793,17 +813,11 @@ class NXOSSSHDriver(NetworkDriver):
         if not output:
             return {}
     
-        """
-        Ethernet4/48 is down (Administratively down)
-        admin state is down, Dedicated Interface
-        """
-    
         # Break output into per-interface sections (note, separator text is retained)
-        separator = r"(^\S+\s+is \S+.*\nadmin state is)"
-        interface_lines = re.split(separator, output, flags=re.M)
-        print('-' * 80)
-        print(len(interface_lines))
-        print('-' * 80)
+        separator1 = r"^\S+\s+is \S+.*\nadmin state is.*$"
+        separator2 = r"^.* is .*, line protocol is .*$"
+        separators = r"({}|{})".format(separator1, separator2)
+        interface_lines = re.split(separators, output, flags=re.M)
 
         if len(interface_lines) == 1:
             raise ValueError("Unexpected output data in '{}':\n\n{}".format(command, interface_lines))
@@ -817,14 +831,13 @@ class NXOSSSHDriver(NetworkDriver):
 
         # Combine the separator and section into one string
         intf_iter = iter(interface_lines)
-        new_interfaces = [line + next(intf_iter, '') for line in intf_iter]
+        try:
+            new_interfaces = [line + next(intf_iter, '') for line in intf_iter]
+        except TypeError:
+            raise ValueError()
 
         for entry in new_interfaces:
             interfaces.update(parse_intf_section(entry))
-            print('-' * 80)
-            print(entry)
-            print(interfaces)
-            print('-' * 80)
 
         return interfaces
 
