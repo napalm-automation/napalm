@@ -16,3 +16,11 @@ Please, open the issue in the correct repo to help us keep things organized : )
 -->
 
 ### Description of Issue/Question
+
+### Trace captured
+
+```
+Please, reproduce the issue with the cli tool in debug mode and paste the entire execution.
+
+https://napalm.readthedocs.io/en/latest/cli.html
+```

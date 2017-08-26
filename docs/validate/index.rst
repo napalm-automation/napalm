@@ -20,59 +20,59 @@ then write the desired state using the same format the getter would retrieve it.
 
     ---
     - get_facts:
-      os_version: 7.0(3)I2(2d)
-      interface_list:
+        os_version: 7.0(3)I2(2d)
+        interface_list:
           _mode: strict
           list:
             - Vlan5
             - Vlan100
-      hostname: n9k2
+        hostname: n9k2
 
     - get_environment:
-      memory:
-        used_ram: '<15.0'
-      cpu:
-        0/RP0/CPU0
-          '%usage': '<15.0'
+        memory:
+          used_ram: '<15.0'
+        cpu:
+          0/RP0/CPU0
+            '%usage': '<15.0'
 
     - get_bgp_neighbors:
-      default:
-        router_id: 192.0.2.2
-        peers:
-          _mode: strict
-          192.0.2.2:
-            is_enabled: true
-            address_family:
-              ipv4:
-                sent_prefixes: 5
-                received_prefixes: '<10'
-              ipv6:
-                sent_prefixes: 2
-                received_prefixes: '<5'
+        default:
+          router_id: 192.0.2.2
+          peers:
+            _mode: strict
+            192.0.2.2:
+              is_enabled: true
+              address_family:
+                ipv4:
+                  sent_prefixes: 5
+                  received_prefixes: '<10'
+                ipv6:
+                  sent_prefixes: 2
+                  received_prefixes: '<5'
 
     - get_interfaces_ip:
-      Ethernet2/1:
-        ipv4:
-          192.0.2.1:
-            prefix_length: 30
+        Ethernet2/1:
+          ipv4:
+            192.0.2.1:
+              prefix_length: 30
     
     - ping:
-      _name: ping_google
-      _kwargs:
+        _name: ping_google
+        _kwargs:
           destination: 8.8.8.8
           source: 192.168.1.1
-      success:
+        success:
           packet_loss: 0
-      _mode: strict
+        _mode: strict
     
     - ping:
-      _name: something_else
-      _kwargs:
+        _name: something_else
+        _kwargs:
           destination: 10.8.2.8
           source: 192.168.1.1
-      success:
+        success:
           packet_loss: 0
-      _mode: strict
+        _mode: strict
 
 
 A few notes:
