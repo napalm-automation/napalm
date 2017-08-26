@@ -1,7 +1,7 @@
 Command Line Tool
 =================
 
-NAPALM ships with a simple CLI tool to help you deploying configuration to your devices directly from the shell.
+NAPALM ships with a simple CLI tool to help you in deploying configuration to your devices directly from the shell.
 It might be convenient for simple bash scripts or provisioning tools that rely on a shell.
 
 The usage is very simple. For example, let's do a dry run (changes will not be applied) and check the changes between
