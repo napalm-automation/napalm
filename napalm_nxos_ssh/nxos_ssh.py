@@ -83,7 +83,8 @@ def parse_intf_section(interface):
     Vlan1 is down (Administratively down), line protocol is down, autostate enabled
     """
     interface = interface.strip()
-    re_protocol = r"^(?P<intf_name>\S+?)\s+is\s+(?P<status>.+?),\s+line\s+protocol\s+is\s+(?P<protocol>\S+).*$"
+    re_protocol = r"^(?P<intf_name>\S+?)\s+is\s+(?P<status>.+?)" \
+                  r",\s+line\s+protocol\s+is\s+(?P<protocol>\S+).*$"
     re_intf_name_state = r"^(?P<intf_name>\S+) is (?P<intf_state>\S+).*"
     re_is_enabled_1 = r"^admin state is (?P<is_enabled>\S+)$"
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
@@ -127,18 +128,18 @@ def parse_intf_section(interface):
     speed_unit = match.group('speed_unit')
     # This was alway in Kbit (in the data I saw)
     if speed_unit != "Kbit":
-        raise ValueError("Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface))
+        msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface)
+        raise ValueError(msg)
     speed = int(round(speed / 1000.0))
 
-    return { intf_name: 
-             {
-                'description': 'N/A',
-                'is_enabled': is_enabled,
-                'is_up': is_up,
-                'last_flapped': -1.0,
-                'mac_address': mac_address,
-                'speed': speed 
-             }
+    return {
+             intf_name: {
+                    'description': 'N/A',
+                    'is_enabled': is_enabled,
+                    'is_up': is_up,
+                    'last_flapped': -1.0,
+                    'mac_address': mac_address,
+                    'speed': speed}
            }
 
 
@@ -812,7 +813,7 @@ class NXOSSSHDriver(NetworkDriver):
         output = self.device.send_command(command)
         if not output:
             return {}
-    
+
         # Break output into per-interface sections (note, separator text is retained)
         separator1 = r"^\S+\s+is \S+.*\nadmin state is.*$"
         separator2 = r"^.* is .*, line protocol is .*$"
@@ -820,14 +821,16 @@ class NXOSSSHDriver(NetworkDriver):
         interface_lines = re.split(separators, output, flags=re.M)
 
         if len(interface_lines) == 1:
-            raise ValueError("Unexpected output data in '{}':\n\n{}".format(command, interface_lines))
+            msg = "Unexpected output data in '{}':\n\n{}".format(command, interface_lines)
+            raise ValueError(msg)
 
         # Get rid of the blank data at the beginning
         interface_lines.pop(0)
 
         # Must be pairs of data (the separator and section corresponding to it)
         if len(interface_lines) % 2 != 0:
-            raise ValueError("Unexpected output data in '{}':\n\n{}".format(command, interface_lines))
+            msg = "Unexpected output data in '{}':\n\n{}".format(command, interface_lines)
+            raise ValueError(msg)
 
         # Combine the separator and section into one string
         intf_iter = iter(interface_lines)
