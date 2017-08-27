@@ -22,12 +22,5 @@
                 "prefix_length": 24
             }
         }
-    },
-    "mgmt0": {
-        "ipv4": {
-            "10.0.0.71": {
-                "prefix_length": 24
-            }
-        }
     }
 }
