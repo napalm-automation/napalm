@@ -1,0 +1,175 @@
+{
+    "success": {
+        "1": {
+            "probes": {
+                "1": {
+                    "rtt": 14.0, 
+                    "ip_address": "10.0.4.2", 
+                    "host_name": "10.0.4.2"
+                }, 
+                "2": {
+                    "rtt": 11.0, 
+                    "ip_address": "10.0.4.2", 
+                    "host_name": "10.0.4.2"
+                },
+                "3": {
+                    "rtt": 11.0, 
+                    "ip_address": "10.0.4.2", 
+                    "host_name": "10.0.4.2"
+                } 
+            }
+        }, 
+        "2": {
+            "probes": {
+                "1": {
+                    "rtt": 175.0, 
+                    "ip_address": "213.250.19.90", 
+                    "host_name": "BSN-access.dynamic.siol.net"
+                }, 
+                "2": {
+                    "rtt": 157.0, 
+                    "ip_address": "213.250.19.90", 
+                    "host_name": "BSN-access.dynamic.siol.net"
+                },
+                "3": {
+                    "rtt": 157.0, 
+                    "ip_address": "213.250.19.90", 
+                    "host_name": "BSN-access.dynamic.siol.net"
+                } 
+            }
+        }, 
+        "3": {
+            "probes": {
+                "1": {
+                    "rtt": 178.0, 
+                    "ip_address": "95.176.241.222", 
+                    "host_name": "95.176.241.222"
+                }, 
+                "2": {
+                    "rtt": 266.0, 
+                    "ip_address": "95.176.241.222", 
+                    "host_name": "95.176.241.222"
+                }, 
+                "3": {
+                    "rtt": 208.0, 
+                    "ip_address": "95.176.241.222", 
+                    "host_name": "95.176.241.222"
+                }
+            }
+        }, 
+        "4": {
+            "probes": {
+                "1": {
+                    "rtt": 320.0, 
+                    "ip_address": "213.250.1.130", 
+                    "host_name": "BSN-250-1-130.static.siol.net"
+                }, 
+                "2": {
+                    "rtt": 300.0, 
+                    "ip_address": "213.250.1.130", 
+                    "host_name": "BSN-250-1-130.static.siol.net"
+                },
+                "3": {
+                    "rtt": 138.0, 
+                    "ip_address": "213.250.1.130", 
+                    "host_name": "BSN-250-1-130.static.siol.net"
+                } 
+            }
+        }, 
+        "5": {
+            "probes": {
+                "1": {
+                    "rtt": 122.0, 
+                    "ip_address": "209.85.248.115", 
+                    "host_name": "BSN-209.85.248.115.static.siol.net"
+                }, 
+                "2": {
+                    "rtt": 157.0, 
+                    "ip_address": "209.85.248.217", 
+                    "host_name": "209.85.248.217"
+                },
+                "3": {
+                    "rtt": 195.0, 
+                    "ip_address": "72.14.237.184", 
+                    "host_name": "72.14.237.184"
+                } 
+            }
+        }, 
+        "6": {
+            "probes": {
+                "1": {
+                    "rtt": 122.0, 
+                    "ip_address": "209.85.248.1", 
+                    "host_name": "BSN-0.static.siol.net"
+                }, 
+                "2": {
+                    "rtt": 157.0, 
+                    "ip_address": "209.85.248.217", 
+                    "host_name": "209.85.248.217"
+                },
+                "3": {
+                    "rtt": 195.0, 
+                    "ip_address": "209.85.248.217", 
+                    "host_name": "209.85.248.217"
+                } 
+            }
+        }, 
+        "7": {
+            "probes": {
+                "1": {
+                    "rtt": 0.0, 
+                    "ip_address": "", 
+                    "host_name": ""
+                }, 
+                "2": {
+                    "rtt": 157.0, 
+                    "ip_address": "209.85.1.1", 
+                    "host_name": "209.85.1.1"
+                },
+                "3": {
+                    "rtt": 195.0, 
+                    "ip_address": "209.85.1.1", 
+                    "host_name": "209.85.1.1"
+                } 
+            }
+        }, 
+        "8": {
+            "probes": {
+                "1": {
+                    "rtt": 0.0, 
+                    "ip_address": "", 
+                    "host_name": ""
+                }, 
+                "2": {
+                    "rtt": 0.0, 
+                    "ip_address": "", 
+                    "host_name": ""
+                },
+                "3": {
+                    "rtt": 0.0, 
+                    "ip_address": "", 
+                    "host_name": ""
+                } 
+            }
+        },
+        "9": {
+            "probes": {
+                "1": {
+                    "rtt": 213.0, 
+                    "ip_address": "8.8.8.8", 
+                    "host_name": "google-public-dns-a.google.com"
+                }, 
+                "2": {
+                    "rtt": 210.0, 
+                    "ip_address": "8.8.8.8", 
+                    "host_name": "google-public-dns-a.google.com"
+                },
+                "3": {
+                    "rtt": 197.0, 
+                    "ip_address": "8.8.8.8", 
+                    "host_name": "google-public-dns-a.google.com"
+                } 
+            }
+        } 
+    }
+}
