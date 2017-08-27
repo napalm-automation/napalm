@@ -24,6 +24,7 @@ import tempfile
 from scp import SCPClient
 import paramiko
 import hashlib
+import socket
 from datetime import datetime
 
 # import third party lib
