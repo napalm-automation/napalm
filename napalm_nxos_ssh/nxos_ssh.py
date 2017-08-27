@@ -1141,7 +1141,7 @@ class NXOSSSHDriver(NetworkDriver):
                         "prefix_length": 10
                     },
                     "fe80::2ec2:60ff:fe4f:feb2": {
-                        "prefix_length": "N/A"
+                        "prefix_length": "128"
                     }
                 }
             },
@@ -1192,13 +1192,10 @@ class NXOSSSHDriver(NetworkDriver):
                 line = line.strip()
                 if 'link-local address' in line:
                     ip_address = line.split()[3]
-                    prefix_len = 'N/A'
+                    prefix_len = '64'
                 else:
                     ip_address, prefix_len = line.split()[0].split('/')
-                try:
-                    prefix_len = int(prefix_len)
-                except ValueError:
-                    prefix_len = 'N/A'
+                prefix_len = int(prefix_len)
                 val = {'prefix_length': prefix_len}
                 v6_interfaces.setdefault(interface, {})[ip_address] = val
 
