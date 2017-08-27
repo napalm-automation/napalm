@@ -1,0 +1,33 @@
+{
+    "Ethernet2/3": {
+        "ipv4": {
+            "4.4.4.4": {
+                "prefix_length": 16
+            }
+        }
+    },
+    "Ethernet2/2": {
+        "ipv4": {
+            "2.2.2.2": {
+                "prefix_length": 27
+            },
+            "3.3.3.3": {
+                "prefix_length": 25
+            }
+        }
+    },
+    "Ethernet2/1": {
+        "ipv4": {
+            "1.1.1.1": {
+                "prefix_length": 24
+            }
+        }
+    },
+    "mgmt0": {
+        "ipv4": {
+            "10.0.0.71": {
+                "prefix_length": 24
+            }
+        }
+    }
+}
