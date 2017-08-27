@@ -1443,15 +1443,16 @@ class NXOSSSHDriver(NetworkDriver):
             return {'error': 'Destination does not look like a valid IP Address: {}'.format(
                 destination)}
 
-        source_opt = ''
         if source:
             source_opt = 'source {source}'.format(source=source)
-
-        command = 'traceroute{version} {destination} {source_opt}'.format(
-            version=version,
-            destination=destination,
-            source_opt=source_opt
-        )
+            command = 'traceroute{version} {destination} {source_opt}'.format(
+                version=version,
+                destination=destination,
+                source_opt=source_opt)
+        else:
+            command = 'traceroute{version} {destination}'.format(
+                version=version,
+                destination=destination)
 
         try:
             traceroute_raw_output = self.device.send_command(command)
