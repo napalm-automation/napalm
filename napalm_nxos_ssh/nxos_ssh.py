@@ -24,6 +24,7 @@ import tempfile
 from scp import SCPClient
 import paramiko
 import hashlib
+import socket
 from datetime import datetime
 
 # import third party lib
@@ -68,6 +69,79 @@ RE_MAC = re.compile(r"{}".format(MAC_REGEX))
 
 # Period needed for 32-bit AS Numbers
 ASN_REGEX = r"[\d\.]+"
+
+
+def parse_intf_section(interface):
+    """Parse a single entry from show interfaces output.
+
+    Different cases:
+    mgmt0 is up
+    admin state is up
+
+    Ethernet2/1 is up
+    admin state is up, Dedicated Interface
+
+    Vlan1 is down (Administratively down), line protocol is down, autostate enabled
+    """
+    interface = interface.strip()
+    re_protocol = r"^(?P<intf_name>\S+?)\s+is\s+(?P<status>.+?)" \
+                  r",\s+line\s+protocol\s+is\s+(?P<protocol>\S+).*$"
+    re_intf_name_state = r"^(?P<intf_name>\S+) is (?P<intf_state>\S+).*"
+    re_is_enabled_1 = r"^admin state is (?P<is_enabled>\S+)$"
+    re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
+    re_mac = r"^\s+Hardware.*address:\s+(?P<mac_address>\S+) "
+    re_speed = r"^\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
+
+    # Check for 'protocol is ' lines
+    match = re.search(re_protocol, interface, flags=re.M)
+    if match:
+        intf_name = match.group('intf_name')
+        status = match.group('status')
+        protocol = match.group('protocol')
+
+        if 'admin' in status.lower():
+            is_enabled = False
+        else:
+            is_enabled = True
+        is_up = bool('up' in protocol)
+    else:
+        # More standard is up, next line admin state is lines
+        match = re.search(re_intf_name_state, interface)
+        intf_name = match.group('intf_name')
+        intf_state = match.group('intf_state').strip()
+        is_up = True if intf_state == 'up' else False
+
+        match = re.search(re_is_enabled_1, interface, flags=re.M)
+        if not match:
+            match = re.search(re_is_enabled_2, interface, flags=re.M)
+        is_enabled = match.group('is_enabled').strip()
+        is_enabled = True if is_enabled == 'up' else False
+
+    match = re.search(re_mac, interface, flags=re.M)
+    if match:
+        mac_address = match.group('mac_address')
+        mac_address = napalm_base.helpers.mac(mac_address)
+    else:
+        mac_address = ""
+
+    match = re.search(re_speed, interface, flags=re.M)
+    speed = int(match.group('speed'))
+    speed_unit = match.group('speed_unit')
+    # This was alway in Kbit (in the data I saw)
+    if speed_unit != "Kbit":
+        msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface)
+        raise ValueError(msg)
+    speed = int(round(speed / 1000.0))
+
+    return {
+             intf_name: {
+                    'description': 'N/A',
+                    'is_enabled': is_enabled,
+                    'is_up': is_up,
+                    'last_flapped': -1.0,
+                    'mac_address': mac_address,
+                    'speed': speed}
+           }
 
 
 def convert_hhmmss(hhmmss):
@@ -368,9 +442,21 @@ class NXOSSSHDriver(NetworkDriver):
             return "{0}\n{1}".format(pattern.format(filename), string)
 
     def is_alive(self):
+        """Returns a flag with the state of the SSH connection."""
+        null = chr(0)
+        try:
+            if self.device is None:
+                return {'is_alive': False}
+            else:
+                # Try sending ASCII null byte to maintain the connection alive
+                self.device.send_command(null)
+        except (socket.error, EOFError):
+            # If unable to send, we can tell for sure that the connection is unusable,
+            # hence return False.
+            return {'is_alive': False}
         return {
             'is_alive': self.device.remote_conn.transport.is_active()
-            }
+        }
 
     def load_replace_candidate(self, filename=None, config=None):
         self._replace_candidate(filename, config)
@@ -709,9 +795,66 @@ class NXOSSSHDriver(NetworkDriver):
         }
 
     def get_interfaces(self):
+        """
+        Get interface details.
+
+        last_flapped is not implemented
+
+        Example Output:
+
+        {   u'Vlan1': {   'description': u'N/A',
+                      'is_enabled': True,
+                      'is_up': True,
+                      'last_flapped': -1.0,
+                      'mac_address': u'a493.4cc1.67a7',
+                      'speed': 100},
+        u'Vlan100': {   'description': u'Data Network',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'last_flapped': -1.0,
+                        'mac_address': u'a493.4cc1.67a7',
+                        'speed': 100},
+        u'Vlan200': {   'description': u'Voice Network',
+                        'is_enabled': True,
+                        'is_up': True,
+                        'last_flapped': -1.0,
+                        'mac_address': u'a493.4cc1.67a7',
+                        'speed': 100}}
+        """
         interfaces = {}
         command = 'show interface'
-        output = self.device.send_command(command) # noqa
+        output = self.device.send_command(command)
+        if not output:
+            return {}
+
+        # Break output into per-interface sections (note, separator text is retained)
+        separator1 = r"^\S+\s+is \S+.*\nadmin state is.*$"
+        separator2 = r"^.* is .*, line protocol is .*$"
+        separators = r"({}|{})".format(separator1, separator2)
+        interface_lines = re.split(separators, output, flags=re.M)
+
+        if len(interface_lines) == 1:
+            msg = "Unexpected output data in '{}':\n\n{}".format(command, interface_lines)
+            raise ValueError(msg)
+
+        # Get rid of the blank data at the beginning
+        interface_lines.pop(0)
+
+        # Must be pairs of data (the separator and section corresponding to it)
+        if len(interface_lines) % 2 != 0:
+            msg = "Unexpected output data in '{}':\n\n{}".format(command, interface_lines)
+            raise ValueError(msg)
+
+        # Combine the separator and section into one string
+        intf_iter = iter(interface_lines)
+        try:
+            new_interfaces = [line + next(intf_iter, '') for line in intf_iter]
+        except TypeError:
+            raise ValueError()
+
+        for entry in new_interfaces:
+            interfaces.update(parse_intf_section(entry))
+
         return interfaces
 
     def get_lldp_neighbors(self):
@@ -1185,6 +1328,7 @@ class NXOSSSHDriver(NetworkDriver):
                    ttl=c.TRACEROUTE_TTL,
                    timeout=c.TRACEROUTE_TIMEOUT,
                    vrf=c.TRACEROUTE_VRF):
+
         _HOP_ENTRY_PROBE = [
             '\s+',
             '(',  # beginning of host_name (ip_address) RTT group
@@ -1214,7 +1358,7 @@ class NXOSSSHDriver(NetworkDriver):
         try:
             version = '6' if IPAddress(destination).version == 6 else ''
         except AddrFormatError:
-            return {'error': 'Destination doest not look like a valid IP Address: {}'.format(
+            return {'error': 'Destination does not look like a valid IP Address: {}'.format(
                 destination)}
 
         source_opt = ''
