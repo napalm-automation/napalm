@@ -91,6 +91,7 @@ def parse_intf_section(interface):
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_mac = r"^\s+Hardware.*address:\s+(?P<mac_address>\S+) "
     re_speed = r"^\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
+    re_description = r"^\s+Description:\s+(?P<description>.*)$"
 
     # Check for 'protocol is ' lines
     match = re.search(re_protocol, interface, flags=re.M)
@@ -133,9 +134,14 @@ def parse_intf_section(interface):
         raise ValueError(msg)
     speed = int(round(speed / 1000.0))
 
+    description = ''
+    match = re.search(re_description, interface, flags=re.M)
+    if match:
+        description = match.group('description')
+
     return {
              intf_name: {
-                    'description': 'N/A',
+                    'description': description,
                     'is_enabled': is_enabled,
                     'is_up': is_up,
                     'last_flapped': -1.0,
@@ -802,7 +808,7 @@ class NXOSSSHDriver(NetworkDriver):
 
         Example Output:
 
-        {   u'Vlan1': {   'description': u'N/A',
+        {   u'Vlan1': {   'description': u'',
                       'is_enabled': True,
                       'is_up': True,
                       'last_flapped': -1.0,

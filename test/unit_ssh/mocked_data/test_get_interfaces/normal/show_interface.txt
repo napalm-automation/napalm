@@ -21,6 +21,7 @@ admin state is up
 Ethernet2/1 is up
 admin state is up, Dedicated Interface
   Hardware:  Ethernet, address: 2cc2.604f.feb2 (bia 2cc2.605e.5dba)
+  Description: Testing port descriptions
   Internet Address is 10.10.10.10/24
   MTU 1500 bytes, BW 1000000 Kbit, DLY 10 usec
   reliability 255/255, txload 1/255, rxload 1/255
