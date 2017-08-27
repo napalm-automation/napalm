@@ -1327,6 +1327,7 @@ class NXOSSSHDriver(NetworkDriver):
                    ttl=c.TRACEROUTE_TTL,
                    timeout=c.TRACEROUTE_TIMEOUT,
                    vrf=c.TRACEROUTE_VRF):
+
         _HOP_ENTRY_PROBE = [
             '\s+',
             '(',  # beginning of host_name (ip_address) RTT group
@@ -1356,7 +1357,7 @@ class NXOSSSHDriver(NetworkDriver):
         try:
             version = '6' if IPAddress(destination).version == 6 else ''
         except AddrFormatError:
-            return {'error': 'Destination doest not look like a valid IP Address: {}'.format(
+            return {'error': 'Destination does not look like a valid IP Address: {}'.format(
                 destination)}
 
         source_opt = ''
