@@ -41,7 +41,7 @@ Bugfixes
 
 If you found a bug and know how to fix just contribute the bugfix. It might be interesting to provide a test to make sure we don't introduce the bug back in the future but this step is optional.
 
-Documentation
+Documentation [#f1]_
 -------------
 
 Just do it! :)
@@ -50,3 +50,6 @@ Proposing a new driver
 ----------------------
 
 This is a but more complex but completely doable. You can find more information `here <https://github.com/napalm-automation/napalm-skeleton>`_.
+
+
+.. [#f1] Please do not edit using the web user interface. You should fork the repository (https://github.com/napalm-automation/napalm) instead.
