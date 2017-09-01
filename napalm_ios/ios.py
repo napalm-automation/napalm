@@ -76,6 +76,8 @@ class IOSDriver(NetworkDriver):
         self.password = password
         self.timeout = timeout
 
+        self.transport = optional_args.get('transport', 'ssh')
+
         # Retrieve file names
         self.candidate_cfg = optional_args.get('candidate_cfg', 'candidate_config.txt')
         self.merge_cfg = optional_args.get('merge_cfg', 'merge_config.txt')
@@ -118,7 +120,7 @@ class IOSDriver(NetworkDriver):
             except KeyError:
                 pass
         self.global_delay_factor = optional_args.get('global_delay_factor', 1)
-        self.port = optional_args.get('port', 22)
+        self.port = optional_args.get('port', {'ssh': 22, 'telnet': 23}[self.transport])
 
         self.device = None
         self.config_replace = False
@@ -128,7 +130,10 @@ class IOSDriver(NetworkDriver):
 
     def open(self):
         """Open a connection to the device."""
-        self.device = ConnectHandler(device_type='cisco_ios',
+        device_type = 'cisco_ios'
+        if self.transport != 'ssh':
+            device_type += '_' + self.transport
+        self.device = ConnectHandler(device_type=device_type,
                                      host=self.hostname,
                                      username=self.username,
                                      password=self.password,
