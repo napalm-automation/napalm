@@ -96,7 +96,7 @@ junos_iface_counter_table:
   rpc: get-interface-information
   args:
     extensive: True
-    interface_name: '[vmfgx][mle]*'
+    interface_name: '[vmfgxe][mlet]*'
   args_key: interface_name
   item: physical-interface
   view: junos_iface_counter_view
