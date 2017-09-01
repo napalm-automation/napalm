@@ -177,7 +177,8 @@ class IOSDriver(NetworkDriver):
             return {'is_alive': False}
         if self.transport == 'telnet':
             try:
-                # Try sending IAC + NOP
+                # Try sending IAC + NOP (IAC is telnet way of sending command
+                # IAC = Interpret as Command (it comes before the NOP)
                 self.device.write_channel(telnetlib.IAC + telnetlib.NOP)
                 return {'is_alive': True}
             except UnicodeDecodeError:
