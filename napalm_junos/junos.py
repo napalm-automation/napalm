@@ -1782,7 +1782,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['input_power'])
                                         if optics['input_power'] not in
-                                        [None, C.OPTICS_NULL_LEVEL]
+                                        [None, C.OPTICS_NULL_LEVEL, '- Inf']
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
