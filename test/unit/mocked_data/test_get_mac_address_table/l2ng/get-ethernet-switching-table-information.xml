@@ -1,5 +1,5 @@
 <l2ng-l2ald-rtb-macdb>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:0c:e6:18:ea:07</l2ng-l2-mac-address>
         <mac-count-global>3</mac-count-global>
         <learnt-mac-count>3</learnt-mac-count>
@@ -13,7 +13,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:0c:e6:1c:25:77</l2ng-l2-mac-address>
         <mac-count-global>3</mac-count-global>
         <learnt-mac-count>3</learnt-mac-count>
@@ -27,7 +27,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:ce:10:6c</l2ng-l2-mac-address>
         <mac-count-global>3</mac-count-global>
         <learnt-mac-count>3</learnt-mac-count>
@@ -41,7 +41,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:0c:e6:31:a8:88</l2ng-l2-mac-address>
         <mac-count-global>7</mac-count-global>
         <learnt-mac-count>7</learnt-mac-count>
@@ -55,7 +55,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:0c:e6:31:a8:94</l2ng-l2-mac-address>
         <mac-count-global>7</mac-count-global>
         <learnt-mac-count>7</learnt-mac-count>
@@ -69,7 +69,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:0c:e6:31:a8:aa</l2ng-l2-mac-address>
         <mac-count-global>7</mac-count-global>
         <learnt-mac-count>7</learnt-mac-count>
@@ -83,7 +83,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:0c:e6:31:a8:ce</l2ng-l2-mac-address>
         <mac-count-global>7</mac-count-global>
         <learnt-mac-count>7</learnt-mac-count>
@@ -97,7 +97,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:0c:e6:31:a9:1a</l2ng-l2-mac-address>
         <mac-count-global>7</mac-count-global>
         <learnt-mac-count>7</learnt-mac-count>
@@ -111,7 +111,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:0c:e6:31:a9:46</l2ng-l2-mac-address>
         <mac-count-global>7</mac-count-global>
         <learnt-mac-count>7</learnt-mac-count>
@@ -125,7 +125,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:0c:e6:31:db:12</l2ng-l2-mac-address>
         <mac-count-global>7</mac-count-global>
         <learnt-mac-count>7</learnt-mac-count>
@@ -139,7 +139,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:13:21:da:21:01</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -153,7 +153,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:14:38:7d:95:81</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -167,7 +167,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:17:a4:77:00:02</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -181,7 +181,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:17:a4:77:00:10</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -195,7 +195,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:17:a4:77:00:1e</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -209,7 +209,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:17:a4:77:00:2c</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -223,7 +223,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:1b:17:00:22:01</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -237,7 +237,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:1d:b3:f1:c6:00</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -251,7 +251,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:21:f7:23:67:e0</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -265,7 +265,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:25:90:c7:4a:5f</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -279,7 +279,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:25:90:c7:4b:bb</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -293,7 +293,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:25:90:c7:4c:27</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -307,7 +307,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:25:90:c7:4d:6f</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -321,7 +321,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:27:f8:df:26:cf</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -335,7 +335,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:27:f8:fa:54:66</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -349,7 +349,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:50:56:9c:1b:63</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -363,7 +363,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:50:56:9c:21:35</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -377,7 +377,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:50:56:9c:4b:82</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -391,7 +391,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:50:56:9c:54:34</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -405,7 +405,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:c0:b7:97:13:4e</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -419,7 +419,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>00:c0:b7:f9:35:81</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -433,7 +433,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>0c:c4:7a:4a:2a:2e</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -447,7 +447,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>14:18:77:29:d6:84</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -461,7 +461,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>24:0b:0a:01:af:fa</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -475,7 +475,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>24:0b:0a:01:b0:28</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -489,7 +489,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>38:22:d6:5a:ec:97</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -503,7 +503,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>38:22:d6:5a:f0:ab</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -517,7 +517,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>38:22:d6:5a:fe:b7</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -531,7 +531,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>38:22:d6:5b:a6:55</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -545,7 +545,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>38:22:d6:73:f7:19</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -559,7 +559,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:15:63:65</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -573,7 +573,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:15:65:e3</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -587,7 +587,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:15:6c:af</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -601,7 +601,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:16:8c:f9</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -615,7 +615,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:38:d9</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -629,7 +629,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:3b:57</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -643,7 +643,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:41:3b</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -657,7 +657,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:43:7f</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -671,7 +671,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:46:71</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -685,7 +685,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:4c:55</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -699,7 +699,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:4d:03</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -713,7 +713,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:4e:25</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -727,7 +727,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:52:e7</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -741,7 +741,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:58:57</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -755,7 +755,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:5b:83</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -769,7 +769,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:5b:f7</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -783,7 +783,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:60:f3</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -797,7 +797,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:69:c9</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -811,7 +811,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:74:e3</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -825,7 +825,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:76:79</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -839,7 +839,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:77:d5</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -853,7 +853,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:84:85</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -867,7 +867,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:89:f5</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -881,7 +881,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>3c:e5:a6:57:8d:cf</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -895,7 +895,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>40:a8:f0:75:73:de</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -909,7 +909,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>44:31:92:5a:bb:27</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -923,7 +923,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>44:31:92:5a:e4:23</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -937,7 +937,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>44:31:92:5a:e7:15</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -951,7 +951,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>44:31:92:5a:f1:bb</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -965,7 +965,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>78:48:59:41:49:27</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -979,7 +979,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>78:48:59:53:91:f1</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -993,7 +993,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>78:48:59:53:93:31</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1007,7 +1007,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>78:48:59:53:9f:61</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1021,7 +1021,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>78:48:59:53:a5:79</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1035,7 +1035,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>78:48:59:53:a6:19</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1049,7 +1049,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>78:48:59:b0:36:0d</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1063,7 +1063,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>7c:e2:ca:68:4e:20</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1077,7 +1077,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>80:c1:6e:aa:a6:50</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1091,7 +1091,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:43:a3:b2</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1105,7 +1105,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:43:a6:de</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1119,7 +1119,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:45:eb:3d</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1133,7 +1133,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8b:fd:85</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1147,7 +1147,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:11:75</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1161,7 +1161,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:1c:1b</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1175,7 +1175,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:1c:55</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1189,7 +1189,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:25:d9</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1203,7 +1203,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:2b:83</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1217,7 +1217,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:2e:75</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1231,7 +1231,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:2e:e9</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1245,7 +1245,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:36:d7</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1259,7 +1259,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:3f:ad</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1273,7 +1273,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:43:fb</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1287,7 +1287,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:44:a9</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1301,7 +1301,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:4f:89</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1315,7 +1315,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:8c:4f:fd</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1329,7 +1329,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>b8:af:67:b9:62:6b</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1343,7 +1343,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>bc:ea:fa:12:32:97</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1357,7 +1357,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>bc:ea:fa:1a:73:3a</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1371,7 +1371,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:00:64:07</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1385,7 +1385,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:00:70:b7</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1399,7 +1399,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:00:71:2b</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1413,7 +1413,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:00:74:1d</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1427,7 +1427,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:00:99:7f</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1441,7 +1441,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:00:a7:ff</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1455,7 +1455,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:00:ab:9f</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1469,7 +1469,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:0c:9b:d7</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1483,7 +1483,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:0c:a3:57</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1497,7 +1497,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:0c:e7:87</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1511,7 +1511,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:0e:cb:c0</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1525,7 +1525,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:66:50:96</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1539,7 +1539,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:8e:21:aa</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1553,7 +1553,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:8e:24:96</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1567,7 +1567,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:8e:35:0e</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1581,7 +1581,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>cc:3e:5f:a1:6b:44</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1595,7 +1595,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>d0:7e:28:d6:ab:95</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1609,7 +1609,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>d0:7e:28:d6:b3:05</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1623,7 +1623,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>d0:7e:28:d6:b3:6b</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1637,7 +1637,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>d0:7e:28:d6:b3:af</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1651,7 +1651,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>d0:7e:28:df:71:11</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
@@ -1665,7 +1665,7 @@
         <l2ng-l2-mac-sequence-number>0</l2ng-l2-mac-sequence-number>
         <l2ng-l2-mac-learn-mask>0x00000001</l2ng-l2-mac-learn-mask>
     </l2ng-l2ald-mac-entry-vlan>
-    <l2ng-l2ald-mac-entry-vlan junos:style="extensive">
+    <l2ng-l2ald-mac-entry-vlan style="extensive">
         <l2ng-l2-mac-address>e8:b6:c2:81:24:41</l2ng-l2-mac-address>
         <mac-count-global>110</mac-count-global>
         <learnt-mac-count>110</learnt-mac-count>
