@@ -1,3 +1,5 @@
 include requirements.txt
 include napalm_nxos/templates/*.j2
 include napalm_nxos/utils/textfsm_templates/*.tpl
+include napalm_nxos_ssh/templates/*.j2
+include napalm_nxos_ssh/utils/textfsm_templates/*.tpl
