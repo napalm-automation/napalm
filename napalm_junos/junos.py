@@ -39,7 +39,6 @@ from jnpr.junos.exception import ConnectTimeoutError
 # import NAPALM Base
 import napalm_base.helpers
 from napalm_base.base import NetworkDriver
-from napalm_base.utils import string_parsers
 from napalm_base.utils import py23_compat
 import napalm_junos.constants as C
 from napalm_base.exceptions import ConnectionException
