@@ -256,9 +256,7 @@ class JunOSDriver(NetworkDriver):
         """Return facts of the device."""
         output = self.device.facts
 
-        uptime = '0'
-        if 'RE0' in output:
-            uptime = output['RE0']['up_time']
+        uptime = self.device.uptime or -1
 
         interfaces = junos_views.junos_iface_table(self.device)
         interfaces.get()
@@ -271,7 +269,7 @@ class JunOSDriver(NetworkDriver):
             'os_version': py23_compat.text_type(output['version']),
             'hostname': py23_compat.text_type(output['hostname']),
             'fqdn': py23_compat.text_type(output['fqdn']),
-            'uptime': string_parsers.convert_uptime_string_seconds(uptime),
+            'uptime': uptime,
             'interface_list': interface_list
         }
 
