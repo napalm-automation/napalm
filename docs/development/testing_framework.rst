@@ -10,7 +10,7 @@ The testing framework has the following features:
 
 1. Same tests across all vendors. Tests defined in ``napalm_base/test/getters.py`` are shared across all drivers.
 2. Multiple test cases per test.
-3. Target of the test can be configured with enviromental variables.
+3. Target of the test can be configured with environmental variables.
 4. Expected output is compared against the actual output of the test result.
 5. NotImplemented methods are skipped automatically.
 
@@ -35,7 +35,7 @@ Each folder will have to contain it's own mocked data and expected result.
 Target
 ^^^^^^
 
-By default, the tests are going to be run agains mocked data but you can change that behavior with the following enviromental variables:
+By default, the tests are going to be run against mocked data but you can change that behavior with the following environmental variables:
 
 * ``NAPALM_TEST_MOCK`` - 1 (default) for mocked data and 0 for connecting to a device.
 * ``NAPALM_HOSTNAME``

@@ -270,11 +270,11 @@ Why this and what's next
 ------------------------
 
 As mentioned in the introduction, this is interesting to validate state. You could, for example,
-very easily check that your BGP neigbors are configured and that the state is up. It becomes even more
+very easily check that your BGP neighbors are configured and that the state is up. It becomes even more
 interesting if you can build the validator file from data from your inventory. That way you could
 deploy your network and verify it matches your expectations all the time without human intervention.
 
 Something else you could do is write the validation file manually prior to a maintenance based on
-some gathered data from the network and on your expectations. You could, then, perform your changs
+some gathered data from the network and on your expectations. You could, then, perform your changes
 and use this tool to verify the state of the network is exactly the one you wanted. No more
 forgetting things or writing one-offs scripts to validate deployments.
