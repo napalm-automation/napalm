@@ -1460,8 +1460,8 @@ class NXOSSSHDriver(NetworkDriver):
         try:
             version = '6' if IPAddress(destination).version == 6 else ''
         except AddrFormatError:
-            return {'error': 'Destination does not look like a valid IP Address: {}'.format(
-                destination)}
+            # Allow use of DNS names
+            pass
 
         if source:
             source_opt = 'source {source}'.format(source=source)
