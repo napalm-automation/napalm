@@ -106,21 +106,18 @@ class IOSXRDriver(NetworkDriver):
         self.device.close()
 
     def is_alive(self):
+        """Returns a flag with the state of the connection."""
         null = chr(0)
+        if self.device is None:
+            return {'is_alive': False}
         try:
-            # Try sending ASCII null byte to maintain
-            #   the connection alive
-            self.device.device.send_command(null)
+            # Try sending ASCII null byte to maintain the connection alive
+            self.device.device.write_channel(null)
+            return {'is_alive': self.device.device.remote_conn.transport.is_active()}
         except (socket.error, EOFError):
-            # If unable to send, we can tell for sure
-            #   that the connection is unusable,
-            #   hence return False.
-            return {
-                'is_alive': False
-            }
-        return {
-            'is_alive': self.device.device.remote_conn.transport.is_active()
-        }
+            # If unable to send, we can tell for sure that the connection is unusable
+            return {'is_alive': False}
+        return {'is_alive': False}
 
     def load_replace_candidate(self, filename=None, config=None):
         self.pending_changes = True
