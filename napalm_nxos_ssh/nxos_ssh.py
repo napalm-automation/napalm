@@ -96,7 +96,6 @@ def parse_intf_section(interface):
     re_speed = r"^\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
     re_description = r"^\s+Description:\s+(?P<description>.*)$"
 
-
     # Check for 'protocol is ' lines
     match = re.search(re_protocol, interface, flags=re.M)
     if match:
@@ -119,24 +118,24 @@ def parse_intf_section(interface):
 
         admin_state_present = re.search("admin state is", interface)
         if admin_state_present:
-#            for x_pattern in [re_is_enabled1, re_is_enabled_2]:
-            match = re.search(re_is_enabled_1, interface, flags=re.M)
-            if not match:
-                match = re.search(re_is_enabled_2, interface, flags=re.M)
-            is_enabled = match.group('is_enabled').strip()
-            is_enabled = True if is_enabled == 'up' else False
-        else:
-            # No admin state, it is case of straight 'is up, is down'
-            if is_up:
-                is_enabled = True
+            # Parse cases where 'admin state' string exists
+            for x_pattern in [re_is_enabled_1, re_is_enabled_2]:
+                match = re.search(x_pattern, interface, flags=re.M)
+                if match:
+                    is_enabled = match.group('is_enabled').strip()
+                    is_enabled = True if is_enabled == 'up' else False
+                    break
             else:
+                msg = "Error parsing intf, 'admin state' never detected:\n\n{}".format(interface)
+                raise ValueError(msg)
+        else:
+            # No 'admin state' should be 'is up' or 'is down' strings
+            # If interface is up; it is enabled
+            is_enabled = True
+            if not is_up:
                 match = re.search(re_is_enabled_3, interface, flags=re.M)
                 if match:
                     is_enabled = False
-                else:
-                    is_enabled = True
-
-    print(is_enabled)                
 
     match = re.search(re_mac, interface, flags=re.M)
     if match:
@@ -859,11 +858,6 @@ class NXOSSSHDriver(NetworkDriver):
         separator3 = r"^.* is (?:down|up).*$"
         separators = r"({}|{}|{})".format(separator1, separator2, separator3)
         interface_lines = re.split(separators, output, flags=re.M)
-        print(len(interface_lines))
-        for x in interface_lines:
-            print("-" * 80)
-            print(x)
-            print("-" * 80)
 
         if len(interface_lines) == 1:
             msg = "Unexpected output data in '{}':\n\n{}".format(command, interface_lines)
