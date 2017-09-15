@@ -82,6 +82,8 @@ def parse_intf_section(interface):
     admin state is up, Dedicated Interface
 
     Vlan1 is down (Administratively down), line protocol is down, autostate enabled
+
+    Ethernet154/1/48 is up (with no 'admin state')
     """
     interface = interface.strip()
     re_protocol = r"^(?P<intf_name>\S+?)\s+is\s+(?P<status>.+?)" \
@@ -89,9 +91,11 @@ def parse_intf_section(interface):
     re_intf_name_state = r"^(?P<intf_name>\S+) is (?P<intf_state>\S+).*"
     re_is_enabled_1 = r"^admin state is (?P<is_enabled>\S+)$"
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
+    re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
     re_mac = r"^\s+Hardware.*address:\s+(?P<mac_address>\S+) "
     re_speed = r"^\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
     re_description = r"^\s+Description:\s+(?P<description>.*)$"
+
 
     # Check for 'protocol is ' lines
     match = re.search(re_protocol, interface, flags=re.M)
@@ -105,6 +109,7 @@ def parse_intf_section(interface):
         else:
             is_enabled = True
         is_up = bool('up' in protocol)
+
     else:
         # More standard is up, next line admin state is lines
         match = re.search(re_intf_name_state, interface)
@@ -112,11 +117,26 @@ def parse_intf_section(interface):
         intf_state = match.group('intf_state').strip()
         is_up = True if intf_state == 'up' else False
 
-        match = re.search(re_is_enabled_1, interface, flags=re.M)
-        if not match:
-            match = re.search(re_is_enabled_2, interface, flags=re.M)
-        is_enabled = match.group('is_enabled').strip()
-        is_enabled = True if is_enabled == 'up' else False
+        admin_state_present = re.search("admin state is", interface)
+        if admin_state_present:
+#            for x_pattern in [re_is_enabled1, re_is_enabled_2]:
+            match = re.search(re_is_enabled_1, interface, flags=re.M)
+            if not match:
+                match = re.search(re_is_enabled_2, interface, flags=re.M)
+            is_enabled = match.group('is_enabled').strip()
+            is_enabled = True if is_enabled == 'up' else False
+        else:
+            # No admin state, it is case of straight 'is up, is down'
+            if is_up:
+                is_enabled = True
+            else:
+                match = re.search(re_is_enabled_3, interface, flags=re.M)
+                if match:
+                    is_enabled = False
+                else:
+                    is_enabled = True
+
+    print(is_enabled)                
 
     match = re.search(re_mac, interface, flags=re.M)
     if match:
@@ -836,8 +856,14 @@ class NXOSSSHDriver(NetworkDriver):
         # Break output into per-interface sections (note, separator text is retained)
         separator1 = r"^\S+\s+is \S+.*\nadmin state is.*$"
         separator2 = r"^.* is .*, line protocol is .*$"
-        separators = r"({}|{})".format(separator1, separator2)
+        separator3 = r"^.* is (?:down|up).*$"
+        separators = r"({}|{}|{})".format(separator1, separator2, separator3)
         interface_lines = re.split(separators, output, flags=re.M)
+        print(len(interface_lines))
+        for x in interface_lines:
+            print("-" * 80)
+            print(x)
+            print("-" * 80)
 
         if len(interface_lines) == 1:
             msg = "Unexpected output data in '{}':\n\n{}".format(command, interface_lines)
