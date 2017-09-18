@@ -1284,7 +1284,10 @@ class JunOSDriver(NetworkDriver):
         mac_address_table = []
 
         if self.device.facts.get('personality', '') in ['SWITCH']:  # for EX & QFX devices
-            mac_table = junos_views.junos_mac_address_table_switch(self.device)
+            if self.device.facts.get('switch_style', '') in ['VLAN_L2NG']:  # for L2NG devices
+                mac_table = junos_views.junos_mac_address_table_switch_l2ng(self.device)
+            else:
+                mac_table = junos_views.junos_mac_address_table_switch(self.device)
         else:
             mac_table = junos_views.junos_mac_address_table(self.device)
 
