@@ -890,6 +890,7 @@ class IOSDriver(NetworkDriver):
                 _, os_version = line.split("IOS (tm) ")
                 os_version = os_version.strip()
 
+        domain_name = 'not set'
         # Determine domain_name and fqdn
         for line in show_hosts.splitlines():
             if 'Default domain' in line:
