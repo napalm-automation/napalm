@@ -579,3 +579,15 @@ class TestGettersNetworkDriver(object):
                 self._test_model(models.network_instance_interfaces, network_instance['interfaces'])
 
         self.assertTrue(result)
+
+    def test_get_ipv6_neighbors_table(self):
+        try:
+            get_ipv6_neighbors_table = self.device.get_ipv6_neighbors_table()
+        except NotImplementedError:
+            raise SkipTest()
+        result = len(get_ipv6_neighbors_table) > 0
+
+        for entry in get_ipv6_neighbors_table:
+            result = result and self._test_model(models.ipv6_neighbor, entry)
+
+        self.assertTrue(result)
