@@ -5,9 +5,9 @@
 		}
 	},
 	"temperature": {
-		"invalid": {
+		"system": {
 			"is_alert": false,
-			"temperature": -1.0,
+			"temperature": 42,
 			"is_critical": false
 		}
 	},

@@ -1550,13 +1550,14 @@ class IOSDriver(NetworkDriver):
         """
         Get environment facts.
 
-        power, fan, temperature are currently not implemented
+        power and fan are currently not implemented
         cpu is using 1-minute average
         cpu hard-coded to cpu0 (i.e. only a single CPU)
         """
         environment = {}
         cpu_cmd = 'show proc cpu'
         mem_cmd = 'show memory statistics'
+        temp_cmd = 'show env temperature status'
 
         output = self._send_command(cpu_cmd)
         environment.setdefault('cpu', {})
@@ -1582,14 +1583,25 @@ class IOSDriver(NetworkDriver):
         environment['memory']['used_ram'] = used_mem
         environment['memory']['available_ram'] = free_mem
 
-        # Initialize 'power', 'fan', and 'temperature' to default values (not implemented)
+        output = self._send_command(temp_cmd)
+        for line in output.splitlines():
+            if 'System Temperature Value' in line:
+                system_temp = float(line.split(':')[1].split()[0])
+            elif 'Yellow Threshold' in line:
+                system_temp_alert = float(line.split(':')[1].split()[0])
+            elif 'Red Threshold' in line:
+                system_temp_crit = float(line.split(':')[1].split()[0])
+        environment.setdefault('temperature', {})
+        env_value = {'is_alert': system_temp >= system_temp_alert,
+                     'is_critical': system_temp >= system_temp_crit, 'temperature': system_temp}
+        environment['temperature']['system'] = env_value
+
+        # Initialize 'power' and 'fan' to default values (not implemented)
         environment.setdefault('power', {})
         environment['power']['invalid'] = {'status': True, 'output': -1.0, 'capacity': -1.0}
         environment.setdefault('fans', {})
         environment['fans']['invalid'] = {'status': True}
-        environment.setdefault('temperature', {})
-        env_value = {'is_alert': False, 'is_critical': False, 'temperature': -1.0}
-        environment['temperature']['invalid'] = env_value
+
         return environment
 
     def get_arp_table(self):
