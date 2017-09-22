@@ -1763,26 +1763,53 @@ class JunOSDriver(NetworkDriver):
         optics_table.get()
         optics_items = optics_table.items()
 
-        # Formatting data into return data structure
-        optics_detail = {}
+        # Format data inserting lane 0 for single lane optics. Format: [(iface, lane, [optical_values]), ...]
+        optics_items_with_lane = []
         for intf_optic_item in optics_items:
+            a = list(intf_optic_item)
+            a.insert(1, u"0")
+            new_intf_optic_item = tuple(a)
+            optics_items_with_lane.append(new_intf_optic_item)
+
+        # Get optical information for 40G/100G optics
+        optics_table40G = junos_views.junos_intf_40Goptics_table(self.device)
+        optics_table40G.get()
+        optics_40Gitems = optics_table40G.items()
+
+        # Format data inserting lane as before. Format: [(iface, lane, [optical_values]), ...]
+        new_optics_40Gitems = []
+        for item in optics_40Gitems:
+            lane = item[0]
+            iface = item[1].pop(0)
+            new_optics_40Gitems.append((iface[1], unicode(lane), item[1]))
+
+        # Remove 40G optics returned from junos_intf_optics_table with all values to 0
+        iface_40G = [item[0] for item in new_optics_40Gitems]
+        for intf_optic_item in optics_items_with_lane:
+            iface_name = intf_optic_item[0]
+            if iface_name not in iface_40G:
+                new_optics_40Gitems.append(intf_optic_item)
+
+        optics_detail = {}
+        for intf_optic_item in new_optics_40Gitems:
+            lane = intf_optic_item[1]
             interface_name = py23_compat.text_type(intf_optic_item[0])
-            optics = dict(intf_optic_item[1])
+            optics = dict(intf_optic_item[2])
             if interface_name not in optics_detail:
                 optics_detail[interface_name] = {}
+                optics_detail[interface_name]['physical_channels'] = {}
+                optics_detail[interface_name]['physical_channels']['channel'] = []
 
             # Defaulting avg, min, max values to 0.0 since device does not
             # return these values
             intf_optics = {
-                'physical_channels': {
-                    'channel': [{
-                            'index': 0,
+                            'index': lane,
                             'state': {
                                 'input_power': {
                                     'instant': (
                                         float(optics['input_power'])
                                         if optics['input_power'] not in
-                                        [None, C.OPTICS_NULL_LEVEL, '- Inf']
+                                        [None, C.OPTICS_NULL_LEVEL]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1809,10 +1836,8 @@ class JunOSDriver(NetworkDriver):
                                     'min': 0.0
                                     }
                                 }
-                        }]
-                    }
-                }
-            optics_detail[interface_name] = intf_optics
+                            }
+            optics_detail[interface_name]['physical_channels']['channel'].append(intf_optics)
 
         return optics_detail
 
