@@ -1803,7 +1803,7 @@ class JunOSDriver(NetworkDriver):
             # Defaulting avg, min, max values to 0.0 since device does not
             # return these values
             intf_optics = {
-                            'index': lane,
+                            'index': int(lane),
                             'state': {
                                 'input_power': {
                                     'instant': (
