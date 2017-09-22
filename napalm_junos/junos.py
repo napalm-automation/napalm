@@ -39,7 +39,6 @@ from jnpr.junos.exception import ConnectTimeoutError
 # import NAPALM Base
 import napalm_base.helpers
 from napalm_base.base import NetworkDriver
-from napalm_base.utils import string_parsers
 from napalm_base.utils import py23_compat
 import napalm_junos.constants as C
 from napalm_base.exceptions import ConnectionException
@@ -256,9 +255,7 @@ class JunOSDriver(NetworkDriver):
         """Return facts of the device."""
         output = self.device.facts
 
-        uptime = '0'
-        if 'RE0' in output:
-            uptime = output['RE0']['up_time']
+        uptime = self.device.uptime or -1
 
         interfaces = junos_views.junos_iface_table(self.device)
         interfaces.get()
@@ -271,7 +268,7 @@ class JunOSDriver(NetworkDriver):
             'os_version': py23_compat.text_type(output['version']),
             'hostname': py23_compat.text_type(output['hostname']),
             'fqdn': py23_compat.text_type(output['fqdn']),
-            'uptime': string_parsers.convert_uptime_string_seconds(uptime),
+            'uptime': uptime,
             'interface_list': interface_list
         }
 
@@ -1135,7 +1132,7 @@ class JunOSDriver(NetworkDriver):
                 # junos internal instances
                 continue
             neighbor_data = bgp_neighbors_table.get(instance=instance,
-                                                    neighbor_address=neighbor_address).items()
+                                                    neighbor_address=str(neighbor_address)).items()
             _bgp_iter_core(neighbor_data, instance=instance)
         # else:
         #     bgp_neighbors_table = junos_views.junos_bgp_neighbors_table(self.device)
@@ -1287,7 +1284,10 @@ class JunOSDriver(NetworkDriver):
         mac_address_table = []
 
         if self.device.facts.get('personality', '') in ['SWITCH']:  # for EX & QFX devices
-            mac_table = junos_views.junos_mac_address_table_switch(self.device)
+            if self.device.facts.get('switch_style', '') in ['VLAN_L2NG']:  # for L2NG devices
+                mac_table = junos_views.junos_mac_address_table_switch_l2ng(self.device)
+            else:
+                mac_table = junos_views.junos_mac_address_table_switch(self.device)
         else:
             mac_table = junos_views.junos_mac_address_table(self.device)
 

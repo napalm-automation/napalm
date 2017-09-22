@@ -73,6 +73,7 @@ class FakeJunOSDevice(BaseTestDouble):
             'vc_capable': False,
             'personality': 'SRX_BRANCH'
         }
+        self._uptime = 4380
 
     @property
     def facts(self):
@@ -87,6 +88,10 @@ class FakeJunOSDevice(BaseTestDouble):
             except (yaml.YAMLError, AttributeError):
                 self._facts = self.default_facts
         return self._facts
+
+    @property
+    def uptime(self):
+        return self._uptime
 
     def open(self):
         pass
