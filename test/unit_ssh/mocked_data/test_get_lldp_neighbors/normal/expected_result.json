@@ -1,0 +1,10 @@
+{
+    "Eth2/2": [
+        {"hostname": "nxos2.madeupdomain.com", "port": "Eth2/2"}], 
+    "Eth2/3": [
+        {"hostname": "nxos2.madeupdomain.com", "port": "Eth2/3"}], 
+    "Eth2/1": [
+        {"hostname": "nxos2.madeupdomain.com", "port": "Eth2/1"}], 
+    "Eth2/4": [
+        {"hostname": "nxos2.madeupdomain.com", "port": "Eth2/4"}]
+}

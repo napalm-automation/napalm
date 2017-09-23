@@ -1,0 +1,4 @@
+DNS lookup enabled
+Vrf Name: default Default domain is twb-tech.com
+Name servers are   8.8.8.8 8.8.4.4
+Host            Address

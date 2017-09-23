@@ -1,0 +1,104 @@
+Ethernet154/1/46 is down (Link not connected)
+  Hardware: 10/100/1000 Ethernet, address: 0cd9.9608.0d6f (bia 0cd9.9608.0d6f)
+  MTU 1500 bytes, BW 23 Kbit, DLY 10 usec
+  reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA
+  Port mode is access
+  auto-duplex, auto-speed
+  Beacon is turned off
+  Input flow-control is off, output flow-control is on
+  Switchport monitor is off
+  EtherType is 0x8100
+  Last link flapped 5week(s) 6day(s)
+  Last clearing of "show interface" counters never
+  12 interface resets
+  30 seconds input rate 0 bits/sec, 0 packets/sec
+  30 seconds output rate 0 bits/sec, 0 packets/sec
+  Load-Interval #2: 5 minute (300 seconds)
+    input rate 0 bps, 0 pps; output rate 0 bps, 0 pps
+  RX
+    104751065 unicast packets  856963 multicast packets  501 broadcast packets
+    105608529 input packets  73128915048 bytes
+    0 jumbo packets  0 storm suppression bytes
+    0 runts  0 giants  0 CRC  0 no buffer
+    0 input error  0 short frame  0 overrun   0 underrun  0 ignored
+    0 watchdog  0 bad etype drop  0 bad proto drop  0 if down drop
+    0 input with dribble  0 input discard
+    0 Rx pause
+  TX
+    58291689 unicast packets  32237862 multicast packets  14956712 broadcast packets
+    105486263 output packets  18381839734 bytes
+    0 jumbo packets
+    0 output error  0 collision  0 deferred  0 late collision
+    0 lost carrier  0 no carrier  0 babble 0 output discard
+    0 Tx pause
+
+Ethernet154/1/48 is up
+  Hardware: 10/100/1000 Ethernet, address: 0cd9.9608.0d71 (bia 0cd9.9608.0d71)
+  MTU 1500 bytes, BW 100000 Kbit, DLY 10 usec
+  reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA
+  Port mode is access
+  full-duplex, 100 Mb/s
+  Beacon is turned off
+  Input flow-control is off, output flow-control is on
+  Switchport monitor is off
+  EtherType is 0x8100
+  Last link flapped 11week(s) 1day(s)
+  Last clearing of "show interface" counters never
+  16 interface resets
+  30 seconds input rate 0 bits/sec, 0 packets/sec
+  30 seconds output rate 176 bits/sec, 0 packets/sec
+  Load-Interval #2: 5 minute (300 seconds)
+    input rate 336 bps, 0 pps; output rate 480 bps, 0 pps
+  RX
+    14005040 unicast packets  299329 multicast packets  160 broadcast packets
+    14304529 input packets  1462644820 bytes
+    0 jumbo packets  0 storm suppression bytes
+    0 runts  0 giants  0 CRC  0 no buffer
+    0 input error  0 short frame  0 overrun   0 underrun  0 ignored
+    0 watchdog  0 bad etype drop  0 bad proto drop  0 if down drop
+    0 input with dribble  0 input discard
+    0 Rx pause
+  TX
+    14095466 unicast packets  15783914 multicast packets  16578099 broadcast packets
+    46457479 output packets  5193557611 bytes
+    0 jumbo packets
+    0 output error  0 collision  0 deferred  0 late collision
+    0 lost carrier  0 no carrier  0 babble 0 output discard
+    0 Tx pause
+
+Ethernet154/1/47 is down (Administratively down)
+  Hardware: 10/100/1000 Ethernet, address: 0cd9.9608.0d6e (bia 0cd9.9608.0d6e)
+  MTU 1500 bytes, BW 23 Kbit, DLY 10 usec
+  reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA
+  Port mode is access
+  auto-duplex, auto-speed
+  Beacon is turned off
+  Input flow-control is off, output flow-control is on
+  Switchport monitor is off
+  EtherType is 0x8100
+  Last link flapped 5week(s) 6day(s)
+  Last clearing of "show interface" counters never
+  12 interface resets
+  30 seconds input rate 0 bits/sec, 0 packets/sec
+  30 seconds output rate 0 bits/sec, 0 packets/sec
+  Load-Interval #2: 5 minute (300 seconds)
+    input rate 0 bps, 0 pps; output rate 0 bps, 0 pps
+  RX
+    104751065 unicast packets  856963 multicast packets  501 broadcast packets
+    105608529 input packets  73128915048 bytes
+    0 jumbo packets  0 storm suppression bytes
+    0 runts  0 giants  0 CRC  0 no buffer
+    0 input error  0 short frame  0 overrun   0 underrun  0 ignored
+    0 watchdog  0 bad etype drop  0 bad proto drop  0 if down drop
+    0 input with dribble  0 input discard
+    0 Rx pause
+  TX
+    58291689 unicast packets  32237862 multicast packets  14956712 broadcast packets
+    105486263 output packets  18381839734 bytes
+    0 jumbo packets
+    0 output error  0 collision  0 deferred  0 late collision
+    0 lost carrier  0 no carrier  0 babble 0 output discard
+    0 Tx pause
