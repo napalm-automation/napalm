@@ -126,8 +126,8 @@ class TestBaseHelpers(unittest.TestCase):
                                                           template_source=template_source,
                                                           **_TEMPLATE_VARS))
         self.assertRaisesRegexp(napalm_base.exceptions.TemplateNotImplemented,
-                                "path.*napalm-base/test/unit/templates'"
-                                + ",.*napalm-base/napalm_base/templates']",
+                                "path.*napalm-base/test/unit/templates'" +
+                                ",.*napalm-base/napalm_base/templates']",
                                 napalm_base.helpers.load_template,
                                 self.network_driver,
                                 '__this_template_does_not_exist__',
