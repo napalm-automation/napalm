@@ -41,7 +41,7 @@ class ROSDriver(NetworkDriver):
     def get_arp_table(self):
         arp_table = []
         for entry in self.api('/ip/arp/print'):
-            if not 'mac-address' in entry:
+            if 'mac-address' not in entry:
                 continue
             arp_table.append(
                 {
