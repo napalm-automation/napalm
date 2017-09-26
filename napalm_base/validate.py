@@ -14,6 +14,10 @@ import copy
 import re
 
 
+# We put it here to compile it only once
+numeric_compare_regex = re.compile("^(<|>|<=|>=|==|!=)(\d+(\.\d+){0,1})$")
+
+
 def _get_validation_file(validation_file):
     try:
         with open(validation_file, 'r') as stream:
@@ -88,6 +92,7 @@ def _compare_getter_dict(src, dst, mode):
                 complies = intermediate_result
                 nested = False
                 if not complies:
+                    result["present"][key]["expected_value"] = src_element
                     result["present"][key]["actual_value"] = dst_element
 
             if not complies:
@@ -119,30 +124,47 @@ def _compare_getter(src, dst):
 
             return _compare_getter_list(src['list'], dst, mode)
         return _compare_getter_dict(src, dst, mode)
-    else:
-        if isinstance(src, py23_compat.string_types):
-            if src.startswith('<') or src.startswith('>'):
-                cmp_result = compare_numeric(src, dst)
-                return cmp_result
-            else:
-                m = re.search(src, py23_compat.text_type(dst))
-                return m is not None
-        elif(type(src) == type(dst) == list):
-            pairs = zip(src, dst)
-            diff_lists = [[(k, x[k], y[k])
-                          for k in x if not re.search(x[k], y[k])]
-                          for x, y in pairs if x != y]
-            return empty_tree(diff_lists)
+
+    elif isinstance(src, py23_compat.string_types):
+        if src.startswith('<') or src.startswith('>'):
+            cmp_result = compare_numeric(src, dst)
+            return cmp_result
         else:
-            return src == dst
+            m = re.search(src, py23_compat.text_type(dst))
+            if m:
+                return bool(m)
+            else:
+                return src == dst
+
+    elif(type(src) == type(dst) == list):
+        pairs = zip(src, dst)
+        diff_lists = [[(k, x[k], y[k])
+                      for k in x if not re.search(x[k], y[k])]
+                      for x, y in pairs if x != y]
+        return empty_tree(diff_lists)
+
+    else:
+        return src == dst
 
 
 def compare_numeric(src_num, dst_num):
     """Compare numerical values. You can use '<%d','>%d'."""
-    complies = eval(str(dst_num)+src_num)
-    if not isinstance(complies, bool):
-        return False
-    return complies
+    dst_num = float(dst_num)
+
+    match = numeric_compare_regex.match(src_num)
+    if not match:
+        error = "Failed numeric comparison. Collected: {}. Expected: {}".format(dst_num, src_num)
+        raise ValueError(error)
+
+    operand = {
+        "<": "__lt__",
+        ">": "__gt__",
+        ">=": "__ge__",
+        "<=": "__le__",
+        "==": "__eq__",
+        "!=": "__ne__",
+    }
+    return getattr(dst_num, operand[match.group(1)])(float(match.group(2)))
 
 
 def empty_tree(input_list):

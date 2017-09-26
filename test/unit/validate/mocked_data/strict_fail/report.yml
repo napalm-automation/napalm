@@ -42,7 +42,7 @@ get_bgp_neighbors:
                                 extra: []
                                 missing: []
                                 present:
-                                  sent_prefixes: {actual_value: 0, complies: false,
+                                    sent_prefixes: {actual_value: 0, expected_value: "^[1-9]", complies: false,
                                     nested: false}
                               nested: true
                             ipv6: {complies: true, nested: true}
@@ -90,7 +90,7 @@ ping:
         extra: []
         missing: []
         present:
-          packet_loss: {actual_value: 1, complies: false, nested: false}
+          packet_loss: {actual_value: 1, expected_value: 0, complies: false, nested: false}
       nested: true
 
 get_route_to:

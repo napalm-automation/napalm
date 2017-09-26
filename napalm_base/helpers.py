@@ -37,29 +37,28 @@ _MACFormat.word_fmt = '%.2X'
 def load_template(cls, template_name, template_source=None, template_path=None,
                   openconfig=False, **template_vars):
     try:
+        search_path = []
         if isinstance(template_source, py23_compat.string_types):
             template = jinja2.Template(template_source)
         else:
-            current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
-            if (isinstance(template_path, py23_compat.string_types) and
-                    os.path.isdir(template_path) and os.path.isabs(template_path)):
-                current_dir = os.path.join(template_path, cls.__module__.split('.')[-1])
-                # append driver name at the end of the custom path
+            if template_path is not None:
+                if (isinstance(template_path, py23_compat.string_types) and
+                        os.path.isdir(template_path) and os.path.isabs(template_path)):
+                    # append driver name at the end of the custom path
+                    search_path.append(os.path.join(template_path, cls.__module__.split('.')[-1]))
+                else:
+                    raise IOError("Template path does not exist: {}".format(template_path))
+            else:
+                # Search modules for template paths
+                search_path = [os.path.dirname(os.path.abspath(sys.modules[c.__module__].__file__))
+                               for c in cls.__class__.mro() if c is not object]
 
             if openconfig:
-                template_dir_path = '{current_dir}/oc_templates'.format(current_dir=current_dir)
+                search_path = ['{}/oc_templates'.format(s) for s in search_path]
             else:
-                template_dir_path = '{current_dir}/templates'.format(current_dir=current_dir)
+                search_path = ['{}/templates'.format(s) for s in search_path]
 
-            if not os.path.isdir(template_dir_path):
-                raise napalm_base.exceptions.DriverTemplateNotImplemented(
-                        '''Config template dir does not exist: {path}.
-                        Please create it and add driver-specific templates.'''.format(
-                            path=template_dir_path
-                        )
-                    )
-
-            loader = jinja2.FileSystemLoader(template_dir_path)
+            loader = jinja2.FileSystemLoader(search_path)
             environment = jinja2.Environment(loader=loader)
 
             for filter_name, filter_function in CustomJinjaFilters.filters().items():
@@ -71,9 +70,9 @@ def load_template(cls, template_name, template_source=None, template_path=None,
         configuration = template.render(**template_vars)
     except jinja2.exceptions.TemplateNotFound:
         raise napalm_base.exceptions.TemplateNotImplemented(
-            "Config template {template_name}.j2 is not defined under {path}".format(
+            "Config template {template_name}.j2 not found in search path: {sp}".format(
                 template_name=template_name,
-                path=template_dir_path
+                sp=search_path
             )
         )
     except (jinja2.exceptions.UndefinedError, jinja2.exceptions.TemplateSyntaxError) as jinjaerr:

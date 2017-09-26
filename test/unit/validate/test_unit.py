@@ -95,7 +95,8 @@ _compare_getter = [
         {u'complies': False,
          u'extra': [],
          u'missing': [],
-         u'present': {'a': {u'actual_value': 2, u'complies': False, u'nested': False},
+         u'present': {'a': {u'actual_value': 2, u'expected_value': 1,
+                            u'complies': False, u'nested': False},
                       'b': {u'complies': True, u'nested': False},
                       'c': {u'complies': True, u'nested': False}}}
     ),
@@ -105,7 +106,8 @@ _compare_getter = [
         {u'complies': False,
          u'extra': [],
          u'missing': ['a'],
-         u'present': {'b': {u'actual_value': 1, u'complies': False, u'nested': False},
+         u'present': {'b': {u'actual_value': 1, u'expected_value': 2,
+                            u'complies': False, u'nested': False},
                       'c': {u'complies': True, u'nested': False}}}
     ),
     (
@@ -140,6 +142,7 @@ _compare_getter = [
                                       u'extra': [],
                                       u'missing': [],
                                       u'present': {'A': {u'actual_value': 1,
+                                                         u'expected_value': 3,
                                                          u'complies': False,
                                                          u'nested': False},
                                                    'B': {u'complies': True,
@@ -159,6 +162,7 @@ _compare_getter = [
                                       u'extra': [],
                                       u'missing': ['B'],
                                       u'present': {'A': {u'actual_value': 1,
+                                                         u'expected_value': 3,
                                                          u'complies': False,
                                                          u'nested': False}}},
                             u'nested': True}}}
@@ -179,7 +183,8 @@ _compare_getter = [
         {u'complies': False,
          u'extra': [],
          u'missing': [],
-         u'present': {'a': {u'actual_value': 2, u'complies': False, u'nested': False},
+         u'present': {'a': {u'actual_value': 2, u'expected_value': 1,
+                            u'complies': False, u'nested': False},
                       'b': {u'complies': True, u'nested': False},
                       'c': {u'complies': True, u'nested': False}}}
     ),
@@ -189,7 +194,8 @@ _compare_getter = [
         {u'complies': False,
          u'extra': [],
          u'missing': ['a'],
-         u'present': {'b': {u'actual_value': 1, u'complies': False, u'nested': False},
+         u'present': {'b': {u'actual_value': 1, u'expected_value': 2,
+                            u'complies': False, u'nested': False},
                       'c': {u'complies': True, u'nested': False}}}
     ),
     (
@@ -224,6 +230,7 @@ _compare_getter = [
                                       u'extra': [],
                                       u'missing': [],
                                       u'present': {'A': {u'actual_value': 1,
+                                                         u'expected_value': 3,
                                                          u'complies': False,
                                                          u'nested': False},
                                                    'B': {u'complies': True,
@@ -243,6 +250,7 @@ _compare_getter = [
                                       u'extra': ['C'],
                                       u'missing': ['B'],
                                       u'present': {'A': {u'actual_value': 1,
+                                                         u'expected_value': 3,
                                                          u'complies': False,
                                                          u'nested': False}}},
                             u'nested': True}}}
@@ -260,6 +268,7 @@ _compare_getter = [
                                       u'extra': ['C'],
                                       u'missing': ['B'],
                                       u'present': {'A': {u'actual_value': 1,
+                                                         u'expected_value': 3,
                                                          u'complies': False,
                                                          u'nested': False}}},
                             u'nested': True}}}
@@ -274,3 +283,20 @@ class TestValidate:
     def test__compare_getter_list(self, src, dst, result):
         """Test for _compare_getter_list."""
         assert validate._compare_getter(src, dst) == result
+
+    def test_numeric_comparison(self):
+        assert validate.compare_numeric("<2", 1)
+        assert not validate.compare_numeric("<2", 3)
+        assert validate.compare_numeric("<=2", 2)
+        assert validate.compare_numeric("<3", "2")
+        assert validate.compare_numeric("!=3", "2")
+        with pytest.raises(ValueError):
+            assert validate.compare_numeric("a2a", 2)
+        with pytest.raises(ValueError):
+            assert validate.compare_numeric("<1a1", 2)
+        with pytest.raises(ValueError):
+            assert validate.compare_numeric("a<1", 2)
+        with pytest.raises(ValueError):
+            assert validate.compare_numeric("<1", "asdasd2")
+        with pytest.raises(ValueError):
+            assert validate.compare_numeric("<1", "2asdasd")

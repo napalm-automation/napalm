@@ -1,8 +1,20 @@
+coveralls
 pytest
 pytest-cov
 pytest-json
 pytest-pythonpath
 pylama
 flake8-import-order
-nose
+ddt
+lxml
+napalm-eos
+napalm-fortios
+napalm-ios
+napalm-iosxr
+napalm-junos
+napalm-nxos
+napalm-panos
+napalm-pluribus
+napalm-ros
+napalm-vyos
 -r requirements.txt

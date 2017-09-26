@@ -16,9 +16,6 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-# std libs
-import sys
-
 # local modules
 import napalm_base.exceptions
 import napalm_base.helpers
@@ -46,17 +43,19 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def __enter__(self):
-        try:
-            self.open()
-        except:  # noqa
-            exc_info = sys.exc_info()
-            self.__raise_clean_exception(exc_info[0], exc_info[1], exc_info[2])
+        self.open()
         return self
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.close()
-        if exc_type is not None:
-            self.__raise_clean_exception(exc_type, exc_value, exc_traceback)
+        if exc_type is not None and (
+                            exc_type.__name__ not in dir(napalm_base.exceptions) and
+                            exc_type.__name__ not in __builtins__.keys()):
+            epilog = ("NAPALM didn't catch this exception. Please, fill a bugfix on "
+                      "https://github.com/napalm-automation/napalm/issues\n"
+                      "Don't forget to include this traceback.")
+            print(epilog)
+            return False
 
     def __del__(self):
         """
@@ -67,30 +66,8 @@ class NetworkDriver(object):
         try:
             if self.is_alive()["is_alive"]:
                 self.close()
-        except NotImplementedError:
+        except Exception:
             pass
-
-    @staticmethod
-    def __raise_clean_exception(exc_type, exc_value, exc_traceback):
-        """
-        This method is going to check if the exception exc_type is part of the builtins exceptions
-        or part of the napalm exceptions. If it is not, it will print a message on the screen
-        giving instructions to fill a bug.
-
-        Finally it will raise the original exception.
-
-        :param exc_type: Exception class.
-        :param exc_value: Exception object.
-        :param exc_traceback: Traceback.
-        """
-        if (exc_type.__name__ not in dir(napalm_base.exceptions) and
-                exc_type.__name__ not in __builtins__.keys()):
-            epilog = ("NAPALM didn't catch this exception. Please, fill a bugfix on "
-                      "https://github.com/napalm-automation/napalm/issues\n"
-                      "Don't forget to include this traceback.")
-            print(epilog)
-        # Traceback should already be attached to exception; no need to re-attach
-        raise exc_value
 
     def open(self):
         """
@@ -111,6 +88,30 @@ class NetworkDriver(object):
         The state does not reflect only on the connection status (when SSH), it must also take into
         consideration other parameters, e.g.: NETCONF session might not be usable, althought the
         underlying SSH session is still open etc.
+        """
+        raise NotImplementedError
+
+    def pre_connection_tests(self):
+        """
+        This is a helper function used by the cli tool cl_napalm_show_tech. Drivers
+        can override this method to do some tests, show information, enable debugging, etc.
+        before a connection with the device is attempted.
+        """
+        raise NotImplementedError
+
+    def connection_tests(self):
+        """
+        This is a helper function used by the cli tool cl_napalm_show_tech. Drivers
+        can override this method to do some tests, show information, enable debugging, etc.
+        before a connection with the device has been successful.
+        """
+        raise NotImplementedError
+
+    def post_connection_tests(self):
+        """
+        This is a helper function used by the cli tool cl_napalm_show_tech. Drivers
+        can override this method to do some tests, show information, enable debugging, etc.
+        after a connection with the device has been closed successfully.
         """
         raise NotImplementedError
 
@@ -242,37 +243,37 @@ class NetworkDriver(object):
                 {
                 'is_up': False,
                 'is_enabled': False,
-                'description': u'',
+                'description': '',
                 'last_flapped': -1,
                 'speed': 1000,
-                'mac_address': u'dead:beef:dead',
+                'mac_address': 'FA:16:3E:57:33:61',
                 },
             u'Ethernet1':
                 {
                 'is_up': True,
                 'is_enabled': True,
-                'description': u'foo',
+                'description': 'foo',
                 'last_flapped': 1429978575.1554043,
                 'speed': 1000,
-                'mac_address': u'beef:dead:beef',
+                'mac_address': 'FA:16:3E:57:33:62',
                 },
             u'Ethernet2':
                 {
                 'is_up': True,
                 'is_enabled': True,
-                'description': u'bla',
+                'description': 'bla',
                 'last_flapped': 1429978575.1555667,
                 'speed': 1000,
-                'mac_address': u'beef:beef:beef',
+                'mac_address': 'FA:16:3E:57:33:63',
                 },
             u'Ethernet3':
                 {
                 'is_up': False,
                 'is_enabled': True,
-                'description': u'bar',
+                'description': 'bar',
                 'last_flapped': -1,
                 'speed': 1000,
-                'mac_address': u'dead:dead:dead',
+                'mac_address': 'FA:16:3E:57:33:64',
                 }
             }
         """
@@ -739,13 +740,13 @@ class NetworkDriver(object):
             [
                 {
                     'interface' : 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '5c:5e:ab:da:3c:f0',
+                    'mac'       : '5C:5E:AB:DA:3C:F0',
                     'ip'        : '172.17.17.1',
                     'age'       : 1454496274.84
                 },
                 {
                     'interface' : 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '66:0e:94:96:e0:ff',
+                    'mac'       : '5C:5E:AB:DA:3C:FF',
                     'ip'        : '172.17.17.2',
                     'age'       : 1435641582.49
                 }
@@ -904,7 +905,7 @@ class NetworkDriver(object):
 
             [
                 {
-                    'mac'       : '00:1c:58:29:4a:71',
+                    'mac'       : '00:1C:58:29:4A:71',
                     'interface' : 'Ethernet47',
                     'vlan'      : 100,
                     'static'    : False,
@@ -913,7 +914,7 @@ class NetworkDriver(object):
                     'last_move' : 1454417742.58
                 },
                 {
-                    'mac'       : '8c:60:4f:58:e1:c1',
+                    'mac'       : '00:1C:58:29:4A:C1',
                     'interface' : 'xe-1/0/1',
                     'vlan'       : 100,
                     'static'    : False,
@@ -922,7 +923,7 @@ class NetworkDriver(object):
                     'last_move' : 1453191948.11
                 },
                 {
-                    'mac'       : 'f4:b5:2f:56:72:01',
+                    'mac'       : '00:1C:58:29:4A:C2',
                     'interface' : 'ae7.900',
                     'vlan'      : 900,
                     'static'    : False,
@@ -1542,7 +1543,7 @@ class NetworkDriver(object):
         Return a compliance report.
 
         Verify that the device complies with the given validation file and writes a compliance
-        report file. See https://napalm.readthedocs.io/en/latest/validate.html.
+        report file. See https://napalm.readthedocs.io/en/latest/validate/index.html.
 
         :param validation_file: Path to the file containing compliance definition. Default is None.
         :param validation_source: Dictionary containing compliance rules.
