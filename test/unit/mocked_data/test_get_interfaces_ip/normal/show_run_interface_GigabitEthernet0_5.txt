@@ -1,8 +1,0 @@
-Building configuration...
-
-Current configuration : 87 bytes
-!
-interface GigabitEthernet0/5
- switchport access vlan 41
- switchport mode access
-end

@@ -1,7 +1,0 @@
-Building configuration...
-
-Current configuration : 39 bytes
-!
-interface Vlan40
- no ip address
-end

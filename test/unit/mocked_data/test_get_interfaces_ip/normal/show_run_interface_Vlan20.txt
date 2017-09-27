@@ -1,7 +1,0 @@
-Building configuration...
-
-Current configuration : 64 bytes
-!
-interface Vlan20
- ip address 172.29.50.3 255.255.255.224
-end

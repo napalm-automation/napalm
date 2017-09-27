@@ -1,7 +1,0 @@
-Building configuration...
-
-Current configuration : 41 bytes
-!
-interface Port-channel1
- shutdown
-end
