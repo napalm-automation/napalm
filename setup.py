@@ -12,7 +12,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name="napalm-junos",
-    version="0.12.0",
+    version="0.12.1",
     packages=find_packages(),
     author="David Barroso, Mircea Ulinic",
     author_email="dbarrosop@dravetech.com, mircea@cloudflare.com",
