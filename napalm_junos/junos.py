@@ -1783,7 +1783,7 @@ class JunOSDriver(NetworkDriver):
         for item in optics_40Gitems:
             lane = item[0]
             iface = item[1].pop(0)
-            new_optics_40Gitems.append((iface[1], unicode(lane), item[1]))
+            new_optics_40Gitems.append((iface[1], py23_compat.text_type(lane), item[1]))
 
         # Remove 40G optics returned from junos_intf_optics_table with all values to 0
         iface_40G = [item[0] for item in new_optics_40Gitems]
