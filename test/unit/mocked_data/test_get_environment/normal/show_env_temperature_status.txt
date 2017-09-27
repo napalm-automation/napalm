@@ -1,0 +1,4 @@
+System Temperature Value: 42 Degree Celsius
+System Temperature State: GREEN
+Yellow Threshold : 88 Degree Celsius
+Red Threshold    : 93 Degree Celsius
