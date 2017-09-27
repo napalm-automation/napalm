@@ -16,11 +16,14 @@ def test_model(model, data):
 
     correct_class = True
     for key, instance_class in model.items():
-        correct_class = isinstance(data[key], instance_class) and correct_class
-        # Properly handle PY2 long
-        if py23_compat.PY2:
-            if isinstance(data[key], long) and isinstance(1, instance_class):  # noqa
-                correct_class = True and correct_class
+        if py23_compat.PY2 and isinstance(data[key], long):      # noqa
+            # Properly handle PY2 long
+            correct_class = (isinstance(data[key], long) and     # noqa
+                             isinstance(1, instance_class) and
+                             correct_class)
+        else:
+            correct_class = isinstance(data[key], instance_class) and correct_class
+
         if not correct_class:
             print("key: {}\nmodel_class: {}\ndata_class: {}".format(
                                                     key, instance_class, data[key].__class__))
