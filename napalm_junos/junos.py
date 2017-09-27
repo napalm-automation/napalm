@@ -444,9 +444,7 @@ class JunOSDriver(NetworkDriver):
             'inet6': 'ipv6',
             'inetflow': 'flow'
         }
-        print("Table: %s" % table)
         family = table.split('.')[-2]
-        print("Family: %s" % family)
         try:
             address_family = address_family_mapping[family]
         except KeyError:
@@ -466,40 +464,21 @@ class JunOSDriver(NetworkDriver):
                 'sent_prefixes': -1
             }
         }
-        print("Neighbor")
-        print(neighbor)
         if not neighbor['is_up']:
             return data
         elif isinstance(neighbor['tables'], list):
             for idx, table in enumerate(neighbor['tables']):
-                print("Table: %s" % table)
                 family = self._get_address_family(table)
                 data[family] = {}
                 data[family]['received_prefixes'] = neighbor['received_prefixes'][idx]
                 data[family]['accepted_prefixes'] = neighbor['accepted_prefixes'][idx]
-                #   Table bgp.evpn.0
-                # RIB State: BGP restart is complete
-                # RIB State: VPN restart is complete
-                # Send state: not advertising
-                # Active prefixes:              8
-                # Received prefixes:            8
-                # Accepted prefixes:            8
-                # Suppressed due to damping:    0
-                # ==> BUG here, there is no sent_prefixes
-                print(neighbor)
-                print("SENT prefixes: %s" % neighbor['sent_prefixes'][idx])
-                try:
-                    data[family]['sent_prefixes'] = neighbor['sent_prefixes'][idx]
-                except KeyError:
-                    data[family]['sent_prefixes'] = -1
+                data[family]['sent_prefixes'] = neighbor['sent_prefixes'][idx]
         else:
             family = self._get_address_family(neighbor['tables'])
             data[family] = {}
             data[family]['received_prefixes'] = neighbor['received_prefixes']
             data[family]['accepted_prefixes'] = neighbor['accepted_prefixes']
             data[family]['sent_prefixes'] = neighbor['sent_prefixes']
-
-        print("ckishimo returning ====================")
         return data
 
     @staticmethod
@@ -545,7 +524,6 @@ class JunOSDriver(NetworkDriver):
             also when the device is capable to return the routing
             instance name at the BGP neighbor level.
             '''
-            print(neighbor_data)
             for bgp_neighbor in neighbor_data:
                 peer_ip = napalm_base.helpers.ip(bgp_neighbor[0].split('+')[0])
                 neighbor_details = deepcopy(default_neighbor_details)
