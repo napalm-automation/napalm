@@ -1799,7 +1799,7 @@ class JunOSDriver(NetworkDriver):
         optics_table40G.get()
         optics_40Gitems = optics_table40G.items()
 
-        # Format data inserting lane as before. 
+        # Format data inserting lane as before.
         # Format: [(iface, lane, [optical_values]), ...]
         new_optics_40Gitems = []
         for item in optics_40Gitems:
@@ -1833,7 +1833,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['input_power'])
                                         if optics['input_power'] not in
-                                        [None, C.OPTICS_NULL_LEVEL,'- Inf']
+                                        [None, C.OPTICS_NULL_LEVEL]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1843,7 +1843,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['output_power'])
                                         if optics['output_power'] not in
-                                        [None, C.OPTICS_NULL_LEVEL,'- Inf']
+                                        [None, C.OPTICS_NULL_LEVEL]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1853,7 +1853,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['laser_bias_current'])
                                         if optics['laser_bias_current'] not in
-                                        [None, C.OPTICS_NULL_LEVEL,'- Inf']
+                                        [None, C.OPTICS_NULL_LEVEL]
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
