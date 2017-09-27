@@ -48,6 +48,17 @@ class TestValidate:
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
+    def test_non_strict_pass_from_source(self):
+        """A simple test."""
+        mocked_data = os.path.join(BASEPATH, "mocked_data", "non_strict_pass")
+        expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
+
+        device = FakeDriver(mocked_data)
+        source = _read_yaml(os.path.join(mocked_data, "validate.yml"))
+        actual_report = device.compliance_report(validation_source=source)
+
+        assert expected_report == actual_report, yaml.safe_dump(actual_report)
+
     def test_non_strict_fail(self):
         """A simple test."""
         mocked_data = os.path.join(BASEPATH, "mocked_data", "non_strict_fail")
@@ -55,6 +66,17 @@ class TestValidate:
 
         device = FakeDriver(mocked_data)
         actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
+
+        assert expected_report == actual_report, yaml.safe_dump(actual_report)
+
+    def test_non_strict_fail_from_source(self):
+        """A simple test."""
+        mocked_data = os.path.join(BASEPATH, "mocked_data", "non_strict_fail")
+        expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
+
+        device = FakeDriver(mocked_data)
+        source = _read_yaml(os.path.join(mocked_data, "validate.yml"))
+        actual_report = device.compliance_report(validation_source=source)
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -68,6 +90,17 @@ class TestValidate:
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
+    def test_strict_fail_from_source(self):
+        """A simple test."""
+        mocked_data = os.path.join(BASEPATH, "mocked_data", "strict_fail")
+        expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
+
+        device = FakeDriver(mocked_data)
+        source = _read_yaml(os.path.join(mocked_data, "validate.yml"))
+        actual_report = device.compliance_report(validation_source=source)
+
+        assert expected_report == actual_report, yaml.safe_dump(actual_report)
+
     def test_strict_pass(self):
         """A simple test."""
         mocked_data = os.path.join(BASEPATH, "mocked_data", "strict_pass")
@@ -78,6 +111,17 @@ class TestValidate:
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
+    def test_strict_pass_from_source(self):
+        """A simple test."""
+        mocked_data = os.path.join(BASEPATH, "mocked_data", "strict_pass")
+        expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
+
+        device = FakeDriver(mocked_data)
+        source = _read_yaml(os.path.join(mocked_data, "validate.yml"))
+        actual_report = device.compliance_report(validation_source=source)
+
+        assert expected_report == actual_report, yaml.safe_dump(actual_report)
+
     def test_strict_pass_skip(self):
         """A simple test."""
         mocked_data = os.path.join(BASEPATH, "mocked_data", "strict_pass_skip")
@@ -85,6 +129,17 @@ class TestValidate:
 
         device = FakeDriver(mocked_data)
         actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
+
+        assert expected_report == actual_report, yaml.safe_dump(actual_report)
+
+    def test_strict_pass_skip_from_source(self):
+        """A simple test."""
+        mocked_data = os.path.join(BASEPATH, "mocked_data", "strict_pass_skip")
+        expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
+
+        device = FakeDriver(mocked_data)
+        source = _read_yaml(os.path.join(mocked_data, "validate.yml"))
+        actual_report = device.compliance_report(validation_source=source)
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
