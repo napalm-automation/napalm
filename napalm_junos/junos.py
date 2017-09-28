@@ -464,6 +464,7 @@ class JunOSDriver(NetworkDriver):
                 'sent_prefixes': -1
             }
         }
+
         if not neighbor['is_up']:
             return data
         elif isinstance(neighbor['tables'], list):
@@ -472,7 +473,10 @@ class JunOSDriver(NetworkDriver):
                 data[family] = {}
                 data[family]['received_prefixes'] = neighbor['received_prefixes'][idx]
                 data[family]['accepted_prefixes'] = neighbor['accepted_prefixes'][idx]
-                data[family]['sent_prefixes'] = neighbor['sent_prefixes'][idx]
+                if 'in sync' in neighbor['send-state'][idx]:
+                    data[family]['sent_prefixes'] = neighbor['sent_prefixes'].pop(0)
+                else:
+                    data[family]['sent_prefixes'] = 0
         else:
             family = self._get_address_family(neighbor['tables'])
             data[family] = {}
@@ -515,21 +519,6 @@ class JunOSDriver(NetworkDriver):
                 uptime_table_lookup[instance] = uptime_table.get(instance=instance).items()
             return uptime_table_lookup[instance]
 
-        def _fix_sent_prefixes(neighbor_details):
-
-            print(neighbor_details)
-            if (type(neighbor_details['tables']) == type([])):
-                # Multiple tables => we need to fix sent_prefixes based on send-state
-                sent_prefixes_list = list()
-                for state in neighbor_details['send-state']:
-                    if 'in sync' in state:
-                        sent_prefixes_list.append(neighbor_details['sent_prefixes'].pop(0))
-                    else:
-                        sent_prefixes_list.append(0)
-                neighbor_details['sent_prefixes'] = sent_prefixes_list
-            print(neighbor_details)
-            return
-
         def _get_bgp_neighbors_core(neighbor_data, instance=None, uptime_table_items=None):
             '''
             Make sure to execute a simple request whenever using
@@ -546,8 +535,6 @@ class JunOSDriver(NetworkDriver):
                     {elem[0]: elem[1] for elem in bgp_neighbor[1] if elem[1] is not None}
                 )
                 
-                neighbor_details = _fix_sent_prefixes(neighbor_details)
-
                 if not instance:
                     # not instance, means newer Junos version,
                     # as we request everything in a single request
