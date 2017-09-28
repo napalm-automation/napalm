@@ -67,25 +67,13 @@ junos_bgp_view:
     received_prefixes: { bgp-rib/received-prefix-count: int }
     accepted_prefixes: { bgp-rib/accepted-prefix-count: int }
     sent_prefixes: { bgp-rib/advertised-prefix-count: int }
+    send-state: send-state
     tables: bgp-rib/name
     local_as: { local-as: int }
     peer_as: { peer-as: int }
     local_id: local-id
     remote_id: { peer-id: unicode }
-
-junos_bgp_table_prefixes:
-  rpc: get-bgp-neighbor-information
-  args:
-    instance: ''
-  key: send-state
-  view: junos_bgp_view_prefixes
-
-junos_bgp_view_prefixes:
-  fields:
-    received_prefixes: { bgp-rib/received-prefix-count: int }
-    accepted_prefixes: { bgp-rib/accepted-prefix-count: int }
-    sent_prefixes: { bgp-rib/advertised-prefix-count: int }    
-    
+  
 ####
 #### LLDP table
 ####
