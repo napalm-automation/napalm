@@ -67,7 +67,7 @@ junos_bgp_view:
     received_prefixes: { bgp-rib/received-prefix-count: int }
     accepted_prefixes: { bgp-rib/accepted-prefix-count: int }
     sent_prefixes: { bgp-rib/advertised-prefix-count: int }
-    send-state: send-state
+    send-state: bgp-rib/send-state
     tables: bgp-rib/name
     local_as: { local-as: int }
     peer_as: { peer-as: int }
