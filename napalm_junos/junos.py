@@ -533,7 +533,6 @@ class JunOSDriver(NetworkDriver):
                 neighbor_details.update(
                     {elem[0]: elem[1] for elem in bgp_neighbor[1] if elem[1] is not None}
                 )
-                
                 if not instance:
                     # not instance, means newer Junos version,
                     # as we request everything in a single request
