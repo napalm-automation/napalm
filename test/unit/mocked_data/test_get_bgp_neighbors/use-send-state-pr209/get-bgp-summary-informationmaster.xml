@@ -2,7 +2,7 @@
     <group-count>2</group-count>
     <peer-count>4</peer-count>
     <down-peer-count>0</down-peer-count>
-    <bgp-rib junos:style="brief">
+    <bgp-ribstyle="brief">
         <name>inet.0</name>
         <total-prefix-count>7</total-prefix-count>
         <received-prefix-count>7</received-prefix-count>
@@ -22,7 +22,7 @@
         <pending-prefix-count>0</pending-prefix-count>
         <bgp-rib-state>BGP restart is complete</bgp-rib-state>
     </bgp-rib>
-    <bgp-rib junos:style="brief">
+    <bgp-ribstyle="brief">
         <name>bgp.evpn.0</name>
         <total-prefix-count>3</total-prefix-count>
         <received-prefix-count>3</received-prefix-count>
@@ -43,17 +43,17 @@
         <bgp-rib-state>BGP restart is complete</bgp-rib-state>
         <vpn-rib-state>VPN restart is complete</vpn-rib-state>
     </bgp-rib>
-    <bgp-peer junos:style="terse" heading="Peer                     AS      InPkt     OutPkt    OutQ   Flaps Last Up/Dwn State|#Active/Received/Accepted/Damped...">
+    <bgp-peerstyle="terse" heading="Peer                     AS      InPkt     OutPkt    OutQ   Flaps Last Up/Dwn State|#Active/Received/Accepted/Damped...">
         <peer-address>10.92.51.2</peer-address>
         <peer-as>65001</peer-as>
-        <input-messages>283</input-messages>
-        <output-messages>282</output-messages>
+        <input-messages>332</input-messages>
+        <output-messages>331</output-messages>
         <route-queue-count>0</route-queue-count>
         <flap-count>0</flap-count>
-        <elapsed-time junos:seconds="7612">2:06:52</elapsed-time>
-        <description>leaf1</description>
-        <peer-state junos:format="Establ">Established</peer-state>
-        <bgp-rib junos:style="terse">
+        <elapsed-timeseconds="8918">2:28:38</elapsed-time>
+        <description>Leaf1_Underlay</description>
+        <peer-stateformat="Establ">Established</peer-state>
+        <bgp-ribstyle="terse">
             <name>inet.0</name>
             <active-prefix-count>2</active-prefix-count>
             <received-prefix-count>4</received-prefix-count>
@@ -61,17 +61,17 @@
             <suppressed-prefix-count>0</suppressed-prefix-count>
         </bgp-rib>
     </bgp-peer>
-    <bgp-peer junos:style="terse">
+    <bgp-peerstyle="terse">
         <peer-address>10.92.52.2</peer-address>
         <peer-as>65002</peer-as>        
-        <input-messages>290</input-messages>
-        <output-messages>288</output-messages>
+        <input-messages>339</input-messages>
+        <output-messages>337</output-messages>
         <route-queue-count>0</route-queue-count>
         <flap-count>1</flap-count>
-        <elapsed-time junos:seconds="7766">2:09:26</elapsed-time>
-        <description>leaf2</description>
-        <peer-state junos:format="Establ">Established</peer-state>
-        <bgp-rib junos:style="terse">
+        <elapsed-timeseconds="9072">2:31:12</elapsed-time>
+        <description>Leaf2_Underlay</description>
+        <peer-stateformat="Establ">Established</peer-state>
+        <bgp-ribstyle="terse">
             <name>inet.0</name>
             <active-prefix-count>1</active-prefix-count>
             <received-prefix-count>3</received-prefix-count>
@@ -79,31 +79,31 @@
             <suppressed-prefix-count>0</suppressed-prefix-count>
         </bgp-rib>
     </bgp-peer>
-    <bgp-peer junos:style="terse">
+    <bgp-peerstyle="terse">
         <peer-address>10.92.99.91</peer-address>
         <peer-as>65005</peer-as>
-        <input-messages>284</input-messages>
-        <output-messages>288</output-messages>
+        <input-messages>332</input-messages>
+        <output-messages>336</output-messages>
         <route-queue-count>0</route-queue-count>
         <flap-count>0</flap-count>
-        <elapsed-time junos:seconds="7607">2:06:47</elapsed-time>
-        <description>leaf1</description>
-        <peer-state junos:format="Establ">Established</peer-state>
-        <bgp-rib junos:style="terse">
+        <elapsed-timeseconds="8913">2:28:33</elapsed-time>
+        <description>Leaf1_Overlay</description>
+        <peer-stateformat="Establ">Established</peer-state>
+        <bgp-ribstyle="terse">
             <name>__default_evpn__.evpn.0</name>
             <active-prefix-count>0</active-prefix-count>
             <received-prefix-count>0</received-prefix-count>
             <accepted-prefix-count>0</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
         </bgp-rib>
-        <bgp-rib junos:style="terse">
+        <bgp-ribstyle="terse">
             <name>bgp.evpn.0</name>
             <active-prefix-count>1</active-prefix-count>
             <received-prefix-count>1</received-prefix-count>
             <accepted-prefix-count>1</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
         </bgp-rib>
-        <bgp-rib junos:style="terse">
+        <bgp-ribstyle="terse">
             <name>default-switch.evpn.0</name>
             <active-prefix-count>1</active-prefix-count>
             <received-prefix-count>1</received-prefix-count>
@@ -111,31 +111,31 @@
             <suppressed-prefix-count>0</suppressed-prefix-count>
         </bgp-rib>
     </bgp-peer>
-    <bgp-peer junos:style="terse">
+    <bgp-peerstyle="terse">
         <peer-address>10.92.99.92</peer-address>
         <peer-as>65005</peer-as>
-        <input-messages>291</input-messages>
-        <output-messages>296</output-messages>
+        <input-messages>339</input-messages>
+        <output-messages>344</output-messages>
         <route-queue-count>0</route-queue-count>
         <flap-count>1</flap-count>
-        <elapsed-time junos:seconds="7762">2:09:22</elapsed-time>
-        <description>leaf2</description>
-        <peer-state junos:format="Establ">Established</peer-state>
-        <bgp-rib junos:style="terse">
+        <elapsed-timeseconds="9068">2:31:08</elapsed-time>
+        <description>Leaf2_Overlay</description>
+        <peer-stateformat="Establ">Established</peer-state>
+        <bgp-ribstyle="terse">
             <name>__default_evpn__.evpn.0</name>
             <active-prefix-count>0</active-prefix-count>
             <received-prefix-count>0</received-prefix-count>
             <accepted-prefix-count>0</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
         </bgp-rib>
-        <bgp-rib junos:style="terse">
+        <bgp-ribstyle="terse">
             <name>bgp.evpn.0</name>     
             <active-prefix-count>2</active-prefix-count>
             <received-prefix-count>2</received-prefix-count>
             <accepted-prefix-count>2</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
         </bgp-rib>
-        <bgp-rib junos:style="terse">
+        <bgp-ribstyle="terse">
             <name>default-switch.evpn.0</name>
             <active-prefix-count>2</active-prefix-count>
             <received-prefix-count>2</received-prefix-count>

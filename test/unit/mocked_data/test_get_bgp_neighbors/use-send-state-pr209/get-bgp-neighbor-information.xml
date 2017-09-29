@@ -1,10 +1,10 @@
 <bgp-information>
-    <bgp-peer junos:style="detail">
+    <bgp-peerstyle="detail">
         <peer-address>10.92.51.2+56664</peer-address>
         <peer-as>65001</peer-as>
         <local-address>10.92.51.1+179</local-address>
         <local-as>65000</local-as>
-        <description>leaf1</description>
+        <description>Leaf1_Underlay</description>
         <peer-group>underlay</peer-group>
         <peer-cfg-rti>master</peer-cfg-rti>
         <peer-fwd-rti>master</peer-fwd-rti>
@@ -60,7 +60,7 @@
         <peer-no-llgr-restarter/>
         <peer-4byte-as-capability-advertised>65001</peer-4byte-as-capability-advertised>
         <peer-addpath-not-supported/>
-        <bgp-rib junos:style="detail">
+        <bgp-ribstyle="detail">
             <name>inet.0</name>
             <rib-bit>20000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
@@ -71,17 +71,17 @@
             <suppressed-prefix-count>0</suppressed-prefix-count>
             <advertised-prefix-count>5</advertised-prefix-count>
         </bgp-rib>
-        <last-received>1576106</last-received>
-        <last-sent>7693</last-sent>
-        <last-checked>1576106</last-checked>
-        <input-messages>286</input-messages>
+        <last-received>1577231</last-received>
+        <last-sent>8818</last-sent>
+        <last-checked>1577231</last-checked>
+        <input-messages>328</input-messages>
         <input-updates>2</input-updates>
         <input-refreshes>0</input-refreshes>
-        <input-octets>5524</input-octets>
-        <output-messages>285</output-messages>
+        <input-octets>6322</input-octets>
+        <output-messages>327</output-messages>
         <output-updates>2</output-updates>
         <output-refreshes>0</output-refreshes>
-        <output-octets>5494</output-octets>
+        <output-octets>6292</output-octets>
         <bgp-output-queue>
             <number>1</number>
             <count>0</count>
@@ -89,12 +89,12 @@
             <rib-adv-nlri>inet-unicast</rib-adv-nlri>
         </bgp-output-queue>
     </bgp-peer>
-    <bgp-peer junos:style="detail">
+    <bgp-peerstyle="detail">
         <peer-address>10.92.52.2+58881</peer-address>
         <peer-as>65002</peer-as>
         <local-address>10.92.52.1+179</local-address>
         <local-as>65000</local-as>
-        <description>leaf2</description>
+        <description>Leaf2_Underlay</description>
         <peer-group>underlay</peer-group>
         <peer-cfg-rti>master</peer-cfg-rti>
         <peer-fwd-rti>master</peer-fwd-rti>
@@ -156,7 +156,7 @@
         <peer-no-llgr-restarter/>
         <peer-4byte-as-capability-advertised>65002</peer-4byte-as-capability-advertised>
         <peer-addpath-not-supported/>
-        <bgp-rib junos:style="detail">
+        <bgp-ribstyle="detail">
             <name>inet.0</name>
             <rib-bit>20000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
@@ -167,17 +167,17 @@
             <suppressed-prefix-count>0</suppressed-prefix-count>
             <advertised-prefix-count>6</advertised-prefix-count>
         </bgp-rib>
-        <last-received>1576106</last-received>
-        <last-sent>7692</last-sent>
-        <last-checked>1576106</last-checked>
-        <input-messages>293</input-messages>
+        <last-received>1577231</last-received>
+        <last-sent>8817</last-sent>
+        <last-checked>1577231</last-checked>
+        <input-messages>335</input-messages>
         <input-updates>2</input-updates>
         <input-refreshes>0</input-refreshes>
-        <input-octets>5653</input-octets>
-        <output-messages>291</output-messages>
+        <input-octets>6451</input-octets>
+        <output-messages>333</output-messages>
         <output-updates>2</output-updates>
         <output-refreshes>0</output-refreshes>
-        <output-octets>5612</output-octets>
+        <output-octets>6410</output-octets>
         <bgp-output-queue>
             <number>1</number>
             <count>0</count>
@@ -185,12 +185,12 @@
             <rib-adv-nlri>inet-unicast</rib-adv-nlri>
         </bgp-output-queue>
     </bgp-peer>
-    <bgp-peer junos:style="detail">
+    <bgp-peerstyle="detail">
         <peer-address>10.92.99.91+179</peer-address>
         <peer-as>65005</peer-as>
         <local-address>10.91.1.1+53524</local-address>
         <local-as>65005</local-as>
-        <description>leaf1</description>
+        <description>Leaf1_Overlay</description>
         <peer-group>evpn</peer-group>
         <peer-cfg-rti>master</peer-cfg-rti>
         <peer-fwd-rti>master</peer-fwd-rti>
@@ -241,7 +241,7 @@
         <peer-no-llgr-restarter/>
         <peer-4byte-as-capability-advertised>65005</peer-4byte-as-capability-advertised>
         <peer-addpath-not-supported/>
-        <bgp-rib junos:style="detail">
+        <bgp-ribstyle="detail">
             <name>__default_evpn__.evpn.0</name>
             <rib-bit>30000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
@@ -253,7 +253,7 @@
             <suppressed-prefix-count>0</suppressed-prefix-count>
             <advertised-prefix-count>2</advertised-prefix-count>
         </bgp-rib>
-        <bgp-rib junos:style="detail">
+        <bgp-ribstyle="detail">
             <name>bgp.evpn.0</name>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
             <vpn-rib-state>VPN restart is complete</vpn-rib-state>
@@ -263,7 +263,7 @@
             <accepted-prefix-count>1</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
         </bgp-rib>
-        <bgp-rib junos:style="detail">
+        <bgp-ribstyle="detail">
             <name>default-switch.evpn.0</name>
             <rib-bit>90000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
@@ -275,17 +275,17 @@
             <suppressed-prefix-count>0</suppressed-prefix-count>
             <advertised-prefix-count>10</advertised-prefix-count>
         </bgp-rib>
-        <last-received>1576106</last-received>
-        <last-sent>7688</last-sent>
-        <last-checked>1576106</last-checked>
-        <input-messages>286</input-messages>
+        <last-received>1577231</last-received>
+        <last-sent>8813</last-sent>
+        <last-checked>1577231</last-checked>
+        <input-messages>328</input-messages>
         <input-updates>4</input-updates>
         <input-refreshes>0</input-refreshes>
-        <input-octets>5657</input-octets>
-        <output-messages>290</output-messages>
+        <input-octets>6455</input-octets>
+        <output-messages>332</output-messages>
         <output-updates>7</output-updates>
         <output-refreshes>0</output-refreshes>
-        <output-octets>6307</output-octets>
+        <output-octets>7105</output-octets>
         <bgp-output-queue>
             <number>2</number>
             <count>0</count>
@@ -299,12 +299,12 @@
             <rib-adv-nlri>evpn</rib-adv-nlri>
         </bgp-output-queue>
     </bgp-peer>
-    <bgp-peer junos:style="detail">
+    <bgp-peerstyle="detail">
         <peer-address>10.92.99.92+51989</peer-address>
         <peer-as>65005</peer-as>
         <local-address>10.91.1.1+179</local-address>
         <local-as>65005</local-as>
-        <description>leaf2</description>
+        <description>Leaf2_Overlay</description>
         <peer-group>evpn</peer-group>
         <peer-cfg-rti>master</peer-cfg-rti>
         <peer-fwd-rti>master</peer-fwd-rti>
@@ -361,7 +361,7 @@
         <peer-no-llgr-restarter/>
         <peer-4byte-as-capability-advertised>65005</peer-4byte-as-capability-advertised>
         <peer-addpath-not-supported/>
-        <bgp-rib junos:style="detail">
+        <bgp-ribstyle="detail">
             <name>__default_evpn__.evpn.0</name>
             <rib-bit>30000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
@@ -373,7 +373,7 @@
             <suppressed-prefix-count>0</suppressed-prefix-count>
             <advertised-prefix-count>2</advertised-prefix-count>
         </bgp-rib>
-        <bgp-rib junos:style="detail">
+        <bgp-ribstyle="detail">
             <name>bgp.evpn.0</name>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
             <vpn-rib-state>VPN restart is complete</vpn-rib-state>
@@ -383,7 +383,7 @@
             <accepted-prefix-count>2</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
         </bgp-rib>
-        <bgp-rib junos:style="detail">
+        <bgp-ribstyle="detail">
             <name>default-switch.evpn.0</name>
             <rib-bit>90000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
@@ -395,17 +395,17 @@
             <suppressed-prefix-count>0</suppressed-prefix-count>
             <advertised-prefix-count>10</advertised-prefix-count>
         </bgp-rib>
-        <last-received>1576106</last-received>
-        <last-sent>7841</last-sent>
-        <last-checked>1576106</last-checked>
-        <input-messages>294</input-messages>
+        <last-received>1577231</last-received>
+        <last-sent>8966</last-sent>
+        <last-checked>1577231</last-checked>
+        <input-messages>335</input-messages>
         <input-updates>3</input-updates>
         <input-refreshes>0</input-refreshes>
-        <input-octets>5803</input-octets>
-        <output-messages>299</output-messages>
+        <input-octets>6582</input-octets>
+        <output-messages>340</output-messages>
         <output-updates>10</output-updates>
         <output-refreshes>0</output-refreshes>
-        <output-octets>6636</output-octets>
+        <output-octets>7415</output-octets>
         <bgp-output-queue>
             <number>2</number>
             <count>0</count>
