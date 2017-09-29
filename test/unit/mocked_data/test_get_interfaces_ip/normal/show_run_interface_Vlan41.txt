@@ -1,8 +1,0 @@
-Building configuration...
-
-Current configuration : 115 bytes
-!
-interface Vlan41
- ip address 192.168.81.34 255.255.255.0 secondary
- ip address 172.29.52.34 255.255.255.224
-end
