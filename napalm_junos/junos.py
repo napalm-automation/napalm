@@ -1769,9 +1769,9 @@ class JunOSDriver(NetworkDriver):
         # Example: intf_optic item is now: ('xe-0/0/0', [ optical_values ])
         optics_items_with_lane = []
         for intf_optic_item in optics_items:
-            a = list(intf_optic_item)
-            a.insert(1, u"0")
-            new_intf_optic_item = tuple(a)
+            temp_list = list(intf_optic_item)
+            temp_list.insert(1, u"0")
+            new_intf_optic_item = tuple(temp_list)
             optics_items_with_lane.append(new_intf_optic_item)
 
         # Now optics_items_with_lane has all optics with lane 0 included
