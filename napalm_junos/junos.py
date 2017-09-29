@@ -1117,7 +1117,10 @@ class JunOSDriver(NetworkDriver):
                 }
                 for rib_entry in neighbor_rib_stats:
                     for elem in rib_entry[1]:
-                        neighbor_rib_details[elem[0]] += elem[1]
+                        if elem[1] is None:
+                            neighbor_rib_details[elem[0]] += 0
+                        else:
+                            neighbor_rib_details[elem[0]] += elem[1]
                 neighbor_details.update(neighbor_rib_details)
                 bgp_neighbors[instance_name][remote_as].append(neighbor_details)
 
