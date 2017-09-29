@@ -1,0 +1,8 @@
+pseudowire100006 is up
+    MTU 1500 bytes, BW 10000000 Kbit
+    Encapsulation mpls
+    Peer IP x.x.x.x, VC ID xx
+    RX
+      34216908 packets 6774108588 bytes 0 drops
+    TX
+      79234824 packets 23633885654 bytes 0 drops
