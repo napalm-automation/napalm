@@ -1028,7 +1028,7 @@ class IOSDriver(NetworkDriver):
                                 'ipv6': {   u'1::1': {   'prefix_length': 64},
                                             u'2001:DB8:1::1': {   'prefix_length': 64},
                                             u'2::': {   'prefix_length': 64},
-                                            u'FE80::3': {   'prefix_length': 64}}},
+                                            u'FE80::3': {   'prefix_length': 10}}},
             u'Tunnel0': {   'ipv4': {   u'10.63.100.9': {   'prefix_length': 24}}},
             u'Tunnel1': {   'ipv4': {   u'10.63.101.9': {   'prefix_length': 24}}},
             u'Vlan100': {   'ipv4': {   u'10.40.0.1': {   'prefix_length': 24},
@@ -1054,14 +1054,12 @@ class IOSDriver(NetworkDriver):
                 continue
             if(line[0] != ' '):
                 ipv4 = {}
-                interfaces[line.split()[0]] = {'ipv4': ipv4}
+                interface_name = line.split()[0]
             m = re.match(INTERNET_ADDRESS, line)
             if m:
                 ip, prefix = m.groups()
                 ipv4.update({ip: {"prefix_length": int(prefix)}})
-
-        # Remove interfaces without ip
-        interfaces = dict(filter(lambda x: x[1]['ipv4'] != {}, interfaces.items()))
+                interfaces[interface_name] = {'ipv4': ipv4}
 
         for line in show_ipv6_interface.splitlines():
             if(len(line.strip()) == 0):
@@ -1076,7 +1074,7 @@ class IOSDriver(NetworkDriver):
             m = re.match(LINK_LOCAL_ADDRESS, line)
             if m:
                 ip = m.group(1)
-                ipv6.update({ip: {"prefix_length": 64}})
+                ipv6.update({ip: {"prefix_length": 10}})
             m = re.match(GLOBAL_ADDRESS, line)
             if m:
                 ip, prefix = m.groups()

@@ -7,7 +7,7 @@
 		},
 		"ipv6": {
 			"FE80::C009:24FF:FEAC:0": {
-				"prefix_length": 64
+				"prefix_length": 10
 			},
 			"2002::1": {
 				"prefix_length": 64
@@ -26,7 +26,7 @@
 	},
 	"Loopback0": {
 		"ipv6": {
-			"FE80::C009:24FF:FEAC:0": {"prefix_length": 64},
+			"FE80::C009:24FF:FEAC:0": {"prefix_length": 10},
 			"2001::1": {"prefix_length": 128},
 			"2001::2": {"prefix_length": 128}
 		}
