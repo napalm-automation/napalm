@@ -651,6 +651,19 @@ junos_intf_optics_view:
     output_power: laser-output-power-dbm
     input_power: rx-signal-avg-optical-power-dbm
 
+junos_intf_40Goptics_table:
+  rpc: get-interface-optics-diagnostics-information
+  item: physical-interface/optics-diagnostics/optics-diagnostics-lane-values
+  key: lane-index
+  view: junos_intf_40Goptics_view
+
+junos_intf_40Goptics_view:
+  fields:
+    interface: ../../name
+    laser_bias_current: laser-bias-current
+    output_power: laser-output-power-dbm
+    input_power: laser-rx-optical-power-dbm
+
 ###
 ### Get network instances
 ###
