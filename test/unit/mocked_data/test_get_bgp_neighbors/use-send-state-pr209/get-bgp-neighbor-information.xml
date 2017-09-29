@@ -1,5 +1,5 @@
 <bgp-information>
-    <bgp-peerstyle="detail">
+    <bgp-peer style="detail">
         <peer-address>10.92.51.2+56664</peer-address>
         <peer-as>65001</peer-as>
         <local-address>10.92.51.1+179</local-address>
@@ -60,7 +60,7 @@
         <peer-no-llgr-restarter/>
         <peer-4byte-as-capability-advertised>65001</peer-4byte-as-capability-advertised>
         <peer-addpath-not-supported/>
-        <bgp-ribstyle="detail">
+        <bgp-rib style="detail">
             <name>inet.0</name>
             <rib-bit>20000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
@@ -89,7 +89,7 @@
             <rib-adv-nlri>inet-unicast</rib-adv-nlri>
         </bgp-output-queue>
     </bgp-peer>
-    <bgp-peerstyle="detail">
+    <bgp-peer style="detail">
         <peer-address>10.92.52.2+58881</peer-address>
         <peer-as>65002</peer-as>
         <local-address>10.92.52.1+179</local-address>
@@ -156,7 +156,7 @@
         <peer-no-llgr-restarter/>
         <peer-4byte-as-capability-advertised>65002</peer-4byte-as-capability-advertised>
         <peer-addpath-not-supported/>
-        <bgp-ribstyle="detail">
+        <bgp-rib style="detail">
             <name>inet.0</name>
             <rib-bit>20000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
@@ -185,7 +185,7 @@
             <rib-adv-nlri>inet-unicast</rib-adv-nlri>
         </bgp-output-queue>
     </bgp-peer>
-    <bgp-peerstyle="detail">
+    <bgp-peer style="detail">
         <peer-address>10.92.99.91+179</peer-address>
         <peer-as>65005</peer-as>
         <local-address>10.91.1.1+53524</local-address>
@@ -241,7 +241,7 @@
         <peer-no-llgr-restarter/>
         <peer-4byte-as-capability-advertised>65005</peer-4byte-as-capability-advertised>
         <peer-addpath-not-supported/>
-        <bgp-ribstyle="detail">
+        <bgp-rib style="detail">
             <name>__default_evpn__.evpn.0</name>
             <rib-bit>30000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
@@ -253,7 +253,7 @@
             <suppressed-prefix-count>0</suppressed-prefix-count>
             <advertised-prefix-count>2</advertised-prefix-count>
         </bgp-rib>
-        <bgp-ribstyle="detail">
+        <bgp-rib style="detail">
             <name>bgp.evpn.0</name>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
             <vpn-rib-state>VPN restart is complete</vpn-rib-state>
@@ -263,7 +263,7 @@
             <accepted-prefix-count>1</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
         </bgp-rib>
-        <bgp-ribstyle="detail">
+        <bgp-rib style="detail">
             <name>default-switch.evpn.0</name>
             <rib-bit>90000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
@@ -299,7 +299,7 @@
             <rib-adv-nlri>evpn</rib-adv-nlri>
         </bgp-output-queue>
     </bgp-peer>
-    <bgp-peerstyle="detail">
+    <bgp-peer style="detail">
         <peer-address>10.92.99.92+51989</peer-address>
         <peer-as>65005</peer-as>
         <local-address>10.91.1.1+179</local-address>
@@ -361,7 +361,7 @@
         <peer-no-llgr-restarter/>
         <peer-4byte-as-capability-advertised>65005</peer-4byte-as-capability-advertised>
         <peer-addpath-not-supported/>
-        <bgp-ribstyle="detail">
+        <bgp-rib style="detail">
             <name>__default_evpn__.evpn.0</name>
             <rib-bit>30000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
@@ -373,7 +373,7 @@
             <suppressed-prefix-count>0</suppressed-prefix-count>
             <advertised-prefix-count>2</advertised-prefix-count>
         </bgp-rib>
-        <bgp-ribstyle="detail">
+        <bgp-rib style="detail">
             <name>bgp.evpn.0</name>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
             <vpn-rib-state>VPN restart is complete</vpn-rib-state>
@@ -383,7 +383,7 @@
             <accepted-prefix-count>2</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
         </bgp-rib>
-        <bgp-ribstyle="detail">
+        <bgp-rib style="detail">
             <name>default-switch.evpn.0</name>
             <rib-bit>90000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
