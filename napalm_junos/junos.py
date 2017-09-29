@@ -464,7 +464,6 @@ class JunOSDriver(NetworkDriver):
                 'sent_prefixes': -1
             }
         }
-
         if not neighbor['is_up']:
             return data
         elif isinstance(neighbor['tables'], list):
