@@ -174,6 +174,14 @@ arp_table = {
     'age': float
 }
 
+ipv6_neighbor = {
+    'interface': text_type,
+    'mac': text_type,
+    'ip': text_type,
+    'age': float,
+    'state': text_type
+}
+
 ntp_peer = {
     # will populate it in the future wit potential keys
 }

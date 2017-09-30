@@ -289,6 +289,17 @@ class BaseTestGetters(object):
         return get_arp_table
 
     @wrap_test_cases
+    def test_get_ipv6_neighbors_table(self, test_case):
+        """Test get_ipv6_neighbors_table."""
+        get_ipv6_neighbors_table = self.device.get_ipv6_neighbors_table()
+        assert len(get_ipv6_neighbors_table) > 0
+
+        for entry in get_ipv6_neighbors_table:
+            assert helpers.test_model(models.ipv6_neighbor, entry)
+
+        return get_ipv6_neighbors_table
+
+    @wrap_test_cases
     def test_get_ntp_peers(self, test_case):
         """Test get_ntp_peers."""
         get_ntp_peers = self.device.get_ntp_peers()

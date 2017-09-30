@@ -1538,6 +1538,37 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
+    def get_ipv6_neighbors_table(self):
+        """
+        Get IPv6 neighbors table information.
+
+        Return a list of dictionaries having the following set of keys:
+            * interface (string)
+            * mac (string)
+            * ip (string)
+            * age (float) in seconds
+            * state (string)
+
+        For example::
+            [
+                {
+                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '5c:5e:ab:da:3c:f0',
+                    'ip'        : '2001:db8:1:1::1',
+                    'age'       : 1454496274.84,
+                    'state'     : 'REACH'
+                },
+                {
+                    'interface': 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '66:0e:94:96:e0:ff',
+                    'ip'        : '2001:db8:1:1::2',
+                    'age'       : 1435641582.49,
+                    'state'     : 'STALE'
+                }
+            ]
+        """
+        raise NotImplementedError
+
     def compliance_report(self, validation_file=None, validation_source=None):
         """
         Return a compliance report.
