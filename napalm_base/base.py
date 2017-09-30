@@ -1546,7 +1546,7 @@ class NetworkDriver(object):
             * interface (string)
             * mac (string)
             * ip (string)
-            * age (float)
+            * age (float) in seconds
             * state (string)
 
         For example::
