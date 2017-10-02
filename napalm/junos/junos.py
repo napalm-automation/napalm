@@ -333,15 +333,8 @@ class JunOSDriver(NetworkDriver):
         environment.get()
         routing_engine.get()
         temperature_thresholds.get()
-        power_supplies.get()
         environment_data = {}
         current_class = None
-
-        # Format PEM information
-        pem_table = dict()
-        for pem in power_supplies.items():
-            pem_name = pem[0].replace("PEM", "Power Supply")
-            pem_table[pem_name] = dict(pem[1])
 
         for sensor_object, object_data in environment.items():
             structured_object_data = {k: v for k, v in object_data}
@@ -444,6 +437,21 @@ class JunOSDriver(NetworkDriver):
                 if pem_table[pem_name]['output'] is not None:
                     environment_data['power'][pem_name]['output'] = pem_table[pem_name]['output']
                 environment_data['power'][pem_name]['status'] = pem_table[pem_name]['status']
+
+        # Try to correct Power Supply information
+        pem_table = dict()
+        try:
+            power_supplies.get()
+        except RpcError as rpcerr:
+            # Not all platforms have support for this
+            pass
+        else:
+            # Format PEM information
+            for pem in power_supplies.items():
+                pem_name = pem[0].replace("PEM", "Power Supply")
+                pem_table[pem_name] = dict(pem[1])
+                environment_data['power'][pem_name]['capacity'] = pem_table[pem_name]['capacity']
+                environment_data['power'][pem_name]['output'] = pem_table[pem_name]['output']               
 
         for routing_engine_object, routing_engine_data in routing_engine.items():
             structured_routing_engine_data = {k: v for k, v in routing_engine_data}
