@@ -451,7 +451,7 @@ class JunOSDriver(NetworkDriver):
                 pem_name = pem[0].replace("PEM", "Power Supply")
                 pem_table[pem_name] = dict(pem[1])
                 environment_data['power'][pem_name]['capacity'] = pem_table[pem_name]['capacity']
-                environment_data['power'][pem_name]['output'] = pem_table[pem_name]['output']               
+                environment_data['power'][pem_name]['output'] = pem_table[pem_name]['output']
 
         for routing_engine_object, routing_engine_data in routing_engine.items():
             structured_routing_engine_data = {k: v for k, v in routing_engine_data}
