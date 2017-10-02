@@ -154,8 +154,8 @@ junos_pem_table:
 
 junos_pem_view:
   fields:
-    capacity: { pem-capacity-detail/capacity-actual: int }
-    output: { dc-output-detail/dc-power: int }
+    capacity: { pem-capacity-detail/capacity-actual: float }
+    output: { dc-output-detail/dc-power: float }
 
 junos_routing_engine_table:
   rpc: get-route-engine-information
