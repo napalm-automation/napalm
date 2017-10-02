@@ -442,7 +442,7 @@ class JunOSDriver(NetworkDriver):
         pem_table = dict()
         try:
             power_supplies.get()
-        except RpcError as rpcerr:
+        except RpcError:
             # Not all platforms have support for this
             pass
         else:
