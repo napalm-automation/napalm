@@ -333,8 +333,15 @@ class JunOSDriver(NetworkDriver):
         environment.get()
         routing_engine.get()
         temperature_thresholds.get()
+        power_supplies.get()
         environment_data = {}
         current_class = None
+
+        # Format PEM information
+        pem_table = dict()
+        for pem in power_supplies.items():
+            pem_name = pem[0].replace("PEM", "Power Supply")
+            pem_table[pem_name] = dict(pem[1])
 
         for sensor_object, object_data in environment.items():
             structured_object_data = {k: v for k, v in object_data}
@@ -355,9 +362,8 @@ class JunOSDriver(NetworkDriver):
                 except KeyError:
                     environment_data['power'] = {}
                     environment_data['power'][sensor_object] = {}
-
-                environment_data['power'][sensor_object]['capacity'] = -1.0
-                environment_data['power'][sensor_object]['output'] = -1.0
+                environment_data['power'][sensor_object]['capacity'] = pem_table[sensor_object]['capacity']
+                environment_data['power'][sensor_object]['output'] = pem_table[sensor_object]['output']
 
             if structured_object_data['class'] == 'Fans':
                 # Create a dict for the 'fans' key
