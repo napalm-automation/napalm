@@ -407,7 +407,7 @@ class JunOSDriver(NetworkDriver):
             # Not all platforms have support for this
             pass
         else:
-            # Format PEM information
+            # Format PEM information and correct capacity and output values
             for pem in power_supplies.items():
                 pem_name = pem[0].replace("PEM", "Power Supply")
                 pem_table[pem_name] = dict(pem[1])
