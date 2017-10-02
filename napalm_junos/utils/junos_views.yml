@@ -154,7 +154,6 @@ junos_pem_table:
 
 junos_pem_view:
   fields:
-    state: state
     capacity: { pem-capacity-detail/capacity-actual: int }
     output: { dc-output-detail/dc-power: int }
 
