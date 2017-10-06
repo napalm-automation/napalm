@@ -5,7 +5,7 @@
             "uptime": "1m30s",
             "version": "6.33.3 (stable)",
             "platform": "MikroTik",
-            "serial_number": "",
+            "serial-number": "",
             "board-name": "x86"
         }
     ]
