@@ -22,6 +22,17 @@
         "invalid": false,
         "mac-address": "0A:00:27:00:00:00",
         "address": "192.168.56.1"
+    },
+    {
+        "complete": false,
+        "address": "192.168.0.220",
+        "dynamic": true,
+        "invalid": false,
+        "disabled": false,
+        ".id": "*13",
+        "published": false,
+        "interface": "ether1",
+        "DHCP": false
     }
     ]
 }
