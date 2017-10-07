@@ -363,7 +363,10 @@ class IOSDriver(NetworkDriver):
             # merge
             cmd = 'show archive config incremental-diffs {} ignorecase'.format(new_file_full)
             diff = self.device.send_command_expect(cmd)
-            if '% Invalid' not in diff:
+            if 'error code 5' in diff or 'returned error 5' in diff:
+                diff = "You have encountered the obscure 'error 5' message. This generally " \
+                       "means you need to add an 'end' statement to the end of your merge changes."
+            elif '% Invalid' not in diff:
                 diff = self._normalize_merge_diff_incr(diff)
             else:
                 cmd = 'more {}'.format(new_file_full)
@@ -374,17 +377,13 @@ class IOSDriver(NetworkDriver):
 
     def _commit_hostname_handler(self, cmd):
         """Special handler for hostname change on commit operation."""
-        try:
-            current_prompt = self.device.find_prompt()
-            # Wait 12 seconds for output to come back (.2 * 60)
-            output = self.device.send_command_expect(cmd, delay_factor=.2, max_loops=60)
-        except IOError:
-            # Check if hostname change
-            if current_prompt == self.device.find_prompt():
-                raise
-            else:
-                self.device.set_base_prompt()
-                output = ''
+        current_prompt = self.device.find_prompt().strip()
+        terminating_char = current_prompt[-1]
+        pattern = r"[>#{}]\s*$".format(terminating_char)
+        # Look exclusively for trailing pattern that includes '#' and '>'
+        output = self.device.send_command_expect(cmd, expect_string=pattern)
+        # Reset base prompt in case hostname changed
+        self.device.set_base_prompt()
         return output
 
     def commit_config(self):
