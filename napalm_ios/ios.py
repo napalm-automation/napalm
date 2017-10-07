@@ -964,18 +964,26 @@ class IOSDriver(NetworkDriver):
         interface_dict = {}
         for line in output.splitlines():
 
-            interface_regex = r"^(\S+?)\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
-            if re.search(interface_regex, line):
-                interface_match = re.search(interface_regex, line)
-                interface = interface_match.groups()[0]
-                status = interface_match.groups()[1]
-                protocol = interface_match.groups()[2]
-
-                if 'admin' in status:
-                    is_enabled = False
-                else:
-                    is_enabled = True
-                is_up = bool('up' in protocol)
+            interface_regex_1 = r"^(\S+?)\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
+            interface_regex_2 = r"^(\S+)\s+is\s+(up|down)"
+            for pattern in (interface_regex_1, interface_regex_2):
+                interface_match = re.search(pattern, line)
+                if interface_match:
+                    interface = interface_match.group(1)
+                    status = interface_match.group(2)
+                    try:
+                        protocol = interface_match.group(3)
+                    except IndexError:
+                        protocol = ''
+                    if 'admin' in status.lower():
+                        is_enabled = False
+                    else:
+                        is_enabled = True
+                    if protocol:
+                        is_up = bool('up' in protocol)
+                    else:
+                        is_up = bool('up' in status)
+                    break
 
             mac_addr_regex = r"^\s+Hardware.+address\s+is\s+({})".format(MAC_REGEX)
             if re.search(mac_addr_regex, line):
