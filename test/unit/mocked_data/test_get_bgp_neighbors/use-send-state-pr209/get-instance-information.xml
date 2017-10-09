@@ -6,13 +6,13 @@
             <irib-name>inet.0</irib-name>
             <irib-active-count>12</irib-active-count>
             <irib-holddown-count>0</irib-holddown-count>
-            <irib-hidden-count>1</irib-hidden-count>
+            <irib-hidden-count>0</irib-hidden-count>
         </instance-rib>
         <instance-rib>
             <irib-name>:vxlan.inet.0</irib-name>
             <irib-active-count>10</irib-active-count>
             <irib-holddown-count>0</irib-holddown-count>
-            <irib-hidden-count>1</irib-hidden-count>
+            <irib-hidden-count>0</irib-hidden-count>
         </instance-rib>
         <instance-rib>
             <irib-name>inet6.0</irib-name>
@@ -22,85 +22,9 @@
         </instance-rib>
         <instance-rib>
             <irib-name>bgp.evpn.0</irib-name>
-            <irib-active-count>15</irib-active-count>
+            <irib-active-count>20</irib-active-count>
             <irib-holddown-count>0</irib-holddown-count>
             <irib-hidden-count>0</irib-hidden-count>
         </instance-rib>
-    </instance-core>
-    <instance-core>
-        <instance-name>__default_evpn__</instance-name>
-        <instance-type>non-forwarding evpn</instance-type>
-        <instance-rib>
-            <irib-name>__default_evpn__.evpn.0</irib-name>
-            <irib-active-count>5</irib-active-count>
-            <irib-holddown-count>0</irib-holddown-count>
-            <irib-hidden-count>0</irib-hidden-count>
-        </instance-rib>
-    </instance-core>
-    <instance-core>
-        <instance-name>__juniper_private1__</instance-name>
-        <instance-type>forwarding</instance-type>
-        <instance-rib>
-            <irib-name>__juniper_private1__.inet.0</irib-name>
-            <irib-active-count>4</irib-active-count>
-            <irib-holddown-count>0</irib-holddown-count>
-            <irib-hidden-count>0</irib-hidden-count>
-        </instance-rib>
-    </instance-core>
-    <instance-core>
-        <instance-name>__juniper_private2__</instance-name>
-        <instance-type>forwarding</instance-type>
-    </instance-core>
-    <instance-core>
-        <instance-name>__juniper_private3__</instance-name>
-        <instance-type>forwarding</instance-type>
-    </instance-core>
-    <instance-core>
-        <instance-name>__juniper_private4__</instance-name>
-        <instance-type>forwarding</instance-type>
-        <instance-rib>
-            <irib-name>__juniper_private4__.inet.0</irib-name>
-            <irib-active-count>2</irib-active-count>
-            <irib-holddown-count>0</irib-holddown-count>
-            <irib-hidden-count>0</irib-hidden-count>
-        </instance-rib>                 
-    </instance-core>
-    <instance-core>
-        <instance-name>__master.anon__</instance-name>
-        <instance-type>forwarding</instance-type>
-    </instance-core>
-    <instance-core>
-        <instance-name>cust0100</instance-name>
-        <instance-type>vrf</instance-type>
-        <instance-rib>
-            <irib-name>cust0100.inet.0</irib-name>
-            <irib-active-count>4</irib-active-count>
-            <irib-holddown-count>0</irib-holddown-count>
-            <irib-hidden-count>1</irib-hidden-count>
-        </instance-rib>
-    </instance-core>
-    <instance-core>
-        <instance-name>cust0200</instance-name>
-        <instance-type>vrf</instance-type>
-        <instance-rib>
-            <irib-name>cust0200.inet.0</irib-name>
-            <irib-active-count>4</irib-active-count>
-            <irib-holddown-count>0</irib-holddown-count>
-            <irib-hidden-count>1</irib-hidden-count>
-        </instance-rib>
-    </instance-core>
-    <instance-core>
-        <instance-name>default-switch</instance-name>
-        <instance-type>evpn</instance-type>
-        <instance-rib>
-            <irib-name>default-switch.evpn.0</irib-name>
-            <irib-active-count>13</irib-active-count>
-            <irib-holddown-count>0</irib-holddown-count>
-            <irib-hidden-count>0</irib-hidden-count>
-        </instance-rib>
-    </instance-core>
-    <instance-core>
-        <instance-name>mgmt_junos</instance-name>
-        <instance-type>forwarding</instance-type>
     </instance-core>
 </instance-information>
