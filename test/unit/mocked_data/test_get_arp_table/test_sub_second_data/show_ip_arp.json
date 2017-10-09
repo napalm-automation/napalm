@@ -1,0 +1,18 @@
+{
+    "TABLE_vrf": {
+        "ROW_vrf": {
+            "vrf-name-out": "default",
+            "TABLE_adj": {
+                "ROW_adj": [
+                    {
+                        "ip-addr-out": "10.122.100.3",
+                        "mac": "188b.9d0b.b33f",
+                        "time-stamp": "0.411797",
+                        "intf-out": "Vlan100"
+                    }
+                ]
+            },
+            "cnt-total": "2438"
+        }
+    }
+}
