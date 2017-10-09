@@ -860,7 +860,7 @@ class IOSDriver(NetworkDriver):
         # default values.
         vendor = u'Cisco'
         uptime = -1
-        serial_number, fqdn, os_version, hostname, domain_name = (u'Unknown',)*5
+        serial_number, fqdn, os_version, hostname, domain_name = ('Unknown',) * 5
 
         # obtain output from device
         show_ver = self._send_command('show version')
