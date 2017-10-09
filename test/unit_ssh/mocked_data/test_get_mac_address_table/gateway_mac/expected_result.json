@@ -1,0 +1,11 @@
+[
+    {
+        "interface": "sup-eth1(R)",
+        "moves": -1,
+        "static": true,
+        "last_move": -1.0,
+        "vlan": 0,
+        "active": false,
+        "mac": "2C:C2:60:5E:5D:E8"
+    }
+]

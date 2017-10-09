@@ -1263,9 +1263,10 @@ class NXOSSSHDriver(NetworkDriver):
         """
 
         #  The '*' is stripped out later
-        RE_MACTABLE_FORMAT1 = r"^\s+{}\s+{}\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+".format(
-                                                                           VLAN_REGEX,
-                                                                           MAC_REGEX)  # 7 fields
+        RE_MACTABLE_FORMAT1 = r"^\s+{}\s+{}\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+".format(VLAN_REGEX,
+                                                                                  MAC_REGEX)
+        RE_MACTABLE_FORMAT2 = r"^\s+{}\s+{}\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+".format('-',
+                                                                                  MAC_REGEX)
 
         mac_address_table = []
         command = 'show mac address-table'
@@ -1279,6 +1280,8 @@ class NXOSSSHDriver(NetworkDriver):
             if mac_type.lower() in ['self', 'static', 'system']:
                 static = True
                 if vlan.lower() == 'all':
+                    vlan = 0
+                elif vlan == '-':
                     vlan = 0
                 if interface.lower() == 'cpu' or re.search(r'router', interface.lower()) or \
                         re.search(r'switch', interface.lower()):
@@ -1302,8 +1305,8 @@ class NXOSSSHDriver(NetworkDriver):
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
-        # Strip any leading astericks
-        output = re.sub(r"^\*", "", output, flags=re.M)
+        # Strip any leading astericks or G character
+        output = re.sub(r"^[\*G]", "", output, flags=re.M)
 
         for line in output.splitlines():
 
@@ -1321,14 +1324,13 @@ class NXOSSSHDriver(NetworkDriver):
                 continue
             elif re.search('^\s*$', line):
                 continue
-            # Format1
-            elif re.search(RE_MACTABLE_FORMAT1, line):
-                if len(line.split()) == 7:
-                    vlan, mac, mac_type, _, _, _, interface = line.split()
-                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-                else:
-                    raise ValueError("Unexpected output from: {}".format(line.split()))
 
+            for pattern in [RE_MACTABLE_FORMAT1, RE_MACTABLE_FORMAT2]:
+                if re.search(pattern, line):
+                    if len(line.split()) == 7:
+                        vlan, mac, mac_type, _, _, _, interface = line.split()
+                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                        break
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
