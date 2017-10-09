@@ -1,4 +1,4 @@
-<bgp-information">
+<bgp-information>
     <bgp-peer style="detail">
         <peer-address>10.92.51.2+179</peer-address>
         <peer-as>65001</peer-as>
