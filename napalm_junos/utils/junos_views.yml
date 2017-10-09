@@ -242,7 +242,7 @@ junos_bgp_config_view:
     apply_groups: {apply-groups: unicode}
     local_address: {local-address: unicode}
     multihop_ttl: {multihop/ttl: int}
-    local_as: {local-as/as-number: int}
+    local_as: local-as | local-as/as-number
     remote_as: {peer-as: int}
     multipath: multipath
     remove_private_as: remove-private
