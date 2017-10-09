@@ -270,7 +270,7 @@ junos_bgp_config_view:
     local_address: {local-address: unicode}
     multihop: multihop
     multihop_ttl: {multihop/ttl: int}
-    local_as: {local-as/as-number: int}
+    local_as: local-as | local-as/as-number
     remote_as: {peer-as: int}
     cluster: cluster
     multipath: multipath
