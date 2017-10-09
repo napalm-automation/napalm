@@ -606,12 +606,24 @@ class NXOSDriver(NetworkDriver):
             raw_mac = arp_table_entry.get('mac')
             age = arp_table_entry.get('time-stamp')
             if age == '-':
-                age_sec = float(-1)
+                age_sec = -1.0
+            elif ':' not in age:
+                # Cisco sometimes returns a sub second arp time 0.411797
+                try:
+                    age_sec = float(age)
+                except ValueError:
+                    age_sec = -1.0
             else:
-                age_time = ''.join(age.split(':'))
-                age_sec = float(
-                    3600 * int(age_time[:2]) + 60 * int(age_time[2:4]) + int(age_time[4:])
-                )
+                fields = age.split(':')
+                if len(fields) == 3:
+                    try:
+                        fields = [float(x) for x in fields]
+                        hours, minutes, seconds = fields
+                        age_sec = 3600 * hours + 60 * minutes + seconds
+                    except ValueError:
+                        age_sec = -1.0
+            age_sec = round(age_sec, 1)
+
             interface = py23_compat.text_type(arp_table_entry.get('intf-out'))
             arp_table.append({
                 'interface': interface,
