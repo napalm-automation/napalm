@@ -1,0 +1,10 @@
+{
+    "hostname": "nxos1",
+    "fqdn": "",
+    "model": "NX-OSv", 
+    "uptime": 2030983,
+    "vendor": "Cisco", 
+    "os_version": "7.3(1)D1(1)", 
+    "serial_number": "TM6012EC74B", 
+    "interface_list": ["mgmt0", "Eth2/1", "Eth2/2", "Eth2/3", "Eth2/4", "Eth2/5", "Eth2/6", "Eth2/7", "Eth2/8", "Eth2/9", "Eth2/10", "Eth2/11", "Eth2/12", "Eth2/13", "Eth2/14", "Eth2/15", "Eth2/16", "Eth2/17", "Eth2/18", "Eth2/19", "Eth2/20", "Eth2/21", "Eth2/22", "Eth2/23", "Eth2/24", "Eth2/25", "Eth2/26", "Eth2/27", "Eth2/28", "Eth2/29", "Eth2/30", "Eth2/31", "Eth2/32", "Eth2/33", "Eth2/34", "Eth2/35", "Eth2/36", "Eth2/37", "Eth2/38", "Eth2/39", "Eth2/40", "Eth2/41", "Eth2/42", "Eth2/43", "Eth2/44", "Eth2/45", "Eth2/46", "Eth2/47", "Eth2/48", "Eth3/1", "Eth3/2", "Eth3/3", "Eth3/4", "Eth3/5", "Eth3/6", "Eth3/7", "Eth3/8", "Eth3/9", "Eth3/10", "Eth3/11", "Eth3/12", "Eth3/13", "Eth3/14", "Eth3/15", "Eth3/16", "Eth3/17", "Eth3/18", "Eth3/19", "Eth3/20", "Eth3/21", "Eth3/22", "Eth3/23", "Eth3/24", "Eth3/25", "Eth3/26", "Eth3/27", "Eth3/28", "Eth3/29", "Eth3/30", "Eth3/31", "Eth3/32", "Eth3/33", "Eth3/34", "Eth3/35", "Eth3/36", "Eth3/37", "Eth3/38", "Eth3/39", "Eth3/40", "Eth3/41", "Eth3/42", "Eth3/43", "Eth3/44", "Eth3/45", "Eth3/46", "Eth3/47", "Eth3/48", "Eth4/1", "Eth4/2", "Eth4/3", "Eth4/4", "Eth4/5", "Eth4/6", "Eth4/7", "Eth4/8", "Eth4/9", "Eth4/10", "Eth4/11", "Eth4/12", "Eth4/13", "Eth4/14", "Eth4/15", "Eth4/16", "Eth4/17", "Eth4/18", "Eth4/19", "Eth4/20", "Eth4/21", "Eth4/22", "Eth4/23", "Eth4/24", "Eth4/25", "Eth4/26", "Eth4/27", "Eth4/28", "Eth4/29", "Eth4/30", "Eth4/31", "Eth4/32", "Eth4/33", "Eth4/34", "Eth4/35", "Eth4/36", "Eth4/37", "Eth4/38", "Eth4/39", "Eth4/40", "Eth4/41", "Eth4/42", "Eth4/43", "Eth4/44", "Eth4/45", "Eth4/46", "Eth4/47", "Eth4/48", "Lo55", "Vlan1"]
+}
