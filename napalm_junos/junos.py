@@ -982,6 +982,9 @@ class JunOSDriver(NetworkDriver):
                         bgp_peer_details['local_as'])
                     bgp_peer_details['remote_as'] = napalm_base.helpers.as_number(
                         bgp_peer_details['remote_as'])
+                    if key == 'cluster':
+                        bgp_peer_details['route_reflector_client'] = True
+
                 if 'cluster' in bgp_config[bgp_group_name].keys():
                     bgp_peer_details['route_reflector_client'] = True
                 prefix_limit_fields = {}
