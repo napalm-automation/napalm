@@ -467,12 +467,19 @@ class JunOSDriver(NetworkDriver):
         if not neighbor['is_up']:
             return data
         elif isinstance(neighbor['tables'], list):
+            if isinstance(neighbor['sent_prefixes'], int):
+                # We expect sent_prefixes to be a list, but sometimes it
+                # is of type int. Therefore convert attribute to list
+                neighbor['sent_prefixes'] = [neighbor['sent_prefixes']]
             for idx, table in enumerate(neighbor['tables']):
                 family = self._get_address_family(table)
                 data[family] = {}
                 data[family]['received_prefixes'] = neighbor['received_prefixes'][idx]
                 data[family]['accepted_prefixes'] = neighbor['accepted_prefixes'][idx]
-                data[family]['sent_prefixes'] = neighbor['sent_prefixes'][idx]
+                if 'in sync' in neighbor['send-state'][idx]:
+                    data[family]['sent_prefixes'] = neighbor['sent_prefixes'].pop(0)
+                else:
+                    data[family]['sent_prefixes'] = 0
         else:
             family = self._get_address_family(neighbor['tables'])
             data[family] = {}
