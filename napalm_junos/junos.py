@@ -885,7 +885,6 @@ class JunOSDriver(NetworkDriver):
             'type': py23_compat.text_type,
             'apply_groups': list,
             'remove_private_as': bool,
-            'cluster': py23_compat.text_type,
             'multipath': bool,
             'multihop_ttl': int
         }
@@ -983,7 +982,7 @@ class JunOSDriver(NetworkDriver):
                         bgp_peer_details['local_as'])
                     bgp_peer_details['remote_as'] = napalm_base.helpers.as_number(
                         bgp_peer_details['remote_as'])
-                if bgp_config[bgp_group_name]['cluster']:
+                if 'cluster' in bgp_config[bgp_group_name].keys():
                     bgp_peer_details['route_reflector_client'] = True
                 prefix_limit_fields = {}
                 for elem in bgp_group_details:
@@ -998,6 +997,10 @@ class JunOSDriver(NetworkDriver):
                 bgp_config[bgp_group_name]['neighbors'][bgp_peer_address] = bgp_peer_details
                 if neighbor and bgp_peer_address == neighbor_ip:
                     break  # found the desired neighbor
+
+        if 'cluster' in bgp_config[bgp_group_name].keys():
+            # we do not want cluster in the output
+            del bgp_config[bgp_group_name]['cluster']
 
         return bgp_config
 
