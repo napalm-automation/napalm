@@ -1,6 +1,6 @@
 {
     "hostname": "nxos1",
-    "fqdn": "Unknown",
+    "fqdn": "",
     "model": "NX-OSv", 
     "uptime": 2030983,
     "vendor": "Cisco", 

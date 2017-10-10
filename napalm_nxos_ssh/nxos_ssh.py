@@ -758,7 +758,7 @@ class NXOSSSHDriver(NetworkDriver):
         # default values.
         vendor = u'Cisco'
         uptime = -1
-        serial_number, fqdn, os_version, hostname, domain_name = ('Unknown',) * 5
+        serial_number, fqdn, os_version, hostname, domain_name = ('',) * 5
 
         # obtain output from device
         show_ver = self.device.send_command('show version')
@@ -795,7 +795,7 @@ class NXOSSSHDriver(NetworkDriver):
                 break
         if hostname.count(".") >= 2:
             fqdn = hostname
-        elif domain_name != 'Unknown':
+        elif domain_name:
             fqdn = '{}.{}'.format(hostname, domain_name)
 
         # interface_list filter
