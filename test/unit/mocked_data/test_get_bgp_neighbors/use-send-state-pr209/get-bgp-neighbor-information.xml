@@ -1,8 +1,8 @@
 <bgp-information>
     <bgp-peer style="detail">
-        <peer-address>10.92.51.2+56664</peer-address>
+        <peer-address>10.92.51.2+179</peer-address>
         <peer-as>65001</peer-as>
-        <local-address>10.92.51.1+179</local-address>
+        <local-address>10.92.51.1+49867</local-address>
         <local-as>65000</local-as>
         <description>Leaf1_Underlay</description>
         <peer-group>underlay</peer-group>
@@ -13,12 +13,12 @@
         <peer-flags>Sync</peer-flags>
         <last-state>OpenConfirm</last-state>
         <last-event>RecvKeepAlive</last-event>
-        <last-error>Open Message Error</last-error>
+        <last-error>None</last-error>
         <bgp-option-information xmlns="http://xml.juniper.net/junos/17.3R1/junos-routing">
             <export-policy>
                 send-direct
             </export-policy>
-            <bgp-options>Multihop Preference AddressFamily PeerAS Multipath Refresh</bgp-options>
+            <bgp-options>Multihop Preference Ttl AddressFamily PeerAS Multipath Refresh</bgp-options>
             <bgp-options2>AdvertisePeerAs AcceptRemoteNextHop PeerSpecficLoopsAllowed</bgp-options2>
             <bgp-options-extended></bgp-options-extended>
             <address-families>inet-unicast</address-families>
@@ -26,18 +26,13 @@
             <preference>170</preference>
         </bgp-option-information>
         <flap-count>0</flap-count>
-        <bgp-error>
-            <name>Open Message Error</name>
-            <send-count>8</send-count>
-            <receive-count>0</receive-count>
-        </bgp-error>
         <peer-id>10.92.99.91</peer-id>
         <local-id>10.91.1.1</local-id>
         <active-holdtime>90</active-holdtime>
         <keepalive-interval>30</keepalive-interval>
-        <group-index>2</group-index>
+        <group-index>0</group-index>
         <peer-index>1</peer-index>
-        <snmp-index>6</snmp-index>
+        <snmp-index>0</snmp-index>
         <bgp-peer-iosession>
             <iosession-thread-name>bgpio-0</iosession-thread-name>
             <iosession-state>Enabled</iosession-state>
@@ -65,23 +60,23 @@
             <rib-bit>20000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
             <send-state>in sync</send-state>
-            <active-prefix-count>2</active-prefix-count>
-            <received-prefix-count>4</received-prefix-count>
-            <accepted-prefix-count>4</accepted-prefix-count>
+            <active-prefix-count>1</active-prefix-count>
+            <received-prefix-count>3</received-prefix-count>
+            <accepted-prefix-count>3</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
-            <advertised-prefix-count>5</advertised-prefix-count>
+            <advertised-prefix-count>6</advertised-prefix-count>
         </bgp-rib>
-        <last-received>1577231</last-received>
-        <last-sent>8818</last-sent>
-        <last-checked>1577231</last-checked>
-        <input-messages>328</input-messages>
+        <last-received>500723</last-received>
+        <last-sent>64120</last-sent>
+        <last-checked>500723</last-checked>
+        <input-messages>2370</input-messages>
         <input-updates>2</input-updates>
         <input-refreshes>0</input-refreshes>
-        <input-octets>6322</input-octets>
-        <output-messages>327</output-messages>
-        <output-updates>2</output-updates>
+        <input-octets>45072</input-octets>
+        <output-messages>2358</output-messages>
+        <output-updates>3</output-updates>
         <output-refreshes>0</output-refreshes>
-        <output-octets>6292</output-octets>
+        <output-octets>44933</output-octets>
         <bgp-output-queue>
             <number>1</number>
             <count>0</count>
@@ -90,9 +85,9 @@
         </bgp-output-queue>
     </bgp-peer>
     <bgp-peer style="detail">
-        <peer-address>10.92.52.2+58881</peer-address>
+        <peer-address>10.92.52.2+179</peer-address>
         <peer-as>65002</peer-as>
-        <local-address>10.92.52.1+179</local-address>
+        <local-address>10.92.52.1+62210</local-address>
         <local-as>65000</local-as>
         <description>Leaf2_Underlay</description>
         <peer-group>underlay</peer-group>
@@ -103,12 +98,12 @@
         <peer-flags>Sync</peer-flags>
         <last-state>OpenConfirm</last-state>
         <last-event>RecvKeepAlive</last-event>
-        <last-error>Cease</last-error>
+        <last-error>Hold Timer Expired Error</last-error>
         <bgp-option-information xmlns="http://xml.juniper.net/junos/17.3R1/junos-routing">
             <export-policy>
                 send-direct
             </export-policy>
-            <bgp-options>Multihop Preference AddressFamily PeerAS Multipath Refresh</bgp-options>
+            <bgp-options>Multihop Preference Ttl AddressFamily PeerAS Multipath Refresh</bgp-options>
             <bgp-options2>AdvertisePeerAs AcceptRemoteNextHop PeerSpecficLoopsAllowed</bgp-options2>
             <bgp-options-extended></bgp-options-extended>
             <address-families>inet-unicast</address-families>
@@ -116,25 +111,25 @@
             <preference>170</preference>
         </bgp-option-information>
         <flap-count>1</flap-count>
-        <last-flap-event>Stop</last-flap-event>
+        <last-flap-event>HoldTime</last-flap-event>
         <bgp-error>
-            <name>Open Message Error</name>
+            <name>Hold Timer Expired Error</name>
             <send-count>1</send-count>
             <receive-count>0</receive-count>
         </bgp-error>
         <bgp-error>
             <name>Cease</name>
-            <send-count>1</send-count>
-            <receive-count>0</receive-count>
+            <send-count>0</send-count>
+            <receive-count>2</receive-count>
         </bgp-error>
         <peer-id>10.92.99.92</peer-id>
         <local-id>10.91.1.1</local-id>
         <active-holdtime>90</active-holdtime>
         <keepalive-interval>30</keepalive-interval>
-        <group-index>2</group-index>
+        <group-index>0</group-index>
         <peer-index>0</peer-index>
-        <snmp-index>7</snmp-index>
-        <bgp-peer-iosession>
+        <snmp-index>1</snmp-index>
+        <bgp-peer-iosession>            
             <iosession-thread-name>bgpio-0</iosession-thread-name>
             <iosession-state>Enabled</iosession-state>
         </bgp-peer-iosession>
@@ -161,23 +156,23 @@
             <rib-bit>20000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
             <send-state>in sync</send-state>
-            <active-prefix-count>1</active-prefix-count>
-            <received-prefix-count>3</received-prefix-count>
-            <accepted-prefix-count>3</accepted-prefix-count>
+            <active-prefix-count>2</active-prefix-count>
+            <received-prefix-count>4</received-prefix-count>
+            <accepted-prefix-count>4</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
-            <advertised-prefix-count>6</advertised-prefix-count>
+            <advertised-prefix-count>5</advertised-prefix-count>
         </bgp-rib>
-        <last-received>1577231</last-received>
-        <last-sent>8817</last-sent>
-        <last-checked>1577231</last-checked>
-        <input-messages>335</input-messages>
-        <input-updates>2</input-updates>
+        <last-received>500723</last-received>
+        <last-sent>64191</last-sent>
+        <last-checked>500723</last-checked>
+        <input-messages>11916</input-messages>
+        <input-updates>11</input-updates>
         <input-refreshes>0</input-refreshes>
-        <input-octets>6451</input-octets>
-        <output-messages>333</output-messages>
-        <output-updates>2</output-updates>
+        <input-octets>226684</input-octets>
+        <output-messages>11848</output-messages>
+        <output-updates>11</output-updates>
         <output-refreshes>0</output-refreshes>
-        <output-octets>6410</output-octets>
+        <output-octets>225455</output-octets>
         <bgp-output-queue>
             <number>1</number>
             <count>0</count>
@@ -188,20 +183,21 @@
     <bgp-peer style="detail">
         <peer-address>10.92.99.91+179</peer-address>
         <peer-as>65005</peer-as>
-        <local-address>10.91.1.1+53524</local-address>
+        <local-address>10.91.1.1+60103</local-address>
         <local-as>65005</local-as>
         <description>Leaf1_Overlay</description>
         <peer-group>evpn</peer-group>
         <peer-cfg-rti>master</peer-cfg-rti>
         <peer-fwd-rti>master</peer-fwd-rti>
         <peer-type>Internal</peer-type>
+        <route-reflector-client/>
         <peer-state>Established</peer-state>
         <peer-flags>Sync</peer-flags>
         <last-state>OpenConfirm</last-state>
         <last-event>RecvKeepAlive</last-event>
-        <last-error>None</last-error>
+        <last-error>Hold Timer Expired Error</last-error>
         <bgp-option-information xmlns="http://xml.juniper.net/junos/17.3R1/junos-routing">
-            <bgp-options>Multihop Preference LocalAddress AddressFamily Multipath LocalAS Rib-group Refresh</bgp-options>
+            <bgp-options>Multihop Preference LocalAddress Ttl Cluster AddressFamily Multipath LocalAS Rib-group Refresh</bgp-options>
             <bgp-options2></bgp-options2>
             <bgp-options-extended></bgp-options-extended>
             <address-families>evpn</address-families>
@@ -211,14 +207,20 @@
             <local-as>65005</local-as>
             <local-system-as>65000</local-system-as>
         </bgp-option-information>
-        <flap-count>0</flap-count>
+        <flap-count>2</flap-count>
+        <last-flap-event>HoldTime</last-flap-event>
+        <bgp-error>
+            <name>Hold Timer Expired Error</name>
+            <send-count>2</send-count>
+            <receive-count>0</receive-count>
+        </bgp-error>
         <peer-id>10.92.99.91</peer-id>
         <local-id>10.91.1.1</local-id>
         <active-holdtime>90</active-holdtime>
         <keepalive-interval>30</keepalive-interval>
-        <group-index>0</group-index>
+        <group-index>1</group-index>
         <peer-index>1</peer-index>
-        <snmp-index>8</snmp-index>
+        <snmp-index>2</snmp-index>
         <bgp-peer-iosession>
             <iosession-thread-name>bgpio-0</iosession-thread-name>
             <iosession-state>Enabled</iosession-state>
@@ -242,65 +244,57 @@
         <peer-4byte-as-capability-advertised>65005</peer-4byte-as-capability-advertised>
         <peer-addpath-not-supported/>
         <bgp-rib style="detail">
-            <name>__default_evpn__.evpn.0</name>
+            <name>bgp.evpn.0</name>
             <rib-bit>30000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
             <vpn-rib-state>VPN restart is complete</vpn-rib-state>
             <send-state>in sync</send-state>
-            <active-prefix-count>0</active-prefix-count>
-            <received-prefix-count>0</received-prefix-count>
-            <accepted-prefix-count>0</accepted-prefix-count>
+            <active-prefix-count>5</active-prefix-count>
+            <received-prefix-count>5</received-prefix-count>
+            <accepted-prefix-count>5</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
-            <advertised-prefix-count>2</advertised-prefix-count>
-        </bgp-rib>
-        <bgp-rib style="detail">
-            <name>bgp.evpn.0</name>
-            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
-            <vpn-rib-state>VPN restart is complete</vpn-rib-state>
-            <send-state>not advertising</send-state>
-            <active-prefix-count>1</active-prefix-count>
-            <received-prefix-count>1</received-prefix-count>
-            <accepted-prefix-count>1</accepted-prefix-count>
-            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>15</advertised-prefix-count>
         </bgp-rib>
         <bgp-rib style="detail">
             <name>default-switch.evpn.0</name>
-            <rib-bit>90000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
             <vpn-rib-state>VPN restart is complete</vpn-rib-state>
-            <send-state>in sync</send-state>
-            <active-prefix-count>1</active-prefix-count>
-            <received-prefix-count>1</received-prefix-count>
-            <accepted-prefix-count>1</accepted-prefix-count>
+            <send-state>not advertising</send-state>
+            <active-prefix-count>5</active-prefix-count>
+            <received-prefix-count>5</received-prefix-count>
+            <accepted-prefix-count>5</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
-            <advertised-prefix-count>10</advertised-prefix-count>
         </bgp-rib>
-        <last-received>1577231</last-received>
-        <last-sent>8813</last-sent>
-        <last-checked>1577231</last-checked>
-        <input-messages>328</input-messages>
-        <input-updates>4</input-updates>
+        <bgp-rib style="detail">
+            <name>__default_evpn__.evpn.0</name>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <vpn-rib-state>VPN restart is complete</vpn-rib-state>
+            <send-state>not advertising</send-state>
+            <active-prefix-count>5</active-prefix-count>
+            <received-prefix-count>5</received-prefix-count>
+            <accepted-prefix-count>5</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+        </bgp-rib>
+        <last-received>500723</last-received>
+        <last-sent>197</last-sent>
+        <last-checked>500723</last-checked>
+        <input-messages>2801</input-messages>
+        <input-updates>433</input-updates>
         <input-refreshes>0</input-refreshes>
-        <input-octets>6455</input-octets>
-        <output-messages>332</output-messages>
-        <output-updates>7</output-updates>
+        <input-octets>81631</input-octets>
+        <output-messages>2576</output-messages>
+        <output-updates>221</output-updates>
         <output-refreshes>0</output-refreshes>
-        <output-octets>7105</output-octets>
+        <output-octets>65340</output-octets>
         <bgp-output-queue>
             <number>2</number>
             <count>0</count>
-            <table-name>__default_evpn__.evpn.0</table-name>
-            <rib-adv-nlri>evpn</rib-adv-nlri>
-        </bgp-output-queue>
-        <bgp-output-queue>
-            <number>8</number>
-            <count>0</count>
-            <table-name>default-switch.evpn.0</table-name>
+            <table-name>bgp.evpn.0</table-name>
             <rib-adv-nlri>evpn</rib-adv-nlri>
         </bgp-output-queue>
     </bgp-peer>
     <bgp-peer style="detail">
-        <peer-address>10.92.99.92+51989</peer-address>
+        <peer-address>10.92.99.92+57881</peer-address>
         <peer-as>65005</peer-as>
         <local-address>10.91.1.1+179</local-address>
         <local-as>65005</local-as>
@@ -309,13 +303,14 @@
         <peer-cfg-rti>master</peer-cfg-rti>
         <peer-fwd-rti>master</peer-fwd-rti>
         <peer-type>Internal</peer-type>
+        <route-reflector-client/>
         <peer-state>Established</peer-state>
         <peer-flags>Sync</peer-flags>
         <last-state>OpenConfirm</last-state>
         <last-event>RecvKeepAlive</last-event>
-        <last-error>Cease</last-error>
+        <last-error>Hold Timer Expired Error</last-error>
         <bgp-option-information xmlns="http://xml.juniper.net/junos/17.3R1/junos-routing">
-            <bgp-options>Multihop Preference LocalAddress AddressFamily Multipath LocalAS Rib-group Refresh</bgp-options>
+            <bgp-options>Multihop Preference LocalAddress Ttl Cluster AddressFamily Multipath LocalAS Rib-group Refresh</bgp-options>
             <bgp-options2></bgp-options2>
             <bgp-options-extended></bgp-options-extended>
             <address-families>evpn</address-families>
@@ -326,19 +321,19 @@
             <local-system-as>65000</local-system-as>
         </bgp-option-information>
         <flap-count>1</flap-count>
-        <last-flap-event>Stop</last-flap-event>
-        <bgp-error>                     
-            <name>Cease</name>
+        <last-flap-event>HoldTime</last-flap-event>
+        <bgp-error>
+            <name>Hold Timer Expired Error</name>
             <send-count>1</send-count>
             <receive-count>0</receive-count>
         </bgp-error>
-        <peer-id>10.92.99.92</peer-id>
+        <peer-id>10.92.99.92</peer-id>  
         <local-id>10.91.1.1</local-id>
         <active-holdtime>90</active-holdtime>
         <keepalive-interval>30</keepalive-interval>
-        <group-index>0</group-index>
+        <group-index>1</group-index>
         <peer-index>0</peer-index>
-        <snmp-index>9</snmp-index>
+        <snmp-index>3</snmp-index>
         <bgp-peer-iosession>
             <iosession-thread-name>bgpio-0</iosession-thread-name>
             <iosession-state>Enabled</iosession-state>
@@ -362,60 +357,52 @@
         <peer-4byte-as-capability-advertised>65005</peer-4byte-as-capability-advertised>
         <peer-addpath-not-supported/>
         <bgp-rib style="detail">
-            <name>__default_evpn__.evpn.0</name>
+            <name>bgp.evpn.0</name>
             <rib-bit>30000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
             <vpn-rib-state>VPN restart is complete</vpn-rib-state>
             <send-state>in sync</send-state>
-            <active-prefix-count>0</active-prefix-count>
-            <received-prefix-count>0</received-prefix-count>
-            <accepted-prefix-count>0</accepted-prefix-count>
+            <active-prefix-count>3</active-prefix-count>
+            <received-prefix-count>3</received-prefix-count>
+            <accepted-prefix-count>3</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
-            <advertised-prefix-count>2</advertised-prefix-count>
-        </bgp-rib>
-        <bgp-rib style="detail">
-            <name>bgp.evpn.0</name>
-            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
-            <vpn-rib-state>VPN restart is complete</vpn-rib-state>
-            <send-state>not advertising</send-state>
-            <active-prefix-count>2</active-prefix-count>
-            <received-prefix-count>2</received-prefix-count>
-            <accepted-prefix-count>2</accepted-prefix-count>
-            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>17</advertised-prefix-count>
         </bgp-rib>
         <bgp-rib style="detail">
             <name>default-switch.evpn.0</name>
-            <rib-bit>90000</rib-bit>
             <bgp-rib-state>BGP restart is complete</bgp-rib-state>
             <vpn-rib-state>VPN restart is complete</vpn-rib-state>
-            <send-state>in sync</send-state>
-            <active-prefix-count>2</active-prefix-count>
-            <received-prefix-count>2</received-prefix-count>
-            <accepted-prefix-count>2</accepted-prefix-count>
+            <send-state>not advertising</send-state>
+            <active-prefix-count>3</active-prefix-count>
+            <received-prefix-count>3</received-prefix-count>
+            <accepted-prefix-count>3</accepted-prefix-count>
             <suppressed-prefix-count>0</suppressed-prefix-count>
-            <advertised-prefix-count>10</advertised-prefix-count>
         </bgp-rib>
-        <last-received>1577231</last-received>
-        <last-sent>8966</last-sent>
-        <last-checked>1577231</last-checked>
-        <input-messages>335</input-messages>
-        <input-updates>3</input-updates>
+        <bgp-rib style="detail">
+            <name>__default_evpn__.evpn.0</name>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <vpn-rib-state>VPN restart is complete</vpn-rib-state>
+            <send-state>not advertising</send-state>
+            <active-prefix-count>3</active-prefix-count>
+            <received-prefix-count>3</received-prefix-count>
+            <accepted-prefix-count>3</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+        </bgp-rib>
+        <last-received>500723</last-received>
+        <last-sent>163</last-sent>
+        <last-checked>500723</last-checked>
+        <input-messages>12158</input-messages>
+        <input-updates>252</input-updates>
         <input-refreshes>0</input-refreshes>
-        <input-octets>6582</input-octets>
-        <output-messages>340</output-messages>
-        <output-updates>10</output-updates>
+        <input-octets>247532</input-octets>
+        <output-messages>12388</output-messages>
+        <output-updates>551</output-updates>
         <output-refreshes>0</output-refreshes>
-        <output-octets>7415</output-octets>
+        <output-octets>277428</output-octets>
         <bgp-output-queue>
             <number>2</number>
             <count>0</count>
-            <table-name>__default_evpn__.evpn.0</table-name>
-            <rib-adv-nlri>evpn</rib-adv-nlri>
-        </bgp-output-queue>
-        <bgp-output-queue>
-            <number>8</number>
-            <count>0</count>
-            <table-name>default-switch.evpn.0</table-name>
+            <table-name>bgp.evpn.0</table-name>
             <rib-adv-nlri>evpn</rib-adv-nlri>
         </bgp-output-queue>
     </bgp-peer>
