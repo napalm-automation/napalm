@@ -9,19 +9,13 @@
             <irib-hidden-count>0</irib-hidden-count>
         </instance-rib>
         <instance-rib>
-            <irib-name>:vxlan.inet.0</irib-name>
-            <irib-active-count>10</irib-active-count>
-            <irib-holddown-count>0</irib-holddown-count>
-            <irib-hidden-count>0</irib-hidden-count>
-        </instance-rib>
-        <instance-rib>
             <irib-name>inet6.0</irib-name>
             <irib-active-count>2</irib-active-count>
             <irib-holddown-count>0</irib-holddown-count>
             <irib-hidden-count>0</irib-hidden-count>
         </instance-rib>
         <instance-rib>
-            <irib-name>bgp.evpn.0</irib-name>
+            <irib-name>evpn.0</irib-name>
             <irib-active-count>20</irib-active-count>
             <irib-holddown-count>0</irib-holddown-count>
             <irib-hidden-count>0</irib-hidden-count>

@@ -46,11 +46,11 @@
     <bgp-peer style="terse" heading="Peer                     AS      InPkt     OutPkt    OutQ   Flaps Last Up/Dwn State|#Active/Received/Accepted/Damped...">
         <peer-address>10.92.51.2</peer-address>
         <peer-as>65001</peer-as>
-        <input-messages>80</input-messages>
-        <output-messages>80</output-messages>
+        <input-messages>2271</input-messages>
+        <output-messages>2259</output-messages>
         <route-queue-count>0</route-queue-count>
         <flap-count>0</flap-count>
-        <elapsed-time seconds="2067">34:27</elapsed-time>
+        <elapsed-time seconds="61468">17:04:28</elapsed-time>
         <description>Leaf1_Underlay</description>
         <peer-state format="Establ">Established</peer-state>
         <bgp-rib style="terse">
@@ -64,11 +64,11 @@
     <bgp-peer style="terse">
         <peer-address>10.92.52.2</peer-address>
         <peer-as>65002</peer-as>        
-        <input-messages>9626</input-messages>
-        <output-messages>9569</output-messages>
+        <input-messages>11815</input-messages>
+        <output-messages>11748</output-messages>
         <route-queue-count>0</route-queue-count>
         <flap-count>1</flap-count>
-        <elapsed-time seconds="260619">3d 0:23:39</elapsed-time>
+        <elapsed-time seconds="320020">3d 16:53:40</elapsed-time>
         <description>Leaf2_Underlay</description>
         <peer-state format="Establ">Established</peer-state>
         <bgp-rib style="terse">
@@ -82,11 +82,11 @@
     <bgp-peer style="terse">
         <peer-address>10.92.99.91</peer-address>
         <peer-as>65005</peer-as>
-        <input-messages>96</input-messages>
-        <output-messages>90</output-messages>
+        <input-messages>2684</input-messages>
+        <output-messages>2467</output-messages>
         <route-queue-count>0</route-queue-count>
         <flap-count>2</flap-count>
-        <elapsed-time seconds="2057">34:17</elapsed-time>
+        <elapsed-time seconds="61458">17:04:18</elapsed-time>
         <description>Leaf1_Overlay</description>
         <peer-state format="Establ">Established</peer-state>
         <bgp-rib style="terse">
@@ -114,11 +114,11 @@
     <bgp-peer style="terse">
         <peer-address>10.92.99.92</peer-address>
         <peer-as>65005</peer-as>
-        <input-messages>9660</input-messages>
-        <output-messages>9695</output-messages>
+        <input-messages>12047</input-messages>
+        <output-messages>12271</output-messages>
         <route-queue-count>0</route-queue-count>
         <flap-count>1</flap-count>
-        <elapsed-time seconds="260612">3d 0:23:32</elapsed-time>
+        <elapsed-time seconds="320013">3d 16:53:33</elapsed-time>
         <description>Leaf2_Overlay</description>
         <peer-state format="Establ">Established</peer-state>
         <bgp-rib style="terse">
