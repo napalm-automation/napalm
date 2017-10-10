@@ -245,6 +245,7 @@ junos_bgp_config_view:
     multihop_ttl: {multihop/ttl: int}
     local_as: {local-as/as-number: int}
     remote_as: {peer-as: int}
+    cluster: cluster
     multipath: multipath
     remove_private_as: remove-private
     import_policy: {import: unicode}
