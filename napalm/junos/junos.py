@@ -948,6 +948,7 @@ class JunOSDriver(NetworkDriver):
             'type': py23_compat.text_type,
             'apply_groups': list,
             'remove_private_as': bool,
+            'cluster': py23_compat.text_type,
             'multipath': bool,
             'multihop_ttl': int
         }
