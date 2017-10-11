@@ -760,9 +760,9 @@ class JunOSDriver(NetworkDriver):
             Search for first occurrence of pattern.
             '''
             rgx = '^.*({pattern})(.*)$'.format(pattern=pattern)
-            match = re.search(rgx, txt, re.I|re.M|re.DOTALL)
+            match = re.search(rgx, txt, re.I | re.M | re.DOTALL)
             if match:
-                return '{pattern}{rest}'.format(pattern=pattern,rest=match.group(2))
+                return '{pattern}{rest}'.format(pattern=pattern, rest=match.group(2))
             else:
                 return '\nPattern not found'
 
