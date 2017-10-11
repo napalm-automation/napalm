@@ -15,7 +15,7 @@
 napalm-ansible
 ==============
 
-Collection of ansible modules that use `napalm <https://github.com/napalm-automation/napalm>`_ to retrieve data or modify configuration on netwroking devices.
+Collection of ansible modules that use `napalm <https://github.com/napalm-automation/napalm>`_ to retrieve data or modify configuration on networking devices.
 
 Modules
 -------
