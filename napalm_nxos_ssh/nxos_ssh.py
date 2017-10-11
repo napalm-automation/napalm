@@ -1097,14 +1097,18 @@ class NXOSSSHDriver(NetworkDriver):
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
 
-            try:
-                if age == '-':
-                    age = 0
+            if age == '-':
+                age = -1.0
+            elif ':' not in age:
+                # Cisco sometimes returns a sub second arp time 0.411797
+                try:
+                    age = float(age)
+                except ValueError:
+                    age = -1.0
+            else:
                 age = convert_hhmmss(age)
                 age = float(age)
-                age = round(age, 1)
-            except ValueError:
-                raise ValueError("Unable to convert age value to float: {}".format(age))
+            age = round(age, 1)
 
             # Validate we matched correctly
             if not re.search(RE_IPADDR, address):
