@@ -292,7 +292,7 @@ junos_bgp_config_peers_view:
     import_policy: {import: unicode}
     export_policy: {export: unicode}
     local_address: {local-address: unicode}
-    local_as: {ocal-as: int}
+    local_as: {local-as/as-number: int}
     cluster: cluster
     remote_as: {peer-as: int}
     authentication_key: {authentication_key: unicode}
