@@ -18,7 +18,6 @@ from __future__ import unicode_literals
 # import stdlib
 import re
 import copy
-import socket
 from collections import defaultdict
 
 # import third party lib
