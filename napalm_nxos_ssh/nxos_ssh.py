@@ -668,9 +668,9 @@ class NXOSSSHDriver(NetworkDriver):
         if 'Invalid command' in output:
             raise MergeConfigException('Error while applying config!')
         if not self._save():
-            raise CommandErrorException('Unable to commit config!')
+            raise CommandErrorException('Unable to save running-config to startup!')
 
-    def _save_config(self, filename):
+    def _save_to_checkpoint(self, filename):
         """Save the current running config to the given file."""
         command = 'checkpoint file {}'.format(filename)
         self.device.send_command(command)
@@ -678,15 +678,12 @@ class NXOSSSHDriver(NetworkDriver):
     def _disable_confirmation(self):
         self._send_config_commands(['terminal dont-ask'])
 
-    def _load_config(self):
+    def _load_cfg_from_checkpoint(self):
         command = 'rollback running file {0}'.format(self.replace_file.split('/')[-1])
         self._disable_confirmation()
-        try:
-            rollback_result = self.device.send_command(command)
-        except Exception:
-            return False
-        if 'Rollback failed.' in rollback_result['msg'] or 'ERROR' in rollback_result:
-            raise ReplaceConfigException(rollback_result['msg'])
+        rollback_result = self.device.send_command(command)
+        if 'Rollback failed.' in rollback_result or 'ERROR' in rollback_result:
+            raise ReplaceConfigException(rollback_result)
         elif rollback_result == []:
             return False
         return True
@@ -694,9 +691,11 @@ class NXOSSSHDriver(NetworkDriver):
     def commit_config(self):
         if self.loaded:
             self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            self._save_config(self.backup_file)
+            # Create Checkpoint from current running-config
+            self._save_to_checkpoint(self.backup_file)
             if self.replace:
-                if self._load_config() is False:
+                cfg_replace_status = self._load_cfg_from_checkpoint()
+                if not cfg_replace_status:
                     raise ReplaceConfigException
             else:
                 try:
@@ -704,7 +703,6 @@ class NXOSSSHDriver(NetworkDriver):
                     self.merge_candidate = ''  # clear the merge buffer
                 except Exception as e:
                     raise MergeConfigException(str(e))
-
             self.changed = True
             self.loaded = False
         else:
@@ -726,16 +724,14 @@ class NXOSSSHDriver(NetworkDriver):
             self._delete_file(self.replace_file)
         self.loaded = False
 
-    def _rollback_ssh(self, backup_file):
-        command = 'rollback running-config file %s' % backup_file
-        result = self.device.send_command(command)
-        if 'completed' not in result.lower():
-            raise ReplaceConfigException(result)
-        self._save_ssh()
-
     def rollback(self):
         if self.changed:
-            self._rollback_ssh(self.backup_file)
+            command = 'rollback running-config file {}'.format(self.backup_file)
+            result = self.device.send_command(command)
+            if 'completed' not in result.lower():
+                raise ReplaceConfigException(result)
+            if not self._save():
+                raise CommandErrorException('Unable to save running-config to startup!')
             self.changed = False
 
     def _apply_key_map(self, key_map, table):
