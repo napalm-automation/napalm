@@ -254,9 +254,11 @@ junos_bgp_config_view:
     description: {description: unicode}
     apply_groups: {apply-groups: unicode}
     local_address: {local-address: unicode}
+    multihop: multihop
     multihop_ttl: {multihop/ttl: int}
-    local_as: "local-as | local-as/as-number"
+    local_as: {local-as/as-number: int}
     remote_as: {peer-as: int}
+    cluster: cluster
     multipath: multipath
     remove_private_as: remove-private
     import_policy: {import: unicode}
@@ -290,9 +292,8 @@ junos_bgp_config_peers_view:
     import_policy: {import: unicode}
     export_policy: {export: unicode}
     local_address: {local-address: unicode}
-    local_as: "local-as/as-number|local-as"
-    # local_as: {local-as/as-number: int}
-    # local_as: {local-as: int}
+    local_as: {local-as/as-number: int}
+    cluster: cluster
     remote_as: {peer-as: int}
     authentication_key: {authentication_key: unicode}
     inet_unicast_limit_prefix_limit: {family/inet/unicast/prefix-limit/maximum: int}

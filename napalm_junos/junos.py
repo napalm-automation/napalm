@@ -965,6 +965,12 @@ class JunOSDriver(NetworkDriver):
                             napalm_base.helpers.convert(datatype, elem[1], default)
                     })
             bgp_config[bgp_group_name]['prefix_limit'] = build_prefix_limit(**prefix_limit_fields)
+            if 'multihop' in bgp_config[bgp_group_name].keys():
+                # Delete 'multihop' key from the output
+                del bgp_config[bgp_group_name]['multihop']
+                if bgp_config[bgp_group_name]['multihop_ttl'] == 0:
+                    # Set ttl to default value 64
+                    bgp_config[bgp_group_name]['multihop_ttl'] = 64
 
             bgp_config[bgp_group_name]['neighbors'] = {}
             for bgp_group_neighbor in bgp_group_peers.items():
@@ -997,6 +1003,13 @@ class JunOSDriver(NetworkDriver):
                         bgp_peer_details['local_as'])
                     bgp_peer_details['remote_as'] = napalm_base.helpers.as_number(
                         bgp_peer_details['remote_as'])
+                    if key == 'cluster':
+                        bgp_peer_details['route_reflector_client'] = True
+                        # we do not want cluster in the output
+                        del bgp_peer_details['cluster']
+
+                if 'cluster' in bgp_config[bgp_group_name].keys():
+                    bgp_peer_details['route_reflector_client'] = True
                 prefix_limit_fields = {}
                 for elem in bgp_group_details:
                     if '_prefix_limit' in elem[0] and elem[1] is not None:
@@ -1010,6 +1023,10 @@ class JunOSDriver(NetworkDriver):
                 bgp_config[bgp_group_name]['neighbors'][bgp_peer_address] = bgp_peer_details
                 if neighbor and bgp_peer_address == neighbor_ip:
                     break  # found the desired neighbor
+
+        if 'cluster' in bgp_config[bgp_group_name].keys():
+            # we do not want cluster in the output
+            del bgp_config[bgp_group_name]['cluster']
 
         return bgp_config
 
