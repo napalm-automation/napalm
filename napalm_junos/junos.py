@@ -321,6 +321,7 @@ class JunOSDriver(NetworkDriver):
         environment = junos_views.junos_enviroment_table(self.device)
         routing_engine = junos_views.junos_routing_engine_table(self.device)
         temperature_thresholds = junos_views.junos_temperature_thresholds(self.device)
+        power_supplies = junos_views.junos_pem_table(self.device)
         environment.get()
         routing_engine.get()
         temperature_thresholds.get()
@@ -347,7 +348,6 @@ class JunOSDriver(NetworkDriver):
                     environment_data['power'] = {}
                     environment_data['power'][sensor_object] = {}
 
-                # Set these values to -1, because Junos does not provide them
                 environment_data['power'][sensor_object]['capacity'] = -1.0
                 environment_data['power'][sensor_object]['output'] = -1.0
 
@@ -398,6 +398,21 @@ class JunOSDriver(NetworkDriver):
                         environment_data['temperature'][sensor_object]['is_alert'] = True
                     elif structured_temperature_data['yellow-alarm'] <= temp:
                         environment_data['temperature'][sensor_object]['is_alert'] = True
+
+        # Try to correct Power Supply information
+        pem_table = dict()
+        try:
+            power_supplies.get()
+        except RpcError:
+            # Not all platforms have support for this
+            pass
+        else:
+            # Format PEM information and correct capacity and output values
+            for pem in power_supplies.items():
+                pem_name = pem[0].replace("PEM", "Power Supply")
+                pem_table[pem_name] = dict(pem[1])
+                environment_data['power'][pem_name]['capacity'] = pem_table[pem_name]['capacity']
+                environment_data['power'][pem_name]['output'] = pem_table[pem_name]['output']
 
         for routing_engine_object, routing_engine_data in routing_engine.items():
             structured_routing_engine_data = {k: v for k, v in routing_engine_data}
@@ -467,12 +482,19 @@ class JunOSDriver(NetworkDriver):
         if not neighbor['is_up']:
             return data
         elif isinstance(neighbor['tables'], list):
+            if isinstance(neighbor['sent_prefixes'], int):
+                # We expect sent_prefixes to be a list, but sometimes it
+                # is of type int. Therefore convert attribute to list
+                neighbor['sent_prefixes'] = [neighbor['sent_prefixes']]
             for idx, table in enumerate(neighbor['tables']):
                 family = self._get_address_family(table)
                 data[family] = {}
                 data[family]['received_prefixes'] = neighbor['received_prefixes'][idx]
                 data[family]['accepted_prefixes'] = neighbor['accepted_prefixes'][idx]
-                data[family]['sent_prefixes'] = neighbor['sent_prefixes'][idx]
+                if 'in sync' in neighbor['send-state'][idx]:
+                    data[family]['sent_prefixes'] = neighbor['sent_prefixes'].pop(0)
+                else:
+                    data[family]['sent_prefixes'] = 0
         else:
             family = self._get_address_family(neighbor['tables'])
             data[family] = {}

@@ -67,6 +67,7 @@ junos_bgp_view:
     received_prefixes: { bgp-rib/received-prefix-count: int }
     accepted_prefixes: { bgp-rib/accepted-prefix-count: int }
     sent_prefixes: { bgp-rib/advertised-prefix-count: int }
+    send-state: bgp-rib/send-state
     tables: bgp-rib/name
     local_as: { local-as: int }
     peer_as: { peer-as: int }
@@ -144,6 +145,18 @@ junos_enviroment_view:
     class: class
     status: status
     temperature: { temperature/@celsius: int }
+
+junos_pem_table:
+  rpc: get-power-usage-information-detail
+  args:
+  item: power-usage-item
+  key: name
+  view: junos_pem_view
+
+junos_pem_view:
+  fields:
+    capacity: { pem-capacity-detail/capacity-actual: float }
+    output: { dc-output-detail/dc-power: float }
 
 junos_routing_engine_table:
   rpc: get-route-engine-information
