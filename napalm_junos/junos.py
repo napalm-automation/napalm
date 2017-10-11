@@ -999,6 +999,8 @@ class JunOSDriver(NetworkDriver):
                         bgp_peer_details['remote_as'])
                     if key == 'cluster':
                         bgp_peer_details['route_reflector_client'] = True
+                        # we do not want cluster in the output
+                        del bgp_peer_details['cluster']
 
                 if 'cluster' in bgp_config[bgp_group_name].keys():
                     bgp_peer_details['route_reflector_client'] = True
