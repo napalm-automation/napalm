@@ -965,6 +965,12 @@ class JunOSDriver(NetworkDriver):
                             napalm_base.helpers.convert(datatype, elem[1], default)
                     })
             bgp_config[bgp_group_name]['prefix_limit'] = build_prefix_limit(**prefix_limit_fields)
+            if 'multihop' in bgp_config[bgp_group_name].keys():
+                # Delete 'multihop' key from the output
+                del bgp_config[bgp_group_name]['multihop']
+                if bgp_config[bgp_group_name]['multihop_ttl'] == 0:
+                    # Set ttl to default value 64
+                    bgp_config[bgp_group_name]['multihop_ttl'] = 64
 
             bgp_config[bgp_group_name]['neighbors'] = {}
             for bgp_group_neighbor in bgp_group_peers.items():

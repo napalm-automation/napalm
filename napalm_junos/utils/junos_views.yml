@@ -254,6 +254,7 @@ junos_bgp_config_view:
     description: {description: unicode}
     apply_groups: {apply-groups: unicode}
     local_address: {local-address: unicode}
+    multihop: multihop
     multihop_ttl: {multihop/ttl: int}
     local_as: {local-as/as-number: int}
     remote_as: {peer-as: int}
