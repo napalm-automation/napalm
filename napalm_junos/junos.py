@@ -1024,9 +1024,9 @@ class JunOSDriver(NetworkDriver):
                 if neighbor and bgp_peer_address == neighbor_ip:
                     break  # found the desired neighbor
 
-        if 'cluster' in bgp_config[bgp_group_name].keys():
-            # we do not want cluster in the output
-            del bgp_config[bgp_group_name]['cluster']
+            if 'cluster' in bgp_config[bgp_group_name].keys():
+                # we do not want cluster in the output
+                del bgp_config[bgp_group_name]['cluster']
 
         return bgp_config
 
