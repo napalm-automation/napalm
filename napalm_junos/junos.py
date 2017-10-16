@@ -760,7 +760,7 @@ class JunOSDriver(NetworkDriver):
             Process CLI output from Juniper device that
             doesn't allow piping the output.
             '''
-            if not txt:
+            if txt is not None:
                 return txt
             _OF_MAP = OrderedDict()
             _OF_MAP['except'] = _except
