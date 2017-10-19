@@ -1,0 +1,66 @@
+{
+  "_": {
+    "multipath": false,
+    "multihop_ttl": 0,
+    "apply_groups": [],
+    "export_policy": "",
+    "import_policy": "",
+    "remove_private_as": false,
+    "local_as": 13335,
+    "local_address": "",
+    "type": "",
+    "remote_as": 0,
+    "prefix_limit": {},
+    "description": "",
+    "neighbors": {
+      "192.168.0.1": {
+        "route_reflector_client": false,
+        "nhs": false,
+        "authentication_key": "",
+        "export_policy": "export-policy",
+        "import_policy": "import-policy",
+        "local_as": 13335,
+        "local_address": "",
+        "remote_as": 32934,
+        "prefix_limit": {},
+        "description": ""
+      },
+      "2001:db8::0:1": {
+        "route_reflector_client": false,
+        "nhs": false,
+        "authentication_key": "",
+        "export_policy": "export-policy",
+        "import_policy": "import-policy",
+        "local_as": 13335,
+        "local_address": "",
+        "remote_as": 8403,
+        "prefix_limit": {},
+        "description": ""
+      },
+      "172.17.17.1": {
+        "route_reflector_client": false,
+        "nhs": false,
+        "authentication_key": "",
+        "export_policy": "export-policy",
+        "import_policy": "import-policy",
+        "local_as": 13335,
+        "local_address": "",
+        "remote_as": 13414,
+        "prefix_limit": {},
+        "description": ""
+      },
+      "2001:db8::0:2": {
+        "route_reflector_client": false,
+        "nhs": false,
+        "authentication_key": "",
+        "export_policy": "export-policy",
+        "import_policy": "import-policy",
+        "local_as": 13335,
+        "local_address": "",
+        "remote_as": 54113,
+        "prefix_limit": {},
+        "description": ""
+      }
+    }
+  }
+}

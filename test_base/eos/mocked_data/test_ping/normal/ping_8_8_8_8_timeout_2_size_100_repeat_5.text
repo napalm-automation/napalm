@@ -1,0 +1,11 @@
+PING 10.1.1.1 (10.1.1.1) 72(100) bytes of data.
+80 bytes from 10.1.1.1: icmp_req=1 ttl=64 time=0.579 ms
+80 bytes from 10.1.1.1: icmp_req=2 ttl=64 time=2.79 ms
+80 bytes from 10.1.1.1: icmp_req=3 ttl=64 time=0.984 ms
+80 bytes from 10.1.1.1: icmp_req=4 ttl=64 time=0.952 ms
+80 bytes from 10.1.1.1: icmp_req=5 ttl=64 time=0.833 ms
+
+--- 10.1.1.1 ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 6ms
+rtt min/avg/max/mdev = 0.579/1.228/2.796/0.797 ms, ipg/ewma 1.500/0.876 ms
+

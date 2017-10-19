@@ -1,0 +1,57 @@
+{
+    "vrfs": {
+        "default": {
+            "routerId": "192.168.256.1",
+            "vrf": "default",
+            "bgpRouteEntries": {
+                "1.0.4.0/24": {
+                    "totalPaths": 1,
+                    "bgpAdvertisedPeerGroups": {},
+                    "totalAdvertisedPeers": 0,
+                    "maskLength": 20,
+                    "bgpRoutePaths": [
+                        {
+                            "asPathEntry": {
+                                "asPathType": "External",
+                                "asPath": "1299 15169 43515"
+                            },
+                            "med": 0,
+                            "localPreference": 50,
+                            "weight": 0,
+                            "nextHop": "192.168.0.1",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "valid": true,
+                                "ecmpContributor": false,
+                                "active": true,
+                                "backup": false,
+                                "stale": false,
+                                "suppressed": false,
+                                "ecmpHead": false,
+                                "queued": false,
+                                "ecmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Igp",
+                                "peerEntry": {
+                                    "peerRouterId": "192.168.256.1",
+                                    "peerAddr": "192.168.0.1"
+                                },
+                                "extCommunityList": [],
+                                "communityList": [
+                                    "1299:1234",
+                                    "1299:5678",
+                                    "1299:91011",
+                                    "1299:12134"
+                                ],
+                                "recvdFromRRClient": false
+                            }
+                        }
+                    ],
+                    "address": "1.0.4.0"
+                }
+            },
+            "asn": 13335
+        }
+	}
+}

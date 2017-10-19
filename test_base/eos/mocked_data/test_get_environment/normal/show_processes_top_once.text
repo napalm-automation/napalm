@@ -1,0 +1,19 @@
+top - 14:03:41 up 131 days, 21:26,  1 user,  load average: 0.39, 0.29, 0.32
+Tasks: 383 total,   1 running, 382 sleeping,   0 stopped,   0 zombie
+Cpu(s):  3.5%us,  0.5%sy,  0.0%ni, 95.7%id,  0.0%wa,  0.2%hi,  0.1%si,  0.0%st
+Mem:  16012300k total,  4580692k used, 11431608k free,   200332k buffers
+Swap:        0k total,        0k used,        0k free,  2395436k cached
+
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+ 6416 root      20   0  662m 105m  37m S  9.0  0.7   3592:55 SandFabric
+ 6420 root      20   0  662m 105m  37m S  7.2  0.7   3589:14 SandFabric
+ 2606 root      20   0  562m  88m  23m S  3.6  0.6   3237:39 Smbus
+ 4332 root      20   0  761m 224m  94m S  3.6  1.4  10642:24 SandFap
+ 6419 root      20   0  662m 105m  37m S  3.6  0.7   3596:53 SandFabric
+ 2675 root      20   0  553m  78m  20m S  1.8  0.5  37:26.89 VrmIr
+ 3850 root      20   0  558m  85m  21m S  1.8  0.5 597:34.22 Adt7462Agent
+ 3954 root      20   0  565m  96m  31m S  1.8  0.6   1809:51 XcvrAgent
+ 6424 root      20   0  662m 105m  37m S  1.8  0.7   3614:34 SandFabric
+20866 dbarroso  20   0 26552  12m 9668 R  1.8  0.1   0:00.06 top
+    1 root      20   0 26340  12m 9832 S  0.0  0.1   0:02.62 init
+    2 root      20   0     0    0    0 S  0.0  0.0   0:01.36 kthreadd

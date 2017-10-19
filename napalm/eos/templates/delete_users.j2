@@ -1,0 +1,17 @@
+{%- for user_name, user_details in users.items() %}
+{%- if user_details is not none %}
+{%- if user_details.get('password') %}
+username {{user_name}} nopassword
+{%- endif %}
+{%- if user_details.get('level') %}
+no username {{user_name}} privilege {{user_details.level}}
+{%- endif %}
+{%- if user_details.get('sshkeys') %}
+{%- for sshkey in user_details.sshkeys %}
+no username {{user_name}} sshkey {{ sshkey }}
+{%- endfor %}
+{%- endif %}
+{%- else %}
+no username {{user_name}}
+{%- endif %}
+{%- endfor %}

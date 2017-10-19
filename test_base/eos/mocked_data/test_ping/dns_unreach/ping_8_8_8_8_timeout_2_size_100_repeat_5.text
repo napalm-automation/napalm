@@ -1,0 +1,10 @@
+PING bad.localdomain (10.213.1.102) 72(100) bytes of data.
+From localhost.localdomain (10.213.1.254) icmp_seq=1 Destination Host Unreachable
+From localhost.localdomain (10.213.1.254) icmp_seq=2 Destination Host Unreachable
+From localhost.localdomain (10.213.1.254) icmp_seq=3 Destination Host Unreachable
+From localhost.localdomain (10.213.1.254) icmp_seq=4 Destination Host Unreachable
+From localhost.localdomain (10.213.1.254) icmp_seq=5 Destination Host Unreachable
+
+--- bad.localdomain ping statistics ---
+5 packets transmitted, 0 received, +5 errors, 100% packet loss, time 4002ms
+pipe 3
