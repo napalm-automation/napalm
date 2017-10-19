@@ -1,0 +1,13 @@
+---
+complies: false
+skipped: []
+get_facts:
+  complies: false
+  extra: []
+  missing: []
+  present:
+    hostname:
+        complies: false
+        actual_value: n9k2
+        expected_value: my_hostname
+        nested: false

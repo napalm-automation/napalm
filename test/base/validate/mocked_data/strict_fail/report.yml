@@ -1,0 +1,123 @@
+---
+complies: false
+skipped: []
+
+get_bgp_neighbors:
+  complies: false
+  extra: []
+  missing: []
+  present:
+    default:
+      complies: false
+      diff:
+        complies: false
+        extra: []
+        missing: []
+        present:
+          peers:
+            complies: false
+            diff:
+              complies: false
+              extra: [192.0.2.3]
+              missing: []
+              present:
+                192.0.2.2:
+                  complies: false
+                  diff:
+                    complies: false
+                    extra: []
+                    missing: []
+                    present:
+                      address_family:
+                        complies: false
+                        diff:
+                          complies: false
+                          extra: []
+                          missing: []
+                          present:
+                            ipv4:
+                              complies: false
+                              diff:
+                                complies: false
+                                extra: []
+                                missing: []
+                                present:
+                                    sent_prefixes: {actual_value: 0, expected_value: "^[1-9]", complies: false,
+                                    nested: false}
+                              nested: true
+                            ipv6: {complies: true, nested: true}
+                        nested: true
+                      is_enabled: {complies: true, nested: false}
+                  nested: true
+            nested: true
+          router_id: {complies: true, nested: false}
+      nested: true
+
+get_facts:
+  complies: false
+  extra: []
+  missing: []
+  present:
+    hostname: {complies: true, nested: false}
+    interface_list:
+      complies: false
+      diff:
+        complies: false
+        extra: [Vlan40, Vlan41, GigabitEthernet0/1, GigabitEthernet0/2, GigabitEthernet0/3,
+          GigabitEthernet0/4, GigabitEthernet0/5, GigabitEthernet0/6, GigabitEthernet0/7,
+          GigabitEthernet0/8, Port-channel1]
+        missing: []
+        present: [Vlan5, Vlan100]
+      nested: true
+    os_version: {complies: true, nested: false}
+
+get_interfaces_ip:
+  complies: true
+  extra: []
+  missing: []
+  present:
+    Ethernet2/1: {complies: true, nested: true}
+
+ping:
+  complies: false
+  extra: []
+  missing: []
+  present:
+    success:
+      complies: false
+      diff:
+        complies: false
+        extra: []
+        missing: []
+        present:
+          packet_loss: {actual_value: 1, expected_value: 0, complies: false, nested: false}
+      nested: true
+
+get_route_to:
+  complies: false
+  extra: []
+  missing: []
+  present:
+    10.155.180.192/26:
+      complies: false
+      diff:
+        complies: false
+        extra:
+        - age: 2222365
+          current_active: false
+          inactive_reason: Not Best in its group - Interior > Exterior > Exterior
+            via Interior
+          last_active: false
+          next_hop: 10.155.180.18
+          outgoing_interface: ge-1/0/0.0
+          preference: 170
+          protocol: BGP
+          protocol_attributes: {as_path: '65239 ?', communities: null, local_as: 202751,
+            local_preference: 100, metric: null, metric2: 0, preference2: -101, remote_address: 10.155.180.2,
+            remote_as: 202751}
+          routing_table: inet.0
+          selected_next_hop: true
+        missing: []
+        present:
+        - {next_hop: 10.155.180.22, outgoing_interface: irb.0, protocol: BGP}
+      nested: true

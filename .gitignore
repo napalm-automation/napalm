@@ -60,6 +60,5 @@ env
 
 test/unit/test_devices.py
 
-.vagrant
-
+report.json
 tags
