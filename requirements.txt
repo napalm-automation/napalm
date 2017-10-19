@@ -1,12 +1,4 @@
-napalm-base
-napalm-eos
-napalm-fortios
-napalm-ios
-napalm-iosxr
-napalm-junos
-napalm-nxos
-napalm-pluribus
-napalm-panos
-napalm-ros
-napalm-vyos
-napalm-yang
+jtextfsm
+jinja2
+netaddr
+pyYAML
