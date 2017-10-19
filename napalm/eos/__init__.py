@@ -12,8 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-"""napalm_eos package."""
-from napalm_eos.eos import EOSDriver
+"""napalm.eos package."""
+from napalm.eos.eos import EOSDriver
 import pkg_resources
 
 try:

@@ -4,7 +4,7 @@
 import unittest
 from ddt import ddt, data, unpack
 
-from napalm_base import get_network_driver
+from napalm.base import get_network_driver
 
 
 @ddt

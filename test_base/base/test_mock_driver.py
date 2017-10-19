@@ -8,9 +8,9 @@ from __future__ import unicode_literals
 
 
 # NAPALM base
-from napalm_base import get_network_driver
-import napalm_base.exceptions
-from napalm_base.utils import py23_compat
+from napalm.base import get_network_driver
+import napalm.base.exceptions
+from napalm.base.utils import py23_compat
 
 import pytest
 
@@ -43,12 +43,12 @@ class TestMockDriver(object):
         d.close()
         assert d.is_alive() == {u'is_alive': False}
 
-        with pytest.raises(napalm_base.exceptions.ConnectionClosedException) as excinfo:
+        with pytest.raises(napalm.base.exceptions.ConnectionClosedException) as excinfo:
             d.get_facts()
         assert "connection closed" in py23_compat.text_type(excinfo.value)
 
     def test_context_manager(self):
-        with pytest.raises(napalm_base.exceptions.ConnectionException) as e, \
+        with pytest.raises(napalm.base.exceptions.ConnectionException) as e, \
                 driver("blah", "bleh", "blih", optional_args=fail_args) as d:
             pass
         assert "You told me to do this" in py23_compat.text_type(e.value)
@@ -111,7 +111,7 @@ class TestMockDriver(object):
             d.get_bgp_neighbors()
         assert "Something" in py23_compat.text_type(excinfo.value)
 
-        with pytest.raises(napalm_base.exceptions.ConnectionClosedException) as excinfo:
+        with pytest.raises(napalm.base.exceptions.ConnectionClosedException) as excinfo:
             d.get_bgp_neighbors()
         assert "Something" in py23_compat.text_type(excinfo.value)
 

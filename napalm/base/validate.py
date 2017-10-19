@@ -7,8 +7,8 @@ from __future__ import unicode_literals
 
 import yaml
 
-from napalm_base.exceptions import ValidationException
-from napalm_base.utils import py23_compat
+from napalm.base.exceptions import ValidationException
+from napalm.base.utils import py23_compat
 
 import copy
 import re

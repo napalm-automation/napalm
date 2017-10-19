@@ -5,15 +5,15 @@ from __future__ import unicode_literals
 import unittest
 from ddt import ddt, data
 
-from napalm_base import get_network_driver
-from napalm_base.base import NetworkDriver
-from napalm_base.exceptions import ModuleImportError
+from napalm.base import get_network_driver
+from napalm.base.base import NetworkDriver
+from napalm.base.exceptions import ModuleImportError
 
 
 @ddt
 class TestGetNetworkDriver(unittest.TestCase):
     """Test the method get_network_driver."""
-    network_drivers = ('eos', 'napalm_eos', 'fortios', 'ios', 'iosxr', 'IOS-XR', 'junos', 'ros',
+    network_drivers = ('eos', 'napalm.eos', 'fortios', 'ios', 'iosxr', 'IOS-XR', 'junos', 'ros',
                        'nxos', 'pluribus', 'panos', 'vyos')
 
     @data(*network_drivers)

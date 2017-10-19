@@ -16,9 +16,9 @@ from netaddr import mac_unix
 from netaddr import IPAddress
 
 # local modules
-import napalm_base.exceptions
-from napalm_base.utils.jinja_filters import CustomJinjaFilters
-from napalm_base.utils import py23_compat
+import napalm.base.exceptions
+from napalm.base.utils.jinja_filters import CustomJinjaFilters
+from napalm.base.utils import py23_compat
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -69,14 +69,14 @@ def load_template(cls, template_name, template_source=None, template_path=None,
             ))
         configuration = template.render(**template_vars)
     except jinja2.exceptions.TemplateNotFound:
-        raise napalm_base.exceptions.TemplateNotImplemented(
+        raise napalm.base.exceptions.TemplateNotImplemented(
             "Config template {template_name}.j2 not found in search path: {sp}".format(
                 template_name=template_name,
                 sp=search_path
             )
         )
     except (jinja2.exceptions.UndefinedError, jinja2.exceptions.TemplateSyntaxError) as jinjaerr:
-        raise napalm_base.exceptions.TemplateRenderException(
+        raise napalm.base.exceptions.TemplateRenderException(
             "Unable to render the Jinja config template {template_name}: {error}".format(
                 template_name=template_name,
                 error=jinjaerr.message
@@ -111,14 +111,14 @@ def textfsm_extractor(cls, template_name, raw_text):
     try:
         fsm_handler = textfsm.TextFSM(open(template_path))
     except IOError:
-        raise napalm_base.exceptions.TemplateNotImplemented(
+        raise napalm.base.exceptions.TemplateNotImplemented(
             "TextFSM template {template_name}.tpl is not defined under {path}".format(
                 template_name=template_name,
                 path=template_dir_path
             )
         )
     except textfsm.TextFSMTemplateError as tfte:
-        raise napalm_base.exceptions.TemplateRenderException(
+        raise napalm.base.exceptions.TemplateRenderException(
             "Wrong format of TextFSM template {template_name}: {error}".format(
                 template_name=template_name,
                 error=py23_compat.text_type(tfte)

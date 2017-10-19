@@ -37,10 +37,10 @@ except ImportError:
     HAS_NETADDR = False
 
 # NAPALM base
-import napalm_base.helpers
-import napalm_base.exceptions
-from napalm_base.base import NetworkDriver
-from napalm_base.utils.string_parsers import convert_uptime_string_seconds
+import napalm.base.helpers
+import napalm.base.exceptions
+from napalm.base.base import NetworkDriver
+from napalm.base.utils.string_parsers import convert_uptime_string_seconds
 
 
 class TestBaseHelpers(unittest.TestCase):
@@ -76,28 +76,28 @@ class TestBaseHelpers(unittest.TestCase):
             'peers': _NTP_PEERS_LIST
         }
 
-        self.assertRaises(napalm_base.exceptions.TemplateNotImplemented,
-                          napalm_base.helpers.load_template,
+        self.assertRaises(napalm.base.exceptions.TemplateNotImplemented,
+                          napalm.base.helpers.load_template,
                           self.network_driver,
                           '__this_template_does_not_exist__',
                           **_TEMPLATE_VARS)
 
-        self.assertTrue(napalm_base.helpers.load_template(self.network_driver,
+        self.assertTrue(napalm.base.helpers.load_template(self.network_driver,
                                                           '__empty_template__',
                                                           **_TEMPLATE_VARS))
 
-        self.assertRaises(napalm_base.exceptions.TemplateRenderException,
-                          napalm_base.helpers.load_template,
+        self.assertRaises(napalm.base.exceptions.TemplateRenderException,
+                          napalm.base.helpers.load_template,
                           self.network_driver,
                           '__completely_wrong_template__',
                           **_TEMPLATE_VARS)
 
-        self.assertTrue(napalm_base.helpers.load_template(self.network_driver,
+        self.assertTrue(napalm.base.helpers.load_template(self.network_driver,
                                                           '__a_very_nice_template__',
                                                           **_TEMPLATE_VARS))
 
         self.assertRaises(IOError,
-                          napalm_base.helpers.load_template,
+                          napalm.base.helpers.load_template,
                           self.network_driver,
                           '__a_very_nice_template__',
                           template_path='/this/path/does/not/exist',
@@ -107,28 +107,28 @@ class TestBaseHelpers(unittest.TestCase):
             os.path.abspath(sys.modules[self.network_driver.__module__].__file__))
         custom_path = os.path.join(install_dir, '../custom/path/base')
 
-        self.assertRaises(napalm_base.exceptions.TemplateNotImplemented,
-                          napalm_base.helpers.load_template,
+        self.assertRaises(napalm.base.exceptions.TemplateNotImplemented,
+                          napalm.base.helpers.load_template,
                           self.network_driver,
                           '__this_template_does_not_exist__',
                           template_path=custom_path,
                           **_TEMPLATE_VARS)
 
-        self.assertTrue(napalm_base.helpers.load_template(self.network_driver,
+        self.assertTrue(napalm.base.helpers.load_template(self.network_driver,
                                                           '__a_very_nice_template__',
                                                           template_path=custom_path,
                                                           **_TEMPLATE_VARS))
 
         template_source = '{% for peer in peers %}ntp peer {{peer}}\n{% endfor %}'
 
-        self.assertTrue(napalm_base.helpers.load_template(self.network_driver,
+        self.assertTrue(napalm.base.helpers.load_template(self.network_driver,
                                                           '_this_still_needs_a_name',
                                                           template_source=template_source,
                                                           **_TEMPLATE_VARS))
-        self.assertRaisesRegexp(napalm_base.exceptions.TemplateNotImplemented,
+        self.assertRaisesRegexp(napalm.base.exceptions.TemplateNotImplemented,
                                 "path.*napalm-base/test/unit/templates'" +
-                                ",.*napalm-base/napalm_base/templates']",
-                                napalm_base.helpers.load_template,
+                                ",.*napalm-base/napalm.base/templates']",
+                                napalm.base.helpers.load_template,
                                 self.network_driver,
                                 '__this_template_does_not_exist__',
                                 **_TEMPLATE_VARS)
@@ -159,25 +159,25 @@ class TestBaseHelpers(unittest.TestCase):
         192.0.2.100           65551    1269381    1363320       0       1      9w5d6h 2/3/0 0/0/0
         '''
 
-        self.assertRaises(napalm_base.exceptions.TemplateNotImplemented,
-                          napalm_base.helpers.textfsm_extractor,
+        self.assertRaises(napalm.base.exceptions.TemplateNotImplemented,
+                          napalm.base.helpers.textfsm_extractor,
                           self.network_driver,
                           '__this_template_does_not_exist__',
                           _TEXTFSM_TEST_STRING)
 
-        self.assertRaises(napalm_base.exceptions.TemplateRenderException,
-                          napalm_base.helpers.textfsm_extractor,
+        self.assertRaises(napalm.base.exceptions.TemplateRenderException,
+                          napalm.base.helpers.textfsm_extractor,
                           self.network_driver,
                           '__empty_template__',
                           _TEXTFSM_TEST_STRING)
 
-        self.assertRaises(napalm_base.exceptions.TemplateRenderException,
-                          napalm_base.helpers.textfsm_extractor,
+        self.assertRaises(napalm.base.exceptions.TemplateRenderException,
+                          napalm.base.helpers.textfsm_extractor,
                           self.network_driver,
                           '__completely_wrong_template__',
                           _TEXTFSM_TEST_STRING)
 
-        self.assertIsInstance(napalm_base.helpers.textfsm_extractor(self.network_driver,
+        self.assertIsInstance(napalm.base.helpers.textfsm_extractor(self.network_driver,
                                                                     '__a_very_nice_template__',
                                                                     _TEXTFSM_TEST_STRING),
                               list)
@@ -190,13 +190,13 @@ class TestBaseHelpers(unittest.TestCase):
             * cast of str to float returns desired float-type value
             * cast of None obj to string does not cast, but returns default
         """
-        self.assertTrue(napalm_base.helpers.convert(int, 'non-int-value', default=-100) == -100)
+        self.assertTrue(napalm.base.helpers.convert(int, 'non-int-value', default=-100) == -100)
         # default value returned
-        self.assertIsInstance(napalm_base.helpers.convert(float, '1e-17'), float)
+        self.assertIsInstance(napalm.base.helpers.convert(float, '1e-17'), float)
         # converts indeed to float
-        self.assertFalse(napalm_base.helpers.convert(str, None) == 'None')
+        self.assertFalse(napalm.base.helpers.convert(str, None) == 'None')
         # should not convert None-type to 'None' string
-        self.assertTrue(napalm_base.helpers.convert(str, None) == u'')
+        self.assertTrue(napalm.base.helpers.convert(str, None) == u'')
         # should return empty unicode
 
     def test_find_txt(self):
@@ -243,38 +243,38 @@ class TestBaseHelpers(unittest.TestCase):
 
         _XML_TREE = ET.fromstring(_XML_STRING)
 
-        self.assertFalse(napalm_base.helpers.find_txt(_XML_TREE, 'parent100/child200', False))
+        self.assertFalse(napalm.base.helpers.find_txt(_XML_TREE, 'parent100/child200', False))
         # returns default value (in this case boolean value False)
 
         # check if content inside the tag /parent1/child1
-        self.assertTrue(len(napalm_base.helpers.find_txt(_XML_TREE, 'parent1/child1')) > 0)
+        self.assertTrue(len(napalm.base.helpers.find_txt(_XML_TREE, 'parent1/child1')) > 0)
 
         # check if able to eval boolean returned as text inside the XML tree
         self.assertTrue(
-            eval(napalm_base.helpers.find_txt(_XML_TREE, 'parent3/@lonely', 'false').title()))
+            eval(napalm.base.helpers.find_txt(_XML_TREE, 'parent3/@lonely', 'false').title()))
 
         # int values
         self.assertIsInstance(
-            int(napalm_base.helpers.find_txt(_XML_TREE, 'stats/parents')), int)
+            int(napalm.base.helpers.find_txt(_XML_TREE, 'stats/parents')), int)
 
         # get first match of the tag child3, wherever would be
         _CHILD3_TAG = _XML_TREE.find('.//child3')
 
         # check if content inside the discovered tag child3
-        self.assertTrue(len(napalm_base.helpers.find_txt(_CHILD3_TAG, '.')) > 0)
+        self.assertTrue(len(napalm.base.helpers.find_txt(_CHILD3_TAG, '.')) > 0)
 
         _SPECIAL_CHILD2 = _XML_TREE.find('.//child2[@special="true"]')
 
-        self.assertTrue(len(napalm_base.helpers.find_txt(_SPECIAL_CHILD2, '.')) > 0)
+        self.assertTrue(len(napalm.base.helpers.find_txt(_SPECIAL_CHILD2, '.')) > 0)
 
         _SPECIAL_CHILD100 = _XML_TREE.find('.//child100[@special="true"]')
 
-        self.assertFalse(len(napalm_base.helpers.find_txt(_SPECIAL_CHILD100, '.')) > 0)
+        self.assertFalse(len(napalm.base.helpers.find_txt(_SPECIAL_CHILD100, '.')) > 0)
 
         _NOT_SPECIAL_CHILD2 = _XML_TREE.xpath('.//child2[not(@special="true")]')[0]
         # use XPath to get tags using predicates!
 
-        self.assertTrue(len(napalm_base.helpers.find_txt(_NOT_SPECIAL_CHILD2, '.')) > 0)
+        self.assertTrue(len(napalm.base.helpers.find_txt(_NOT_SPECIAL_CHILD2, '.')) > 0)
 
     def test_mac(self):
 
@@ -288,11 +288,11 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertTrue(HAS_NETADDR)
 
         # test that raises AddrFormatError when wrong format
-        self.assertRaises(AddrFormatError, napalm_base.helpers.mac, 'fake')
+        self.assertRaises(AddrFormatError, napalm.base.helpers.mac, 'fake')
 
-        self.assertEqual(napalm_base.helpers.mac('0123456789ab'), '01:23:45:67:89:AB')
-        self.assertEqual(napalm_base.helpers.mac('0123.4567.89ab'), '01:23:45:67:89:AB')
-        self.assertEqual(napalm_base.helpers.mac('123.4567.89ab'), '01:23:45:67:89:AB')
+        self.assertEqual(napalm.base.helpers.mac('0123456789ab'), '01:23:45:67:89:AB')
+        self.assertEqual(napalm.base.helpers.mac('0123.4567.89ab'), '01:23:45:67:89:AB')
+        self.assertEqual(napalm.base.helpers.mac('123.4567.89ab'), '01:23:45:67:89:AB')
 
     def test_ip(self):
         """
@@ -306,28 +306,28 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertTrue(HAS_NETADDR)
 
         # test that raises AddrFormatError when wrong format
-        self.assertRaises(AddrFormatError, napalm_base.helpers.ip, 'fake')
-        self.assertRaises(ValueError, napalm_base.helpers.ip, '2001:db8:85a3::8a2e:370:7334',
+        self.assertRaises(AddrFormatError, napalm.base.helpers.ip, 'fake')
+        self.assertRaises(ValueError, napalm.base.helpers.ip, '2001:db8:85a3::8a2e:370:7334',
                           version=4)
-        self.assertRaises(ValueError, napalm_base.helpers.ip, '192.168.17.1',
+        self.assertRaises(ValueError, napalm.base.helpers.ip, '192.168.17.1',
                           version=6)
         self.assertEqual(
-          napalm_base.helpers.ip('2001:0dB8:85a3:0000:0000:8A2e:0370:7334'),
+          napalm.base.helpers.ip('2001:0dB8:85a3:0000:0000:8A2e:0370:7334'),
           '2001:db8:85a3::8a2e:370:7334'
         )
         self.assertEqual(
-          napalm_base.helpers.ip('2001:0DB8::0003', version=6),
+          napalm.base.helpers.ip('2001:0DB8::0003', version=6),
           '2001:db8::3'
         )
 
     def test_as_number(self):
         """Test the as_number helper function."""
-        self.assertEqual(napalm_base.helpers.as_number('64001'), 64001)
-        self.assertEqual(napalm_base.helpers.as_number('1.0'), 65536)
-        self.assertEqual(napalm_base.helpers.as_number('1.100'), 65636)
-        self.assertEqual(napalm_base.helpers.as_number('1.65535'), 131071)
-        self.assertEqual(napalm_base.helpers.as_number('65535.65535'), 4294967295)
-        self.assertEqual(napalm_base.helpers.as_number(64001), 64001)
+        self.assertEqual(napalm.base.helpers.as_number('64001'), 64001)
+        self.assertEqual(napalm.base.helpers.as_number('1.0'), 65536)
+        self.assertEqual(napalm.base.helpers.as_number('1.100'), 65636)
+        self.assertEqual(napalm.base.helpers.as_number('1.65535'), 131071)
+        self.assertEqual(napalm.base.helpers.as_number('65535.65535'), 4294967295)
+        self.assertEqual(napalm.base.helpers.as_number(64001), 64001)
 
     def test_convert_uptime_string_seconds(self):
         """

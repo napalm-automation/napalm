@@ -17,12 +17,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 # local modules
-import napalm_base.exceptions
-import napalm_base.helpers
+import napalm.base.exceptions
+import napalm.base.helpers
 
-import napalm_base.constants as c
+import napalm.base.constants as c
 
-from napalm_base import validate
+from napalm.base import validate
 
 
 class NetworkDriver(object):
@@ -49,7 +49,7 @@ class NetworkDriver(object):
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.close()
         if exc_type is not None and (
-                            exc_type.__name__ not in dir(napalm_base.exceptions) and
+                            exc_type.__name__ not in dir(napalm.base.exceptions) and
                             exc_type.__name__ not in __builtins__.keys()):
             epilog = ("NAPALM didn't catch this exception. Please, fill a bugfix on "
                       "https://github.com/napalm-automation/napalm/issues\n"
@@ -132,7 +132,7 @@ class NetworkDriver(object):
         source does not have the right format, either the arguments in `template_vars` are not \
         properly specified.
         """
-        return napalm_base.helpers.load_template(self,
+        return napalm.base.helpers.load_template(self,
                                                  template_name,
                                                  template_source=template_source,
                                                  template_path=template_path,

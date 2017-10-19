@@ -1,8 +1,8 @@
 """Tests for the validate operation."""
 from __future__ import unicode_literals
 
-from napalm_base.base import NetworkDriver
-from napalm_base import constants as C
+from napalm.base.base import NetworkDriver
+from napalm.base import constants as C
 import json
 
 import os

@@ -14,8 +14,8 @@
 
 import unittest
 
-from napalm_eos import eos
-from napalm_base.test.base import TestConfigNetworkDriver
+from napalm.eos import eos
+from napalm.base.test.base import TestConfigNetworkDriver
 
 
 class TestConfigEOSDriver(unittest.TestCase, TestConfigNetworkDriver):

@@ -12,7 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-"""napalm_base package."""
+"""napalm.base package."""
 
 # Python3 support
 from __future__ import print_function
@@ -33,10 +33,10 @@ except AttributeError:
     raise RuntimeError('NAPALM requires Python 2.7 or Python3')
 
 # NAPALM base
-from napalm_base.base import NetworkDriver
-from napalm_base.exceptions import ModuleImportError
-from napalm_base.mock import MockDriver
-from napalm_base.utils import py23_compat
+from napalm.base.base import NetworkDriver
+from napalm.base.exceptions import ModuleImportError
+from napalm.base.mock import MockDriver
+from napalm.base.utils import py23_compat
 
 try:
     __version__ = pkg_resources.get_distribution('napalm-base').version
@@ -76,10 +76,10 @@ def get_network_driver(module_name, prepend=True):
         <class 'napalm_junos.junos.JunOSDriver'>
         >>> get_network_driver('IOS-XR')
         <class 'napalm_iosxr.iosxr.IOSXRDriver'>
-        >>> get_network_driver('napalm_eos')
-        <class 'napalm_eos.eos.EOSDriver'>
+        >>> get_network_driver('napalm.eos')
+        <class 'napalm.eos.eos.EOSDriver'>
         >>> get_network_driver('wrong')
-        napalm_base.exceptions.ModuleImportError: Cannot import "napalm_wrong". Is the library \
+        napalm.base.exceptions.ModuleImportError: Cannot import "napalm_wrong". Is the library \
         installed?
     """
     if module_name == "mock":
@@ -110,5 +110,5 @@ def get_network_driver(module_name, prepend=True):
 
     # looks like you don't have any Driver class in your module...
     raise ModuleImportError(
-        'No class inheriting "napalm_base.base.NetworkDriver" found in "{install_name}".'
+        'No class inheriting "napalm.base.base.NetworkDriver" found in "{install_name}".'
         .format(install_name=module_install_name))
