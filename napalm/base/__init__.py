@@ -39,7 +39,7 @@ from napalm.base.mock import MockDriver
 from napalm.base.utils import py23_compat
 
 try:
-    __version__ = pkg_resources.get_distribution('napalm-base').version
+    __version__ = pkg_resources.get_distribution('napalm').version
 except pkg_resources.DistributionNotFound:
     __version__ = "Not installed"
 

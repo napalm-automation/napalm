@@ -6,14 +6,15 @@ from pip.req import parse_requirements
 
 __author__ = 'David Barroso <dbarrosop@dravetech.com>'
 
-install_reqs = parse_requirements('requirements/all.txt', session=uuid.uuid1())
+install_reqs = parse_requirements('requirements/all', session=uuid.uuid1())
 reqs = [str(ir.req) for ir in install_reqs]
 
 
 setup(
     name="napalm",
     version='2.00.0-alpha-1',
-    packages=find_packages(),
+    packages=find_packages(exclude=("test*", )),
+    test_suite='test_base',
     author="David Barroso, Kirk Byers, Mircea Ulinic",
     author_email="dbarrosop@dravetech.com, ping@mirceaulinic.net, ktbyers@twb-tech.com",
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",

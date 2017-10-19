@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 import napalm.base.exceptions
 import napalm.base.helpers
 
-import napalm.base.constants as c
+from napalm.base import constants as c
 
 from napalm.base import validate
 

@@ -1,1 +1,3 @@
 include requirements/*
+include napalm/eos/templates/*.j2
+include napalm/eos/utils/textfsm_templates/*.tpl

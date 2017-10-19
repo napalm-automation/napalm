@@ -1,0 +1,25 @@
+language: python
+
+python:
+  - 2.7
+  - 3.4
+  - 3.5
+  - 3.6
+
+install:
+  - pip install tox-travis
+  - pip install coveralls
+deploy:
+  provider: pypi
+  user: dbarroso
+  password:
+    secure: kt2RgomUtrf5zXo3CyF8B7SkolvKgALAO0s72WuMd0wTGmgOvoBlt10Vfc+G+wuVAYvW/JKdsYRceancAFyWLFgjLtNxbV4cJF2RXN956sYFSJ2VrtUiB19WuKZjX6024gMs780hC/3bdK1SDg/NAAHSR7u2cma3QgRcW6O+UG4=
+  on:
+    tags: true
+    branch: master
+
+script:
+  - tox
+
+after_success:
+  - coveralls
