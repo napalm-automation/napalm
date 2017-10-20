@@ -1,0 +1,7 @@
+system {
+  ntp {
+    {% for peer in peers %}
+      peer {{peer}};
+    {% endfor %}
+  }
+}

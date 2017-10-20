@@ -1,0 +1,23 @@
+snmp {
+  {% if (location is defined) and location %}
+  location "{{location}}";
+  {% endif %}
+  {% if (contact is defined) and contact %}
+  contact "{{contact}}";
+  {% endif %}
+  {% if (community is defined) and community %}
+  {% for comm_name, comm_details in community.iteritems() %}
+  community {{comm_name}} {
+    {% if (comm_details is defined) and comm_details %}
+    {% if (comm_details.get('mode') is defined) and comm_details.get('mode') == 'rw' %}
+    authorization read-write;
+    {% else %}
+    authorization read-only;
+    {% endif %}
+    {% else %}
+    authorization read-only;
+    {% endif %}
+  }
+  {% endfor %}
+  {% endif %}
+}

@@ -1,0 +1,1 @@
+{"irb.17": {"ipv4": {"172.17.17.1": {"prefix_length": 32}, "172.17.19.1": {"prefix_length": 24}}, "ipv6": {"2400::1": {"prefix_length": 64}, "fe80::1": {"prefix_length": 128}}}}

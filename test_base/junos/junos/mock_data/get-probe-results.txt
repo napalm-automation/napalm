@@ -1,0 +1,540 @@
+<probe-results>
+    <probe-test-results>
+        <owner>sjc-loops</owner>
+        <test-name>edge01.lax01</test-name>
+        <target-address>192.168.0.1</target-address>
+        <probe-type>icmp-ping</probe-type>
+        <test-size format="5 probes">
+            5
+        </test-size>
+        <probe-single-results style="verbose">
+            <probe-status>Response received</probe-status>
+            <probe-time seconds="1456744484">
+                Mon Feb 29 11:14:44 2016
+            </probe-time>
+            <hardware-timestamp-status>No hardware timestamps</hardware-timestamp-status>
+            <rtt>8118</rtt>
+            <round-trip-jitter>350</round-trip-jitter>
+            <round-trip-interarrival-jitter>553</round-trip-interarrival-jitter>
+        </probe-single-results>
+        <probe-test-current-results>
+            <probe-test-generic-results>
+                <results-scope>current test</results-scope>
+                <probes-sent>4</probes-sent>
+                <probe-responses>4</probe-responses>
+                <loss-percentage>0</loss-percentage>
+                <probe-test-rtt>
+                    <probe-summary-results>
+                        <probe-results-type>Round trip time</probe-results-type>
+                        <samples>4</samples>
+                        <min-delay format="7756 usec">
+                            7756
+                        </min-delay>
+                        <max-delay format="8979 usec">
+                            8979
+                        </max-delay>
+                        <avg-delay format="8155 usec">
+                            8155
+                        </avg-delay>
+                        <jitter-delay format="1223 usec">
+                            1223
+                        </jitter-delay>
+                        <stddev-delay format="497 usec">
+                            497
+                        </stddev-delay>
+                        <sum-delay format="32621 usec">
+                            32621
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-rtt>
+                <probe-test-positive-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Positive round trip jitter</probe-results-type>
+                        <samples>3</samples>
+                        <min-delay format="25 usec">
+                            25
+                        </min-delay>
+                        <max-delay format="1223 usec">
+                            1223
+                        </max-delay>
+                        <avg-delay format="533 usec">
+                            533
+                        </avg-delay>
+                        <jitter-delay format="1198 usec">
+                            1198
+                        </jitter-delay>
+                        <stddev-delay format="506 usec">
+                            506
+                        </stddev-delay>
+                        <sum-delay format="1598 usec">
+                            1598
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-positive-round-trip-jitter>
+                <probe-test-negative-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Negative round trip jitter</probe-results-type>
+                        <samples>1</samples>
+                        <min-delay format="1211 usec">
+                            1211
+                        </min-delay>
+                        <max-delay format="1211 usec">
+                            1211
+                        </max-delay>
+                        <avg-delay format="1211 usec">
+                            1211
+                        </avg-delay>
+                        <jitter-delay format="0 usec">
+                            0
+                        </jitter-delay>
+                        <stddev-delay format="0 usec">
+                            0
+                        </stddev-delay>
+                        <sum-delay format="1211 usec">
+                            1211
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-negative-round-trip-jitter>
+            </probe-test-generic-results>
+        </probe-test-current-results>
+        <probe-last-test-results>
+            <probe-test-generic-results>
+                <results-scope>last test</results-scope>
+                <probes-sent>5</probes-sent>
+                <probe-responses>5</probe-responses>
+                <loss-percentage>0</loss-percentage>
+                <probe-last-test-info>
+                    <last-test-time seconds="1456744415">
+                        Mon Feb 29 11:13:35 2016
+                    </last-test-time>
+                </probe-last-test-info>
+                <probe-test-rtt>
+                    <probe-summary-results>
+                        <probe-results-type>Round trip time</probe-results-type>
+                        <samples>5</samples>
+                        <min-delay format="7727 usec">
+                            7727
+                        </min-delay>
+                        <max-delay format="8039 usec">
+                            8039
+                        </max-delay>
+                        <avg-delay format="7796 usec">
+                            7796
+                        </avg-delay>
+                        <jitter-delay format="312 usec">
+                            312
+                        </jitter-delay>
+                        <stddev-delay format="122 usec">
+                            122
+                        </stddev-delay>
+                        <sum-delay format="38981 usec">
+                            38981
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-rtt>
+                <probe-test-positive-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Positive round trip jitter</probe-results-type>
+                        <samples>3</samples>
+                        <min-delay format="4 usec">
+                            4
+                        </min-delay>
+                        <max-delay format="307 usec">
+                            307
+                        </max-delay>
+                        <avg-delay format="109 usec">
+                            109
+                        </avg-delay>
+                        <jitter-delay format="303 usec">
+                            303
+                        </jitter-delay>
+                        <stddev-delay format="140 usec">
+                            140
+                        </stddev-delay>
+                        <sum-delay format="327 usec">
+                            327
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-positive-round-trip-jitter>
+                <probe-test-negative-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Negative round trip jitter</probe-results-type>
+                        <samples>2</samples>
+                        <min-delay format="23 usec">
+                            23
+                        </min-delay>
+                        <max-delay format="305 usec">
+                            305
+                        </max-delay>
+                        <avg-delay format="164 usec">
+                            164
+                        </avg-delay>
+                        <jitter-delay format="282 usec">
+                            282
+                        </jitter-delay>
+                        <stddev-delay format="141 usec">
+                            141
+                        </stddev-delay>
+                        <sum-delay format="328 usec">
+                            328
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-negative-round-trip-jitter>
+            </probe-test-generic-results>
+        </probe-last-test-results>
+        <probe-test-global-results>
+            <probe-test-generic-results>
+                <results-scope>all tests</results-scope>
+                <probes-sent>617364</probes-sent>
+                <probe-responses>614320</probe-responses>
+                <loss-percentage>0</loss-percentage>
+                <probe-test-rtt>
+                    <probe-summary-results>
+                        <probe-results-type>Round trip time</probe-results-type>
+                        <samples>614320</samples>
+                        <min-delay format="7517 usec">
+                            7517
+                        </min-delay>
+                        <max-delay format="2604766 usec">
+                            2604766
+                        </max-delay>
+                        <avg-delay format="13134 usec">
+                            13134
+                        </avg-delay>
+                        <jitter-delay format="2597249 usec">
+                            2597249
+                        </jitter-delay>
+                        <stddev-delay format="24293 usec">
+                            24293
+                        </stddev-delay>
+                        <sum-delay format="8068336360 usec">
+                            8068336360
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-rtt>
+                <probe-test-positive-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Positive round trip jitter</probe-results-type>
+                        <samples>306591</samples>
+                        <min-delay format="0 usec">
+                            0
+                        </min-delay>
+                        <max-delay format="2458850 usec">
+                            2458850
+                        </max-delay>
+                        <avg-delay format="968 usec">
+                            968
+                        </avg-delay>
+                        <jitter-delay format="2458850 usec">
+                            2458850
+                        </jitter-delay>
+                        <stddev-delay format="12429 usec">
+                            12429
+                        </stddev-delay>
+                        <sum-delay format="296911677 usec">
+                            296911677
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-positive-round-trip-jitter>
+                <probe-test-negative-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Negative round trip jitter</probe-results-type>
+                        <samples>307728</samples>
+                        <min-delay format="1 usec">
+                            1
+                        </min-delay>
+                        <max-delay format="1561619 usec">
+                            1561619
+                        </max-delay>
+                        <avg-delay format="965 usec">
+                            965
+                        </avg-delay>
+                        <jitter-delay format="1561618 usec">
+                            1561618
+                        </jitter-delay>
+                        <stddev-delay format="10719 usec">
+                            10719
+                        </stddev-delay>
+                        <sum-delay format="296917194 usec">
+                            296917194
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-negative-round-trip-jitter>
+            </probe-test-generic-results>
+        </probe-test-global-results>
+        <delay-thresh>0</delay-thresh>
+        <jitter-thresh>0</jitter-thresh>
+        <stddev-thresh>0</stddev-thresh>
+        <loss-thresh-total>1</loss-thresh-total>
+        <loss-thresh-succ>1</loss-thresh-succ>
+    </probe-test-results>
+    <probe-test-results>
+        <owner>sjc-loops</owner>
+        <test-name>edge01.pdx01</test-name>
+        <target-address>172.17.17.1</target-address>
+        <probe-type>icmp-ping</probe-type>
+        <test-size format="10 probes">
+            10
+        </test-size>
+        <probe-single-results style="verbose">
+            <probe-status>Response received</probe-status>
+            <probe-time seconds="1456744389">
+                Mon Feb 29 11:13:09 2016
+            </probe-time>
+            <hardware-timestamp-status>No hardware timestamps</hardware-timestamp-status>
+            <rtt>9018</rtt>
+            <round-trip-jitter>1288</round-trip-jitter>
+            <round-trip-interarrival-jitter>116</round-trip-interarrival-jitter>
+        </probe-single-results>
+        <probe-test-current-results>
+            <probe-test-generic-results>
+                <results-scope>current test</results-scope>
+                <probes-sent>10</probes-sent>
+                <probe-responses>10</probe-responses>
+                <loss-percentage>0</loss-percentage>
+                <probe-test-rtt>
+                    <probe-summary-results>
+                        <probe-results-type>Round trip time</probe-results-type>
+                        <samples>10</samples>
+                        <min-delay format="7697 usec">
+                            7697
+                        </min-delay>
+                        <max-delay format="9018 usec">
+                            9018
+                        </max-delay>
+                        <avg-delay format="7894 usec">
+                            7894
+                        </avg-delay>
+                        <jitter-delay format="1321 usec">
+                            1321
+                        </jitter-delay>
+                        <stddev-delay format="385 usec">
+                            385
+                        </stddev-delay>
+                        <sum-delay format="78944 usec">
+                            78944
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-rtt>
+                <probe-test-positive-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Positive round trip jitter</probe-results-type>
+                        <samples>4</samples>
+                        <min-delay format="31 usec">
+                            31
+                        </min-delay>
+                        <max-delay format="1288 usec">
+                            1288
+                        </max-delay>
+                        <avg-delay format="422 usec">
+                            422
+                        </avg-delay>
+                        <jitter-delay format="1257 usec">
+                            1257
+                        </jitter-delay>
+                        <stddev-delay format="510 usec">
+                            510
+                        </stddev-delay>
+                        <sum-delay format="1687 usec">
+                            1687
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-positive-round-trip-jitter>
+                <probe-test-negative-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Negative round trip jitter</probe-results-type>
+                        <samples>5</samples>
+                        <min-delay format="6 usec">
+                            6
+                        </min-delay>
+                        <max-delay format="305 usec">
+                            305
+                        </max-delay>
+                        <avg-delay format="83 usec">
+                            83
+                        </avg-delay>
+                        <jitter-delay format="299 usec">
+                            299
+                        </jitter-delay>
+                        <stddev-delay format="112 usec">
+                            112
+                        </stddev-delay>
+                        <sum-delay format="415 usec">
+                            415
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-negative-round-trip-jitter>
+            </probe-test-generic-results>
+        </probe-test-current-results>
+        <probe-last-test-results>
+            <probe-test-generic-results>
+                <results-scope>last test</results-scope>
+                <probes-sent>10</probes-sent>
+                <probe-responses>10</probe-responses>
+                <loss-percentage>0</loss-percentage>
+                <probe-last-test-info>
+                    <last-test-time seconds="1456744389">
+                        Mon Feb 29 11:13:09 2016
+                    </last-test-time>
+                </probe-last-test-info>
+                <probe-test-rtt>
+                    <probe-summary-results>
+                        <probe-results-type>Round trip time</probe-results-type>
+                        <samples>10</samples>
+                        <min-delay format="7697 usec">
+                            7697
+                        </min-delay>
+                        <max-delay format="9018 usec">
+                            9018
+                        </max-delay>
+                        <avg-delay format="7894 usec">
+                            7894
+                        </avg-delay>
+                        <jitter-delay format="1321 usec">
+                            1321
+                        </jitter-delay>
+                        <stddev-delay format="385 usec">
+                            385
+                        </stddev-delay>
+                        <sum-delay format="78944 usec">
+                            78944
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-rtt>
+                <probe-test-positive-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Positive round trip jitter</probe-results-type>
+                        <samples>4</samples>
+                        <min-delay format="31 usec">
+                            31
+                        </min-delay>
+                        <max-delay format="1288 usec">
+                            1288
+                        </max-delay>
+                        <avg-delay format="422 usec">
+                            422
+                        </avg-delay>
+                        <jitter-delay format="1257 usec">
+                            1257
+                        </jitter-delay>
+                        <stddev-delay format="510 usec">
+                            510
+                        </stddev-delay>
+                        <sum-delay format="1687 usec">
+                            1687
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-positive-round-trip-jitter>
+                <probe-test-negative-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Negative round trip jitter</probe-results-type>
+                        <samples>5</samples>
+                        <min-delay format="6 usec">
+                            6
+                        </min-delay>
+                        <max-delay format="305 usec">
+                            305
+                        </max-delay>
+                        <avg-delay format="83 usec">
+                            83
+                        </avg-delay>
+                        <jitter-delay format="299 usec">
+                            299
+                        </jitter-delay>
+                        <stddev-delay format="112 usec">
+                            112
+                        </stddev-delay>
+                        <sum-delay format="415 usec">
+                            415
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-negative-round-trip-jitter>
+            </probe-test-generic-results>
+        </probe-last-test-results>
+        <probe-test-global-results>
+            <probe-test-generic-results>
+                <results-scope>all tests</results-scope>
+                <probes-sent>10</probes-sent>
+                <probe-responses>10</probe-responses>
+                <loss-percentage>0</loss-percentage>
+                <probe-test-rtt>
+                    <probe-summary-results>
+                        <probe-results-type>Round trip time</probe-results-type>
+                        <samples>10</samples>
+                        <min-delay format="7697 usec">
+                            7697
+                        </min-delay>
+                        <max-delay format="9018 usec">
+                            9018
+                        </max-delay>
+                        <avg-delay format="7894 usec">
+                            7894
+                        </avg-delay>
+                        <jitter-delay format="1321 usec">
+                            1321
+                        </jitter-delay>
+                        <stddev-delay format="385 usec">
+                            385
+                        </stddev-delay>
+                        <sum-delay format="78944 usec">
+                            78944
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-rtt>
+                <probe-test-positive-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Positive round trip jitter</probe-results-type>
+                        <samples>4</samples>
+                        <min-delay format="31 usec">
+                            31
+                        </min-delay>
+                        <max-delay format="1288 usec">
+                            1288
+                        </max-delay>
+                        <avg-delay format="422 usec">
+                            422
+                        </avg-delay>
+                        <jitter-delay format="1257 usec">
+                            1257
+                        </jitter-delay>
+                        <stddev-delay format="510 usec">
+                            510
+                        </stddev-delay>
+                        <sum-delay format="1687 usec">
+                            1687
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-positive-round-trip-jitter>
+                <probe-test-negative-round-trip-jitter>
+                    <probe-summary-results>
+                        <probe-results-type>Negative round trip jitter</probe-results-type>
+                        <samples>5</samples>
+                        <min-delay format="6 usec">
+                            6
+                        </min-delay>
+                        <max-delay format="305 usec">
+                            305
+                        </max-delay>
+                        <avg-delay format="83 usec">
+                            83
+                        </avg-delay>
+                        <jitter-delay format="299 usec">
+                            299
+                        </jitter-delay>
+                        <stddev-delay format="112 usec">
+                            112
+                        </stddev-delay>
+                        <sum-delay format="415 usec">
+                            415
+                        </sum-delay>
+                    </probe-summary-results>
+                </probe-test-negative-round-trip-jitter>
+            </probe-test-generic-results>
+        </probe-test-global-results>
+        <delay-thresh>0</delay-thresh>
+        <jitter-thresh>0</jitter-thresh>
+        <stddev-thresh>0</stddev-thresh>
+        <loss-thresh-total>1</loss-thresh-total>
+        <loss-thresh-succ>1</loss-thresh-succ>
+    </probe-test-results>
+</probe-results>

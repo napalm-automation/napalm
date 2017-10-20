@@ -1,0 +1,73 @@
+<environment-information>
+    <environment-item>
+        <name>FPC 0 Power Supply 0</name>
+        <class>Power</class>
+        <status>OK</status>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 Power Supply 0</name>
+        <status>OK</status>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 Power Supply 0</name>
+        <status>OK</status>
+    </environment-item>
+    <environment-item>
+        <name>FPC 0 CPU Sensor</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="37">37 degrees C / 98 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 0 PSU Sensor</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="29">29 degrees C / 84 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 CPU Sensor</name>
+        <status>OK</status>
+        <temperature celsius="38">38 degrees C / 100 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 PSU Sensor</name>
+        <status>OK</status>
+        <temperature celsius="29">29 degrees C / 84 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 CPU Sensor</name>
+        <status>OK</status>
+        <temperature celsius="43">43 degrees C / 109 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 PSU Sensor</name>
+        <status>OK</status>
+        <temperature celsius="35">35 degrees C / 95 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 0 Fan Tray 0</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>FPC 0 Fan Tray 1</name>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 Fan Tray 0</name>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 Fan Tray 1</name>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 Fan Tray 0</name>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+</environment-information>

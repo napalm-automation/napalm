@@ -1,0 +1,74 @@
+<temperature-threshold-information>
+  <temperature-threshold>
+    <name>FPC 0 CPU</name>
+    <fan-normal-speed>60</fan-normal-speed>
+    <fan-high-speed>70</fan-high-speed>
+    <bad-fan-yellow-alarm>70</bad-fan-yellow-alarm>
+    <bad-fan-red-alarm>85</bad-fan-red-alarm>
+    <yellow-alarm>80</yellow-alarm>
+    <red-alarm>95</red-alarm>
+  </temperature-threshold>
+  <temperature-threshold>
+    <name>FPC 0 EX-PFE1</name>
+    <fan-normal-speed>60</fan-normal-speed>
+    <fan-high-speed>70</fan-high-speed>
+    <bad-fan-yellow-alarm>70</bad-fan-yellow-alarm>
+    <bad-fan-red-alarm>85</bad-fan-red-alarm>
+    <yellow-alarm>80</yellow-alarm>
+    <red-alarm>95</red-alarm>
+  </temperature-threshold>
+  <temperature-threshold>
+    <name>FPC 0 EX-PFE2</name>
+    <fan-normal-speed>60</fan-normal-speed>
+    <fan-high-speed>70</fan-high-speed>
+    <bad-fan-yellow-alarm>70</bad-fan-yellow-alarm>
+    <bad-fan-red-alarm>85</bad-fan-red-alarm>
+    <yellow-alarm>80</yellow-alarm>
+    <red-alarm>95</red-alarm>
+  </temperature-threshold>
+  <temperature-threshold>
+    <name>FPC 0 EX-PFE3</name>
+    <fan-normal-speed>60</fan-normal-speed>
+    <fan-high-speed>70</fan-high-speed>
+    <bad-fan-yellow-alarm>70</bad-fan-yellow-alarm>
+    <bad-fan-red-alarm>85</bad-fan-red-alarm>
+    <yellow-alarm>80</yellow-alarm>
+    <red-alarm>95</red-alarm>
+  </temperature-threshold>
+  <temperature-threshold>
+    <name>FPC 0 GEPHY Front Left</name>
+    <fan-normal-speed>60</fan-normal-speed>
+    <fan-high-speed>70</fan-high-speed>
+    <bad-fan-yellow-alarm>70</bad-fan-yellow-alarm>
+    <bad-fan-red-alarm>85</bad-fan-red-alarm>
+    <yellow-alarm>80</yellow-alarm>
+    <red-alarm>95</red-alarm>
+  </temperature-threshold>
+  <temperature-threshold>
+    <name>FPC 0 GEPHY Front Middle</name>
+    <fan-normal-speed>60</fan-normal-speed>
+    <fan-high-speed>70</fan-high-speed>
+    <bad-fan-yellow-alarm>70</bad-fan-yellow-alarm>
+    <bad-fan-red-alarm>85</bad-fan-red-alarm>
+    <yellow-alarm>80</yellow-alarm>
+    <red-alarm>95</red-alarm>
+  </temperature-threshold>
+  <temperature-threshold>
+    <name>FPC 0 GEPHY Front Right</name>
+    <fan-normal-speed>60</fan-normal-speed>
+    <fan-high-speed>70</fan-high-speed>
+    <bad-fan-yellow-alarm>70</bad-fan-yellow-alarm>
+    <bad-fan-red-alarm>85</bad-fan-red-alarm>
+    <yellow-alarm>80</yellow-alarm>
+    <red-alarm>95</red-alarm>
+  </temperature-threshold>
+  <temperature-threshold>
+    <name>FPC 0 Uplink Conn</name>
+    <fan-normal-speed>60</fan-normal-speed>
+    <fan-high-speed>70</fan-high-speed>
+    <bad-fan-yellow-alarm>70</bad-fan-yellow-alarm>
+    <bad-fan-red-alarm>85</bad-fan-red-alarm>
+    <yellow-alarm>80</yellow-alarm>
+    <red-alarm>95</red-alarm>
+  </temperature-threshold>
+</temperature-threshold-information>

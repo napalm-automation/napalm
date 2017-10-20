@@ -73,7 +73,7 @@ def get_network_driver(module_name, prepend=True):
     .. code-block:: python
 
         >>> get_network_driver('junos')
-        <class 'napalm_junos.junos.JunOSDriver'>
+        <class 'napalm.junos.junos.JunOSDriver'>
         >>> get_network_driver('IOS-XR')
         <class 'napalm.iosxr.iosxr.IOSXRDriver'>
         >>> get_network_driver('napalm.eos')

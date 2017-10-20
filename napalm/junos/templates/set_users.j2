@@ -1,0 +1,34 @@
+system {
+  login {
+    {%- for user_name, user_details in users.items() -%}
+    user {{user_name}} {
+      {%- if user_details.get('password') or user_details.get('sshkeys') -%}
+      authentication {
+        {%- if user_details.get('password') -%}
+        plain-text-password "{{user_details.password}}";
+        {%- endif -%}
+        {%- if user_details.get('sshkeys') -%}
+          {%- for sshkey in user_details.sshkeys -%}
+            {%- if sshkey.split()[0] == 'ssh-dss' -%}
+            ssh-dsa "{{ sshkey }}";
+            {%- else -%}
+            {{ sshkey.split()[0] }} "{{ sshkey }}";
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      }
+      {%- endif -%}
+      {% set user_level = user_details.level|default(0) -%}
+      {%- if user_level == 15 -%}
+        class super-user;
+      {%- elif user_level < 15 and user_level >= 5 -%}
+        class operator;
+      {%- elif user_level < 5 and user_level >=1 -%}
+        class read-only;
+      {% elif user_level == 0 -%}
+        class unauthorized;
+      {% endif -%}
+    }
+    {%- endfor -%}
+  }
+}

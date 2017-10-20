@@ -1,0 +1,269 @@
+<bgp-information>
+    <bgp-peer style="detail">
+        <peer-address>1.2.3.4+179</peer-address>
+        <peer-as>13335</peer-as>
+        <local-address>172.17.17.2+58451</local-address>
+        <local-as>13335</local-as>
+        <description>magic stuff</description>
+        <peer-group>MAGIC</peer-group>
+        <peer-cfg-rti>MAGIC</peer-cfg-rti>
+        <peer-fwd-rti>MAGIC</peer-fwd-rti>
+        <peer-type>Internal</peer-type>
+        <peer-state>Established</peer-state>
+        <peer-flags>Sync RSync</peer-flags>
+        <last-state>EstabSync</last-state>
+        <last-event>RecvKeepAlive</last-event>
+        <last-error>Cease</last-error>
+        <bgp-option-information>
+            <export-policy>
+                MAGIC-OUT
+            </export-policy>
+            <import-policy>
+                MAGIC-IN
+            </import-policy>
+            <bgp-options>Multihop Preference LocalAddress HoldTime Ttl AddressFamily PrefixLimit LocalAS Refresh</bgp-options>
+            <bgp-options2></bgp-options2>
+            <bgp-options-extended></bgp-options-extended>
+            <address-families>inet-unicast inet6-unicast</address-families>
+            <local-address>172.17.17.2</local-address>
+            <holdtime>900</holdtime>
+            <preference>170</preference>
+            <prefix-limit>
+                <nlri-type>inet-unicast</nlri-type>
+                <prefix-count>10000</prefix-count>
+                <limit-action>warning only</limit-action>
+            </prefix-limit>
+            <prefix-limit>
+                <nlri-type>inet6-unicast</nlri-type>
+                <prefix-count>10000</prefix-count>
+                <limit-action>warning only</limit-action>
+            </prefix-limit>
+            <local-as>13335</local-as>
+            <local-system-as>13335</local-system-as>
+        </bgp-option-information>
+        <flap-count>3</flap-count>
+        <last-flap-event>Closed</last-flap-event>
+        <bgp-error>
+            <name>Hold Timer Expired Error</name>
+            <send-count>0</send-count>
+            <receive-count>1</receive-count>
+        </bgp-error>
+        <bgp-error>
+            <name>Cease</name>
+            <send-count>1</send-count>
+            <receive-count>0</receive-count>
+        </bgp-error>
+        <peer-id>1.2.3.4</peer-id>
+        <local-id>172.17.17.2</local-id>
+        <active-holdtime>900</active-holdtime>
+        <keepalive-interval>300</keepalive-interval>
+        <group-index>34</group-index>
+        <peer-index>1</peer-index>
+        <bgp-bfd>
+            <bfd-configuration-state>disabled</bfd-configuration-state>
+            <bfd-operational-state>down</bfd-operational-state>
+        </bgp-bfd>
+        <peer-restart-nlri-configured>inet-unicast inet6-unicast</peer-restart-nlri-configured>
+        <nlri-type-peer>inet-unicast inet6-unicast</nlri-type-peer>
+        <nlri-type-session>inet-unicast inet6-unicast</nlri-type-session>
+        <peer-refresh-capability>2</peer-refresh-capability>
+        <peer-stale-route-time-configured>300</peer-stale-route-time-configured>
+        <peer-no-restart/>
+        <peer-restart-nlri-negotiated>inet-unicast inet6-unicast</peer-restart-nlri-negotiated>
+        <peer-end-of-rib-received>inet-unicast inet6-unicast</peer-end-of-rib-received>
+        <peer-end-of-rib-sent>inet-unicast inet6-unicast</peer-end-of-rib-sent>
+        <peer-end-of-rib-scheduled></peer-end-of-rib-scheduled>
+        <peer-no-llgr-helper/>
+        <peer-4byte-as-capability-advertised>13335</peer-4byte-as-capability-advertised>
+        <peer-addpath-not-supported/>
+        <bgp-rib style="detail">
+            <name>inet.0</name>
+            <rib-bit>50000</rib-bit>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <vpn-rib-state>VPN restart is complete</vpn-rib-state>
+            <send-state>in sync</send-state>
+            <active-prefix-count>0</active-prefix-count>
+            <received-prefix-count>0</received-prefix-count>
+            <accepted-prefix-count>0</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>0</advertised-prefix-count>
+        </bgp-rib>
+        <bgp-rib style="detail">
+            <name>inet6.0</name>
+            <rib-bit>60000</rib-bit>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <vpn-rib-state>VPN restart is complete</vpn-rib-state>
+            <send-state>in sync</send-state>
+            <active-prefix-count>0</active-prefix-count>
+            <received-prefix-count>0</received-prefix-count>
+            <accepted-prefix-count>0</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>0</advertised-prefix-count>
+        </bgp-rib>
+        <last-received>224</last-received>
+        <last-sent>127</last-sent>
+        <last-checked>771</last-checked>
+        <input-messages>1273</input-messages>
+        <input-updates>2</input-updates>
+        <input-refreshes>0</input-refreshes>
+        <input-octets>24202</input-octets>
+        <output-messages>1335</output-messages>
+        <output-updates>0</output-updates>
+        <output-refreshes>0</output-refreshes>
+        <output-octets>25451</output-octets>
+        <bgp-output-queue>
+            <number>4</number>
+            <count>0</count>
+            <table-name>inet.0</table-name>
+            <rib-adv-nlri>inet-unicast</rib-adv-nlri>
+        </bgp-output-queue>
+        <bgp-output-queue>
+            <number>5</number>
+            <count>0</count>
+            <table-name>inet6.0</table-name>
+            <rib-adv-nlri>inet6-unicast</rib-adv-nlri>
+        </bgp-output-queue>
+    </bgp-peer>
+    <bgp-peer style="detail">
+        <peer-address>1.2.3.4</peer-address>
+        <peer-as>13335</peer-as>
+        <local-address>172.17.17.1</local-address>
+        <local-as>13335</local-as>
+        <peer-group>MAGIC</peer-group>
+        <peer-cfg-rti>master</peer-cfg-rti>
+        <peer-fwd-rti>master</peer-fwd-rti>
+        <peer-type>Internal</peer-type>
+        <peer-state>Established</peer-state>
+        <peer-flags>Sync RSync</peer-flags>
+        <last-state>Idle</last-state>
+        <last-event>RecvKeepAlive</last-event>
+        <last-error>None</last-error>
+        <bgp-option-information>
+            <export-policy>
+                MAGIC-OUT
+            </export-policy>
+            <import-policy>
+                MAGIC-IN
+            </import-policy>
+            <bgp-options>Multihop Preference LocalAddress HoldTime Ttl LogUpDown AddressFamily PrefixLimit Refresh</bgp-options>
+            <bgp-options2></bgp-options2>
+            <bgp-options-extended></bgp-options-extended>
+            <address-families>inet-unicast inet6-unicast inet-flow</address-families>
+            <local-address>172.17.17.1</local-address>
+            <holdtime>900</holdtime>
+            <preference>170</preference>
+            <prefix-limit>
+                <nlri-type>inet-unicast</nlri-type>
+                <prefix-count>10000</prefix-count>
+                <limit-action>warning only</limit-action>
+            </prefix-limit>
+            <prefix-limit>
+                <nlri-type>inet6-unicast</nlri-type>
+                <prefix-count>10000</prefix-count>
+                <limit-action>warning only</limit-action>
+            </prefix-limit>
+            <prefix-limit>
+                <nlri-type>inet-flow</nlri-type>
+                <prefix-count>10000</prefix-count>
+                <limit-action>warning only</limit-action>
+            </prefix-limit>
+            <nlri-information>
+                <nlri-type>inet-flow</nlri-type>
+                <nlri-flags>
+                </nlri-flags>
+                <nlri-flow-novalidate>
+                    MAGIC-FLOW-IN
+                </nlri-flow-novalidate>
+            </nlri-information>
+        </bgp-option-information>
+        <flap-count>0</flap-count>
+        <peer-id>1.2.3.4</peer-id>
+        <local-id>172.17.17.1</local-id>
+        <active-holdtime>900</active-holdtime>
+        <keepalive-interval>300</keepalive-interval>
+        <group-index>19</group-index>
+        <peer-index>1</peer-index>
+        <bgp-bfd>
+            <bfd-configuration-state>disabled</bfd-configuration-state>
+            <bfd-operational-state>down</bfd-operational-state>
+        </bgp-bfd>
+        <peer-restart-nlri-configured>inet-unicast inet6-unicast inet-flow</peer-restart-nlri-configured>
+        <nlri-type-peer>inet-unicast inet6-unicast inet-flow</nlri-type-peer>
+        <nlri-type-session>inet-unicast inet6-unicast inet-flow</nlri-type-session>
+        <peer-refresh-capability>2</peer-refresh-capability>
+        <peer-stale-route-time-configured>300</peer-stale-route-time-configured>
+        <peer-restart-time-received>120</peer-restart-time-received>
+        <peer-restart-nlri-received>inet-unicast inet6-unicast inet-flow</peer-restart-nlri-received>
+        <peer-restart-nlri-can-save-state>inet-unicast inet6-unicast inet-flow</peer-restart-nlri-can-save-state>
+        <peer-restart-nlri-state-saved></peer-restart-nlri-state-saved>
+        <peer-restart-nlri-negotiated>inet-unicast inet6-unicast inet-flow</peer-restart-nlri-negotiated>
+        <peer-end-of-rib-received>inet-unicast inet6-unicast inet-flow</peer-end-of-rib-received>
+        <peer-end-of-rib-sent>inet-unicast inet6-unicast inet-flow</peer-end-of-rib-sent>
+        <peer-end-of-rib-scheduled></peer-end-of-rib-scheduled>
+        <peer-no-llgr-helper/>
+        <peer-4byte-as-capability-advertised>13335</peer-4byte-as-capability-advertised>
+        <peer-addpath-not-supported/>
+        <bgp-rib style="detail">
+            <name>inet.0</name>
+            <rib-bit>2000f</rib-bit>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <send-state>in sync</send-state>
+            <active-prefix-count>1</active-prefix-count>
+            <received-prefix-count>215</received-prefix-count>
+            <accepted-prefix-count>215</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>0</advertised-prefix-count>
+        </bgp-rib>
+        <bgp-rib style="detail">
+            <name>inetflow.0</name>
+            <rib-bit>30000</rib-bit>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <send-state>in sync</send-state>
+            <active-prefix-count>1</active-prefix-count>
+            <received-prefix-count>1</received-prefix-count>
+            <accepted-prefix-count>1</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>0</advertised-prefix-count>
+        </bgp-rib>
+        <bgp-rib style="detail">
+            <name>inet6.0</name>
+            <rib-bit>40007</rib-bit>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <send-state>in sync</send-state>
+            <active-prefix-count>0</active-prefix-count>
+            <received-prefix-count>0</received-prefix-count>
+            <accepted-prefix-count>0</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>0</advertised-prefix-count>
+        </bgp-rib>
+        <last-received>175</last-received>
+        <last-sent>154</last-sent>
+        <last-checked>140</last-checked>
+        <input-messages>9125</input-messages>
+        <input-updates>116</input-updates>
+        <input-refreshes>0</input-refreshes>
+        <input-octets>179783</input-octets>
+        <output-messages>9444</output-messages>
+        <output-updates>0</output-updates>
+        <output-refreshes>0</output-refreshes>
+        <output-octets>179436</output-octets>
+        <bgp-output-queue>
+            <number>1</number>
+            <count>0</count>
+            <table-name>inet.0</table-name>
+            <rib-adv-nlri>inet-unicast</rib-adv-nlri>
+        </bgp-output-queue>
+        <bgp-output-queue>
+            <number>2</number>
+            <count>0</count>
+            <table-name>inetflow.0</table-name>
+            <rib-adv-nlri>inet-flow</rib-adv-nlri>
+        </bgp-output-queue>
+        <bgp-output-queue>
+            <number>3</number>
+            <count>0</count>
+            <table-name>inet6.0</table-name>
+            <rib-adv-nlri>inet6-unicast</rib-adv-nlri>
+        </bgp-output-queue>
+    </bgp-peer>
+</bgp-information>

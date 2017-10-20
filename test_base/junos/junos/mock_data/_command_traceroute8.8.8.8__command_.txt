@@ -1,0 +1,368 @@
+<rpc-reply message-id="urn:uuid:62a0878a-0b98-11e6-887c-2c600c83f6e9">
+<traceroute-results>
+<target-host>
+8.8.8.8
+</target-host>
+<target-ip>
+8.8.8.8
+</target-ip>
+<max-hop-index>
+30
+</max-hop-index>
+<packet-size>
+40
+</packet-size>
+<hop>
+<ttl-value>
+1
+</ttl-value>
+<last-ip-address>
+198.32.176.31
+</last-ip-address>
+<last-host-name>
+core2-1-1-0.pao.net.google.com
+</last-host-name>
+<probe-result date-determined="1461665979">
+<probe-index>
+1
+</probe-index>
+<ip-address>
+198.32.176.31
+</ip-address>
+<host-name>
+core2-1-1-0.pao.net.google.com
+</host-name>
+<icmp-type integer-type-value="11">
+<icmp-timxceed/>
+</icmp-type>
+<icmp-code integer-code-value="0">
+<icmp-timxceed-intrans/>
+</icmp-code>
+<rtt>
+4103
+</rtt>
+<probe-success/>
+</probe-result>
+<probe-result date-determined="1461665980">
+<probe-index>
+2
+</probe-index>
+<ip-address>
+198.32.176.31
+</ip-address>
+<host-name>
+core2-1-1-0.pao.net.google.com
+</host-name>
+<icmp-type integer-type-value="11">
+<icmp-timxceed/>
+</icmp-type>
+<icmp-code integer-code-value="0">
+<icmp-timxceed-intrans/>
+</icmp-code>
+<rtt>
+1310
+</rtt>
+<probe-success/>
+</probe-result>
+</hop>
+<hop>
+<ttl-value>
+1
+</ttl-value>
+<last-ip-address>
+206.223.116.21
+</last-ip-address>
+<last-host-name>
+eqixsj-google-gige.google.com
+</last-host-name>
+<probe-result date-determined="1461665980">
+<probe-index>
+3
+</probe-index>
+<ip-address>
+206.223.116.21
+</ip-address>
+<host-name>
+eqixsj-google-gige.google.com
+</host-name>
+<icmp-type integer-type-value="11">
+<icmp-timxceed/>
+</icmp-type>
+<icmp-code integer-code-value="0">
+<icmp-timxceed-intrans/>
+</icmp-code>
+<rtt>
+517
+</rtt>
+<probe-success/>
+</probe-result>
+</hop>
+<hop>
+<ttl-value>
+2
+</ttl-value>
+<last-ip-address>
+209.85.244.23
+</last-ip-address>
+<last-host-name>
+209.85.244.23
+</last-host-name>
+<probe-result date-determined="1461665980">
+<probe-index>
+1
+</probe-index>
+<ip-address>
+209.85.244.23
+</ip-address>
+<host-name>
+209.85.244.23
+</host-name>
+<icmp-type integer-type-value="11">
+<icmp-timxceed/>
+</icmp-type>
+<icmp-code integer-code-value="0">
+<icmp-timxceed-intrans/>
+</icmp-code>
+<rtt>
+1573
+</rtt>
+<probe-success/>
+</probe-result>
+</hop>
+<hop>
+<ttl-value>
+2
+</ttl-value>
+<last-ip-address>
+216.239.50.189
+</last-ip-address>
+<last-host-name>
+216.239.50.189
+</last-host-name>
+<probe-result date-determined="1461665980">
+<probe-index>
+2
+</probe-index>
+<ip-address>
+216.239.50.189
+</ip-address>
+<host-name>
+216.239.50.189
+</host-name>
+<icmp-type integer-type-value="11">
+<icmp-timxceed/>
+</icmp-type>
+<icmp-code integer-code-value="0">
+<icmp-timxceed-intrans/>
+</icmp-code>
+<rtt>
+2200
+</rtt>
+<probe-success/>
+</probe-result>
+</hop>
+<hop>
+<ttl-value>
+2
+</ttl-value>
+<last-ip-address>
+209.85.244.23
+</last-ip-address>
+<last-host-name>
+209.85.244.23
+</last-host-name>
+<probe-result date-determined="1461665980">
+<probe-index>
+3
+</probe-index>
+<ip-address>
+209.85.244.23
+</ip-address>
+<host-name>
+209.85.244.23
+</host-name>
+<icmp-type integer-type-value="11">
+<icmp-timxceed/>
+</icmp-type>
+<icmp-code integer-code-value="0">
+<icmp-timxceed-intrans/>
+</icmp-code>
+<rtt>
+1558
+</rtt>
+<probe-success/>
+</probe-result>
+</hop>
+<hop>
+<ttl-value>
+3
+</ttl-value>
+<last-ip-address>
+216.239.56.125
+</last-ip-address>
+<last-host-name>
+216.239.56.125
+</last-host-name>
+<probe-result date-determined="1461665980">
+<probe-index>
+1
+</probe-index>
+<ip-address>
+216.239.56.125
+</ip-address>
+<host-name>
+216.239.56.125
+</host-name>
+<icmp-type integer-type-value="11">
+<icmp-timxceed/>
+</icmp-type>
+<icmp-code integer-code-value="0">
+<icmp-timxceed-intrans/>
+</icmp-code>
+<rtt>
+1999
+</rtt>
+<probe-success/>
+</probe-result>
+</hop>
+<hop>
+<ttl-value>
+3
+</ttl-value>
+<last-ip-address>
+209.85.255.255
+</last-ip-address>
+<last-host-name>
+209.85.255.255
+</last-host-name>
+<probe-result date-determined="1461665980">
+<probe-index>
+2
+</probe-index>
+<ip-address>
+209.85.255.255
+</ip-address>
+<host-name>
+209.85.255.255
+</host-name>
+<icmp-type integer-type-value="11">
+<icmp-timxceed/>
+</icmp-type>
+<icmp-code integer-code-value="0">
+<icmp-timxceed-intrans/>
+</icmp-code>
+<rtt>
+2488
+</rtt>
+<probe-success/>
+</probe-result>
+</hop>
+<hop>
+<ttl-value>
+3
+</ttl-value>
+<last-ip-address>
+216.239.49.123
+</last-ip-address>
+<last-host-name>
+216.239.49.123
+</last-host-name>
+<probe-result date-determined="1461665980">
+<probe-index>
+3
+</probe-index>
+<ip-address>
+216.239.49.123
+</ip-address>
+<host-name>
+216.239.49.123
+</host-name>
+<icmp-type integer-type-value="11">
+<icmp-timxceed/>
+</icmp-type>
+<icmp-code integer-code-value="0">
+<icmp-timxceed-intrans/>
+</icmp-code>
+<rtt>
+5750
+</rtt>
+<probe-success/>
+</probe-result>
+</hop>
+<hop>
+<ttl-value>
+4
+</ttl-value>
+<last-ip-address>
+8.8.8.8
+</last-ip-address>
+<last-host-name>
+google-public-dns-a.google.com
+</last-host-name>
+<probe-result date-determined="1461665980">
+<probe-index>
+1
+</probe-index>
+<ip-address>
+8.8.8.8
+</ip-address>
+<host-name>
+google-public-dns-a.google.com
+</host-name>
+<icmp-type integer-type-value="3">
+<icmp-unreach/>
+</icmp-type>
+<icmp-code integer-code-value="3">
+<icmp-unreach-port/>
+</icmp-code>
+<rtt>
+1311
+</rtt>
+<probe-reached/>
+</probe-result>
+<probe-result date-determined="1461665980">
+<probe-index>
+2
+</probe-index>
+<ip-address>
+8.8.8.8
+</ip-address>
+<host-name>
+google-public-dns-a.google.com
+</host-name>
+<icmp-type integer-type-value="3">
+<icmp-unreach/>
+</icmp-type>
+<icmp-code integer-code-value="3">
+<icmp-unreach-port/>
+</icmp-code>
+<rtt>
+1582
+</rtt>
+<probe-reached/>
+</probe-result>
+<probe-result date-determined="1461665980">
+<probe-index>
+3
+</probe-index>
+<ip-address>
+8.8.8.8
+</ip-address>
+<host-name>
+google-public-dns-a.google.com
+</host-name>
+<icmp-type integer-type-value="3">
+<icmp-unreach/>
+</icmp-type>
+<icmp-code integer-code-value="3">
+<icmp-unreach-port/>
+</icmp-code>
+<rtt>
+1589
+</rtt>
+<probe-reached/>
+</probe-result>
+</hop>
+<traceroute-success/>
+</traceroute-results>
+</rpc-reply>
