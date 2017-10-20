@@ -61,11 +61,4 @@ env
 test/unit/test_devices.py
 
 report.json
-<<<<<<< HEAD
-=======
-test/unit/TestEOSDriverKB2.py
-test/unit/eos/cleanup.sh
-test/unit/eos/prep_test.sh
-
->>>>>>> 7cf04723d4d55ce2c07d07369d5fbf9b92bfb6a9
 tags
