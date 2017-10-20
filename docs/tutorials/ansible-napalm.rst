@@ -15,12 +15,12 @@
 napalm-ansible
 ==============
 
-Collection of ansible modules that use `napalm <https://github.com/napalm-automation/napalm>`_ to retrieve data or modify configuration on netwroking devices.
+Collection of ansible modules that use `napalm <https://github.com/napalm-automation/napalm>`_ to retrieve data or modify configuration on networking devices.
 
 Modules
 -------
 
-The following modules are currenty available:
+The following modules are currently available:
 
 * napalm_get_facts
 * napalm_install_config
@@ -134,7 +134,7 @@ Example to get compliance report::
 A More Detailed Example
 -----------------------
 
-It's very oftern we come to these tools needing to know how to run before we can walk.
+It's very often we come to these tools needing to know how to run before we can walk.
 Please review the `Ansible Documentation <http://docs.ansible.com/ansible/playbooks.html>`_ as this will answer some basic questions.
 It is also advised to have some kind of `yaml linter <https://pypi.python.org/pypi/yamllint>`_ or syntax checker available.
 

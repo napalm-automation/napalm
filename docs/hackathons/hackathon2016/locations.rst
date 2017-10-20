@@ -1,7 +1,7 @@
 Location
 ________
 
-The hackathon will be held online. We will use slack as the main communications channel, github to coordinate the work and hangouts for live presentations, which will be posted online on a youtbe channel within the hour.
+The hackathon will be held online. We will use slack as the main communications channel, github to coordinate the work and hangouts for live presentations, which will be posted online on a youtube channel within the hour.
 
 Check this :ref:`link <hackathon2016-useful-information>` for more information regarding the slack channel, hangouts, youtube, etc..
 

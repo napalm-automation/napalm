@@ -51,7 +51,7 @@ or:
 Dependencies
 ------------
 
-Althought dependencies for the transport libraries are solved by `pip`, on some operating systems there are some particular requirements:
+Although dependencies for the transport libraries are solved by `pip`, on some operating systems there are some particular requirements:
 
 .. toctree::
    :maxdepth: 1
