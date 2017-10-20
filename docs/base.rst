@@ -1,7 +1,7 @@
 NetworkDriver
 -------------
 
-.. autoclass:: napalm_base.base.NetworkDriver
+.. autoclass:: napalm.base.base.NetworkDriver
     :members:
     :undoc-members:
     :show-inheritance:

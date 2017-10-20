@@ -14,7 +14,6 @@
 # serve to show the default.
 from collections import defaultdict
 
-import glob
 import json
 import os
 import re
@@ -22,7 +21,7 @@ import subprocess
 import sys
 
 
-from napalm_base import NetworkDriver
+from napalm.base import NetworkDriver
 from jinja2 import Environment, FileSystemLoader
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -286,7 +285,8 @@ enable_epub_build = False
 EXCLUDE_METHODS = ('cli', 'close', 'commit_config', 'compare_config',
                    'discard_config', 'load_merge_candidate',
                    'load_replace_candidate', 'load_template', 'open',
-                   'rollback', 'compliance_report')
+                   'rollback', 'compliance_report', 'connection_tests',
+                   'post_connection_tests', 'pre_connection_tests')
 
 EXCLUDE_IN_REPORT = ('test_method_signatures')
 
@@ -314,33 +314,33 @@ def build_getters_support_matrix(app):
         print("Something bad happened when processing the test reports.")
         sys.exit(-1)
 
-    drivers = []
+    drivers = set()
     matrix = {m: defaultdict(dict) for m in dir(NetworkDriver)
               if not (m.startswith('_') or
                       m in EXCLUDE_METHODS)}
 
-    regex_name = re.compile(r"::test_(\w+)")
+    regex_name = re.compile(r"(?P<driver>\w+)\/.*::test_(?P<getter>\w+)")
 
-    for filename in glob.iglob('./support/tests/*.json'):
-        driver = filename.split('/')[-1].split('.')[0]
-        drivers.append(driver)
-        with open(filename, 'r') as f:
-            data = json.loads(f.read())
-            for test in data["report"]["tests"]:
-                match = regex_name.search(test['name'])
-                if match:
-                    method = match.group(1)
-                else:
-                    continue
-                if method in EXCLUDE_IN_REPORT:
-                    continue
-                result = test['outcome']
+    filename = './support/tests/report.json'
+    with open(filename, 'r') as f:
+        data = json.loads(f.read())
+        for test in data["report"]["tests"]:
+            match = regex_name.search(test['name'])
+            if match:
+                driver = match.group('driver')
+                drivers.add(driver)
+                method = match.group('getter')
+            else:
+                continue
+            if method in EXCLUDE_IN_REPORT:
+                continue
+            result = test['outcome']
 
-                if method in METHOD_ALIASES.keys():
-                    method = METHOD_ALIASES[method]
+            if method in METHOD_ALIASES.keys():
+                method = METHOD_ALIASES[method]
 
-                intermediate_result = matrix[method].get(driver, None)
-                matrix[method][driver] = _merge_results(result, intermediate_result)
+            intermediate_result = matrix[method].get(driver, None)
+            matrix[method][driver] = _merge_results(result, intermediate_result)
 
     sorted_methods = sorted(matrix.keys())
     drivers = sorted(drivers)
