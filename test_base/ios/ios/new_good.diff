@@ -1,0 +1,8 @@
+interface GigabitEthernet2
+ +ip address 172.20.0.1 255.255.255.0
++router bgp 65000
+ +bgp log-neighbor-changes
+ +neighbor 1.1.1.1 remote-as 12345
+interface GigabitEthernet2
+ -no ip address
+

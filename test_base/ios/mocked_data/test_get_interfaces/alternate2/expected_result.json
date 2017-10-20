@@ -1,0 +1,450 @@
+{
+  "FastEthernet1/0/38": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:AA",
+    "description": ""
+  },
+  "FastEthernet1/0/39": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:AB",
+    "description": ""
+  },
+  "FastEthernet1/0/34": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:A6",
+    "description": ""
+  },
+  "FastEthernet1/0/35": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:A7",
+    "description": ""
+  },
+  "FastEthernet1/0/36": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:A8",
+    "description": ""
+  },
+  "FastEthernet1/0/37": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:A9",
+    "description": ""
+  },
+  "FastEthernet1/0/30": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:A2",
+    "description": ""
+  },
+  "FastEthernet1/0/31": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:A3",
+    "description": ""
+  },
+  "FastEthernet1/0/32": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:A4",
+    "description": ""
+  },
+  "FastEthernet1/0/33": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:A5",
+    "description": ""
+  },
+  "FastEthernet1/0/16": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:92",
+    "description": ""
+  },
+  "FastEthernet1/0/17": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:93",
+    "description": ""
+  },
+  "FastEthernet1/0/14": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:90",
+    "description": ""
+  },
+  "FastEthernet1/0/15": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:91",
+    "description": ""
+  },
+  "FastEthernet1/0/12": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:8E",
+    "description": ""
+  },
+  "FastEthernet1/0/13": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:8F",
+    "description": ""
+  },
+  "FastEthernet1/0/10": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:8C",
+    "description": ""
+  },
+  "FastEthernet1/0/11": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:8D",
+    "description": ""
+  },
+  "FastEthernet1/0/18": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:94",
+    "description": ""
+  },
+  "FastEthernet1/0/19": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:95",
+    "description": ""
+  },
+  "Vlan100": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 1000,
+    "mac_address": "00:14:1C:57:A4:C2",
+    "description": ""
+  },
+  "Vlan254": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 1000,
+    "mac_address": "00:14:1C:57:A4:C3",
+    "description": ""
+  },
+  "FastEthernet1/0/29": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:A1",
+    "description": ""
+  },
+  "FastEthernet1/0/28": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:A0",
+    "description": ""
+  },
+  "FastEthernet1/0/23": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:99",
+    "description": ""
+  },
+  "FastEthernet1/0/22": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:98",
+    "description": ""
+  },
+  "FastEthernet1/0/21": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:97",
+    "description": ""
+  },
+  "FastEthernet1/0/20": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:96",
+    "description": ""
+  },
+  "FastEthernet1/0/27": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:9F",
+    "description": ""
+  },
+  "FastEthernet1/0/26": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:9E",
+    "description": ""
+  },
+  "FastEthernet1/0/25": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:9D",
+    "description": ""
+  },
+  "FastEthernet1/0/24": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:9A",
+    "description": ""
+  },
+  "FastEthernet1/0/48": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:B4",
+    "description": ""
+  },
+  "FastEthernet1/0/41": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:AD",
+    "description": ""
+  },
+  "FastEthernet1/0/40": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:AC",
+    "description": ""
+  },
+  "FastEthernet1/0/43": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:AF",
+    "description": ""
+  },
+  "FastEthernet1/0/42": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:AE",
+    "description": ""
+  },
+  "FastEthernet1/0/45": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:B1",
+    "description": ""
+  },
+  "FastEthernet1/0/44": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:B0",
+    "description": ""
+  },
+  "FastEthernet1/0/47": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:B3",
+    "description": ""
+  },
+  "FastEthernet1/0/46": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:B2",
+    "description": ""
+  },
+  "FastEthernet1/0/8": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:8A",
+    "description": ""
+  },
+  "FastEthernet1/0/9": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:8B",
+    "description": ""
+  },
+  "FastEthernet1/0/6": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:88",
+    "description": ""
+  },
+  "Vlan50": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 1000,
+    "mac_address": "00:14:1C:57:A4:C1",
+    "description": ""
+  },
+  "FastEthernet1/0/4": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:86",
+    "description": ""
+  },
+  "FastEthernet1/0/5": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:87",
+    "description": ""
+  },
+  "FastEthernet1/0/2": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:84",
+    "description": ""
+  },
+  "GigabitEthernet1/0/4": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:9C",
+    "description": ""
+  },
+  "FastEthernet1/0/1": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:83",
+    "description": ""
+  },
+  "Vlan1": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 1000,
+    "mac_address": "00:14:1C:57:A4:C0",
+    "description": ""
+  },
+  "FastEthernet1/0/7": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:89",
+    "description": ""
+  },
+  "GigabitEthernet1/0/2": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:82",
+    "description": ""
+  },
+  "FastEthernet1/0/3": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": true,
+    "speed": 100,
+    "mac_address": "00:14:1C:57:A4:85",
+    "description": ""
+  },
+  "GigabitEthernet1/0/1": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:81",
+    "description": ""
+  },
+  "GigabitEthernet1/0/3": {
+    "last_flapped": -1,
+    "is_enabled": true,
+    "is_up": false,
+    "speed": 10,
+    "mac_address": "00:14:1C:57:A4:9B",
+    "description": ""
+  }
+}

@@ -1,0 +1,23 @@
+{
+	"location": "123 Anytown USA Rack 404",
+	"community": {
+		"public": {
+			"acl": "11",
+			"mode": "ro"
+		},
+		"private": {
+			"acl": "12",
+			"mode": "rw"
+		},
+		"public_named_acl": {
+			"acl": "ALLOW-SNMP-ACL",
+			"mode": "ro"
+		},
+		"public_no_acl": {
+			"acl": "N/A",
+			"mode": "ro"
+		}
+	},
+	"chassis_id": "Asset Tag 54670",
+	"contact": "Config rev 028"
+}

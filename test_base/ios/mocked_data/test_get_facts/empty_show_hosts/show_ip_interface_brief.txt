@@ -1,0 +1,14 @@
+Interface              IP-Address      OK? Method Status                Protocol
+Vlan1                  unassigned      YES NVRAM  administratively down down
+Vlan20                 172.29.50.3     YES NVRAM  up                    up
+Vlan40                 unassigned      YES unset  up                    up
+Vlan41                 172.29.52.34    YES NVRAM  up                    up
+GigabitEthernet0/1     unassigned      YES unset  up                    up
+GigabitEthernet0/2     unassigned      YES unset  up                    up
+GigabitEthernet0/3     unassigned      YES unset  up                    up
+GigabitEthernet0/4     unassigned      YES unset  down                  down
+GigabitEthernet0/5     unassigned      YES unset  up                    up
+GigabitEthernet0/6     unassigned      YES unset  up                    up
+GigabitEthernet0/7     unassigned      YES unset  up                    up
+GigabitEthernet0/8     unassigned      YES unset  up                    up
+Port-channel1          unassigned      YES unset  administratively down down

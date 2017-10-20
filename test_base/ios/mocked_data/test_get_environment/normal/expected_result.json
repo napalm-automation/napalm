@@ -1,0 +1,30 @@
+{
+	"fans": {
+		"invalid": {
+			"status": true
+		}
+	},
+	"temperature": {
+		"system": {
+			"is_alert": false,
+			"temperature": 42,
+			"is_critical": false
+		}
+	},
+	"cpu": {
+		"0": {
+			"%usage": 6.0
+		}
+	},
+	"power": {
+		"invalid": {
+			"status": true,
+			"output": -1.0,
+			"capacity": -1.0
+		}
+	},
+	"memory": {
+		"available_ram": 4826256,
+		"used_ram": 20873476
+	}
+}

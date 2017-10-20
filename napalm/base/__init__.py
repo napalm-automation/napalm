@@ -75,7 +75,7 @@ def get_network_driver(module_name, prepend=True):
         >>> get_network_driver('junos')
         <class 'napalm_junos.junos.JunOSDriver'>
         >>> get_network_driver('IOS-XR')
-        <class 'napalm_iosxr.iosxr.IOSXRDriver'>
+        <class 'napalm.iosxr.iosxr.IOSXRDriver'>
         >>> get_network_driver('napalm.eos')
         <class 'napalm.eos.eos.EOSDriver'>
         >>> get_network_driver('wrong')

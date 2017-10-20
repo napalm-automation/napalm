@@ -1,0 +1,10 @@
+{
+	"GigabitEthernet1": [{
+		"port": "Gi2/0",
+		"hostname": "SW2.cisco.com"
+	}],
+	"GigabitEthernet2": [{
+		"port": "0050.56c0.0001",
+		"hostname": "0050.56c0.0001"
+	}]
+}

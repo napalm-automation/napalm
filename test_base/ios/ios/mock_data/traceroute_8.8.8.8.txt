@@ -1,0 +1,16 @@
+Type escape sequence to abort.
+Tracing the route to google-public-dns-a.google.com (8.8.8.8)
+VRF info: (vrf in name/id, vrf out name/id)
+  1 10.0.4.2 14 msec 11 msec 11 msec
+  2 BSN-access.dynamic.siol.net (213.250.19.90) 175 msec 157 msec 157 msec
+  3 95.176.241.222 178 msec 266 msec 208 msec
+  4 BSN-250-1-130.static.siol.net (213.250.1.130) 320 msec 300 msec 138 msec
+  5 BSN-209.85.248.115.static.siol.net (209.85.248.115) 122 msec
+    209.85.248.217 157 msec
+    72.14.237.184 195 msec
+  6 BSN-0.static.siol.net (209.85.248.1) 122 msec
+    209.85.248.217 157 msec 195 msec
+  7 *
+    209.85.1.1 157 msec 195 msec
+  8 * * *
+  9 google-public-dns-a.google.com (8.8.8.8) 213 msec 210 msec 197 msec
