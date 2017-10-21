@@ -1,5 +1,6 @@
 import pkg_resources
 import sys
+from napalm.base import get_network_driver
 
 # Verify Python Version that is running
 try:
@@ -14,9 +15,10 @@ try:
 except pkg_resources.DistributionNotFound:
     __version__ = "Not installed"
 
-
 SUPPORTED_DRIVERS = [
     "eos",
     "ios",
     "junos",
 ]
+
+__all__ = ('get_network_driver', )
