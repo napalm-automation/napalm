@@ -3,16 +3,53 @@ import uuid
 
 from setuptools import setup, find_packages
 from pip.req import parse_requirements
+from itertools import chain
+
+import sys
 
 __author__ = 'David Barroso <dbarrosop@dravetech.com>'
 
-install_reqs = parse_requirements('requirements/all', session=uuid.uuid1())
-reqs = [str(ir.req) for ir in install_reqs]
+
+def extract_drivers(opt):
+    return set([r.replace("--drivers=", "").strip() for r in opt.split(",")])
+
+
+def process_requirements():
+    develop = False
+    if 'egg_info' in sys.argv:
+        return []
+    elif 'develop' in sys.argv:
+        develop = True
+
+    requirements = set()
+    for r in sys.argv:
+        if r.startswith("--drivers"):
+            requirements |= extract_drivers(r)
+
+    # let's remove the options
+    sys.argv = [o for o in sys.argv if not o.startswith("--drivers")]
+
+    requirements = requirements or set(['all'])
+    requirements.add('base')
+
+    u = uuid.uuid1()
+
+    iter_reqs = chain(*[parse_requirements("requirements/{}".format(r), session=u)
+                        for r in requirements])
+
+    if develop:
+        import pip
+        [pip.main(['install', (str(ir.req))]) for ir in iter_reqs]
+
+    return [str(ir.req) for ir in iter_reqs]
+
+
+reqs = process_requirements()
 
 
 setup(
     name="napalm",
-    version='2.00.0-alpha-1',
+    version='2.0.0a1',
     packages=find_packages(exclude=("test*", )),
     test_suite='test_base',
     author="David Barroso, Kirk Byers, Mircea Ulinic",
