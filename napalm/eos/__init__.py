@@ -14,11 +14,5 @@
 
 """napalm.eos package."""
 from napalm.eos.eos import EOSDriver
-import pkg_resources
-
-try:
-    __version__ = pkg_resources.get_distribution('napalm-eos').version
-except pkg_resources.DistributionNotFound:
-    __version__ = "Not installed"
 
 __all__ = ('EOSDriver',)

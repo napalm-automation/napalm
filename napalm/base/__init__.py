@@ -19,30 +19,15 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 # Python std lib
-import sys
 import inspect
 import importlib
-import pkg_resources
 
-# Verify Python Version that is running
-try:
-    if not(sys.version_info.major == 2 and sys.version_info.minor == 7) and \
-            not(sys.version_info.major == 3):
-        raise RuntimeError('NAPALM requires Python 2.7 or Python3')
-except AttributeError:
-    raise RuntimeError('NAPALM requires Python 2.7 or Python3')
 
 # NAPALM base
 from napalm.base.base import NetworkDriver
 from napalm.base.exceptions import ModuleImportError
 from napalm.base.mock import MockDriver
 from napalm.base.utils import py23_compat
-
-try:
-    __version__ = pkg_resources.get_distribution('napalm').version
-except pkg_resources.DistributionNotFound:
-    __version__ = "Not installed"
-
 
 __all__ = [
     'get_network_driver',  # export the function
