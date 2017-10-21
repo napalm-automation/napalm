@@ -13,3 +13,10 @@ try:
     __version__ = pkg_resources.get_distribution('napalm').version
 except pkg_resources.DistributionNotFound:
     __version__ = "Not installed"
+
+
+SUPPORTED_DRIVERS = [
+    "eos",
+    "ios",
+    "junos",
+]

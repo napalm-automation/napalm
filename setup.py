@@ -1,55 +1,66 @@
 """setup.py file."""
+import napalm
+
 import uuid
 
+from distutils.core import Command
 from setuptools import setup, find_packages
-from pip.req import parse_requirements
-from itertools import chain
+from setuptools.command import install
 
+
+from pip.req import parse_requirements
+
+import pip
 import sys
+
 
 __author__ = 'David Barroso <dbarrosop@dravetech.com>'
 
 
-def extract_drivers(opt):
-    return set([r.replace("--drivers=", "").strip() for r in opt.split(",")])
-
-
-def process_requirements():
-    develop = False
-    if 'egg_info' in sys.argv:
-        return []
-    elif 'develop' in sys.argv:
-        develop = True
-
-    requirements = set()
-    for r in sys.argv:
-        if r.startswith("--drivers"):
-            requirements |= extract_drivers(r)
-
-    # let's remove the options
-    sys.argv = [o for o in sys.argv if not o.startswith("--drivers")]
-
-    requirements = requirements or set(['all'])
-    requirements.add('base')
-
+def process_requirements(dep):
+    print("PROCESSING DEPENDENCIES FOR {}".format(dep))
     u = uuid.uuid1()
-
-    iter_reqs = chain(*[parse_requirements("requirements/{}".format(r), session=u)
-                        for r in requirements])
-
-    if develop:
-        import pip
-        [pip.main(['install', (str(ir.req))]) for ir in iter_reqs]
-
-    return [str(ir.req) for ir in iter_reqs]
+    iter_reqs = parse_requirements("requirements/{}".format(dep), session=u)
+    [pip.main(['install', (str(ir.req))]) for ir in iter_reqs]
 
 
-reqs = process_requirements()
+def custom_command_driver(driver):
+    class CustomCommand(Command):
+        """A custom command to run Pylint on all Python source files."""
+        user_options = []
 
+        def initialize_options(self):
+            pass
+
+        def finalize_options(self):
+            pass
+
+        def run(self):
+            """Run command."""
+            process_requirements(driver)
+
+    return CustomCommand
+
+
+class CustomInstall(install.install):
+    """A custom command to run Pylint on all Python source files."""
+
+    def run(self):
+        """Run command."""
+        if any([d in sys.argv for d in napalm.SUPPORTED_DRIVERS]):
+            process_requirements('base')
+        else:
+            process_requirements('all')
+        install.install.run(self)
+
+
+custom_commands = {d: custom_command_driver(d) for d in napalm.SUPPORTED_DRIVERS}
+custom_commands['install'] = CustomInstall
 
 setup(
+    cmdclass=custom_commands,
     name="napalm",
-    version='2.0.0a1',
+    version='2.0.0a3',
     packages=find_packages(exclude=("test*", )),
     test_suite='test_base',
     author="David Barroso, Kirk Byers, Mircea Ulinic",
@@ -69,7 +80,7 @@ setup(
     ],
     url="https://github.com/napalm-automation/napalm",
     include_package_data=True,
-    install_requires=reqs,
+    install_requires=[],
     entry_points={
         'console_scripts': [
             'cl_napalm_configure=napalm.base.clitools.cl_napalm_configure:main',
