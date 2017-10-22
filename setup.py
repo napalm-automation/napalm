@@ -16,7 +16,7 @@ import sys
 __author__ = 'David Barroso <dbarrosop@dravetech.com>'
 
 # Read SUPPORTED_DRIVERS from file
-filename = os.path.join('napalm', 'SUPPORTED_DRIVERS')
+filename = os.path.join('napalm', 'SUPPORTED_DRIVERS.json')
 with open(filename) as supported:
     SUPPORTED_DRIVERS = json.load(supported)
 
