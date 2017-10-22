@@ -9,6 +9,8 @@ python:
 install:
   - pip install tox-travis
   - pip install coveralls
+  - pip install -r ./requirements/dev
+  - pip install -r ./requirements/all
 deploy:
   provider: pypi
   user: dbarroso
