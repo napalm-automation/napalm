@@ -1,0 +1,47 @@
+IPv6 Interface Status for VRF "default"
+Ethernet2/3, Interface status: protocol-up/link-up/admin-up, iod: 39
+  IPv6 address:
+    2001:db8::1/10 [VALID]
+  IPv6 subnet:  2000::/10
+  IPv6 link-local address: fe80::2ec2:60ff:fe4f:feb2 (default) [VALID]
+  IPv6 virtual addresses configured: none
+  IPv6 multicast routing: disabled
+  IPv6 report link local: disabled
+  IPv6 Forwarding feature: disabled
+  IPv6 multicast groups locally joined:
+      ff02::2  ff02::1  ff02::1:ff00:1  ff02::1:ff4f:feb2
+      ff02::1:ff00:0
+  IPv6 multicast (S,G) entries joined: none
+  IPv6 MTU: 1500 (using link MTU)
+  IPv6 unicast reverse path forwarding: none
+  IPv6 load sharing: none
+  IPv6 interface statistics last reset: never
+  IPv6 interface RP-traffic statistics: (forwarded/originated/consumed)
+    Unicast packets:      0/0/0
+    Unicast bytes:        0/0/0
+    Multicast packets:    0/15/0
+    Multicast bytes:      0/1590/0
+Ethernet2/4, Interface status: protocol-up/link-up/admin-up, iod: 40
+  IPv6 address:
+    2001:11:2233::a1/24 [VALID]
+    2001:cc11:22bb:0:2ec2:60ff:fe4f:feb2/64 [VALID]
+  IPv6 subnet:  2001::/24
+  IPv6 link-local address: fe80::2ec2:60ff:fe4f:feb2 (default) [VALID]
+  IPv6 virtual addresses configured: none
+  IPv6 multicast routing: disabled
+  IPv6 report link local: disabled
+  IPv6 Forwarding feature: disabled
+  IPv6 multicast groups locally joined:
+      ff02::1:ff4f:feb2  ff02::2  ff02::1  ff02::1:ff00:a1
+      ff02::1:ff4f:feb2  ff02::1:ff00:0
+  IPv6 multicast (S,G) entries joined: none
+  IPv6 MTU: 1500 (using link MTU)
+  IPv6 unicast reverse path forwarding: none
+  IPv6 load sharing: none
+  IPv6 interface statistics last reset: never
+  IPv6 interface RP-traffic statistics: (forwarded/originated/consumed)
+    Unicast packets:      0/0/0
+    Unicast bytes:        0/0/0
+    Multicast packets:    0/18/0
+    Multicast bytes:      0/2076/0
+

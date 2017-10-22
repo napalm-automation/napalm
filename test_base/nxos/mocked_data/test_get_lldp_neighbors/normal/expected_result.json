@@ -1,0 +1,21 @@
+{
+    "Eth1/1": [
+        {
+            "hostname": "n9k2.ntc.com", 
+            "port": "Ethernet1/1"
+        }
+    ], 
+    "mgmt0": [
+        {
+            "hostname": "PERIMETER.cisco.com", 
+            "port": "Fa1/0/9"
+        }
+    ], 
+    "Eth1/2": [
+        {
+            "hostname": "n9k2.ntc.com", 
+            "port": "Ethernet1/2"
+        }
+    ]
+}
+

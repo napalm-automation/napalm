@@ -1,0 +1,61 @@
+BGP summary information for VRF default, address family IPv4 Unicast
+BGP router identifier 10.1.0.16, local AS number 65535
+BGP table version is 361, IPv4 Unicast config peers 2, capable peers 2
+13 network entries and 17 paths using 2224 bytes of memory
+BGP attribute entries [4/576], BGP AS path entries [1/14]
+BGP community entries [295/10792], BGP clusterlist entries [0/0]
+13 received paths for inbound soft reconfiguration
+4 identical, 9 modified, 0 filtered received paths using 72 bytes
+
+Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.2.1.14       4    10  472516  472238      361    0    0     3w1d 9
+10.1.0.1        4 65535  242485  242487      361    0    0    23w2d 4
+
+BGP summary information for VRF RED1, address family IPv6 Unicast
+
+BGP summary information for VRF RED2, address family IPv4 Unicast
+BGP router identifier 10.1.0.17, local AS number 65535
+BGP table version is 8757, IPv4 Unicast config peers 3, capable peers 3
+59 network entries and 28 paths using 5768 bytes of memory
+BGP attribute entries [11/1584], BGP AS path entries [5/54]
+BGP community entries [295/10792], BGP clusterlist entries [0/0]
+65 received paths for inbound soft reconfiguration
+6 identical, 16 modified, 43 filtered received paths using 2536 bytes
+
+Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.2.2.1        4    10  477087  472247     8757    0    0     3w1d 15
+10.1.0.2        4 65535   34423   34483     8757    0    0     3w2d 6
+10.1.12.22      4    10  472430  472238     8757    0    0     3w1d 1
+
+BGP summary information for VRF RED2, address family IPv6 Unicast
+
+BGP summary information for VRF RED3, address family IPv4 Unicast
+BGP router identifier 10.1.0.18, local AS number 65535
+BGP table version is 8985, IPv4 Unicast config peers 3, capable peers 3
+84 network entries and 41 paths using 8312 bytes of memory
+BGP attribute entries [18/2592], BGP AS path entries [7/78]
+BGP community entries [295/10792], BGP clusterlist entries [0/0]
+91 received paths for inbound soft reconfiguration
+14 identical, 20 modified, 57 filtered received paths using 3352 bytes
+
+Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.2.2.12       4    10  472652  472216     8985    0    0     3w1d 5
+10.2.2.13       4    10  477090  472246     8985    0    0     3w1d 15
+10.1.0.3        4 65535   34418   34466     8985    0    0     3w2d 7
+
+BGP summary information for VRF RED3, address family IPv6 Unicast
+BGP router identifier 10.1.0.18, local AS number 65535
+BGP table version is 145, IPv6 Unicast config peers 3, capable peers 3
+12 network entries and 15 paths using 2136 bytes of memory
+BGP attribute entries [16/2304], BGP AS path entries [6/72]
+BGP community entries [295/10792], BGP clusterlist entries [0/0]
+11 received paths for inbound soft reconfiguration
+3 identical, 8 modified, 0 filtered received paths using 64 bytes
+
+Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+2001:db8:4:701::2
+                4 65535  163664  163693      145    0    0     3w2d 3
+2001:db8:e0:dd::1
+                4    10  327491  327278      145    0    0     3w1d 4
+2001:db8:e0:df::1
+                4    10  327465  327268      145    0    0     3w1d 4

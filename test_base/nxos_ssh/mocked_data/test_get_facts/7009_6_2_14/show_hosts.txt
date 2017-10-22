@@ -1,0 +1,8 @@
+DNS lookup disabled
+Default domain for vrf:default is spam.com
+Name/address lookup uses domain service
+Name servers are 255.255.255.255
+
+
+
+Host                    Address

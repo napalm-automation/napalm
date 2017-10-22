@@ -15,7 +15,7 @@ class TestGetNetworkDriver(unittest.TestCase):
     """Test the method get_network_driver."""
 
     # MIGRATION
-    network_drivers = ('eos', 'napalm.eos', 'junos', 'ios', )
+    network_drivers = ('eos', 'napalm.eos', 'junos', 'ios', 'nxos', 'nxos_ssh', )
     # 'iosxr', 'IOS-XR', 'junos', 'ros',
     #  'nxos', 'pluribus', 'panos', 'vyos')
 
