@@ -1,5 +1,6 @@
 """setup.py file."""
 import uuid
+import os
 import json
 
 from distutils.core import Command
@@ -15,7 +16,8 @@ import sys
 __author__ = 'David Barroso <dbarrosop@dravetech.com>'
 
 # Read SUPPORTED_DRIVERS from file
-with open("./napalm/SUPPORTED_DRIVERS.json") as supported:
+filename = os.path.join('napalm', 'SUPPORTED_DRIVERS')
+with open(filename) as supported:
     SUPPORTED_DRIVERS = json.load(supported)
 
 def process_requirements(dep):
