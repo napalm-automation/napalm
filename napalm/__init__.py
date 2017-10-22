@@ -1,7 +1,7 @@
 import pkg_resources
 import sys
-import json
 from napalm.base import get_network_driver
+from napalm._SUPPORTED_DRIVERS import SUPPORTED_DRIVERS
 
 # Verify Python Version that is running
 try:
@@ -16,8 +16,4 @@ try:
 except pkg_resources.DistributionNotFound:
     __version__ = "Not installed"
 
-# Read supported drivers from file (as needs to be available to setup.py)
-with open("SUPPORTED_DRIVERS.json") as supported:
-    SUPPORTED_DRIVERS = json.load(supported)
-
-__all__ = ('get_network_driver', )
+__all__ = ('get_network_driver', 'SUPPORTED_DRIVERS')
