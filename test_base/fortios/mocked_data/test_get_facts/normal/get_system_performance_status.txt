@@ -1,0 +1,12 @@
+CPU states: 0% user 18% system 0% nice 82% idle
+CPU0 states: 0% user 22% system 0% nice 78% idle
+CPU1 states: 0% user 15% system 0% nice 85% idle
+CPU2 states: 0% user 17% system 0% nice 83% idle
+CPU3 states: 0% user 19% system 0% nice 81% idle
+Memory states: 49% used
+Average network usage: 141989 kbps in 1 minute, 125760 kbps in 10 minutes, 146591 kbps in 30 minutes
+Average sessions: 14482 sessions in 1 minute, 14837 sessions in 10 minutes, 14965 sessions in 30 minutes
+Average session setup rate: 259 sessions per second in last 1 minute, 154 sessions per second in last 10 minutes, 193 sessions per second in last 30 minutes
+Virus caught: 0 total in 1 minute
+IPS attacks blocked: 0 total in 1 minute
+Uptime: 274 days,  1 hours,  41 minutes

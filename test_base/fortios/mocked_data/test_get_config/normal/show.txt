@@ -1,0 +1,402 @@
+#config-version=FWF60D-5.00-FW-build271-140124:opmode=1:vdom=0:user=admin
+#conf_file_ver=9284291339995375843
+#buildno=0271
+#global_vdom=1
+config system global
+    set admintimeout 15
+    set fgd-alert-subscription advisory latest-threat
+    set gui-certificates enable
+    set gui-dynamic-routing enable
+    set gui-ipv6 enable
+    set gui-local-in-policy enable
+    set gui-nat46-64 enable
+    set gui-policy-based-ipsec enable
+    set hostname "FORTINET"
+    set service-expire-notification disable
+    set timezone 08
+end
+config system accprofile
+    edit "prof_admin"
+        set admingrp read-write
+        set authgrp read-write
+        set endpoint-control-grp read-write
+        set fwgrp read-write
+        set loggrp read-write
+        set mntgrp read-write
+        set netgrp read-write
+        set routegrp read-write
+        set sysgrp read-write
+        set updategrp read-write
+        set utmgrp read-write
+        set vpngrp read-write
+        set wanoptgrp read-write
+        set wifi read-write
+    next
+end
+config system interface
+    edit "dmz"
+        set vdom "root"
+        set ip 10.10.10.1 255.255.255.0
+        set allowaccess ping https fgfm capwap
+        set type physical
+        set snmp-index 5
+    next
+    edit "wan1"
+        set vdom "root"
+        set mode dhcp
+        set allowaccess ping https ssh snmp
+        set type physical
+        set snmp-index 3
+            config ipv6
+                set ip6-allowaccess ping https ssh
+            end
+        set defaultgw enable
+    next
+    edit "wan2"
+        set vdom "root"
+        set ip 192.168.101.99 255.255.255.0
+        set allowaccess ping fgfm auto-ipsec
+        set type physical
+        set snmp-index 4
+    next
+    edit "modem"
+        set vdom "root"
+        set mode pppoe
+        set type physical
+        set snmp-index 6
+        set defaultgw enable
+    next
+    edit "ssl.root"
+        set vdom "root"
+        set type tunnel
+        set alias "sslvpn tunnel interface"
+        set snmp-index 7
+    next
+    edit "mesh.root"
+        set vdom "root"
+        set type vap-switch
+        set snmp-index 9
+    next
+    edit "internal"
+        set vdom "root"
+        set ip 10.10.90.1 255.255.255.0
+        set allowaccess ping https ssh snmp http fgfm capwap
+        set status down
+        set type physical
+        set snmp-index 2
+    next
+    edit "wifi"
+        set vdom "root"
+        set ip 10.10.80.1 255.255.255.0
+        set allowaccess ping https ssh fgfm
+        set status down
+        set type vap-switch
+        set snmp-index 1
+    next
+end
+config system admin
+    edit "admin"
+        set accprofile "super_admin"
+        set vdom "root"
+            config dashboard-tabs
+                edit 1
+                    set name "Status"
+                next
+                edit 2
+                    set columns 1
+                    set name "Top Sources"
+                next
+                edit 3
+                    set columns 1
+                    set name "Top Destinations"
+                next
+                edit 4
+                    set columns 1
+                    set name "Top Applications"
+                next
+            end
+            config dashboard
+                edit 1
+                    set tab-id 1
+                    set column 1
+                next
+                edit 2
+                    set widget-type licinfo
+                    set tab-id 1
+                    set column 1
+                next
+                edit 3
+                    set widget-type jsconsole
+                    set tab-id 1
+                    set column 1
+                next
+                edit 4
+                    set widget-type sysres
+                    set tab-id 1
+                    set column 2
+                next
+                edit 5
+                    set widget-type gui-features
+                    set tab-id 1
+                    set column 2
+                next
+                edit 6
+                    set widget-type alert
+                    set tab-id 1
+                    set column 2
+                    set top-n 10
+                next
+                edit 21
+                    set widget-type sessions
+                    set tab-id 2
+                    set column 1
+                    set top-n 25
+                    set sort-by msg-counts
+                next
+                edit 31
+                    set widget-type sessions
+                    set tab-id 3
+                    set column 1
+                    set top-n 25
+                    set sort-by msg-counts
+                    set report-by destination
+                next
+                edit 41
+                    set widget-type sessions
+                    set tab-id 4
+                    set column 1
+                    set top-n 25
+                    set sort-by msg-counts
+                    set report-by application
+                next
+            end
+            config login-time
+                edit "admin"
+                    set last-login 2014-03-05 20:18:42
+                next
+            end
+        set password ENC AK1mbPadQmYqP8Q4f7ClXXWGrgEMVWbGGwf6IgRwHQduoc=
+    next
+end
+config system ha
+    set override disable
+end
+config system storage
+    edit "FLASH1"
+        set media-type "scsi"
+        set partition "4E6CD8C90723C14B"
+    next
+end
+config system replacemsg-image
+    edit "logo_fnet"
+        set image-base64 ''
+        set image-type gif
+    next
+    edit "logo_fguard_wf"
+        set image-base64 ''
+        set image-type gif
+    next
+    edit "logo_fw_auth"
+        set image-base64 ''
+        set image-type png
+    next
+    edit "logo_v2_fnet"
+        set image-base64 ''
+        set image-type png
+    next
+    edit "logo_v2_fguard_wf"
+        set image-base64 ''
+        set image-type png
+    next
+end
+config system snmp sysinfo
+    set status enable
+end
+config vpn certificate ca
+end
+config vpn certificate local
+end
+config wanopt storage
+    edit "FLASH1"
+        set size 4563
+    next
+end
+config system session-sync
+end
+config ips global
+    set default-app-cat-mask 18446744073474670591
+end
+config ips dbinfo
+    set version 1
+end
+config gui console
+    unset preferences
+end
+config system auto-install
+    set auto-install-config enable
+    set auto-install-image enable
+end
+config system console
+    set output standard
+end
+config system ntp
+    set ntpsync enable
+    set syncinterval 60
+end
+config system settings
+    set sip-tcp-port 5060
+    set sip-udp-port 5060
+end
+config firewall service group
+    edit "Email Access"
+        set member "DNS" "IMAP" "IMAPS" "POP3" "POP3S" "SMTP" "SMTPS"
+    next
+    edit "Web Access"
+        set member "DNS" "HTTP" "HTTPS"
+    next
+    edit "Windows AD"
+        set member "DCE-RPC" "DNS" "KERBEROS" "LDAP" "LDAP_UDP" "SAMBA" "SMB"
+    next
+    edit "Exchange Server"
+        set member "DCE-RPC" "DNS" "HTTPS"
+    next
+end
+config webfilter ftgd-local-cat
+    edit "custom1"
+        set id 140
+    next
+    edit "custom2"
+        set id 141
+    next
+end
+config user fortitoken
+    edit "FTKMOB4302463E0E"
+        set license "FTMTRIAL00138836"
+    next
+    edit "FTKMOB433B7004CF"
+        set license "FTMTRIAL00138836"
+    next
+end
+config user local
+    edit "guest"
+        set type password
+        set passwd ENC SWv0LitZXJWqXLGveoEXgcboipAFM2wg7Np0oxyQpRubIce9royFr2/bxJ2nzvoPR0CN3p1/2+VWuPJlLTDGuYX0ojfBAbWkgLXI2AxwB3jpUp7PMWMyyfn4aT2Y35HnSP5mP87q2d1lMYJkBttbceEmZsDgkmeRyLPDNdtSCFvZ7pKm0gNDILk7sLPyJT7k5ZXxtw==
+    next
+end
+config user group
+    edit "FSSO_Guest_Users"
+        set group-type fsso-service
+    next
+    edit "Guest-group"
+        set member "guest"
+    next
+end
+config spamfilter profile
+    edit "default"
+        set comment "malware and phishing URL filtering"
+    next
+end
+config wanopt settings
+    set host-id "default-id"
+end
+config wanopt profile
+    edit "default"
+        set comments "default WANopt profile"
+    next
+end
+config web-proxy global
+    set proxy-fqdn "default.fqdn"
+end
+config firewall schedule recurring
+    edit "always"
+        set day sunday monday tuesday wednesday thursday friday saturday
+    next
+end
+config firewall profile-protocol-options
+    edit "default"
+        set comment "all default services"
+            config http
+                set ports 80
+                set options clientcomfort no-content-summary
+                unset post-lang
+            end
+            config ftp
+                set ports 21
+                set options clientcomfort no-content-summary splice
+            end
+            config imap
+                set ports 143
+                set options fragmail no-content-summary
+            end
+            config mapi
+                set ports 135
+                set options fragmail no-content-summary
+            end
+            config pop3
+                set ports 110
+                set options fragmail no-content-summary
+            end
+            config smtp
+                set ports 25
+                set options fragmail no-content-summary splice
+            end
+            config nntp
+                set ports 119
+                set options no-content-summary splice
+            end
+            config im
+                unset options
+            end
+            config dns
+                set ports 53
+            end
+    next
+end
+config firewall deep-inspection-options
+    edit "default"
+        set comment "all default services"
+            config https
+                set ports 443
+            end
+            config ftps
+                set ports 990
+            end
+            config imaps
+                set ports 993
+            end
+            config pop3s
+                set ports 995
+            end
+            config smtps
+                set ports 465
+            end
+    next
+end
+config firewall identity-based-route
+end
+config firewall policy
+    edit 5
+        set srcintf "internal"
+        set dstintf "wifi"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+    next
+end
+config wireless-controller wtp
+    edit "FWF60D-WIFI0"
+    next
+end
+config log disk setting
+    set status enable
+    set storage "FLASH1"
+end
+config log eventfilter
+    set user disable
+    set wan-opt disable
+end
+config log setting
+    set gui-location disk
+end

@@ -1,0 +1,42 @@
+BGP neighbor is 10.15.2.105, remote AS 65209, local AS 65432, external link
+  BGP version 4, remote router ID 209.92.66.34
+  BGP state = Established, up for 01w3d19h
+  Last read 00:00:31, hold time is 180, keepalive interval is 60 seconds
+  Configured hold time is 180, keepalive interval is 60 seconds
+  Neighbor capabilities:
+    Route refresh: advertised and received (old and new)
+    Address family IPv4 Unicast: advertised and received
+    Address family IPv6 Unicast: advertised and received
+  Received 164115 messages, 207 notifications, 0 in queue
+  Sent 222373 messages, 223 notifications, 0 in queue
+  Route refresh request: received 0, sent 0
+  Minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv4 Unicast
+  BGP table version 20294, neighbor version 20293
+  Index 0, Offset 0, Mask 0x1
+  Community attribute sent to this neighbor (both)
+  Inbound path policy configured
+  Outbound path policy configured
+  Route map for incoming advertisements is *allow-officeroot
+  Route map for outgoing advertisements is *allow-taggedroot
+  1 accepted prefixes
+  668 announced prefixes
+
+ For address family: IPv6 Unicast
+  BGP table version 583, neighbor version 583
+  Index 11, Offset 1, Mask 0x8
+  Community attribute sent to this neighbor (both)
+  0 accepted prefixes
+  3 announced prefixes
+
+ Connections established 111; dropped 111
+Local host: 10.15.2.104, Local port: 18347
+Foreign host: 10.15.2.105, Foreign port: 179
+Nexthop: 10.15.2.104
+Nexthop global: ::
+Nexthop local: ::
+BGP connection: non shared network
+Last Reset: 01w3d19h, due to BGP Notification sent
+Notification Error Message: (CeaseUnspecified Error Subcode)
+

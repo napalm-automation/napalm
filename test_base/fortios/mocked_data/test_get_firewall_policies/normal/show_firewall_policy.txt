@@ -1,0 +1,12 @@
+config firewall policy
+    edit 1
+        set uuid 9d747de8-dad4-51e5-7a7e-d078aa77140a
+        set srcintf "any"
+        set dstintf "any"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+    next
+end

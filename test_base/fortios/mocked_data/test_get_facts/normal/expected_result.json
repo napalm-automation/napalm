@@ -1,0 +1,1 @@
+{"uptime": 23679660, "vendor": "Fortigate", "hostname": "vpn-sto3-z8r307-2", "fqdn": "vpn-sto3-z8r307-2.spotify.net", "os_version": "v5.2.2", "serial_number": "FG800C3914800949", "model": "FortiGate-800C", "interface_list": ["mgmt1", "mgmt2", "wan1", "wan2", "port1", "port2", "modem", "ssl.root", "npu0-vlink0", "npu0-vlink1", "pub0", "svc0", "forticlient", "native", "MY_VPN"]}

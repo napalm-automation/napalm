@@ -1,0 +1,60 @@
+config router bgp
+    set as 65432
+    set router-id 10.235.32.243
+        config aggregate-address
+            edit 1
+                set prefix 192.168.53.0 255.255.255.0
+            next
+            edit 2
+                set prefix 192.168.4.0 255.255.252.0
+            next
+        end
+        config neighbor
+            edit "10.15.2.99"
+                set bfd enable
+                set shutdown enable
+                set description "LOMGW-ASH2-1 PRIMARY TUNNEL"
+                set remote-as 65307
+                set route-map-in "allow-tagged"
+                set route-map-out "allow-tagged"
+            next
+            edit "10.15.2.101"
+                set bfd enable
+                set description "OFFICE NYC620 PRIMARY TUNNEL"
+                set remote-as 65208
+                set route-map-in "allow-office"
+                set route-map-in6 "allow-office"
+                set route-map-out "allow-tagged"
+                set route-map-out6 "deny-all"
+            next
+            edit "10.15.2.105"
+                set bfd enable
+                set description "OFFICE SFO988 SECONDARY TUNNEL"
+                set remote-as 65209
+                set route-map-in "allow-office"
+                set route-map-out "allow-tagged"
+            next
+        end
+        config redistribute "connected"
+        end
+        config redistribute "rip"
+        end
+        config redistribute "ospf"
+        end
+        config redistribute "static"
+            set status enable
+            set route-map "tag-static-with-community"
+        end
+        config redistribute "isis"
+        end
+        config redistribute6 "connected"
+        end
+        config redistribute6 "rip"
+        end
+        config redistribute6 "ospf"
+        end
+        config redistribute6 "static"
+        end
+        config redistribute6 "isis"
+        end
+end
