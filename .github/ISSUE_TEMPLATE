@@ -1,33 +1,7 @@
-### Description of Issue/Question
+### The NAPALM Project has reunified!
+
+Please submit all NAPALM issues to:
+https://github.com/napalm-automation/napalm/issues
 
 
-### Did you follow the steps from https://github.com/napalm-automation/napalm#faq
-[ ] Yes
-[ ] No
-
-
-### Setup
-
-### napalm-iosxr version
-(Paste verbatim output from `pip freeze | grep napalm-iosxr` between quotes below)
-
-```
-
-```
-
-### IOS-XR version and platform details
-(Paste the complete verbatim output from `show version brief` between quotes below)
-
-```
-
-```
-
-### Steps to Reproduce the Issue
-
-### Error Traceback
-(Paste the complete traceback of the exception between quotes below)
-
-```
-
-```
-
+### DO NOT submit any issues to this repository.
