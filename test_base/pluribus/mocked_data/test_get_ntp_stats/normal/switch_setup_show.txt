@@ -1,0 +1,15 @@
+switch-name@$@sw03.sjc01
+mgmt-ip@$@10.0.0.1
+mgmt-netmask@$@16
+in-band-ip@$@192.168.0.1
+in-band-netmask@$@24
+gateway-ip@$@192.168.0.2
+dns-ip@$@8.8.8.8
+dns-secondary-ip@$@8.8.4.4
+domain-name@$@cloudflare.com
+ntp-server@$@69.20.226.105
+timezone@$@UTC
+date@$@2016-02-17,13:18:57
+phone-home@$@yes
+hostid@$@167772570
+analytics-store@$@default
