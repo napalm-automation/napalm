@@ -1,0 +1,41 @@
+<lldp-neighbors-information style="detail">
+    <lldp-neighbor-information>
+        <lldp-index>23</lldp-index>
+        <lldp-ttl>120</lldp-ttl>
+        <lldp-timemark>Mon Apr 18 10:04:06 2016</lldp-timemark>
+        <lldp-age>29</lldp-age>
+        <lldp-local-interface>xe-0/1/0.0</lldp-local-interface>
+        <lldp-local-parent-interface-name>ae0.0</lldp-local-parent-interface-name>
+        <lldp-local-port-id>600</lldp-local-port-id>
+        <lldp-local-port-ageout-count>0</lldp-local-port-ageout-count>
+        <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
+        <lldp-remote-chassis-id>00:1c:73:ee:c0:46</lldp-remote-chassis-id>
+        <lldp-remote-port-id-subtype>Interface name</lldp-remote-port-id-subtype>
+        <lldp-remote-port-id>Ethernet3/2/1</lldp-remote-port-id>
+        <lldp-remote-port-description>Po1:sw21.tpe01:xe-0/1/0</lldp-remote-port-description>
+        <lldp-remote-system-name>core05.tpe01</lldp-remote-system-name>
+        <lldp-system-description>
+            <lldp-remote-system-description>Arista Networks EOS version 4.14.8M running on an Arista Networks DCS-7504</lldp-remote-system-description>
+        </lldp-system-description>
+        <lldp-remote-system-capabilities-supported>Bridge Router </lldp-remote-system-capabilities-supported>
+        <lldp-remote-system-capabilities-enabled>Bridge </lldp-remote-system-capabilities-enabled>
+        <lldp-remote-management-address-type>IPv4</lldp-remote-management-address-type>
+        <lldp-remote-management-address>199.27.130.35</lldp-remote-management-address>
+        <lldp-remote-management-address-port-id>2000900</lldp-remote-management-address-port-id>
+        <lldp-remote-management-address-sub-type>1</lldp-remote-management-address-sub-type>
+        <lldp-remote-management-address-interface-subtype>ifIndex(2)</lldp-remote-management-address-interface-subtype>
+        <lldp-remote-management-addr-oid>1.3.6.1.2.1.31.1.1.1.1.2000900</lldp-remote-management-addr-oid>
+        <lldp-remote-org-def-info-oui>0.80.c2</lldp-remote-org-def-info-oui>
+        <lldp-remote-org-def-info-subtype>1</lldp-remote-org-def-info-subtype>
+        <lldp-remote-org-def-info-index>1</lldp-remote-org-def-info-index>
+        <lldp-remote-org-def-info>0001 </lldp-remote-org-def-info>
+        <lldp-remote-org-def-info-oui>0.12.f</lldp-remote-org-def-info-oui>
+        <lldp-remote-org-def-info-subtype>3</lldp-remote-org-def-info-subtype>
+        <lldp-remote-org-def-info-index>2</lldp-remote-org-def-info-index>
+        <lldp-remote-org-def-info>03000F4241 </lldp-remote-org-def-info>
+        <lldp-remote-org-def-info-oui>0.12.f</lldp-remote-org-def-info-oui>
+        <lldp-remote-org-def-info-subtype>4</lldp-remote-org-def-info-subtype>
+        <lldp-remote-org-def-info-index>3</lldp-remote-org-def-info-index>
+        <lldp-remote-org-def-info>2414 </lldp-remote-org-def-info>
+    </lldp-neighbor-information>
+</lldp-neighbors-information>

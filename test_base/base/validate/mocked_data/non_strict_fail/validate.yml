@@ -1,0 +1,46 @@
+---
+- get_facts:
+    os_version: 7.0\(3\)I2\(2d\)
+    interface_list:
+        list:
+          - Vlan5
+          - Vlan666
+    hostname: n9k2
+
+- get_bgp_neighbors:
+    default:
+      router_id: 192.6.6.6
+      peers:
+        192.6.7.8:
+          is_enabled: false
+        192.0.2.3:
+          is_enabled: false
+        192.0.2.2:
+          is_enabled: true
+          address_family:
+            ipv4:
+              sent_prefixes: 5
+            ipv6:
+              sent_prefixes: 6
+
+- get_interfaces_ip:
+    Ethernet2/1:
+      ipv4:
+        192.0.2.1:
+          prefix_length: 30
+
+- get_route_to:
+    _kwargs:
+      destination: 185.155.180.192/26
+    "10.155.180.192/26":
+      list:
+       - next_hop: 10.155.180.22
+         outgoing_interface: "irb.0"
+         protocol: "OSPF"
+
+- get_environment:
+    memory:
+      available_ram: "<20.0"
+    cpu:
+      0/RP0/CPU0:
+        "%usage": "<20.0"

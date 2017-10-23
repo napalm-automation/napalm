@@ -1,0 +1,4 @@
+Interface                      Status         Protocol Description
+Gi1                            up             up
+Gi2                            up             up       blah bleh
+Gi3                            admin down     down

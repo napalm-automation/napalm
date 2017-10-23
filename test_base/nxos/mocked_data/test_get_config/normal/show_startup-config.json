@@ -1,0 +1,26 @@
+!Command: show running-config
+!Time: Thu Dec 15 18:05:42 2016
+
+version 7.3(1)D1(1)
+power redundancy-mode redundant
+
+hostname nxos-spine1
+vdc nxos-spine1 id 1
+  limit-resource module-type m1 m1xl m2xl f2e
+  allocate interface Ethernet2/1-48
+  allocate interface Ethernet3/1-48
+  allocate interface Ethernet4/1-48
+  limit-resource vlan minimum 16 maximum 4094
+  limit-resource vrf minimum 2 maximum 4096
+  limit-resource port-channel minimum 0 maximum 768
+  limit-resource u4route-mem minimum 96 maximum 96
+  limit-resource u6route-mem minimum 24 maximum 24
+  limit-resource m4route-mem minimum 58 maximum 58
+  limit-resource m6route-mem minimum 8 maximum 8
+
+feature scp-server
+cfs eth distribute
+feature interface-vlan
+feature hsrp
+feature vpc
+feature nxapi

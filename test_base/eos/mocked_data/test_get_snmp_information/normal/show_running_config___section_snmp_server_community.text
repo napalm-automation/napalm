@@ -1,0 +1,6 @@
+snmp-server community basic ro
+snmp-server community private rw
+snmp-server community test-view view view-name ro
+snmp-server community test-ipv4-acl ro ipv4-ext-acl
+snmp-server community test-num-acl ro 11
+snmp-server community complex ro ipv6 ipv6-acl ipv4-std-acl

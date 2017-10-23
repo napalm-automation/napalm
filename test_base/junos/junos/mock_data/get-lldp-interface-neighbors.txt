@@ -1,0 +1,40 @@
+<lldp-neighbors-information junos_style="detail">
+    <lldp-neighbor-information>
+        <lldp-index>115</lldp-index>
+        <lldp-ttl>120</lldp-ttl>
+        <lldp-timemark>Mon Feb 22 12:29:41 2016</lldp-timemark>
+        <lldp-age>1</lldp-age>
+        <lldp-local-interface>xe-4/3/6</lldp-local-interface>
+        <lldp-local-parent-interface-name>ae7</lldp-local-parent-interface-name>
+        <lldp-local-port-id>922</lldp-local-port-id>
+        <lldp-local-port-ageout-count>0</lldp-local-port-ageout-count>
+        <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
+        <lldp-remote-chassis-id>00:1c:73:ee:c0:46</lldp-remote-chassis-id>
+        <lldp-remote-port-id-subtype>Interface name</lldp-remote-port-id-subtype>
+        <lldp-remote-port-id>Ethernet4/33/3</lldp-remote-port-id>
+        <lldp-remote-system-name>core01.sjc01</lldp-remote-system-name>
+        <lldp-system-description>
+            <lldp-remote-system-description>Arista Networks EOS version 4.14.8M running on an Arista Networks DCS-7504</lldp-remote-system-description>
+        </lldp-system-description>
+        <lldp-remote-system-capabilities-supported>Bridge Router </lldp-remote-system-capabilities-supported>
+        <lldp-remote-system-capabilities-enabled>Bridge </lldp-remote-system-capabilities-enabled>
+        <lldp-remote-management-address-type>IPv4(1)</lldp-remote-management-address-type>
+        <lldp-remote-management-address>172.17.17.1</lldp-remote-management-address>
+        <lldp-remote-management-address-port-id>2000900</lldp-remote-management-address-port-id>
+        <lldp-remote-management-address-interface-subtype>ifIndex(2)</lldp-remote-management-address-interface-subtype>
+        <lldp-remote-management-addr-oid></lldp-remote-management-addr-oid>
+        <lldp-remote-oui-802-1>0080c2</lldp-remote-oui-802-1>
+        <lldp-remote-subtype>(1)</lldp-remote-subtype>
+        <lldp-remote-value>0001 </lldp-remote-value>
+        <lldp-remote-index>1</lldp-remote-index>
+        <lldp-remote-oui-802-3>00120f</lldp-remote-oui-802-3>
+        <lldp-remote-subtype-lag>3</lldp-remote-subtype-lag>
+        <lldp-remote-subtype-lag-status>3</lldp-remote-subtype-lag-status>
+        <lldp-remote-subtype-lag-portid>1000100</lldp-remote-subtype-lag-portid>
+        <lldp-remote-index>2</lldp-remote-index>
+        <lldp-remote-oui-802-3>00120f</lldp-remote-oui-802-3>
+        <lldp-remote-subtype-mtu>4</lldp-remote-subtype-mtu>
+        <lldp-remote-subtype-mtu-size>9236</lldp-remote-subtype-mtu-size>
+        <lldp-remote-index>3</lldp-remote-index>
+    </lldp-neighbor-information>
+</lldp-neighbors-information>

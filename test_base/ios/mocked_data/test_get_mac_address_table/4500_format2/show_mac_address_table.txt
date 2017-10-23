@@ -1,0 +1,19 @@
+Unicast Entries
+ vlan   mac address     type        protocols               port
+-------+---------------+--------+---------------------+--------------------
+   1    0011.21e4.8710   dynamic ip,assigned,other     Port-channel21
+   1    0012.daf7.0cff    static ip,ipx,assigned,other Switch
+   1    0017.9415.eec0   dynamic ip,assigned           Port-channel21
+  11    0004.f2fe.7f95    static ip,ipx,assigned,other GigabitEthernet3/15
+  11    0004.f2fe.82da    static ip,ipx,assigned,other GigabitEthernet2/47
+
+Multicast Entries
+ vlan    mac address     type    ports
+-------+---------------+-------+--------------------------------------------
+   1    0100.0ccc.ccce   system Po21
+   1    ffff.ffff.ffff   system Switch,Po21
+  11    ffff.ffff.ffff   system Gi2/4,Gi2/5,Gi2/8,Gi2/11,Gi2/12,Gi2/13,Gi2/19
+                                Gi2/41,Gi2/42,Gi2/43,Gi2/47,Gi3/10,Gi3/15
+                                Gi3/16
+  24    ffff.ffff.ffff   system Po21
+  27    ffff.ffff.ffff   system Gi3/30,Po21

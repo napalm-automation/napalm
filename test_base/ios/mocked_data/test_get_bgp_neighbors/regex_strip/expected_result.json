@@ -1,0 +1,39 @@
+{
+  "global": {
+    "router_id": "192.168.0.1",
+    "peers": {
+      "192.168.0.2": {
+        "is_enabled": true,
+        "uptime": -1,
+        "remote_as": 65001,
+        "description": "",
+        "remote_id": "0.0.0.0",
+        "local_as": 65000,
+        "is_up": false,
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1,
+            "received_prefixes": -1
+          }
+        }
+      },
+      "192.168.0.3": {
+        "is_enabled": true,
+        "uptime": -1,
+        "remote_as": 65010,
+        "description": "",
+        "remote_id": "192.168.0.3",
+        "local_as": 65000,
+        "is_up": false,
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1,
+            "received_prefixes": -1
+          }
+        }
+      }
+    }
+  }
+}

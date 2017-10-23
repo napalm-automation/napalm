@@ -1,0 +1,4 @@
+[edit interfaces ge-0/0/1 unit 0]
++     family inet {
++         address 192.168.77.11/24;
++     }

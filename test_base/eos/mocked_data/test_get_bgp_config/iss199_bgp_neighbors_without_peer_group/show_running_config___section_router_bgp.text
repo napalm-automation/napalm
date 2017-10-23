@@ -1,0 +1,18 @@
+router bgp 13335
+   maximum-paths 32
+   neighbor 192.168.0.1 remote-as 32934
+   neighbor 192.168.0.1 maximum-routes 100
+   neighbor 192.168.0.1 route-map import-policy in
+   neighbor 192.168.0.1 route-map export-policy out
+   neighbor 172.17.17.1 remote-as 13414
+   neighbor 172.17.17.1 maximum-routes 500
+   neighbor 172.17.17.1 route-map import-policy in
+   neighbor 172.17.17.1 route-map export-policy out
+   neighbor 2001:db8::0:1 remote-as 8403
+   neighbor 2001:db8::0:1 maximum-routes 500
+   neighbor 2001:db8::0:1 route-map import-policy in
+   neighbor 2001:db8::0:1 route-map export-policy out
+   neighbor 2001:db8::0:2 remote-as 54113
+   neighbor 2001:db8::0:2 route-map import-policy in
+   neighbor 2001:db8::0:2 route-map export-policy out
+!

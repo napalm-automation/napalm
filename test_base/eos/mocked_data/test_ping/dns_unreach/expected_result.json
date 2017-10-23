@@ -1,0 +1,1 @@
+{"success": {"packet_loss": 5, "rtt_stddev": 0.0, "rtt_min": 0.0, "results": [{"rtt": 0.0, "ip_address": "10.213.1.254"}, {"rtt": 0.0, "ip_address": "10.213.1.254"}, {"rtt": 0.0, "ip_address": "10.213.1.254"}, {"rtt": 0.0, "ip_address": "10.213.1.254"}, {"rtt": 0.0, "ip_address": "10.213.1.254"}], "rtt_avg": 0.0, "rtt_max": 0.0, "probes_sent": 5}}

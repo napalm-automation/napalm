@@ -1,0 +1,17 @@
+@@ -3,8 +3,6 @@
+ ! boot system flash:/vEOS-lab.swi
+ !
+ transceiver qsfp default-mode 4x10G
+-!
+-hostname NEWHOSTNAME
+ !
+ spanning-tree mode mstp
+ !
+@@ -18,7 +16,6 @@
+ interface Ethernet1
+ !
+ interface Ethernet2
+-   description BLALALAL
+ !
+ interface Management1
+    ip address 10.0.2.15/24

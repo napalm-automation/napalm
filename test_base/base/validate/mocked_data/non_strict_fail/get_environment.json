@@ -1,0 +1,14 @@
+{
+    "cpu": {
+        "0/RP0/CPU0": {
+            "%usage": 100.0
+        }
+    },
+    "fans": {},
+    "memory": {
+        "available_ram": 90.0,
+        "used_ram": 10.0
+        },
+    "power": {},
+    "temperature": {}
+ }

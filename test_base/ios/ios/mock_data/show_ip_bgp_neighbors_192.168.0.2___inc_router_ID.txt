@@ -1,0 +1,1 @@
+  BGP version 4, remote router ID 0.0.0.0

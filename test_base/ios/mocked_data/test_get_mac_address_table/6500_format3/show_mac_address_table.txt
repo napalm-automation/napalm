@@ -1,0 +1,22 @@
+Legend: * - primary entry
+        age - seconds since last seen
+        n/a - not available
+
+  vlan   mac address     type    learn     age              ports
+------+----------------+--------+-----+----------+--------------------------
+*   19  00ff.9ab4.03ad   dynamic  Yes         25   Te7/1
+   197  c0ff.bc1f.72f2    static  Yes          -   Gi4/28
+   197  10ff.ae63.7a9e    static  Yes          -   Gi1/14
+   197  d4ff.56b2.9527    static  Yes          -   Gi2/1
+*  100  1cff.0fc9.1180    static  No           -   Router
+*  ---  00ff.0000.0000    static  No           -   Router
+   118  50ff.9dcc.182b    static  Yes          -   Gi2/16
+   118  50ff.9dcc.1667    static  Yes          -   Gi3/29
+   197  10ff.ae63.9ffe    static  Yes          -   Gi4/18
+*  197  3333.0000.00ff    static  Yes          -   Gi1/1,Gi1/2,Gi1/3,Gi1/4
+                                                   Gi1/6,Gi1/7,Gi1/8,Gi1/9
+                                                   Gi10/44,Gi10/45,Gi10/46
+                                                   Gi10/48,Router,Switch,Stby-Switch
+                                                   Gi10/43
+   197  c0ff.bc1f.71b7    static  Yes          -   Gi5/8
+   118  3cff.0ed0.0f7b    static  Yes          -   Gi4/16

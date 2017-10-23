@@ -1,0 +1,202 @@
+<route-information>
+    <route-table>
+        <table-name>inet.0</table-name>
+        <destination-count>591971</destination-count>
+        <total-route-count>4001470</total-route-count>
+        <active-route-count>591761</active-route-count>
+        <holddown-route-count>4</holddown-route-count>
+        <hidden-route-count>989</hidden-route-count>
+        <rt style="detail">
+            <rt-destination>1.0.4.0</rt-destination>
+            <rt-prefix-length>24</rt-prefix-length>
+            <rt-entry-count format="7 entries">7</rt-entry-count>
+            <rt-announced-count>1</rt-announced-count>
+            <tsi indent="0">
+                KRT in-kernel 1.0.4.0/24 -> {192.168.0.1, 192.168.0.3}
+                Page 0 idx 0, (group PDX type External) Type 1 val 453cfeac (adv_entry)
+                   Advertised metrics:
+                     Nexthop: Self
+                     AS path: [13335] 6939 4637 1221 38803 56203 I
+                     Communities: 13335:12345
+                Page 1 idx 2, (group ROUTESERVER type External) Type 1 val 453cccb0 (adv_entry)
+                   Advertised metrics:
+                     Nexthop: Self
+                     AS path: [13335] 6939 4637 1221 38803 56203 I
+                     Communities: 13335:12345
+                Page 1 idx 3, (group BIRD-COLLECTOR type Internal) Type 1 val 3a24cc40 (adv_entry)
+                   Advertised metrics:
+                     Nexthop: 192.168.0.1
+                     MED: 0
+                     Localpref: 200
+                     AS path: [13335] 6939 4637 1221 38803 56203 I
+                     Communities: 13335:12345
+                Page 1 idx 7, (group PMACCT type Internal) Type 1 val 4add1810 (adv_entry)
+                   Advertised metrics:
+                     Nexthop: 192.168.0.1
+                     MED: 0
+                     Localpref: 200
+                     AS path: [13335] 6939 4637 1221 38803 56203 I
+                     Communities: 13335:12345
+                Path 1.0.4.0 from 192.168.0.1 Vector len 4.  Val: 0 10 11 15
+            </tsi>
+            <rt-entry>
+                <active-tag>*</active-tag>
+                <current-active/>
+                <last-active/>
+                <protocol-name>BGP</protocol-name>
+                <preference>170</preference>
+                <preference2>-201</preference2>
+                <nh-type>Router</nh-type>
+                <nh-index>1048582</nh-index>
+                <nh-address>0xa73c154</nh-address>
+                <nh-reference-count>187647</nh-reference-count>
+                <nh-kernel-id>0</nh-kernel-id>
+                <gateway>192.168.0.1</gateway>
+                <nh indent="16">
+                    <nh-string>Next hop</nh-string>
+                    <to>192.168.0.1</to>
+                    <via>ae10.0</via>
+                    <session>3e</session>
+                </nh>
+                <nh indent="16">
+                    <nh-string>Next hop</nh-string>
+                    <to>192.168.0.3</to>
+                    <via>xe-2/3/2.0</via>
+                    <selected-next-hop/>
+                    <session>2f3</session>
+                </nh>
+                <rt-entry-state>Active Ext</rt-entry-state>
+                <local-as>13335</local-as>
+                <peer-as>6939</peer-as>
+                <age seconds="110562">1d 6:42:42</age>
+                <metric>0</metric>
+                <validation-state>unverified</validation-state>
+                <task-name>BGP_6939.192.168.0.1+8160</task-name>
+                <announce-bits>4</announce-bits>
+                <announce-tasks>0-KRT 2-RT 6-BGP_RT_Background 7-Resolve tree 4 </announce-tasks>
+                <as-path>AS path: 6939 4637 1221 38803 56203 I
+                </as-path>
+                <communities>
+                    <community>13335:12345</community>
+                </communities>
+                <bgp-rt-flag>Accepted Multipath</bgp-rt-flag>
+                <local-preference>200</local-preference>
+                <peer-id>192.168.0.2</peer-id>
+            </rt-entry>
+            <rt-entry>
+                <active-tag> </active-tag>
+                <protocol-name>BGP</protocol-name>
+                <preference>170</preference>
+                <preference2>-201</preference2>
+                <nh-type>Router</nh-type>
+                <nh-index>6113</nh-index>
+                <nh-address>0x2099736c</nh-address>
+                <nh-reference-count>90421</nh-reference-count>
+                <nh-kernel-id>0</nh-kernel-id>
+                <gateway>192.168.0.3</gateway>
+                <nh indent="16">
+                    <nh-string>Next hop</nh-string>
+                    <to>192.168.0.3</to>
+                    <via>xe-2/3/2.0</via>
+                    <selected-next-hop/>
+                    <session>2f3</session>
+                </nh>
+                <rt-entry-state>NotBest Ext</rt-entry-state>
+                <inactive-reason>Not Best in its group - Router ID</inactive-reason>
+                <local-as>13335</local-as>
+                <peer-as>6939</peer-as>
+                <age seconds="110562">1d 6:42:42</age>
+                <metric>0</metric>
+                <validation-state>unverified</validation-state>
+                <task-name>BGP_6939.192.168.0.3+8023</task-name>
+                <as-path>AS path: 6939 4637 1221 38803 56203 I
+                </as-path>
+                <communities>
+                    <community>13335:12345</community>
+                </communities>
+                <bgp-rt-flag>Accepted MultipathContrib</bgp-rt-flag>
+                <local-preference>200</local-preference>
+                <peer-id>192.168.0.4</peer-id>
+            </rt-entry>
+            <rt-entry>
+                <active-tag> </active-tag>
+                <protocol-name>BGP</protocol-name>
+                <preference>170</preference>
+                <preference2>-101</preference2>
+                <nh-type>Router</nh-type>
+                <nh-index>22733</nh-index>
+                <nh-address>0x1a550010</nh-address>
+                <nh-reference-count>666484</nh-reference-count>
+                <nh-kernel-id>0</nh-kernel-id>
+                <gateway>192.168.0.5</gateway>
+                <nh indent="16">
+                    <nh-string>Next hop</nh-string>
+                    <to>192.168.0.5</to>
+                    <via>ae9.0</via>
+                    <selected-next-hop/>
+                    <session>128</session>
+                </nh>
+                <rt-entry-state>Ext</rt-entry-state>
+                <inactive-reason>Local Preference</inactive-reason>
+                <local-as>13335</local-as>
+                <peer-as>4436</peer-as>
+                <age seconds="35478">9:51:18</age>
+                <metric>0</metric>
+                <validation-state>unverified</validation-state>
+                <task-name>BGP_4436.192.168.0.5+56698</task-name>
+                <as-path>AS path: 4436 4637 1221 38803 56203 I
+                </as-path>
+                <communities>
+                    <community>3257:1111</community>
+                    <community>3257:2222</community>
+                    <community>3257:3333</community>
+                    <community>3257:4444</community>
+                    <community>3257:5555</community>
+                </communities>
+                <bgp-rt-flag>Accepted</bgp-rt-flag>
+                <local-preference>100</local-preference>
+                <peer-id>192.168.0.6</peer-id>
+            </rt-entry>
+            <rt-entry>
+                <active-tag> </active-tag>
+                <protocol-name>BGP</protocol-name>
+                <preference>170</preference>
+                <preference2>-51</preference2>
+                <nh-type>Router</nh-type>
+                <nh-index>1125</nh-index>
+                <nh-address>0x13c632d4</nh-address>
+                <nh-reference-count>706652</nh-reference-count>
+                <nh-kernel-id>0</nh-kernel-id>
+                <gateway>192.168.0.7</gateway>
+                <nh indent="16">
+                    <nh-string>Next hop</nh-string>
+                    <to>192.168.0.7</to>
+                    <via>ae1.0</via>
+                    <selected-next-hop/>
+                    <session>e8</session>
+                </nh>
+                <rt-entry-state>Ext</rt-entry-state>
+                <inactive-reason>Local Preference</inactive-reason>
+                <local-as>13335</local-as>
+                <peer-as>6453</peer-as>
+                <age seconds="110546">1d 6:42:26</age>
+                <validation-state>unverified</validation-state>
+                <task-name>BGP_6453.192.168.0.7+179</task-name>
+                <as-path>AS path: 6453 4637 1221 38803 56203 I
+                </as-path>
+                <communities>
+                    <community>6453:1111</community>
+                    <community>6453:3333</community>
+                    <community>6453:4444</community>
+                    <community>6453:5555</community>
+                    <community>13335:11111</community>
+                    <community>13335:22222</community>
+                    <community>13335:33333</community>
+                </communities>
+                <bgp-rt-flag>Accepted</bgp-rt-flag>
+                <local-preference>50</local-preference>
+                <peer-id>192.168.0.8</peer-id>
+            </rt-entry>
+        </rt>
+    </route-table>
+</route-information>

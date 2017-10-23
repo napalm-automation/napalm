@@ -1,0 +1,16 @@
+--------------------------------------------------------------------------------
+Port             Name            Status    Vlan      Duplex  Speed   Type
+--------------------------------------------------------------------------------
+mgmt0            --              connected routed    full    a-1000  --         
+Eth1/1           --              connected routed    full    1000               
+Eth1/2           --              connected routed    full    1000               
+Eth1/3           --              connected routed    full    1000               
+Eth1/4           --              connected routed    full    1000               
+Eth1/5           --              connected routed    full    1000               
+Eth1/6           --              connected routed    full    1000               
+Eth1/7           --              connected routed    full    1000               
+Eth1/8           --              connected routed    full    1000               
+Eth51/1/1           --              connected routed    full    1000               
+Eth51/1/2           --              connected routed    full    1000               
+Eth51/1/3           --              connected routed    full    1000               
+Eth51/1/4           --              connected routed    full    1000               

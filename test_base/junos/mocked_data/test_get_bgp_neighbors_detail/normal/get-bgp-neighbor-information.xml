@@ -1,0 +1,171 @@
+<bgp-information>
+    <bgp-peer junos_specific="detail">
+        <peer-address>192.168.100.1+50877</peer-address>
+        <peer-as>4436</peer-as>
+        <local-address>192.168.100.2+179</local-address>
+        <local-as>13335</local-as>
+        <peer-type>External</peer-type>
+        <peer-state>Established</peer-state>
+        <peer-flags>Sync RSync</peer-flags>
+        <last-state>EstabSync</last-state>
+        <last-event>RecvKeepAlive</last-event>
+        <last-error>Cease</last-error>
+        <bgp-option-information xmlns="http://xml.juniper.net/junos/13.3R6/junos-routing">
+            <export-policy>
+                4-GTT-TRANSIT-OUT
+            </export-policy>
+            <import-policy>
+                4-GTT-TRANSIT-IN
+            </import-policy>
+            <bgp-options>Preference RemovePrivateAS LogUpDown AddressFamily PeerAS Multipath LocalAS Refresh</bgp-options>
+            <bgp-options2></bgp-options2>
+            <bgp-options-extended></bgp-options-extended>
+            <address-families>inet-unicast</address-families>
+            <holdtime>90</holdtime>
+            <preference>170</preference>
+            <local-as>13335</local-as>
+            <local-system-as>0</local-system-as>
+        </bgp-option-information>
+        <flap-count>2</flap-count>
+        <last-flap-event>Stop</last-flap-event>
+        <bgp-error>
+            <name>Open Message Error</name>
+            <send-count>1</send-count>
+            <receive-count>0</receive-count>
+        </bgp-error>
+        <bgp-error>
+            <name>Cease</name>
+            <send-count>2</send-count>
+            <receive-count>0</receive-count>
+        </bgp-error>
+        <peer-id>192.168.100.1</peer-id>
+        <local-id>192.168.100.2</local-id>
+        <active-holdtime>90</active-holdtime>
+        <keepalive-interval>30</keepalive-interval>
+        <group-index>23</group-index>
+        <peer-index>0</peer-index>
+        <bgp-bfd>
+            <bfd-configuration-state>disabled</bfd-configuration-state>
+            <bfd-operational-state>down</bfd-operational-state>
+        </bgp-bfd>
+        <local-interface-name>irb.420</local-interface-name>
+        <local-interface-index>765</local-interface-index>
+        <peer-restart-nlri-configured>inet-unicast</peer-restart-nlri-configured>
+        <nlri-type-peer>inet-unicast</nlri-type-peer>
+        <nlri-type-session>inet-unicast</nlri-type-session>
+        <peer-refresh-capability>2</peer-refresh-capability>
+        <peer-stale-route-time-configured>300</peer-stale-route-time-configured>
+        <peer-no-restart/>
+        <peer-restart-nlri-negotiated>inet-unicast</peer-restart-nlri-negotiated>
+        <peer-end-of-rib-received>inet-unicast</peer-end-of-rib-received>
+        <peer-end-of-rib-sent>inet-unicast</peer-end-of-rib-sent>
+        <peer-end-of-rib-scheduled></peer-end-of-rib-scheduled>
+        <peer-4byte-as-capability-advertised>4436</peer-4byte-as-capability-advertised>
+        <peer-addpath-not-supported/>
+        <bgp-rib junos_specific="detail">
+            <name>inet.0</name>
+            <rib-bit>10005</rib-bit>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <send-state>in sync</send-state>
+            <active-prefix-count>101545</active-prefix-count>
+            <received-prefix-count>567257</received-prefix-count>
+            <accepted-prefix-count>567257</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>111</advertised-prefix-count>
+        </bgp-rib>
+        <last-received>0</last-received>
+        <last-sent>3</last-sent>
+        <last-checked>31</last-checked>
+        <input-messages>12094123</input-messages>
+        <input-updates>11951665</input-updates>
+        <input-refreshes>0</input-refreshes>
+        <input-octets>1244994779</input-octets>
+        <output-messages>141052</output-messages>
+        <output-updates>158</output-updates>
+        <output-refreshes>0</output-refreshes>
+        <output-octets>2694237</output-octets>
+        <bgp-output-queue>
+            <number>0</number>
+            <count>0</count>
+        </bgp-output-queue>
+    </bgp-peer>
+    <bgp-peer junos_specific="detail">
+        <peer-address>172.17.17.1+54687</peer-address>
+        <peer-as>1299</peer-as>
+        <local-address>172.17.17.2+179</local-address>
+        <local-as>13335</local-as>
+        <peer-type>External</peer-type>
+        <peer-state>Established</peer-state>
+        <peer-flags>Sync RSync</peer-flags>
+        <last-state>OpenConfirm</last-state>
+        <last-event>RecvKeepAlive</last-event>
+        <last-error>None</last-error>
+        <bgp-option-information xmlns="http://xml.juniper.net/junos/13.3R6/junos-routing">
+            <export-policy>
+                4-TELIA-TRANSIT-OUT
+            </export-policy>
+            <import-policy>
+                4-TELIA-TRANSIT-IN
+            </import-policy>
+            <bgp-options>Preference RemovePrivateAS LogUpDown AddressFamily PeerAS Multipath LocalAS Refresh</bgp-options>
+            <bgp-options2></bgp-options2>
+            <bgp-options-extended></bgp-options-extended>
+            <address-families>inet-unicast</address-families>
+            <holdtime>90</holdtime>
+            <preference>170</preference>
+            <local-as>13335</local-as>
+            <local-system-as>0</local-system-as>
+        </bgp-option-information>
+        <flap-count>0</flap-count>
+        <peer-id>172.17.17.1</peer-id>
+        <local-id>172.17.17.2</local-id>
+        <active-holdtime>90</active-holdtime>
+        <keepalive-interval>30</keepalive-interval>
+        <group-index>0</group-index>
+        <peer-index>0</peer-index>
+        <bgp-bfd>
+            <bfd-configuration-state>disabled</bfd-configuration-state>
+            <bfd-operational-state>down</bfd-operational-state>
+        </bgp-bfd>
+        <local-interface-name>ae3.0</local-interface-name>
+        <local-interface-index>745</local-interface-index>
+        <peer-restart-nlri-configured>inet-unicast</peer-restart-nlri-configured>
+        <nlri-type-peer>inet-unicast</nlri-type-peer>
+        <nlri-type-session>inet-unicast</nlri-type-session>
+        <peer-refresh-capability>2</peer-refresh-capability>
+        <peer-stale-route-time-configured>300</peer-stale-route-time-configured>
+        <peer-no-restart/>
+        <peer-restart-nlri-negotiated>inet-unicast</peer-restart-nlri-negotiated>
+        <peer-end-of-rib-received>inet-unicast</peer-end-of-rib-received>
+        <peer-end-of-rib-sent>inet-unicast</peer-end-of-rib-sent>
+        <peer-end-of-rib-scheduled></peer-end-of-rib-scheduled>
+        <peer-4byte-as-capability-advertised>1299</peer-4byte-as-capability-advertised>
+        <peer-addpath-not-supported/>
+        <bgp-rib junos_specific="detail">
+            <name>inet.0</name>
+            <rib-bit>10002</rib-bit>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <send-state>in sync</send-state>
+            <active-prefix-count>37358</active-prefix-count>
+            <received-prefix-count>567162</received-prefix-count>
+            <accepted-prefix-count>566998</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>111</advertised-prefix-count>
+        </bgp-rib>
+        <last-received>7</last-received>
+        <last-sent>29</last-sent>
+        <last-checked>1</last-checked>
+        <input-messages>26006050</input-messages>
+        <input-updates>25604153</input-updates>
+        <input-refreshes>0</input-refreshes>
+        <input-octets>2153200326</input-octets>
+        <output-messages>383524</output-messages>
+        <output-updates>524</output-updates>
+        <output-refreshes>0</output-refreshes>
+        <output-octets>7342325</output-octets>
+        <bgp-output-queue>
+            <number>0</number>
+            <count>0</count>
+        </bgp-output-queue>
+    </bgp-peer>
+</bgp-information>

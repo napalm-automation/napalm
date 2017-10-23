@@ -1,0 +1,60 @@
+<interface-information style="terse">
+    <physical-interface>
+        <name>irb</name>
+        <admin-status format="Enabled">up</admin-status>
+        <oper-status>up</oper-status>
+        <local-index>134</local-index>
+        <snmp-index>505</snmp-index>
+        <if-type>Ethernet</if-type>
+        <link-level-type>Ethernet</link-level-type>
+        <mtu>1514</mtu>
+        <if-device-flags>
+            <ifdf-present/>
+            <ifdf-running/>
+        </if-device-flags>
+        <ifd-specific-config-flags>
+        </ifd-specific-config-flags>
+        <if-config-flags>
+            <iff-snmp-traps/>
+        </if-config-flags>
+        <link-type>Full-Duplex</link-type>
+        <if-media-flags>
+            <ifmf-none/>
+        </if-media-flags>
+        <current-physical-address format="MAC de:ad:be:ef:de:ad">de:ad:be:ef:de:ad</current-physical-address>
+        <hardware-physical-address format="MAC de:ad:be:ef:de:ad">de:ad:be:ef:de:ad</hardware-physical-address>
+        <interface-flapped seconds="0">Never</interface-flapped>
+        <traffic-statistics style="brief">
+            <input-packets>0</input-packets>
+            <output-packets>0</output-packets>
+        </traffic-statistics>
+        <logical-interface>
+            <name>irb.17</name>
+            <admin-status>up</admin-status>
+            <oper-status>up</oper-status>
+            <filter-information>
+            </filter-information>
+            <address-family>
+                <address-family-name>inet</address-family-name>
+                <interface-address>
+                    <ifa-local emit="emit">172.17.17.1/32</ifa-local>
+                </interface-address>
+                <interface-address>
+                    <ifa-local emit="emit">172.17.19.1/24</ifa-local>
+                </interface-address>
+            </address-family>
+            <address-family>
+                <address-family-name>inet6</address-family-name>
+                <interface-address>
+                    <ifa-local emit="emit">2400::1/64</ifa-local>
+                </interface-address>
+                <interface-address>
+                    <ifa-local emit="emit">fe80::1/128</ifa-local>
+                </interface-address>
+            </address-family>
+            <address-family>
+                <address-family-name>multiservice</address-family-name>
+            </address-family>
+        </logical-interface>
+    </physical-interface>
+</interface-information>

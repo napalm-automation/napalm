@@ -1,0 +1,10 @@
+CPU utilization for five seconds: 0%/0%; one minute: 0%; five minutes: 0%
+ PID Runtime(ms)     Invoked      uSecs   5Sec   1Min   5Min TTY Process
+   1           1          10        100  0.00%  0.00%  0.00%   0 Chunk Manager
+   2           1         152          6  0.00%  0.00%  0.00%   0 Load Meter
+   3           0           1          0  0.00%  0.00%  0.00%   0 XOS async sync X
+   4           1          12         83  0.00%  0.00%  0.00%   0 RF Slave Main Th
+   5           0           1          0  0.00%  0.00%  0.00%   0 Retransmission o
+   6           0           1          0  0.00%  0.00%  0.00%   0 IPC ISSU Dispatc
+   7           0           1          0  0.00%  0.00%  0.00%   0 RO Notify Timers
+   8          75         100        750  0.00%  0.00%  0.00%   0 Check heaps

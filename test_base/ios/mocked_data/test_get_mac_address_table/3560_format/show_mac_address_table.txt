@@ -1,0 +1,48 @@
+          Mac Address Table
+-------------------------------------------
+ 
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+All    0100.0ccc.cccc    STATIC      CPU
+All    0100.0ccc.cccd    STATIC      CPU
+All    0180.c200.0000    STATIC      CPU
+All    0180.c200.0001    STATIC      CPU
+All    0180.c200.0002    STATIC      CPU
+All    0180.c200.0003    STATIC      CPU
+All    0180.c200.0004    STATIC      CPU
+All    0180.c200.0005    STATIC      CPU
+All    0180.c200.0006    STATIC      CPU
+All    0180.c200.0007    STATIC      CPU
+All    0180.c200.0008    STATIC      CPU
+All    0180.c200.0009    STATIC      CPU
+All    0180.c200.000a    STATIC      CPU
+All    0180.c200.000b    STATIC      CPU
+All    0180.c200.000c    STATIC      CPU
+All    0180.c200.000d    STATIC      CPU
+All    0180.c200.000e    STATIC      CPU
+All    0180.c200.000f    STATIC      CPU
+All    0180.c200.0010    STATIC      CPU
+All    ffff.ffff.ffff    STATIC      CPU
+   1    000a.b82d.10e0    DYNAMIC     Fa0/16
+   1    0012.80b6.4cd8    DYNAMIC     Fa0/3
+   1    0012.80b6.4cd9    DYNAMIC     Fa0/16
+   1    0014.6915.4100    DYNAMIC     Fa0/16
+   1    0018.b921.9200    DYNAMIC     Fa0/16
+   1    0018.b921.9278    DYNAMIC     Fa0/1
+   1    0018.b974.528f    DYNAMIC     Fa0/16
+   1    0019.0617.660f    DYNAMIC     Fa0/13
+   1    0019.0617.6610    DYNAMIC     Fa0/14
+   1    0019.0617.6611    DYNAMIC     Fa0/15
+   1    001b.d450.970f    DYNAMIC     Fa0/19
+   1    001b.d450.9710    DYNAMIC     Fa0/20
+   1    001b.d450.9711    DYNAMIC     Fa0/21
+   4    0018.b974.528f    DYNAMIC     Fa0/16
+  45    0018.b945.d5a9    DYNAMIC     Fa0/19
+  45    0018.b945.f780    DYNAMIC     Fa0/5
+  45    0018.b974.528f    DYNAMIC     Fa0/16
+  56    0018.b945.f781    DYNAMIC     Fa0/16
+  56    0018.b974.528f    DYNAMIC     Fa0/16
+  56    0019.069c.80e1    DYNAMIC     Fa0/19
+   6    0018.b974.528f    DYNAMIC     Fa0/16
+   6    0019.069c.80e0    DYNAMIC     Fa0/13
+Total Mac Addresses for this criterion: 42

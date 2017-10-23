@@ -1,0 +1,6 @@
+
+  address         ref clock       st   when   poll reach  delay  offset   disp
++~129.6.15.28     .ACTS.           1     10     64     3 103.59   3.391 937.90
+*~24.56.178.140   .ACTS.           1      6     64     3 35.535 -26.338 63.457
++~128.138.140.44  .NIST.           1     67    128     1 37.997 -23.927 187.58
+ * sys.peer, # selected, + candidate, - outlyer, x falseticker, ~ configured

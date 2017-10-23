@@ -1,0 +1,21 @@
+{
+    "tablesLastChangeTime": 1448356585.4279644,
+    "tablesAgeOuts": 0,
+    "tablesInserts": 2,
+    "lldpNeighbors": [
+        {
+            "ttl": 120,
+            "neighborDevice": "precise64",
+            "neighborPort": "0800.274f.332d",
+            "port": "Ethernet1"
+        },
+        {
+            "ttl": 120,
+            "neighborDevice": "precise64",
+            "neighborPort": "0800.27ca.c5be",
+            "port": "Ethernet2"
+        }
+    ],
+    "tablesDeletes": 0,
+    "tablesDrops": 0
+}

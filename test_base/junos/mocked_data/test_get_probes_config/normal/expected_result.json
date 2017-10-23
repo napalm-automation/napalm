@@ -1,0 +1,1 @@
+{"sjc-loops": {"edge01.pdx01": {"source": "", "probe_type": "icmp-ping", "target": "172.17.17.1", "test_interval": 3600, "probe_count": 10}, "edge01.lax01": {"source": "", "probe_type": "icmp-ping", "target": "192.168.0.1", "test_interval": 60, "probe_count": 5}}}

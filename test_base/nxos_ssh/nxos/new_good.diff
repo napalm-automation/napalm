@@ -1,0 +1,10 @@
+interface Ethernet2/1
+  shutdown
+  no ip address 4.3.2.1/24
+  switchport
+  exit
+interface Ethernet2/1
+ switchport
+ shutdown
+exit
+no system default switchport shutdown

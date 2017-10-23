@@ -1,0 +1,11 @@
+BGP summary information for VRF default, address family IPv4 Unicast
+BGP router identifier 0.0.0.0, local AS number 22
+BGP table version is 12, IPv4 Unicast config peers 1, capable peers 0
+0 network entries and 0 paths using 0 bytes of memory
+BGP attribute entries [0/0], BGP AS path entries [0/0]
+BGP community entries [0/0], BGP clusterlist entries [0/0]
+
+Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+1.1.1.1         4    33       0       0        0    0    0    4d22h Shut (Admin)
+
+BGP summary information for VRF default, address family IPv6 Unicast

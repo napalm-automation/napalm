@@ -43,17 +43,21 @@ Partial Installation
 If you want to install just a subset of the available modules you can just pick them as follows:
 
 ```
-pip install napalm-eos napalm-junos
+pip install --install-option="ios" napalm
 ```
 
-That will install only the `eos` and the `junos` drivers. If you want to remove or add a module later on you can just use `pip` to do it:
-
+To install multiple drivers:
 ```
-pip uninstall napalm-junos
-pip install napalm-ios
+pip install --install-option="eos" --install-option="junos" napalm
+```
+
+To add drivers to an existing instalation:
+```
+pip install --install-option="eos" --install-option="junos" --force-reinstall -U napalm
 ```
 
 Check the ['Supported Network Operating Systems'](#supported-network-operating-systems) section for more information about supported modules.
+
 
 Upgrading
 =========
@@ -67,20 +71,24 @@ pip install napalm -U
 or:
 
 ```
-pip install napalm-eos napalm-junos -U
+pip install --install-option="eos" --install-option="junos" napalm -U
 ```
 
-We will be posting news on our slack channel and on Twitter (more details soon).
+
+We will be posting news on our slack channel and on Twitter.
+
 
 Automation Frameworks
 ======================
 
 Due to its flexibility, NAPALM can be integrated in widely used automation frameworks.
 
+
 Ansible
 -------
 
 Please check [napalm-ansible](https://github.com/napalm-automation/napalm-ansible) for existing Ansible modules leveraging the NAPALM API. Make sure you read the documentation and you understand how it works before trying to use it.
+
 
 SaltStack
 ---------
@@ -90,11 +98,6 @@ Beginning with release code named `Carbon` (2016.11), [NAPALM is fully integrate
 
 Contact
 =======
-
-Mailing List
-------------
-
-If you have any questions, join the users' mailing list at [napalm-automation@googlegroups.com](mailto:napalm-automation@googlegroups.com) and if you are developer and want to contribute to NAPALM feel free to join to the developers' mailing list at [napalm-dev@googlegroups.com](mailto:napalm-dev@googlegroups.com)
 
 Slack
 -----
@@ -107,7 +110,7 @@ FAQ
 If you have any issues using NAPALM or encounter any errors, before submitting any questions (directly by email or on Slack), please go through the following checklist:
 
 - Make sure you have the latest release installed. We release very often, so upgrading to the latest version might help in many cases.
-- Double or triple check if you indeed are able to access the device using the credentials provided.
+- Double check you are able to access the device using the credentials provided.
 - Does your device meet the minimum [requirements](http://napalm.readthedocs.io/en/latest/support/index.html#general-support-matrix)?
 - Some operating systems have some specific [constraints](http://napalm.readthedocs.io/en/latest/support/index.html#caveats). (e.g. have you enabled the XML agent on IOS-XR, or the NXAPI feature on NXOS?)
 - Are you able to connect to the device using NAPALM? Check using the CLI test tool:

@@ -1,0 +1,7 @@
+Mac Address Table
+-------------------------------------------
+
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+All    1111.2222.3333    STATIC      CPU
+  6    0018.b974.528f    DYNAMIC     Fa0/16

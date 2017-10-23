@@ -1,0 +1,5 @@
+-r base
+-r eos
+-r ios
+-r junos
+-r nxos

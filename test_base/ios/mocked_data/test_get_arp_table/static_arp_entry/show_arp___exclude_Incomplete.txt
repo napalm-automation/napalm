@@ -1,0 +1,9 @@
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  172.29.50.1             8   84b8.0276.ac0e  ARPA
+Internet  172.29.50.2           221   0019.0725.344a  ARPA   Vlan20
+Internet  172.29.50.3             -   0024.f7dd.7741  ARPA   Vlan20
+Internet  172.29.50.10           37   6805.ca12.71c2  ARPA   Vlan20
+Internet  172.29.52.33           61   84b8.0276.ac0e  ARPA   Vlan41
+Internet  172.29.52.34            -   0024.f7dd.7743  ARPA   Vlan41
+Internet  172.29.52.40            3   a099.9b1c.dfa7  ARPA   Vlan41
+Internet  192.168.81.34           -   0024.f7dd.7743  ARPA   Vlan41

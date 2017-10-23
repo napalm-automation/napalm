@@ -1,0 +1,50 @@
+{
+    "Eth2/2": [
+        {
+            "remote_port_description": "Ethernet2/2", 
+            "remote_system_description": "Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00", 
+            "remote_chassis_id": "2C:C2:60:64:E1:5F", 
+            "remote_system_enable_capab": "B, R", 
+            "remote_port": "Ethernet2/2", 
+            "parent_interface": "", 
+            "remote_system_capab": "B, R", 
+            "remote_system_name": "nxos2.madeupdomain.com"
+        }
+    ], 
+    "Eth2/3": [
+        {
+            "remote_port_description": "Ethernet2/3", 
+            "remote_system_description": "Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00", 
+            "remote_chassis_id": "2C:C2:60:72:61:7B", 
+            "remote_system_enable_capab": "B, R", 
+            "remote_port": "Ethernet2/3", 
+            "parent_interface": "", 
+            "remote_system_capab": "B, R", 
+            "remote_system_name": "nxos2.madeupdomain.com"
+        }
+    ], 
+    "Eth2/1": [
+        {
+            "remote_port_description": "Ethernet2/1", 
+            "remote_system_description": "Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00", 
+            "remote_chassis_id": "2C:C2:60:54:DC:2C", 
+            "remote_system_enable_capab": "B, R", 
+            "remote_port": "Ethernet2/1", 
+            "parent_interface": "", 
+            "remote_system_capab": "B, R", 
+            "remote_system_name": "nxos2.madeupdomain.com"
+        }
+    ], 
+    "Eth2/4": [
+        {
+            "remote_port_description": "Ethernet2/4", 
+            "remote_system_description": "Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00", 
+            "remote_chassis_id": "2C:C2:60:70:69:DA", 
+            "remote_system_enable_capab": "B, R", 
+            "remote_port": "Ethernet2/4", 
+            "parent_interface": "", 
+            "remote_system_capab": "B, R", 
+            "remote_system_name": "nxos2.madeupdomain.com"
+        }
+    ]
+}

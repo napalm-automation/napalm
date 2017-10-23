@@ -1,0 +1,27 @@
+---
+complies: true
+method_not_implemented:
+    reason: NotImplemented
+    skipped: true
+skipped:
+    - method_not_implemented
+check_bgp_neighbors_have_prefixes:
+  complies: true
+  extra: []
+  missing: []
+  present:
+    default: {complies: true, nested: true}
+get_facts:
+  complies: true
+  extra: []
+  missing: []
+  present:
+    hostname: {complies: true, nested: false}
+    interface_list: {complies: true, nested: true}
+    os_version: {complies: true, nested: false}
+get_interfaces_ip:
+  complies: true
+  extra: []
+  missing: []
+  present:
+    Ethernet2/1: {complies: true, nested: true}

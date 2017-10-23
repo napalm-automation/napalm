@@ -1,0 +1,17 @@
+<configuration>
+    <routing-instances>
+        <instance>
+            <name>DUMMY</name>
+            <instance-type>vrf</instance-type>
+            <interface>
+                <name>lt-0/0/10.1</name>
+            </interface>
+            <route-distinguisher>
+                <rd-type>13335:1234</rd-type>
+            </route-distinguisher>
+            <interface>
+                <name>irb.400</name>
+            </interface>
+        </instance>
+    </routing-instances>
+</configuration>

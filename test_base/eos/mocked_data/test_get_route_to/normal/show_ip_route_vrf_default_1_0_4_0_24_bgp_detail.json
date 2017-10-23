@@ -1,0 +1,27 @@
+{
+    "vrfs": {
+        "default": {
+            "routes": {
+                "1.0.4.0/24": {
+                    "kernelProgrammed": true,
+                    "directlyConnected": false,
+                    "preference": 200,
+                    "routeAction": "forward",
+                    "vias": [
+                        {
+                            "interface": "Port-Channel2",
+                            "nexthopAddr": "192.168.0.1"
+                        }
+                    ],
+                    "metric": 0,
+                    "hardwareProgrammed": true,
+                    "routeType": "eBGP"
+                }
+            },
+            "allRoutesProgrammedKernel": true,
+            "routingDisabled": false,
+            "allRoutesProgrammedHardware": true,
+            "defaultRouteState": "reachable"
+        }
+    }
+}
