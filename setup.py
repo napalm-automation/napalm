@@ -1,7 +1,6 @@
 """setup.py file."""
-import napalm
-
 import uuid
+import os
 
 from distutils.core import Command
 from setuptools import setup, find_packages
@@ -13,8 +12,14 @@ from pip.req import parse_requirements
 import pip
 import sys
 
-
 __author__ = 'David Barroso <dbarrosop@dravetech.com>'
+
+# Read SUPPORTED_DRIVERS from file (without importing)
+_locals = {}
+filename = os.path.join('napalm', '_SUPPORTED_DRIVERS.py')
+with open(filename) as supported:
+    exec(supported.read(), None, _locals)
+    SUPPORTED_DRIVERS = _locals['SUPPORTED_DRIVERS']
 
 
 def process_requirements(dep):
@@ -47,14 +52,14 @@ class CustomInstall(install.install):
 
     def run(self):
         """Run command."""
-        if any([d in sys.argv for d in napalm.SUPPORTED_DRIVERS]):
+        if any([d in sys.argv for d in SUPPORTED_DRIVERS]):
             process_requirements('base')
         else:
             process_requirements('all')
         install.install.run(self)
 
 
-custom_commands = {d: custom_command_driver(d) for d in napalm.SUPPORTED_DRIVERS}
+custom_commands = {d: custom_command_driver(d) for d in SUPPORTED_DRIVERS}
 custom_commands['install'] = CustomInstall
 
 setup(
