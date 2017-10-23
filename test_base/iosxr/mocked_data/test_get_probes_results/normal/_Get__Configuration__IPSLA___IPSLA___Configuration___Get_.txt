@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response MajorVersion="1" MinorVersion="0">
+    <Get>
+        <Configuration>
+            <IPSLA MajorVersion="7" MinorVersion="3">
+                <Operation>
+                    <DefinitionTable MajorVersion="7" MinorVersion="3">
+                        <Definition>
+                            <Naming>
+                                <OperationID>
+                                    1
+                                </OperationID>
+                            </Naming>
+                            <OperationType>
+                                <ICMPEcho MajorVersion="7" MinorVersion="3">
+                                    <Create MajorVersion="7" MinorVersion="3">
+                                        true
+                                    </Create>
+                                    <Tag MajorVersion="7" MinorVersion="3">
+                                        test-GT-4
+                                    </Tag>
+                                    <History MajorVersion="7" MinorVersion="3">
+                                        <Lives>
+                                            1
+                                        </Lives>
+                                        <HistoryFilter>
+                                            All
+                                        </HistoryFilter>
+                                        <Buckets>
+                                            20
+                                        </Buckets>
+                                    </History>
+                                    <SourceAddress MajorVersion="7" MinorVersion="3">
+                                        1.1.1.1.1
+                                    </SourceAddress>
+                                    <DestAddress MajorVersion="7" MinorVersion="3">
+                                        2.2.2.2
+                                    </DestAddress>
+                                    <Timeout MajorVersion="7" MinorVersion="3">
+                                        2000
+                                    </Timeout>
+                                    <Frequency MajorVersion="7" MinorVersion="3">
+                                        3
+                                    </Frequency>
+                                </ICMPEcho>
+                            </OperationType>
+                        </Definition>
+                        <Definition>
+                            <Naming>
+                                <OperationID>
+                                    2
+                                </OperationID>
+                            </Naming>
+                            <OperationType>
+                                <ICMPEcho MajorVersion="7" MinorVersion="3">
+                                    <Create MajorVersion="7" MinorVersion="3">
+                                        true
+                                    </Create>
+                                    <Tag MajorVersion="7" MinorVersion="3">
+                                        sjc01-TE-4
+                                    </Tag>
+                                    <History MajorVersion="7" MinorVersion="3">
+                                        <Lives>
+                                            1
+                                        </Lives>
+                                        <HistoryFilter>
+                                            All
+                                        </HistoryFilter>
+                                        <Buckets>
+                                            20
+                                        </Buckets>
+                                    </History>
+                                    <SourceAddress MajorVersion="7" MinorVersion="3">
+                                        3.3.3.3
+                                    </SourceAddress>
+                                    <DestAddress MajorVersion="7" MinorVersion="3">
+                                        4.4.4.4
+                                    </DestAddress>
+                                    <Timeout MajorVersion="7" MinorVersion="3">
+                                        2000
+                                    </Timeout>
+                                    <Frequency MajorVersion="7" MinorVersion="3">
+                                        3
+                                    </Frequency>
+                                </ICMPEcho>
+                            </OperationType>
+                        </Definition>
+                    </DefinitionTable>
+                    <ScheduleTable MajorVersion="7" MinorVersion="3">
+                        <Schedule>
+                            <Naming>
+                                <OperationID>
+                                    1
+                                </OperationID>
+                            </Naming>
+                            <StartTime>
+                                <ScheduleType>
+                                    Now
+                                </ScheduleType>
+                            </StartTime>
+                            <Life>
+                                Forever
+                            </Life>
+                        </Schedule>
+                        <Schedule>
+                            <Naming>
+                                <OperationID>
+                                    2
+                                </OperationID>
+                            </Naming>
+                            <StartTime>
+                                <ScheduleType>
+                                    Now
+                                </ScheduleType>
+                            </StartTime>
+                            <Life>
+                                Forever
+                            </Life>
+                        </Schedule>
+                    </ScheduleTable>
+                </Operation>
+            </IPSLA>
+        </Configuration>
+    </Get>
+    <ResultSummary ErrorCount="0"/>
+</Response>

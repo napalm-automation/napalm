@@ -1,0 +1,84 @@
+{
+  "4-public-anycast-peers": {
+    "local_as": 0,
+    "remove_private_as": true,
+    "import_policy": "4-public-anycast-peers-in",
+    "multihop_ttl": 0,
+    "neighbors": {
+      "192.168.20.3": {
+        "export_policy": "",
+        "local_as": 0,
+        "prefix_limit": {
+          "inet": {
+            "unicast": {
+              "teardown": {
+                "timeout": 0,
+                "threshold": 75
+              },
+              "limit": 5000
+            }
+          }
+        },
+        "remote_as": 9050,
+        "import_policy": "",
+        "nhs": false,
+        "authentication_key": "",
+        "local_address": "",
+        "description": "Telekom Romania [RO ISP ANYCAST]",
+        "route_reflector_client": false
+      },
+      "172.17.17.50": {
+        "export_policy": "",
+        "local_as": 0,
+        "prefix_limit": {
+          "inet": {
+            "unicast": {
+              "teardown": {
+                "timeout": 0,
+                "threshold": 75
+              },
+              "limit": 500
+            }
+          }
+        },
+        "remote_as": 48161,
+        "import_policy": "",
+        "nhs": false,
+        "authentication_key": "",
+        "local_address": "",
+        "description": "NextGen [RO ISP ANYCAST]",
+        "route_reflector_client": false
+      },
+      "192.168.50.5": {
+        "export_policy": "",
+        "local_as": 0,
+        "prefix_limit": {
+          "inet": {
+            "unicast": {
+              "teardown": {
+                "timeout": 0,
+                "threshold": 75
+              },
+              "limit": 1000
+            }
+          }
+        },
+        "remote_as": 9009,
+        "import_policy": "",
+        "nhs": false,
+        "authentication_key": "",
+        "local_address": "",
+        "description": "M247 Ltd [UK Hosting ANYCAST]",
+        "route_reflector_client": false
+      }
+    },
+    "multipath": false,
+    "export_policy": "4-public-anycast-peers-out",
+    "type": "external",
+    "apply_groups": [],
+    "remote_as": 0,
+    "prefix_limit": {},
+    "description": "",
+    "local_address": ""
+  }
+}

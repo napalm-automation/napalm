@@ -1,0 +1,12 @@
+{
+	"dummy-test2": {
+		"password": "",
+		"sshkeys": [],
+		"level": 15
+	},
+	"dummy-test": {
+		"password": "",
+		"sshkeys": [],
+		"level": 15
+	}
+}

@@ -1,0 +1,23 @@
+{% if (location is defined) and location %}
+snmp-server location "{{location}}"
+{% endif %}
+{% if (contact is defined) and contact %}
+snmp-server contact "{{contact}}"
+{% endif %}
+{% if (chassis_id is defined) and chassis_id %}
+snmp-server chassis-id "{{chassis_id}}"
+{% endif %}
+{% if (community is defined) and community %}
+{% for comm_name, comm_details in community.iteritems() %}
+{% if (comm_details is defined) and comm_details %}
+{% if (comm_details.get('mode') is defined) and comm_details.get('mode') == 'rw' %}
+snmp-server community {{comm_name}} RW
+{% else %}
+snmp-server community {{comm_name}} RO
+{% endif %}
+{% else %}
+snmp-server community {{comm_name}} RO
+{% endif %}
+{% endfor %}
+{% endif %}
+

@@ -1,0 +1,14 @@
+{% if (location is defined) and location %}
+no snmp-server location "{{location}}"
+{% endif %}
+{% if (contact is defined) and contact %}
+no snmp-server contact "{{contact}}"
+{% endif %}
+{% if (chassis_id is defined) and chassis_id %}
+no snmp-server chassis-id "{{chassis_id}}"
+{% endif %}
+{% if (community is defined) and community %}
+{% for comm_name, comm_details in community.iteritems() %}
+no community {{comm_name}}
+{% endfor %}
+{% endif %}

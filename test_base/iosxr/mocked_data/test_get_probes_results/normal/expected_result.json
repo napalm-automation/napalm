@@ -1,0 +1,42 @@
+{
+	"1": {
+		"test-GT-4": {
+			"last_test_min_delay": 87.0,
+			"global_test_min_delay": 86.0,
+			"target": "",
+			"global_test_max_delay": 159.0,
+			"probe_type": "icmp-ping",
+			"global_test_avg_delay": 88.62016806722689,
+			"last_test_avg_delay": 87.0,
+			"current_test_min_delay": 0.0,
+			"last_test_max_delay": 87.0,
+			"current_test_max_delay": 0.0,
+			"last_test_loss": 0,
+			"rtt": 87.15,
+			"source": "1.1.1.1.1",
+			"round_trip_jitter": -1.7033112740867153,
+			"probe_count": 20,
+			"current_test_avg_delay": 0.0
+		}
+	},
+	"2": {
+		"sjc01-TE-4": {
+			"last_test_min_delay": 1.0,
+			"global_test_min_delay": 1.0,
+			"target": "",
+			"global_test_max_delay": 1.0,
+			"probe_type": "icmp-ping",
+			"global_test_avg_delay": 1.0,
+			"last_test_avg_delay": 1.0,
+			"current_test_min_delay": 0.0,
+			"last_test_max_delay": 1.0,
+			"current_test_max_delay": 0.0,
+			"last_test_loss": 0,
+			"rtt": 1.0,
+			"source": "3.3.3.3",
+			"round_trip_jitter": 0.0,
+			"probe_count": 20,
+			"current_test_avg_delay": 0.0
+		}
+	}
+}

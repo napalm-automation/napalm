@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response MajorVersion="1" MinorVersion="0">
+    <Set>
+        <Action>
+            <TraceRoute MajorVersion="1" MinorVersion="1">
+                <IPV4>
+                    <Destination>
+                        8.8.8.8
+                    </Destination>
+                    <Probe>
+                        1
+                    </Probe>
+                    <Source>
+                        127.0.0.1
+                    </Source>
+                    <Results>
+                        <DestAddress>
+                            8.8.8.8
+                        </DestAddress>
+
+                        <ProbeIndex>
+                            0
+                        </ProbeIndex>
+                        <Result>
+                            *
+                        </Result>
+
+                        <HopIndex>
+                            2
+                        </HopIndex>
+                        <HopHostName>
+                            tor10.ip4.gtt.net
+                        </HopHostName>
+                        <HopAddress>
+                            1.1.1.1
+                        </HopAddress>
+
+                        <ProbeIndex>
+                            0
+                        </ProbeIndex>
+                        <DeltaTime>
+                            0
+                        </DeltaTime>
+
+                        <HopIndex>
+                            3
+                        </HopIndex>
+                        <HopHostName>
+                            tcore5.TNK-Toronto.as6453.net
+                        </HopHostName>
+                        <HopAddress>
+                            2.2.2.2
+                        </HopAddress>
+
+                        <ProbeIndex>
+                            0
+                        </ProbeIndex>
+                        <DeltaTime>
+                            186
+                        </DeltaTime>
+
+                        <ProbeIndex>
+                            0
+                        </ProbeIndex>
+                        <Result>
+                            *
+                        </Result>
+
+                        <HopIndex>
+                            5
+                        </HopIndex>
+                        <HopHostName>
+                            tcore22.SQN-San-Jose.as6453.net
+                        </HopHostName>
+                        <HopAddress>
+                            3.3.3.3
+                        </HopAddress>
+
+                        <ProbeIndex>
+                            0
+                        </ProbeIndex>
+                        <DeltaTime>
+                            192
+                        </DeltaTime>
+
+                        <HopIndex>
+                            6
+                        </HopIndex>
+                        <HopHostName>
+                            tcore0.PDI-Palo-Alto.as6453.net
+                        </HopHostName>
+                        <HopAddress>
+                            4.4.4.4
+                        </HopAddress>
+
+                        <ProbeIndex>
+                            0
+                        </ProbeIndex>
+                        <DeltaTime>
+                            169
+                        </DeltaTime>
+
+                        <HopIndex>
+                            7
+                        </HopIndex>
+                        <HopHostName>
+                            tcore17.TV2-Tokyo.as6453.net
+                        </HopHostName>
+                        <HopAddress>
+                            5.5.5.5
+                        </HopAddress>
+
+                        <ProbeIndex>
+                            0
+                        </ProbeIndex>
+                        <DeltaTime>
+                            189
+                        </DeltaTime>
+
+                        <HopIndex>
+                            8
+                        </HopIndex>
+                        <HopHostName>
+                            tcore7.TV2-Tokyo.as6453.net
+                        </HopHostName>
+                        <HopAddress>
+                            6.6.6.6
+                        </HopAddress>
+
+                        <ProbeIndex>
+                            0
+                        </ProbeIndex>
+                        <DeltaTime>
+                            186
+                        </DeltaTime>
+
+                        <HopIndex>
+                            9
+                        </HopIndex>
+                        <HopAddress>
+                            8.8.8.8
+                        </HopAddress>
+
+                        <ProbeIndex>
+                            0
+                        </ProbeIndex>
+                        <DeltaTime>
+                            199
+                        </DeltaTime>
+
+                    </Results>
+                </IPV4>
+            </TraceRoute>
+        </Action>
+    </Set>
+    <ResultSummary ErrorCount="0"/>
+</Response>

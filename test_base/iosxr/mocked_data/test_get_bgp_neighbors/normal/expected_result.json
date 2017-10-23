@@ -1,0 +1,161 @@
+{
+	"test": {
+		"router_id": "1.1.1.1",
+		"peers": {
+			"20.20.20.20": {
+				"is_enabled": false,
+				"uptime": 10009522,
+				"remote_as": 1234,
+				"description": "Why so curious?",
+				"remote_id": "1.2.3.4",
+				"local_as": 13335,
+				"is_up": true,
+				"address_family": {
+					"ipv4": {
+						"sent_prefixes": 1348,
+						"accepted_prefixes": 588215,
+						"received_prefixes": 588224
+					}
+				}
+			},
+			"9.10.11.12": {
+				"is_enabled": false,
+				"uptime": -1,
+				"remote_as": 7777,
+				"description": "Banana",
+				"remote_id": "0.0.0.0",
+				"local_as": 13335,
+				"is_up": false,
+				"address_family": {
+					"ipv4": {
+						"sent_prefixes": 0,
+						"accepted_prefixes": 0,
+						"received_prefixes": 0
+					}
+				}
+			},
+			"30.30.30.30": {
+				"is_enabled": false,
+				"uptime": -1,
+				"remote_as": 7777,
+				"description": "Banana",
+				"remote_id": "0.0.0.0",
+				"local_as": 13335,
+				"is_up": false,
+				"address_family": {
+					"ipv4": {
+						"sent_prefixes": 0,
+						"accepted_prefixes": 0,
+						"received_prefixes": 0
+					}
+				}
+			},
+			"5.6.7.8": {
+				"is_enabled": false,
+				"uptime": 1871663,
+				"remote_as": 13335,
+				"description": "",
+				"remote_id": "5.6.7.8",
+				"local_as": 13335,
+				"is_up": true,
+				"address_family": {
+					"ipv4": {
+						"sent_prefixes": 0,
+						"accepted_prefixes": 316,
+						"received_prefixes": 316
+					}
+				}
+			}
+		}
+	},
+	"global": {
+		"router_id": "1.9.9.0",
+		"peers": {
+			"1.2.3.4": {
+				"is_enabled": false,
+				"uptime": -1,
+				"remote_as": 8473,
+				"description": "test",
+				"remote_id": "0.0.0.0",
+				"local_as": 31337,
+				"is_up": false,
+				"address_family": {
+					"ipv4": {
+						"sent_prefixes": 0,
+						"accepted_prefixes": 0,
+						"received_prefixes": 0
+					}
+				}
+			}
+		}
+	},
+	"test2": {
+		"router_id": "1.1.1.1",
+		"peers": {
+			"20.20.20.20": {
+				"is_enabled": false,
+				"uptime": 10009522,
+				"remote_as": 1234,
+				"description": "Why so curious?",
+				"remote_id": "1.2.3.4",
+				"local_as": 13335,
+				"is_up": true,
+				"address_family": {
+					"ipv4": {
+						"sent_prefixes": 1348,
+						"accepted_prefixes": 588215,
+						"received_prefixes": 588224
+					}
+				}
+			},
+			"9.10.11.12": {
+				"is_enabled": false,
+				"uptime": -1,
+				"remote_as": 7777,
+				"description": "Banana",
+				"remote_id": "0.0.0.0",
+				"local_as": 13335,
+				"is_up": false,
+				"address_family": {
+					"ipv4": {
+						"sent_prefixes": 0,
+						"accepted_prefixes": 0,
+						"received_prefixes": 0
+					}
+				}
+			},
+			"30.30.30.30": {
+				"is_enabled": false,
+				"uptime": -1,
+				"remote_as": 7777,
+				"description": "Banana",
+				"remote_id": "0.0.0.0",
+				"local_as": 13335,
+				"is_up": false,
+				"address_family": {
+					"ipv4": {
+						"sent_prefixes": 0,
+						"accepted_prefixes": 0,
+						"received_prefixes": 0
+					}
+				}
+			},
+			"5.6.7.8": {
+				"is_enabled": false,
+				"uptime": 1871663,
+				"remote_as": 13335,
+				"description": "",
+				"remote_id": "5.6.7.8",
+				"local_as": 13335,
+				"is_up": true,
+				"address_family": {
+					"ipv4": {
+						"sent_prefixes": 0,
+						"accepted_prefixes": 316,
+						"received_prefixes": 316
+					}
+				}
+			}
+		}
+	}
+}

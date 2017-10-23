@@ -1,0 +1,34 @@
+{
+	"Bundle-Ether2": {
+		"ipv6": {
+			"2001:db8::": {
+				"prefix_length": 126
+			}
+		}
+	},
+	"BVI10": {
+		"ipv4": {
+			"192.168.0.1": {
+				"prefix_length": 21
+			}
+		}
+	},
+	"BVI100": {
+		"ipv4": {
+			"192.168.21.1": {
+				"prefix_length": 24
+			},
+			"192.168.23.1": {
+				"prefix_length": 24
+			},
+			"172.17.18.1": {
+				"prefix_length": 24
+			}
+		},
+		"ipv6": {
+			"2400:cb00:49:1024::1": {
+				"prefix_length": 64
+			}
+		}
+	}
+}

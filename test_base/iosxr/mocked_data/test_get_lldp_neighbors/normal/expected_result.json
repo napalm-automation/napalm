@@ -1,0 +1,10 @@
+{
+	"Gi0/0/0/0": [{
+		"hostname": "precise64",
+		"port": "0800.27f3.3c29"
+	}],
+	"Gi0/0/0/1": [{
+		"hostname": "precise64",
+		"port": "0800.275d.d2a8"
+	}]
+}

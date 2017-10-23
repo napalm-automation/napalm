@@ -1,0 +1,13 @@
+{%- for user_name, user_details in users.iteritems() %}
+{%- if user_details %}
+username {{user_name}}
+{%- endif %}
+{%- if user_details.get('password') %}
+  no password
+{%- endif %}
+{%- if user_details.get('level') %}
+  no group
+{%- endif %}
+{%- else %}
+no username {{user_name}}
+{%- endfor %}
