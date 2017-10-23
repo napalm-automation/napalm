@@ -75,6 +75,7 @@ _                               EOS   JunOS   IOS-XR  FortiOS  NXOS    IOS    Pl
 **load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|  |yes|      |yes|     |no|	    |yes|
 **ping**                       |yes|  |yes|   |no|    |no|     |no|    |yes|  |no|       |no|      |yes|    |yes|
 **traceroute**                 |yes|  |yes|   |yes|   |no|     |yes|   |yes|  |yes|      |no|      |no|     |no|
+**commit_confirm**             |no|   |yes|   |no|    |no|     |no|    |no|   |no|       |no|      |no|     |no|
 ============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
 
 Available configuration templates
