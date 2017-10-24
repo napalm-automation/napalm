@@ -183,7 +183,10 @@ class IOSXRDriver(NetworkDriver):
         system_time_xpath = './/SystemTime/Uptime'
         platform_attr_xpath = './/RackTable/Rack/Attributes/BasicInfo'
         system_time_tree = facts_rpc_reply.xpath(system_time_xpath)[0]
-        platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)[0]
+        try:
+            platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)[0]
+        except IndexError:
+            platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)
 
         hostname = napalm_base.helpers.convert(
             text_type, napalm_base.helpers.find_txt(system_time_tree, 'Hostname'))
