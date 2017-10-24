@@ -1,0 +1,4 @@
+pan-python
+netmiko>=1.4.3
+requests-toolbelt
+xmltodict

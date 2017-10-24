@@ -5,4 +5,5 @@
 -r iosxr
 -r junos
 -r nxos
+-r panos
 -r pluribus
