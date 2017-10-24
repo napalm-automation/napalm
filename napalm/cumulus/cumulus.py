@@ -30,11 +30,11 @@ from collections import defaultdict
 
 from netmiko import ConnectHandler
 from netmiko.ssh_exception import NetMikoTimeoutException
-import napalm_base.constants as C
-from napalm_base.utils import py23_compat
-from napalm_base.utils import string_parsers
-from napalm_base.base import NetworkDriver
-from napalm_base.exceptions import (
+import napalm.base.constants as C
+from napalm.base.utils import py23_compat
+from napalm.base.utils import string_parsers
+from napalm.base.base import NetworkDriver
+from napalm.base.exceptions import (
     ConnectionException,
     MergeConfigException,
     )

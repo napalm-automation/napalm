@@ -1,0 +1,2 @@
+netmiko>=1.4.3
+pytz

@@ -1,4 +1,5 @@
 -r base
+-r cumulus
 -r eos
 -r fortios
 -r ios

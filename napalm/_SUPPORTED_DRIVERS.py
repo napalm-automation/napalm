@@ -1,4 +1,5 @@
 SUPPORTED_DRIVERS = [
+    "cumulus",
     "eos",
     "fortios",
     "ios",
