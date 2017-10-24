@@ -1,0 +1,16 @@
+{
+    "uptime": 545, 
+    "vendor": "Cumulus", 
+    "hostname": "cumulus", 
+    "fqdn": "cumulus", 
+    "os_version": "3.2.0", 
+    "serial_number": "08:00:27:70:e6:e9", 
+    "model": "Cumulus Linux", 
+    "interface_list": [
+        "eth0", 
+        "lo", 
+        "swp1", 
+        "swp2", 
+        "swp3"
+    ]
+}

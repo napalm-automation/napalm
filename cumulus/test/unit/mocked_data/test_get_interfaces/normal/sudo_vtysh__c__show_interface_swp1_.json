@@ -1,0 +1,13 @@
+Interface swp1 is up, line protocol is up
+  Link ups:       0    last: (never)
+  Link downs:     0    last: (never)
+  PTM status: disabled
+  vrf: Default-IP-Routing-Table
+  index 3 metric 0 mtu 1500 
+  flags: <UP,BROADCAST,RUNNING,MULTICAST>
+  Type: Ethernet
+  HWaddr: 50:00:00:0b:00:01
+  inet 192.168.100.115/24
+  inet6 fe80::5200:ff:fe0b:1/64
+  Interface Type Other
+

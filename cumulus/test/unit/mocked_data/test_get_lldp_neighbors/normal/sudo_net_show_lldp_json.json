@@ -1,0 +1,261 @@
+{
+    "eth0": {
+        "connector_type": null, 
+        "iface_obj": {
+            "asic": null, 
+            "connector_type": 0, 
+            "counters": null, 
+            "description": "", 
+            "ip_addr_assign": 0, 
+            "ip_address": {
+                "allentries": [
+                    "10.1.100.115/24"
+                ]
+            }, 
+            "ip_neighbor": {
+                "allentries": {
+                    "10.1.100.1": {
+                        "mac": "00:14:1c:57:a4:c2"
+                    }, 
+                    "10.1.100.200": {
+                        "mac": "f4:4d:30:63:34:f3"
+                    }
+                }
+            }, 
+            "linkstate": 2, 
+            "lldp": [
+                {
+                    "adj_hostname": "L2IOU1.ntc.com", 
+                    "adj_mgmt_ip": "192.168.100.104", 
+                    "adj_port": "Ethernet0/0", 
+                    "system_descr": "Cisco IOS Software, Linux Software (I86BI_LINUX_L2-ADVENTERPRISEK9-M), Version 15.6(0.9)S, EARLY DEPLOYMENT ENGINEERING WEEKLY BUILD, synced to  BLD_DARLING_122S_040709_1301\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2015 by Cisco Systems, Inc.\nCompiled Tue 14-Jul-15 11:02 by alnguyen running on Linux Unix"
+                }, 
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet0/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }, 
+                {
+                    "adj_hostname": "NXOS1(TB000D0000B)", 
+                    "adj_mgmt_ip": "192.168.100.105", 
+                    "adj_port": "mgmt0", 
+                    "system_descr": "Cisco Nexus Operating System (NX-OS) Software, Version 7.3(0)D1(1) running on N7K-C7018"
+                }, 
+                {
+                    "adj_hostname": "IOUL3-01.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.103", 
+                    "adj_port": "Ethernet0/0", 
+                    "system_descr": "Cisco IOS Software, Linux Software (I86BI_LINUX-ADVENTERPRISEK9-M), Version 15.4(2)T4, DEVELOPMENT TEST SOFTWARE\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2015 by Cisco Systems, Inc.\nCompiled Thu 08-Oct-15 21:21 by prod_rel_team running on Linux Unix"
+                }
+            ], 
+            "mac": "50:00:00:0b:00:00", 
+            "mtu": 1500, 
+            "name": "eth0", 
+            "native_vlan": [], 
+            "speed": 1000, 
+            "vlan": null, 
+            "vlan_filtering": false, 
+            "vlan_list": {}
+        }, 
+        "linkstate": "UP", 
+        "name": "eth0", 
+        "port_category": "Mgmt", 
+        "speed": "1G", 
+        "summary": [
+            "IP: 10.1.100.115/24"
+        ]
+    }, 
+    "swp1": {
+        "connector_type": null, 
+        "iface_obj": {
+            "asic": null, 
+            "connector_type": 0, 
+            "counters": {
+                "all": {
+                    "rx": {}, 
+                    "tx": {}
+                }, 
+                "total_err": null, 
+                "total_rx": null, 
+                "total_tx": null
+            }, 
+            "description": "", 
+            "ip_addr_assign": 0, 
+            "ip_address": {
+                "allentries": [
+                    "192.168.100.115/24"
+                ]
+            }, 
+            "ip_neighbor": {
+                "allentries": {}
+            }, 
+            "linkstate": 2, 
+            "lldp": [
+                {
+                    "adj_hostname": "NXOS1(TB000D0000B)", 
+                    "adj_mgmt_ip": "192.168.100.105", 
+                    "adj_port": "Ethernet2/1", 
+                    "system_descr": "Cisco Nexus Operating System (NX-OS) Software, Version 7.3(0)D1(1) running on N7K-C7018"
+                }, 
+                {
+                    "adj_hostname": "VIRL1.ntc.com", 
+                    "adj_mgmt_ip": "192.168.100.106", 
+                    "adj_port": "GigabitEthernet0/1", 
+                    "system_descr": "Cisco IOS Software, IOSv Software (VIOS-ADVENTERPRISEK9-M), Experimental Version 15.4(20140730:011659) [lucylee-pi25-2 107]\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Tue 29-Jul-14 18:17 by lucylee running on Cisco IOSv"
+                }, 
+                {
+                    "adj_hostname": "L2IOU1.ntc.com", 
+                    "adj_mgmt_ip": "192.168.100.104", 
+                    "adj_port": "Ethernet0/1", 
+                    "system_descr": "Cisco IOS Software, Linux Software (I86BI_LINUX_L2-ADVENTERPRISEK9-M), Version 15.6(0.9)S, EARLY DEPLOYMENT ENGINEERING WEEKLY BUILD, synced to  BLD_DARLING_122S_040709_1301\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2015 by Cisco Systems, Inc.\nCompiled Tue 14-Jul-15 11:02 by alnguyen running on Linux Unix"
+                }, 
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet1/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }
+            ], 
+            "mac": "50:00:00:0b:00:01", 
+            "mtu": 1500, 
+            "name": "swp1", 
+            "native_vlan": [], 
+            "speed": 1000, 
+            "vlan": null, 
+            "vlan_filtering": false, 
+            "vlan_list": {}
+        }, 
+        "linkstate": "UP", 
+        "name": "swp1", 
+        "port_category": "Interface/L3", 
+        "speed": "1G", 
+        "summary": [
+            "IP: 192.168.100.115/24"
+        ]
+    }, 
+    "swp2": {
+        "connector_type": null, 
+        "iface_obj": {
+            "asic": null, 
+            "connector_type": 0, 
+            "counters": {
+                "all": {
+                    "rx": {}, 
+                    "tx": {}
+                }, 
+                "total_err": null, 
+                "total_rx": null, 
+                "total_tx": null
+            }, 
+            "description": "", 
+            "ip_addr_assign": 0, 
+            "ip_address": {
+                "allentries": [
+                    "192.168.101.115/24"
+                ]
+            }, 
+            "ip_neighbor": {
+                "allentries": {}
+            }, 
+            "linkstate": 2, 
+            "lldp": [
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet2/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }, 
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet3/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }, 
+                {
+                    "adj_hostname": "cumulus", 
+                    "adj_mgmt_ip": "10.1.100.115", 
+                    "adj_port": "swp3", 
+                    "system_descr": "Cumulus Linux version 3.2.1 running on Linux"
+                }
+            ], 
+            "mac": "50:00:00:0b:00:02", 
+            "mtu": 1500, 
+            "name": "swp2", 
+            "native_vlan": [], 
+            "speed": 1000, 
+            "vlan": null, 
+            "vlan_filtering": false, 
+            "vlan_list": {}
+        }, 
+        "linkstate": "UP", 
+        "name": "swp2", 
+        "port_category": "Interface/L3", 
+        "speed": "1G", 
+        "summary": [
+            "IP: 192.168.101.115/24"
+        ]
+    }, 
+    "swp3": {
+        "connector_type": null, 
+        "iface_obj": {
+            "asic": null, 
+            "connector_type": 0, 
+            "counters": {
+                "all": {
+                    "rx": {}, 
+                    "tx": {}
+                }, 
+                "total_err": null, 
+                "total_rx": null, 
+                "total_tx": null
+            }, 
+            "description": "", 
+            "ip_addr_assign": 0, 
+            "ip_address": {
+                "allentries": [
+                    "192.168.102.115/24"
+                ]
+            }, 
+            "ip_neighbor": {
+                "allentries": {}
+            }, 
+            "linkstate": 2, 
+            "lldp": [
+                {
+                    "adj_hostname": "cumulus", 
+                    "adj_mgmt_ip": "10.1.100.115", 
+                    "adj_port": "swp2", 
+                    "system_descr": "Cumulus Linux version 3.2.1 running on Linux"
+                }, 
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet2/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }, 
+                {
+                    "adj_hostname": "DYNA1.ntc.com", 
+                    "adj_mgmt_ip": "10.1.100.102", 
+                    "adj_port": "FastEthernet3/0", 
+                    "system_descr": "Cisco IOS Software, 7200 Software (C7200-ADVENTERPRISEK9-M), Version 15.2(4)S6, RELEASE SOFTWARE (fc1)\nTechnical Support: http://www.cisco.com/techsupport\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\nCompiled Fri 08-Aug-14 04:05 by prod_rel_team running on Cisco 7206VXR"
+                }
+            ], 
+            "mac": "50:00:00:0b:00:03", 
+            "mtu": 1500, 
+            "name": "swp3", 
+            "native_vlan": [], 
+            "speed": 1000, 
+            "vlan": null, 
+            "vlan_filtering": false, 
+            "vlan_list": {}
+        }, 
+        "linkstate": "UP", 
+        "name": "swp3", 
+        "port_category": "Interface/L3", 
+        "speed": "1G", 
+        "summary": [
+            "IP: 192.168.102.115/24"
+        ]
+    }
+}

@@ -1,0 +1,3 @@
+napalm_base
+netmiko>=1.1.0
+pytz

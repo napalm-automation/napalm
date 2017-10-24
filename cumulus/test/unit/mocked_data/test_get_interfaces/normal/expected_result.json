@@ -1,0 +1,50 @@
+{
+    "bridge": {
+        "is_enabled": true, 
+        "description": "", 
+        "last_flapped": -1, 
+        "is_up": true, 
+        "mac_address": "6e:d2:b8:b6:1a:89", 
+        "speed": -1
+    }, 
+    "lo": {
+        "is_enabled": true, 
+        "description": "", 
+        "last_flapped": -1, 
+        "is_up": true, 
+        "mac_address": "00:00:00:00:00:00", 
+        "speed": -1
+    }, 
+    "swp2": {
+        "is_enabled": true, 
+        "description": "", 
+        "last_flapped": -1, 
+        "is_up": true, 
+        "mac_address": "50:00:00:0b:00:02", 
+        "speed": 1000
+    }, 
+    "swp3": {
+        "is_enabled": true, 
+        "description": "", 
+        "last_flapped": -1, 
+        "is_up": true, 
+        "mac_address": "50:00:00:0b:00:03", 
+        "speed": 1000
+    }, 
+    "swp1": {
+        "is_enabled": true, 
+        "description": "", 
+        "last_flapped": -1, 
+        "is_up": true, 
+        "mac_address": "50:00:00:0b:00:01", 
+        "speed": 1000
+    }, 
+    "eth0": {
+        "is_enabled": true, 
+        "description": "", 
+        "last_flapped": -1, 
+        "is_up": true, 
+        "mac_address": "50:00:00:0b:00:00", 
+        "speed": 1000
+    }
+}

@@ -1,0 +1,8 @@
+quagga.service - Cumulus Linux Quagga
+   Loaded: loaded (/lib/systemd/system/quagga.service; enabled)
+   Active: active (running) since Mon 2017-03-20 10:59:26 UTC; 24h ago
+  Process: 30041 ExecStop=/usr/lib/quagga/quagga stop (code=exited, status=0/SUCCESS)
+  Process: 31697 ExecStart=/usr/lib/quagga/quagga start (code=exited, status=0/SUCCESS)
+   CGroup: /system.slice/quagga.service
+           31712 /usr/lib/quagga/zebra -s 90000000 --daemon -A 127.0.0.1
+           31718 /usr/lib/quagga/watchquagga -adz -r /usr/sbin/servicebBquaggabBrestartbB%s -s /usr/sbin/servicebBquaggabBstartbB%s -k /us...

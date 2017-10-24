@@ -1,0 +1,66 @@
+{
+    "swp2": [
+        {
+            "hostname": "DYNA1.ntc.com", 
+            "port": "FastEthernet2/0"
+        }, 
+        {
+            "hostname": "DYNA1.ntc.com", 
+            "port": "FastEthernet3/0"
+        }, 
+        {
+            "hostname": "cumulus", 
+            "port": "swp3"
+        }
+    ], 
+    "swp3": [
+        {
+            "hostname": "cumulus", 
+            "port": "swp2"
+        }, 
+        {
+            "hostname": "DYNA1.ntc.com", 
+            "port": "FastEthernet2/0"
+        }, 
+        {
+            "hostname": "DYNA1.ntc.com", 
+            "port": "FastEthernet3/0"
+        }
+    ], 
+    "swp1": [
+        {
+            "hostname": "NXOS1(TB000D0000B)", 
+            "port": "Ethernet2/1"
+        }, 
+        {
+            "hostname": "VIRL1.ntc.com", 
+            "port": "GigabitEthernet0/1"
+        }, 
+        {
+            "hostname": "L2IOU1.ntc.com", 
+            "port": "Ethernet0/1"
+        }, 
+        {
+            "hostname": "DYNA1.ntc.com", 
+            "port": "FastEthernet1/0"
+        }
+    ], 
+    "eth0": [
+        {
+            "hostname": "L2IOU1.ntc.com", 
+            "port": "Ethernet0/0"
+        }, 
+        {
+            "hostname": "DYNA1.ntc.com", 
+            "port": "FastEthernet0/0"
+        }, 
+        {
+            "hostname": "NXOS1(TB000D0000B)", 
+            "port": "mgmt0"
+        }, 
+        {
+            "hostname": "IOUL3-01.ntc.com", 
+            "port": "Ethernet0/0"
+        }
+    ]
+}
