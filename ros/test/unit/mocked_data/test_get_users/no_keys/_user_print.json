@@ -1,0 +1,14 @@
+{
+    "data":
+    [
+    {
+        "comment": "system default user",
+        "group": "full",
+        "name": "admin",
+        "last-logged-in": "dec/05/2016 22:58:02",
+        ".id": "*1",
+        "disabled": false,
+        "address": ""
+    }
+    ]
+}

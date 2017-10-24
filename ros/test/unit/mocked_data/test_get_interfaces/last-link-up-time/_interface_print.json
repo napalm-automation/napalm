@@ -1,0 +1,27 @@
+{
+    "data":
+    [
+        {
+            "tx-drop": 0,
+            "disabled": false,
+            "actual-mtu": 1500,
+            "last-link-up-time": "nov/24/2016 21:07:05",
+            "tx-error": 0,
+            "default-name": "ether1",
+            "tx-byte": 4005,
+            "rx-byte": 3910,
+            "mac-address": "08:00:27:A9:3F:55",
+            ".id": "*1",
+            "rx-packet": 35,
+            "running": true,
+            "tx-packet": 30,
+            "name": "ether1",
+            "fast-path": false,
+            "type": "ether",
+            "link-downs": 0,
+            "rx-error": 0,
+            "mtu": 1500,
+            "rx-drop": 0
+        }
+    ]
+}

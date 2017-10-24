@@ -1,0 +1,10 @@
+{
+    "ether1": {
+        "is_up": true,
+        "is_enabled": true,
+        "description": "",
+        "last_flapped": -1,
+        "speed": -1,
+        "mac_address": ""
+    }
+}

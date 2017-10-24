@@ -1,0 +1,23 @@
+{
+    "data":
+    [
+    {
+        "uptime": "2h17m13s",
+        "cpu-frequency": 2494,
+        "cpu-count": 1,
+        "total-memory": 262049792,
+        "total-hdd-space": 375877632,
+        "build-time": "Dec/03/2015 16:08:10",
+        "architecture-name": "x86",
+        "cpu": "Intel(R)",
+        "platform": "MikroTik",
+        "free-hdd-space": 325242880,
+        "version": "6.33.3 (stable)",
+        "board-name": "x86",
+        "write-sect-since-reboot": 1500,
+        "write-sect-total": 1500,
+        "cpu-load": 0,
+        "free-memory": 245358592
+    }
+    ]
+}

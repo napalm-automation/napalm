@@ -1,0 +1,18 @@
+{
+    "data":
+    [
+    {
+        "read-access": true,
+        "authentication-protocol": "MD5",
+        "name": "public",
+        "default": true,
+        "authentication-password": "",
+        "encryption-protocol": "DES",
+        "write-access": false,
+        ".id": "*0",
+        "security": "none",
+        "encryption-password": "",
+        "addresses": "0.0.0.0/0"
+    }
+    ]
+}

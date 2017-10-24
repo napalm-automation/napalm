@@ -1,0 +1,15 @@
+{
+    "data":
+    [
+        {
+            "running": true,
+            "dynamic": false,
+            "name": "ether1",
+            "comment": "",
+            "type": "ether",
+            "disabled": false,
+            "mtu": 1500,
+            ".id": "*1"
+        }
+    ]
+}
