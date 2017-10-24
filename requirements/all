@@ -8,3 +8,4 @@
 -r panos
 -r pluribus
 -r ros
+-r vyos

@@ -14,8 +14,8 @@
 
 import unittest
 
-from napalm_vyos import vyos
-from napalm_base.test.base import TestConfigNetworkDriver
+from napalm.vyos import vyos
+from napalm.base.test.base import TestConfigNetworkDriver
 
 
 class TestConfigVyOSDriver(unittest.TestCase, TestConfigNetworkDriver):

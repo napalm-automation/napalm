@@ -30,10 +30,10 @@ from netmiko import ConnectHandler
 from netmiko import SCPConn
 
 # NAPALM base
-import napalm_base.constants as C
-from napalm_base.utils import py23_compat
-from napalm_base.base import NetworkDriver
-from napalm_base.exceptions import ConnectionException, \
+import napalm.base.constants as C
+from napalm.base.utils import py23_compat
+from napalm.base.base import NetworkDriver
+from napalm.base.exceptions import ConnectionException, \
                                    MergeConfigException, ReplaceConfigException
 
 

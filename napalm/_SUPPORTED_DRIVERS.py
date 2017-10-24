@@ -9,4 +9,5 @@ SUPPORTED_DRIVERS = [
     "panos",
     "pluribus",
     "ros",
+    "vyos",
 ]

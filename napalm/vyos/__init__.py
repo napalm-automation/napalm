@@ -12,8 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-"""napalm_vyos package."""
-from napalm_vyos.vyos import VyOSDriver
+"""napalm.vyos package."""
+from napalm.vyos.vyos import VyOSDriver
 import pkg_resources
 
 try:
