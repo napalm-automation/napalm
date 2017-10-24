@@ -1,0 +1,4 @@
+napalm_base
+paramiko
+netmiko>=1.1.0
+vyattaconfparser

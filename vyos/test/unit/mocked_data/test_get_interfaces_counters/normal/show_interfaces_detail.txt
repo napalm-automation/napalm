@@ -1,0 +1,37 @@
+eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:c5:c9:67 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::a00:27ff:fec5:c967/64 scope link
+       valid_lft forever preferred_lft forever
+
+    RX:  bytes    packets     errors    dropped    overrun      mcast
+     136000952    1231123          0          0          0          0
+    TX:  bytes    packets     errors    dropped    carrier collisions
+     341194779    1227696          0          0          0          0
+eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 08:00:27:41:d5:f8 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.12.2/24 brd 10.0.12.255 scope global eth1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::a00:27ff:fe41:d5f8/64 scope link
+       valid_lft forever preferred_lft forever
+
+    RX:  bytes    packets     errors    dropped    overrun      mcast
+     128872155    1123706          0          0          0          0
+    TX:  bytes    packets     errors    dropped    carrier collisions
+     128813163    1123876          0          0          0          0
+lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet 10.2.2.2/32 scope global lo
+       valid_lft forever preferred_lft forever
+    inet 8.8.8.8/32 scope global lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+
+    RX:  bytes    packets     errors    dropped    overrun      mcast
+      75048164    1249364          0          0          0          0
+    TX:  bytes    packets     errors    dropped    carrier collisions
+      75048164    1249364          0          0          0          0

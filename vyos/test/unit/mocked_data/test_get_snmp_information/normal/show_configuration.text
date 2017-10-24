@@ -1,0 +1,124 @@
+interfaces {
+    ethernet eth0 {
+        address dhcp
+        duplex auto
+        smp_affinity auto
+        speed auto
+    }
+    ethernet eth1 {
+        address 10.0.1.222/24
+        duplex auto
+        smp_affinity auto
+        speed auto
+    }
+    loopback lo {
+        address 10.2.2.2/32
+        address 8.8.8.8/32
+    }
+}
+policy {
+    prefix-list EXPORT {
+        rule 1 {
+            action permit
+            prefix 172.16.2.0/24
+        }
+        rule 65535 {
+            action permit
+            prefix 10.2.2.2/32
+        }
+    }
+    route-map EXPORT-POLICY {
+        rule 1 {
+            action permit
+            match {
+                ip {
+                    address {
+                        prefix-list EXPORT
+                    }
+                }
+            }
+        }
+    }
+}
+protocols {
+    bgp 65002 {
+        neighbor 10.0.1.100 {
+            remote-as 65001
+            route-map {
+                export EXPORT-POLICY
+            }
+        }
+        redistribute {
+            connected {
+                route-map EXPORT-POLICY
+            }
+        }
+    }
+}
+service {
+    snmp {
+        community commro {
+            authorization ro
+        }
+        contact admin@foo.corp
+        location PL,Krakow
+    }
+    ssh {
+        disable-host-validation
+        port 22
+    }
+}
+system {
+    config-management {
+        commit-revisions 20
+    }
+    host-name vyos2
+    login {
+        banner {
+            pre-login "My banner for all devices"
+        }
+        user vagrant {
+            authentication {
+                encrypted-password $6$fcHhBu3T$WLmiu6/txlEfWK5uh4mKE8v7qocuftsoAN1oHqPIIoogXAX8zS.SKhB105EExYU6yBy4cKHUD/Q6Mm7CUbVTr.
+                plaintext-password ""
+                public-keys vagrant {
+                    key AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ==
+                    type ssh-rsa
+                }
+            }
+            level admin
+        }
+        user vyos {
+            authentication {
+                encrypted-password $1$yHIMnG/J$aWDkd3oDYSYps8twB5vpw1
+                plaintext-password ""
+            }
+            level admin
+        }
+    }
+    ntp {
+        server 10.0.1.100 {
+        }
+    }
+    package {
+        auto-sync 1
+        repository community {
+            components main
+            distribution helium
+            password ""
+            url http://packages.vyos.net/vyos
+            username ""
+        }
+    }
+    syslog {
+        global {
+            facility all {
+                level notice
+            }
+            facility protocols {
+                level debug
+            }
+        }
+    }
+    time-zone UTC
+}
