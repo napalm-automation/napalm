@@ -1,7 +1,7 @@
 import unittest
 
-from napalm_ros import ros
-from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver  # noqa
+from napalm.ros import ros
+from napalm.base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver  # noqa
 
 
 class TestConfigROSDriver(unittest.TestCase, TestConfigNetworkDriver):

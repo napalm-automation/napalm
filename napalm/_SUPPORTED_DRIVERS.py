@@ -8,4 +8,5 @@ SUPPORTED_DRIVERS = [
     "nxos_ssh",
     "panos",
     "pluribus",
+    "ros",
 ]

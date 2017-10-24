@@ -7,3 +7,4 @@
 -r nxos
 -r panos
 -r pluribus
+-r ros

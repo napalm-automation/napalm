@@ -1,4 +1,4 @@
-from napalm_base.helpers import (
+from napalm.base.helpers import (
         ip as cast_ip,
         )
 
