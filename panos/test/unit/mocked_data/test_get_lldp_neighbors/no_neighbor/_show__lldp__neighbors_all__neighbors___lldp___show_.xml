@@ -1,0 +1,18 @@
+<response status="success">
+<result>
+<entry name="ethernet1/1">
+<local>
+<index>16</index>
+<port-id>1</port-id>
+</local>
+<neighbors></neighbors>
+</entry>
+<entry name="ethernet1/2">
+<local>
+<index>17</index>
+<port-id>2</port-id>
+</local>
+<neighbors></neighbors>
+</entry>
+</result>
+</response>

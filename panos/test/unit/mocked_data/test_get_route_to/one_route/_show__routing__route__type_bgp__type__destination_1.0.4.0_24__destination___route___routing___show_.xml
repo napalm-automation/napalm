@@ -1,0 +1,14 @@
+<response status="success">
+    <result>
+        <flags>flags: A:active, ?:loose, C:connect, H:host, S:static, ~:internal, R:rip, O:ospf, B:bgp, Oi:ospf intra-area, Oo:ospf inter-area, O1:ospf ext-type-1, O2:ospf ext-type-2, E:ecmp</flags>
+        <entry>
+            <virtual-router>default</virtual-router>
+            <destination>10.22.0.0/16</destination>
+            <nexthop>10.0.0.1</nexthop>
+            <metric/>
+            <flags>A?B
+            </flags>
+            <age>2832970</age>
+            <interface/></entry>
+    </result>
+</response>
