@@ -456,16 +456,6 @@ class NXOSSSHDriver(NetworkDriver):
                      (hours * 3600) + (minutes * 60) + seconds
         return uptime_sec
 
-    @staticmethod
-    def fix_checkpoint_string(string, filename):
-        # used to generate checkpoint-like files
-        pattern = '''!Command: Checkpoint cmd vdc 1'''
-
-        if '!Command' in string:
-            return re.sub('!Command.*', pattern.format(filename), string)
-        else:
-            return "{0}\n{1}".format(pattern.format(filename), string)
-
     def is_alive(self):
         """Returns a flag with the state of the SSH connection."""
         null = chr(0)
@@ -512,23 +502,17 @@ class NXOSSSHDriver(NetworkDriver):
 
     def _replace_candidate(self, filename, config):
         if not filename:
-            file_content = self.fix_checkpoint_string(config, self.replace_file)
             filename = self._create_tmp_file(config)
         else:
             if not os.path.isfile(filename):
                 raise ReplaceConfigException("File {} not found".format(filename))
 
         self.replace_file = filename
-        with open(self.replace_file, 'r+') as f:
-            file_content = f.read()
-            file_content = self.fix_checkpoint_string(file_content, self.replace_file)
-            f.write(file_content)
-
         if not self._enough_space(self.replace_file):
             msg = 'Could not transfer file. Not enough space on device.'
             raise ReplaceConfigException(msg)
 
-        self._check_file_exists(self.replace_file)
+        self._check_file_exists(self.replace_file):
         dest = os.path.basename(self.replace_file)
         full_remote_path = 'bootflash:{}'.format(dest)
         with paramiko.SSHClient() as ssh:
