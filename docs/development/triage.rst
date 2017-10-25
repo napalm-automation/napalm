@@ -14,7 +14,6 @@ We triage Issues and Pull Requests (PR) using GitHub and ZenHub features:
 - :ref:`triage-labels`
 - :ref:`triage-milestone`
 - :ref:`triage-pipeline`
-- :ref:`triage-estimate`
 
 .. _triage-labels:
 
