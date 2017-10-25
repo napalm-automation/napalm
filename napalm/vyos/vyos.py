@@ -102,7 +102,7 @@ class VyOSDriver(NetworkDriver):
 
         try:
             self._scp_client = SCPConn(self.device)
-        except:
+        except:         # noqa
             raise ConnectionException("Failed to open connection ")
 
     def close(self):
@@ -625,7 +625,9 @@ class VyOSDriver(NetworkDriver):
                 snmp["community"].update({
                     i: {
                         "acl": py23_compat.text_type(""),
-                        "mode": py23_compat.text_type(config["service"]["snmp"]["community"][i]["authorization"])
+                        "mode": py23_compat.text_type(
+                            config["service"]["snmp"]["community"][i]["authorization"]
+                        )
                     }
                 })
 
