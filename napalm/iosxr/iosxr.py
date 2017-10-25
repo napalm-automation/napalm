@@ -266,19 +266,36 @@ class IOSXRDriver(NetworkDriver):
             else:
                 interface_stats = {}
                 interface_stats['tx_multicast_packets'] = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(interface,
-                        'InterfaceStatistics/FullInterfaceStats/MulticastPacketsSent'))
+                    int,
+                    napalm.base.helpers.find_txt(
+                        interface,
+                        'InterfaceStatistics/FullInterfaceStats/MulticastPacketsSent'
+                    )
+                )
                 interface_stats['tx_discards'] = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(interface,
-                        'InterfaceStatistics/FullInterfaceStats/OutputDrops'))
+                    int,
+                    napalm.base.helpers.find_txt(
+                        interface,
+                        'InterfaceStatistics/FullInterfaceStats/OutputDrops'
+                    )
+                )
                 interface_stats['tx_octets'] = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(interface,
-                        'InterfaceStatistics/FullInterfaceStats/BytesSent'))
+                    int,
+                    napalm.base.helpers.find_txt(
+                        interface,
+                        'InterfaceStatistics/FullInterfaceStats/BytesSent'
+                    )
+                )
                 interface_stats['tx_errors'] = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(interface,
-                        'InterfaceStatistics/FullInterfaceStats/OutputErrors'))
+                    int,
+                    napalm.base.helpers.find_txt(
+                        interface,
+                        'InterfaceStatistics/FullInterfaceStats/OutputErrors'
+                    )
+                )
                 interface_stats['rx_octets'] = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(interface,
+                    int, 
+                    napalm.base.helpers.find_txt(interface,
                         'InterfaceStatistics/FullInterfaceStats/BytesReceived'))
                 interface_stats['tx_unicast_packets'] = napalm.base.helpers.convert(
                     int, napalm.base.helpers.find_txt(interface,
