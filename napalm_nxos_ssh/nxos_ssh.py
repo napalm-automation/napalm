@@ -512,7 +512,7 @@ class NXOSSSHDriver(NetworkDriver):
             msg = 'Could not transfer file. Not enough space on device.'
             raise ReplaceConfigException(msg)
 
-        self._check_file_exists(self.replace_file):
+        self._check_file_exists(self.replace_file)
         dest = os.path.basename(self.replace_file)
         full_remote_path = 'bootflash:{}'.format(dest)
         with paramiko.SSHClient() as ssh:
