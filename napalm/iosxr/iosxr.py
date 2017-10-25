@@ -385,14 +385,20 @@ class IOSXRDriver(NetworkDriver):
 
             if vrf == "global":
                 this_vrf['router_id'] = napalm.base.helpers.convert(
-                    text_type, napalm.base.helpers.find_txt(result_tree,
-                                                            'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/DefaultVRF\
-                        /GlobalProcessInfo/VRF/RouterID'))
+                    text_type, napalm.base.helpers.find_txt(
+                        result_tree,
+                        'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/DefaultVRF'
+                        '/GlobalProcessInfo/VRF/RouterID'
+                    )
+                )
             else:
                 this_vrf['router_id'] = napalm.base.helpers.convert(
-                    text_type, napalm.base.helpers.find_txt(result_tree,
-                                                            'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/VRFTable/VRF\
-                        /GlobalProcessInfo/VRF/RouterID'))
+                    text_type, napalm.base.helpers.find_txt(
+                        result_tree,
+                        'Get/Operational/BGP/InstanceTable/Instance/InstanceActive/VRFTable/VRF'
+                        '/GlobalProcessInfo/VRF/RouterID'
+                    )
+                )
 
             neighbors = {}
 
