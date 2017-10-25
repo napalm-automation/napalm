@@ -454,8 +454,7 @@ class IOSXRDriver(NetworkDriver):
                             int,
                             napalm.base.helpers.find_txt(neighbor, 'AFData/Entry/PrefixesAccepted'),
                             0
-                        ) + \
-                        napalm.base.helpers.convert(
+                        ) + napalm.base.helpers.convert(
                             int,
                             napalm.base.helpers.find_txt(neighbor, 'AFData/Entry/PrefixesDenied'),
                             0
