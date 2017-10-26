@@ -1,3 +1,0 @@
-no vlan 111
-hostname nxos-spine2
-feature hsrp
