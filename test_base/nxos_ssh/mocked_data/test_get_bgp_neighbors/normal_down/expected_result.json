@@ -1,0 +1,23 @@
+{
+    "global": {
+        "router_id": "0.0.0.0", 
+        "peers": {
+            "1.1.1.1": {
+                "is_enabled": false, 
+                "uptime": -1, 
+                "remote_as": 33, 
+                "address_family": {
+                    "ipv4": {
+                        "sent_prefixes": -1, 
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": -1
+                    }
+                }, 
+                "is_up": false, 
+                "remote_id": "0.0.0.0", 
+                "local_as": 22, 
+                "description": ""
+            }
+        }
+    }
+}

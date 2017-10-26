@@ -1,0 +1,48 @@
+{
+    "global": {
+        "router_id": "10.0.0.100",
+        "peers": {}
+    },
+    "management": {
+        "router_id": "10.1.100.20",
+        "peers": {
+            "10.1.100.21": {
+                "is_enabled": true,
+                "uptime": -1,
+                "remote_as": 65535,
+                "description": "",
+                "remote_id": "10.1.100.21",
+                "local_as": 65535,
+                "is_up": true,
+                "address_family": {
+                    "ipv4": {
+                        "sent_prefixes": -1,
+                        "accepted_prefixes": -1,
+                        "received_prefixes": -1
+                    }
+                }
+            }
+        }
+    },
+    "red": {
+        "router_id": "10.1.100.20",
+        "peers": {
+            "10.1.100.21": {
+                "is_enabled": true,
+                "uptime": -1,
+                "remote_as": 4261806180,
+                "description": "",
+                "remote_id": "10.1.100.21",
+                "local_as": 65535,
+                "is_up": true,
+                "address_family": {
+                    "ipv4": {
+                        "sent_prefixes": -1,
+                        "accepted_prefixes": -1,
+                        "received_prefixes": -1
+                    }
+                }
+            }
+        }
+    }
+}

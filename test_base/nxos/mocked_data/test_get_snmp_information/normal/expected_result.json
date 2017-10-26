@@ -1,0 +1,16 @@
+{
+    "contact": "", 
+    "location": "", 
+    "chassis_id": "",
+    "community": {
+        "networktocode": {
+            "mode": "network-operator", 
+            "acl": ""
+        }, 
+        "public": {
+            "mode": "network-operator", 
+            "acl": ""
+        }
+    }
+}
+

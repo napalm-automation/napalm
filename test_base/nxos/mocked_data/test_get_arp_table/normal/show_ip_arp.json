@@ -1,0 +1,1 @@
+{"TABLE_vrf": {"ROW_vrf": {"cnt-total": 1, "vrf-name-out": "default", "TABLE_adj": {"ROW_adj": {"mac": "000a.000a.000a", "time-stamp": "-", "intf-out": "Ethernet2/1", "ip-addr-out": "1.1.1.1"}}}}}
