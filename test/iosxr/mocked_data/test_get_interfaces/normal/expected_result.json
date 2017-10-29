@@ -1,0 +1,26 @@
+{
+	"TenGigE0/0/0/14": {
+		"is_enabled": false,
+		"description": "",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "E0:AC:F1:64:71:52",
+		"speed": 10000
+	},
+	"TenGigE0/0/0/24": {
+		"is_enabled": false,
+		"description": "",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "E0:AC:F1:64:71:5C",
+		"speed": 10000
+	},
+	"TenGigE0/0/0/13": {
+		"is_enabled": false,
+		"description": "",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "E0:AC:F1:64:71:51",
+		"speed": 10000
+	}
+}

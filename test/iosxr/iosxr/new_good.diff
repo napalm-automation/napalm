@@ -1,0 +1,18 @@
++  hostname ios-xrv-unittest-changed
++  interface GigabitEthernet0/0/0/0
++   ipv4 address 192.168.78.12 255.255.255.0
++  !
+-  interface GigabitEthernet0/0/0/1
++  router bgp 65000
++   vrf test
++    neighbor 1.1.1.2
++     remote-as 1
++    !
++   !
++   vrf test2
++    neighbor 2.2.2.3
++     remote-as 2
++    !
++   !
++  !
+-  ssh server rate-limit 600

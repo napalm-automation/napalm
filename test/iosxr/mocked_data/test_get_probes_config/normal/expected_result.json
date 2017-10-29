@@ -1,0 +1,20 @@
+{
+	"1": {
+		"test-GT-4": {
+			"source": "1.1.1.1.1",
+			"probe_type": "icmp-ping",
+			"target": "2.2.2.2",
+			"test_interval": 3,
+			"probe_count": 20
+		}
+	},
+	"2": {
+		"sjc01-TE-4": {
+			"source": "3.3.3.3",
+			"probe_type": "icmp-ping",
+			"target": "4.4.4.4",
+			"test_interval": 3,
+			"probe_count": 20
+		}
+	}
+}

@@ -1,0 +1,62 @@
+{
+  "_": {
+    "multipath": false,
+    "prefix_limit": {},
+    "description": "",
+    "type": "",
+    "import_policy": "",
+    "export_policy": "",
+    "local_address": "",
+    "remove_private_as": false,
+    "remote_as": 0,
+    "multihop_ttl": 0,
+    "local_as": 0,
+    "apply_groups": [],
+    "neighbors": {
+      "10.255.255.2": {
+        "route_reflector_client": false,
+        "prefix_limit": {
+          "inet": {
+            "unicast": {
+              "teardown": {
+                "timeout": 0,
+                "threshold": 0
+              },
+              "limit": 0
+            }
+          }
+        },
+        "local_as": 0,
+        "description": "",
+        "local_address": "",
+        "import_policy": "pass-all",
+        "remote_as": 65900,
+        "export_policy": "pass-all",
+        "authentication_key": "",
+        "nhs": false
+      },
+      "10.255.255.3": {
+        "route_reflector_client": false,
+        "prefix_limit": {
+          "inet": {
+            "unicast": {
+              "teardown": {
+                "timeout": 0,
+                "threshold": 0
+              },
+              "limit": 0
+            }
+          }
+        },
+        "local_as": 0,
+        "description": "",
+        "local_address": "",
+        "import_policy": "pass-all",
+        "remote_as": 65900,
+        "export_policy": "pass-all",
+        "authentication_key": "",
+        "nhs": false
+      }
+    }
+  }
+}

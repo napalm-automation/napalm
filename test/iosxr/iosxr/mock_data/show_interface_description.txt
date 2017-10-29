@@ -1,0 +1,8 @@
+Fri Nov 27 10:02:21.639 UTC
+
+Interface          Status      Protocol    Description
+--------------------------------------------------------------------------------
+Nu0                up          up
+Mg0/0/CPU0/0       up          up
+Gi0/0/0/0          up          up
+Gi0/0/0/1          up          up

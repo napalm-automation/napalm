@@ -1,0 +1,96 @@
+Null0 is up, line protocol is up
+  Interface state transitions: 1
+  Hardware is Null interface
+  Internet address is Unknown
+  MTU 1500 bytes, BW 0 Kbit
+     reliability 255/255, txload Unknown, rxload Unknown
+  Encapsulation Null,  loopback not set,
+  Last input never, output never
+  Last clearing of "show interface" counters never
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     0 packets input, 0 bytes, 0 total input drops
+     0 drops for unrecognized upper-level protocol
+     Received 0 broadcast packets, 0 multicast packets
+     0 packets output, 0 bytes, 0 total output drops
+     Output 0 broadcast packets, 0 multicast packets
+
+MgmtEth0/0/CPU0/0 is up, line protocol is up
+  Interface state transitions: 1
+  Hardware is Management Ethernet, address is 0800.27a3.db3b (bia 0800.27a3.db3b)
+  Internet address is 192.168.56.202/24
+  MTU 1514 bytes, BW 0 Kbit
+     reliability 255/255, txload Unknown, rxload Unknown
+  Encapsulation ARPA,
+  Duplex unknown, 0Kb/s, unknown, link type is autonegotiation
+  output flow control is off, input flow control is off
+  Carrier delay (up) is 10 msec
+  loopback not set,
+  ARP type ARPA, ARP timeout 04:00:00
+  Last input 00:00:00, output 00:00:00
+  Last clearing of "show interface" counters never
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     2653 packets input, 433617 bytes, 0 total input drops
+     0 drops for unrecognized upper-level protocol
+     Received 851 broadcast packets, 500 multicast packets
+              0 runts, 0 giants, 0 throttles, 0 parity
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+     822 packets output, 211959 bytes, 0 total output drops
+     Output 5 broadcast packets, 0 multicast packets
+     0 output errors, 0 underruns, 0 applique, 0 resets
+     0 output buffer failures, 0 output buffers swapped out
+     1 carrier transitions
+
+GigabitEthernet0/0/0/0 is up, line protocol is up
+  Interface state transitions: 1
+  Hardware is GigabitEthernet, address is 0800.27b2.4650 (bia 0800.27b2.4650)
+  Internet address is Unknown
+  MTU 1514 bytes, BW 1000000 Kbit (Max: 1000000 Kbit)
+     reliability 255/255, txload 0/255, rxload 0/255
+  Encapsulation ARPA,
+  Full-duplex, 1000Mb/s, unknown, link type is force-up
+  output flow control is off, input flow control is off
+  Carrier delay (up) is 10 msec
+  loopback not set,
+  Last input 00:00:28, output 00:00:18
+  Last clearing of "show interface" counters never
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     365 packets input, 72270 bytes, 0 total input drops
+     0 drops for unrecognized upper-level protocol
+     Received 0 broadcast packets, 365 multicast packets
+              0 runts, 0 giants, 0 throttles, 0 parity
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+     367 packets output, 63491 bytes, 0 total output drops
+     Output 0 broadcast packets, 367 multicast packets
+     0 output errors, 0 underruns, 0 applique, 0 resets
+     0 output buffer failures, 0 output buffers swapped out
+     1 carrier transitions
+
+GigabitEthernet0/0/0/1 is up, line protocol is up
+  Interface state transitions: 1
+  Hardware is GigabitEthernet, address is 0800.27a5.abb0 (bia 0800.27a5.abb0)
+  Internet address is Unknown
+  MTU 1514 bytes, BW 1000000 Kbit (Max: 1000000 Kbit)
+     reliability 255/255, txload 0/255, rxload 0/255
+  Encapsulation ARPA,
+  Full-duplex, 1000Mb/s, unknown, link type is force-up
+  output flow control is off, input flow control is off
+  Carrier delay (up) is 10 msec
+  loopback not set,
+  Last input 00:00:28, output 00:00:18
+  Last clearing of "show interface" counters never
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+     365 packets input, 72270 bytes, 0 total input drops
+     0 drops for unrecognized upper-level protocol
+     Received 0 broadcast packets, 365 multicast packets
+              0 runts, 0 giants, 0 throttles, 0 parity
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+     367 packets output, 63491 bytes, 0 total output drops
+     Output 0 broadcast packets, 367 multicast packets
+     0 output errors, 0 underruns, 0 applique, 0 resets
+     0 output buffer failures, 0 output buffers swapped out
+     1 carrier transitions
+

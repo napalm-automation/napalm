@@ -1,0 +1,112 @@
+{
+  "_": {
+    "remote_as": 0,
+    "neighbors": {
+      "10.255.255.220": {
+        "remote_as": 65900,
+        "export_policy": "pass-all",
+        "description": "",
+        "route_reflector_client": false,
+        "nhs": false,
+        "local_as": 0,
+        "import_policy": "pass-all",
+        "local_address": "",
+        "prefix_limit": {
+          "inet": {
+            "unicast": {
+              "limit": 0,
+              "teardown": {
+                "threshold": 0,
+                "timeout": 0
+              }
+            }
+          }
+        },
+        "authentication_key": ""
+      },
+      "10.255.255.2": {
+        "remote_as": 65900,
+        "export_policy": "pass-all",
+        "description": "",
+        "route_reflector_client": false,
+        "nhs": false,
+        "local_as": 0,
+        "import_policy": "pass-all",
+        "local_address": "",
+        "prefix_limit": {
+          "inet": {
+            "unicast": {
+              "limit": 0,
+              "teardown": {
+                "threshold": 0,
+                "timeout": 0
+              }
+            }
+          }
+        },
+        "authentication_key": ""
+      }
+    },
+    "multihop_ttl": 0,
+    "import_policy": "",
+    "local_address": "",
+    "type": "",
+    "remove_private_as": false,
+    "description": "",
+    "export_policy": "",
+    "local_as": 0,
+    "apply_groups": [],
+    "multipath": false,
+    "prefix_limit": {}
+  },
+  "RR": {
+    "remote_as": 65900,
+    "neighbors": {
+      "10.255.255.12": {
+        "remote_as": 0,
+        "export_policy": "",
+        "description": "",
+        "route_reflector_client": false,
+        "nhs": false,
+        "local_as": 0,
+        "import_policy": "RP-SPECIAL-SNOWFLAKE-IN",
+        "local_address": "",
+        "prefix_limit": {
+          "inet": {
+            "unicast": {
+              "limit": 0,
+              "teardown": {
+                "threshold": 0,
+                "timeout": 0
+              }
+            }
+          }
+        },
+        "authentication_key": ""
+      },
+      "10.255.255.3": {
+        "remote_as": 0,
+        "export_policy": "",
+        "description": "",
+        "route_reflector_client": false,
+        "nhs": false,
+        "local_as": 0,
+        "import_policy": "",
+        "local_address": "",
+        "prefix_limit": {},
+        "authentication_key": ""
+      }
+    },
+    "multihop_ttl": 0,
+    "import_policy": "RP-RR-IN",
+    "local_address": "",
+    "type": "external",
+    "remove_private_as": true,
+    "description": "",
+    "export_policy": "",
+    "local_as": 0,
+    "apply_groups": [],
+    "multipath": false,
+    "prefix_limit": {}
+  }
+}

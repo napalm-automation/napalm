@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response MajorVersion="1" MinorVersion="0">
+    <Get>
+        <Configuration>
+            <SNMP MajorVersion="12" MinorVersion="6">
+                <Administration>
+                    <DefaultCommunityTable>
+                        <DefaultCommunity>
+                            <Naming>
+                                <CommunityName>
+                                    hackme
+                                </CommunityName>
+                            </Naming>
+                            <Priviledge>
+                                ReadOnly
+                            </Priviledge>
+                            <AccessList>
+                                ifyoucan
+                            </AccessList>
+                        </DefaultCommunity>
+                    </DefaultCommunityTable>
+                </Administration>
+                <System>
+                    <ChassisID>
+                        edge01.yyz01
+                    </ChassisID>
+                    <Contact>
+                        noc@cloudflare.com
+                    </Contact>
+                    <Location>
+                        Toronto, Canada
+                    </Location>
+                </System>
+            </SNMP>
+        </Configuration>
+    </Get>
+    <ResultSummary ErrorCount="0"/>
+</Response>

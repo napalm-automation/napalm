@@ -1,0 +1,11 @@
+{
+	"contact": "noc@cloudflare.com",
+	"location": "Toronto, Canada",
+	"community": {
+		"hackme": {
+			"mode": "ro",
+			"acl": "ifyoucan"
+		}
+	},
+	"chassis_id": "edge01.yyz01"
+}

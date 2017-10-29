@@ -1,0 +1,16 @@
+ipsla
+  {% set probe_id = 0 %}
+  {% for probe_name, probe_test in probes.iteritems() %}
+  {% for test_name, test_details in probe_test.iteritems() %}
+  no schedule operation {{probe_id + loop.index}}
+  {% endfor %}
+  {% set probe_id = probe_id + probe_test.keys()|length %}
+  {% endfor %}
+  {% set probe_id = 0 %}
+  {% for probe_name, probe_test in probes.iteritems() %}
+  {% for test_name, test_details in probe_test.iteritems() %}
+  no operation {{probe_id + loop.index}}
+  {% endfor %}
+  {% set probe_id = probe_id + probe_test.keys()|length %}
+  {% endfor %}
+!

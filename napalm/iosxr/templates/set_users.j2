@@ -1,0 +1,16 @@
+{%- for user_name, user_details in users.items() %}
+username {{user_name}}
+  {% set user_level = user_details.level|default(1) %}
+  {%- if user_level == 15 %}
+    group root-system
+  {%- elif user_level == 5 %}
+    group operator
+  {%- elif user_level == 2 %}
+    group serviceadmin
+  {%- elif user_level == 1 %}
+    group sysadmin
+  {% endif %}
+  {%- if user_details.get('password') %}
+    password {{user_details.password}}
+  {%- endif %}
+{%- endfor %}
