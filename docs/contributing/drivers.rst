@@ -1,9 +1,9 @@
 .. _contributing-drivers:
 
-Community drivers
+Community Drivers
 =================
 
-In addition to the core drivers, maintained by the NAPALM core developers,
+In addition to the core drivers, maintained by the :ref:`contributing-core`,
 the community can always provide additional drivers. We welcome any submission,
 and new drivers will be hosted under the
 `napalm-automation-community <https://github.com/napalm-automation-community>`_ on
