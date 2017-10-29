@@ -1,0 +1,25 @@
+services {
+  rpm {
+    {% for probe_name, probe_test in probes.iteritems() %}
+    probe {{probe_name}} {
+      {% for test_name, test_details in probe_test.iteritems() %}
+        test {{test_name}} {
+          {% if test_details.probe_type is defined %}
+          probe-type {{test_details.probe_type}};
+          {% endif %}
+          target address {{test_details.target}};
+          {% if test_details.probe_count is defined %}
+          probe-count {{test_details.probe_count}};
+          {% endif %}
+          {% if test_details.test_interval is defined %}
+          test-interval {{test_details.test_interval}};
+          {% endif %}
+          {% if test_details.source is defined %}
+          source-address {{test_details.source}};
+          {% endif %}
+        }
+      {% endfor %}
+    }
+    {% endfor %}
+  }
+}

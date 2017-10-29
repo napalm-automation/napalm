@@ -1,0 +1,697 @@
+---
+
+####
+#### Interface table
+####
+
+junos_iface_table:
+  rpc: get-interface-information
+  args:
+    extensive: True
+  args_key: interface_name
+  item: physical-interface
+  view: junos_iface_view
+
+junos_iface_view:
+  fields:
+    is_up: { oper-status: True=up }
+    is_enabled: { admin-status: True=up }
+    description: { description: unicode }
+    last_flapped: { interface-flapped/@seconds: int }
+    #mode: logical-interface/address-family/address-family-name
+    speed: speed
+    mac_address: current-physical-address
+
+####
+#### BGP tables
+####
+
+junos_route_instance_table:
+  rpc: get-instance-information
+  item: instance-core
+  key: instance-name
+  view: junos_route_instance_view
+
+junos_route_instance_view:
+  fields:
+    name: instance-name
+
+junos_bgp_uptime_table:
+  rpc: get-bgp-summary-information
+  args:
+    instance: ''
+  item: bgp-peer
+  key: peer-address
+  view: junos_bgp_uptime_view
+
+junos_bgp_uptime_view:
+  fields:
+    uptime: { elapsed-time/@seconds: int }
+  tables: bgp-rib/name
+
+junos_bgp_table:
+  rpc: get-bgp-neighbor-information
+  args:
+    instance: ''
+  item: bgp-peer
+  key: peer-address
+  view: junos_bgp_view
+
+junos_bgp_view:
+  fields:
+    remote_as: { peer-as: int }
+    description: description
+    peer_fwd_rti: peer-fwd-rti
+    is_up: { peer-state: True=Established }
+    is_enabled: { peer-state: False=True }
+    received_prefixes: { bgp-rib/received-prefix-count: int }
+    accepted_prefixes: { bgp-rib/accepted-prefix-count: int }
+    sent_prefixes: { bgp-rib/advertised-prefix-count: int }
+    send-state: bgp-rib/send-state
+    tables: bgp-rib/name
+    local_as: { local-as: int }
+    peer_as: { peer-as: int }
+    local_id: local-id
+    remote_id: { peer-id: unicode }
+
+####
+#### LLDP table
+####
+
+junos_lldp_table:
+  rpc: get-lldp-neighbors-information
+  item: lldp-neighbor-information
+  key: lldp-local-port-id | lldp-local-interface
+  view: junos_lldp_view
+
+junos_lldp_view:
+  fields:
+    hostname: lldp-remote-system-name
+    port: lldp-remote-port-description | lldp-remote-port-id
+
+####
+#### Interface counters
+####
+
+junos_iface_counter_table:
+  rpc: get-interface-information
+  args:
+    extensive: True
+    interface_name: '[vmfgxe][mlet]*'
+  args_key: interface_name
+  item: physical-interface
+  view: junos_iface_counter_view
+
+
+junos_iface_counter_view:
+  groups:
+    ts: traffic-statistics
+    rxerrs: input-error-list
+    txerrs: output-error-list
+    ethernet_traffic_types: ethernet-mac-statistics
+
+
+  # fields that are part of groups are called
+  # "fields_<group-name>"
+  fields_ethernet_traffic_types:
+    rx_broadcast_packets: { input-broadcasts: int }
+    tx_broadcast_packets: { output-broadcasts: int }
+    rx_unicast_packets: { input-unicasts: int }
+    tx_unicast_packets: { output-unicasts: int }
+    rx_multicast_packets: { input-multicasts: int }
+    tx_multicast_packets: { output-multicasts: int }
+
+  fields_ts:
+    rx_octets: { input-bytes: int }
+    tx_octets: { output-bytes: int }
+
+  fields_rxerrs:
+    rx_errors: { input-errors: int }
+    rx_discards: { input-discards: int }
+
+  fields_txerrs:
+    tx_errors: { output-errors: int }
+    tx_discards: { output-drops: int }
+
+junos_enviroment_table:
+  rpc: get-environment-information
+  args:
+  item: environment-item
+  key: name
+  view: junos_enviroment_view
+
+junos_enviroment_view:
+  fields:
+    class: class
+    status: status
+    temperature: { temperature/@celsius: int }
+
+junos_pem_table:
+  rpc: get-power-usage-information-detail
+  args:
+  item: power-usage-item
+  key: name
+  view: junos_pem_view
+
+junos_pem_view:
+  fields:
+    capacity: { pem-capacity-detail/capacity-actual: float }
+    output: { dc-output-detail/dc-power: float }
+
+junos_routing_engine_table:
+  rpc: get-route-engine-information
+  args:
+  item: route-engine
+  key: slot
+  view: junos_routing_engine_view
+
+junos_routing_engine_view:
+  fields:
+    cpu-idle: { cpu-idle: int }
+    memory-dram-size: memory-dram-size
+    memory-buffer-utilization : { memory-buffer-utilization: int }
+
+junos_temperature_thresholds:
+  rpc: get-temperature-threshold-information
+  args:
+  item: temperature-threshold
+  key: name
+  view: junos_temperature_thresholds_view
+
+junos_temperature_thresholds_view:
+  fields:
+    name: name
+    yellow-alarm: { yellow-alarm: int }
+    red-alarm: { red-alarm: int }
+    tx_discards: { output-drops: int }
+
+###
+### NTP Peers Config
+###
+
+junos_ntp_peers_config_table:
+  get: system/ntp/peer
+  view: junos_ntp_peers_config_view
+
+junos_ntp_peers_config_view:
+  fields:
+    peer: name
+
+###
+### NTP Servers Config
+###
+
+junos_ntp_servers_config_table:
+  get: system/ntp/server
+  view: junos_ntp_servers_config_view
+
+junos_ntp_servers_config_view:
+  fields:
+    peer: name
+
+###
+### LLDP Neighbors Detail
+###
+
+junos_lldp_neighbors_detail_table:
+  rpc: get-lldp-neighbors-information
+  args:
+  item: lldp-neighbor-information
+  key: lldp-local-interface | lldp-local-port-id
+  view: junos_lldp_neighbors_detail_view
+
+junos_lldp_neighbors_detail_view:
+  fields:
+    # interface: {lldp-local-port-id: unicode}
+    interface_description: {lldp-local-interface: unicode}
+    parent_interface: {lldp-local-parent-interface-name: unicode}
+    remote_port: {lldp-remote-port-id: unicode}
+    remote_chassis_id: {lldp-remote-chassis-id: unicode}
+    remote_port_description: {lldp-remote-port-description: unicode}
+    remote_system_name: {lldp-remote-system-name: unicode}
+    remote_system_description: {lldp-system-description/lldp-remote-system-description: unicode}
+    remote_system_capab: {lldp-remote-system-capabilities-supported: unicode}
+    remote_system_enable_capab: {lldp-remote-system-capabilities-enabled: unicode}
+
+###
+### BGP config
+###
+
+
+junos_bgp_config_table:
+  get: protocols/bgp/group
+  view: junos_bgp_config_view
+
+junos_bgp_config_group_table:
+  get: protocols/bgp/group
+  view: junos_bgp_config_view
+  required_keys:
+    group: name
+
+junos_bgp_config_view:
+  fields:
+    type: {type: unicode}
+    description: {description: unicode}
+    apply_groups: {apply-groups: unicode}
+    local_address: {local-address: unicode}
+    multihop: multihop
+    multihop_ttl: {multihop/ttl: int}
+    local_as: {local-as/as-number: int}
+    remote_as: {peer-as: int}
+    cluster: cluster
+    multipath: multipath
+    remove_private_as: remove-private
+    import_policy: {import: unicode}
+    export_policy: {export: unicode}
+    neighbors: junos_bgp_config_peers_table
+    inet_unicast_limit_prefix_limit: {family/inet/unicast/prefix-limit/maximum: int}
+    inet_unicast_teardown_threshold_prefix_limit: {family/inet/unicast/prefix-limit/teardown/limit-threshold: int}
+    inet_unicast_teardown_timeout_prefix_limit: {family/inet/unicast/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet_unicast_novalidate_prefix_limit: {family/inet/unicast/prefix-limit/no-validate: int}
+    inet_flow_limit_prefix_limit: {family/inet/flow/prefix-limit/maximum: int}
+    inet_flow_teardown_threshold_prefix_limit: {family/inet/flow/prefix-limit/teardown/limit-threshold: int}
+    inet_flow_teardown_timeout_prefix_limit: {family/inet/flow/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet_flow_novalidate_prefix_limit: {family/inet/flow/prefix-limit/no-validate: unicode}
+    inet6_unicast_limit_prefix_limit: {family/inet6/unicast/prefix-limit/maximum: int}
+    inet6_unicast_teardown_threshold_prefix_limit: {family/inet6/unicast/prefix-limit/teardown/limit-threshold: int}
+    inet6_unicast_teardown_timeout_prefix_limit: {family/inet6/unicast/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet6_unicast_novalidate_prefix_limit: {family/inet6/unicast/prefix-limit/no-validate: int}
+    inet6_flow_limit_prefix_limit: {family/inet6/flow/prefix-limit/maximum: int}
+    inet6_flow_teardown_threshold_prefix_limit: {family/inet6/flow/prefix-limit/teardown/limit-threshold: int}
+    inet6_flow_teardown_timeout_prefix_limit: {family/inet6/flow/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet6_flow_novalidate_prefix_limit: {family/inet6/flow/prefix-limit/no-validate: unicode}
+
+junos_bgp_config_peers_table:
+  item: neighbor
+  key: name
+  view: junos_bgp_config_peers_view
+
+junos_bgp_config_peers_view:
+  fields:
+    description: {description: unicode}
+    import_policy: {import: unicode}
+    export_policy: {export: unicode}
+    local_address: {local-address: unicode}
+    local_as: {local-as/as-number: int}
+    cluster: cluster
+    remote_as: {peer-as: int}
+    authentication_key: {authentication_key: unicode}
+    inet_unicast_limit_prefix_limit: {family/inet/unicast/prefix-limit/maximum: int}
+    inet_unicast_teardown_threshold_prefix_limit: {family/inet/unicast/prefix-limit/teardown/limit-threshold: int}
+    inet_unicast_teardown_timeout_prefix_limit: {family/inet/unicast/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet_unicast_novalidate_prefix_limit: {family/inet/unicast/prefix-limit/no-validate: int}
+    inet_flow_limit_prefix_limit: {family/inet/flow/prefix-limit/maximum: int}
+    inet_flow_teardown_threshold_prefix_limit: {family/inet/flow/prefix-limit/teardown/limit-threshold: int}
+    inet_flow_teardown_timeout_prefix_limit: {family/inet/flow/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet_flow_novalidate_prefix_limit: {family/inet/flow/prefix-limit/no-validate: unicode}
+    inet6_unicast_limit_prefix_limit: {family/inet6/unicast/prefix-limit/maximum: int}
+    inet6_unicast_teardown_threshold_prefix_limit: {family/inet6/unicast/prefix-limit/teardown/limit-threshold: int}
+    inet6_unicast_teardown_timeout_prefix_limit: {family/inet6/unicast/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet6_unicast_novalidate_prefix_limit: {family/inet6/unicast/prefix-limit/no-validate: int}
+    inet6_flow_limit_prefix_limit: {family/inet6/flow/prefix-limit/maximum: int}
+    inet6_flow_teardown_threshold_prefix_limit: {family/inet6/flow/prefix-limit/teardown/limit-threshold: int}
+    inet6_flow_teardown_timeout_prefix_limit: {family/inet6/flow/prefix-limit/teardown/idle-timeout/timeout: int}
+    inet6_flow_novalidate_prefix_limit: {family/inet6/flow/prefix-limit/no-validate: unicode}
+
+####
+#### BGP Neighbors and Routing Tables Stats
+####
+
+junos_bgp_tables_summary_table:
+  rpc: get-bgp-summary-information
+  args:
+    instance: ''
+    group: ''
+  item: bgp-rib
+  key: name
+  view: junos_bgp_tables_summary_view
+
+junos_bgp_tables_summary_view:
+  fields:
+    routing_table: name
+    total_prefix_count: {total-prefix-count: int}
+    received_prefix_count: {received-prefix-countL: int}
+    active_prefix_count: {active-prefix-count: int}
+    suppressed_prefix_count: {suppressed-prefix-count: int}
+    history_prefix_count: {history-prefix-count: int}
+    damped_prefix_count: {damped-prefix-count: int}
+    total_external_prefix_count: {total-external-prefix-count: int}
+    active_external_prefix_count: {active-external-prefix-count: int}
+    accepted_external_prefix_count: {accepted-external-prefix-count: int}
+    suppressed_external_prefix_count: {suppressed-external-prefix-count: int}
+    total_internal_prefix_count: {total-internal-prefix-count: int}
+    active_internal_prefix_count: {active-internal-prefix-count: int}
+    accepted_internal_prefix_count: {accepted-internal-prefix-count: int}
+    suppressed_internal_prefix_count: {suppressed-internal-prefix-count: int}
+    pending_prefix_count: {pending-prefix-count: int}
+    bgp_rib_state: bgp-rib-state
+
+junos_bgp_neighbors_table:
+  rpc: get-bgp-neighbor-information
+  args:
+    instance: ''
+  args_key: neighbor_address
+  item: bgp-peer
+  key: peer-as
+  view: junos_bgp_neighbors_view
+
+junos_bgp_neighbors_view:
+  fields:
+    up: {peer-state: True=Established}
+    local_as: {local-as: int}
+    remote_as: {peer-as: int}
+    router_id: {peer-id: unicode}
+    peer_fwd_rti: peer-fwd-rti
+    local_address: local-address
+    peer_address: peer-address
+    options: bgp-option-information/bgp-options
+    import_policy: {bgp-option-information/import-policy: unicode}
+    export_policy: {bgp-option-information/export-policy: unicode}
+    input_messages: {input-messages: int}
+    output_messages: {output-messages: int}
+    input_updates: {input-updates: int}
+    output_updates: {output-updates: int}
+    connection_state: {peer-state: unicode}
+    previous_connection_state: {last-state: unicode}
+    last_event: {last-event: unicode}
+    4byte_as: {peer-4byte-as-capability-advertised: int}
+    local_as_prepend: {peer-addpath-not-supported: False=None}
+    holdtime: {active-holdtime: int}
+    configured_holdtime: {bgp-option-information/holdtime: int}
+    keepalive: {keepalive-interval: int}
+    configured_keepalive: {keepalive-interval: int}
+    rib: junos_bgp_rib_table
+    queue: junos_bgp_queue_table
+    flap_count: {flap-count: int}
+
+junos_bgp_queue_table:
+  item: bgp-output-queue
+  key: table-name
+  view: junos_bgp_queue_view
+
+junos_bgp_queue_view:
+  fields:
+    messages_queued_out: {count: int}
+
+junos_bgp_rib_table:
+  item: bgp-rib
+  key: name
+  view: junos_bgp_rib_view
+
+junos_bgp_rib_view:
+  fields:
+    active_prefix_count: {active-prefix-count: int}
+    received_prefix_count: {received-prefix-count: int}
+    accepted_prefix_count: {accepted-prefix-count: int}
+    suppressed_prefix_count: {suppressed-prefix-count: int}
+    advertised_prefix_count: {advertised-prefix-count: int}
+
+###
+### ARP Table
+###
+
+junos_arp_table:
+  rpc: get-arp-table-information
+  args:
+    expiration-time: true
+    no-resolve: true
+  item: arp-table-entry
+  key: interface-name
+  view: junos_arp_view
+
+junos_arp_view:
+  fields:
+    interface: {interface-name: unicode}
+    mac: {mac-address: unicode}
+    ip: {ip-address: unicode}
+    age: {time-to-expire: float}
+
+###
+### Interfaces IPs
+###
+
+junos_ip_interfaces_table:
+  rpc: get-interface-information
+  item: physical-interface/logical-interface/address-family/interface-address
+  args:
+    terse: True
+  key: ifa-local
+  view: junos_ip_interfaces_view
+
+junos_ip_interfaces_view:
+  fields:
+    family: ../address-family-name
+    interface: ../../name
+
+###
+### MAC Address table
+###
+
+junos_mac_address_table:
+  rpc: get-bridge-mac-table
+  item: l2ald-mac-entry
+  args:
+    extensive: True
+  args_key:
+    - interface
+    - vlan_id
+  key: l2-bridge-vlan
+  view: junos_mac_address_view
+
+junos_mac_address_view:
+  fields:
+    interface: {l2-mac-logical-interface: unicode}
+    mac: {l2-mac-address: unicode}
+    vlan: {l2-bridge-vlan: int}
+
+# Different table struct & view for EX & QFX series
+
+junos_mac_address_table_switch:
+  rpc: get-ethernet-switching-table-information
+  item: ethernet-switching-table/mac-table-entry
+  args:
+    extensive: True
+  args_key:
+    - interface_name
+    - vlan
+  key: mac-vlan-tag
+  view: junos_mac_address_view_switch
+
+junos_mac_address_view_switch:
+  fields:
+    interface: {mac-interface: unicode}
+    mac: {mac-address: unicode}
+    vlan: {mac-vlan-tag: int}
+    static: {mac-type: True=Static}
+
+# Yet another table struct & view for L2NG devices
+
+junos_mac_address_table_switch_l2ng:
+  rpc: get-ethernet-switching-table-information
+  item: l2ng-l2ald-mac-entry-vlan
+  args:
+    extensive: True
+  args_key:
+    - interface_name
+    - vlan
+  key: l2ng-l2-vlan-id
+  view: junos_mac_address_view_switch_l2ng
+
+junos_mac_address_view_switch_l2ng:
+  fields:
+    interface: {l2ng-l2-mac-logical-interface: unicode}
+    mac: {l2ng-l2-mac-address: unicode}
+    vlan: {l2ng-l2-vlan-id: int}
+
+###
+### Route Information
+###
+
+junos_route_table:
+  rpc: get-route-information
+  args:
+    extensive: True
+  args_key:
+    destination
+  item: route-table/rt/rt-entry/nh
+  key: to
+  view: junos_route_table_view
+
+junos_protocol_route_table:
+  rpc: get-route-information
+  args:
+    extensive: True
+  args_key:
+    destination
+    protocol
+  item: route-table/rt/rt-entry/nh
+  key: via
+  view: junos_route_table_view
+
+junos_route_table_view:
+  fields:
+    ###
+    ### Common fields
+    ###
+    destination: {../../rt-destination: unicode}
+    prefix_length: {../../rt-prefix-length: int}
+    protocol: {../protocol-name: unicode}
+    current_active: {../current-active: True=current-active}
+    last_active: {../last-active: True=last-active}
+    age: {../age/@seconds: int}
+    next_hop: {to: unicode}
+    outgoing_interface: {via: unicode}
+    selected_next_hop: {selected-next-hop: True=selected-next-hop}
+    preference: {../preference: int}
+    inactive_reason: {../inactive-reason: unicode}
+    routing_table: {../../../table-name: unicode}
+    ###
+    ### BGP Specific fields
+    ###
+    as_path: {../as-path: unicode}
+    local_as: {../local-as: int}
+    remote_as: {../peer-as: int}
+    local_preference: {../local-preference: int}
+    communities: {../communities/community: unicode}
+    preference2: {../preference2: int}
+    remote_address: {../peer-id: unicode}
+    metric: {../metric: int}
+    metric2: {../metric2: int}
+    ###
+    ### ISIS Specific fields
+    ###
+    level: {../rt-isis-level: int}
+
+###
+### SNMP Config
+###
+
+junos_snmp_config_table:
+  get: snmp
+  view: junos_snmp_config_view
+  key: contact
+
+junos_snmp_config_view:
+  fields:
+    location: {location: unicode}
+    contact: {contact: unicode}
+    chassis_id: {system-name: unicode}
+    communities_table: junos_snmp_communities_table
+
+junos_snmp_communities_table:
+  item: community
+  key: name
+  view: junos_snmp_communities_view
+
+junos_snmp_communities_view:
+  fields:
+    mode: authorization
+
+###
+### RPM Probes Config
+###
+
+junos_rpm_probes_config_table:
+  get: services/rpm/probe/test
+  view: junos_rpm_probes_config_view
+
+junos_rpm_probes_config_view:
+  fields:
+    probe_name: ../name
+    probe_type: probe-type
+    target: target/address
+    probe_count: probe-count
+    test_interval: test-interval
+    source_address: source-address
+
+###
+### RPM Probes Results
+###
+
+junos_rpm_probes_results_table:
+  rpc: get-probe-results
+  item: probe-test-results
+  key: owner
+  view: junos_rpm_probes_results_view
+
+junos_rpm_probes_results_view:
+  fields:
+    test_name: {test-name: unicode}
+    target: {target-address: unicode}
+    source: {source-address: unicode}
+    probe_type: {probe-type: unicode}
+    probe_count: {test-size: int}
+    rtt: {probe-single-results/rtt: float}
+    round_trip_jitter: {probe-single-results/round-trip-jitter: float}
+    current_test_min_delay: {probe-test-current-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
+    current_test_max_delay: {probe-test-current-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
+    current_test_avg_delay: {probe-test-current-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
+    last_test_min_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
+    last_test_max_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
+    last_test_avg_delay: {probe-last-test-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
+    last_test_loss: {probe-last-test-results/probe-test-generic-results/loss-percentage: float}
+    global_test_min_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/min-delay: float}
+    global_test_max_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/max-delay: float}
+    global_test_avg_delay: {probe-test-global-results/probe-test-generic-results/probe-test-rtt/probe-summary-results/avg-delay: float}
+
+###
+### Get Users
+###
+
+junos_users_table:
+  get: system/login/user
+  view: junos_users_table_view
+
+junos_users_table_view:
+  fields:
+    class: class
+    password: authentication/encrypted-password
+    ssh_rsa: authentication/ssh-rsa/name
+    ssh_dsa: authentication/ssh-dsa/name
+    ssh_ecdsa: authentication/ssh-ecdsa/name
+
+###
+### Get Optics
+###
+
+junos_intf_optics_table:
+  rpc: get-interface-optics-diagnostics-information
+  item: physical-interface
+  view: junos_intf_optics_view
+
+junos_intf_optics_view:
+  groups:
+    optics: optics-diagnostics
+  fields_optics:
+    laser_bias_current: laser-bias-current
+    output_power: laser-output-power-dbm
+    input_power: rx-signal-avg-optical-power-dbm
+
+junos_intf_40Goptics_table:
+  rpc: get-interface-optics-diagnostics-information
+  item: physical-interface/optics-diagnostics/optics-diagnostics-lane-values
+  key: lane-index
+  view: junos_intf_40Goptics_view
+
+junos_intf_40Goptics_view:
+  fields:
+    interface: ../../name
+    laser_bias_current: laser-bias-current
+    output_power: laser-output-power-dbm
+    input_power: laser-rx-optical-power-dbm
+
+###
+### Get network instances
+###
+
+junos_nw_instances_table:
+  get: routing-instances/instance
+  view: junos_nw_instances_view
+  args_key:
+    name
+
+junos_nw_instances_view:
+  fields:
+    instance_type: {instance-type: unicode}
+    interfaces: {interface/name: unicode}
+    route_distinguisher: {route-distinguisher/rd-type: unicode}

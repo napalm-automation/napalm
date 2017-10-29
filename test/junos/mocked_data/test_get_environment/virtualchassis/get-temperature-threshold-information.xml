@@ -1,0 +1,62 @@
+<temperature-threshold-information>
+    <temperature-threshold>
+        <name>FPC 0 CPU Sensor</name>
+        <fan-normal-speed>47</fan-normal-speed>
+        <fan-high-speed>62</fan-high-speed>
+        <yellow-alarm>64</yellow-alarm>
+        <bad-fan-yellow-alarm>64</bad-fan-yellow-alarm>
+        <red-alarm>71</red-alarm>
+        <bad-fan-red-alarm>71</bad-fan-red-alarm>
+        <fire-shutdown>77</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 0 PSU Sensor</name>
+        <fan-normal-speed>41</fan-normal-speed>
+        <fan-high-speed>57</fan-high-speed>
+        <yellow-alarm>59</yellow-alarm>
+        <bad-fan-yellow-alarm>59</bad-fan-yellow-alarm>
+        <red-alarm>66</red-alarm>
+        <bad-fan-red-alarm>66</bad-fan-red-alarm>
+        <fire-shutdown>72</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 CPU Sensor</name>
+        <fan-normal-speed>47</fan-normal-speed>
+        <fan-high-speed>62</fan-high-speed>
+        <yellow-alarm>64</yellow-alarm>
+        <bad-fan-yellow-alarm>64</bad-fan-yellow-alarm>
+        <red-alarm>71</red-alarm>
+        <bad-fan-red-alarm>71</bad-fan-red-alarm>
+        <fire-shutdown>77</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 PSU Sensor</name>
+        <fan-normal-speed>41</fan-normal-speed>
+        <fan-high-speed>57</fan-high-speed>
+        <yellow-alarm>59</yellow-alarm>
+        <bad-fan-yellow-alarm>59</bad-fan-yellow-alarm>
+        <red-alarm>66</red-alarm>
+        <bad-fan-red-alarm>66</bad-fan-red-alarm>
+        <fire-shutdown>72</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 2 CPU Sensor</name>
+        <fan-normal-speed>47</fan-normal-speed>
+        <fan-high-speed>64</fan-high-speed>
+        <yellow-alarm>68</yellow-alarm>
+        <bad-fan-yellow-alarm>68</bad-fan-yellow-alarm>
+        <red-alarm>72</red-alarm>
+        <bad-fan-red-alarm>72</bad-fan-red-alarm>
+        <fire-shutdown>76</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 2 PSU Sensor</name>
+        <fan-normal-speed>42</fan-normal-speed>
+        <fan-high-speed>60</fan-high-speed>
+        <yellow-alarm>66</yellow-alarm>
+        <bad-fan-yellow-alarm>66</bad-fan-yellow-alarm>
+        <red-alarm>70</red-alarm>
+        <bad-fan-red-alarm>70</bad-fan-red-alarm>
+        <fire-shutdown>73</fire-shutdown>
+    </temperature-threshold>
+</temperature-threshold-information>

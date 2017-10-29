@@ -1,0 +1,11 @@
+{% if (servers is defined) and servers %}
+system {
+  ntp {
+    {% for server in servers %}
+      {% if server %}
+        delete: server {{server}};
+      {% endif %}
+    {% endfor %}
+  }
+}
+{% endif %}

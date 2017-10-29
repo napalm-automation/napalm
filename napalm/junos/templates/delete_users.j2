@@ -1,0 +1,26 @@
+system {
+  login {
+    {%- for user_name, user_details in users.items() -%}
+      {%- if user_details and (user_details.get('password') and user_details.get('sshkeys')) -%}
+      user {{user_name}} {
+          authentication {
+            {%- if user_details.get('password') -%}
+            delete: encrypted-password "{{user_details.password}}";
+            {%- endif -%}
+            {%- if user_details.get('sshkeys') -%}
+              {%- for sshkey in user_details.sshkeys -%}
+                {%- if sshkey.split()[0] == 'ssh-dss' -%}
+                delete: {{ sshkey.split()[0] }} "{{ sshkey }}";
+                {%- else -%}
+                delete: ssh-dss "{{ sshkey }}";
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+          }
+      }
+      {%- else -%}
+      delete: user {{user_name}};
+      {% endif -%}
+    {%- endfor -%}
+  }
+}

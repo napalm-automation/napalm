@@ -1,0 +1,1 @@
+{"xe-0/0/0": {"physical_channels": {"channel": [{"index": 0, "state": {"output_power": {"max": 0.0, "avg": 0.0, "instant": -1.35, "min": 0.0}, "laser_bias_current": {"max": 0.0, "avg": 0.0, "instant": 44.298, "min": 0.0}, "input_power": {"max": 0.0, "avg": 0.0, "instant": -3.42, "min": 0.0}}}]}}}
