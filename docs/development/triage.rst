@@ -29,9 +29,6 @@ Each platform supported by NAPALM has associated a label, e.g., ``junos``, ``eos
 ``ios``, ``iosxr``, ``vyos``, etc. It is mandatory that the maintainer to apply
 one or more of these labels.
 
-We also create labels for community drivers, but in addition, we also add the
-:ref:`triage-community-driver-label` to the Issue or the PR.
-
 .. _triage-api-change-label:
 
 ``api change``
@@ -73,16 +70,6 @@ PR kills a bug.
 
 This refers to Issues only, and it is added when the maintainer(s) cannot
 reproduce the behaviour reported.
-
-.. _triage-community-driver-label:
-
-``community driver``
---------------------
-
-This label is added when we want to emphasise that the Issue or the PR affects
-one of more drivers provided by the community. When an Issue is marked with
-``community driver``, that means the NAPALM maintainers may not be able to solve
-it, but the community is asked to help.
 
 .. _triage-deprecation-label:
 
@@ -172,7 +159,7 @@ We need to investigate the problem further.
 ``new driver``
 --------------
 
-When we discuss the possibility or implement a new (community) driver.
+When we discuss the possibility to add a new core driver.
 
 .. _triage-new-method:
 
