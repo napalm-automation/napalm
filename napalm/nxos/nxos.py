@@ -32,14 +32,14 @@ from pynxos.features.file_copy import FileCopy
 from pynxos.errors import CLIError
 
 # import NAPALM Base
-import napalm_base.helpers
-from napalm_base import NetworkDriver
-from napalm_base.utils import py23_compat
-from napalm_base.exceptions import ConnectionException
-from napalm_base.exceptions import MergeConfigException
-from napalm_base.exceptions import CommandErrorException
-from napalm_base.exceptions import ReplaceConfigException
-import napalm_base.constants as c
+import napalm.base.helpers
+from napalm.base import NetworkDriver
+from napalm.base.utils import py23_compat
+from napalm.base.exceptions import ConnectionException
+from napalm.base.exceptions import MergeConfigException
+from napalm.base.exceptions import CommandErrorException
+from napalm.base.exceptions import ReplaceConfigException
+import napalm.base.constants as c
 
 
 class NXOSDriver(NetworkDriver):
@@ -133,7 +133,7 @@ class NXOSDriver(NetworkDriver):
         for part in stupid_cisco_output.split():
             for key in things_keys:
                 if key in part:
-                    things[key]['count'] = napalm_base.helpers.convert(
+                    things[key]['count'] = napalm.base.helpers.convert(
                         int, part.replace(key, ''), 0)
 
         delta = sum([det.get('count', 0) * det.get('weight') for det in things.values()])
@@ -407,8 +407,8 @@ class NXOSDriver(NetworkDriver):
                 'last_flapped': self._compute_timestamp(
                     interface_details.get('eth_link_flapped', '')),
                 'speed': interface_speed,
-                'mac_address': napalm_base.helpers.convert(
-                    napalm_base.helpers.mac, interface_details.get('eth_hw_addr')),
+                'mac_address': napalm.base.helpers.convert(
+                    napalm.base.helpers.mac, interface_details.get('eth_hw_addr')),
             }
         return interfaces
 
@@ -417,7 +417,7 @@ class NXOSDriver(NetworkDriver):
         try:
             command = 'show lldp neighbors'
             lldp_raw_output = self.cli([command]).get(command, '')
-            lldp_neighbors = napalm_base.helpers.textfsm_extractor(
+            lldp_neighbors = napalm.base.helpers.textfsm_extractor(
                                 self, 'lldp_neighbors', lldp_raw_output)
         except CLIError:
             lldp_neighbors = []
@@ -462,8 +462,8 @@ class NXOSDriver(NetworkDriver):
                 neighbors_list = [neighbors_list]
 
             for neighbor_dict in neighbors_list:
-                neighborid = napalm_base.helpers.ip(neighbor_dict['neighbor-id'])
-                remoteas = napalm_base.helpers.as_number(neighbor_dict['remoteas'])
+                neighborid = napalm.base.helpers.ip(neighbor_dict['neighbor-id'])
+                remoteas = napalm.base.helpers.as_number(neighbor_dict['remoteas'])
                 state = py23_compat.text_type(neighbor_dict['state'])
 
                 bgp_state = bgp_state_dict[state]
@@ -539,7 +539,7 @@ class NXOSDriver(NetworkDriver):
             chassis_rgx = re.search(CHASSIS_REGEX, line, re.I)
             if chassis_rgx:
                 lldp_neighbor = {
-                    'remote_chassis_id': napalm_base.helpers.mac(chassis_rgx.groups()[1])
+                    'remote_chassis_id': napalm.base.helpers.mac(chassis_rgx.groups()[1])
                 }
                 continue
             lldp_neighbor['parent_interface'] = ''
@@ -627,9 +627,9 @@ class NXOSDriver(NetworkDriver):
             interface = py23_compat.text_type(arp_table_entry.get('intf-out'))
             arp_table.append({
                 'interface': interface,
-                'mac': napalm_base.helpers.convert(
-                    napalm_base.helpers.mac, raw_mac, raw_mac),
-                'ip': napalm_base.helpers.ip(raw_ip),
+                'mac': napalm.base.helpers.convert(
+                    napalm.base.helpers.mac, raw_mac, raw_mac),
+                'ip': napalm.base.helpers.ip(raw_ip),
                 'age': age_sec
             })
         return arp_table
@@ -642,7 +642,7 @@ class NXOSDriver(NetworkDriver):
         for ntp_peer in ntp_peers_table:
             if ntp_peer.get('serv_peer', '').strip() != peer_type:
                 continue
-            peer_addr = napalm_base.helpers.ip(ntp_peer.get('PeerIPAddress').strip())
+            peer_addr = napalm.base.helpers.ip(ntp_peer.get('PeerIPAddress').strip())
             ntp_entities[peer_addr] = {}
 
         return ntp_entities
@@ -659,7 +659,7 @@ class NXOSDriver(NetworkDriver):
         ntp_stats_table = self._get_command_table(command, 'TABLE_peersstatus', 'ROW_peersstatus')
 
         for ntp_peer in ntp_stats_table:
-            peer_address = napalm_base.helpers.ip(ntp_peer.get('remote').strip())
+            peer_address = napalm.base.helpers.ip(ntp_peer.get('remote').strip())
             syncmode = ntp_peer.get('syncmode')
             stratum = int(ntp_peer.get('st'))
             hostpoll = int(ntp_peer.get('poll'))
@@ -687,7 +687,7 @@ class NXOSDriver(NetworkDriver):
 
         for interface in ipv4_interf_table_vrf:
             interface_name = py23_compat.text_type(interface.get('intf-name', ''))
-            address = napalm_base.helpers.ip(interface.get('prefix'))
+            address = napalm.base.helpers.ip(interface.get('prefix'))
             prefix = int(interface.get('masklen', ''))
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = {}
@@ -703,7 +703,7 @@ class NXOSDriver(NetworkDriver):
             if type(secondary_addresses) is dict:
                 secondary_addresses = [secondary_addresses]
             for secondary_address in secondary_addresses:
-                secondary_address_ip = napalm_base.helpers.ip(secondary_address.get('prefix1'))
+                secondary_address_ip = napalm.base.helpers.ip(secondary_address.get('prefix1'))
                 secondary_address_prefix = int(secondary_address.get('masklen1', ''))
                 if 'ipv4' not in interfaces_ip[interface_name].keys():
                     interfaces_ip[interface_name]['ipv4'] = {}
@@ -718,7 +718,7 @@ class NXOSDriver(NetworkDriver):
 
         for interface in ipv6_interf_table_vrf:
             interface_name = py23_compat.text_type(interface.get('intf-name', ''))
-            address = napalm_base.helpers.ip(interface.get('addr', '').split('/')[0])
+            address = napalm.base.helpers.ip(interface.get('addr', '').split('/')[0])
             prefix = interface.get('prefix', '').split('/')[-1]
             if prefix:
                 prefix = int(interface.get('prefix', '').split('/')[-1])
@@ -738,7 +738,7 @@ class NXOSDriver(NetworkDriver):
                 secondary_addresses = [secondary_addresses]
             for secondary_address in secondary_addresses:
                 sec_prefix = secondary_address.get('sec-prefix', '').split('/')
-                secondary_address_ip = napalm_base.helpers.ip(sec_prefix[0])
+                secondary_address_ip = napalm.base.helpers.ip(sec_prefix[0])
                 secondary_address_prefix = int(sec_prefix[-1])
                 if 'ipv6' not in interfaces_ip[interface_name].keys():
                     interfaces_ip[interface_name]['ipv6'] = {}
@@ -763,7 +763,7 @@ class NXOSDriver(NetworkDriver):
             moves = 0
             last_move = 0.0
             mac_table.append({
-                'mac': napalm_base.helpers.mac(raw_mac),
+                'mac': napalm.base.helpers.mac(raw_mac),
                 'interface': interface,
                 'vlan': vlan,
                 'active': active,
@@ -777,7 +777,7 @@ class NXOSDriver(NetworkDriver):
         snmp_information = {}
         snmp_command = 'show running-config'
         snmp_raw_output = self.cli([snmp_command]).get(snmp_command, '')
-        snmp_config = napalm_base.helpers.textfsm_extractor(self, 'snmp_config', snmp_raw_output)
+        snmp_config = napalm.base.helpers.textfsm_extractor(self, 'snmp_config', snmp_raw_output)
 
         if not snmp_config:
             return snmp_information
@@ -830,7 +830,7 @@ class NXOSDriver(NetworkDriver):
         users = {}
         command = 'show running-config'
         section_username_raw_output = self.cli([command]).get(command, '')
-        section_username_tabled_output = napalm_base.helpers.textfsm_extractor(
+        section_username_tabled_output = napalm.base.helpers.textfsm_extractor(
             self, 'users', section_username_raw_output)
 
         for user in section_username_tabled_output:
@@ -931,8 +931,8 @@ class NXOSDriver(NetworkDriver):
                 for probe_index in range(probes):
                     host_name = hop_details[3+probe_index*5]
                     ip_address_raw = hop_details[4+probe_index*5]
-                    ip_address = napalm_base.helpers.convert(
-                        napalm_base.helpers.ip, ip_address_raw, ip_address_raw)
+                    ip_address = napalm.base.helpers.convert(
+                        napalm.base.helpers.ip, ip_address_raw, ip_address_raw)
                     rtt = hop_details[5+probe_index*5]
                     if rtt:
                         rtt = float(rtt)

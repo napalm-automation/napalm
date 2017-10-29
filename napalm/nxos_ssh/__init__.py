@@ -13,13 +13,13 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-"""napalm_nxos package."""
+"""napalm.nxos package."""
 
 # Import stdlib
 import pkg_resources
 
 # Import local modules
-from napalm_nxos_ssh.nxos_ssh import NXOSSSHDriver
+from napalm.nxos_ssh.nxos_ssh import NXOSSSHDriver
 
 
 try:

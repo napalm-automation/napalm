@@ -12,13 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-"""napalm_ios package."""
-import pkg_resources
-from napalm_ios.ios import IOSDriver
+"""napalm.ios package."""
+from napalm.ios.ios import IOSDriver
 
-try:
-    __version__ = pkg_resources.get_distribution('napalm-ios').version
-except pkg_resources.DistributionNotFound:
-    __version__ = "Not installed"
 
 __all__ = ['IOSDriver']

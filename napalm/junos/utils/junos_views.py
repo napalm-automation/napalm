@@ -5,7 +5,7 @@ import yaml
 import re
 from jnpr.junos.factory import loadyaml, FactoryLoader
 from os.path import splitext
-from napalm_base.utils import py23_compat
+from napalm.base.utils import py23_compat
 
 
 def _preprocess_yml(path):

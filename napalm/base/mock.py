@@ -16,8 +16,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from napalm_base.base import NetworkDriver
-import napalm_base.exceptions
+from napalm.base.base import NetworkDriver
+import napalm.base.exceptions
 
 import inspect
 import json
@@ -124,11 +124,11 @@ class MockDriver(NetworkDriver):
 
     def _raise_if_closed(self):
         if not self.opened:
-            raise napalm_base.exceptions.ConnectionClosedException("connection closed")
+            raise napalm.base.exceptions.ConnectionClosedException("connection closed")
 
     def open(self):
         if self.fail_on_open:
-            raise napalm_base.exceptions.ConnectionException("You told me to do this")
+            raise napalm.base.exceptions.ConnectionException("You told me to do this")
         self.opened = True
 
     def close(self):

@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-from napalm_base.constants import *  # noqa
+from napalm.base.constants import *  # noqa
 
 SR_638170159_SOLVED = False
 # this flag says if the Cisco TAC SR 638170159

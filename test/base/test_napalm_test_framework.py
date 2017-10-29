@@ -2,8 +2,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import unittest
-from napalm_base.base import NetworkDriver
-import napalm_base.test.base as ntb
+from napalm.base.base import NetworkDriver
+import napalm.base.test.base as ntb
 
 # Note: don't import the TestGettersNetworkDriver class itself, or
 # nose finds it and tries to run the tests for it, which yields

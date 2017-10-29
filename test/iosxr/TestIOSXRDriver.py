@@ -15,8 +15,8 @@
 import unittest
 import os
 
-from napalm_iosxr.iosxr import IOSXRDriver
-from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
+from napalm.iosxr.iosxr import IOSXRDriver
+from napalm.base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 
 
 class TestConfigIOSXRDriver(unittest.TestCase, TestConfigNetworkDriver):

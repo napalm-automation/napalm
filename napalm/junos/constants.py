@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-from napalm_base.constants import *  # noqa
+from napalm.base.constants import *  # noqa
 
 # OpenConfig mapping
 # ref: https://github.com/openconfig/public/blob/master/release/models/network-instance/openconfig-network-instance-types.yang  # noqa

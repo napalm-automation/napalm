@@ -35,14 +35,14 @@ from netmiko import ConnectHandler
 from netmiko.ssh_exception import NetMikoTimeoutException
 
 # import NAPALM Base
-import napalm_base.helpers
-from napalm_base import NetworkDriver
-from napalm_base.utils import py23_compat
-from napalm_base.exceptions import ConnectionException
-from napalm_base.exceptions import MergeConfigException
-from napalm_base.exceptions import CommandErrorException
-from napalm_base.exceptions import ReplaceConfigException
-import napalm_base.constants as c
+import napalm.base.helpers
+from napalm.base import NetworkDriver
+from napalm.base.utils import py23_compat
+from napalm.base.exceptions import ConnectionException
+from napalm.base.exceptions import MergeConfigException
+from napalm.base.exceptions import CommandErrorException
+from napalm.base.exceptions import ReplaceConfigException
+import napalm.base.constants as c
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
@@ -140,7 +140,7 @@ def parse_intf_section(interface):
     match = re.search(re_mac, interface, flags=re.M)
     if match:
         mac_address = match.group('mac_address')
-        mac_address = napalm_base.helpers.mac(mac_address)
+        mac_address = napalm.base.helpers.mac(mac_address)
     else:
         mac_address = ""
 
@@ -284,7 +284,7 @@ def bgp_table_parser(bgp_table):
             peer_ip: {
                 "is_enabled": is_enabled,
                 "uptime": uptime,
-                "remote_as": napalm_base.helpers.as_number(remote_as),
+                "remote_as": napalm.base.helpers.as_number(remote_as),
                 "is_up": is_up,
                 "description": "",
                 "received_prefixes": received_prefixes,
@@ -323,7 +323,7 @@ def bgp_summary_parser(bgp_summary):
     bgp_summary_dict['afi'] = afi
 
     local_as = bgp_summary_dict['local_as']
-    local_as = napalm_base.helpers.as_number(local_as)
+    local_as = napalm.base.helpers.as_number(local_as)
 
     match = re.search(IPV4_ADDR_REGEX, bgp_summary_dict['router_id'])
     if not match:
@@ -456,6 +456,16 @@ class NXOSSSHDriver(NetworkDriver):
                      (hours * 3600) + (minutes * 60) + seconds
         return uptime_sec
 
+    @staticmethod
+    def fix_checkpoint_string(string, filename):
+        # used to generate checkpoint-like files
+        pattern = '''!Command: Checkpoint cmd vdc 1'''
+
+        if '!Command' in string:
+            return re.sub('!Command.*', pattern.format(filename), string)
+        else:
+            return "{0}\n{1}".format(pattern.format(filename), string)
+
     def is_alive(self):
         """Returns a flag with the state of the SSH connection."""
         null = chr(0)
@@ -502,12 +512,18 @@ class NXOSSSHDriver(NetworkDriver):
 
     def _replace_candidate(self, filename, config):
         if not filename:
+            file_content = self.fix_checkpoint_string(config, self.replace_file)
             filename = self._create_tmp_file(config)
         else:
             if not os.path.isfile(filename):
                 raise ReplaceConfigException("File {} not found".format(filename))
 
         self.replace_file = filename
+        with open(self.replace_file, 'r+') as f:
+            file_content = f.read()
+            file_content = self.fix_checkpoint_string(file_content, self.replace_file)
+            f.write(file_content)
+
         if not self._enough_space(self.replace_file):
             msg = 'Could not transfer file. Not enough space on device.'
             raise ReplaceConfigException(msg)
@@ -866,7 +882,7 @@ class NXOSSSHDriver(NetworkDriver):
         results = {}
         command = 'show lldp neighbors'
         output = self.device.send_command(command)
-        lldp_neighbors = napalm_base.helpers.textfsm_extractor(
+        lldp_neighbors = napalm.base.helpers.textfsm_extractor(
                             self, 'lldp_neighbors', output)
 
         for neighbor in lldp_neighbors:
@@ -978,7 +994,7 @@ class NXOSSSHDriver(NetworkDriver):
             chassis_rgx = re.search(CHASSIS_REGEX, line, re.I)
             if chassis_rgx:
                 lldp_neighbor = {
-                    'remote_chassis_id': napalm_base.helpers.mac(chassis_rgx.groups()[1])
+                    'remote_chassis_id': napalm.base.helpers.mac(chassis_rgx.groups()[1])
                 }
                 continue
             lldp_neighbor['parent_interface'] = ''
@@ -1097,7 +1113,7 @@ class NXOSSSHDriver(NetworkDriver):
                 raise ValueError("Invalid MAC Address detected: {}".format(mac))
             entry = {
                 'interface': interface,
-                'mac': napalm_base.helpers.mac(mac),
+                'mac': napalm.base.helpers.mac(mac),
                 'ip': address,
                 'age': age
             }
@@ -1276,7 +1292,7 @@ class NXOSSSHDriver(NetworkDriver):
             else:
                 active = False
             return {
-                'mac': napalm_base.helpers.mac(mac),
+                'mac': napalm.base.helpers.mac(mac),
                 'interface': interface,
                 'vlan': int(vlan),
                 'static': static,
@@ -1323,7 +1339,7 @@ class NXOSSSHDriver(NetworkDriver):
         snmp_information = {}
         command = 'show running-config'
         output = self.device.send_command(command)
-        snmp_config = napalm_base.helpers.textfsm_extractor(self, 'snmp_config', output)
+        snmp_config = napalm.base.helpers.textfsm_extractor(self, 'snmp_config', output)
 
         if not snmp_config:
             return snmp_information
@@ -1376,7 +1392,7 @@ class NXOSSSHDriver(NetworkDriver):
         users = {}
         command = 'show running-config'
         output = self.device.send_command(command)
-        section_username_tabled_output = napalm_base.helpers.textfsm_extractor(
+        section_username_tabled_output = napalm.base.helpers.textfsm_extractor(
             self, 'users', output)
 
         for user in section_username_tabled_output:
@@ -1479,8 +1495,8 @@ class NXOSSSHDriver(NetworkDriver):
                 for probe_index in range(probes):
                     host_name = hop_details[3+probe_index*5]
                     ip_address_raw = hop_details[4+probe_index*5]
-                    ip_address = napalm_base.helpers.convert(
-                        napalm_base.helpers.ip, ip_address_raw, ip_address_raw)
+                    ip_address = napalm.base.helpers.convert(
+                        napalm.base.helpers.ip, ip_address_raw, ip_address_raw)
                     rtt = hop_details[5+probe_index*5]
                     if rtt:
                         rtt = float(rtt)

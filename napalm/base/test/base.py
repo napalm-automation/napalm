@@ -17,12 +17,12 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import difflib
-from napalm_base import exceptions
-from napalm_base.test import models
+from napalm.base import exceptions
+from napalm.base.test import models
 from unittest import SkipTest
 
 # text_type is 'unicode' for py2 and 'str' for py3
-from napalm_base.utils.py23_compat import text_type
+from napalm.base.utils.py23_compat import text_type
 
 
 class TestConfigNetworkDriver(object):

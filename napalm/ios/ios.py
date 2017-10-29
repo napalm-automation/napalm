@@ -25,13 +25,13 @@ import telnetlib
 import copy
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
-from napalm_base.base import NetworkDriver
-from napalm_base.exceptions import ReplaceConfigException, MergeConfigException, \
+from napalm.base.base import NetworkDriver
+from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
             ConnectionClosedException, CommandErrorException
 
-from napalm_base.utils import py23_compat
-import napalm_base.constants as C
-import napalm_base.helpers
+from napalm.base.utils import py23_compat
+import napalm.base.constants as C
+import napalm.base.helpers
 
 
 # Easier to store these as constants
@@ -988,7 +988,7 @@ class IOSDriver(NetworkDriver):
             mac_addr_regex = r"^\s+Hardware.+address\s+is\s+({})".format(MAC_REGEX)
             if re.search(mac_addr_regex, line):
                 mac_addr_match = re.search(mac_addr_regex, line)
-                mac_address = napalm_base.helpers.mac(mac_addr_match.groups()[0])
+                mac_address = napalm.base.helpers.mac(mac_addr_match.groups()[0])
 
             descr_regex = "^\s+Description:\s+(.+?)$"
             if re.search(descr_regex, line):
@@ -1312,13 +1312,13 @@ class IOSDriver(NetworkDriver):
                 raise ValueError
 
         # check the router_id looks like an ipv4 address
-        router_id = napalm_base.helpers.ip(router_id, version=4)
+        router_id = napalm.base.helpers.ip(router_id, version=4)
 
         # add parsed data to output dict
         bgp_neighbor_data['global']['router_id'] = router_id
         bgp_neighbor_data['global']['peers'] = {}
         for entry in summary_data:
-            remote_addr = napalm_base.helpers.ip(entry['remote_addr'])
+            remote_addr = napalm.base.helpers.ip(entry['remote_addr'])
             afi = entry['afi'].lower()
             # check that we're looking at a supported afi
             if afi not in supported_afi:
@@ -1327,7 +1327,7 @@ class IOSDriver(NetworkDriver):
             neighbor_entry = None
             for neighbor in neighbor_data:
                 if (neighbor['afi'].lower() == afi and
-                        napalm_base.helpers.ip(neighbor['remote_addr']) == remote_addr):
+                        napalm.base.helpers.ip(neighbor['remote_addr']) == remote_addr):
                     neighbor_entry = neighbor
                     break
             if not isinstance(neighbor_entry, dict):
@@ -1379,12 +1379,12 @@ class IOSDriver(NetworkDriver):
                 description = ''
 
             # check the remote router_id looks like an ipv4 address
-            remote_id = napalm_base.helpers.ip(neighbor_entry['remote_id'], version=4)
+            remote_id = napalm.base.helpers.ip(neighbor_entry['remote_id'], version=4)
 
             if remote_addr not in bgp_neighbor_data['global']['peers']:
                 bgp_neighbor_data['global']['peers'][remote_addr] = {
-                    'local_as': napalm_base.helpers.as_number(entry['local_as']),
-                    'remote_as': napalm_base.helpers.as_number(entry['remote_as']),
+                    'local_as': napalm.base.helpers.as_number(entry['local_as']),
+                    'remote_as': napalm.base.helpers.as_number(entry['remote_as']),
                     'remote_id': remote_id,
                     'is_up': is_up,
                     'is_enabled': is_enabled,
@@ -1403,8 +1403,8 @@ class IOSDriver(NetworkDriver):
                 existing = bgp_neighbor_data['global']['peers'][remote_addr]
                 assert afi not in existing['address_family']
                 # compare with existing values and croak if they don't match
-                assert existing['local_as'] == napalm_base.helpers.as_number(entry['local_as'])
-                assert existing['remote_as'] == napalm_base.helpers.as_number(entry['remote_as'])
+                assert existing['local_as'] == napalm.base.helpers.as_number(entry['local_as'])
+                assert existing['remote_as'] == napalm.base.helpers.as_number(entry['remote_as'])
                 assert existing['remote_id'] == remote_id
                 assert existing['is_enabled'] == is_enabled
                 assert existing['description'] == description
@@ -1642,7 +1642,7 @@ class IOSDriver(NetworkDriver):
                 raise ValueError("Invalid MAC Address detected: {}".format(mac))
             entry = {
                 'interface': interface,
-                'mac': napalm_base.helpers.mac(mac),
+                'mac': napalm.base.helpers.mac(mac),
                 'ip': address,
                 'age': age
             }
@@ -1806,7 +1806,7 @@ class IOSDriver(NetworkDriver):
             else:
                 active = False
             return {
-                'mac': napalm_base.helpers.mac(mac),
+                'mac': napalm.base.helpers.mac(mac),
                 'interface': interface,
                 'vlan': int(vlan),
                 'static': static,

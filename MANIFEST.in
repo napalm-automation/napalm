@@ -1,0 +1,4 @@
+include requirements/*
+include napalm/*/templates/*.j2
+include napalm/*/utils/textfsm_templates/*.tpl
+include napalm/junos/utils/*.yml

@@ -4,7 +4,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from napalm_base.utils import py23_compat
+from napalm.base.utils import py23_compat
 
 
 def test_model(model, data):

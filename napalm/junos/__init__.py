@@ -12,15 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-"""napalm_junos package."""
-
-# Import stdlib
-import pkg_resources
+"""napalm.junos package."""
 
 # Import local modules
-from napalm_junos.junos import JunOSDriver  # noqa
-
-try:
-    __version__ = pkg_resources.get_distribution('napalm-junos').version
-except pkg_resources.DistributionNotFound:
-    __version__ = "Not installed"
+from napalm.junos.junos import JunOSDriver  # noqa

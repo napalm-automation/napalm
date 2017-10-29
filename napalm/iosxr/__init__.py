@@ -13,13 +13,13 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-"""napalm_iosxr package."""
+"""napalm.iosxr package."""
 
 # Import stdlib
 import pkg_resources
 
 # Import local modules
-from napalm_iosxr.iosxr import IOSXRDriver  # noqa
+from napalm.iosxr.iosxr import IOSXRDriver  # noqa
 
 __all__ = ('IOSXRDriver',)
 

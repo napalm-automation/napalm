@@ -12,13 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-"""napalm_eos package."""
-from napalm_eos.eos import EOSDriver
-import pkg_resources
-
-try:
-    __version__ = pkg_resources.get_distribution('napalm-eos').version
-except pkg_resources.DistributionNotFound:
-    __version__ = "Not installed"
+"""napalm.eos package."""
+from napalm.eos.eos import EOSDriver
 
 __all__ = ('EOSDriver',)

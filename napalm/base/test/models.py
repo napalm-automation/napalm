@@ -1,6 +1,6 @@
 
 # text_type is 'unicode' for py2 and 'str' for py3
-from napalm_base.utils.py23_compat import text_type
+from napalm.base.utils.py23_compat import text_type
 
 alive = {
     'is_alive': bool

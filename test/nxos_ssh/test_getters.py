@@ -1,8 +1,8 @@
 """Tests for getters."""
 
-from napalm_base.test.getters import BaseTestGetters, wrap_test_cases
-from napalm_base.test import helpers
-from napalm_base.test import models
+from napalm.base.test.getters import BaseTestGetters, wrap_test_cases
+from napalm.base.test import helpers
+from napalm.base.test import models
 
 import pytest
 from mock import patch

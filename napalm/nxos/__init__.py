@@ -13,13 +13,13 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-"""napalm_nxos package."""
+"""napalm.nxos package."""
 
 # Import stdlib
 import pkg_resources
 
 # Import local modules
-from napalm_nxos.nxos import NXOSDriver  # noqa
+from napalm.nxos.nxos import NXOSDriver  # noqa
 
 try:
     __version__ = pkg_resources.get_distribution('napalm-nxos').version

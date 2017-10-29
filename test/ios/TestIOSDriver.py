@@ -15,9 +15,9 @@
 """Tests for IOSDriver."""
 
 import unittest
-from napalm_ios import ios
-from napalm_base.utils import py23_compat
-from napalm_base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
+from napalm.ios import ios
+from napalm.base.utils import py23_compat
+from napalm.base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import re
 
 

@@ -1,7 +1,7 @@
 """Tests for the validate methods."""
 import pytest
 
-from napalm_base import validate
+from napalm.base import validate
 
 _compare_getter = [
     (

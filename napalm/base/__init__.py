@@ -12,37 +12,22 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-"""napalm_base package."""
+"""napalm.base package."""
 
 # Python3 support
 from __future__ import print_function
 from __future__ import unicode_literals
 
 # Python std lib
-import sys
 import inspect
 import importlib
-import pkg_resources
 
-# Verify Python Version that is running
-try:
-    if not(sys.version_info.major == 2 and sys.version_info.minor == 7) and \
-            not(sys.version_info.major == 3):
-        raise RuntimeError('NAPALM requires Python 2.7 or Python3')
-except AttributeError:
-    raise RuntimeError('NAPALM requires Python 2.7 or Python3')
 
 # NAPALM base
-from napalm_base.base import NetworkDriver
-from napalm_base.exceptions import ModuleImportError
-from napalm_base.mock import MockDriver
-from napalm_base.utils import py23_compat
-
-try:
-    __version__ = pkg_resources.get_distribution('napalm-base').version
-except pkg_resources.DistributionNotFound:
-    __version__ = "Not installed"
-
+from napalm.base.base import NetworkDriver
+from napalm.base.exceptions import ModuleImportError
+from napalm.base.mock import MockDriver
+from napalm.base.utils import py23_compat
 
 __all__ = [
     'get_network_driver',  # export the function
@@ -73,13 +58,13 @@ def get_network_driver(module_name, prepend=True):
     .. code-block:: python
 
         >>> get_network_driver('junos')
-        <class 'napalm_junos.junos.JunOSDriver'>
+        <class 'napalm.junos.junos.JunOSDriver'>
         >>> get_network_driver('IOS-XR')
-        <class 'napalm_iosxr.iosxr.IOSXRDriver'>
-        >>> get_network_driver('napalm_eos')
-        <class 'napalm_eos.eos.EOSDriver'>
+        <class 'napalm.iosxr.iosxr.IOSXRDriver'>
+        >>> get_network_driver('napalm.eos')
+        <class 'napalm.eos.eos.EOSDriver'>
         >>> get_network_driver('wrong')
-        napalm_base.exceptions.ModuleImportError: Cannot import "napalm_wrong". Is the library \
+        napalm.base.exceptions.ModuleImportError: Cannot import "napalm_wrong". Is the library \
         installed?
     """
     if module_name == "mock":
@@ -94,8 +79,8 @@ def get_network_driver(module_name, prepend=True):
         # Try to not raise error when users requests IOS-XR for e.g.
         module_install_name = module_name.replace('-', '')
         # Can also request using napalm_[SOMETHING]
-        if 'napalm_' not in module_install_name and prepend is True:
-            module_install_name = 'napalm_{name}'.format(name=module_install_name)
+        if 'napalm' not in module_install_name and prepend is True:
+            module_install_name = 'napalm.{name}'.format(name=module_install_name)
         module = importlib.import_module(module_install_name)
     except ImportError:
         raise ModuleImportError(
@@ -110,5 +95,5 @@ def get_network_driver(module_name, prepend=True):
 
     # looks like you don't have any Driver class in your module...
     raise ModuleImportError(
-        'No class inheriting "napalm_base.base.NetworkDriver" found in "{install_name}".'
+        'No class inheriting "napalm.base.base.NetworkDriver" found in "{install_name}".'
         .format(install_name=module_install_name))

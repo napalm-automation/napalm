@@ -1,13 +1,14 @@
 """Test fixtures."""
+import copy
 
 import lxml
 import yaml
 import pytest
-from napalm_base.test import conftest as parent_conftest
+from napalm.base.test import conftest as parent_conftest
 
-from napalm_base.test.double import BaseTestDouble
+from napalm.base.test.double import BaseTestDouble
 
-from napalm_junos import junos
+from napalm.junos import junos
 
 
 @pytest.fixture(scope='class')
@@ -77,16 +78,15 @@ class FakeJunOSDevice(BaseTestDouble):
 
     @property
     def facts(self):
+        # we want to reinitialize it every time to avoid side effects
+        self._facts = copy.deepcopy(self.default_facts)
         try:
             alt_facts_filepath = self.find_file(self.alternative_facts_file)
         except IOError:
             self._facts = self.default_facts
             return self._facts
         with open(alt_facts_filepath, 'r') as alt_facts:
-            try:
-                self._facts.update(yaml.load(alt_facts))
-            except (yaml.YAMLError, AttributeError):
-                self._facts = self.default_facts
+            self._facts.update(yaml.load(alt_facts))
         return self._facts
 
     @property
