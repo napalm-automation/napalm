@@ -1,0 +1,59 @@
+Cisco Nexus Operating System (NX-OS) Software
+TAC support: http://www.cisco.com/tac
+Documents: http://www.cisco.com/en/US/products/ps9372/tsd_products_support_series_home.html
+Copyright (c) 2002-2015, Cisco Systems, Inc. All rights reserved.
+The copyrights to certain works contained in this software are
+owned by other third parties and used and distributed under
+license. Certain components of this software are licensed under
+the GNU General Public License (GPL) version 2.0 or the GNU
+Lesser General Public License (LGPL) Version 2.1. A copy of each
+such license is available at
+http://www.opensource.org/licenses/gpl-2.0.php and
+http://www.opensource.org/licenses/lgpl-2.1.php
+
+Software
+  BIOS:      version 3.22.0
+  kickstart: version 6.2(14)
+  system:    version 6.2(14)
+  BIOS compile time:       02/20/10
+  kickstart image file is: bootflash:///n7000-s1-kickstart.6.2.14.bin
+  kickstart compile time:  7/27/2015 9:00:00 [08/27/2015 18:41:26]
+  system image file is:    bootflash:///n7000-s1-dk9.6.2.14.bin
+  system compile time:     7/27/2015 9:00:00 [08/27/2015 20:31:27]
+
+
+Hardware
+  cisco Nexus7000 C7009 (9 Slot) Chassis ("Supervisor Module-1X")
+  Intel(R) Xeon(R) CPU         with 8260668 kB of memory.
+  Processor Board ID JAF1602BKEN
+
+  Device name: EGGS-SW01
+  bootflash:    2048256 kB
+  slot0:              0 kB (expansion flash)
+
+Kernel uptime is 383 day(s), 19 hour(s), 49 minute(s), 21 second(s)
+
+Last reset at 878023 usecs after  Tue Jul 19 17:46:55 2016
+
+  Reason: Reset Requested by CLI command reload
+  System version: 6.2(14)
+  Service: 
+
+plugin
+  Core Plugin, Ethernet Plugin
+
+
+CMP (Module 1) ok
+ CMP Software
+  CMP BIOS version:        02.01.05
+  CMP Image version:       6.2(14) [build 6.2(14)]
+  CMP BIOS compile time:   8/ 4/2008 19:39:40
+  CMP Image compile time:  7/27/2015 9:00:00
+
+CMP (Module 2) ok
+ CMP Software
+  CMP BIOS version:        02.01.05
+  CMP Image version:       6.2(14) [build 6.2(14)]
+  CMP BIOS compile time:   8/ 4/2008 19:39:40
+  CMP Image compile time:  7/27/2015 9:00:00
+

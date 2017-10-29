@@ -1,0 +1,13 @@
+{
+    "admin": {
+        "password": "$5$aH4ttsPk$kNH7qXBaegskBUekuymPzaL5Q0Vh/mQVSdw4tQ0AcU7", 
+        "sshkeys": [], 
+        "level": 15
+    }, 
+    "ntc": {
+        "password": "$5$xcNSvZMS$UBw5G51GWd.87viPKHxJop/ViJMd6.Up3FFiCk9X0I4", 
+        "sshkeys": [], 
+        "level": 15
+    }
+}
+

@@ -1,0 +1,145 @@
+{
+    "RED3": {
+        "router_id": "10.1.0.18", 
+        "peers": {
+            "2001:db8:4:701::2": {
+                "is_enabled": true, 
+                "uptime": 1987200, 
+                "remote_as": 65535, 
+                "address_family": {
+                    "ipv6": {
+                        "sent_prefixes": -1, 
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": 3
+                    }
+                }, 
+                "is_up": true, 
+                "remote_id": "0.0.0.0", 
+                "local_as": 65535, 
+                "description": ""
+            }, 
+            "2001:db8:e0:df::1": {
+                "is_enabled": true, 
+                "uptime": 1900800, 
+                "remote_as": 10, 
+                "address_family": {
+                    "ipv6": {
+                        "sent_prefixes": -1, 
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": 4
+                    }
+                }, 
+                "is_up": true, 
+                "remote_id": "0.0.0.0", 
+                "local_as": 65535, 
+                "description": ""
+            }, 
+            "2001:db8:e0:dd::1": {
+                "is_enabled": true, 
+                "uptime": 1900800, 
+                "remote_as": 10, 
+                "address_family": {
+                    "ipv6": {
+                        "sent_prefixes": -1, 
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": 4
+                    }
+                }, 
+                "is_up": true, 
+                "remote_id": "0.0.0.0", 
+                "local_as": 65535, 
+                "description": ""
+            }
+        }
+    }, 
+    "RED2": {
+        "router_id": "10.1.0.17", 
+        "peers": {
+            "10.1.12.22": {
+                "is_enabled": true, 
+                "uptime": 1900800, 
+                "remote_as": 10, 
+                "address_family": {
+                    "ipv4": {
+                        "sent_prefixes": -1, 
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": 1
+                    }
+                }, 
+                "is_up": true, 
+                "remote_id": "0.0.0.0", 
+                "local_as": 65535, 
+                "description": ""
+            }, 
+            "10.2.2.1": {
+                "is_enabled": true, 
+                "uptime": 1900800, 
+                "remote_as": 10, 
+                "address_family": {
+                    "ipv4": {
+                        "sent_prefixes": -1, 
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": 15
+                    }
+                }, 
+                "is_up": true, 
+                "remote_id": "0.0.0.0", 
+                "local_as": 65535, 
+                "description": ""
+            }, 
+            "10.1.0.2": {
+                "is_enabled": true, 
+                "uptime": 1987200, 
+                "remote_as": 65535, 
+                "address_family": {
+                    "ipv4": {
+                        "sent_prefixes": -1, 
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": 6
+                    }
+                }, 
+                "is_up": true, 
+                "remote_id": "0.0.0.0", 
+                "local_as": 65535, 
+                "description": ""
+            }
+        }
+    }, 
+    "global": {
+        "router_id": "10.1.0.16", 
+        "peers": {
+            "10.2.1.14": {
+                "is_enabled": true, 
+                "uptime": 1900800, 
+                "remote_as": 10, 
+                "address_family": {
+                    "ipv4": {
+                        "sent_prefixes": -1, 
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": 9
+                    }
+                }, 
+                "is_up": true, 
+                "remote_id": "0.0.0.0", 
+                "local_as": 65535, 
+                "description": ""
+            }, 
+            "10.1.0.1": {
+                "is_enabled": true, 
+                "uptime": 14083200, 
+                "remote_as": 65535, 
+                "address_family": {
+                    "ipv4": {
+                        "sent_prefixes": -1, 
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": 4
+                    }
+                }, 
+                "is_up": true, 
+                "remote_id": "0.0.0.0", 
+                "local_as": 65535, 
+                "description": ""
+            }
+        }
+    } 
+}

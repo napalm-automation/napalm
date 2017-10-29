@@ -1,0 +1,6 @@
+DNS lookup enabled
+Name/address lookup uses domain service
+Name servers are 255.255.255.255
+
+
+Host                    Address
