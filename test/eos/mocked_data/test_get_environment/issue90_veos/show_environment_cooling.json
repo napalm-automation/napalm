@@ -1,0 +1,9 @@
+{
+    "overrideFanSpeed": 0,
+    "coolingMode": "automatic",
+    "powerSupplySlots": [],
+    "fanTraySlots": [],
+    "shutdownOnInsufficientFans": true,
+    "systemStatus": "unknownCoolingAlarmLevel",
+    "airflowDirection": "unknownAirflowDirection"
+}

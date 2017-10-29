@@ -1,0 +1,10 @@
+PING www.google.com (172.217.9.68) 72(100) bytes of data.
+72 bytes from ord38s09-in-f4.1e100.net (172.217.9.68): icmp_seq=1 ttl=52 (truncated)
+72 bytes from ord38s09-in-f4.1e100.net (172.217.9.68): icmp_seq=2 ttl=52 (truncated)
+72 bytes from ord38s09-in-f4.1e100.net (172.217.9.68): icmp_seq=3 ttl=52 (truncated)
+72 bytes from ord38s09-in-f4.1e100.net (172.217.9.68): icmp_seq=4 ttl=52 (truncated)
+72 bytes from ord38s09-in-f4.1e100.net (172.217.9.68): icmp_seq=5 ttl=52 (truncated)
+
+--- www.google.com ping statistics ---
+5 packets transmitted, 5 received, 0% packet loss, time 7ms
+rtt min/avg/max/mdev = 0.746/1.170/1.466/0.252 ms, ipg/ewma 1.750/1.306 ms

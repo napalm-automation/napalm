@@ -1,0 +1,2 @@
+{"success": {"packet_loss": 0, "rtt_stddev": 0.562, "rtt_min": 1.321, "results": [{"rtt": 1.78, "ip_address": "151.101.65.140"}, {"rtt": 1.41, "ip_address": "151.101.65.140"}, {"rtt": 1.32, "ip_address": "151.101.65.140"}, {"rtt": 2.84, "ip_address": "151.101.65.140"}, {"rtt": 1.44, "ip_address": "151.101.65.140"}], "rtt_avg": 1.760, "rtt_max": 2.840, "probes_sent": 5}}
+

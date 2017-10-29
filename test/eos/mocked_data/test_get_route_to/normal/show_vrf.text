@@ -1,0 +1,9 @@
+Maximum number of vrfs allowed: 14
+ Vrf     RD           Protocols    State                    Interfaces
+------- ------------ ------------ ------------------------- -------------------
+ TEST    0:1          ipv4,ipv6    v4:routing; multicast,   Ethernet1, Vlan100,
+                                   v6:routing               Vlan101, Vlan102,
+                                                            Vlan103, Vlan104
+
+
+

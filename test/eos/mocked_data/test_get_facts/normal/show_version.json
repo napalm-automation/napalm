@@ -1,0 +1,13 @@
+{
+    "modelName": "vEOS",
+    "internalVersion": "4.15.5M-3054042.4155M",
+    "systemMacAddress": "08:00:27:b3:fc:e1",
+    "serialNumber": "",
+    "memTotal": 1897592,
+    "bootupTimestamp": 1466586790.4,
+    "memFree": 114160,
+    "version": "4.15.5M",
+    "architecture": "i386",
+    "internalBuildId": "d6560fe3-4c9f-4765-81f0-cba651cf54f8",
+    "hardwareRevision": ""
+}

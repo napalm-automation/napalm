@@ -1,0 +1,370 @@
+{
+  "temperature": {
+    "TempSensor12/1": {
+      "is_alert": false,
+      "temperature": 27.5,
+      "is_critical": false
+    },
+    "TempSensor14/1": {
+      "is_alert": false,
+      "temperature": 28.25,
+      "is_critical": false
+    },
+    "TempSensor16/5": {
+      "is_alert": false,
+      "temperature": 31,
+      "is_critical": false
+    },
+    "TempSensorP1/1": {
+      "is_alert": false,
+      "temperature": 29.625,
+      "is_critical": false
+    },
+    "TempSensorP1/2": {
+      "is_alert": false,
+      "temperature": 22.375,
+      "is_critical": false
+    },
+    "TempSensor1/9": {
+      "is_alert": false,
+      "temperature": 20,
+      "is_critical": false
+    },
+    "TempSensor1/8": {
+      "is_alert": false,
+      "temperature": 21,
+      "is_critical": false
+    },
+    "TempSensorP2/1": {
+      "is_alert": false,
+      "temperature": 28.75,
+      "is_critical": false
+    },
+    "TempSensor3/12": {
+      "is_alert": false,
+      "temperature": 64,
+      "is_critical": false
+    },
+    "TempSensor3/11": {
+      "is_alert": false,
+      "temperature": 48.75,
+      "is_critical": false
+    },
+    "TempSensor3/10": {
+      "is_alert": false,
+      "temperature": 55,
+      "is_critical": false
+    },
+    "TempSensor1/1": {
+      "is_alert": false,
+      "temperature": 28,
+      "is_critical": false
+    },
+    "TempSensor1/3": {
+      "is_alert": false,
+      "temperature": 32,
+      "is_critical": false
+    },
+    "TempSensor1/2": {
+      "is_alert": false,
+      "temperature": 32,
+      "is_critical": false
+    },
+    "TempSensor1/5": {
+      "is_alert": false,
+      "temperature": 26,
+      "is_critical": false
+    },
+    "TempSensor1/4": {
+      "is_alert": false,
+      "temperature": 31,
+      "is_critical": false
+    },
+    "TempSensor1/7": {
+      "is_alert": false,
+      "temperature": 48,
+      "is_critical": false
+    },
+    "TempSensor1/6": {
+      "is_alert": false,
+      "temperature": 49,
+      "is_critical": false
+    },
+    "TempSensor13/3": {
+      "is_alert": false,
+      "temperature": 28.25,
+      "is_critical": false
+    },
+    "TempSensor13/2": {
+      "is_alert": false,
+      "temperature": 24.5,
+      "is_critical": false
+    },
+    "TempSensor13/1": {
+      "is_alert": false,
+      "temperature": 27.75,
+      "is_critical": false
+    },
+    "TempSensorP4/2": {
+      "is_alert": false,
+      "temperature": 23.75,
+      "is_critical": false
+    },
+    "TempSensor3/9": {
+      "is_alert": false,
+      "temperature": 62.25,
+      "is_critical": false
+    },
+    "TempSensor3/8": {
+      "is_alert": false,
+      "temperature": 55.5,
+      "is_critical": false
+    },
+    "TempSensor3/7": {
+      "is_alert": false,
+      "temperature": 54,
+      "is_critical": false
+    },
+    "TempSensor3/6": {
+      "is_alert": false,
+      "temperature": 62,
+      "is_critical": false
+    },
+    "TempSensor3/5": {
+      "is_alert": false,
+      "temperature": 51.5,
+      "is_critical": false
+    },
+    "TempSensor3/4": {
+      "is_alert": false,
+      "temperature": 53,
+      "is_critical": false
+    },
+    "TempSensor3/3": {
+      "is_alert": false,
+      "temperature": 34.75,
+      "is_critical": false
+    },
+    "TempSensor3/2": {
+      "is_alert": false,
+      "temperature": 55.25,
+      "is_critical": false
+    },
+    "TempSensor3/1": {
+      "is_alert": false,
+      "temperature": 25.75,
+      "is_critical": false
+    },
+    "TempSensor12/5": {
+      "is_alert": false,
+      "temperature": 30,
+      "is_critical": false
+    },
+    "TempSensor11/5": {
+      "is_alert": false,
+      "temperature": 29,
+      "is_critical": false
+    },
+    "TempSensor11/4": {
+      "is_alert": false,
+      "temperature": 32,
+      "is_critical": false
+    },
+    "TempSensor11/1": {
+      "is_alert": false,
+      "temperature": 27.75,
+      "is_critical": false
+    },
+    "TempSensorP3/2": {
+      "is_alert": false,
+      "temperature": 23.125,
+      "is_critical": false
+    },
+    "TempSensor11/3": {
+      "is_alert": false,
+      "temperature": 28.5,
+      "is_critical": false
+    },
+    "TempSensor11/2": {
+      "is_alert": false,
+      "temperature": 24.5,
+      "is_critical": false
+    },
+    "TempSensor15/1": {
+      "is_alert": false,
+      "temperature": 28,
+      "is_critical": false
+    },
+    "TempSensor15/3": {
+      "is_alert": false,
+      "temperature": 28.5,
+      "is_critical": false
+    },
+    "TempSensor15/2": {
+      "is_alert": false,
+      "temperature": 24.75,
+      "is_critical": false
+    },
+    "TempSensor15/5": {
+      "is_alert": false,
+      "temperature": 30,
+      "is_critical": false
+    },
+    "TempSensor15/4": {
+      "is_alert": false,
+      "temperature": 33,
+      "is_critical": false
+    },
+    "TempSensor1/11": {
+      "is_alert": false,
+      "temperature": 27,
+      "is_critical": false
+    },
+    "TempSensor1/10": {
+      "is_alert": false,
+      "temperature": 27,
+      "is_critical": false
+    },
+    "TempSensor14/2": {
+      "is_alert": false,
+      "temperature": 24.75,
+      "is_critical": false
+    },
+    "TempSensor14/3": {
+      "is_alert": false,
+      "temperature": 28.5,
+      "is_critical": false
+    },
+    "TempSensor14/4": {
+      "is_alert": false,
+      "temperature": 33,
+      "is_critical": false
+    },
+    "TempSensor14/5": {
+      "is_alert": false,
+      "temperature": 29,
+      "is_critical": false
+    },
+    "TempSensorP4/1": {
+      "is_alert": false,
+      "temperature": 30,
+      "is_critical": false
+    },
+    "TempSensor16/4": {
+      "is_alert": false,
+      "temperature": 33,
+      "is_critical": false
+    },
+    "TempSensor12/4": {
+      "is_alert": false,
+      "temperature": 32,
+      "is_critical": false
+    },
+    "TempSensor16/2": {
+      "is_alert": false,
+      "temperature": 27,
+      "is_critical": false
+    },
+    "TempSensor16/3": {
+      "is_alert": false,
+      "temperature": 29.75,
+      "is_critical": false
+    },
+    "TempSensor16/1": {
+      "is_alert": false,
+      "temperature": 28.25,
+      "is_critical": false
+    },
+    "TempSensorP3/1": {
+      "is_alert": false,
+      "temperature": 30.375,
+      "is_critical": false
+    },
+    "TempSensor13/5": {
+      "is_alert": false,
+      "temperature": 30,
+      "is_critical": false
+    },
+    "TempSensorP2/2": {
+      "is_alert": false,
+      "temperature": 22.25,
+      "is_critical": false
+    },
+    "TempSensor13/4": {
+      "is_alert": false,
+      "temperature": 32,
+      "is_critical": false
+    },
+    "TempSensor12/2": {
+      "is_alert": false,
+      "temperature": 24.25,
+      "is_critical": false
+    },
+    "TempSensor12/3": {
+      "is_alert": false,
+      "temperature": 28.5,
+      "is_critical": false
+    },
+    "TempSensor2": {
+      "is_alert": false, 
+      "temperature": 35.0, 
+      "is_critical": false
+    }, 
+    "TempSensor1": {
+      "is_alert": false, 
+      "temperature": 41.63677939132518, 
+      "is_critical": false
+    }
+  },
+  "power": {
+    "1": {
+      "status": true,
+      "output": 296,
+      "capacity": 2900
+    },
+    "2": {
+      "status": true,
+      "output": 212,
+      "capacity": 2900
+    },
+    "3": {
+      "status": true,
+      "output": 212,
+      "capacity": 2900
+    },
+    "4": {
+      "status": true,
+      "output": 212,
+      "capacity": 2900
+    }
+  },
+  "fans": {
+    "1": {
+      "status": true
+    },
+    "2": {
+      "status": true
+    },
+    "3": {
+      "status": true
+    },
+    "4": {
+      "status": true
+    },
+    "5": {
+      "status": true
+    },
+    "6": {
+      "status": true
+    }
+  },
+  "memory": {
+    "available_ram": 26775428,
+    "used_ram": 5696652
+  },
+  "cpu": {
+    "0": {
+      "%usage": 5.4 
+    }
+  }
+}
