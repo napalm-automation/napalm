@@ -1,0 +1,9 @@
+Building configuration...
+
+Current configuration : 85 bytes
+!
+interface GigabitEthernet1
+ ip address dhcp
+ negotiation auto
+ no mop enabled
+end

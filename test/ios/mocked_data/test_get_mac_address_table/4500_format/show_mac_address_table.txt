@@ -1,0 +1,18 @@
+Unicast Entries
+ vlan     mac address     type        protocols               port
+---------+---------------+--------+---------------------+-------------------------
+   1      30a3.30a3.a1c3   dynamic ip,ipx,assigned,other Port-channel1
+  99      30a3.30a3.a1c4   dynamic ip,ipx,assigned,other Port-channel1
+  99      30a3.30a3.a1c5   dynamic ip,ipx,assigned,other Port-channel1
+  99      30a3.30a3.a1c6   dynamic ip,ipx,assigned,other Port-channel1
+  99      30a3.30a3.a1c7   dynamic ip,ipx,assigned,other Port-channel1
+  99      30a3.30a3.a1c8   dynamic ip,ipx,assigned,other Port-channel1
+  99      30a3.30a3.a1c9   dynamic ip,ipx,assigned,other Port-channel1
+  99      30a3.30a3.a1ca   dynamic ip,ipx,assigned,other Port-channel1
+
+Multicast Entries
+vlan mac address type ports
+---------+---------------+-------+--------------------------------------------
+1 0100.0ccc.ccce system Po1
+1 ffff.ffff.ffff system Po1
+39 ffff.ffff.ffff system Gi10/31,Gi10/32,Switch,Po1

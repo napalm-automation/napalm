@@ -1,0 +1,10 @@
+{
+	"pseudowire100006": {
+		"speed": 10000,
+		"mac_address": "",
+		"is_up": true,
+		"last_flapped": -1.0,
+		"description": "",
+		"is_enabled": true
+	}
+}

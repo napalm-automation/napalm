@@ -1,0 +1,128 @@
+[
+  {
+    "moves": -1,
+    "interface": "Port-channel1",
+    "vlan": 1,
+    "static": false,
+    "mac": "30:A3:30:A3:A1:C3",
+    "active": true,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Port-channel1",
+    "vlan": 99,
+    "static": false,
+    "mac": "30:A3:30:A3:A1:C4",
+    "active": true,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Port-channel1",
+    "vlan": 99,
+    "static": false,
+    "mac": "30:A3:30:A3:A1:C5",
+    "active": true,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Port-channel1",
+    "vlan": 99,
+    "static": false,
+    "mac": "30:A3:30:A3:A1:C6",
+    "active": true,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Port-channel1",
+    "vlan": 99,
+    "static": false,
+    "mac": "30:A3:30:A3:A1:C7",
+    "active": true,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Port-channel1",
+    "vlan": 99,
+    "static": false,
+    "mac": "30:A3:30:A3:A1:C8",
+    "active": true,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Port-channel1",
+    "vlan": 99,
+    "static": false,
+    "mac": "30:A3:30:A3:A1:C9",
+    "active": true,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Port-channel1",
+    "vlan": 99,
+    "static": false,
+    "mac": "30:A3:30:A3:A1:CA",
+    "active": true,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Po1",
+    "vlan": 1,
+    "static": true,
+    "mac": "01:00:0C:CC:CC:CE",
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Po1",
+    "vlan": 1,
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Gi10/31",
+    "vlan": 39,
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Gi10/32",
+    "vlan": 39,
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "",
+    "vlan": 39,
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "moves": -1,
+    "interface": "Po1",
+    "vlan": 39,
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "active": false,
+    "last_move": -1
+  }
+]

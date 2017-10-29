@@ -1,0 +1,29 @@
+TenGigabitEthernet2/0/1 is up, line protocol is up (connected) 
+  Hardware is Ten Gigabit Ethernet, address is 0042.5a8d.d91b (bia 0042.5a8d.d91b)
+  Description: Uplink-to-DSW2
+  MTU 1500 bytes, BW 10000000 Kbit/sec, DLY 10 usec, 
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation ARPA, loopback not set
+  Keepalive not set
+  Full-duplex, 10Gb/s, link type is auto, media type is SFP-10GBase-LRM
+  input flow-control is off, output flow-control is unsupported 
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input 00:00:29, output 00:00:01, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  5 minute input rate 187000 bits/sec, 135 packets/sec
+  5 minute output rate 181000 bits/sec, 113 packets/sec
+     21192627 packets input, 4732793131 bytes, 0 no buffer
+     Received 1625861 broadcasts (279957 multicasts)
+     0 runts, 0 giants, 0 throttles 
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 watchdog, 279957 multicast, 0 pause input
+     0 input packets with dribble condition detected
+     27963853 packets output, 3954071411 bytes, 0 underruns
+     0 output errors, 0 collisions, 1 interface resets
+     0 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier, 0 pause output
+     0 output buffer failures, 0 output buffers swapped out

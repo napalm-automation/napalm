@@ -1,0 +1,8 @@
+Legend: * - primary entry
+        age - seconds since last seen
+        n/a - not available
+
+  vlan   mac address     type    learn     age              ports
+------+----------------+--------+-----+----------+--------------------------
+*  999  1111.2222.3333   dynamic  Yes          0   Port-channel1
+  999  1111.2222.3333   dynamic  Yes          0   Port-channel2

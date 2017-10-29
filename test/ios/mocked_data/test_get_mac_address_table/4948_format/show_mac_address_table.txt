@@ -1,0 +1,4 @@
+Unicast Entries
+ vlan   mac address     type        protocols               port
+-------+---------------+--------+---------------------+--------------------
+ 999    1111.2222.3333   dynamic ip                    Port-channel1      

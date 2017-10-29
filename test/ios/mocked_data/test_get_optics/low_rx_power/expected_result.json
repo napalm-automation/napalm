@@ -1,0 +1,29 @@
+{
+	"GigabitEthernet0/11": {
+		"physical_channels": {
+			"channel": [{
+				"index": 0,
+				"state": {
+					"output_power": {
+						"max": -100.0,
+						"avg": -100.0,
+						"instant": -6.8,
+						"min": -100.0
+					},
+					"laser_bias_current": {
+						"max": 0.0,
+						"avg": 0.0,
+						"instant": 0.0,
+						"min": 0.0
+					},
+					"input_power": {
+						"max": -100.0,
+						"avg": -100.0,
+						"instant": -27.4,
+						"min": -100.0
+					}
+				}
+			}]
+		}
+	}
+}

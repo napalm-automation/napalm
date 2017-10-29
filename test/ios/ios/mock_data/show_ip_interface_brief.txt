@@ -1,0 +1,4 @@
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet1       10.0.2.15       YES DHCP   up                    up
+GigabitEthernet2       192.168.0.1     YES manual up                    up
+GigabitEthernet3       unassigned      YES unset  administratively down down

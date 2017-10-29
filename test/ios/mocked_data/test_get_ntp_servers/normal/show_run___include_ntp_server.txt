@@ -1,0 +1,4 @@
+ntp server 192.168.0.1 prefer
+ntp server 17.72.148.53
+ntp server vrf NAPALM 37.187.56.220
+ntp server 2001:DB8:0:0:8:800:200C:417A version 4

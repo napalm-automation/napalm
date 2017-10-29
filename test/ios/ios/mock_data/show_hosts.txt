@@ -1,0 +1,10 @@
+Name lookup view: Global
+Default domain is acme.com
+Name/address lookup uses domain service
+Name servers are 10.0.2.3
+
+Codes: UN - unknown, EX - expired, OK - OK, ?? - revalidate
+       temp - temporary, perm - permanent
+       NA - Not Applicable None - Not defined
+
+Host                      Port  Flags      Age Type   Address(es)

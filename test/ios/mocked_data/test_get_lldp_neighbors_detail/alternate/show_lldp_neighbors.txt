@@ -1,0 +1,10 @@
+Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+
+Device ID           Local Intf     Hold-time  Capability      Port ID
+eos-spine1.ntc.com  Gi1            120        B,R             Management1
+vmx1                Gi1            120        B,R             fxp0
+
+Total entries displayed: 2
+

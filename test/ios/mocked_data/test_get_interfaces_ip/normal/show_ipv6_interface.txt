@@ -1,0 +1,30 @@
+Vlan20 is administratively down, line protocol is down
+  IPv6 is enabled, link-local address is FE80::C009:24FF:FEAC:0 [TEN]
+  Global unicast address(es):
+    2002::1, subnet is 2002::/64 [TEN]
+  Joined group address(es):
+    FF02::1
+    FF02::1:FF00:1
+    FF02::1:FFAC:0
+  MTU is 1500 bytes
+  ICMP error messages limited to one every 100 milliseconds
+  ICMP redirects are enabled
+  ND DAD is enabled, number of DAD attempts: 1
+  ND reachable time is 30000 milliseconds
+Loopback0 is up, line protocol is up
+  IPv6 is enabled, link-local address is FE80::C009:24FF:FEAC:0
+  Global unicast address(es):
+    2001::1, subnet is 2001::1/128
+    2001::2, subnet is 2001::2/128
+  Joined group address(es):
+    FF02::1
+    FF02::2
+    FF02::1:FF00:1
+    FF02::1:FF00:2
+    FF02::1:FFAC:0
+  MTU is 1514 bytes
+  ICMP error messages limited to one every 100 milliseconds
+  ICMP redirects are enabled
+  ND DAD is not supported
+  ND reachable time is 30000 milliseconds
+

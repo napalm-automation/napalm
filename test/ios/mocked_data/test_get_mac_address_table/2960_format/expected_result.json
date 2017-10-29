@@ -1,0 +1,18 @@
+[{
+	"static": true,
+	"active": false,
+	"vlan": 0,
+	"mac": "11:11:22:22:33:33",
+	"interface": "",
+	"moves": -1,
+	"last_move": -1.0
+},
+{
+	"static": false,
+	"active": true,
+	"vlan": 6,
+	"mac": "00:18:B9:74:52:8F",
+	"interface": "Fa0/16",
+	"moves": -1,
+	"last_move": -1.0
+}]
