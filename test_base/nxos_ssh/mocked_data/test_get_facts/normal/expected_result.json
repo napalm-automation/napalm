@@ -1,5 +1,5 @@
 {
-    "hostname": "nxos1.twb-tech.com", 
+    "hostname": "nxos1",
     "fqdn": "nxos1.twb-tech.com",
     "model": "NX-OSv", 
     "uptime": 2030983,

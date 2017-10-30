@@ -777,9 +777,9 @@ class NXOSSSHDriver(NetworkDriver):
                 os_version = line.split()[2]
                 os_version = os_version.strip()
 
-            if 'cisco' in line and 'Chassis' in line:
-                _, model = line.split()[:2]
-                model = model.strip()
+            if re.search(r"cisco.*Chassis", line):
+                match = re.search(r"cisco (.*) Chassis ", line)
+                model = match.group(1).strip()
 
         hostname = show_hostname.strip()
 
@@ -791,6 +791,7 @@ class NXOSSSHDriver(NetworkDriver):
                 break
         if hostname.count(".") >= 2:
             fqdn = hostname
+            hostname = hostname.split(".")[0]
         elif domain_name:
             fqdn = '{}.{}'.format(hostname, domain_name)
 
