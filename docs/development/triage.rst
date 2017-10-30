@@ -9,11 +9,11 @@ Triaging Issues and Pull Requests
     but the users are equally welcome to read this document and understand our
     process, and eventually suggest improvements.
 
-We triage Issues and Pull Requests (PR) using GitHub and ZenHub features:
+We triage Issues and Pull Requests (PR) using GitHub features only:
 
 - :ref:`triage-labels`
 - :ref:`triage-milestone`
-- :ref:`triage-pipeline`
+- :ref:`triage-projects`
 
 .. _triage-labels:
 
@@ -46,6 +46,14 @@ all the drivers.
 
 When someone adds or proposes something really awesome.
 
+.. _triage-base-label:
+
+``base``
+--------
+
+When base components are affected, e.g., `get_network_driver`, the validate
+functionality, or the testing framework.
+
 .. _triage-blocked-label:
 
 ``blocked``
@@ -71,6 +79,13 @@ PR kills a bug.
 This refers to Issues only, and it is added when the maintainer(s) cannot
 reproduce the behaviour reported.
 
+.. _triage-core-label:
+
+``core``
+--------
+
+When any core components (drivers) are affected.
+
 .. _triage-deprecation-label:
 
 ``deprecation``
@@ -91,15 +106,6 @@ Can be added to both Issues and PRs, anything related to the documentation.
 -------------
 
 Applicable to Issues only, to be added before closing a duplicate.
-
-.. _triage-epic-label:
-
-``epic``
---------
-
-When the Issue/PR is part of a bigger change that involves several other Issues
-and/or PRs (the others must be referenced in the body, or using the ZenHub
-feature).
 
 .. _triage-feature-label:
 
@@ -215,15 +221,11 @@ using the labels.
 The Issue or the PR needs further discussion.
 
 
-.. _triage-pipeline:
+.. _triage-projects:
 
-Pipeline
+Projects
 ++++++++
 
-Pipeline is a ZenHub feature, and we can choose the most appropriate from:
+Any major change that may consist on several Pull Requests should be groupped
+into a GitHub Project.
 
-- Backlog
-- To Do
-- In Progress
-- Needs Review
-- Needs Discussion

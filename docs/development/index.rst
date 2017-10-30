@@ -8,4 +8,4 @@ Some useful information for development purposes.
    :maxdepth: 1
 
    testing_framework
-   triaging
+   triage
