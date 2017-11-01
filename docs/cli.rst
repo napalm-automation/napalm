@@ -137,18 +137,7 @@ The debugging mode is also quite useful and it's recommended you use it to repor
     2017-08-15 15:14:23,527 - napalm - DEBUG - Starting napalm's debugging tool
     2017-08-15 15:14:23,527 - napalm - DEBUG - Gathering napalm packages
     2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-ansible==0.7.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm==0.24.3
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-eos==0.6.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-fortios==0.4.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-ios==0.7.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-iosxr==0.5.4
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-junos==0.12.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-nxos==0.6.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-panos==0.4.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-pluribus==0.5.1
-    2017-08-15 15:14:23,542 - napalm - DEBUG - napalm-ros==0.2.2
-    2017-08-15 15:14:23,542 - napalm - DEBUG - napalm-vyos==0.1.3
-    2017-08-15 15:14:23,542 - napalm - DEBUG - napalm==1.2.0
+    2017-08-15 15:14:23,542 - napalm - DEBUG - napalm==2.0.0
     2017-08-15 15:14:23,542 - napalm - DEBUG - get_network_driver - Calling with args: ('eos',), {}
     2017-08-15 15:14:23,551 - napalm - DEBUG - get_network_driver - Successful
     2017-08-15 15:14:23,551 - napalm - DEBUG - __init__ - Calling with args: (<class 'napalm.eos.eos.EOSDriver'>, 'localhost', 'vagrant'), {'password': u'*******', 'optional_args': {u'port': 12443}, 'timeout': 60}
