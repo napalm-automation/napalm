@@ -8,7 +8,7 @@ ________
 
 The testing framework has the following features:
 
-1. Same tests across all vendors. Tests defined in ``napalm_base/test/getters.py`` are shared across all drivers.
+1. Same tests across all vendors. Tests defined in ``napalm.base/test/getters.py`` are shared across all drivers.
 2. Multiple test cases per test.
 3. Target of the test can be configured with environmental variables.
 4. Expected output is compared against the actual output of the test result.
@@ -57,9 +57,9 @@ Multiple test cases::
     lots_of_peers no_peers      normal
     (napalm) ➜  napalm-eos git:(test_framework) ✗ py.test test/unit/test_getters.py::TestGetter::test_get_bgp_neighbors
     ... 
-    test/unit/test_getters.py::TestGetter::test_get_bgp_neighbors[lots_of_peers] <- ../napalm-base/napalm_base/test/getters.py PASSED
-    test/unit/test_getters.py::TestGetter::test_get_bgp_neighbors[no_peers] <- ../napalm-base/napalm_base/test/getters.py PASSED
-    test/unit/test_getters.py::TestGetter::test_get_bgp_neighbors[normal] <- ../napalm-base/napalm_base/test/getters.py PASSED
+    test/unit/test_getters.py::TestGetter::test_get_bgp_neighbors[lots_of_peers] <- ../napalm/napalm.base/test/getters.py PASSED
+    test/unit/test_getters.py::TestGetter::test_get_bgp_neighbors[no_peers] <- ../napalm/napalm.base/test/getters.py PASSED
+    test/unit/test_getters.py::TestGetter::test_get_bgp_neighbors[normal] <- ../napalm/napalm.base/test/getters.py PASSED
     
 Missing test cases::
 
@@ -67,7 +67,7 @@ Missing test cases::
     ls: test/unit/mocked_data/test_get_bgp_neighbors: No such file or directory
     (napalm) ➜  napalm-eos git:(test_framework) ✗ py.test test/unit/test_getters.py::TestGetter::test_get_bgp_neighbors
     ... 
-    test/unit/test_getters.py::TestGetter::test_get_bgp_neighbors[no_test_case_found] <- ../napalm-base/napalm_base/test/getters.py FAILED
+    test/unit/test_getters.py::TestGetter::test_get_bgp_neighbors[no_test_case_found] <- ../napalm/napalm.base/test/getters.py FAILED
     
     ========================================================= FAILURES ==========================================================
     ___________________________________ TestGetter.test_get_bgp_neighbors[no_test_case_found] ___________________________________
@@ -88,14 +88,14 @@ Missing test cases::
     >               pytest.fail("No test case for '{}' found".format(func.__name__))
     E               Failed: No test case for 'test_get_bgp_neighbors' found
     
-    ../napalm-base/napalm_base/test/getters.py:64: Failed
+    ../napalm/napalm.base/test/getters.py:64: Failed
     ================================================= 1 failed in 0.12 seconds ==================================================
 
 Method not implemented::
 
     (napalm) ➜  napalm-eos git:(test_framework) ✗ py.test test/unit/test_getters.py::TestGetter::test_get_probes_config
     ...
-    test/unit/test_getters.py::TestGetter::test_get_probes_config[no_test_case_found] <- ../napalm-base/napalm_base/test/getters.py SKIPPED
+    test/unit/test_getters.py::TestGetter::test_get_probes_config[no_test_case_found] <- ../napalm/napalm.base/test/getters.py SKIPPED
     
     ================================================= 1 skipped in 0.09 seconds =================================================
 
