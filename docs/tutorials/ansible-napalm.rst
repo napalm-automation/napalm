@@ -22,9 +22,9 @@ Modules
 
 The following modules are currently available:
 
-* napalm.get_facts
-* napalm.install_config
-* napalm.validate
+* napalm_get_facts
+* napalm_install_config
+* napalm_validate
 
 Install
 -------
@@ -90,7 +90,7 @@ Examples
 Example to retrieve facts from a device::
 
      - name: get facts from device
-       napalm.get_facts:
+       napalm_get_facts:
          hostname={{ inventory_hostname }}
          username={{ user }}
          dev_os={{ os }}
@@ -107,7 +107,7 @@ Example to install config on a device::
         src=../compiled/{{ inventory_hostname }}/
         dest=../compiled/{{ inventory_hostname }}/running.conf
 
-     - napalm.install_config:
+     - napalm_install_config:
         hostname={{ inventory_hostname }}
         username={{ user }}
         dev_os={{ os }}
@@ -122,7 +122,7 @@ Example to install config on a device::
 Example to get compliance report::
 
     - name: GET VALIDATION REPORT
-      napalm.validate:
+      napalm_validate:
         username: "{{ un }}"
         password: "{{ pwd }}"
         hostname: "{{ inventory_hostname }}"
@@ -147,7 +147,7 @@ Non parameterized example with comments to get you started::
 
       tasks:                                     #Begin Tasks
         - name: get facts from device            #Task Name
-          napalm.get_facts:                      #Call the napalm module, in this case napal_get_facts
+          napalm_get_facts:                      #Call the napalm module, in this case napal_get_facts
             optional_args: {'secret': password}  #The enable password for Cisco IOS
             hostname: "{{ inventory_hostname }}" #This is a parameter and is derived from your ansible inventory file
             username: 'user'                     #The username to ssh with
