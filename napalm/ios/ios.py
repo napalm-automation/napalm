@@ -1145,7 +1145,15 @@ class IOSDriver(NetworkDriver):
 
         Currently no VRF support. Supports both IPv4 and IPv6.
         """
-        supported_afi = ['ipv4', 'ipv6']
+        supported_afi = ('ipv4 unicast', 
+                         'ipv6 unicast',
+                         'ipv4 multicast',
+                         'ipv6 multicast',
+                         'ipv4 mdt',
+                         'l2vpn epn',
+                         'l2vpn vpls',
+                         'vpnv4 unicast',
+                         'vpnv6 unicast')
 
         bgp_neighbor_data = dict()
         bgp_neighbor_data['global'] = {}
@@ -1157,7 +1165,7 @@ class IOSDriver(NetworkDriver):
         # get neighbor output from device
         neighbor_output = ''
         for afi in supported_afi:
-            cmd_bgp_neighbor = 'show bgp %s unicast neighbors' % afi
+            cmd_bgp_neighbor = 'show bgp {} neighbors'.format(afi)
             neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
             # trailing newline required for parsing
             neighbor_output += "\n"
@@ -1166,7 +1174,7 @@ class IOSDriver(NetworkDriver):
         parse_summary = {
             'patterns': [
                 # For address family: IPv4 Unicast
-                {'regexp': re.compile(r'^For address family: (?P<afi>\S+) '),
+                {'regexp': re.compile(r'^For address family: (?P<afi>\w+\s\w+)'),
                  'record': False},
                 # Capture router_id and local_as values, e.g.:
                 # BGP router identifier 10.0.1.1, local AS number 65000
@@ -1241,7 +1249,7 @@ class IOSDriver(NetworkDriver):
                  'record': False},
                 # Capture AFI and SAFI names, e.g.:
                 # For address family: IPv4 Unicast
-                {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) '),
+                {'regexp': re.compile(r'^\s+For address family: (?P<afi>\w+\s\w+)'),
                  'record': False},
                 # Capture current sent and accepted prefixes, e.g.:
                 #     Prefixes Current:          637213       3142 (Consumes 377040 bytes)
@@ -1330,6 +1338,8 @@ class IOSDriver(NetworkDriver):
                         napalm.base.helpers.ip(neighbor['remote_addr']) == remote_addr):
                     neighbor_entry = neighbor
                     break
+            if not neighbor_entry:
+                continue
             if not isinstance(neighbor_entry, dict):
                 raise ValueError(msg="Couldn't find neighbor data for %s in afi %s" %
                                      (remote_addr, afi))
