@@ -19,6 +19,7 @@ from netaddr import IPAddress
 import napalm.base.exceptions
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
 from napalm.base.utils import py23_compat
+from napalm.base.interface_map import _interface_map
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -255,3 +256,57 @@ def as_number(as_number_val):
         return (int(big) << 16) + int(little)
     else:
         return int(as_number_str)
+
+def canonical_interface(interface, device_os, short=False):
+    '''
+    Function to retun interface canonical name
+    This puposely does not use regex, or first X characters, to ensure
+    there is no chance for false positives. As an example, Po = PortChannel, and
+    PO = POS. With either character or regex, that would produce a false positive.
+    '''
+
+    if device_os == "cisco_nxos_ssh":
+        device_os = "cisco_nxos"
+    supported_os_list = ["cisco_ios", "cisco_nxos", "cisco_xr", "arista_eos"]
+    if device_os not in supported_os_list:
+        return interface
+
+    def split_on_match(split_interface):
+        '''
+        simple fuction to split on first digit, slash,  or space match
+        '''
+        head = split_interface.rstrip(r'/\0123456789 ')
+        tail = split_interface[len(head):].lstrip()
+        return head, tail
+
+    interface_type, interface_number = split_on_match(interface)
+
+    int_map = _interface_map()
+    base_interfaces = int_map['base_interfaces']
+    os_map = int_map.get('os_map', {})
+    os_specific_interfaces = {}
+
+    # Populate os_specific_interfaces from the base list
+    for interface_root in os_map[device_os].get('from_base', []):
+        if base_interfaces.get(interface_root):
+            os_specific_interfaces[interface_root] = base_interfaces.get(interface_root)
+            os_specific_interfaces[interface_root + '_short'] = \
+            base_interfaces.get(interface_root + '_short')
+        else:
+            exit()
+    # if the device_os is defined and a dict, add to os_specific_interfaces
+    if isinstance(os_map[device_os].get('from_os'), dict):
+        for key, value in os_map.items():
+            os_specific_interfaces[key] = value
+
+    # go through dictionary and each list within value pair,
+    # if match, pull out either long or short form
+    for key, value in os_specific_interfaces.items():
+        for current_interface in value:
+            if current_interface == interface_type:
+                if short is True:
+                    return os_specific_interfaces[key + '_short'] + str(interface_number)
+                return key + str(interface_number)
+
+    # if nothing matched, at least return the original
+    return interface

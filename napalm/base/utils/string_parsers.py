@@ -1,23 +1,24 @@
+""" Common methods to normalize a string """
 from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
 
-
 def convert(text):
+    """Convert text to integer, if it is a digit."""
     if text.isdigit():
         return int(text)
-    else:
-        return text
+    return text
 
 
 def alphanum_key(key):
+    """ split on end numbers."""
     return [convert(c) for c in re.split('([0-9]+)', key)]
 
 
-def sorted_nicely(l):
+def sorted_nicely(sort_me):
     """ Sort the given iterable in the way that humans expect."""
-    return sorted(l, key=alphanum_key)
+    return sorted(sort_me, key=alphanum_key)
 
 
 def colon_separated_string_to_dict(string, separator=':'):
@@ -66,10 +67,10 @@ def hyphen_range(string):
         if len(sub_element) == 1:
             list_numbers.append(int(sub_element[0]))
         elif len(sub_element) == 2:
-            for x in range(int(sub_element[0]), int(sub_element[1])+1):
-                list_numbers.append(x)
+            for number in range(int(sub_element[0]), int(sub_element[1])+1):
+                list_numbers.append(number)
         else:
-            raise Exception('Something went wrong expanding the range'.format(string))
+            raise Exception('Something went wrong expanding the range {}'.format(string))
 
     return list_numbers
 
