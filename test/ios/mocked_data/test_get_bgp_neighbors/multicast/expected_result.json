@@ -1,0 +1,27 @@
+{'global': {'router_id': '192.168.242.162', 'peers': {'192.168.242.152': 
+{'local_as': 65421, 'remote_as': 65421, 'remote_id': '192.168.242.152', 'is_up': True, 
+'is_enabled': True, 'description': '# primary RR1 #', 'uptime': 1, 
+'address_family': {'ipv4 unicast': {'received_prefixes': 0, 'accepted_prefixes': 0, 
+'sent_prefixes': 0}, 'ipv4 mdt': {'received_prefixes': 0, 'accepted_prefixes': 0, 
+'sent_prefixes': 0}, 'vpnv4 unicast': {'received_prefixes': 238794, 
+'accepted_prefixes': 238794, 'sent_prefixes': 30}}}, '192.168.242.153': {'local_as': 65421, 
+'remote_as': 65421, 'remote_id': '192.168.242.202', 'is_up': True, 'is_enabled': True, 
+'description': '# secondary RR2 #', 'uptime': 1, 'address_family': 
+{'ipv4 unicast': {'received_prefixes': 0, 'accepted_prefixes': 0, 'sent_prefixes': 0}, 
+'ipv4 mdt': {'received_prefixes': 0, 'accepted_prefixes': 0, 'sent_prefixes': 0}, 
+'vpnv4 unicast': {'received_prefixes': 244163, 'accepted_prefixes': 244163, 'sent_prefixes': 30}}}, '192.168.242.158': {'local_as': 65421, 'remote_as': 65421, 'remote_id': '0.0.0.0', 'is_up': True, 'is_enabled': True, 
+'description': '# secondary RR2 #', 'uptime': 1, 'address_family': {'ipv4 unicast': 
+{'received_prefixes': 0, 'accepted_prefixes': 0, 'sent_prefixes': 0}}}, 
+'192.168.242.172': {'local_as': 65421, 'remote_as': 65421, 'remote_id': '192.168.242.203', 
+'is_up': True, 'is_enabled': True, 'description': 'Bnet-R5', 'uptime': 1, 
+'address_family': {'ipv4 unicast': {'received_prefixes': 83, 'accepted_prefixes': 83, 'sent_prefixes': 2}, 
+'ipv4 mdt': {'received_prefixes': 795, 'accepted_prefixes': 795, 'sent_prefixes': 3}, 
+'vpnv6 unicast': {'received_prefixes': 1928, 'accepted_prefixes': 1928, 
+'sent_prefixes': 297}, 'l2vpn vpls': {'received_prefixes': 4, 
+'accepted_prefixes': 4, 'sent_prefixes': 1}}}, '192.168.242.173': 
+{'local_as': 65421, 'remote_as': 65421, 'remote_id': '192.168.242.201', 'is_up': True, 
+'is_enabled': True, 'description': 'Bnet-R6', 'uptime': 1, 
+'address_family': {'ipv4 unicast': {'received_prefixes': 0, 'accepted_prefixes': 0, 
+'sent_prefixes': 0}, 'ipv4 mdt': {'received_prefixes': 795, 'accepted_prefixes': 795, 'sent_prefixes': 3}, 
+'vpnv6 unicast': {'received_prefixes': 1928, 'accepted_prefixes': 1928, 'sent_prefixes': 297}, 
+'l2vpn vpls': {'received_prefixes': 3, 'accepted_prefixes': 3, 'sent_prefixes': 1}}}}}}
