@@ -1341,7 +1341,7 @@ class IOSDriver(NetworkDriver):
             if not neighbor_entry:
                 continue
             if not isinstance(neighbor_entry, dict):
-                raise ValueError(msg="Couldn't find neighbor data for %s in afi %s" %
+                raise ValueError("Couldn't find neighbor data for %s in afi %s" %
                                      (remote_addr, afi))
 
             # check for admin down state
