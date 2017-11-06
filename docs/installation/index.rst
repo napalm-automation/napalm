@@ -21,44 +21,36 @@ If you want to install just a subset of the available modules you can just pick 
 
 .. code-block:: bash
 
-    pip install napalm-eos napalm-junos
+    pip install --install-option="eos" --install-option="junos" napalm
 
-That will install only the `eos` and the `junos` drivers. If you want to remove or add a module later on you can just use `pip` to do it:
-
-.. code-block:: bash
-
-    pip uninstall napalm-junos
-    pip install napalm-ios
-
-Check the ['Supported Network Operating Systems'](http://napalm.readthedocs.io/en/latest/support/index.html) section for more information about supported modules.
-
-
-Upgrading
----------
-
-We plan to upgrade napalm as fast as possible. Adding new methods and bugfixes. To upgrade napalm it's as simple as repeating the steps you performed while installing but adding the `-U` flag. For example:
-
-.. code-block:: bash
-  
-    pip install napalm -U
-
-or:
+That will install only the ``eos`` and the ``junos`` drivers. If you want to add an extra driver later you can use ``pip --force-reinstall -U`` to do it:
 
 .. code-block:: bash
 
-    pip install napalm-eos napalm-junos -U
+    pip install --install-option="ios" --force-reinstall -U napalm
+
+
+Note you can pass those options to a requirements file as well:
+
+.. code-block:: bash
+
+    # requrements.txt
+    napalm --install-option="ios" --install-option="eos"
+
+
+Check the `supported devices`_ section for more information on supported drivers.
 
 Dependencies
 ------------
 
-Although dependencies for the transport libraries are solved by `pip`, on some operating systems there are some particular requirements:
+Although dependencies for the transport libraries are solved by ``pip``, on some operating systems there are some particular requirements:
 
 .. toctree::
    :maxdepth: 1
 
-   junos
-   iosxr
    ios
-   panos
-   pluribus
-   vyos
+   iosxr
+   junos
+
+
+.. _supported devices: ../support/index.html

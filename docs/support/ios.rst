@@ -47,7 +47,7 @@ IOSDriver requires that the `archive` functionality be enabled to perform auto-r
 
 
 Configuration file
-------------------
+__________________
 
 * IOS requires config file to begin with a `version` eg. `15.0` and `end` marker at the end of the file. Otherwise IOS will reject `configure replace` operation.
 * For the diff to work properly, indentation of your candidate file has to exactly match the indentation in the running config.
@@ -55,7 +55,7 @@ Configuration file
 
 
 Self-Signed Certificate (and the hidden tab character)
-------------------
+______________________________________________________
 
 Cisco IOS adds a tab character into the self-signed certificate. This exists on the quit line::
 
@@ -91,7 +91,7 @@ Cisco IOS is very particular about the self-signed certificate and will reject r
 
 
 Banner
-------------------
+______
 
 IOS requires that the banner use the EXT character (ASCII 3). This looks like a cntl-C in the file, but as a single character. It is NOT a separate '^' + 'C' character, but an ASCII3 character::
 
@@ -114,11 +114,10 @@ In vim insert, you can also type <ctrl>+V, release only the V, then type C
 
 
 Notes
-_______
+_____
 
 * Will automatically enable secure copy ('ip scp server enable') on the network device. This is a configuration change.
 
 * During various operations, NAPALM ios driver will turn off the prompting for confirmations (`file prompt quiet`). It should re-enable prompting before exiting the device (`no file prompt quiet`).
 
-* The NAPALM-ios driver supports all Netmiko arguments as either standard arguments (hostname, username, password, timeout) or as optional_args (everything else).  
-
+* The NAPALM-ios driver supports all Netmiko arguments as either standard arguments (hostname, username, password, timeout) or as optional_args (everything else).
