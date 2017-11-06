@@ -1965,7 +1965,7 @@ class IOSDriver(NetworkDriver):
             * level (int)
             * password (str)
             * sshkeys (list)
-        
+
         *Note: sshkeys on ios is the ssh key fingerprint
 
         The level is an integer between 0 and 15, where 0 is the
@@ -1976,7 +1976,7 @@ class IOSDriver(NetworkDriver):
         output = self._send_command(command)
         curuser = ""
         for line in output.splitlines():
-            if line.startswith("username"):                
+            if line.startswith("username"):
                 tokens = line.split(" ")
                 users[tokens[1]] = {
                     'level': 1,
@@ -1988,7 +1988,6 @@ class IOSDriver(NetworkDriver):
                     if tokens[i] == "privilege":
                         users[tokens[1]]["level"] = int(tokens[i+1])
                         i += 2
-    
                     elif tokens[i] == "secret":
                         users[tokens[1]]["password"] = tokens[i+2]
                         i += 3
