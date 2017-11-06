@@ -1164,7 +1164,7 @@ class IOSDriver(NetworkDriver):
 
         # get neighbor output from device
         neighbor_output = ''
-        for afi in supported_afi[2:]:
+        for afi in supported_afi[:2]:
             cmd_bgp_neighbor = 'show bgp {} neighbors'.format(afi)
             neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
             # trailing newline required for parsing
