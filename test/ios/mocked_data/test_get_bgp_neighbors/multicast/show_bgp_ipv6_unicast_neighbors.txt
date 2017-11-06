@@ -1,0 +1,3 @@
+Load for five secs: 2%/0%; one minute: 3%; five minutes: 3%
+Time source is NTP, 13:48:21.261 UTC Mon Nov 6 2017
+
