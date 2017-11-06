@@ -1955,6 +1955,54 @@ class IOSDriver(NetworkDriver):
             snmp_dict['chassis_id'] = snmp_chassis
         return snmp_dict
 
+    def get_users(self):
+        """
+        Returns a dictionary with the configured users.
+        The keys of the main dictionary represents the username.
+        The values represent the details of the user,
+        represented by the following keys:
+
+            * level (int)
+            * password (str)
+            * sshkeys (list)
+
+        *Note: sshkeys on ios is the ssh key fingerprint
+
+        The level is an integer between 0 and 15, where 0 is the
+        lowest access and 15 represents full access to the device.
+        """
+        users = {}
+        command = "show run | section username"
+        output = self._send_command(command)
+        curuser = ""
+        for line in output.splitlines():
+            if line.startswith("username"):
+                tokens = line.split(" ")
+                users[tokens[1]] = {
+                    'level': 1,
+                    'password': "",
+                    'sshkeys': []
+                }
+                i = 2
+                while i < len(tokens):
+                    if tokens[i] == "privilege":
+                        users[tokens[1]]["level"] = int(tokens[i+1])
+                        i += 2
+                    elif tokens[i] == "secret":
+                        users[tokens[1]]["password"] = tokens[i+2]
+                        i += 3
+            elif line.startswith(" "):
+                line = line.strip()
+                if line.startswith("username"):
+                    curuser = line.split(" ")[1]
+                    if curuser not in users:
+                        continue
+                elif line.startswith("key-hash"):
+                    if curuser not in users:
+                        continue
+                    users[curuser]["sshkeys"].append(line[9:])
+        return users
+
     def ping(self, destination, source=C.PING_SOURCE, ttl=C.PING_TTL, timeout=C.PING_TIMEOUT,
              size=C.PING_SIZE, count=C.PING_COUNT, vrf=C.PING_VRF):
         """
