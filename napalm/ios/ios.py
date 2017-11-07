@@ -2147,7 +2147,7 @@ class IOSDriver(NetworkDriver):
         return traceroute_dict
 
     def get_network_instances(self):
-        
+
         instances = {}
         command = 'show vrf detail'
         output = self._send_command(command)
@@ -2163,7 +2163,7 @@ class IOSDriver(NetworkDriver):
                             'name': name,
                             'type': 'L3VRF',
                             'state': {'route_distinguisher': RD},
-                            'interfaces': {int: {} for int in interfaces.split()}
+                            'interface': {int: {} for int in interfaces.split()}
                             }
         return instances
 
