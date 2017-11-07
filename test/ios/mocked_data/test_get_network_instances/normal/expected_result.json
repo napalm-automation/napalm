@@ -1,0 +1,63 @@
+{
+   "Mgmt-intf":{
+      "name":"Mgmt-intf",
+      "type":"L3VRF",
+      "state":{
+         "route_distinguisher":"<not set>"
+      },
+      "interfaces":{
+         "Gi0":{
+
+         }
+      }
+   },
+   "Aut622":{
+      "name":"Aut622",
+      "type":"L3VRF",
+      "state":{
+         "route_distinguisher":"65421:224"
+      },
+      "interfaces":{
+         "Te2/0/0.622":{
+
+         },
+         "Lo622":{
+
+         }
+      }
+   },
+   "mipepa33":{
+      "name":"mipepa33",
+      "type":"L3VRF",
+      "state":{
+         "route_distinguisher":"65421:942133"
+      },
+      "interfaces":{
+         "Lo199":{
+
+         },
+         "Te2/0/0.1919":{
+
+         },
+         "Tu0":{
+
+         },
+         "Tu4":{
+
+         },
+         "Tu6":{
+
+         }
+      }
+   },
+   "vrf101":{
+      "name":"vrf101",
+      "type":"L3VRF",
+      "state":{
+         "route_distinguisher":"65421:55101"
+      },
+      "interfaces":{
+
+      }
+   }
+}
