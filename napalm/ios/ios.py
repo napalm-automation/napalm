@@ -2209,6 +2209,7 @@ class IOSDriver(NetworkDriver):
             # typical format of an entry in the IOS IPv6 neighbors table:
             # 2002:FFFF:233::1 0 2894.0fed.be30  REACH Fa3/1/2.233
             ip, age, mac, state, interface = entry.split()
+            mac = -1 if mac == '-' else napalm.base.helpers.mac(mac)
             ipv6_neighbors_table.append({
                                         'interface': interface,
                                         'mac': mac,
