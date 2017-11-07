@@ -2146,6 +2146,27 @@ class IOSDriver(NetworkDriver):
         traceroute_dict['success'] = results
         return traceroute_dict
 
+    def get_network_instances(self):
+        
+        instances = {}
+        command = 'show vrf detail'
+        output = self._send_command(command)
+
+        for vrf in output.split('\n\n'):
+            first_part = vrf.split('Address family')[0]
+            # retrieve the name of the VRF and the Route Distinguisher
+            name, RD = re.match(r'^VRF (\S+).*RD (.*);', first_part).groups()
+            # retrieve the list of interfaces of the VRF
+            if_regex = re.match(r'.*Interfaces:(.*)', first_part, re.DOTALL)
+            interfaces = '' if 'No interfaces' in first_part else if_regex.group(1)
+            instances[name] = {
+                            'name': name,
+                            'type': 'L3VRF',
+                            'state': {'route_distinguisher': RD},
+                            'interfaces': {int: {} for int in interfaces.split()}
+                            }
+        return instances
+
     def get_config(self, retrieve='all'):
         """Implementation of get_config for IOS.
 
