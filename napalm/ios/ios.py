@@ -2164,7 +2164,7 @@ class IOSDriver(NetworkDriver):
         instances['default'] = {
                             'name': 'default',
                             'type': 'DEFAULT_INSTANCE',
-                            'state': {'route_distinguisher': None},
+                            'state': {'route_distinguisher': ''},
                             'interfaces': {'interface': interface_dict}
                             }
     

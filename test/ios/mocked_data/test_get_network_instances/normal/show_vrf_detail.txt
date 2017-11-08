@@ -1,47 +1,5 @@
-VRF Mgmt-intf (VRF Id = 1); default RD <not set>; default VPNID <not set>
-  New CLI format, supports multiple address-families
-  Flags: 0x1808
-  Interfaces:
-    Gi0
-Address family ipv4 unicast (Table ID = 0x1):
-  Flags: 0x0
-  No Export VPN route-target communities
-  No Import VPN route-target communities
-  No import route-map
-  No global export route-map
-  No export route-map
-  VRF label distribution protocol: not configured
-  VRF label allocation mode: per-prefix
-Address family ipv6 unicast (Table ID = 0x1E000001):
-  Flags: 0x0
-  No Export VPN route-target communities
-  No Import VPN route-target communities
-  No import route-map
-  No global export route-map
-  No export route-map
-  VRF label distribution protocol: not configured
-  VRF label allocation mode: per-prefix
-Address family ipv4 multicast not active
-
-VRF Aut622 (VRF Id = 311); default RD 65421:224; default VPNID <not set>
-  Old CLI format, supports IPv4 only
-  Flags: 0xC
-  Interfaces:
-    Te2/0/0.622              Lo622
-Address family ipv4 unicast (Table ID = 0x137):
-  Flags: 0x0
-  Export VPN route-target communities
-    RT:65421:410
-  Import VPN route-target communities
-    RT:65421:400
-  No import route-map
-  No global export route-map
-  Export route-map: auto-export
-  Route limit 10000, warning limit 80% (8000), current count 13
-  VRF label distribution protocol: not configured
-  VRF label allocation mode: per-prefix
-Address family ipv6 unicast not active
-Address family ipv4 multicast not active
+Load for five secs: 0%/0%; one minute: 0%; five minutes: 1%
+Time source is NTP, 09:28:50.737 DST Wed Nov 8 2017
 
 VRF Mgmt-intf (VRF Id = 1); default RD <not set>; default VPNID <not set>
   New CLI format, supports multiple address-families
@@ -68,64 +26,20 @@ Address family ipv6 unicast (Table ID = 0x1E000001):
   VRF label allocation mode: per-prefix
 Address family ipv4 multicast not active
 
-VRF mipepa33 (VRF Id = 2); default RD 65421:942133; default VPNID <not set>
-  New CLI format, supports multiple address-families
-  Flags: 0x180C
-  Interfaces:
-    Lo199                    Te2/0/0.1919             Tu0
-    Tu4                      Tu6
-Address family ipv4 unicast (Table ID = 0x2):
-  Flags: 0x0
-  Export VPN route-target communities
-    RT:46642:6633
-  Import VPN route-target communities
-    RT:46642:6633
-  No import route-map
-  No global export route-map
-  No export route-map
-  Route limit 10000, warning limit 80% (8000), current count 352
-  VRF label distribution protocol: not configured
-  VRF label allocation mode: per-prefix
-Address family ipv6 unicast (Table ID = 0x1E000002):
-  Flags: 0x0
-  Export VPN route-target communities
-    RT:46642:6633
-  Import VPN route-target communities
-    RT:46642:6633
-  Import route-map: IMPORT99
-  No global export route-map
-  Export route-map: VPN-export
-  Route limit 10000, warning limit 80% (8000), current count 1
-  VRF label distribution protocol: not configured
-  VRF label allocation mode: per-prefix
-Address family ipv4 multicast not active
-
-VRF vrf101 (VRF Id = 6); default RD 65421:55101; default VPNID <not set>
+VRF opsnet (VRF Id = 2); default RD 10283:1021312690; default VPNID <not set>
   New CLI format, supports multiple address-families
   Flags: 0x180C
   No interfaces
-Address family ipv4 unicast (Table ID = 0x6):
+Address family ipv4 unicast (Table ID = 0x2):
   Flags: 0x0
   Export VPN route-target communities
-    RT:65421:100101
+    RT:10283:50000
   Import VPN route-target communities
-    RT:65421:100101
-  Import route-map: IMPORT99
+    RT:10283:50000
+  No import route-map
   No global export route-map
-  Export route-map: VPN-export
-  Route limit 10000, warning limit 80% (8000), current count 0
+  No export route-map
   VRF label distribution protocol: not configured
   VRF label allocation mode: per-prefix
-Address family ipv6 unicast (Table ID = 0x1E000006):
-  Flags: 0x0
-  Export VPN route-target communities
-    RT:65421:100101
-  Import VPN route-target communities
-    RT:65421:100101
-  Import route-map: IMPORT99
-  No global export route-map
-  Export route-map: VPN-EXPORT
-  Route limit 10000, warning limit 80% (8000), current count 1
-  VRF label distribution protocol: not configured
-  VRF label allocation mode: per-prefix
+Address family ipv6 unicast not active
 Address family ipv4 multicast not active
