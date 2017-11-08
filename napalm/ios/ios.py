@@ -2146,7 +2146,7 @@ class IOSDriver(NetworkDriver):
         traceroute_dict['success'] = results
         return traceroute_dict
 
-    def get_network_instances(self):
+    def get_network_instances(self, name=''):
     
         instances = {}
         sh_vrf_detail = self._send_command('show vrf detail')
@@ -2190,7 +2190,7 @@ class IOSDriver(NetworkDriver):
                             'state': {'route_distinguisher': RD},
                             'interfaces': {'interface': interfaces}
                             }
-        return instances
+        return instances if not name else instances[name]
 
     def get_config(self, retrieve='all'):
         """Implementation of get_config for IOS.
