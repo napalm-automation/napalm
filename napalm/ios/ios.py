@@ -2162,18 +2162,18 @@ class IOSDriver(NetworkDriver):
             interface_dict[interface] = {}
     
         instances['default'] = {
-                            'name': 'default',
-                            'type': 'DEFAULT_INSTANCE',
-                            'state': {'route_distinguisher': ''},
-                            'interfaces': {'interface': interface_dict}
-                            }
+                                'name': 'default',
+                                'type': 'DEFAULT_INSTANCE',
+                                'state': {'route_distinguisher': ''},
+                                'interfaces': {'interface': interface_dict}
+                                }
     
         for vrf in sh_vrf_detail.split('\n\n'):
     
             first_part = vrf.split('Address family')[0]
     
             # retrieve the name of the VRF and the Route Distinguisher
-            name, RD = re.match(r'^VRF (\S+).*RD (.*);', first_part).groups()
+            vrf_name, RD = re.match(r'^VRF (\S+).*RD (.*);', first_part).groups()
             if RD == '<not set>':
                 RD = ''
     
@@ -2184,12 +2184,12 @@ class IOSDriver(NetworkDriver):
             else:
                 interfaces = {itf: {} for itf in if_regex.group(1).split()}
     
-            instances[name] = {
-                            'name': name,
-                            'type': 'L3VRF',
-                            'state': {'route_distinguisher': RD},
-                            'interfaces': {'interface': interfaces}
-                            }
+            instances[vrf_name] = {
+                                   'name': vrf_name,
+                                   'type': 'L3VRF',
+                                   'state': {'route_distinguisher': RD},
+                                   'interfaces': {'interface': interfaces}
+                                   }
         return instances if not name else instances[name]
 
     def get_config(self, retrieve='all'):
