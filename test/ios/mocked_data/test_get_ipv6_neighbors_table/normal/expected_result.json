@@ -22,28 +22,28 @@
    },
    {
       "interface":"Gi3/3/1.217",
-      "mac":-1,
+      "mac":"",
       "ip":"2001:12:12:217::1",
       "age":0.0,
       "state":"INCMP"
    },
    {
       "interface":"Gi3/3/1.219",
-      "mac":-1,
+      "mac":"",
       "ip":"2001:12:12:219::1",
       "age":0.0,
       "state":"INCMP"
    },
    {
       "interface":"Gi3/3/1.226",
-      "mac":-1,
+      "mac":"",
       "ip":"2001:12:12:226::1",
       "age":0.0,
       "state":"INCMP"
    },
    {
       "interface":"Gi3/3/1.227",
-      "mac":-1,
+      "mac":"",
       "ip":"2001:12:12:227::1",
       "age":0.0,
       "state":"INCMP"
