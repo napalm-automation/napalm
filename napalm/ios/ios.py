@@ -2147,23 +2147,48 @@ class IOSDriver(NetworkDriver):
         return traceroute_dict
 
     def get_network_instances(self):
-
+    
         instances = {}
-        command = 'show vrf detail'
-        output = self._send_command(command)
+        sh_vrf_detail = self._send_command('show vrf detail')
+        show_ip_int_br = self._send_command('show ip interface brief')
 
-        for vrf in output.split('\n\n'):
+        # retrieve all interfaces for the default VRF
+        interface_dict = {}
+        show_ip_int_br = show_ip_int_br.strip()
+        for line in show_ip_int_br.splitlines():
+            if 'Interface ' in line:
+                continue
+            interface = line.split()[0]
+            interface_dict[interface] = {}
+    
+        instances['default'] = {
+                            'name': 'default',
+                            'type': 'DEFAULT_INSTANCE',
+                            'state': {'route_distinguisher': None},
+                            'interfaces': {'interface': interface_dict}
+                            }
+    
+        for vrf in sh_vrf_detail.split('\n\n'):
+    
             first_part = vrf.split('Address family')[0]
+    
             # retrieve the name of the VRF and the Route Distinguisher
             name, RD = re.match(r'^VRF (\S+).*RD (.*);', first_part).groups()
-            # retrieve the list of interfaces of the VRF
+            if RD == '<not set>':
+                RD = ''
+    
+            # retrieve the interfaces of the VRF
             if_regex = re.match(r'.*Interfaces:(.*)', first_part, re.DOTALL)
-            interfaces = '' if 'No interfaces' in first_part else if_regex.group(1)
+            if 'No interfaces' in first_part:
+                interfaces = {}
+            else:
+                interfaces = {itf: {} for itf in if_regex.group(1).split()}
+    
             instances[name] = {
                             'name': name,
                             'type': 'L3VRF',
                             'state': {'route_distinguisher': RD},
-                            'interface': {int: {} for int in interfaces.split()}
+                            'interfaces': {'interface': interfaces}
                             }
         return instances
 
