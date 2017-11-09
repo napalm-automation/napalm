@@ -1087,4 +1087,3 @@ class NXOSDriver(NXOSDriverBase):
                     })
             ping_dict['success'].update({'results': results_array})
         return ping_dict
-

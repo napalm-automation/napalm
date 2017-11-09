@@ -1525,13 +1525,13 @@ class NXOSSSHDriver(NXOSDriverBase):
             config['startup'] = py23_compat.text_type(self.device.send_command(command))
         return config
 
-    def ping(self, 
-             destination, 
-             source=c.PING_SOURCE, 
-             ttl=c.PING_TTL, 
-             timeout=c.PING_TIMEOUT, 
-             size=c.PING_SIZE, 
-             count=c.PING_COUNT, 
+    def ping(self,
+             destination,
+             source=c.PING_SOURCE,
+             ttl=c.PING_TTL,
+             timeout=c.PING_TIMEOUT,
+             size=c.PING_SIZE,
+             count=c.PING_COUNT,
              vrf=c.PING_VRF):
         """
         Execute ping on the device and returns a dictionary with the result.
@@ -1567,11 +1567,11 @@ class NXOSSSHDriver(NXOSDriverBase):
         command += ' count {}'.format(count)
         if source != '':
             command += ' source {}'.format(source)
-            
+
         if vrf != '':
             command += ' vrf {}'.format(vrf)
         output = self.device.send_command(command)
-        
+
         if 'connect:' in output:
             ping_dict['error'] = output
         elif 'PING' in output:
