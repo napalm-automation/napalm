@@ -1,0 +1,53 @@
+Cisco Internetwork Operating System Software
+IOS (tm) C2950 Software (C2950-I6K2L2Q4-M), Version 12.1(22)EA13, RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2009 by cisco Systems, Inc.
+Compiled Fri 27-Feb-09 22:20 by amvarma
+Image text-base: 0x80010000, data-base: 0x80680000
+
+ROM: Bootstrap program is C2950 boot loader
+
+c2950 uptime is 33 weeks, 4 days, 7 hours, 49 minutes
+System returned to ROM by power-on
+System restarted at 10:02:41 CDT Sat Mar 18 2017
+System image file is "flash:/c2950-i6k2l2q4-mz.121-22.EA13.bin"
+
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+cisco WS-C2950T-48-SI (RC32300) processor (revision F0) with 19912K bytes of memory.
+Processor board ID FHK0922W0JC
+Last reset from system-reset
+Running Standard Image
+48 FastEthernet/IEEE 802.3 interface(s)
+2 Gigabit Ethernet/IEEE 802.3 interface(s)
+
+32K bytes of flash-simulated non-volatile configuration memory.
+Base ethernet MAC Address: 00:14:69:CE:67:40
+Motherboard assembly number: 73-9102-03
+Power supply part number: 34-0965-01
+Motherboard serial number: FOC09205LA5
+Power supply serial number: DAB09199E5R
+Model revision number: F0
+Motherboard revision number: A0
+Model number: WS-C2950T-48-SI
+System serial number: FHK0922W0JC
+CLEI Code Number: CNMRU002RB
+Top Assembly Part Number: 800-24111-02
+Top Assembly Revision Number: A0
+Version ID: N/A
+Configuration register is 0xF
+
