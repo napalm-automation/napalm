@@ -133,7 +133,7 @@ class EOSDriver(NetworkDriver):
         if [k for k, v in sess.items() if v['state'] == 'pending' and k != self.config_session]:
             raise SessionLockedException('Session is already in use')
 
-    def _load_config(self, filename=None, config=None, replace=True):
+    def _load_config(self, filename=None, config=None, replace=True, **kwargs):
         commands = []
 
         self._lock()
@@ -159,7 +159,7 @@ class EOSDriver(NetworkDriver):
             commands.append(line)
 
         try:
-            self.device.run_commands(commands)
+            self.device.run_commands(commands, **kwargs)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             if replace:
@@ -167,13 +167,13 @@ class EOSDriver(NetworkDriver):
             else:
                 raise MergeConfigException(e.message)
 
-    def load_replace_candidate(self, filename=None, config=None):
+    def load_replace_candidate(self, filename=None, config=None, **kwargs):
         """Implementation of NAPALM method load_replace_candidate."""
-        self._load_config(filename, config, True)
+        self._load_config(filename, config, True, **kwargs)
 
-    def load_merge_candidate(self, filename=None, config=None):
+    def load_merge_candidate(self, filename=None, config=None, **kwargs):
         """Implementation of NAPALM method load_merge_candidate."""
-        self._load_config(filename, config, False)
+        self._load_config(filename, config, False, **kwargs)
 
     def compare_config(self):
         """Implementation of NAPALM method compare_config."""
