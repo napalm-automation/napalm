@@ -1,0 +1,1 @@
+[{"interface": "em0.0", "ip": "fd00:1111:1111::2", "mac": "FE:54:00:08:EE:00", "age": 884.0, "state": "stale"}, {"interface": "em0.0", "ip": "fd00:2222:2222::2", "mac": "FE:54:00:08:EE:00", "age": 8.0, "state": "reachable"}, {"interface": "em0.0", "ip": "fe80::24e6:6cff:fe85:9ecb", "mac": "FE:54:00:08:EE:00", "age": 850.0, "state": "stale"}]
