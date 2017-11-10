@@ -161,7 +161,7 @@ class EOSDriver(NetworkDriver):
             commands.append(line)
 
         try:
-            self.device.run_commands(commands,autoComplete=self.autoComplete)
+            self.device.run_commands(commands, autoComplete=self.autoComplete)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             if replace:
@@ -197,7 +197,7 @@ class EOSDriver(NetworkDriver):
         commands.append('commit')
         commands.append('write memory')
 
-        self.device.run_commands(commands,autoComplete=self.autoComplete)
+        self.device.run_commands(commands, autoComplete=self.autoComplete)
         self.config_session = None
 
     def discard_config(self):
@@ -206,7 +206,7 @@ class EOSDriver(NetworkDriver):
             commands = []
             commands.append('configure session {}'.format(self.config_session))
             commands.append('abort')
-            self.device.run_commands(commands,autoComplete=self.autoComplete)
+            self.device.run_commands(commands, autoComplete=self.autoComplete)
             self.config_session = None
 
     def rollback(self):
@@ -214,7 +214,7 @@ class EOSDriver(NetworkDriver):
         commands = []
         commands.append('configure replace flash:rollback-0')
         commands.append('write memory')
-        self.device.run_commands(commands,autoComplete=self.autoComplete)
+        self.device.run_commands(commands, autoComplete=self.autoComplete)
 
     def get_facts(self):
         """Implementation of NAPALM method get_facts."""
