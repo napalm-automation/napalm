@@ -292,7 +292,6 @@ class BaseTestGetters(object):
     def test_get_ipv6_neighbors_table(self, test_case):
         """Test get_ipv6_neighbors_table."""
         get_ipv6_neighbors_table = self.device.get_ipv6_neighbors_table()
-        assert len(get_ipv6_neighbors_table) > 0
 
         for entry in get_ipv6_neighbors_table:
             assert helpers.test_model(models.ipv6_neighbor, entry)
