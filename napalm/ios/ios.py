@@ -884,10 +884,10 @@ class IOSDriver(NetworkDriver):
                 except ValueError:
                     # Handle 'Cisco IOS Software [Denali],'
                     _, os_version = re.split(r"Cisco IOS Software \[.*?\], ", line)
-                os_version = os_version.strip()
-            elif re.search(r"IOS (tm).+Software", line):
+            elif re.search(r"IOS \(tm\).+Software", line):
                 _, os_version = line.split("IOS (tm) ")
-                os_version = os_version.strip()
+
+            os_version = os_version.strip()
 
         # Determine domain_name and fqdn
         for line in show_hosts.splitlines():
