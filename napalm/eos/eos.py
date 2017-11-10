@@ -88,6 +88,8 @@ class EOSDriver(NetworkDriver):
 
         self.profile = ["eos"]
 
+        self.autoComplete = optional_args.get('autoComplete', False)
+
     def open(self):
         """Implementation of NAPALM method open."""
         try:
@@ -133,7 +135,7 @@ class EOSDriver(NetworkDriver):
         if [k for k, v in sess.items() if v['state'] == 'pending' and k != self.config_session]:
             raise SessionLockedException('Session is already in use')
 
-    def _load_config(self, filename=None, config=None, replace=True, **kwargs):
+    def _load_config(self, filename=None, config=None, replace=True):
         commands = []
 
         self._lock()
@@ -159,7 +161,7 @@ class EOSDriver(NetworkDriver):
             commands.append(line)
 
         try:
-            self.device.run_commands(commands, **kwargs)
+            self.device.run_commands(commands,autoComplete=self.autoComplete)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             if replace:
@@ -167,13 +169,13 @@ class EOSDriver(NetworkDriver):
             else:
                 raise MergeConfigException(e.message)
 
-    def load_replace_candidate(self, filename=None, config=None, **kwargs):
+    def load_replace_candidate(self, filename=None, config=None):
         """Implementation of NAPALM method load_replace_candidate."""
-        self._load_config(filename, config, True, **kwargs)
+        self._load_config(filename, config, True)
 
-    def load_merge_candidate(self, filename=None, config=None, **kwargs):
+    def load_merge_candidate(self, filename=None, config=None):
         """Implementation of NAPALM method load_merge_candidate."""
-        self._load_config(filename, config, False, **kwargs)
+        self._load_config(filename, config, False)
 
     def compare_config(self):
         """Implementation of NAPALM method compare_config."""
@@ -195,7 +197,7 @@ class EOSDriver(NetworkDriver):
         commands.append('commit')
         commands.append('write memory')
 
-        self.device.run_commands(commands)
+        self.device.run_commands(commands,autoComplete=self.autoComplete)
         self.config_session = None
 
     def discard_config(self):
@@ -204,7 +206,7 @@ class EOSDriver(NetworkDriver):
             commands = []
             commands.append('configure session {}'.format(self.config_session))
             commands.append('abort')
-            self.device.run_commands(commands)
+            self.device.run_commands(commands,autoComplete=self.autoComplete)
             self.config_session = None
 
     def rollback(self):
@@ -212,7 +214,7 @@ class EOSDriver(NetworkDriver):
         commands = []
         commands.append('configure replace flash:rollback-0')
         commands.append('write memory')
-        self.device.run_commands(commands)
+        self.device.run_commands(commands,autoComplete=self.autoComplete)
 
     def get_facts(self):
         """Implementation of NAPALM method get_facts."""
