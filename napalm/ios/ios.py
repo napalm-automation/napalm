@@ -884,10 +884,10 @@ class IOSDriver(NetworkDriver):
                 except ValueError:
                     # Handle 'Cisco IOS Software [Denali],'
                     _, os_version = re.split(r"Cisco IOS Software \[.*?\], ", line)
-                os_version = os_version.strip()
-            elif re.search(r"IOS (tm).+Software", line):
+            elif re.search(r"IOS \(tm\).+Software", line):
                 _, os_version = line.split("IOS (tm) ")
-                os_version = os_version.strip()
+
+            os_version = os_version.strip()
 
         # Determine domain_name and fqdn
         for line in show_hosts.splitlines():
@@ -2218,6 +2218,52 @@ class IOSDriver(NetworkDriver):
             configs['running'] = output
 
         return configs
+
+    def get_ipv6_neighbors_table(self):
+        """
+        Get IPv6 neighbors table information.
+        Return a list of dictionaries having the following set of keys:
+            * interface (string)
+            * mac (string)
+            * ip (string)
+            * age (float) in seconds
+            * state (string)
+        For example::
+            [
+                {
+                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '5c:5e:ab:da:3c:f0',
+                    'ip'        : '2001:db8:1:1::1',
+                    'age'       : 1454496274.84,
+                    'state'     : 'REACH'
+                },
+                {
+                    'interface': 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '66:0e:94:96:e0:ff',
+                    'ip'        : '2001:db8:1:1::2',
+                    'age'       : 1435641582.49,
+                    'state'     : 'STALE'
+                }
+            ]
+        """
+
+        ipv6_neighbors_table = []
+        command = 'show ipv6 neighbors'
+        output = self._send_command(command)
+
+        for entry in output.split('\n')[1:]:
+            # typical format of an entry in the IOS IPv6 neighbors table:
+            # 2002:FFFF:233::1 0 2894.0fed.be30  REACH Fa3/1/2.233
+            ip, age, mac, state, interface = entry.split()
+            mac = '' if mac == '-' else napalm.base.helpers.mac(mac)
+            ipv6_neighbors_table.append({
+                                        'interface': interface,
+                                        'mac': mac,
+                                        'ip': ip,
+                                        'age': float(age),
+                                        'state': state
+                                        })
+        return ipv6_neighbors_table
 
     @property
     def dest_file_system(self):
