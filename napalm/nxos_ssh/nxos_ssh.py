@@ -1034,7 +1034,7 @@ class NXOSSSHDriver(NetworkDriver):
             cli_output[py23_compat.text_type(command)] = output
         return cli_output
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=c.ARP_VRF):
         """
         Get arp table information.
 
@@ -1062,7 +1062,14 @@ class NXOSSSHDriver(NetworkDriver):
         """
         arp_table = []
 
-        command = 'show ip arp vrf default | exc INCOMPLETE'
+        # Remove this stanza after a test case is made
+        if vrf:
+            raise NotImplementedError("ARP VRF not implemented")
+
+        if not vrf:
+            vrf = "default"
+
+        command = 'show ip arp vrf {} | exc INCOMPLETE'.format(vrf)
         output = self.device.send_command(command)
 
         separator = r"^Address\s+Age.*Interface.*$"

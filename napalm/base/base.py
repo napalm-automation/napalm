@@ -726,7 +726,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=c.ARP_VRF):
 
         """
         Returns a list of dictionaries having the following set of keys:

@@ -1101,7 +1101,10 @@ class IOSXRDriver(NetworkDriver):
         bgp_neighbors_detail['global'] = bgp_neighbors_detail.pop('default')
         return bgp_neighbors_detail
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=C.ARP_VRF):
+
+        if vrf:
+            raise NotImplementedError("ARP VRF not implemented")
 
         arp_table = []
 

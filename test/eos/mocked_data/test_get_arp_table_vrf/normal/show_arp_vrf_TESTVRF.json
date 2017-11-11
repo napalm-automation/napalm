@@ -1,0 +1,14 @@
+{
+    "dynamicEntries": 1,
+    "ipV4Neighbors": [
+        {
+            "hwAddress": "001c.732a.cf6a",
+            "address": "10.199.201.17",
+            "interface": "Ethernet33",
+            "age": 0
+        }
+    ],
+    "notLearnedEntries": 19,
+    "totalEntries": 1,
+    "staticEntries": 0
+}

@@ -1182,7 +1182,7 @@ class JunOSDriver(NetworkDriver):
         #     _bgp_iter_core(neighbor_data)
         return bgp_neighbors
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=C.ARP_VRF):
         """Return the ARP table."""
         # could use ArpTable
         # from jnpr.junos.op.phyport import ArpTable
@@ -1192,6 +1192,9 @@ class JunOSDriver(NetworkDriver):
         #   - filters
         #   - group by VLAN ID
         #   - hostname & TTE fields as well
+
+        if vrf:
+            raise NotImplementedError("ARP VRF not implemeneted")
 
         arp_table = []
 

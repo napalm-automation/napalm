@@ -1580,7 +1580,7 @@ class IOSDriver(NetworkDriver):
 
         return environment
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=C.ARP_VRF):
         """
         Get arp table information.
 
@@ -1608,7 +1608,12 @@ class IOSDriver(NetworkDriver):
         """
         arp_table = []
 
-        command = 'show arp | exclude Incomplete'
+        if vrf:
+            raise NotImplementedError("ARP VRF not implemented")  # need test case
+            command = 'show arp {} | exclude Incomplete'.format(vrf)
+        else:
+            command = 'show arp | exclude Incomplete'
+
         output = self._send_command(command)
 
         # Skip the first line which is a header

@@ -791,11 +791,14 @@ class EOSDriver(NetworkDriver):
 
         return bgp_config
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=c.ARP_VRF):
 
         arp_table = []
 
-        commands = ['show arp']
+        if not vrf:
+            vrf = "default"
+
+        commands = ['show arp vrf {}'.format(vrf)]
 
         ipv4_neighbors = []
         try:
