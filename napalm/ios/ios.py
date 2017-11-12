@@ -1974,33 +1974,16 @@ class IOSDriver(NetworkDriver):
         users = {}
         command = "show run | section username"
         output = self._send_command(command)
-        curuser = ""
-        for line in output.splitlines():
-            if line.startswith("username"):
-                tokens = line.split(" ")
-                users[tokens[1]] = {
-                    'level': 1,
-                    'password': "",
-                    'sshkeys': []
-                }
-                i = 2
-                while i < len(tokens):
-                    if tokens[i] == "privilege":
-                        users[tokens[1]]["level"] = int(tokens[i+1])
-                        i += 2
-                    elif tokens[i] == "secret":
-                        users[tokens[1]]["password"] = tokens[i+2]
-                        i += 3
-            elif line.startswith(" "):
-                line = line.strip()
-                if line.startswith("username"):
-                    curuser = line.split(" ")[1]
-                    if curuser not in users:
-                        continue
-                elif line.startswith("key-hash"):
-                    if curuser not in users:
-                        continue
-                    users[curuser]["sshkeys"].append(line[9:])
+        for match in re.finditer(r"^username\s+(?P<username>\S+)\s+(?:privilege\s+(?P<priv_level>\S+)\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$", output, re.M):
+            users[match.groupdict()["username"]] = {
+                'level': int(match.groupdict()["priv_level"]) if match.groupdict()["priv_level"] else 1,
+                'password': match.groupdict()["pwd_hash"] if match.groupdict()["pwd_hash"] else "",
+                'sshkeys': []
+            }
+        for match in re.finditer(r"^\s+username\s+(?P<username>\S+)(?P<keys>(?:\n\s+key-hash\s+(?P<hash_type>\S+)\s+(?P<hash>\S+)(?:\s+\S+)?)+)$", output, re.M):
+            if match.groupdict()["username"] not in users:
+                continue
+            users[match.groupdict()["username"]]["sshkeys"] = map(lambda s: s[12:],filter(None, match.groupdict()["keys"].splitlines()))
         return users
 
     def ping(self, destination, source=C.PING_SOURCE, ttl=C.PING_TTL, timeout=C.PING_TIMEOUT,
