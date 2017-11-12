@@ -1989,8 +1989,8 @@ class IOSDriver(NetworkDriver):
         for match in re.finditer(pub_keychain_regex, output, re.M):
             if match.groupdict()["username"] not in users:
                 continue
-            users[match.groupdict()["username"]]["sshkeys"] = map(lambda s: s.strip()[
-                9:], filter(None, match.groupdict()["keys"].splitlines()))
+            users[match.groupdict()["username"]]["sshkeys"] = list(map(lambda s: s.strip()[
+                9:], filter(None, match.groupdict()["keys"].splitlines())))
         return users
 
     def ping(self, destination, source=C.PING_SOURCE, ttl=C.PING_TTL, timeout=C.PING_TIMEOUT,
