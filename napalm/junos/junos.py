@@ -290,7 +290,8 @@ class JunOSDriver(NetworkDriver):
                     napalm.base.helpers.mac,
                     interfaces[iface]['mac_address'],
                     py23_compat.text_type(interfaces[iface]['mac_address'])),
-                'speed': -1
+                'speed': -1,
+                'mtu': interfaces[iface]['mtu']
             }
             # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
 
