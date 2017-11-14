@@ -54,6 +54,11 @@ class EOSDriver(NetworkDriver):
 
     SUPPORTED_OC_MODELS = []
 
+    HEREDOC_COMMANDS = [
+        "banner login",
+        "banner motd",
+    ]
+
     _RE_BGP_INFO = re.compile('BGP neighbor is (?P<neighbor>.*?), remote AS (?P<as>.*?), .*') # noqa
     _RE_BGP_RID_INFO = re.compile('.*BGP version 4, remote router ID (?P<rid>.*?), VRF (?P<vrf>.*?)$') # noqa
     _RE_BGP_DESC = re.compile('\s+Description: (?P<description>.*?)')
@@ -135,6 +140,19 @@ class EOSDriver(NetworkDriver):
         if [k for k, v in sess.items() if v['state'] == 'pending' and k != self.config_session]:
             raise SessionLockedException('Session is already in use')
 
+    @staticmethod
+    def _multiline_convert(config, start="banner login", end="EOF"):
+        """Converts running-config HEREDOC into MULTILINE hack"""
+        ret = list(config)  # Don't modify list in-place
+        try:
+            s = ret.index(start)
+            e = ret.index(end, s)
+        except ValueError:  # Command not in config
+            return ret
+        ret[s:e + 1] = ["{} MULTILINE: {}".format(ret[s], "\n".join(ret[s+1:e]))]
+
+        return ret
+
     def _load_config(self, filename=None, config=None, replace=True):
         commands = []
 
@@ -151,6 +169,9 @@ class EOSDriver(NetworkDriver):
                 lines = config
             else:
                 lines = config.splitlines()
+
+        for start in self.HEREDOC_COMMANDS:
+            lines = self._multiline_convert(lines, start)
 
         for line in lines:
             line = line.strip()
