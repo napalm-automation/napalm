@@ -24,7 +24,6 @@ import logging
 import collections
 from copy import deepcopy
 from collections import OrderedDict
-from itertools import chain
 
 # import third party lib
 from lxml.builder import E
