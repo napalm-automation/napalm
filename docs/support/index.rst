@@ -125,6 +125,7 @@ ____________________________________
 * :code:`alt_key_file` (ios, iosxr) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
 * :code:`keepalive` (junos, iosxr) - SSH keepalive interval, in seconds (default: ``30`` seconds).
 * :code:`ignore_warning` (junos) - Allows to set `ignore_warning` when loading configuration to avoid exceptions via junos-pyez. (default: ``False``).
+* :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
 
 The transport argument
 ______________________
