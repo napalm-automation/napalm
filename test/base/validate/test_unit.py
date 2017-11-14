@@ -282,21 +282,21 @@ class TestValidate:
     @pytest.mark.parametrize('src, dst, result', _compare_getter)
     def test__compare_getter_list(self, src, dst, result):
         """Test for _compare_getter_list."""
-        assert validate._compare_getter(src, dst) == result
+        assert validate.compare(src, dst) == result
 
     def test_numeric_comparison(self):
-        assert validate.compare_numeric("<2", 1)
-        assert not validate.compare_numeric("<2", 3)
-        assert validate.compare_numeric("<=2", 2)
-        assert validate.compare_numeric("<3", "2")
-        assert validate.compare_numeric("!=3", "2")
+        assert validate._compare_numeric("<2", 1)
+        assert not validate._compare_numeric("<2", 3)
+        assert validate._compare_numeric("<=2", 2)
+        assert validate._compare_numeric("<3", "2")
+        assert validate._compare_numeric("!=3", "2")
         with pytest.raises(ValueError):
-            assert validate.compare_numeric("a2a", 2)
+            assert validate._compare_numeric("a2a", 2)
         with pytest.raises(ValueError):
-            assert validate.compare_numeric("<1a1", 2)
+            assert validate._compare_numeric("<1a1", 2)
         with pytest.raises(ValueError):
-            assert validate.compare_numeric("a<1", 2)
+            assert validate._compare_numeric("a<1", 2)
         with pytest.raises(ValueError):
-            assert validate.compare_numeric("<1", "asdasd2")
+            assert validate._compare_numeric("<1", "asdasd2")
         with pytest.raises(ValueError):
-            assert validate.compare_numeric("<1", "2asdasd")
+            assert validate._compare_numeric("<1", "2asdasd")

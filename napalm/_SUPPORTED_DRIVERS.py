@@ -1,4 +1,5 @@
 SUPPORTED_DRIVERS = [
+    "base",
     "eos",
     "ios",
     "iosxr",
