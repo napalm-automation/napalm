@@ -125,6 +125,7 @@ class TestBaseHelpers(unittest.TestCase):
                                                           '_this_still_needs_a_name',
                                                           template_source=template_source,
                                                           **_TEMPLATE_VARS))
+
         def __foo_to_bar(s):
             if s == "foo":
                 return "bar"
