@@ -1610,7 +1610,7 @@ class IOSDriver(NetworkDriver):
 
         if vrf:
             raise NotImplementedError("ARP VRF not implemented")  # need test case
-            command = 'show arp {} | exclude Incomplete'.format(vrf)
+            command = 'show arp vrf {} | exclude Incomplete'.format(vrf)
         else:
             command = 'show arp | exclude Incomplete'
 
