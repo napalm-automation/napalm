@@ -35,7 +35,7 @@ _MACFormat.word_fmt = '%.2X'
 # callable helpers
 # ----------------------------------------------------------------------------------------------------------------------
 def load_template(cls, template_name, template_source=None, template_path=None,
-                  openconfig=False, **template_vars):
+                  openconfig=False, jinja_filters={}, **template_vars):
     try:
         search_path = []
         if isinstance(template_source, py23_compat.string_types):
@@ -61,8 +61,9 @@ def load_template(cls, template_name, template_source=None, template_path=None,
             loader = jinja2.FileSystemLoader(search_path)
             environment = jinja2.Environment(loader=loader)
 
-            for filter_name, filter_function in CustomJinjaFilters.filters().items():
-                environment.filters[filter_name] = filter_function
+            for d in [CustomJinjaFilters.filters(), jinja_filters]:
+                for filter_name, filter_function in d.items():
+                    environment.filters[filter_name] = filter_function
 
             template = environment.get_template('{template_name}.j2'.format(
                 template_name=template_name

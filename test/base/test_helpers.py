@@ -125,6 +125,15 @@ class TestBaseHelpers(unittest.TestCase):
                                                           '_this_still_needs_a_name',
                                                           template_source=template_source,
                                                           **_TEMPLATE_VARS))
+        def __foo_to_bar(s):
+            if s == "foo":
+                return "bar"
+            return s
+
+        self.assertTrue(napalm.base.helpers.load_template(self.network_driver,
+                                                          '__custom_jinja_filter_template__',
+                                                          jinja_filters={'foo_to_bar': __foo_to_bar},
+                                                          **_TEMPLATE_VARS))
         # MIGRATION mircea
         #  self.assertRaisesRegexp(napalm.base.exceptions.TemplateNotImplemented,
         #                          "path.*napalm-base/test/unit/templates'" +
