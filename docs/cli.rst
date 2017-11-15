@@ -137,27 +137,16 @@ The debugging mode is also quite useful and it's recommended you use it to repor
     2017-08-15 15:14:23,527 - napalm - DEBUG - Starting napalm's debugging tool
     2017-08-15 15:14:23,527 - napalm - DEBUG - Gathering napalm packages
     2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-ansible==0.7.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-base==0.24.3
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-eos==0.6.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-fortios==0.4.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-ios==0.7.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-iosxr==0.5.4
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-junos==0.12.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-nxos==0.6.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-panos==0.4.0
-    2017-08-15 15:14:23,541 - napalm - DEBUG - napalm-pluribus==0.5.1
-    2017-08-15 15:14:23,542 - napalm - DEBUG - napalm-ros==0.2.2
-    2017-08-15 15:14:23,542 - napalm - DEBUG - napalm-vyos==0.1.3
-    2017-08-15 15:14:23,542 - napalm - DEBUG - napalm==1.2.0
+    2017-08-15 15:14:23,542 - napalm - DEBUG - napalm==2.0.0
     2017-08-15 15:14:23,542 - napalm - DEBUG - get_network_driver - Calling with args: ('eos',), {}
     2017-08-15 15:14:23,551 - napalm - DEBUG - get_network_driver - Successful
-    2017-08-15 15:14:23,551 - napalm - DEBUG - __init__ - Calling with args: (<class 'napalm_eos.eos.EOSDriver'>, 'localhost', 'vagrant'), {'password': u'*******', 'optional_args': {u'port': 12443}, 'timeout': 60}
+    2017-08-15 15:14:23,551 - napalm - DEBUG - __init__ - Calling with args: (<class 'napalm.eos.eos.EOSDriver'>, 'localhost', 'vagrant'), {'password': u'*******', 'optional_args': {u'port': 12443}, 'timeout': 60}
     2017-08-15 15:14:23,551 - napalm - DEBUG - __init__ - Successful
-    2017-08-15 15:14:23,551 - napalm - DEBUG - pre_connection_tests - Calling with args: (<napalm_eos.eos.EOSDriver object at 0x105d58bd0>,), {}
-    2017-08-15 15:14:23,551 - napalm - DEBUG - open - Calling with args: (<napalm_eos.eos.EOSDriver object at 0x105d58bd0>,), {}
+    2017-08-15 15:14:23,551 - napalm - DEBUG - pre_connection_tests - Calling with args: (<napalm.eos.eos.EOSDriver object at 0x105d58bd0>,), {}
+    2017-08-15 15:14:23,551 - napalm - DEBUG - open - Calling with args: (<napalm.eos.eos.EOSDriver object at 0x105d58bd0>,), {}
     2017-08-15 15:14:23,586 - napalm - DEBUG - open - Successful
-    2017-08-15 15:14:23,586 - napalm - DEBUG - connection_tests - Calling with args: (<napalm_eos.eos.EOSDriver object at 0x105d58bd0>,), {}
-    2017-08-15 15:14:23,587 - napalm - DEBUG - get_facts - Calling with args: (<napalm_eos.eos.EOSDriver object at 0x105d58bd0>,), {}
+    2017-08-15 15:14:23,586 - napalm - DEBUG - connection_tests - Calling with args: (<napalm.eos.eos.EOSDriver object at 0x105d58bd0>,), {}
+    2017-08-15 15:14:23,587 - napalm - DEBUG - get_facts - Calling with args: (<napalm.eos.eos.EOSDriver object at 0x105d58bd0>,), {}
     2017-08-15 15:14:23,622 - napalm - DEBUG - Gathered facts:
     {
         "os_version": "4.15.2.1F-2759627.41521F",
@@ -188,7 +177,7 @@ The debugging mode is also quite useful and it's recommended you use it to repor
         "fqdn": "myhost"
     }
     2017-08-15 15:14:23,622 - napalm - DEBUG - get_facts - Successful
-    2017-08-15 15:14:23,622 - napalm - DEBUG - load_merge_candidate - Calling with args: (<napalm_eos.eos.EOSDriver object at 0x105d58bd0>,), {'filename': 'new_config.txt'}
+    2017-08-15 15:14:23,622 - napalm - DEBUG - load_merge_candidate - Calling with args: (<napalm.eos.eos.EOSDriver object at 0x105d58bd0>,), {'filename': 'new_config.txt'}
     2017-08-15 15:14:23,894 - napalm - ERROR - load_merge_candidate - Failed: Error [1000]: CLI command 3 of 5 'hostname a_new-hostname' failed: could not run command [ Host name is invalid. Host name must contain only alphanumeric characters, '.' and '-'.
     It must begin and end with an alphanumeric character.]
 
@@ -196,20 +185,20 @@ The debugging mode is also quite useful and it's recommended you use it to repor
 
     Traceback (most recent call last):
       File "/Users/dbarroso/.virtualenvs/napalm/bin/napalm", line 11, in <module>
-        load_entry_point('napalm-base', 'console_scripts', 'napalm')()
-      File "/Users/dbarroso/workspace/napalm/napalm-base/napalm_base/clitools/cl_napalm.py", line 285, in main
+        load_entry_point('napalm', 'console_scripts', 'napalm')()
+      File "/Users/dbarroso/workspace/napalm/napalm/napalm.base/clitools/cl_napalm.py", line 285, in main
         run_tests(args)
-      File "/Users/dbarroso/workspace/napalm/napalm-base/napalm_base/clitools/cl_napalm.py", line 270, in run_tests
+      File "/Users/dbarroso/workspace/napalm/napalm/napalm.base/clitools/cl_napalm.py", line 270, in run_tests
         configuration_change(device, args.config_file, args.strategy, args.dry_run)
-      File "/Users/dbarroso/workspace/napalm/napalm-base/napalm_base/clitools/cl_napalm.py", line 224, in configuration_change
+      File "/Users/dbarroso/workspace/napalm/napalm/napalm.base/clitools/cl_napalm.py", line 224, in configuration_change
         strategy_method(device, filename=config_file)
-      File "/Users/dbarroso/workspace/napalm/napalm-base/napalm_base/clitools/cl_napalm.py", line 27, in wrapper
+      File "/Users/dbarroso/workspace/napalm/napalm/napalm.base/clitools/cl_napalm.py", line 27, in wrapper
         r = func(*args, **kwargs)
-      File "/Users/dbarroso/workspace/napalm/napalm-base/napalm_base/clitools/cl_napalm.py", line 202, in call_load_merge_candidate
+      File "/Users/dbarroso/workspace/napalm/napalm/napalm.base/clitools/cl_napalm.py", line 202, in call_load_merge_candidate
         return device.load_merge_candidate(*args, **kwargs)
-      File "/Users/dbarroso/workspace/napalm/napalm-eos/napalm_eos/eos.py", line 176, in load_merge_candidate
+      File "/Users/dbarroso/workspace/napalm/napalm-eos/napalm.eos/eos.py", line 176, in load_merge_candidate
         self._load_config(filename, config, False)
-      File "/Users/dbarroso/workspace/napalm/napalm-eos/napalm_eos/eos.py", line 168, in _load_config
+      File "/Users/dbarroso/workspace/napalm/napalm-eos/napalm.eos/eos.py", line 168, in _load_config
         raise MergeConfigException(e.message)
-    napalm_base.exceptions.MergeConfigException: Error [1000]: CLI command 3 of 5 'hostname a_new-hostname' failed: could not run command [ Host name is invalid. Host name must contain only alphanumeric characters, '.' and '-'.
+    napalm.base.exceptions.MergeConfigException: Error [1000]: CLI command 3 of 5 'hostname a_new-hostname' failed: could not run command [ Host name is invalid. Host name must contain only alphanumeric characters, '.' and '-'.
     It must begin and end with an alphanumeric character.]

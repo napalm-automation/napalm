@@ -1,0 +1,78 @@
+{
+   "default":{
+      "interfaces":{
+         "interface":{
+            "GigabitEthernet0/0/0":{
+
+            },
+            "Gi0/0/0.152":{
+
+            },
+            "GigabitEthernet0/0/2":{
+
+            },
+            "Gi0/0/0.1774":{
+
+            },
+            "GigabitEthernet0/0/4":{
+
+            },
+            "Gi0/0/0.1772":{
+
+            },
+            "GigabitEthernet0/0/3":{
+
+            },
+            "Gi0/0/0.154":{
+
+            },
+            "GigabitEthernet0/0/1":{
+
+            },
+            "GigabitEthernet0":{
+
+            },
+            "Gi0/0/0.1776":{
+
+            },
+            "Gi0/0/0.600":{
+
+            },
+            "Loopback2":{
+
+            }
+         }
+      },
+      "state":{
+         "route_distinguisher":""
+      },
+      "type":"DEFAULT_INSTANCE",
+      "name":"default"
+   },
+   "Mgmt-intf":{
+      "interfaces":{
+         "interface":{
+            "Gi0":{
+
+            }
+         }
+      },
+      "state":{
+         "route_distinguisher":""
+      },
+      "type":"L3VRF",
+      "name":"Mgmt-intf"
+   },
+   "opsnet":{
+      "interfaces":{
+         "interface":{
+
+         }
+      },
+      "state":{
+         "route_distinguisher":"10283:1021312690"
+      },
+      "type":"L3VRF",
+      "name":"opsnet"
+   }
+}

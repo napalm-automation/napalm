@@ -6,26 +6,22 @@ General support matrix
 
 
 
-  =====================   ==========  =============   ============ ==============  ============  ============  ===============  =========================  ==============  ==============
-  _                       EOS         JunOS           IOS-XR       FortiOS         NXOS          IOS           Pluribus         PANOS                      MikroTik        VyOS
-  =====================   ==========  =============   ============ ==============  ============  ============  ===============  =========================  ==============  ==============
-  **Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-fortios  napalm-nxos   napalm-ios    napalm-pluribus  napalm-panos               napalm-ros      napalm-vyos
-  **Driver Name**         eos         junos           iosxr        fortios         nxos          ios           pluribus         panos                      ros             vyos
-  **Structured data**     Yes         Yes             No           No              Yes           No            No               Yes                        Yes             Yes
-  **Minimum version**     4.15.0F     12.1            5.1.0        5.2.0           6.1 [#g1]_    12.4(20)T     N/A              7.0                        3.30            1.1.6
-  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pyFG`_         `pycsco`_     `netmiko`_    `pyPluribus`_    `netmiko`_, `pan-python`_  `librouteros`_  `netmiko`_
-  **Caveats**             :doc:`eos`                               :doc:`fortios`  :doc:`nxos`   :doc:`ios`                     :doc:`panos`                               :doc:`vyos`
-  =====================   ==========  =============   ============ ==============  ============  ============  ===============  =========================  ==============  ==============
+  =====================   ==========  =============   ============ ============  ============
+  _                       EOS         JunOS           IOS-XR       NXOS          IOS
+  =====================   ==========  =============   ============ ============  ============
+  **Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-nxos   napalm-ios
+  **Driver Name**         eos         junos           iosxr        nxos          ios
+  **Structured data**     Yes         Yes             No           Yes           No
+  **Minimum version**     4.15.0F     12.1            5.1.0        6.1 [#g1]_    12.4(20)T
+  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pycsco`_     `netmiko`_
+  **Caveats**             :doc:`eos`                               :doc:`nxos`   :doc:`ios`
+  =====================   ==========  =============   ============ ============  ============
 
 .. _pyeapi: https://github.com/arista-eosplus/pyeapi
 .. _junos-eznc: https://github.com/Juniper/py-junos-eznc
 .. _pyIOSXR: https://github.com/fooelisa/pyiosxr
-.. _pyFG: https://github.com/spotify/pyfg
 .. _pycsco: https://github.com/jedelman8/pycsco
 .. _netmiko: https://github.com/ktbyers/netmiko
-.. _pyPluribus: https://github.com/mirceaulinic/pypluribus
-.. _pan-python: https://github.com/kevinsteves/pan-python
-.. _librouteros: https://github.com/luqasz/librouteros
 
 .. [#g1] NX-API support on the Nexus 5k, 6k and 7k families was introduced in version 7.2
 
@@ -35,19 +31,18 @@ General support matrix
 Configuration support matrix
 ----------------------------
 
-=====================   ==========  =====   ==========  ==============  ==============  ==============  ==============  ============== ======== ========
-_                       EOS         JunOS   IOS-XR      FortiOS         NXOS            IOS             Pluribus        PANOS          MikroTik VyOS
-=====================   ==========  =====   ==========  ==============  ==============  ==============  ==============  ============== ======== ========
-**Config. replace**     Yes         Yes     Yes         Yes             Yes             Yes             No              Yes            No       Yes
-**Config. merge**       Yes         Yes     Yes         Yes             Yes             Yes             No              Yes            No       Yes
-**Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c1]_      Yes [#c4]_      Yes             No              Yes            No       Yes
-**Atomic Changes**      Yes         Yes     Yes         No [#c2]_       Yes/No [#c5]_   Yes             Yes             Yes/No [#c5]_  No       Yes
-**Rollback**            Yes [#c2]_  Yes     Yes         Yes             Yes/No [#c5]_   Yes             No              Yes            No       Yes
-=====================   ==========  =====   ==========  ==============  ==============  ==============  ==============  ============== ======== ========
+=====================   ==========  =====   ==========  ==============  ==============
+_                       EOS         JunOS   IOS-XR      NXOS            IOS
+=====================   ==========  =====   ==========  ==============  ==============
+**Config. replace**     Yes         Yes     Yes         Yes             Yes
+**Config. merge**       Yes         Yes     Yes         Yes             Yes
+**Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c4]_      Yes
+**Atomic Changes**      Yes         Yes     Yes         Yes/No [#c5]_   Yes
+**Rollback**            Yes [#c2]_  Yes     Yes         Yes/No [#c5]_   Yes
+=====================   ==========  =====   ==========  ==============  ==============
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
-.. [#c3] Check the caveats, this is a dangerous operation in this device.
 .. [#c4] For merges, the diff is simply the merge config itself. See caveats.
 .. [#c5] No for merges. See caveats.
 
@@ -69,18 +64,18 @@ Other methods
 .. |yes|   unicode:: U+02705 .. Yes
 .. |no|    unicode:: U+0274C .. No
 
-============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
-_                               EOS   JunOS   IOS-XR  FortiOS  NXOS    IOS    Pluribus   PANOS     ROS      VyOS
-============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
-**load_template**              |yes|  |yes|   |yes|   |yes|    |yes|   |yes|  |yes|      |yes|     |no|	    |yes|
-**ping**                       |yes|  |yes|   |no|    |no|     |no|    |yes|  |no|       |no|      |yes|    |yes|
-**traceroute**                 |yes|  |yes|   |yes|   |no|     |yes|   |yes|  |yes|      |no|      |no|     |no|
-============================== =====  =====   ======  =======  ======  =====  =========  ========= ======== ========
+============================== =====  =====   ======  ======  =====
+_                               EOS   JunOS   IOS-XR  NXOS    IOS
+============================== =====  =====   ======  ======  =====
+**load_template**              |yes|  |yes|   |yes|   |yes|   |yes|
+**ping**                       |yes|  |yes|   |no|    |no|    |yes|
+**traceroute**                 |yes|  |yes|   |yes|   |yes|   |yes|
+============================== =====  =====   ======  ======  =====
 
 Available configuration templates
 ---------------------------------
 
-* :code:`set_hostname` (JunOS, IOS-XR, IOS, PANOS) - Configures the hostname of the device.
+* :code:`set_hostname` (JunOS, IOS-XR, IOS) - Configures the hostname of the device.
 * :code:`set_ntp_peers` (JunOS, IOS-XR, EOS, NXOS, IOS) - Configures NTP peers of the device.
 * :code:`delete_ntp_peers` (JunOS, IOS-XR, EOS, NXOS, IOS): Removes NTP peers form device's configuration.
 * :code:`set_probes` (JunOS, IOS-XR): Configures RPM/SLA probes.
@@ -94,12 +89,8 @@ Caveats
    :maxdepth: 1
 
    eos
-   fortios
-   ibm
-   nxos
    ios
-   panos
-   vyos
+   nxos
 
 Optional arguments
 ------------------
@@ -117,24 +108,22 @@ NAPALM supports passing certain optional arguments to some drivers. To do that y
 List of supported optional arguments
 ____________________________________
 
-* :code:`fortios_vdom` (fortios) - VDOM to connect to.
-* :code:`port` (eos, iosxr, junos, ios, nxos, ros, vyos) - Allows you to specify a port other than the default.
+* :code:`port` (eos, iosxr, junos, ios, nxos) - Allows you to specify a port other than the default.
 * :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: ``False``).
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
-* :code:`global_delay_factor` (ios, vyos) - Allow for additional delay in command execution (default: ``1``).
+* :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: ``1``).
 * :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
 * :code:`secret` (ios) - Password required to enter privileged exec (enable) (default: ``''``).
-* :code:`ssh_strict` (iosxr, ios, panos, vyos) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
-* :code:`allow_agent` (ios, iosxr, panos, vyos) - Paramiko argument, enable connecting to the SSH agent (default: ``False``).
-* :code:`use_keys` (iosxr, ios, panos, vyos) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
-* :code:`key_file` (junos, vyos, ios, iosxr, vyos) - Path to a private key file. (default: ``False``).
-* :code:`api_key` (panos) - Allow to specify the API key instead of username/password (default: ``''``).
-* :code:`ssh_config_file` (junos, ios, iosxr, panos, vyos) - File name of OpenSSH configuration file.
-* :code:`alt_host_keys` (ios, iosxr, panos, vyos) - If ``True``, host keys will be loaded from the file specified in ``alt_key_file``.
-* :code:`alt_key_file` (ios, iosxr, panos, vyos) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
-* :code:`keepalive` (junos, iosxr, ios) - SSH keepalive interval, in seconds (default: ``30`` seconds).
+* :code:`ssh_strict` (iosxr, ios) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
+* :code:`allow_agent` (ios, iosxr) - Paramiko argument, enable connecting to the SSH agent (default: ``False``).
+* :code:`use_keys` (iosxr, ios, panos) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
+* :code:`key_file` (junos, ios, iosxr) - Path to a private key file. (default: ``False``).
+* :code:`ssh_config_file` (junos, ios, iosxr) - File name of OpenSSH configuration file.
+* :code:`alt_host_keys` (ios, iosxr) - If ``True``, host keys will be loaded from the file specified in ``alt_key_file``.
+* :code:`alt_key_file` (ios, iosxr) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
+* :code:`keepalive` (junos, iosxr) - SSH keepalive interval, in seconds (default: ``30`` seconds).
 * :code:`ignore_warning` (junos) - Allows to set `ignore_warning` when loading configuration to avoid exceptions via junos-pyez. (default: ``False``).
 
 The transport argument
@@ -148,11 +137,3 @@ _               EOS                   NXOS                  IOS
 **Default**     ``https``             ``https``             ``ssh``
 **Supported**   ``http``, ``https``   ``http``, ``https``   ``telnet``, ``ssh``
 =============== ====================  ====================  ===================
-
-Adding optional arguments to NAPALM drivers
-___________________________________________
-
-If you are a developer and want to add an optional argument to a driver, please, follow this pattern when naming the
-argument; :code:`$driver_name-$usage` if the argument applies only to a particular driver. For example, the optional
-argument :code:`fortios_vdom` is used only by the FortiOS driver to select a particular vdom. Otherwise, just name it
-:code:`$driver_name-$usage`. For example the :code:`port` optional argument.

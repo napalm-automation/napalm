@@ -1,0 +1,17 @@
+Load for five secs: 0%/0%; one minute: 1%; five minutes: 1%
+Time source is NTP, 09:30:03.851 DST Wed Nov 8 2017
+
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0/0   unassigned      YES NVRAM  up                    up
+Gi0/0/0.152            192.168.241.21  YES NVRAM  up                    up
+Gi0/0/0.154            192.168.241.30  YES NVRAM  up                    up
+Gi0/0/0.600            192.168.241.141 YES NVRAM  up                    up
+Gi0/0/0.1772           120.177.177.1   YES NVRAM  up                    up
+Gi0/0/0.1774           101.177.177.1   YES NVRAM  up                    up
+Gi0/0/0.1776           100.177.177.1   YES NVRAM  up                    up
+GigabitEthernet0/0/1   unassigned      YES NVRAM  administratively down down
+GigabitEthernet0/0/2   unassigned      YES NVRAM  administratively down down
+GigabitEthernet0/0/3   unassigned      YES NVRAM  administratively down down
+GigabitEthernet0/0/4   unassigned      YES NVRAM  administratively down down
+GigabitEthernet0       192.168.243.80  YES NVRAM  up                    up
+Loopback2              192.168.242.152 YES NVRAM  up                    up
