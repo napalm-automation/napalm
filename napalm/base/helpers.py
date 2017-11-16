@@ -257,6 +257,7 @@ def as_number(as_number_val):
     else:
         return int(as_number_str)
 
+
 def canonical_interface(interface, device_os, change, short=False):
     '''
     Function to retun interface canonical name

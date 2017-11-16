@@ -130,7 +130,6 @@ class IOSDriver(NetworkDriver):
 
         self.canonical_int = optional_args.get('canonical_int', False)
 
-
     def open(self):
         """Open a connection to the device."""
         device_type = 'cisco_ios'
