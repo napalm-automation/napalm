@@ -62,7 +62,9 @@ def load_template(cls, template_name, template_source=None, template_path=None,
             loader = jinja2.FileSystemLoader(search_path)
             environment = jinja2.Environment(loader=loader)
 
-            for filter_name, filter_function in itertools.chain(CustomJinjaFilters.filters().items(), jinja_filters.items()):
+            for filter_name, filter_function in itertools.chain(
+                    CustomJinjaFilters.filters().items(),
+                    jinja_filters.items()):
                 environment.filters[filter_name] = filter_function
 
             template = environment.get_template('{template_name}.j2'.format(
