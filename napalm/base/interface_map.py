@@ -82,7 +82,7 @@ def _interface_map():
         "ATM": "At",
         "EOBC": "EO",
         "Ethernet": "Et",
-        "FastEthernet": "Fas",
+        "FastEthernet": "Fa",
         "Fddi": "FD",
         "FortyGigabitEthernet": "Fo",
         "GigabitEthernet": "Gi",
