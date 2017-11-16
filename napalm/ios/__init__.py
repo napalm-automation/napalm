@@ -15,7 +15,7 @@
 """napalm.ios package."""
 try:
     from custom_napalm.ios import CustomIOSDriver as IOSDriver
-except:
+except ImportError:
     from napalm.ios.ios import IOSDriver
 
 
