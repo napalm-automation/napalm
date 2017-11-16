@@ -1,219 +1,104 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+
 def _interface_map():
     interface_map = {
       "base_interfaces": {
-        "ATM": [
-          "ATM",
-          "AT"
-        ],
-        "ATM_short": "At",
-        "EOBC": [
-          "EOBC",
-          "EO"
-        ],
-        "EOBC_short": "EO",
-        "Ethernet": [
-          "Ethernet",
-          "Eth",
-          "Et"
-        ],
-        "Ethernet_short": "Et",
-        "FastEthernet": [
-          "FastEthernet",
-          "FastEth",
-          "FastE",
-          "Fast",
-          "Fas",
-          "FE",
-          "Fa"
-        ],
-        "FastEthernet_short": "Fa",
-        "Fddi": [
-          "Fddi",
-          "FD"
-        ],
-        "Fddi_short": "FD",
-        "FortyGigabitEthernet": [
-          "FortyGigabitEthernet",
-          "FortyGigEthernet",
-          "FortyGigEth",
-          "FortyGigE",
-          "FortyGig",
-          "FGE",
-          "FO",
-          "Fo"
-        ],
-        "FortyGigabitEthernet_short": "Fo",
-        "GigabitEthernet": [
-          "GigabitEthernet",
-          "GigEthernet",
-          "GigEth",
-          "GigE",
-          "Gig",
-          "GE",
-          "Gi"
-        ],
-        "GigabitEthernet_short": "Gi",
-        "HundredGigabitEthernet": [
-          "HundredGigabitEthernet",
-          "HundredGigEthernet",
-          "HundredGigEth",
-          "HundredGigE",
-          "HundredGig",
-          "Hu"
-        ],
-        "HundredGigabitEthernet_short": "Hu",
-        "Loopback": [
-          "Loopback",
-          "Lo"
-        ],
-        "Loopback_short": "Lo",
-        "Management": [
-          "Management",
-          "Mgmt",
-          "Ma"
-        ],
+        "ATM": "ATM",
+        "AT": "ATM",
+        "EOBC": "EOBC",
+        "EO": "EOBC",
+        "Ethernet": "Ethernet",
+        "Eth": "Ethernet",
+        "Et": "Ethernet",
+        "FastEthernet": "FastEthernet",
+        "FastEth": "FastEthernet",
+        "FastE": "FastEthernet",
+        "Fast": "FastEthernet",
+        "Fas": "FastEthernet",
+        "FE": "FastEthernet",
+        "Fa": "FastEthernet",
+        "Fddi": "Fddi",
+        "FD": "Fddi",
+        "FortyGigabitEthernet": "FortyGigabitEthernet",
+        "FortyGigEthernet": "FortyGigabitEthernet",
+        "FortyGigEth": "FortyGigabitEthernet",
+        "FortyGigE": "FortyGigabitEthernet",
+        "FortyGig": "FortyGigabitEthernet",
+        "FGE": "FortyGigabitEthernet",
+        "FO": "FortyGigabitEthernet",
+        "Fo": "FortyGigabitEthernet",
+        "GigabitEthernet": "GigabitEthernet",
+        "GigEthernet": "GigabitEthernet",
+        "GigEth": "GigabitEthernet",
+        "GigE": "GigabitEthernet",
+        "Gig": "GigabitEthernet",
+        "GE": "GigabitEthernet",
+        "Gi": "GigabitEthernet",
+        "HundredGigabitEthernet": "HundredGigabitEthernet",
+        "HundredGigEthernet": "HundredGigabitEthernet",
+        "HundredGigEth": "HundredGigabitEthernet",
+        "HundredGigE": "HundredGigabitEthernet",
+        "HundredGig": "HundredGigabitEthernet",
+        "Hu": "HundredGigabitEthernet",
+        "Loopback": "Loopback",
+        "Lo": "Loopback",
+        "Management": "Management",
+        "Mgmt": "Management",
+        "Ma": "Management",
         "Management_short": "Ma",
-        "MFR": [
-          "MFR"
-        ],
-        "MFR_short": "MFR",
-        "Multilink": [
-          "Multilink",
-          "Mu"
-        ],
-        "Multilink_short": "Mu",
-        "PortChannel": [
-          "PortChannel",
-          "Port-Channel",
-          "Po"
-        ],
-        "PortChannel_short": "Po",
-        "POS": [
-          "POS",
-          "PO"
-        ],
-        "POS_short": "PO",
-        "Serial": [
-          "Serial",
-          "Se",
-          "S"
-        ],
-        "Serial_short": "Se",
-        "TenGigabitEthernet": [
-          "TenGigabitEthernet",
-          "TenGigEthernet",
-          "TenGigEth",
-          "TenGig",
-          "TeGig",
-          "Ten",
-          "T",
-          "Te"
-        ],
-        "TenGigabitEthernet_short": "Te",
-        "Tunnel": [
-          "Tunnel",
-          "Tun",
-          "Tu"
-        ],
-        "Tunnel_short": "Tu",
-        "Virtual-Access": [
-          "Virtual-Access",
-          "Vi"
-        ],
-        "Virtual-Access_short": "Vi",
-        "Virtual-Template": [
-          "Virtual-Template",
-          "Vt"
-        ],
-        "Virtual-Template_short": "Vt",
-        "VLAN": [
-          "VLAN",
-          "V",
-          "Vl"
-        ],
-        "VLAN_short": "Vl"
+        "MFR": "MFR",
+        "Multilink": "Multilink",
+        "Mu": "Multilink",
+        "PortChannel": "PortChannel",
+        "Port-Channel": "PortChannel",
+        "Po": "PortChannel",
+        "POS": "POS",
+        "PO": "POS",
+        "Serial": "Serial",
+        "Se": "Serial",
+        "S": "Serial",
+        "TenGigabitEthernet": "TenGigabitEthernet",
+        "TenGigEthernet": "TenGigabitEthernet",
+        "TenGigEth": "TenGigabitEthernet",
+        "TenGig": "TenGigabitEthernet",
+        "TeGig": "TenGigabitEthernet",
+        "Ten": "TenGigabitEthernet",
+        "T": "TenGigabitEthernet",
+        "Te": "TenGigabitEthernet",
+        "Tunnel": "Tunnel",
+        "Tun": "Tunnel",
+        "Tu": "Tunnel",
+        "Virtual-Access": "Virtual-Access",
+        "Vi": "Virtual-Access",
+        "Virtual-Template": "Virtual-Template",
+        "Vt": "Virtual-Template",
+        "VLAN": "VLAN",
+        "V": "VLAN",
+        "Vl": "VLAN"
       },
-      "os_map": {
-        "cisco_ios": {
-          "from_base": [
-            "ATM",
-            "EOBC",
-            "Ethernet",
-            "FastEthernet",
-            "Fddi",
-            "FortyGigabitEthernet",
-            "GigabitEthernet",
-            "HundredGigabitEthernet",
-            "Loopback",
-            "Management",
-            "MFR",
-            "Multilink",
-            "PortChannel",
-            "POS",
-            "Serial",
-            "TenGigabitEthernet",
-            "Tunnel",
-            "Virtual-Access",
-            "Virtual-Template",
-            "VLAN"
-          ],
-          "from_os": None
-        },
-        "cisco_nxos": {
-          "from_base": [
-            "Ethernet",
-            "FastEthernet",
-            "FortyGigabitEthernet",
-            "GigabitEthernet",
-            "HundredGigabitEthernet",
-            "Loopback",
-            "Management",
-            "Multilink",
-            "PortChannel",
-            "Serial",
-            "TenGigabitEthernet",
-            "Tunnel",
-            "VLAN"
-          ]
-        },
-        "cisco_xr": {
-          "from_base": [
-            "ATM",
-            "Ethernet",
-            "FastEthernet",
-            "FortyGigabitEthernet",
-            "GigabitEthernet",
-            "HundredGigabitEthernet",
-            "Loopback",
-            "Management",
-            "MFR",
-            "Multilink",
-            "PortChannel",
-            "POS",
-            "Serial",
-            "TenGigabitEthernet",
-            "Tunnel",
-            "Virtual-Access",
-            "Virtual-Template",
-            "VLAN"
-          ],
-          "from_os": None
-        },
-        "arista_eos": {
-          "from_base": [
-            "Ethernet",
-            "Loopback",
-            "Management",
-            "Multilink",
-            "PortChannel",
-            "Tunnel",
-            "VLAN"
-          ],
-          "from_os": None
-        }
+      "reverse_mapping": {
+        "ATM": "At",
+        "EOBC": "EO",
+        "Ethernet": "Et",
+        "FastEthernet": "Fas",
+        "Fddi": "FD",
+        "FortyGigabitEthernet": "Fo",
+        "GigabitEthernet": "Gi",
+        "HundredGigabitEthernet": "Hu",
+        "Loopback": "Lo",
+        "Management": "Ma",
+        "MFR": "MFR",
+        "Multilink": "Mu",
+        "PortChannel": "Po",
+        "POS": "PO",
+        "Serial": "Se",
+        "TenGigabitEthernet": "Te",
+        "Tunnel": "Tu",
+        "Virtual-Access": "Vi",
+        "Virtual-Template": "Vt",
+        "VLAN": "Vl"
       }
     }
 

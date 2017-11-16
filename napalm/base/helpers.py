@@ -257,13 +257,15 @@ def as_number(as_number_val):
     else:
         return int(as_number_str)
 
-def canonical_interface(interface, device_os, short=False):
+def canonical_interface(interface, device_os, change, short=False):
     '''
     Function to retun interface canonical name
     This puposely does not use regex, or first X characters, to ensure
     there is no chance for false positives. As an example, Po = PortChannel, and
     PO = POS. With either character or regex, that would produce a false positive.
     '''
+    if not change:
+        return interface
 
     if device_os == "cisco_nxos_ssh":
         device_os = "cisco_nxos"
@@ -273,7 +275,7 @@ def canonical_interface(interface, device_os, short=False):
 
     def split_on_match(split_interface):
         '''
-        simple fuction to split on first digit, slash,  or space match
+        simple fuction to split on first digit, slash, or space match
         '''
         head = split_interface.rstrip(r'/\0123456789 ')
         tail = split_interface[len(head):].lstrip()
@@ -283,30 +285,17 @@ def canonical_interface(interface, device_os, short=False):
 
     int_map = _interface_map()
     base_interfaces = int_map['base_interfaces']
-    os_map = int_map.get('os_map', {})
-    os_specific_interfaces = {}
-
-    # Populate os_specific_interfaces from the base list
-    for interface_root in os_map[device_os].get('from_base', []):
-        if base_interfaces.get(interface_root):
-            os_specific_interfaces[interface_root] = base_interfaces.get(interface_root)
-            os_specific_interfaces[interface_root + '_short'] = \
-            base_interfaces.get(interface_root + '_short')
+    reverse_mapping = int_map['reverse_mapping']
+    if int_map.get(device_os):
+        base_interfaces = base_interfaces.update(int_map.get(device_os))
+    # check in dict for mapping
+    if base_interfaces.get(interface_type):
+        long_int = base_interfaces.get(interface_type)
+        # return short form if set
+        if short is True:
+            return reverse_mapping[long_int] + str(interface_number)
         else:
-            exit()
-    # if the device_os is defined and a dict, add to os_specific_interfaces
-    if isinstance(os_map[device_os].get('from_os'), dict):
-        for key, value in os_map.items():
-            os_specific_interfaces[key] = value
-
-    # go through dictionary and each list within value pair,
-    # if match, pull out either long or short form
-    for key, value in os_specific_interfaces.items():
-        for current_interface in value:
-            if current_interface == interface_type:
-                if short is True:
-                    return os_specific_interfaces[key + '_short'] + str(interface_number)
-                return key + str(interface_number)
-
+            return long_int + str(interface_number)
     # if nothing matched, at least return the original
-    return interface
+    else:
+        return interface

@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 
 import re
 
+
 def convert(text):
     """Convert text to integer, if it is a digit."""
     if text.isdigit():
