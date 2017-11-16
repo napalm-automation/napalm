@@ -25,7 +25,10 @@ import telnetlib
 import copy
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
-from napalm.base.base import NetworkDriver
+try:
+    from custom_napalm.base import CustomNetworkDriver as NetworkDriver
+except ImportError:
+    from napalm.base.base import NetworkDriver
 from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
             ConnectionClosedException, CommandErrorException
 

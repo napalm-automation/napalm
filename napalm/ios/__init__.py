@@ -13,7 +13,10 @@
 # the License.
 
 """napalm.ios package."""
-from napalm.ios.ios import IOSDriver
+try:
+    from custom_napalm.ios import CustomIOSDriver as IOSDriver
+except:
+    from napalm.ios.ios import IOSDriver
 
 
 __all__ = ['IOSDriver']
