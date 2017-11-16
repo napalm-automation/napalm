@@ -1,0 +1,7 @@
+Default domain is example.com
+Name/address lookup uses static mappings
+
+Codes: u - unknown, e - expired, * - OK, ? - revalidate
+       t - temporary, p - permanent
+
+Host                      Port  Flags      Age Type   Address(es)

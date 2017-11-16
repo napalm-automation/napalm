@@ -21,7 +21,7 @@ The best way to propose a new method is as follows to send a PR with the propose
 In addition, before merging we will want an implementation for any driver of your choice.
 
 For example:
-  - `get_config proposal <https://github.com/napalm-automation/napalm-base/pull/69/files>`_ - That particular example had an issue that some had raised as a reference but that's not mandatory. You can create an issue first but that's optional.
+  - `get_config proposal <https://github.com/napalm-automation/napalm/pull/69/files>`_ - That particular example had an issue that some had raised as a reference but that's not mandatory. You can create an issue first but that's optional.
   - `get_config implementation for EOS <https://github.com/napalm-automation/napalm-eos/pull/38/files>`_ - Before the PR was merged an implementation was provided as a proof of concept. This is mandatory. This PRs doesn't have to arrive at the same time as the previous one but it will be required. Note that the rules for "`Implementing an already defined method`_" apply to this PR.
 
 Implementing an already defined method
