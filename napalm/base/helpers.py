@@ -273,10 +273,10 @@ def canonical_interface_name(interface, update_os_mapping=None):
     PO = POS. With either character or regex, that would produce a false positive.
     '''
 
-    interface_type, interface_number = split_on_match(interface)
+    interface_type, interface_number = int_split_on_match(interface)
 
-    if isinstance(update_long_to_short, dict):
-        base_interfaces.update(update_long_to_short)
+    if isinstance(update_os_mapping, dict):
+        base_interfaces.update(update_os_mapping)
     # check in dict for mapping
     if base_interfaces.get(interface_type):
         long_int = base_interfaces.get(interface_type)
@@ -293,10 +293,10 @@ def abbreviated_interface_name(interface, update_os_mapping=None):
     PO = POS. With either character or regex, that would produce a false positive.
     '''
 
-    interface_type, interface_number = split_on_match(interface)
+    interface_type, interface_number = int_split_on_match(interface)
 
-    if isinstance(update_long_to_short, dict):
-        base_interfaces.update(update_long_to_short)
+    if isinstance(update_os_mapping, dict):
+        base_interfaces.update(update_os_mapping)
     # check in dict for mapping
     if base_interfaces.get(interface_type):
         long_int = base_interfaces.get(interface_type)
