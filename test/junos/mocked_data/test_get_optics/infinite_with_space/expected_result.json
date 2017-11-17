@@ -1,0 +1,31 @@
+{
+"xe-2/2/2": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "avg": 0.0,
+                            "instant": -31.55,
+                            "max": 0.0,
+                            "min": 0.0
+                        },
+                        "laser_bias_current": {
+                            "avg": 0.0,
+                            "instant": 33.490,
+                            "max": 0.0,
+                            "min": 0.0
+                        },
+                        "output_power": {
+                            "avg": 0.0,
+                            "instant": 0.0,
+                            "max": 0.0,
+                            "min": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
