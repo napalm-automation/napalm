@@ -1,7 +1,7 @@
 {  
    "GigabitEthernet0/0":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"FA:16:3E:57:33:6F",
       "speed":1000,
       "last_flapped":-1.0,
       "is_up":false,
@@ -10,7 +10,7 @@
    },
    "Vlan1":{  
       "description":"OOB Management",
-      "mac_address":1,
+      "mac_address":"FA:16:3E:57:80:01",
       "speed":1000,
       "last_flapped":-1.0,
       "is_up":true,
@@ -19,7 +19,7 @@
    },
    "GigabitEthernet0/3":{  
       "description":"to iosvl2-3",
-      "mac_address":1,
+      "mac_address":"FA:16:3E:31:2C:47",
       "speed":1000,
       "last_flapped":-1.0,
       "is_up":true,
@@ -28,7 +28,7 @@
    },
    "GigabitEthernet0/1":{  
       "description":"to iosvl2-2",
-      "mac_address":1,
+      "mac_address":"FA:16:3E:4F:41:CC",
       "speed":1000,
       "last_flapped":-1.0,
       "is_up":true,
@@ -37,7 +37,7 @@
    },
    "Port-channel1":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"FA:16:3E:4F:41:CC",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":false,
@@ -46,7 +46,7 @@
    },
    "GigabitEthernet0/2":{  
       "description":"to iosvl2-4",
-      "mac_address":1,
+      "mac_address":"FA:16:3E:A3:3E:49",
       "speed":1000,
       "last_flapped":-1.0,
       "is_up":true,
@@ -64,7 +64,7 @@
    },
    "GigabitEthernet1/0":{  
       "description":"to iosvl2-3",
-      "mac_address":1,
+      "mac_address":"FA:16:3E:C8:50:AB",
       "speed":1000,
       "last_flapped":-1.0,
       "is_up":true,

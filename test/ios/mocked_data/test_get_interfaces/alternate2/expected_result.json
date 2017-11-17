@@ -1,7 +1,7 @@
 {  
    "FastEthernet1/0/43":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:AF",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":false,
@@ -10,7 +10,7 @@
    },
    "FastEthernet1/0/48":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:B4",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -19,7 +19,7 @@
    },
    "FastEthernet1/0/15":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:91",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":false,
@@ -28,7 +28,7 @@
    },
    "FastEthernet1/0/30":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:A2",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -37,7 +37,7 @@
    },
    "FastEthernet1/0/1":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:83",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -46,7 +46,7 @@
    },
    "FastEthernet1/0/22":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:98",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -55,7 +55,7 @@
    },
    "FastEthernet1/0/25":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:9D",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -64,7 +64,7 @@
    },
    "FastEthernet1/0/41":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:AD",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -73,7 +73,7 @@
    },
    "FastEthernet1/0/12":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:8E",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -82,7 +82,7 @@
    },
    "FastEthernet1/0/32":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:A4",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -91,7 +91,7 @@
    },
    "FastEthernet1/0/45":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:B1",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -100,7 +100,7 @@
    },
    "FastEthernet1/0/35":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:A7",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -109,7 +109,7 @@
    },
    "FastEthernet1/0/14":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:90",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -118,7 +118,7 @@
    },
    "Vlan1":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:C0",
       "speed":1000,
       "last_flapped":-1.0,
       "is_up":true,
@@ -127,7 +127,7 @@
    },
    "FastEthernet1/0/39":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:AB",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -136,7 +136,7 @@
    },
    "FastEthernet1/0/47":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:B3",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -145,7 +145,7 @@
    },
    "FastEthernet1/0/16":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:92",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":false,
@@ -154,7 +154,7 @@
    },
    "GigabitEthernet1/0/4":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:9C",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -163,7 +163,7 @@
    },
    "FastEthernet1/0/42":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:AE",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -172,7 +172,7 @@
    },
    "FastEthernet1/0/24":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:9A",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -181,7 +181,7 @@
    },
    "FastEthernet1/0/4":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:86",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -190,7 +190,7 @@
    },
    "FastEthernet1/0/37":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:A9",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":false,
@@ -199,7 +199,7 @@
    },
    "FastEthernet1/0/9":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:8B",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -208,7 +208,7 @@
    },
    "FastEthernet1/0/19":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:95",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -217,7 +217,7 @@
    },
    "FastEthernet1/0/44":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:B0",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -226,7 +226,7 @@
    },
    "FastEthernet1/0/27":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:9F",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -235,7 +235,7 @@
    },
    "FastEthernet1/0/20":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:96",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -244,7 +244,7 @@
    },
    "FastEthernet1/0/23":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:99",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":false,
@@ -253,7 +253,7 @@
    },
    "FastEthernet1/0/3":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:85",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -262,7 +262,7 @@
    },
    "FastEthernet1/0/6":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:88",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -271,7 +271,7 @@
    },
    "FastEthernet1/0/33":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:A5",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -280,7 +280,7 @@
    },
    "FastEthernet1/0/17":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:93",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":false,
@@ -289,7 +289,7 @@
    },
    "FastEthernet1/0/8":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:8A",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -298,7 +298,7 @@
    },
    "FastEthernet1/0/38":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:AA",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -307,7 +307,7 @@
    },
    "FastEthernet1/0/18":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:94",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":false,
@@ -316,7 +316,7 @@
    },
    "FastEthernet1/0/5":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:87",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -325,7 +325,7 @@
    },
    "FastEthernet1/0/7":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:89",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -334,7 +334,7 @@
    },
    "FastEthernet1/0/40":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:AC",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -343,7 +343,7 @@
    },
    "FastEthernet1/0/28":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:A0",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -352,7 +352,7 @@
    },
    "FastEthernet1/0/21":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:97",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -361,7 +361,7 @@
    },
    "Vlan254":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:C3",
       "speed":1000,
       "last_flapped":-1.0,
       "is_up":true,
@@ -370,7 +370,7 @@
    },
    "FastEthernet1/0/13":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:8F",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -379,7 +379,7 @@
    },
    "GigabitEthernet1/0/1":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:81",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -388,7 +388,7 @@
    },
    "FastEthernet1/0/11":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:8D",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":false,
@@ -397,7 +397,7 @@
    },
    "FastEthernet1/0/10":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:8C",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -406,7 +406,7 @@
    },
    "FastEthernet1/0/36":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:A8",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -415,7 +415,7 @@
    },
    "Vlan100":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:C2",
       "speed":1000,
       "last_flapped":-1.0,
       "is_up":true,
@@ -424,7 +424,7 @@
    },
    "FastEthernet1/0/2":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:84",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -433,7 +433,7 @@
    },
    "FastEthernet1/0/34":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:A6",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -442,7 +442,7 @@
    },
    "FastEthernet1/0/29":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:A1",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -451,7 +451,7 @@
    },
    "FastEthernet1/0/31":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:A3",
       "speed":100,
       "last_flapped":-1.0,
       "is_up":true,
@@ -460,7 +460,7 @@
    },
    "FastEthernet1/0/46":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:B2",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -469,7 +469,7 @@
    },
    "GigabitEthernet1/0/3":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:9B",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -478,7 +478,7 @@
    },
    "FastEthernet1/0/26":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:9E",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -487,7 +487,7 @@
    },
    "GigabitEthernet1/0/2":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:82",
       "speed":10,
       "last_flapped":-1.0,
       "is_up":false,
@@ -496,7 +496,7 @@
    },
    "Vlan50":{  
       "description":"",
-      "mac_address":1,
+      "mac_address":"00:14:1C:57:A4:C1",
       "speed":1000,
       "last_flapped":-1.0,
       "is_up":true,
