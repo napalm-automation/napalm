@@ -128,7 +128,7 @@ class IOSDriver(NetworkDriver):
 
         self.profile = ["ios"]
 
-        self.canonical_int = optional_args.get('canonical_int', False)
+        self.set_canonical_interface = optional_args.get('canonical_int', False)
 
     def open(self):
         """Open a connection to the device."""
@@ -434,14 +434,6 @@ class IOSDriver(NetworkDriver):
 
         # Save config to startup (both replace and merge)
         output += self.device.send_command_expect("write mem")
-
-    def _canonical_int(self, interface):
-        """Expose the helper function within this class."""
-        if self.canonical_int is True:
-            return napalm.base.helpers.canonical_interface(interface, True, short=False,
-                                                           update_long_to_short=None)
-        else:
-            return interface
 
     def discard_config(self):
         """Set candidate_cfg to current running-config. Erase the merge_cfg file."""
@@ -1817,7 +1809,7 @@ class IOSDriver(NetworkDriver):
                 active = False
             return {
                 'mac': napalm.base.helpers.mac(mac),
-                'interface': self._canonical_int(interface),
+                'interface': self.canonical_int(interface),
                 'vlan': int(vlan),
                 'static': static,
                 'active': active,
