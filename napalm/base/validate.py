@@ -48,7 +48,7 @@ def _compare_getter_list(src, dst, mode):
         i = 0
         while True:
             try:
-                intermediate_match = _compare_getter(src_element, dst[i])
+                intermediate_match = compare(src_element, dst[i])
                 if isinstance(intermediate_match, dict) and intermediate_match["complies"] or \
                    not isinstance(intermediate_match, dict) and intermediate_match:
                     found = True
@@ -79,7 +79,7 @@ def _compare_getter_dict(src, dst, mode):
         try:
             dst_element = dst.pop(key)
             result["present"][key] = {}
-            intermediate_result = _compare_getter(src_element, dst_element)
+            intermediate_result = compare(src_element, dst_element)
 
             if isinstance(intermediate_result, dict):
                 nested = True
@@ -111,7 +111,7 @@ def _compare_getter_dict(src, dst, mode):
     return result
 
 
-def _compare_getter(src, dst):
+def compare(src, dst):
     if isinstance(src, py23_compat.string_types):
         src = py23_compat.text_type(src)
 
@@ -127,7 +127,7 @@ def _compare_getter(src, dst):
 
     elif isinstance(src, py23_compat.string_types):
         if src.startswith('<') or src.startswith('>'):
-            cmp_result = compare_numeric(src, dst)
+            cmp_result = _compare_numeric(src, dst)
             return cmp_result
         else:
             m = re.search(src, py23_compat.text_type(dst))
@@ -147,7 +147,7 @@ def _compare_getter(src, dst):
         return src == dst
 
 
-def compare_numeric(src_num, dst_num):
+def _compare_numeric(src_num, dst_num):
     """Compare numerical values. You can use '<%d','>%d'."""
     dst_num = float(dst_num)
 
@@ -191,7 +191,7 @@ def compliance_report(cls, validation_file=None, validation_source=None):
                 try:
                     kwargs = expected_results.pop('_kwargs', {})
                     actual_results = getattr(cls, getter)(**kwargs)
-                    report[key] = _compare_getter(expected_results, actual_results)
+                    report[key] = compare(expected_results, actual_results)
                 except NotImplementedError:
                     report[key] = {"skipped": True, "reason": "NotImplemented"}
 
