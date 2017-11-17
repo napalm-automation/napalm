@@ -265,15 +265,13 @@ def int_split_on_match(split_interface):
     tail = split_interface[len(head):].lstrip()
     return head, tail
 
-def canonical_interface_name(interface, change=False, update_os_mapping=None):
+def canonical_interface_name(interface, update_os_mapping=None):
     '''
     Function to retun interface canonical name
     This puposely does not use regex, or first X characters, to ensure
     there is no chance for false positives. As an example, Po = PortChannel, and
     PO = POS. With either character or regex, that would produce a false positive.
     '''
-    if not change:
-        return interface
 
     interface_type, interface_number = split_on_match(interface)
 
@@ -287,15 +285,13 @@ def canonical_interface_name(interface, change=False, update_os_mapping=None):
     else:
         return interface
 
-def abbreviated_interface_name(interface, change=False, update_os_mapping=None):
+def abbreviated_interface_name(interface, update_os_mapping=None):
     '''
     Function to retun interface canonical name
     This puposely does not use regex, or first X characters, to ensure
     there is no chance for false positives. As an example, Po = PortChannel, and
     PO = POS. With either character or regex, that would produce a false positive.
     '''
-    if not change:
-        return interface
 
     interface_type, interface_number = split_on_match(interface)
 
