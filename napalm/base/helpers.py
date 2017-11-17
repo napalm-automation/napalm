@@ -19,7 +19,7 @@ from netaddr import IPAddress
 import napalm.base.exceptions
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
 from napalm.base.utils import py23_compat
-from napalm.base.interface_map import _interface_map
+from napalm.base.interface_map import interface_map
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -284,11 +284,10 @@ def canonical_interface(interface, device_os, change, short=False):
 
     interface_type, interface_number = split_on_match(interface)
 
-    int_map = _interface_map()
-    base_interfaces = int_map['base_interfaces']
-    reverse_mapping = int_map['reverse_mapping']
-    if int_map.get(device_os):
-        base_interfaces = base_interfaces.update(int_map.get(device_os))
+    base_interfaces = interface_map['base_interfaces']
+    reverse_mapping = interface_map['reverse_mapping']
+    if interface_map.get(device_os):
+        base_interfaces = base_interfaces.update(interface_map.get(device_os))
     # check in dict for mapping
     if base_interfaces.get(interface_type):
         long_int = base_interfaces.get(interface_type)
