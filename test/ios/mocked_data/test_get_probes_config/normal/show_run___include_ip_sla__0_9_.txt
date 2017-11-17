@@ -1,0 +1,14 @@
+ip sla 1
+ icmp-echo 8.8.8.8 source-interface Loopback0
+ tag test-google-8
+ history lives-kept 1
+ history buckets-kept 20
+ timeout 2000
+ frequency 3
+ip sla 2
+ icmp-echo 8.8.4.4 source-ip 1.1.1.1
+ tag test-google-4
+ history lives-kept 1
+ history buckets-kept 20
+ timeout 2000
+ frequency 3

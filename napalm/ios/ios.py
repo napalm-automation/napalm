@@ -1902,6 +1902,41 @@ class IOSDriver(NetworkDriver):
 
         return mac_address_table
 
+    def get_probes_config(self):
+        probes = {}
+        probes_regex = r"ip\s+sla\s+(?P<id>\d+)\n" \
+            "\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*" \
+            "\s+tag\s+(?P<name>\S+)\n.*" \
+            "\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*" \
+            "\s+frequency\s+(?P<interval>\d+)$"
+        probe_args = {
+            'icmp-echo': r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
+        }
+        probe_type_map = {
+            'icmp-echo': 'icmp-ping',
+        }
+        command = "show run | include ip sla [0-9]"
+        output = self._send_command(command)
+        for match in re.finditer(probes_regex, output, re.M):
+            probe = match.groupdict()
+            if probe["probe_type"] not in probe_args:
+                # Probe type not supported yet
+                continue
+            probe_args_match = re.match(probe_args[probe["probe_type"]],
+                                        probe["probe_args"])
+            probe_data = probe_args_match.groupdict()
+            probes[probe["id"]] = {
+                probe["name"]: {
+                    'probe_type': probe_type_map[probe["probe_type"]],
+                    'target': probe_data["target"],
+                    'source': probe_data["source"],
+                    'probe_count': int(probe["probe_count"]),
+                    'test_interval': int(probe["interval"])
+                }
+            }
+
+        return probes
+
     def get_snmp_information(self):
         """
         Returns a dict of dicts
