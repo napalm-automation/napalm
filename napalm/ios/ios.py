@@ -128,7 +128,7 @@ class IOSDriver(NetworkDriver):
 
         self.profile = ["ios"]
 
-        self.set_canonical_interface = optional_args.get('canonical_int', False)
+        self.use_canonical_interface = optional_args.get('canonical_int', False)
 
     def open(self):
         """Open a connection to the device."""

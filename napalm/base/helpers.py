@@ -19,7 +19,7 @@ from netaddr import IPAddress
 import napalm.base.exceptions
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
 from napalm.base.utils import py23_compat
-from napalm.base.interface_map import interface_map
+from napalm.base.canonical_map import base_interfaces, reverse_mapping
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -258,7 +258,7 @@ def as_number(as_number_val):
         return int(as_number_str)
 
 
-def canonical_interface(interface, change, short=False, update_long_to_short=None):
+def canonical_interface(interface, change=False, short=False, update_long_to_short=None):
     '''
     Function to retun interface canonical name
     This puposely does not use regex, or first X characters, to ensure
@@ -277,9 +277,6 @@ def canonical_interface(interface, change, short=False, update_long_to_short=Non
         return head, tail
 
     interface_type, interface_number = split_on_match(interface)
-
-    base_interfaces = interface_map['base_interfaces']
-    reverse_mapping = interface_map['reverse_mapping']
 
     if isinstance(update_long_to_short, dict):
         base_interfaces.update(update_long_to_short)

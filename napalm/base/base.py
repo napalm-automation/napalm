@@ -1586,8 +1586,8 @@ class NetworkDriver(object):
 
     def canonical_int(self, interface):
         """Expose the helper function within this class."""
-        if self.set_canonical_interface is True:
-            return napalm.base.helpers.canonical_interface(interface, True, short=False,
+        if self.use_canonical_interface is True:
+            return napalm.base.helpers.canonical_interface(interface, change=True, short=False,
                                                            update_long_to_short=None)
         else:
             return interface
