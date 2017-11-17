@@ -1873,6 +1873,8 @@ class JunOSDriver(NetworkDriver):
                 optics_detail[interface_name]['physical_channels'] = {}
                 optics_detail[interface_name]['physical_channels']['channel'] = []
 
+            INVALID_LIGHT_LEVEL = [None, C.OPTICS_NULL_LEVEL, C.OPTICS_NULL_LEVEL_SPC]
+
             # Defaulting avg, min, max values to 0.0 since device does not
             # return these values
             intf_optics = {
@@ -1882,7 +1884,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['input_power'])
                                         if optics['input_power'] not in
-                                        [None, C.OPTICS_NULL_LEVEL]
+                                        INVALID_LIGHT_LEVEL
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1892,7 +1894,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['output_power'])
                                         if optics['output_power'] not in
-                                        [None, C.OPTICS_NULL_LEVEL]
+                                        INVALID_LIGHT_LEVEL
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1902,7 +1904,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['laser_bias_current'])
                                         if optics['laser_bias_current'] not in
-                                        [None, C.OPTICS_NULL_LEVEL]
+                                        INVALID_LIGHT_LEVEL
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,

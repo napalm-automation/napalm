@@ -14,3 +14,7 @@ OC_NETWORK_INSTANCE_TYPE_MAP = {
     'vpls': 'BGP_VPLS',
     'forwarding': 'L2P2P'
 }
+# OPTICS_NULL_LEVEL_SPC matches infinite light level '- Inf'
+# reading on some versions of JUNOS
+# https://github.com/napalm-automation/napalm/issues/491
+OPTICS_NULL_LEVEL_SPC = '- Inf'

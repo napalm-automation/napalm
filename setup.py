@@ -5,11 +5,12 @@ import os
 from distutils.core import Command
 from setuptools import setup, find_packages
 from setuptools.command import install
+from subprocess import check_call
 
 
 from pip.req import parse_requirements
 
-import pip
+import pip  # noqa: test pip is installed
 import sys
 
 __author__ = 'David Barroso <dbarrosop@dravetech.com>'
@@ -26,7 +27,9 @@ def process_requirements(dep):
     print("PROCESSING DEPENDENCIES FOR {}".format(dep))
     u = uuid.uuid1()
     iter_reqs = parse_requirements("requirements/{}".format(dep), session=u)
-    [pip.main(['install', (str(ir.req))]) for ir in iter_reqs]
+
+    for ir in iter_reqs:
+        check_call([sys.executable, '-m', 'pip', 'install', str(ir.req)])
 
 
 def custom_command_driver(driver):
