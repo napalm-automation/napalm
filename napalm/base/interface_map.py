@@ -100,4 +100,3 @@ interface_map = {
     "VLAN": "Vl"
   }
 }
-
