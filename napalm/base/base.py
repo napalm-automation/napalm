@@ -1584,10 +1584,10 @@ class NetworkDriver(object):
         return validate.compliance_report(self, validation_file=validation_file,
                                           validation_source=validation_source)
 
-    def canonical_int(self, interface):
+    def _canonical_int(self, interface):
         """Expose the helper function within this class."""
         if self.use_canonical_interface is True:
-            return napalm.base.helpers.canonical_interface(interface, change=True, short=False,
-                                                           update_long_to_short=None)
+            return napalm.base.helpers.canonical_interface_name(interface, short=False,
+                                                                update_os_mapping=None)
         else:
             return interface

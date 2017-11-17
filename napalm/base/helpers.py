@@ -257,8 +257,15 @@ def as_number(as_number_val):
     else:
         return int(as_number_str)
 
+def int_split_on_match(split_interface):
+    '''
+    simple fuction to split on first digit, slash, or space match
+    '''
+    head = split_interface.rstrip(r'/\0123456789 ')
+    tail = split_interface[len(head):].lstrip()
+    return head, tail
 
-def canonical_interface(interface, change=False, short=False, update_long_to_short=None):
+def canonical_interface_name(interface, change=False, update_os_mapping=None):
     '''
     Function to retun interface canonical name
     This puposely does not use regex, or first X characters, to ensure
@@ -268,13 +275,27 @@ def canonical_interface(interface, change=False, short=False, update_long_to_sho
     if not change:
         return interface
 
-    def split_on_match(split_interface):
-        '''
-        simple fuction to split on first digit, slash, or space match
-        '''
-        head = split_interface.rstrip(r'/\0123456789 ')
-        tail = split_interface[len(head):].lstrip()
-        return head, tail
+    interface_type, interface_number = split_on_match(interface)
+
+    if isinstance(update_long_to_short, dict):
+        base_interfaces.update(update_long_to_short)
+    # check in dict for mapping
+    if base_interfaces.get(interface_type):
+        long_int = base_interfaces.get(interface_type)
+        return long_int + str(interface_number)
+    # if nothing matched, at least return the original
+    else:
+        return interface
+
+def abbreviated_interface_name(interface, change=False, update_os_mapping=None):
+    '''
+    Function to retun interface canonical name
+    This puposely does not use regex, or first X characters, to ensure
+    there is no chance for false positives. As an example, Po = PortChannel, and
+    PO = POS. With either character or regex, that would produce a false positive.
+    '''
+    if not change:
+        return interface
 
     interface_type, interface_number = split_on_match(interface)
 
@@ -283,11 +304,7 @@ def canonical_interface(interface, change=False, short=False, update_long_to_sho
     # check in dict for mapping
     if base_interfaces.get(interface_type):
         long_int = base_interfaces.get(interface_type)
-        # return short form if set
-        if short is True:
-            return reverse_mapping[long_int] + str(interface_number)
-        else:
-            return long_int + str(interface_number)
+        return reverse_mapping[long_int] + str(interface_number)
     # if nothing matched, at least return the original
     else:
         return interface

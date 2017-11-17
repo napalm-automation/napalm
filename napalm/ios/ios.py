@@ -1809,7 +1809,7 @@ class IOSDriver(NetworkDriver):
                 active = False
             return {
                 'mac': napalm.base.helpers.mac(mac),
-                'interface': self.canonical_int(interface),
+                'interface': self._canonical_int(interface),
                 'vlan': int(vlan),
                 'static': static,
                 'active': active,
