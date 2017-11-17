@@ -1018,12 +1018,12 @@ class IOSDriver(NetworkDriver):
                     raise ValueError("Did not correctly find the interface status")
 
                 interface_dict[interface] = {
-                                            'is_enabled': is_enabled, 
+                                            'is_enabled': is_enabled,
                                             'is_up': is_up,
-                                            'description': description, 
+                                            'description': description,
                                             'mac_address': mac_address,
-                                            'last_flapped': last_flapped, 
-                                            'speed': speed, 
+                                            'last_flapped': last_flapped,
+                                            'speed': speed,
                                             'mtu': mtu
                                             }
 

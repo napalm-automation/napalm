@@ -1,26 +1,29 @@
-{
-	"GigabitEthernet3": {
-		"speed": 1000,
-		"mac_address": "08:00:27:82:51:6B",
-		"is_up": false,
-		"last_flapped": -1.0,
-		"description": "",
-		"is_enabled": false
-	},
-	"GigabitEthernet2": {
-		"speed": 1000,
-		"mac_address": "08:00:27:79:E8:96",
-		"is_up": true,
-		"last_flapped": -1.0,
-		"description": "blah bleh",
-		"is_enabled": true
-	},
-	"GigabitEthernet1": {
-		"speed": 1000,
-		"mac_address": "08:00:27:F8:E8:42",
-		"is_up": true,
-		"last_flapped": -1.0,
-		"description": "",
-		"is_enabled": true
-	}
+{  
+   "GigabitEthernet1":{  
+      "description":"",
+      "mac_address":1,
+      "speed":1000,
+      "last_flapped":-1.0,
+      "is_up":true,
+      "is_enabled":true,
+      "mtu":1500
+   },
+   "GigabitEthernet2":{  
+      "description":"blah bleh",
+      "mac_address":1,
+      "speed":1000,
+      "last_flapped":-1.0,
+      "is_up":true,
+      "is_enabled":true,
+      "mtu":1500
+   },
+   "GigabitEthernet3":{  
+      "description":"",
+      "mac_address":1,
+      "speed":1000,
+      "last_flapped":-1.0,
+      "is_up":false,
+      "is_enabled":false,
+      "mtu":1500
+   }
 }
