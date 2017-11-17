@@ -161,7 +161,7 @@ class EOSDriver(NetworkDriver):
             commands.append(line)
 
         try:
-            if self.eos_autoComplete:
+            if self.eos_autoComplete is not None:
                 self.devcie.run_commands(commands, autoComplete=self.eos_autoComplete)
             else:
                 self.device.run_commands(commands)
