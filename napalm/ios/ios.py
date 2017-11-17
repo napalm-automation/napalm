@@ -438,7 +438,8 @@ class IOSDriver(NetworkDriver):
     def _canonical_int(self, interface):
         """Expose the helper function within this class."""
         if self.canonical_int is True:
-            return napalm.base.helpers.canonical_interface(interface, "cisco_ios", True)
+            return napalm.base.helpers.canonical_interface(interface, True, short=False,
+                                                           update_long_to_short=None)
         else:
             return interface
 

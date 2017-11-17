@@ -258,7 +258,7 @@ def as_number(as_number_val):
         return int(as_number_str)
 
 
-def canonical_interface(interface, device_os, change, short=False):
+def canonical_interface(interface, change, short=False, update_long_to_short=None):
     '''
     Function to retun interface canonical name
     This puposely does not use regex, or first X characters, to ensure
@@ -266,12 +266,6 @@ def canonical_interface(interface, device_os, change, short=False):
     PO = POS. With either character or regex, that would produce a false positive.
     '''
     if not change:
-        return interface
-
-    if device_os == "cisco_nxos_ssh":
-        device_os = "cisco_nxos"
-    supported_os_list = ["cisco_ios", "cisco_nxos", "cisco_xr", "arista_eos"]
-    if device_os not in supported_os_list:
         return interface
 
     def split_on_match(split_interface):
@@ -286,8 +280,9 @@ def canonical_interface(interface, device_os, change, short=False):
 
     base_interfaces = interface_map['base_interfaces']
     reverse_mapping = interface_map['reverse_mapping']
-    if interface_map.get(device_os):
-        base_interfaces = base_interfaces.update(interface_map.get(device_os))
+
+    if isinstance(update_long_to_short, dict):
+        base_interfaces.update(update_long_to_short)
     # check in dict for mapping
     if base_interfaces.get(interface_type):
         long_int = base_interfaces.get(interface_type)
