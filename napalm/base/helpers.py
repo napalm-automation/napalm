@@ -19,6 +19,7 @@ from netaddr import IPAddress
 import napalm.base.exceptions
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
 from napalm.base.utils import py23_compat
+from napalm.base.canonical_map import base_interfaces, reverse_mapping
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -255,3 +256,54 @@ def as_number(as_number_val):
         return (int(big) << 16) + int(little)
     else:
         return int(as_number_str)
+
+
+def int_split_on_match(split_interface):
+    '''
+    simple fuction to split on first digit, slash, or space match
+    '''
+    head = split_interface.rstrip(r'/\0123456789 ')
+    tail = split_interface[len(head):].lstrip()
+    return head, tail
+
+
+def canonical_interface_name(interface, update_os_mapping=None):
+    '''
+    Function to retun interface canonical name
+    This puposely does not use regex, or first X characters, to ensure
+    there is no chance for false positives. As an example, Po = PortChannel, and
+    PO = POS. With either character or regex, that would produce a false positive.
+    '''
+
+    interface_type, interface_number = int_split_on_match(interface)
+
+    if isinstance(update_os_mapping, dict):
+        base_interfaces.update(update_os_mapping)
+    # check in dict for mapping
+    if base_interfaces.get(interface_type):
+        long_int = base_interfaces.get(interface_type)
+        return long_int + str(interface_number)
+    # if nothing matched, at least return the original
+    else:
+        return interface
+
+
+def abbreviated_interface_name(interface, update_os_mapping=None):
+    '''
+    Function to retun interface canonical name
+    This puposely does not use regex, or first X characters, to ensure
+    there is no chance for false positives. As an example, Po = PortChannel, and
+    PO = POS. With either character or regex, that would produce a false positive.
+    '''
+
+    interface_type, interface_number = int_split_on_match(interface)
+
+    if isinstance(update_os_mapping, dict):
+        base_interfaces.update(update_os_mapping)
+    # check in dict for mapping
+    if base_interfaces.get(interface_type):
+        long_int = base_interfaces.get(interface_type)
+        return reverse_mapping[long_int] + str(interface_number)
+    # if nothing matched, at least return the original
+    else:
+        return interface
