@@ -934,23 +934,26 @@ class IOSDriver(NetworkDriver):
         Example Output:
 
         {   u'Vlan1': {   'description': u'N/A',
-                      'is_enabled': True,
-                      'is_up': True,
-                      'last_flapped': -1.0,
-                      'mac_address': u'a493.4cc1.67a7',
-                      'speed': 100},
+                        'is_enabled': True,
+                        'is_up': True,
+                        'last_flapped': -1.0,
+                        'mac_address': u'a493.4cc1.67a7',
+                        'speed': 100,
+                        'mtu': 1500},
         u'Vlan100': {   'description': u'Data Network',
                         'is_enabled': True,
                         'is_up': True,
                         'last_flapped': -1.0,
                         'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100},
+                        'speed': 100,
+                        'mtu': 1500},
         u'Vlan200': {   'description': u'Voice Network',
                         'is_enabled': True,
                         'is_up': True,
                         'last_flapped': -1.0,
                         'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100}}
+                        'speed': 100,
+                        'mtu': 1500},
         """
         # default values.
         last_flapped = -1.0
@@ -995,17 +998,18 @@ class IOSDriver(NetworkDriver):
                 descr_match = re.search(descr_regex, line)
                 description = descr_match.groups()[0]
 
-            speed_regex = r"^\s+MTU\s+\d+.+BW\s+(\d+)\s+([KMG]?b)"
-            if re.search(speed_regex, line):
-                speed_match = re.search(speed_regex, line)
-                speed = speed_match.groups()[0]
-                speedformat = speed_match.groups()[1]
+            mtu_speed_regex = r"^\s+MTU\s+(\d+).+BW\s+(\d+)\s+([KMG]?b)"
+            if re.search(mtu_speed_regex, line):
+                speed_match = re.search(mtu_speed_regex, line)
+                speed = speed_match.groups()[1]
+                speedformat = speed_match.groups()[2]
                 speed = float(speed)
                 if speedformat.startswith('Kb'):
                     speed = speed / 1000.0
                 elif speedformat.startswith('Gb'):
                     speed = speed * 1000
                 speed = int(round(speed))
+                mtu = int(speed_match.groups()[0])
 
                 if interface == '':
                     raise ValueError("Interface attributes were \
@@ -1013,9 +1017,15 @@ class IOSDriver(NetworkDriver):
                 if not isinstance(is_up, bool) or not isinstance(is_enabled, bool):
                     raise ValueError("Did not correctly find the interface status")
 
-                interface_dict[interface] = {'is_enabled': is_enabled, 'is_up': is_up,
-                                             'description': description, 'mac_address': mac_address,
-                                             'last_flapped': last_flapped, 'speed': speed}
+                interface_dict[interface] = {
+                                            'is_enabled': is_enabled,
+                                            'is_up': is_up,
+                                            'description': description,
+                                            'mac_address': mac_address,
+                                            'last_flapped': last_flapped,
+                                            'speed': speed,
+                                            'mtu': mtu
+                                            }
 
                 interface = description = mac_address = speed = speedformat = ''
                 is_enabled = is_up = None

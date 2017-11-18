@@ -1,10 +1,11 @@
-{
-	"pseudowire100006": {
-		"speed": 10000,
-		"mac_address": "",
-		"is_up": true,
-		"last_flapped": -1.0,
-		"description": "",
-		"is_enabled": true
-	}
+{  
+   "pseudowire100006":{  
+      "description":"",
+      "mac_address":"",
+      "speed":10000,
+      "last_flapped":-1.0,
+      "is_up":true,
+      "is_enabled":true,
+      "mtu":1500
+   }
 }
