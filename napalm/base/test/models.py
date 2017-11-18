@@ -24,6 +24,7 @@ interface = {
     'last_flapped': float,
     'speed': int,
     'mac_address': text_type,
+    'mtu': int,
 }
 
 lldp_neighbors = {
