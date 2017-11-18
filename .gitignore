@@ -63,3 +63,6 @@ test/unit/test_devices.py
 
 report.json
 tags
+
+docs/ansible/napalm_*/
+docs/ansible/tests/*.json

@@ -1,0 +1,25 @@
+{{ name }}
+=====================
+
+{{ doc['description'][0] }}
+
+
+Options
+=======
+
+
+===========   ============   ============
+Parameter     Required       Description
+===========   ============   ============
+{% for p in doc['options'] %}
+**{{ p }}** {{ doc['options'][p]['required'] }} {{ doc['options'][p]['description'][0] }}
+{% endfor %}
+
+Examples
+========
+{{ examples }}
+
+
+Return
+======
+{{ return }}
