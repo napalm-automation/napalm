@@ -258,52 +258,55 @@ def as_number(as_number_val):
         return int(as_number_str)
 
 
-def int_split_on_match(split_interface):
-    '''
-    simple fuction to split on first digit, slash, or space match
-    '''
-    head = split_interface.rstrip(r'/\0123456789 ')
-    tail = split_interface[len(head):].lstrip()
-    return head, tail
+def split_interface(intf_name):
+    """Split an interface name based on first digit, slash, or space match."""
+    head = intf_name.rstrip(r'/\0123456789 ')
+    tail = intf_name[len(head):].lstrip()
+    return (head, tail)
 
 
-def canonical_interface_name(interface, update_os_mapping=None):
-    '''
-    Function to retun interface canonical name
+def canonical_interface_name(interface, addl_name_map=None):
+    """Function to return an interface's canonical name (fully expanded name).
+
     This puposely does not use regex, or first X characters, to ensure
     there is no chance for false positives. As an example, Po = PortChannel, and
     PO = POS. With either character or regex, that would produce a false positive.
-    '''
+    """
+    name_map = {}
+    name_map.update(base_interfaces)
+    interface_type, interface_number = split_interface(interface)
 
-    interface_type, interface_number = int_split_on_match(interface)
-
-    if isinstance(update_os_mapping, dict):
-        base_interfaces.update(update_os_mapping)
+    if isinstance(addl_name_map, dict):
+        name_map.update(addl_name_map)
     # check in dict for mapping
-    if base_interfaces.get(interface_type):
-        long_int = base_interfaces.get(interface_type)
+    if name_map.get(interface_type):
+        long_int = name_map.get(interface_type)
         return long_int + str(interface_number)
-    # if nothing matched, at least return the original
+    # if nothing matched, return the original name
     else:
         return interface
 
 
-def abbreviated_interface_name(interface, update_os_mapping=None):
-    '''
-    Function to retun interface canonical name
-    This puposely does not use regex, or first X characters, to ensure
-    there is no chance for false positives. As an example, Po = PortChannel, and
-    PO = POS. With either character or regex, that would produce a false positive.
-    '''
+def abbreviated_interface_name(interface, addl_name_map=None):
+    """Function to return an abbreviated representation of the interface name."""
+    reverse_name_map = {}
+    reverse_name_map.update(reverse_mapping)
+    interface_type, interface_number = split_interface(interface)
 
-    interface_type, interface_number = int_split_on_match(interface)
+    if isinstance(addl_name_map, dict):
+        reverse_name_map.update(addl_name_map)
 
-    if isinstance(update_os_mapping, dict):
-        base_interfaces.update(update_os_mapping)
-    # check in dict for mapping
+    # Try to ensure canonical type.
     if base_interfaces.get(interface_type):
-        long_int = base_interfaces.get(interface_type)
-        return reverse_mapping[long_int] + str(interface_number)
-    # if nothing matched, at least return the original
+        canonical_type = base_interfaces.get(interface_type)
     else:
-        return interface
+        canonical_type = interface_type
+
+    try:
+        abbreviated_name = reverse_mapping[canonical_type] + str(interface_number)
+        return abbreviated_name
+    except KeyError:
+        pass
+
+    # If abbreviated name lookup fails, return original name
+    return interface
