@@ -332,7 +332,7 @@ def build_napalm_ansible_module_docs(app):
         module_dir = './ansible/{0}'.format(module)
         try:
             os.stat(module_dir)
-        except:
+        except Exception:
             os.mkdir(module_dir)
 
         with open('{0}/index.rst'.format(module_dir), 'w') as f:
@@ -390,7 +390,6 @@ def setup(app):
     """Map methods to states of the documentation build."""
     app.connect('builder-inited', build_getters_support_matrix)
     app.connect('builder-inited', build_napalm_ansible_module_docs)
-
 
 
 build_getters_support_matrix(None)
