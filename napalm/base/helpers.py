@@ -257,6 +257,7 @@ def as_number(as_number_val):
     else:
         return int(as_number_str)
 
+
 def int_split_on_match(split_interface):
     '''
     simple fuction to split on first digit, slash, or space match
@@ -264,6 +265,7 @@ def int_split_on_match(split_interface):
     head = split_interface.rstrip(r'/\0123456789 ')
     tail = split_interface[len(head):].lstrip()
     return head, tail
+
 
 def canonical_interface_name(interface, update_os_mapping=None):
     '''
@@ -284,6 +286,7 @@ def canonical_interface_name(interface, update_os_mapping=None):
     # if nothing matched, at least return the original
     else:
         return interface
+
 
 def abbreviated_interface_name(interface, update_os_mapping=None):
     '''
