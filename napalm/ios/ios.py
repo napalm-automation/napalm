@@ -884,10 +884,10 @@ class IOSDriver(NetworkDriver):
                 except ValueError:
                     # Handle 'Cisco IOS Software [Denali],'
                     _, os_version = re.split(r"Cisco IOS Software \[.*?\], ", line)
-                os_version = os_version.strip()
-            elif re.search(r"IOS (tm).+Software", line):
+            elif re.search(r"IOS \(tm\).+Software", line):
                 _, os_version = line.split("IOS (tm) ")
-                os_version = os_version.strip()
+
+            os_version = os_version.strip()
 
         # Determine domain_name and fqdn
         for line in show_hosts.splitlines():
@@ -1912,6 +1912,41 @@ class IOSDriver(NetworkDriver):
 
         return mac_address_table
 
+    def get_probes_config(self):
+        probes = {}
+        probes_regex = r"ip\s+sla\s+(?P<id>\d+)\n" \
+            "\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*" \
+            "\s+tag\s+(?P<name>\S+)\n.*" \
+            "\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*" \
+            "\s+frequency\s+(?P<interval>\d+)$"
+        probe_args = {
+            'icmp-echo': r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
+        }
+        probe_type_map = {
+            'icmp-echo': 'icmp-ping',
+        }
+        command = "show run | include ip sla [0-9]"
+        output = self._send_command(command)
+        for match in re.finditer(probes_regex, output, re.M):
+            probe = match.groupdict()
+            if probe["probe_type"] not in probe_args:
+                # Probe type not supported yet
+                continue
+            probe_args_match = re.match(probe_args[probe["probe_type"]],
+                                        probe["probe_args"])
+            probe_data = probe_args_match.groupdict()
+            probes[probe["id"]] = {
+                probe["name"]: {
+                    'probe_type': probe_type_map[probe["probe_type"]],
+                    'target': probe_data["target"],
+                    'source': probe_data["source"],
+                    'probe_count': int(probe["probe_count"]),
+                    'test_interval': int(probe["interval"])
+                }
+            }
+
+        return probes
+
     def get_snmp_information(self):
         """
         Returns a dict of dicts
@@ -2156,6 +2191,52 @@ class IOSDriver(NetworkDriver):
         traceroute_dict['success'] = results
         return traceroute_dict
 
+    def get_network_instances(self, name=''):
+
+        instances = {}
+        sh_vrf_detail = self._send_command('show vrf detail')
+        show_ip_int_br = self._send_command('show ip interface brief')
+
+        # retrieve all interfaces for the default VRF
+        interface_dict = {}
+        show_ip_int_br = show_ip_int_br.strip()
+        for line in show_ip_int_br.splitlines():
+            if 'Interface ' in line:
+                continue
+            interface = line.split()[0]
+            interface_dict[interface] = {}
+
+        instances['default'] = {
+                                'name': 'default',
+                                'type': 'DEFAULT_INSTANCE',
+                                'state': {'route_distinguisher': ''},
+                                'interfaces': {'interface': interface_dict}
+                                }
+
+        for vrf in sh_vrf_detail.split('\n\n'):
+
+            first_part = vrf.split('Address family')[0]
+
+            # retrieve the name of the VRF and the Route Distinguisher
+            vrf_name, RD = re.match(r'^VRF (\S+).*RD (.*);', first_part).groups()
+            if RD == '<not set>':
+                RD = ''
+
+            # retrieve the interfaces of the VRF
+            if_regex = re.match(r'.*Interfaces:(.*)', first_part, re.DOTALL)
+            if 'No interfaces' in first_part:
+                interfaces = {}
+            else:
+                interfaces = {itf: {} for itf in if_regex.group(1).split()}
+
+            instances[vrf_name] = {
+                                   'name': vrf_name,
+                                   'type': 'L3VRF',
+                                   'state': {'route_distinguisher': RD},
+                                   'interfaces': {'interface': interfaces}
+                                   }
+        return instances if not name else instances[name]
+
     def get_config(self, retrieve='all'):
         """Implementation of get_config for IOS.
 
@@ -2182,6 +2263,57 @@ class IOSDriver(NetworkDriver):
             configs['running'] = output
 
         return configs
+
+    def get_ipv6_neighbors_table(self):
+        """
+        Get IPv6 neighbors table information.
+        Return a list of dictionaries having the following set of keys:
+            * interface (string)
+            * mac (string)
+            * ip (string)
+            * age (float) in seconds
+            * state (string)
+        For example::
+            [
+                {
+                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '5c:5e:ab:da:3c:f0',
+                    'ip'        : '2001:db8:1:1::1',
+                    'age'       : 1454496274.84,
+                    'state'     : 'REACH'
+                },
+                {
+                    'interface': 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '66:0e:94:96:e0:ff',
+                    'ip'        : '2001:db8:1:1::2',
+                    'age'       : 1435641582.49,
+                    'state'     : 'STALE'
+                }
+            ]
+        """
+
+        ipv6_neighbors_table = []
+        command = 'show ipv6 neighbors'
+        output = self._send_command(command)
+
+        ipv6_neighbors = ''
+        fields = re.split(r"^IPv6\s+Address.*Interface$", output, flags=(re.M | re.I))
+        if len(fields) == 2:
+            ipv6_neighbors = fields[1].strip()
+        for entry in ipv6_neighbors.splitlines():
+            # typical format of an entry in the IOS IPv6 neighbors table:
+            # 2002:FFFF:233::1 0 2894.0fed.be30  REACH Fa3/1/2.233
+            ip, age, mac, state, interface = entry.split()
+            mac = '' if mac == '-' else napalm.base.helpers.mac(mac)
+            ip = napalm.base.helpers.ip(ip)
+            ipv6_neighbors_table.append({
+                                        'interface': interface,
+                                        'mac': mac,
+                                        'ip': ip,
+                                        'age': float(age),
+                                        'state': state
+                                        })
+        return ipv6_neighbors_table
 
     @property
     def dest_file_system(self):

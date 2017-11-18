@@ -426,6 +426,20 @@ junos_arp_view:
     ip: {ip-address: unicode}
     age: {time-to-expire: float}
 
+junos_ipv6_neighbors_table:
+  rpc: get-ipv6-nd-information
+  item: ipv6-nd-entry
+  key: ipv6-nd-interface-name
+  view: junos_ipv6_neighbors_view
+
+junos_ipv6_neighbors_view:
+  fields:
+    interface: {ipv6-nd-interface-name: unicode}
+    mac: {ipv6-nd-neighbor-l2-address: unicode}
+    ip: {ipv6-nd-neighbor-address: unicode}
+    age: {ipv6-nd-expire: float}
+    state: {ipv6-nd-state: unicode}
+
 ###
 ### Interfaces IPs
 ###

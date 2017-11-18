@@ -1,0 +1,331 @@
+[
+    {
+        "interface": "Gi3/0/0.915",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2001:45:45:915::13",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.325",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:125::1",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.324",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:124::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.327",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:127::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.326",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:126::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.321",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:121::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.320",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:120::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.323",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:123::1",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.322",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:122::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.329",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:129::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.328",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:128::1",
+        "age": 0.0,
+        "state": "STALE"
+    },
+    {
+        "interface": "Gi3/0/0.335",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:135::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.334",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:134::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.337",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:137::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.336",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:136::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.331",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:131::1",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.330",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:130::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.333",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:133::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.332",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:132::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.339",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:139::1",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.338",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:138::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Fa4/0/6.114",
+        "mac": "00:1B:54:AA:F0:66",
+        "ip": "2004:e4e5:e4e5:141::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.340",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "2004:e4e5:e4e5:140::1",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.2001",
+        "mac": "30:7C:5E:F8:8D:4A",
+        "ip": "fe80::327c:5e07:d1f8:8d4a",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.2003",
+        "mac": "30:7C:5E:F8:8D:4A",
+        "ip": "fe80::327c:5e07:d3f8:8d4a",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.321",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.320",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.915",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.340",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.325",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.322",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.332",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.329",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.328",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.333",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.330",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "STALE"
+    },
+    {
+        "interface": "Gi3/0/0.335",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.323",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.331",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.337",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.338",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "DELAY"
+    },
+    {
+        "interface": "Gi3/0/0.324",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.336",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.326",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.327",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Gi3/0/0.334",
+        "mac": "00:1B:54:AA:F0:48",
+        "ip": "fe80::21b:54ff:feaa:f048",
+        "age": 0.0,
+        "state": "REACH"
+    },
+    {
+        "interface": "Fa4/0/6.114",
+        "mac": "00:1B:54:AA:F0:66",
+        "ip": "fe80::21b:54ff:feaa:f066",
+        "age": 0.0,
+        "state": "REACH"
+    }
+]
