@@ -1209,6 +1209,24 @@ class JunOSDriver(NetworkDriver):
 
         return arp_table
 
+    def get_ipv6_neighbors_table(self):
+        """Return the IPv6 neighbors table."""
+        ipv6_neighbors_table = []
+
+        ipv6_neighbors_table_raw = junos_views.junos_ipv6_neighbors_table(self.device)
+        ipv6_neighbors_table_raw.get()
+        ipv6_neighbors_table_items = ipv6_neighbors_table_raw.items()
+
+        for ipv6_table_entry in ipv6_neighbors_table_items:
+            ipv6_entry = {
+                elem[0]: elem[1] for elem in ipv6_table_entry[1]
+            }
+            ipv6_entry['mac'] = napalm.base.helpers.mac(ipv6_entry.get('mac'))
+            ipv6_entry['ip'] = napalm.base.helpers.ip(ipv6_entry.get('ip'))
+            ipv6_neighbors_table.append(ipv6_entry)
+
+        return ipv6_neighbors_table
+
     def get_ntp_peers(self):
         """Return the NTP peers configured on the device."""
         ntp_table = junos_views.junos_ntp_peers_config_table(self.device)
@@ -1855,6 +1873,8 @@ class JunOSDriver(NetworkDriver):
                 optics_detail[interface_name]['physical_channels'] = {}
                 optics_detail[interface_name]['physical_channels']['channel'] = []
 
+            INVALID_LIGHT_LEVEL = [None, C.OPTICS_NULL_LEVEL, C.OPTICS_NULL_LEVEL_SPC]
+
             # Defaulting avg, min, max values to 0.0 since device does not
             # return these values
             intf_optics = {
@@ -1864,7 +1884,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['input_power'])
                                         if optics['input_power'] not in
-                                        [None, C.OPTICS_NULL_LEVEL]
+                                        INVALID_LIGHT_LEVEL
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1874,7 +1894,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['output_power'])
                                         if optics['output_power'] not in
-                                        [None, C.OPTICS_NULL_LEVEL]
+                                        INVALID_LIGHT_LEVEL
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
@@ -1884,7 +1904,7 @@ class JunOSDriver(NetworkDriver):
                                     'instant': (
                                         float(optics['laser_bias_current'])
                                         if optics['laser_bias_current'] not in
-                                        [None, C.OPTICS_NULL_LEVEL]
+                                        INVALID_LIGHT_LEVEL
                                         else 0.0),
                                     'avg': 0.0,
                                     'max': 0.0,
