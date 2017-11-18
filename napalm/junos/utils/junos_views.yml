@@ -21,6 +21,8 @@ junos_iface_view:
     #mode: logical-interface/address-family/address-family-name
     speed: speed
     mac_address: current-physical-address
+    mtu: mtu
+
 
 ####
 #### BGP tables
