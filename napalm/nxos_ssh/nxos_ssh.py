@@ -93,7 +93,7 @@ def parse_intf_section(interface):
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
     re_mac = r"^\s+Hardware.*address:\s+(?P<mac_address>\S+) "
-    re_speed = r"^\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
+    re_mtu_speed = r"^\s+MTU (?P<MTU>\d+).*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
     re_description = r"^\s+Description:\s+(?P<description>.*)$"
 
     # Check for 'protocol is ' lines
@@ -144,7 +144,8 @@ def parse_intf_section(interface):
     else:
         mac_address = ""
 
-    match = re.search(re_speed, interface, flags=re.M)
+    match = re.search(re_mtu_speed, interface, flags=re.M)
+    mtu = int(match.group('MTU'))
     speed = int(match.group('speed'))
     speed_unit = match.group('speed_unit')
     # This was alway in Kbit (in the data I saw)
@@ -165,7 +166,8 @@ def parse_intf_section(interface):
                     'is_up': is_up,
                     'last_flapped': -1.0,
                     'mac_address': mac_address,
-                    'speed': speed}
+                    'speed': speed,
+                    'mtu': mtu}
            }
 
 
@@ -811,19 +813,22 @@ class NXOSSSHDriver(NetworkDriver):
                       'is_up': True,
                       'last_flapped': -1.0,
                       'mac_address': u'a493.4cc1.67a7',
-                      'speed': 100},
+                      'speed': 100,
+                      'mtu': 1500},
         u'Vlan100': {   'description': u'Data Network',
                         'is_enabled': True,
                         'is_up': True,
                         'last_flapped': -1.0,
                         'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100},
+                        'speed': 100,
+                        'mtu': 1500},
         u'Vlan200': {   'description': u'Voice Network',
                         'is_enabled': True,
                         'is_up': True,
                         'last_flapped': -1.0,
                         'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100}}
+                        'speed': 100,
+                        'mtu': 1500}}
         """
         interfaces = {}
         command = 'show interface'
