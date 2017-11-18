@@ -68,7 +68,7 @@ custom_commands['install'] = CustomInstall
 setup(
     cmdclass=custom_commands,
     name="napalm",
-    version='2.0.0',
+    version='2.1.0',
     packages=find_packages(exclude=("test*", )),
     test_suite='test_base',
     author="David Barroso, Kirk Byers, Mircea Ulinic",
