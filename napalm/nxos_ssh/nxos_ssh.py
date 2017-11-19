@@ -672,7 +672,10 @@ class NXOSSSHDriver(NetworkDriver):
             return False
         return True
 
-    def commit_config(self):
+    def commit_config(self, confirmed=None):
+        if confirmed is not None:
+            raise NotImplementedError
+
         if self.loaded:
             self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
             # Create Checkpoint from current running-config

@@ -178,10 +178,17 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def commit_config(self):
+    def commit_config(self, confirmed=None):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
+
+        :param confirmed (optional): Number of minutes until rollback occurs. Default is None \
+        (no confirmation).
         """
+        raise NotImplementedError
+
+    def commit_confirm(self):
+        """Confirm pending commit."""
         raise NotImplementedError
 
     def discard_config(self):

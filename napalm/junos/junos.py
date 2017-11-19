@@ -234,8 +234,10 @@ class JunOSDriver(NetworkDriver):
         else:
             return diff.strip()
 
-    def commit_config(self):
+    def commit_config(self, confirmed=None):
         """Commit configuration."""
+        if confirmed is not None:
+            raise NotImplementedError
         self.device.cu.commit(ignore_warning=self.ignore_warning)
         if not self.config_lock:
             self._unlock()
