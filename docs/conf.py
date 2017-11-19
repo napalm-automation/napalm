@@ -317,9 +317,8 @@ def build_napalm_ansible_module_docs(app):
         sys.exit(-1)
 
     env = Environment(loader=FileSystemLoader("."))
-    template_file = env.get_template("ansible-module.j2")
 
-    modules_dir = './ansible/tests'
+    modules_dir = './integrations/ansible/modules/source'
     module_files = glob('{0}/*.json'.format(modules_dir))
     for module_file in module_files:
         with open(module_file, 'r') as f:
@@ -327,13 +326,15 @@ def build_napalm_ansible_module_docs(app):
             data = json.loads(f.read())
             data['name'] = module
 
-        rendered_template = template_file.render(**data)
+        module_dir = './integrations/ansible/modules/{0}'.format(module)
 
-        module_dir = './ansible/{0}'.format(module)
         try:
             os.stat(module_dir)
         except Exception:
             os.mkdir(module_dir)
+
+        template_file = env.get_template("ansible-module.j2")
+        rendered_template = template_file.render(**data)
 
         with open('{0}/index.rst'.format(module_dir), 'w') as f:
             f.write(rendered_template)
