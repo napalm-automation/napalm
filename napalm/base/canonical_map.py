@@ -42,6 +42,7 @@ base_interfaces = {
   "Hu": "HundredGigabitEthernet",
   "Loopback": "Loopback",
   "Lo": "Loopback",
+  "lo": "Loopback",
   "Management": "Management",
   "Mgmt": "Management",
   "Ma": "Management",
