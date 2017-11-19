@@ -289,7 +289,7 @@ def canonical_interface_name(interface, addl_name_map=None):
     # check in dict for mapping
     if name_map.get(interface_type):
         long_int = name_map.get(interface_type)
-        return long_int + str(interface_number)
+        return long_int + py23_compat.text_type(interface_number)
     # if nothing matched, return the original name
     else:
         return interface
@@ -327,7 +327,7 @@ def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=N
         canonical_type = interface_type
 
     try:
-        abbreviated_name = rev_name_map[canonical_type] + str(interface_number)
+        abbreviated_name = rev_name_map[canonical_type] + py23_compat.text_type(interface_number)
         return abbreviated_name
     except KeyError:
         pass

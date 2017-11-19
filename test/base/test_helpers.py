@@ -403,10 +403,10 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertEqual(napalm.base.helpers.canonical_interface_name('lo0'), "Loopback0")
         self.assertEqual(napalm.base.helpers.canonical_interface_name('no_match0/1'),
                          "no_match0/1")
-        self.assertEqual(napalm.base.helpers.canonical_interface_name('lo',
-                         addl_name_map={"lo": "something_custom"}), "something_custom")
-        self.assertEqual(napalm.base.helpers.canonical_interface_name('uniq',
-                         addl_name_map={"uniq": "something_custom"}), "something_custom")
+        self.assertEqual(napalm.base.helpers.canonical_interface_name('lo10',
+                         addl_name_map={"lo": "something_custom"}), "something_custom10")
+        self.assertEqual(napalm.base.helpers.canonical_interface_name('uniq0/1/1',
+                         addl_name_map={"uniq": "something_custom"}), "something_custom0/1/1")
 
     def test_abbreviated_interface_name(self):
         """Test the abbreviated_interface_name helper function."""
@@ -420,8 +420,8 @@ class TestBaseHelpers(unittest.TestCase):
                          "Hu105/1/1")
         self.assertEqual(napalm.base.helpers.abbreviated_interface_name('Lo0'), "Lo0")
         self.assertEqual(napalm.base.helpers.abbreviated_interface_name('lo0'), "Lo0")
-        self.assertEqual(napalm.base.helpers.abbreviated_interface_name('no_match0/1'),
-                         "no_match0/1")
+        self.assertEqual(napalm.base.helpers.abbreviated_interface_name('something_custom0/1'),
+                         "something_custom0/1")
         self.assertEqual(napalm.base.helpers.abbreviated_interface_name('loop10',
                          addl_name_map={"loop": "Loopback"}), "Lo10")
         self.assertEqual(napalm.base.helpers.abbreviated_interface_name('loop10',
