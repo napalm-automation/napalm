@@ -268,10 +268,17 @@ def split_interface(intf_name):
 def canonical_interface_name(interface, addl_name_map=None):
     """Function to return an interface's canonical name (fully expanded name).
 
-    This puposely does not use regex, or first X characters, to ensure
-    there is no chance for false positives. As an example, Po = PortChannel, and
-    PO = POS. With either character or regex, that would produce a false positive.
+    Use of explicit matches used to indicate a clear understanding on any potential
+    match. Regex and other looser matching methods were not implmented to avoid false
+    positive matches. As an example, it would make sense to do "[P|p][O|o]" which would
+    incorrectly match PO = POS and Po = Port-channel, leading to a false positive, not
+    easily troubleshot, found, or known.
+
+    :param interface: The interface you are attempting to expand.
+    :param addl_name_map: A dict containing key/value pairs that is mean to update the base mapping.
+    Used if a OS has specific differences. e.g. {"Po": "PortChannel"} vs {"Po": "Port-Channel"}
     """
+
     name_map = {}
     name_map.update(base_interfaces)
     interface_type, interface_number = split_interface(interface)
@@ -288,7 +295,17 @@ def canonical_interface_name(interface, addl_name_map=None):
 
 
 def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=None):
-    """Function to return an abbreviated representation of the interface name."""
+    """Function to return an abbreviated representation of the interface name.
+
+    :param interface: The interface you are attempting to expand.
+    :param addl_name_map (optional): A dict containing key/value pairs that updates
+    the base mapping. Used if an OS has specific differences. e.g. {"Po": "PortChannel"} vs
+    {"Po": "Port-Channel"}
+    :param addl_reverse_map (optional): A dict containing key/value pairs that updates
+    the reverse mapping. Used if an OS has specific differences. e.g. {"PortChannel": "Po"} vs
+    {"PortChannel": "po"}
+    """
+
     name_map = {}
     name_map.update(base_interfaces)
     interface_type, interface_number = split_interface(interface)
