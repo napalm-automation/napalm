@@ -275,8 +275,9 @@ def canonical_interface_name(interface, addl_name_map=None):
     easily troubleshot, found, or known.
 
     :param interface: The interface you are attempting to expand.
-    :param addl_name_map: A dict containing key/value pairs that is mean to update the base mapping.
-    Used if a OS has specific differences. e.g. {"Po": "PortChannel"} vs {"Po": "Port-Channel"}
+    :param addl_name_map (optional): A dict containing key/value pairs that updates
+    the base mapping. Used if an OS has specific differences. e.g. {"Po": "PortChannel"} vs
+    {"Po": "Port-Channel"}
     """
 
     name_map = {}
@@ -297,7 +298,7 @@ def canonical_interface_name(interface, addl_name_map=None):
 def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=None):
     """Function to return an abbreviated representation of the interface name.
 
-    :param interface: The interface you are attempting to expand.
+    :param interface: The interface you are attempting to abbreviate.
     :param addl_name_map (optional): A dict containing key/value pairs that updates
     the base mapping. Used if an OS has specific differences. e.g. {"Po": "PortChannel"} vs
     {"Po": "Port-Channel"}
@@ -312,8 +313,12 @@ def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=N
 
     if isinstance(addl_name_map, dict):
         name_map.update(addl_name_map)
+
+    rev_name_map = {}
+    rev_name_map.update(reverse_mapping)
+
     if isinstance(addl_reverse_map, dict):
-        reverse_mapping.update(addl_reverse_map)
+        rev_name_map.update(addl_reverse_map)
 
     # Try to ensure canonical type.
     if name_map.get(interface_type):
@@ -322,7 +327,7 @@ def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=N
         canonical_type = interface_type
 
     try:
-        abbreviated_name = reverse_mapping[canonical_type] + str(interface_number)
+        abbreviated_name = rev_name_map[canonical_type] + str(interface_number)
         return abbreviated_name
     except KeyError:
         pass
