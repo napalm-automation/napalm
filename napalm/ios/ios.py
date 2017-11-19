@@ -388,12 +388,15 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self):
+    def commit_config(self, confirmed=None):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """
+        if confirmed is not None:
+            raise NotImplementedError
+
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
