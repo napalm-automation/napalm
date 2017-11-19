@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 # std libs
 import os
 import sys
+from datetime import date, datetime
 
 # third party libs
 import jinja2
@@ -307,3 +308,60 @@ def abbreviated_interface_name(interface, update_os_mapping=None):
     # if nothing matched, at least return the original
     else:
         return interface
+
+
+def current_str_date():
+    return str(date.today())
+
+
+def current_str_datetime(fmt=None):
+    if not fmt:
+        fmt = '%Y_%m_%d_%H_%M_%S'
+    return str(datetime.strftime(datetime.now(), fmt))
+
+
+def build_output_dir(base_dir, os, hostname, dynamic_dir=None, output_file=None):
+    if dynamic_dir is None:
+        dynamic_dir = []
+    if output_file is None:
+        output_file = ["hostname", "command"]
+    acceptable_attr = ["hostname", "os", "command", "date", "datetime"]
+
+    if not set(acceptable_attr) > set(dynamic_dir):
+        raise IOError("Raise Proper ERROR HERE")
+    if not set(acceptable_attr) > set(output_file):
+        raise IOError("Raise Proper ERROR HERE")
+
+    if not base_dir.endswith('/'):
+        base_dir = base_dir + "/"
+
+    output_dir = base_dir
+    for val in dynamic_dir:
+        if val == "hostname":
+            output_dir = output_dir + hostname + "/"
+        elif val == "os":
+            output_dir = output_dir + os + "/"
+        elif val == "date":
+            output_dir = output_dir + current_str_date() + "/"
+        elif val == "datetime":
+            output_dir = output_dir + current_str_datetime() + "/"
+        elif val == "command":
+            output_dir = output_dir + "{command}/"
+
+    output_file_name = ""
+    for val in output_file:
+        if val == "hostname":
+            output_file_name = output_file_name + hostname + "_"
+        elif val == "os":
+            output_file_name = output_file_name + os + "_"
+        elif val == "date":
+            output_file_name = output_file_name + current_str_date() + "_"
+        elif val == "datetime":
+            output_file_name = output_file_name + current_str_datetime() + "_"
+        elif val == "command":
+            output_file_name = output_file_name + "{command}" + "_"
+
+    output_file_name = output_file_name[:-1]
+    output_file_name = output_file_name + ".txt"
+
+    return output_dir + output_file_name
