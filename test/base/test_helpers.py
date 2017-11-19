@@ -391,42 +391,43 @@ class TestBaseHelpers(unittest.TestCase):
     def test_canonical_interface_name(self):
         """Test the canonical_interface_name helper function."""
         self.assertEqual(napalm.base.helpers.canonical_interface_name('Fa0/1'), "FastEthernet0/1")
-        self.assertEqual(napalm.base.helpers.canonical_interface_name('FastEthernet0/1'), "FastEthernet0/1")
-        self.assertEqual(napalm.base.helpers.canonical_interface_name('TenGig1/1/1.5'), "TenGigabitEthernet1/1/1.5")
-        self.assertEqual(napalm.base.helpers.canonical_interface_name('Gi1/2'), "GigabitEthernet1/2")
-        self.assertEqual(napalm.base.helpers.canonical_interface_name('HundredGigE105/1/1'), "HundredGigabitEthernet105/1/1")
+        self.assertEqual(napalm.base.helpers.canonical_interface_name('FastEthernet0/1'),
+                         'FastEthernet0/1')
+        self.assertEqual(napalm.base.helpers.canonical_interface_name('TenGig1/1/1.5'),
+                         "TenGigabitEthernet1/1/1.5")
+        self.assertEqual(napalm.base.helpers.canonical_interface_name('Gi1/2'),
+                         "GigabitEthernet1/2")
+        self.assertEqual(napalm.base.helpers.canonical_interface_name('HundredGigE105/1/1'),
+                         "HundredGigabitEthernet105/1/1")
         self.assertEqual(napalm.base.helpers.canonical_interface_name('Lo0'), "Loopback0")
         self.assertEqual(napalm.base.helpers.canonical_interface_name('lo0'), "Loopback0")
-        self.assertEqual(napalm.base.helpers.canonical_interface_name('no_match0/1'), "no_match0/1")
+        self.assertEqual(napalm.base.helpers.canonical_interface_name('no_match0/1'),
+                         "no_match0/1")
         self.assertEqual(napalm.base.helpers.canonical_interface_name('lo',
-                                                                      addl_name_map =
-                                                                      {"lo":"something_custom"}),
-                                                                      "something_custom")
+                         addl_name_map={"lo": "something_custom"}), "something_custom")
         self.assertEqual(napalm.base.helpers.canonical_interface_name('uniq',
-                                                                      addl_name_map =
-                                                                      {"uniq":"something_custom"}),
-                                                                      "something_custom")
+                         addl_name_map={"uniq": "something_custom"}), "something_custom")
 
     def test_abbreviated_interface_name(self):
         """Test the abbreviated_interface_name helper function."""
         self.assertEqual(napalm.base.helpers.abbreviated_interface_name('Fa0/1'), "Fa0/1")
-        self.assertEqual(napalm.base.helpers.abbreviated_interface_name('FastEthernet0/1'), "Fa0/1")
-        self.assertEqual(napalm.base.helpers.abbreviated_interface_name('TenGig1/1/1.5'), "Te1/1/1.5")
+        self.assertEqual(napalm.base.helpers.abbreviated_interface_name('FastEthernet0/1'),
+                         "Fa0/1")
+        self.assertEqual(napalm.base.helpers.abbreviated_interface_name('TenGig1/1/1.5'),
+                         "Te1/1/1.5")
         self.assertEqual(napalm.base.helpers.abbreviated_interface_name('Gi1/2'), "Gi1/2")
-        self.assertEqual(napalm.base.helpers.abbreviated_interface_name('HundredGigE105/1/1'), "Hu105/1/1")
+        self.assertEqual(napalm.base.helpers.abbreviated_interface_name('HundredGigE105/1/1'),
+                         "Hu105/1/1")
         self.assertEqual(napalm.base.helpers.abbreviated_interface_name('Lo0'), "Lo0")
         self.assertEqual(napalm.base.helpers.abbreviated_interface_name('lo0'), "Lo0")
-        self.assertEqual(napalm.base.helpers.abbreviated_interface_name('no_match0/1'), "no_match0/1")
+        self.assertEqual(napalm.base.helpers.abbreviated_interface_name('no_match0/1'),
+                         "no_match0/1")
         self.assertEqual(napalm.base.helpers.abbreviated_interface_name('loop10',
-                                                                      addl_name_map =
-                                                                      {"loop":"Loopback"}),
-                                                                      "Lo10")
+                         addl_name_map={"loop": "Loopback"}), "Lo10")
         self.assertEqual(napalm.base.helpers.abbreviated_interface_name('loop10',
-                                                                      addl_name_map =
-                                                                      {"loop":"Loopback"},
-                                                                      addl_reverse_map =
-                                                                      {"Loopback":"lo"}),
-                                                                      "lo10")
+                         addl_name_map={"loop": "Loopback"},
+                         addl_reverse_map={"Loopback": "lo"}), "lo10")
+
 
 class FakeNetworkDriver(NetworkDriver):
 
