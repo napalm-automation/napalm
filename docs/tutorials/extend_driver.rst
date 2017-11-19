@@ -15,6 +15,9 @@ The get_driver method, is simply looking for a `custom_napalm.<os>` driver first
     except ImportError:
         module = importlib.import_module(module_install_name)
 
+Extending a Driver
+------------------
+
 By simply adding custom_napalm folder with an `__init__.py` and an `<os>.py` (e.g. `ios.py`) with class built to inherit
 the os class, you can expose all of the napalm methods, and your custom ones. This may sound like a lot, but this is 
 here is a simple example of how to inherit the OS driver and all the requirements.
@@ -33,6 +36,9 @@ Sample python path custom_napalm directory.::
     ├── __init__.py
     └── ios.py
 
+
+Creatin a Custom Method
+-----------------------
 
 Bulding on the previous example, we can create a a simple parse to return what our custom enviornment is looking for.
 
@@ -68,6 +74,9 @@ Which can build.
     >>> device.open()
     >>> device.get_my_banner()
     {'device': u'NYC-SW01', 'room': u'1004', 'site': u'NYC', 'floor': u'10'}
+
+Custom Driver Notes
+-------------------
 
 Please note that since there is no base class `get_my_banner` method, if you attempt to access
 this method from an os that is not supporting, then it will fail ungracefully. To alleviate
