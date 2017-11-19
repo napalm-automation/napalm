@@ -69,6 +69,23 @@ class TestConfigNetworkDriver(object):
 
         self.assertEqual(len(diff), 0)
 
+    def test_replacing_and_committing_config_with_confirm(self):
+        try:
+            self.device.load_replace_candidate(filename='%s/new_good.conf' % self.vendor)
+            self.device.commit_config(confirmed=5)
+            self.device.commit_confirm()
+        except NotImplementedError:
+            raise SkipTest()
+
+        # The diff should be empty as the configuration has been committed already
+        diff = self.device.compare_config()
+
+        # Reverting changes
+        self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
+        self.device.commit_config()
+
+        self.assertEqual(len(diff), 0)
+
     def test_replacing_config_with_typo(self):
         result = False
         try:
