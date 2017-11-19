@@ -1,122 +1,137 @@
-{
-  "Ethernet2/11": {
-    "is_enabled": false,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": false,
-    "mac_address": "2C:C2:60:4F:FE:B2",
-    "speed": 1000
-  },
-  "Ethernet2/10": {
-    "is_enabled": false,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": false,
-    "mac_address": "2C:C2:60:4F:FE:B2",
-    "speed": 1000
-  },
-  "Ethernet2/8": {
-    "is_enabled": false,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": false,
-    "mac_address": "2C:C2:60:4F:FE:B2",
-    "speed": 1000
-  },
-  "mgmt0": {
-    "is_enabled": true,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": true,
-    "mac_address": "2C:C2:60:12:EC:74",
-    "speed": 1000
-  },
-  "Ethernet2/6": {
-    "is_enabled": true,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": true,
-    "mac_address": "2C:C2:60:4F:FE:B2",
-    "speed": 1000
-  },
-  "loopback0": {
-    "is_enabled": true,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": true,
-    "mac_address": "",
-    "speed": 8000
-  },
-  "Ethernet2/9": {
-    "is_enabled": false,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": false,
-    "mac_address": "2C:C2:60:4F:FE:B2",
-    "speed": 1000
-  },
-  "loopback55": {
-    "is_enabled": true,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": true,
-    "mac_address": "",
-    "speed": 8000
-  },
-  "Ethernet2/7": {
-    "is_enabled": true,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": true,
-    "mac_address": "2C:C2:60:4F:FE:B2",
-    "speed": 1000
-  },
-  "Vlan1": {
-    "is_enabled": false,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": false,
-    "mac_address": "",
-    "speed": 1000
-  },
-  "Ethernet2/5": {
-    "is_enabled": true,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": true,
-    "mac_address": "2C:C2:60:4F:FE:B2",
-    "speed": 1000
-  },
-  "Ethernet2/4": {
-    "is_enabled": true,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": true,
-    "mac_address": "2C:C2:60:4F:FE:B2",
-    "speed": 1000
-  },
-  "Ethernet2/3": {
-    "is_enabled": true,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": true,
-    "mac_address": "2C:C2:60:4F:FE:B2",
-    "speed": 1000
-  },
-  "Ethernet2/2": {
-    "is_enabled": true,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": true,
-    "mac_address": "2C:C2:60:4F:FE:B2",
-    "speed": 1000
-  },
-  "Ethernet2/1": {
-    "is_enabled": true,
-    "description": "",
-    "last_flapped": -1,
-    "is_up": true,
-    "mac_address": "2C:C2:60:4F:FE:B2",
-    "speed": 1000
-  }
+{  
+   "Ethernet2/4":{  
+      "is_enabled":true,
+      "description":"",
+      "speed":1000,
+      "is_up":true,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:4F:FE:B2"
+   },
+   "Ethernet2/3":{  
+      "is_enabled":true,
+      "description":"",
+      "speed":1000,
+      "is_up":true,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:4F:FE:B2"
+   },
+   "mgmt0":{  
+      "is_enabled":true,
+      "description":"",
+      "speed":1000,
+      "is_up":true,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:12:EC:74"
+   },
+   "Ethernet2/10":{  
+      "is_enabled":false,
+      "description":"",
+      "speed":1000,
+      "is_up":false,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:4F:FE:B2"
+   },
+   "Ethernet2/6":{  
+      "is_enabled":true,
+      "description":"",
+      "speed":1000,
+      "is_up":true,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:4F:FE:B2"
+   },
+   "Ethernet2/5":{  
+      "is_enabled":true,
+      "description":"",
+      "speed":1000,
+      "is_up":true,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:4F:FE:B2"
+   },
+   "Ethernet2/8":{  
+      "is_enabled":false,
+      "description":"",
+      "speed":1000,
+      "is_up":false,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:4F:FE:B2"
+   },
+   "loopback0":{  
+      "is_enabled":true,
+      "description":"",
+      "speed":8000,
+      "is_up":true,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":""
+   },
+   "Vlan1":{  
+      "is_enabled":false,
+      "description":"",
+      "speed":1000,
+      "is_up":false,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":""
+   },
+   "Ethernet2/2":{  
+      "is_enabled":true,
+      "description":"",
+      "speed":1000,
+      "is_up":true,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:4F:FE:B2"
+   },
+   "Ethernet2/1":{  
+      "is_enabled":true,
+      "description":"",
+      "speed":1000,
+      "is_up":true,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:4F:FE:B2"
+   },
+   "loopback55":{  
+      "is_enabled":true,
+      "description":"",
+      "speed":8000,
+      "is_up":true,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":""
+   },
+   "Ethernet2/11":{  
+      "is_enabled":false,
+      "description":"",
+      "speed":1000,
+      "is_up":false,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:4F:FE:B2"
+   },
+   "Ethernet2/9":{  
+      "is_enabled":false,
+      "description":"",
+      "speed":1000,
+      "is_up":false,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:4F:FE:B2"
+   },
+   "Ethernet2/7":{  
+      "is_enabled":true,
+      "description":"",
+      "speed":1000,
+      "is_up":true,
+      "mtu":1500,
+      "last_flapped":-1.0,
+      "mac_address":"2C:C2:60:4F:FE:B2"
+   }
 }
