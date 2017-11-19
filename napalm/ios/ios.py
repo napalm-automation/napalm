@@ -128,6 +128,8 @@ class IOSDriver(NetworkDriver):
 
         self.profile = ["ios"]
 
+        self.use_canonical_interface = optional_args.get('canonical_int', False)
+
     def open(self):
         """Open a connection to the device."""
         device_type = 'cisco_ios'
@@ -1807,7 +1809,7 @@ class IOSDriver(NetworkDriver):
                 active = False
             return {
                 'mac': napalm.base.helpers.mac(mac),
-                'interface': interface,
+                'interface': self._canonical_int(interface),
                 'vlan': int(vlan),
                 'static': static,
                 'active': active,
@@ -1901,6 +1903,41 @@ class IOSDriver(NetworkDriver):
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
         return mac_address_table
+
+    def get_probes_config(self):
+        probes = {}
+        probes_regex = r"ip\s+sla\s+(?P<id>\d+)\n" \
+            "\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*" \
+            "\s+tag\s+(?P<name>\S+)\n.*" \
+            "\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*" \
+            "\s+frequency\s+(?P<interval>\d+)$"
+        probe_args = {
+            'icmp-echo': r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
+        }
+        probe_type_map = {
+            'icmp-echo': 'icmp-ping',
+        }
+        command = "show run | include ip sla [0-9]"
+        output = self._send_command(command)
+        for match in re.finditer(probes_regex, output, re.M):
+            probe = match.groupdict()
+            if probe["probe_type"] not in probe_args:
+                # Probe type not supported yet
+                continue
+            probe_args_match = re.match(probe_args[probe["probe_type"]],
+                                        probe["probe_args"])
+            probe_data = probe_args_match.groupdict()
+            probes[probe["id"]] = {
+                probe["name"]: {
+                    'probe_type': probe_type_map[probe["probe_type"]],
+                    'target': probe_data["target"],
+                    'source': probe_data["source"],
+                    'probe_count': int(probe["probe_count"]),
+                    'test_interval': int(probe["interval"])
+                }
+            }
+
+        return probes
 
     def get_snmp_information(self):
         """
@@ -2251,11 +2288,16 @@ class IOSDriver(NetworkDriver):
         command = 'show ipv6 neighbors'
         output = self._send_command(command)
 
-        for entry in output.split('\n')[1:]:
+        ipv6_neighbors = ''
+        fields = re.split(r"^IPv6\s+Address.*Interface$", output, flags=(re.M | re.I))
+        if len(fields) == 2:
+            ipv6_neighbors = fields[1].strip()
+        for entry in ipv6_neighbors.splitlines():
             # typical format of an entry in the IOS IPv6 neighbors table:
             # 2002:FFFF:233::1 0 2894.0fed.be30  REACH Fa3/1/2.233
             ip, age, mac, state, interface = entry.split()
             mac = '' if mac == '-' else napalm.base.helpers.mac(mac)
+            ip = napalm.base.helpers.ip(ip)
             ipv6_neighbors_table.append({
                                         'interface': interface,
                                         'mac': mac,
