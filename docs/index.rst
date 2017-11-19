@@ -60,7 +60,7 @@ Documentation
    base
    yang
    logs
-   ansible/index
+   integrations/index
    contributing/index
    development/index
    hackathons/index

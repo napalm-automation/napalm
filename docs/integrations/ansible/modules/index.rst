@@ -1,5 +1,5 @@
-napalm-ansible
-==============
+modules
+=======
 
 Below are the ansible modules which are currently available for NAPALM
 
@@ -7,4 +7,4 @@ Below are the ansible modules which are currently available for NAPALM
    :maxdepth: 1
    :glob:
 
-   */index
+   napalm_*/index
