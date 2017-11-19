@@ -37,8 +37,8 @@ Sample python path custom_napalm directory.::
     └── ios.py
 
 
-Creatin a Custom Method
------------------------
+Creating a Custom Method
+------------------------
 
 Bulding on the previous example, we can create a a simple parse to return what our custom enviornment is looking for.
 
