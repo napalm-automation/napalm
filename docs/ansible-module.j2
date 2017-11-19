@@ -15,7 +15,7 @@ Parameters
 		<th>Default</th>
 		<th>Choices</th>
 		<th>Description</th>
-	{% for p in doc['options'] %}
+	{% for p in doc['options']|sort %}
 			<tr>
 				<td>{{ p }}</td>
 				<td>{{ doc['options'][p]['required'] }}</td>
