@@ -178,10 +178,17 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def commit_config(self):
+    def commit_config(self, confirmed=None):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
+
+        :param confirmed (optional): Number of minutes until rollback occurs. Default is None \
+        (no confirmation).
         """
+        raise NotImplementedError
+
+    def commit_confirm(self):
+        """Confirm pending commit."""
         raise NotImplementedError
 
     def discard_config(self):
@@ -1587,6 +1594,6 @@ class NetworkDriver(object):
     def _canonical_int(self, interface):
         """Expose the helper function within this class."""
         if self.use_canonical_interface is True:
-            return napalm.base.helpers.canonical_interface_name(interface, update_os_mapping=None)
+            return napalm.base.helpers.canonical_interface_name(interface, addl_name_map=None)
         else:
             return interface

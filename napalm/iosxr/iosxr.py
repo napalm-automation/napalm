@@ -145,7 +145,10 @@ class IOSXRDriver(NetworkDriver):
         else:
             return self.device.compare_config().strip()
 
-    def commit_config(self):
+    def commit_config(self, confirmed=None):
+        if confirmed is not None:
+            raise NotImplementedError
+
         if self.replace:
             self.device.commit_replace_config()
         else:
