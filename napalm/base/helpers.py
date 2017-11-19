@@ -260,7 +260,7 @@ def as_number(as_number_val):
 
 def split_interface(intf_name):
     """Split an interface name based on first digit, slash, or space match."""
-    head = intf_name.rstrip(r'/\0123456789 ')
+    head = intf_name.rstrip(r'/\0123456789. ')
     tail = intf_name[len(head):].lstrip()
     return (head, tail)
 
@@ -287,18 +287,20 @@ def canonical_interface_name(interface, addl_name_map=None):
         return interface
 
 
-def abbreviated_interface_name(interface, addl_name_map=None):
+def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=None):
     """Function to return an abbreviated representation of the interface name."""
-    reverse_name_map = {}
-    reverse_name_map.update(reverse_mapping)
+    name_map = {}
+    name_map.update(base_interfaces)
     interface_type, interface_number = split_interface(interface)
 
     if isinstance(addl_name_map, dict):
-        reverse_name_map.update(addl_name_map)
+        name_map.update(addl_name_map)
+    if isinstance(addl_reverse_map, dict):
+        reverse_mapping.update(addl_reverse_map)
 
     # Try to ensure canonical type.
-    if base_interfaces.get(interface_type):
-        canonical_type = base_interfaces.get(interface_type)
+    if name_map.get(interface_type):
+        canonical_type = name_map.get(interface_type)
     else:
         canonical_type = interface_type
 
