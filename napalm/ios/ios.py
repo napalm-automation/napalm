@@ -128,6 +128,24 @@ class IOSDriver(NetworkDriver):
 
         self.profile = ["ios"]
 
+        if optional_args.get('save_commands'):
+            self.save_cmd = optional_args.get('save_commands')
+
+            try:
+                base_dir = self.save_cmd["log_command_base_dir"]
+            except KeyError:
+                raise CommandErrorException("NEED TO SET PROPER DIR, PUT IN PROPER RAISE HERE")
+
+            dynamic_dir = self.save_cmd.get("log_command_dynamic_dir", None)
+            output_file = self.save_cmd.get("log_command_output_file", None)
+            self.write_log_file = napalm.base.helpers.build_output_dir(base_dir,
+                                                                       self.profile[0],
+                                                                       self.hostname,
+                                                                       dynamic_dir=dynamic_dir,
+                                                                       output_file=output_file)
+        else:
+            self.save_cmd = False
+
         self.use_canonical_interface = optional_args.get('canonical_int', False)
 
     def open(self):
@@ -156,21 +174,42 @@ class IOSDriver(NetworkDriver):
         self.device.disconnect()
 
     def _send_command(self, command):
-        """Wrapper for self.device.send.command().
+        def __send_command(self, command):
+            """Wrapper for self.device.send.command().
 
-        If command is a list will iterate through commands until valid command.
-        """
-        try:
+            If command is a list will iterate through commands until valid command.
+            """
+            try:
+                if isinstance(command, list):
+                    for cmd in command:
+                        output = self.device.send_command(cmd)
+                        if "% Invalid" not in output:
+                            break
+                else:
+                    output = self.device.send_command(command)
+                return self._send_command_postprocess(output)
+            except (socket.error, EOFError) as e:
+                raise ConnectionClosedException(str(e))
+
+        output = __send_command(self, command)
+
+        if self.save_cmd:
+
+            file_path = self.write_log_file
+
             if isinstance(command, list):
-                for cmd in command:
-                    output = self.device.send_command(cmd)
-                    if "% Invalid" not in output:
-                        break
-            else:
-                output = self.device.send_command(command)
-            return self._send_command_postprocess(output)
-        except (socket.error, EOFError) as e:
-            raise ConnectionClosedException(str(e))
+                command = command[0]
+            file_command = re.sub('[\\\\/:*?"<>| ]', '_', command)
+            file_path = file_path.format(command=file_command)
+            folder_path = os.path.dirname(os.path.abspath(file_path))
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
+
+            file = open(file_path, "w")
+            file.write(output)
+            file.close()
+
+        return output
 
     def is_alive(self):
         """Returns a flag with the state of the connection."""

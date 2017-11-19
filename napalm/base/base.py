@@ -1590,3 +1590,23 @@ class NetworkDriver(object):
             return napalm.base.helpers.canonical_interface_name(interface, update_os_mapping=None)
         else:
             return interface
+
+#    def log_command_output(self, func):
+#        """Generic method to log commands"""
+#        def wrap_function(self, *args, **kwargs):
+#            output = func(*args, **kwargs)
+#
+#            if optional_args.get('save_commands'):
+#                self.save_commands_directory = save_command_directory()
+#
+#            file_path = self.write_log_file
+#            file_path = file_path.format(commands="sho_run")
+#            folder_path = os.path.dirname(os.path.abspath(file_path))
+#            if not os.path.exists(folder_path):
+#                os.makedirs(folder_path)
+#
+#            file = open(file_path,"w")
+#            file.write(output)
+#            file.close()
+#            return output
+#        return wrap_function
