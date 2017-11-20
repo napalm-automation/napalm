@@ -162,7 +162,7 @@ class EOSDriver(NetworkDriver):
 
         try:
             if self.eos_autoComplete is not None:
-                self.devcie.run_commands(commands, autoComplete=self.eos_autoComplete)
+                self.device.run_commands(commands, autoComplete=self.eos_autoComplete)
             else:
                 self.device.run_commands(commands)
         except pyeapi.eapilib.CommandError as e:
