@@ -128,6 +128,8 @@ class IOSDriver(NetworkDriver):
 
         self.profile = ["ios"]
 
+        self.use_canonical_interface = optional_args.get('canonical_int', False)
+
     def open(self):
         """Open a connection to the device."""
         device_type = 'cisco_ios'
@@ -1807,7 +1809,7 @@ class IOSDriver(NetworkDriver):
                 active = False
             return {
                 'mac': napalm.base.helpers.mac(mac),
-                'interface': interface,
+                'interface': self._canonical_int(interface),
                 'vlan': int(vlan),
                 'static': static,
                 'active': active,
