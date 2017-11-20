@@ -60,6 +60,17 @@ class BaseTestDouble(object):
             except ValueError:
                 raise ValueError("No JSON object could be decoded on filename: {}".format(filename))
 
+    @property
+    def expected_result_canonical(self):
+        """Return the expected result for the current test case."""
+        filename = self.find_file('expected_result_canonical.json')
+
+        with open(filename, mode='r') as f:
+            try:
+                return json.loads(f.read())
+            except ValueError:
+                raise ValueError("No JSON object could be decoded on filename: {}".format(filename))
+
 
 def _string_key_to_int(param):
     """For a given dictionary, convert all strings that represent a number into an int."""

@@ -1,0 +1,177 @@
+{
+  "global": {
+    "router_id": "10.0.1.1",
+    "peers": {
+      "10.0.0.2": {
+        "is_enabled": true,
+        "uptime": 4838400,
+        "remote_as": 65000,
+        "description": "internal-2",
+        "remote_id": "10.0.1.2",
+        "local_as": 65000,
+        "is_up": true,
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": 637213,
+            "accepted_prefixes": 3142,
+            "received_prefixes": 3142
+          },
+          "ipv6": {
+            "sent_prefixes": 36714,
+            "accepted_prefixes": 148,
+            "received_prefixes": 148
+          }
+        }
+      },
+      "10.0.0.3": {
+        "is_enabled": true,
+        "uptime": 133200,
+        "remote_as": 65000,
+        "description": "internal-3",
+        "remote_id": "10.0.1.3",
+        "local_as": 65000,
+        "is_up": true,
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": 966,
+            "accepted_prefixes": 1,
+            "received_prefixes": 1
+          },
+          "ipv6": {
+            "sent_prefixes": 105,
+            "accepted_prefixes": 2,
+            "received_prefixes": 2
+          }
+        }
+      },
+      "192.168.0.1": {
+        "is_enabled": true,
+        "uptime": 3888000,
+        "remote_as": 65001,
+        "description": "external-1",
+        "remote_id": "192.168.1.1",
+        "local_as": 65000,
+        "is_up": true,
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": 709,
+            "accepted_prefixes": 0,
+            "received_prefixes": 0
+          }
+        }
+      },
+      "192.168.0.2": {
+        "is_enabled": true,
+        "uptime": -1,
+        "remote_as": 65002,
+        "description": "external-2",
+        "remote_id": "0.0.0.0",
+        "local_as": 65000,
+        "is_up": false,
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1,
+            "received_prefixes": -1 
+          }
+        }
+      },
+      "192.168.0.3": {
+        "is_enabled": false,
+        "uptime": -1,
+        "remote_as": 65003,
+        "description": "external-3",
+        "remote_id": "0.0.0.0",
+        "local_as": 65000,
+        "is_up": false,
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1,
+            "received_prefixes": -1
+          }
+        }
+      },
+      "192.168.0.4": {
+        "is_enabled": true,
+        "uptime": 16243200,
+        "remote_as": 65004,
+        "description": "external-4",
+        "remote_id": "192.168.1.4",
+        "local_as": 65000,
+        "is_up": true,
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": 213,
+            "accepted_prefixes": 629700,
+            "received_prefixes": 629700
+          }
+        }
+      },
+      "2001:db8::1": {
+        "is_enabled": true,
+        "uptime": 3456000,
+        "remote_as": 65001,
+        "description": "external-1",
+        "remote_id": "192.168.1.1",
+        "local_as": 65000,
+        "is_up": true,
+        "address_family": {
+          "ipv6": {
+            "sent_prefixes": 35,
+            "accepted_prefixes": 0,
+            "received_prefixes": 0
+          }
+        }
+      },
+      "2001:db8::2": {
+        "is_enabled": true,
+        "uptime": 10713600,
+        "remote_as": 65002,
+        "description": "external-2",
+        "remote_id": "192.168.1.2",
+        "local_as": 65000,
+        "is_up": true,
+        "address_family": {
+          "ipv6": {
+            "sent_prefixes": 36,
+            "accepted_prefixes": 1,
+            "received_prefixes": 1
+          }
+        }
+      },
+      "2001:db8::3": {
+        "is_enabled": false,
+        "uptime": -1,
+        "remote_as": 65003,
+        "description": "external-3",
+        "remote_id": "0.0.0.0",
+        "local_as": 65000,
+        "is_up": false,
+        "address_family": {
+          "ipv6": {
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1,
+            "received_prefixes": -1
+          }
+        }
+      },
+      "2001:db8::4": {
+        "is_enabled": true,
+        "uptime": 16243200,
+        "remote_as": 65004,
+        "description": "external-4",
+        "remote_id": "192.168.1.4",
+        "local_as": 65000,
+        "is_up": true,
+        "address_family": {
+          "ipv6": {
+            "sent_prefixes": 29,
+            "accepted_prefixes": 36387,
+            "received_prefixes": 36387
+          }
+        }
+      }
+    }
+  }
+}

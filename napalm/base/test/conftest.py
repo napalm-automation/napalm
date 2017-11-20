@@ -23,6 +23,10 @@ def set_device_parameters(request):
     else:
         driver = request.cls.driver
 
+    if hasattr(request.cls, "canonical"):# and request.cls.canonical is True:
+        #if not isinstance(NAPALM_OPTIONAL_ARGS, dict):
+        #    NAPALM_OPTIONAL_ARGS = {}
+        NAPALM_OPTIONAL_ARGS['canonical_int'] = True
     request.cls.device = driver(NAPALM_HOSTNAME,
                                 NAPALM_USERNAME,
                                 NAPALM_PASSWORD,

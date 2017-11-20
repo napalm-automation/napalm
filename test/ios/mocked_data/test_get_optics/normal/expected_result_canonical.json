@@ -1,0 +1,56 @@
+{
+	"TenGigabitEthernet1/0/1": {
+		"physical_channels": {
+			"channel": [{
+				"index": 0,
+				"state": {
+					"output_power": {
+						"max": -100.0,
+						"avg": -100.0,
+						"instant": -2.0,
+						"min": -100.0
+					},
+					"laser_bias_current": {
+						"max": 0.0,
+						"avg": 0.0,
+						"instant": 0.0,
+						"min": 0.0
+					},
+					"input_power": {
+						"max": -100.0,
+						"avg": -100.0,
+						"instant": -3.5,
+						"min": -100.0
+					}
+				}
+			}]
+		}
+	},
+	"TenGigabitEthernet2/0/1": {
+		"physical_channels": {
+			"channel": [{
+				"index": 0, 
+				"state": {
+					"output_power": {
+						"max": -100.0,
+						"avg": -100.0,
+						"instant": -2.0,
+						"min": -100.0
+					},
+					"laser_bias_current": {
+						"max": 0.0,
+						"avg": 0.0,
+						"instant": 0.0,
+						"min": 0.0
+					}, 
+					"input_power": {
+						"max": -100.0, 
+						"avg": -100.0, 
+						"instant": -2.5,
+						"min": -100.0
+					}
+				}
+			}]
+		}
+	}
+}

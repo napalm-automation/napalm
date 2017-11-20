@@ -84,7 +84,10 @@ def wrap_test_cases(func):
         # as expected. For example, dicts where integers are strings
 
         try:
-            expected_result = attr.expected_result
+            if hasattr(cls, "canonical"):
+                expected_result = attr.expected_result_canonical
+            else:
+                expected_result = attr.expected_result
         except IOError as e:
             raise Exception("{}. Actual result was: {}".format(e, json.dumps(result)))
         if isinstance(result, list):
@@ -92,9 +95,9 @@ def wrap_test_cases(func):
         else:
             diff = dict_diff(result, expected_result)
         if diff:
-            print("Resulting JSON object was: {}".format(json.dumps(result)))
+            print("Resulting JSON object was: {}".format(json.dumps(result, indent=2)))
             raise AssertionError("Expected result varies on some keys {}".format(
-                                                                        json.dumps(diff)))
+                                 json.dumps(diff, indent=2)))
 
         for patched_attr in cls.device.patched_attrs:
             attr = getattr(cls.device, patched_attr)

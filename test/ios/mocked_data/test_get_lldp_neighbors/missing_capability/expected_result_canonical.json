@@ -1,0 +1,10 @@
+{
+	"GigabitEthernet1": [{
+		"port": "17",
+		"hostname": "twb-sf-hpsw1"
+	}],
+	"GigabitEthernet2": [{
+		"port": "18",
+		"hostname": "twb-sf-hpsw2"
+	}]
+}

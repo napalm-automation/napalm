@@ -1,0 +1,227 @@
+[
+  {
+    "vlan": 1,
+    "interface": "Port-channel21",
+    "static": false,
+    "mac": "00:11:21:E4:87:10",
+    "moves": -1,
+    "active": true,
+    "last_move": -1
+  },
+  {
+    "vlan": 1,
+    "interface": "",
+    "static": true,
+    "mac": "00:12:DA:F7:0C:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 1,
+    "interface": "Port-channel21",
+    "static": false,
+    "mac": "00:17:94:15:EE:C0",
+    "moves": -1,
+    "active": true,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet3/15",
+    "static": true,
+    "mac": "00:04:F2:FE:7F:95",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/47",
+    "static": true,
+    "mac": "00:04:F2:FE:82:DA",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 1,
+    "interface": "Port-channel21",
+    "static": true,
+    "mac": "01:00:0C:CC:CC:CE",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 1,
+    "interface": "",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 1,
+    "interface": "Port-channel21",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/4",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/5",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/8",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/11",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/12",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/13",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/19",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/41",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/42",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/43",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet2/47",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet3/10",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet3/15",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 11,
+    "interface": "GigabitEthernet3/16",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 24,
+    "interface": "Port-channel21",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 27,
+    "interface": "GigabitEthernet3/30",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  },
+  {
+    "vlan": 27,
+    "interface": "Port-channel21",
+    "static": true,
+    "mac": "FF:FF:FF:FF:FF:FF",
+    "moves": -1,
+    "active": false,
+    "last_move": -1
+  }
+]
