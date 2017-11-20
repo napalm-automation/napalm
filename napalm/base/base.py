@@ -188,6 +188,10 @@ class NetworkDriver(object):
         """Confirm pending commit."""
         raise NotImplementedError
 
+    def commit_confirm_revert(self):
+        """Immediately revert pending commit confirm."""
+        raise NotImplementedError
+
     def discard_config(self):
         """
         Discards the configuration loaded into the candidate.
