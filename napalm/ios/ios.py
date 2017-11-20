@@ -644,7 +644,7 @@ class IOSDriver(NetworkDriver):
             output_power = split_list[3]
             input_power = split_list[4]
 
-            port = self._expand_interface_name(int_brief)
+            port = self._canonical_int(int_brief)
 
             port_detail = {}
 
@@ -2303,7 +2303,7 @@ class IOSDriver(NetworkDriver):
             mac = '' if mac == '-' else napalm.base.helpers.mac(mac)
             ip = napalm.base.helpers.ip(ip)
             ipv6_neighbors_table.append({
-                                        'interface': interface,
+                                        'interface': self._canonical_int(interface),
                                         'mac': mac,
                                         'ip': ip,
                                         'age': float(age),
