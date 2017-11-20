@@ -143,7 +143,7 @@ class EOSDriver(NetworkDriver):
 
     @staticmethod
     def _multiline_convert(config, start="banner login", end="EOF", depth=1):
-        """Converts running-config HEREDOC into MULTILINE hack"""
+        """Converts running-config HEREDOC into EAPI JSON dict"""
         ret = list(config)  # Don't modify list in-place
         try:
             s = ret.index(start)
