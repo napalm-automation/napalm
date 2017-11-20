@@ -55,8 +55,9 @@ class EOSDriver(NetworkDriver):
     SUPPORTED_OC_MODELS = []
 
     HEREDOC_COMMANDS = [
-        "banner login",
-        "banner motd",
+        ("banner login", 1),
+        ("banner motd", 1),
+        ("protocol https certificate", 2)
     ]
 
     _RE_BGP_INFO = re.compile('BGP neighbor is (?P<neighbor>.*?), remote AS (?P<as>.*?), .*') # noqa
@@ -141,12 +142,15 @@ class EOSDriver(NetworkDriver):
             raise SessionLockedException('Session is already in use')
 
     @staticmethod
-    def _multiline_convert(config, start="banner login", end="EOF"):
+    def _multiline_convert(config, start="banner login", end="EOF", depth=1):
         """Converts running-config HEREDOC into MULTILINE hack"""
         ret = list(config)  # Don't modify list in-place
         try:
             s = ret.index(start)
-            e = ret.index(end, s)
+            e = s
+            while depth:
+                e = ret.index(end, e + 1)
+                depth = depth - 1
         except ValueError:  # Couldn't find end, abort
             return ret
         ret[s] = {'cmd': ret[s], 'input': "\n".join(ret[s+1:e])}
@@ -179,8 +183,8 @@ class EOSDriver(NetworkDriver):
                 continue
             commands.append(line)
 
-        for start in [s for s in self.HEREDOC_COMMANDS if s in commands]:
-            commands = self._multiline_convert(commands, start)
+        for start, depth in [(s, d) for (s, d) in self.HEREDOC_COMMANDS if s in commands]:
+            commands = self._multiline_convert(commands, start=start, depth=depth)
 
         try:
             if self.eos_autoComplete is not None:
