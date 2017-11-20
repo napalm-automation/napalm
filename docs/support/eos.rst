@@ -10,7 +10,7 @@ Multi-line/HEREDOC
 ~~~~~~~~~~~~~~~~~~
 EOS configuration is loaded via ``pyeapi.eapilib.Node.run_commands()``, which by itself cannot handle multi-line commands
 such as ``banner motd``.  The helper function ``EOSDriver._load_config()`` will attempt to detect HEREDOC commands in the
-input configuration and convert them into a single-line commmand that ``pyeapi`` understands.
+input configuration and convert them into a dictionary that eAPI understands
 
 Rollback
 ~~~~~~~~

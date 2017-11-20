@@ -147,9 +147,10 @@ class EOSDriver(NetworkDriver):
         try:
             s = ret.index(start)
             e = ret.index(end, s)
-        except ValueError:  # Command not in config
+        except ValueError:  # Couldn't find end, abort
             return ret
-        ret[s:e + 1] = ["{} MULTILINE: {}".format(ret[s], "\n".join(ret[s+1:e]))]
+        ret[s] = {'cmd': ret[s], 'input': "\n".join(ret[s+1:e])}
+        del ret[s + 1:e + 1]
 
         return ret
 
@@ -170,9 +171,6 @@ class EOSDriver(NetworkDriver):
             else:
                 lines = config.splitlines()
 
-        for start in self.HEREDOC_COMMANDS:
-            lines = self._multiline_convert(lines, start)
-
         for line in lines:
             line = line.strip()
             if line == '':
@@ -180,6 +178,9 @@ class EOSDriver(NetworkDriver):
             if line.startswith('!'):
                 continue
             commands.append(line)
+
+        for start in [s for s in self.HEREDOC_COMMANDS if s in commands]:
+            commands = self._multiline_convert(commands, start)
 
         try:
             if self.eos_autoComplete is not None:
