@@ -1,7 +1,7 @@
 Integrations
 ============
 
-Below are the ansible modules which are currently available for NAPALM
+NAPALM can be integrated with automation frameworks such as Ansible or Salt. In order to use NAPALM with ansible you will need to install napalm-ansible.
 
 .. toctree::
    :maxdepth: 1
