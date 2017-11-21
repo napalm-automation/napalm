@@ -126,6 +126,7 @@ ____________________________________
 * :code:`ssh_strict` (iosxr, ios) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
 * :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`use_keys` (iosxr, ios, panos) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
+* :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
 
 The transport argument
 ______________________
