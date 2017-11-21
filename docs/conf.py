@@ -81,7 +81,7 @@ release = '1'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', 'napalm_ansible_repo']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -310,7 +310,7 @@ def build_napalm_ansible_module_docs(app):
     """Create documentation for Ansible modules."""
 
     # Add script to clone napalm-ansible repo
-    status = 0
+    status = subprocess.call("./build-ansible-module-docs.sh", stdout=sys.stdout, stderr=sys.stderr)
 
     if status != 0:
         print("Something bad happened when processing the Ansible modules.")
