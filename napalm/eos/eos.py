@@ -88,6 +88,8 @@ class EOSDriver(NetworkDriver):
 
         self.profile = ["eos"]
 
+        self.eos_autoComplete = optional_args.get('eos_autoComplete', None)
+
     def open(self):
         """Implementation of NAPALM method open."""
         try:
@@ -159,7 +161,10 @@ class EOSDriver(NetworkDriver):
             commands.append(line)
 
         try:
-            self.device.run_commands(commands)
+            if self.eos_autoComplete is not None:
+                self.device.run_commands(commands, autoComplete=self.eos_autoComplete)
+            else:
+                self.device.run_commands(commands)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             if replace:
