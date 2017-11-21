@@ -14,14 +14,20 @@ from napalm.ios import ios
 
 
 @pytest.fixture(scope='class')
-def set_device_parameters(request):
+def set_device_parameters(request, local_param=None):
     """Set up the class."""
+    # if local_param[0] == 2:
+    setattr(request.cls, "canonical", True)
+
     def fin():
         request.cls.device.close()
     request.addfinalizer(fin)
 
     request.cls.driver = ios.IOSDriver
-    request.cls.patched_driver = PatchedIOSDriver
+    # if local_param[0] == 2:
+    request.cls.patched_driver = PatchedIOSDriverCanonical
+    # else:
+    #    request.cls.patched_driver = PatchedIOSDriver
     request.cls.vendor = 'ios'
     parent_conftest.set_device_parameters(request)
 
@@ -36,6 +42,31 @@ class PatchedIOSDriver(ios.IOSDriver):
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
 
+        super().__init__(hostname, username, password, timeout, optional_args)
+
+        self.patched_attrs = ['device']
+        self.device = FakeIOSDevice()
+
+    def disconnect(self):
+        pass
+
+    def is_alive(self):
+        return {
+            'is_alive': True  # In testing everything works..
+        }
+
+    def open(self):
+        pass
+
+
+class PatchedIOSDriverCanonical(ios.IOSDriver):
+    """Patched IOS Driver."""
+
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+
+        if not isinstance(optional_args, dict):
+            optional_args = {}
+        optional_args["canonical_int"] = True
         super().__init__(hostname, username, password, timeout, optional_args)
 
         self.patched_attrs = ['device']

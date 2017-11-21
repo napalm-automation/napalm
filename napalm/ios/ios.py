@@ -644,7 +644,7 @@ class IOSDriver(NetworkDriver):
             output_power = split_list[3]
             input_power = split_list[4]
 
-            port = self._expand_interface_name(int_brief)
+            port = self._canonical_int(int_brief)
 
             port_detail = {}
 
@@ -731,7 +731,7 @@ class IOSDriver(NetworkDriver):
                             device_id = device_id_new
                         else:
                             raise ValueError("Unable to obtain remote device name")
-            local_port = self._expand_interface_name(local_int_brief)
+            local_port = self._canonical_int(local_int_brief)
 
             entry = {'port': remote_port, 'hostname': device_id}
             lldp.setdefault(local_port, [])
@@ -790,7 +790,7 @@ class IOSDriver(NetworkDriver):
                 lldp_neighbors = {}
 
         for interface in lldp_neighbors:
-            local_port = interface
+            local_port = self._canonical_int(interface)
             lldp_fields = self._lldp_detail_parser(interface)
             # Convert any 'not advertised' to 'N/A'
             for field in lldp_fields:
@@ -914,7 +914,7 @@ class IOSDriver(NetworkDriver):
             if 'Interface ' in line:
                 continue
             interface = line.split()[0]
-            interface_list.append(interface)
+            interface_list.append(self._canonical_int(interface))
 
         return {
             'uptime': uptime,
@@ -1015,9 +1015,12 @@ class IOSDriver(NetworkDriver):
                 if not isinstance(is_up, bool) or not isinstance(is_enabled, bool):
                     raise ValueError("Did not correctly find the interface status")
 
-                interface_dict[interface] = {'is_enabled': is_enabled, 'is_up': is_up,
-                                             'description': description, 'mac_address': mac_address,
-                                             'last_flapped': last_flapped, 'speed': speed}
+                interface_dict[self._canonical_int(interface)] = {'is_enabled': is_enabled,
+                                                                  'is_up': is_up,
+                                                                  'description': description,
+                                                                  'mac_address': mac_address,
+                                                                  'last_flapped': last_flapped,
+                                                                  'speed': speed}
 
                 interface = description = mac_address = speed = speedformat = ''
                 is_enabled = is_up = None
@@ -1063,7 +1066,7 @@ class IOSDriver(NetworkDriver):
                 continue
             if(line[0] != ' '):
                 ipv4 = {}
-                interface_name = line.split()[0]
+                interface_name = self._canonical_int(line.split()[0])
             m = re.match(INTERNET_ADDRESS, line)
             if m:
                 ip, prefix = m.groups()
@@ -1074,7 +1077,7 @@ class IOSDriver(NetworkDriver):
             if(len(line.strip()) == 0):
                 continue
             if(line[0] != ' '):
-                ifname = line.split()[0]
+                ifname = self._canonical_int(line.split()[0])
                 ipv6 = {}
                 if ifname not in interfaces:
                     interfaces[ifname] = {'ipv6': ipv6}
@@ -1463,7 +1466,8 @@ class IOSDriver(NetworkDriver):
             raise ValueError("Unexpected output from: {}".format(command))
 
         # Re-join interface names with interface strings
-        for interface, interface_str in zip(intf, interface_strings):
+        for interface_orig, interface_str in zip(intf, interface_strings):
+            interface = self._canonical_int(interface_orig)
             counters.setdefault(interface, {})
             for line in interface_str.splitlines():
                 if 'packets input' in line:
@@ -1504,11 +1508,11 @@ class IOSDriver(NetworkDriver):
                     counters[interface]['tx_errors'] = int(match.group(1))
                     counters[interface]['tx_discards'] = -1
             for line in sh_int_sum_cmd_out.splitlines():
-                if interface in line:
+                if interface_orig in line:
                     # Line is tabular output with columns
                     # Interface  IHQ  IQD  OHQ  OQD  RXBS  RXPS  TXBS  TXPS  TRTL
                     # where columns (excluding interface) are integers
-                    regex = r"\b" + interface + \
+                    regex = r"\b" + interface_orig + \
                         r"\b\s+(\d+)\s+(?P<IQD>\d+)\s+(\d+)" + \
                         r"\s+(?P<OQD>\d+)\s+(\d+)\s+(\d+)" + \
                         r"\s+(\d+)\s+(\d+)\s+(\d+)"
@@ -1643,7 +1647,7 @@ class IOSDriver(NetworkDriver):
             if not re.search(RE_MAC, mac):
                 raise ValueError("Invalid MAC Address detected: {}".format(mac))
             entry = {
-                'interface': interface,
+                'interface': self._canonical_int(interface),
                 'mac': napalm.base.helpers.mac(mac),
                 'ip': address,
                 'age': age
@@ -2196,7 +2200,7 @@ class IOSDriver(NetworkDriver):
             if 'Interface ' in line:
                 continue
             interface = line.split()[0]
-            interface_dict[interface] = {}
+            interface_dict[self._canonical_int(interface)] = {}
 
         instances['default'] = {
                                 'name': 'default',
@@ -2299,7 +2303,7 @@ class IOSDriver(NetworkDriver):
             mac = '' if mac == '-' else napalm.base.helpers.mac(mac)
             ip = napalm.base.helpers.ip(ip)
             ipv6_neighbors_table.append({
-                                        'interface': interface,
+                                        'interface': self._canonical_int(interface),
                                         'mac': mac,
                                         'ip': ip,
                                         'age': float(age),

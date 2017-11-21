@@ -1,0 +1,10 @@
+{
+	"os_version": "C2950 Software (C2950-I6K2L2Q4-M), Version 12.1(22)EA13, RELEASE SOFTWARE (fc2)",
+	"uptime": 20332140,
+	"interface_list": ["Vlan1", "Vlan20", "Vlan40", "Vlan41", "GigabitEthernet0/1", "GigabitEthernet0/2", "GigabitEthernet0/3", "GigabitEthernet0/4", "GigabitEthernet0/5", "GigabitEthernet0/6", "GigabitEthernet0/7", "GigabitEthernet0/8", "Port-channel1"],
+	"vendor": "Cisco",
+	"serial_number": "FHK0922W0JC",
+	"model": "WS-C2950T-48-SI",
+	"hostname": "c2950",
+	"fqdn": "c2950.example.com"
+}

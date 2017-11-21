@@ -9,7 +9,9 @@ base_interfaces = {
   "EO": "EOBC",
   "Ethernet": "Ethernet",
   "Eth": "Ethernet",
+  "eth": "Ethernet",
   "Et": "Ethernet",
+  "et": "Ethernet",
   "FastEthernet": "FastEthernet",
   "FastEth": "FastEthernet",
   "FastE": "FastEthernet",
@@ -50,9 +52,9 @@ base_interfaces = {
   "MFR": "MFR",
   "Multilink": "Multilink",
   "Mu": "Multilink",
-  "PortChannel": "PortChannel",
-  "Port-Channel": "PortChannel",
-  "Po": "PortChannel",
+  "PortChannel": "Port-channel",
+  "Port-Channel": "Port-channel",
+  "Po": "Port-channel",
   "POS": "POS",
   "PO": "POS",
   "Serial": "Serial",
@@ -75,7 +77,9 @@ base_interfaces = {
   "Vt": "Virtual-Template",
   "VLAN": "VLAN",
   "V": "VLAN",
-  "Vl": "VLAN"
+  "Vl": "VLAN",
+  "Wlan-GigabitEthernet": "Wlan-GigabitEthernet"
+
 }
 
 reverse_mapping = {
@@ -98,5 +102,6 @@ reverse_mapping = {
   "Tunnel": "Tu",
   "Virtual-Access": "Vi",
   "Virtual-Template": "Vt",
-  "VLAN": "Vl"
+  "VLAN": "Vl",
+  "Wlan-GigabitEthernet": "Wl-Gi"
 }
