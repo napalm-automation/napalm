@@ -388,7 +388,17 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self):
+    def commit_confirm(self):
+        """Confirm pending commit."""
+        cmd = "configure confirm"
+        self.device.send_command_expect(cmd)
+
+    def commit_abort(self):
+        """Immediately revert pending commit confirm."""
+        cmd = "configure revert now"
+        self.device.send_command_expect(cmd)
+
+    def commit_config(self, confirmed=None):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
@@ -403,10 +413,24 @@ class IOSDriver(NetworkDriver):
             cfg_file = self._gen_full_path(filename)
             if not self._check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
-            if self.auto_rollback_on_error:
-                cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
-            else:
-                cmd = 'configure replace {} force'.format(cfg_file)
+            if not self.auto_rollback_on_error:
+                raise NotImplementedError("auto_rollback_on_error attribute has been removed")
+
+            cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
+            if confirmed is not None:
+                confirmed = int(confirmed)
+                # Ensure within Cisco IOS thresholds (minutes)
+                CISCO_LOW_THRESHOLD = 1
+                CISCO_HIGH_THRESHOLD = 120
+                if CISCO_LOW_THRESHOLD <= confirmed <= CISCO_HIGH_THRESHOLD:
+                    cmd = 'configure replace flash:/candidate_config.txt force ' \
+                          'revert trigger error timer {}'.format(confirmed)
+                else:
+                    msg = "Invalid value for 'confirmed'; Cisco IOS requires a value " \
+                          "between: {}-{} minutes".format(CISCO_LOW_THRESHOLD,
+                                                          CISCO_HIGH_THRESHOLD)
+                    raise ValueError(msg)
+
             output = self._commit_hostname_handler(cmd)
             if ('original configuration has been successfully restored' in output) or \
                ('error' in output.lower()) or \
