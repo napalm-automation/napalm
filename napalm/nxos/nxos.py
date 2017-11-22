@@ -323,7 +323,7 @@ class NXOSDriver(NetworkDriver):
             raise ReplaceConfigException(rollback_result['msg'])
         return True
 
-    def commit_config(self, confirmed=None):
+    def commit_config(self, confirmed=None, message=None):
         if confirmed is not None:
             raise NotImplementedError
 

@@ -393,14 +393,13 @@ class IOSDriver(NetworkDriver):
         cmd = "configure confirm"
         self.device.send_command_expect(cmd)
 
-    def commit_abort(self):
+    def _commit_abort(self):
         """Immediately revert pending commit confirm."""
         cmd = "configure revert now"
         self.device.send_command_expect(cmd)
 
-    def commit_config(self, confirmed=None):
-        """
-        If replacement operation, perform 'configure replace' for the entire config.
+    def commit_config(self, confirmed=None, message=None):
+        """If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """

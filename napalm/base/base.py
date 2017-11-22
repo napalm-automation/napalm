@@ -178,7 +178,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def commit_config(self, confirmed=None):
+    def commit_config(self, confirmed=None, message=None):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
         """
@@ -186,10 +186,6 @@ class NetworkDriver(object):
 
     def commit_confirm(self):
         """Confirm pending commit."""
-        raise NotImplementedError
-
-    def commit_confirm_revert(self):
-        """Immediately revert pending commit confirm."""
         raise NotImplementedError
 
     def discard_config(self):

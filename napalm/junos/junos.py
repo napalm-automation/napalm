@@ -234,7 +234,7 @@ class JunOSDriver(NetworkDriver):
         else:
             return diff.strip()
 
-    def commit_config(self, confirmed=None):
+    def commit_config(self, confirmed=None, message=None):
         """Commit configuration."""
         if confirmed is not None:
             raise NotImplementedError
