@@ -4,8 +4,13 @@ EOS
 Minimum Version
 ~~~~~~~~~~~~~~~
 
-
 To be able to support the ``compare_config`` method you will require to run at least EOS version `4.15.0F`.
+
+Multi-line/HEREDOC
+~~~~~~~~~~~~~~~~~~
+EOS configuration is loaded via ``pyeapi.eapilib.Node.run_commands()``, which by itself cannot handle multi-line commands
+such as ``banner motd``.  The helper function ``EOSDriver._load_config()`` will attempt to detect HEREDOC commands in the
+input configuration and convert them into a dictionary that eAPI understands
 
 Rollback
 ~~~~~~~~
