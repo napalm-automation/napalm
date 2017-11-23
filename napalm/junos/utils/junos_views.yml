@@ -155,6 +155,7 @@ junos_pem_table:
 
 junos_pem_view:
   fields:
+    status: { state: True=Online }
     capacity: { pem-capacity-detail/capacity-actual: float }
     output: { dc-output-detail/dc-power: float }
 
