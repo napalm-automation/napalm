@@ -133,14 +133,14 @@ junos_iface_counter_view:
     tx_errors: { output-errors: int }
     tx_discards: { output-drops: int }
 
-junos_enviroment_table:
+junos_environment_table:
   rpc: get-environment-information
   args:
   item: environment-item
   key: name
-  view: junos_enviroment_view
+  view: junos_environment_view
 
-junos_enviroment_view:
+junos_environment_view:
   fields:
     class: class
     status: status

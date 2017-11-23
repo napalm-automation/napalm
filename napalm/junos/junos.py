@@ -318,7 +318,7 @@ class JunOSDriver(NetworkDriver):
 
     def get_environment(self):
         """Return environment details."""
-        environment = junos_views.junos_enviroment_table(self.device)
+        environment = junos_views.junos_environment_table(self.device)
         routing_engine = junos_views.junos_routing_engine_table(self.device)
         temperature_thresholds = junos_views.junos_temperature_thresholds(self.device)
         power_supplies = junos_views.junos_pem_table(self.device)
