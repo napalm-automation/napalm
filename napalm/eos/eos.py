@@ -271,6 +271,8 @@ class EOSDriver(NetworkDriver):
             interfaces[interface]['mac_address'] = napalm.base.helpers.convert(
                 napalm.base.helpers.mac, values.pop('physicalAddress', u''))
 
+            interfaces[interface]['mtu'] = int(values['mtu'])
+
         return interfaces
 
     def get_lldp_neighbors(self):
