@@ -691,6 +691,18 @@ class IOSDriver(NetworkDriver):
 
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
+
+        def _device_id_expand(device_id, local_int_brief):
+            """Device id might be abbreviated: try to obtain the full device id."""
+            lldp_tmp = self._lldp_detail_parser(local_int_brief)
+            device_id_new = lldp_tmp[3][0]
+            # Verify abbreviated and full name are consistent
+            if device_id_new[:20] == device_id:
+                return device_id_new
+            else:
+                # Else return the original device_id
+                return device_id
+
         lldp = {}
         command = 'show lldp neighbors'
         output = self._send_command(command)
@@ -710,39 +722,22 @@ class IOSDriver(NetworkDriver):
 
         for lldp_entry in split_output.splitlines():
             # Example, twb-sf-hpsw1    Fa4   120   B   17
+            device_id = lldp_entry[:20].strip()
+            remaining_fields = lldp_entry[20:]
             try:
-                device_id, local_int_brief, hold_time, capability, remote_port = lldp_entry.split()
+                local_int_brief, hold_time, capability, remote_port = remaining_fields.split()
             except ValueError:
-                if len(lldp_entry.split()) == 4:
-                    # Four fields might be long_name or missing capability
-                    capability_missing = True if lldp_entry[46] == ' ' else False
+                if len(remaining_fields.split()) == 3:
+                    # Three fields might be missing capability
+                    capability_missing = True if remaining_fields[26] == ' ' else False
                     if capability_missing:
-                        device_id, local_int_brief, hold_time, remote_port = lldp_entry.split()
-                    else:
-                        # Might be long_name issue
-                        tmp_field, hold_time, capability, remote_port = lldp_entry.split()
-                        device_id = tmp_field[:20]
-                        local_int_brief = tmp_field[20:]
-                        # device_id might be abbreviated, try to get full name
-                        lldp_tmp = self._lldp_detail_parser(local_int_brief)
-                        device_id_new = lldp_tmp[3][0]
-                        # Verify abbreviated and full name are consistent
-                        if device_id_new[:20] == device_id:
-                            device_id = device_id_new
-                        else:
-                            raise ValueError("Unable to obtain remote device name")
-                elif len(lldp_entry.split()) > 5:
-                    # Check if spaces in the device_id
-                    # Assume fixed length device_id field of 20 characters
-                    device_id = lldp_entry[:20].strip()
-                    # Check for spaces inside of the device_id
-                    if ' ' in device_id:
-                        # Parse the remaining fields
-                        fields = lldp_entry[20:]
-                        local_int_brief, hold_time, capability, remote_port = fields.split()
+                        local_int_brief, hold_time, remote_port = remaining_fields.split()
                     else:
                         raise ValueError("Unable to parse LLDP Info:\n{}".format(lldp_entry))
 
+            # device_id might be abbreviated, try to get full name
+            if len(device_id) == 20:
+                device_id = _device_id_expand(device_id, local_int_brief)
             local_port = self._expand_interface_name(local_int_brief)
 
             entry = {'port': remote_port, 'hostname': device_id}
