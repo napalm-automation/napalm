@@ -60,6 +60,7 @@ Documentation
    base
    yang
    logs
+   integrations/index
    contributing/index
    development/index
    hackathons/index
