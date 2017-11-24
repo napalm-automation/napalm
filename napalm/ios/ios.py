@@ -731,6 +731,12 @@ class IOSDriver(NetworkDriver):
                             device_id = device_id_new
                         else:
                             raise ValueError("Unable to obtain remote device name")
+                elif len(lldp_entry.split()) > 5:
+                    # Assuming spaces only in device_id
+                    device_id = ' '.join(lldp_entry.split()[:len(lldp_entry.split())-4])
+                    local_int_brief = lldp_entry.split()[-4]
+                    remote_port = lldp_entry.split()[-1]
+
             local_port = self._expand_interface_name(local_int_brief)
 
             entry = {'port': remote_port, 'hostname': device_id}
