@@ -211,7 +211,7 @@ class NXOSDriver(NetworkDriver):
 
         file_content = self.fix_checkpoint_string(file_content, self.replace_file)
         temp_file = tempfile.NamedTemporaryFile()
-        temp_file.write(file_content)
+        temp_file.write(file_content.encode())
         temp_file.flush()
         self.replace_file = cfg_filename
 

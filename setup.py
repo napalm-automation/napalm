@@ -1,74 +1,19 @@
 """setup.py file."""
 import uuid
-import os
 
-from distutils.core import Command
 from setuptools import setup, find_packages
-from setuptools.command import install
-from subprocess import check_call
-
 
 from pip.req import parse_requirements
 
-import pip  # noqa: test pip is installed
-import sys
+
+install_reqs = parse_requirements('requirements.txt', session=uuid.uuid1())
+reqs = [str(ir.req) for ir in install_reqs]
 
 __author__ = 'David Barroso <dbarrosop@dravetech.com>'
 
-# Read SUPPORTED_DRIVERS from file (without importing)
-_locals = {}
-filename = os.path.join('napalm', '_SUPPORTED_DRIVERS.py')
-with open(filename) as supported:
-    exec(supported.read(), None, _locals)
-    SUPPORTED_DRIVERS = _locals['SUPPORTED_DRIVERS']
-
-
-def process_requirements(dep):
-    print("PROCESSING DEPENDENCIES FOR {}".format(dep))
-    u = uuid.uuid1()
-    iter_reqs = parse_requirements("requirements/{}".format(dep), session=u)
-
-    for ir in iter_reqs:
-        check_call([sys.executable, '-m', 'pip', 'install', str(ir.req)])
-
-
-def custom_command_driver(driver):
-    class CustomCommand(Command):
-        """A custom command to run Pylint on all Python source files."""
-        user_options = []
-
-        def initialize_options(self):
-            pass
-
-        def finalize_options(self):
-            pass
-
-        def run(self):
-            """Run command."""
-            process_requirements(driver)
-
-    return CustomCommand
-
-
-class CustomInstall(install.install):
-    """A custom command to run Pylint on all Python source files."""
-
-    def run(self):
-        """Run command."""
-        if any([d in sys.argv for d in SUPPORTED_DRIVERS]):
-            process_requirements('base')
-        else:
-            process_requirements('all')
-        install.install.run(self)
-
-
-custom_commands = {d: custom_command_driver(d) for d in SUPPORTED_DRIVERS}
-custom_commands['install'] = CustomInstall
-
 setup(
-    cmdclass=custom_commands,
     name="napalm",
-    version='2.1.0',
+    version='2.2.0',
     packages=find_packages(exclude=("test*", )),
     test_suite='test_base',
     author="David Barroso, Kirk Byers, Mircea Ulinic",
@@ -88,7 +33,7 @@ setup(
     ],
     url="https://github.com/napalm-automation/napalm",
     include_package_data=True,
-    install_requires=[],
+    install_requires=reqs,
     entry_points={
         'console_scripts': [
             'cl_napalm_configure=napalm.base.clitools.cl_napalm_configure:main',
