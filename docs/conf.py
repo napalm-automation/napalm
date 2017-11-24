@@ -20,7 +20,7 @@ import re
 import subprocess
 import sys
 
-
+from glob import glob
 from napalm.base import NetworkDriver
 from jinja2 import Environment, FileSystemLoader
 
@@ -81,7 +81,7 @@ release = '1'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', 'napalm_ansible_repo']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -306,6 +306,40 @@ def _merge_results(last, intermediate):
         return last
 
 
+def build_napalm_ansible_module_docs(app):
+    """Create documentation for Ansible modules."""
+
+    # Add script to clone napalm-ansible repo
+    status = subprocess.call("./build-ansible-module-docs.sh", stdout=sys.stdout, stderr=sys.stderr)
+
+    if status != 0:
+        print("Something bad happened when processing the Ansible modules.")
+        sys.exit(-1)
+
+    env = Environment(loader=FileSystemLoader("."))
+
+    modules_dir = './integrations/ansible/modules/source'
+    module_files = glob('{0}/*.json'.format(modules_dir))
+    for module_file in module_files:
+        with open(module_file, 'r') as f:
+            module = module_file.split('/')[-1].split('.')[0]
+            data = json.loads(f.read())
+            data['name'] = module
+
+        module_dir = './integrations/ansible/modules/{0}'.format(module)
+
+        try:
+            os.stat(module_dir)
+        except Exception:
+            os.mkdir(module_dir)
+
+        template_file = env.get_template("ansible-module.j2")
+        rendered_template = template_file.render(**data)
+
+        with open('{0}/index.rst'.format(module_dir), 'w') as f:
+            f.write(rendered_template)
+
+
 def build_getters_support_matrix(app):
     """Build the getters support matrix."""
     status = subprocess.call("./test.sh", stdout=sys.stdout, stderr=sys.stderr)
@@ -356,6 +390,8 @@ def build_getters_support_matrix(app):
 def setup(app):
     """Map methods to states of the documentation build."""
     app.connect('builder-inited', build_getters_support_matrix)
+    app.connect('builder-inited', build_napalm_ansible_module_docs)
 
 
 build_getters_support_matrix(None)
+build_napalm_ansible_module_docs(None)
