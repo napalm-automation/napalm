@@ -13,7 +13,7 @@ git checkout develop
 
 pip install -r requirements-dev.txt
 pip install .
-py.test
+py.test -c /dev/null
 cp module_docs/* $MODULES_OUTPUT/
 
 cd $CWD
