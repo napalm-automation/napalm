@@ -1,0 +1,11 @@
+Maximum number of vrfs allowed: 14
+ Vrf     RD           Protocols    State               Interfaces
+------- ------------ ------------ ------------------- -------------------
+VRFA0   201:201   ipv4        v4:routing; multicast,  Vlan2, Vlan102
+                               v6:no routing
+
+VRFA1   203:203   ipv4        v4:routing; multicast,  Vlan3, Vlan103
+                               v6:no routing
+
+VRFA2   205:205   ipv4        v4:routing; multicast,  Ethernet1, Vlan100
+                               v6:no routing
