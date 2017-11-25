@@ -1,0 +1,20 @@
+{
+	"1": {
+		"test-google-8": {
+			"source": "Loopback0",
+			"probe_type": "icmp-ping",
+			"target": "8.8.8.8",
+			"test_interval": 3,
+			"probe_count": 20
+		}
+	},
+	"2": {
+		"test-google-4": {
+			"source": "1.1.1.1",
+			"probe_type": "icmp-ping",
+			"target": "8.8.4.4",
+			"test_interval": 3,
+			"probe_count": 20
+		}
+	}
+}

@@ -86,11 +86,12 @@ class MockDevice(object):
         self.profile = profile
 
     def run_commands(self, commands):
-        """Only useful for EOS"""
-        if "eos" in self.profile:
-            return list(self.parent.cli(commands).values())[0]
-        else:
-            raise AttributeError("MockedDriver instance has not attribute '_rpc'")
+        """Mock for EOS"""
+        return list(self.parent.cli(commands).values())[0]
+
+    def show(self, command):
+        """Mock for nxos"""
+        return self.run_commands([command])
 
 
 class MockDriver(NetworkDriver):

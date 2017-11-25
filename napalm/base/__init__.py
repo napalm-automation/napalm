@@ -81,7 +81,10 @@ def get_network_driver(module_name, prepend=True):
         # Can also request using napalm_[SOMETHING]
         if 'napalm' not in module_install_name and prepend is True:
             module_install_name = 'napalm.{name}'.format(name=module_install_name)
-        module = importlib.import_module(module_install_name)
+        try:
+            module = importlib.import_module("custom_" + module_install_name)
+        except ImportError:
+            module = importlib.import_module(module_install_name)
     except ImportError:
         raise ModuleImportError(
                 'Cannot import "{install_name}". Is the library installed?'.format(
