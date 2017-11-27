@@ -1,0 +1,62 @@
+<temperature-threshold-information>
+    <temperature-threshold>
+        <name>Chassis default</name>
+        <fan-normal-speed>48</fan-normal-speed>
+        <fan-high-speed>54</fan-high-speed>
+        <bad-fan-yellow-alarm>55</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>65</bad-fan-red-alarm>
+        <yellow-alarm>65</yellow-alarm>
+        <red-alarm>75</red-alarm>
+        <fire-shutdown>100</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>Routing Engine 0</name>
+        <fan-normal-speed>70</fan-normal-speed>
+        <fan-high-speed>80</fan-high-speed>
+        <bad-fan-yellow-alarm>95</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>110</bad-fan-red-alarm>
+        <yellow-alarm>95</yellow-alarm>
+        <red-alarm>110</red-alarm>
+        <fire-shutdown>112</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 2</name>
+        <fan-normal-speed>55</fan-normal-speed>
+        <fan-high-speed>60</fan-high-speed>
+        <bad-fan-yellow-alarm>65</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>80</bad-fan-red-alarm>
+        <yellow-alarm>75</yellow-alarm>
+        <red-alarm>90</red-alarm>
+        <fire-shutdown>95</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 3</name>
+        <fan-normal-speed>55</fan-normal-speed>
+        <fan-high-speed>60</fan-high-speed>
+        <bad-fan-yellow-alarm>65</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>80</bad-fan-red-alarm>
+        <yellow-alarm>75</yellow-alarm>
+        <red-alarm>90</red-alarm>
+        <fire-shutdown>95</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 4</name>
+        <fan-normal-speed>55</fan-normal-speed>
+        <fan-high-speed>60</fan-high-speed>
+        <bad-fan-yellow-alarm>65</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>80</bad-fan-red-alarm>
+        <yellow-alarm>75</yellow-alarm>
+        <red-alarm>105</red-alarm>
+        <fire-shutdown>110</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 5</name>
+        <fan-normal-speed>55</fan-normal-speed>
+        <fan-high-speed>60</fan-high-speed>
+        <bad-fan-yellow-alarm>65</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>80</bad-fan-red-alarm>
+        <yellow-alarm>75</yellow-alarm>
+        <red-alarm>105</red-alarm>
+        <fire-shutdown>110</fire-shutdown>
+    </temperature-threshold>
+</temperature-threshold-information>
