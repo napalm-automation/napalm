@@ -158,6 +158,19 @@ class EOSDriver(NetworkDriver):
 
         return ret
 
+    @staticmethod
+    def _mode_comment_convert(config):
+        ret = list(config)
+        d = 1
+        s, _ = next((idx, l) for idx, l in enumerate(ret) if isinstance(l, py23_compat.text_type)
+                    and re.match(r"^(\s+)?!!", l))
+        while re.match(r"^(\s+)?!!", config[s + d]):
+            d = d + 1
+        ret[s] = {'cmd': 'comment', 'input': "\n".join(map(lambda s: s.lstrip("! "), ret[s:s + d]))}
+        del ret[s + 1:s + d]
+
+        return ret
+
     def _load_config(self, filename=None, config=None, replace=True):
         commands = []
 
@@ -179,9 +192,13 @@ class EOSDriver(NetworkDriver):
             line = line.strip()
             if line == '':
                 continue
-            if line.startswith('!'):
+            if line.startswith('!') and not line.startswith('!!'):
                 continue
             commands.append(line)
+
+        while next((l for l in commands if isinstance(l, py23_compat.text_type)
+                    and re.match(r"(\s+)?!!", l)), None):
+            commands = self._mode_comment_convert(commands)
 
         for start, depth in [(s, d) for (s, d) in self.HEREDOC_COMMANDS if s in commands]:
             commands = self._multiline_convert(commands, start=start, depth=depth)
