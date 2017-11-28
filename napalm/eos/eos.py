@@ -162,7 +162,7 @@ class EOSDriver(NetworkDriver):
     def _mode_comment_convert(config):
         ret = list(config)
         d = 1
-        s, _ = next((idx, l) for idx, l in enumerate(ret) if isinstance(l, py23_compat.text_type)
+        s, _ = next((idx, l) for idx, l in enumerate(ret) if isinstance(l, py23_compat.string_types)
                     and re.match(r"^(\s+)?!!", l))
         while re.match(r"^(\s+)?!!", config[s + d]):
             d = d + 1
@@ -196,7 +196,7 @@ class EOSDriver(NetworkDriver):
                 continue
             commands.append(line)
 
-        while next((l for l in commands if isinstance(l, py23_compat.text_type)
+        while next((l for l in commands if isinstance(l, py23_compat.string_types)
                     and re.match(r"(\s+)?!!", l)), None):
             commands = self._mode_comment_convert(commands)
 
