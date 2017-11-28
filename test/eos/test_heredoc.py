@@ -1,12 +1,13 @@
 import mock
 import pytest
+from textwrap import dedent
 
 
 @pytest.mark.usefixtures("set_device_parameters")
 class TestConfigMangling(object):
     def test_heredoc(self):
 
-        raw_config = """hostname vEOS
+        raw_config = dedent("""hostname vEOS
         ip name-server 192.0.2.1
         !
         banner login
@@ -29,7 +30,7 @@ class TestConfigMangling(object):
         management ssh
           idle-timeout 15
         !
-        """
+        """)
 
         self.device.device.run_commands = mock.MagicMock()
 
@@ -51,6 +52,41 @@ class TestConfigMangling(object):
             },
             "management ssh",
             "idle-timeout 15"
+        ]
+
+        self.device.device.run_commands.assert_called_with(expected_result)
+
+    def test_mode_comment(self):
+        raw_config = dedent("""ip access-list standard test1
+            !! This is a
+            !! multiline mode comment
+            !! for standard ACL test1
+            permit host 192.0.2.1
+        !
+        ip access-list standard test2
+            !! This is a single-line mode comment for standard ACL test2
+            permit host 192.0.2.2
+        !
+        """)
+
+        self.device.device.run_commands = mock.MagicMock()
+
+        self.device._load_config(config=raw_config, replace=False)
+
+        expected_result = [
+            "configure session {}".format(self.device.config_session),
+            "ip access-list standard test1",
+            {
+                "cmd": "comment",
+                "input": "This is a\nmultiline mode comment\nfor standard ACL test1"
+            },
+            "permit host 192.0.2.1",
+            "ip access-list standard test2",
+            {
+                "cmd": "comment",
+                "input": "This is a single-line mode comment for standard ACL test2"
+            },
+            "permit host 192.0.2.2",
         ]
 
         self.device.device.run_commands.assert_called_with(expected_result)
