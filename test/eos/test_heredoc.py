@@ -67,6 +67,13 @@ class TestConfigMangling(object):
             !! This is a single-line mode comment for standard ACL test2
             permit host 192.0.2.2
         !
+        ip access-list standard test3
+            comment
+            This is a multi-line HEREDOC
+            comment for standard ACL test3
+            EOF
+            permit host 192.0.2.3
+        !
         """)
 
         self.device.device.run_commands = mock.MagicMock()
@@ -87,6 +94,12 @@ class TestConfigMangling(object):
                 "input": "This is a single-line mode comment for standard ACL test2"
             },
             "permit host 192.0.2.2",
+            "ip access-list standard test3",
+            {
+                "cmd": "comment",
+                "input": "This is a multi-line HEREDOC\ncomment for standard ACL test3"
+            },
+            "permit host 192.0.2.3"
         ]
 
         self.device.device.run_commands.assert_called_with(expected_result)

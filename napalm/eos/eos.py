@@ -57,6 +57,7 @@ class EOSDriver(NetworkDriver):
     HEREDOC_COMMANDS = [
         ("banner login", 1),
         ("banner motd", 1),
+        ("comment", 1),
         ("protocol https certificate", 2)
     ]
 
