@@ -1223,7 +1223,6 @@ class NXOSSSHDriver(NetworkDriver):
         Table, having the following keys
             * mac (string)
             * interface (string)
-            * other_interfaces (list)
             * vlan (int)
             * active (boolean)
             * static (boolean)
@@ -1266,7 +1265,7 @@ class NXOSSSHDriver(NetworkDriver):
         def remove_prefix(s, prefix):
             return s[len(prefix):] if s.startswith(prefix) else s
 
-        def process_mac_fields(vlan, mac, mac_type, interface, other_interfaces):
+        def process_mac_fields(vlan, mac, mac_type, interface):
             """Return proper data for mac address fields."""
             if mac_type.lower() in ['self', 'static', 'system']:
                 static = True
@@ -1290,8 +1289,7 @@ class NXOSSSHDriver(NetworkDriver):
                 'static': static,
                 'active': active,
                 'moves': -1,
-                'last_move': -1.0,
-                'other_interfaces': other_interfaces
+                'last_move': -1.0
             }
 
         # Skip the header lines
@@ -1324,19 +1322,22 @@ class NXOSSSHDriver(NetworkDriver):
                 if re.search(pattern, line):
                     split = line.split()
                     if len(split) >= 7:
-                        other_interfaces = []
                         vlan, mac, mac_type, _, _, _, interface = split[:7]
+                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                    interface))
 
                         # if there is multiples interfaces for the mac address on the same line
                         for i in range(7, len(split)):
-                            other_interfaces.append(split[i])
-                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface, other_interfaces))
+                            mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                        split[i]))
                         break
 
                     # if there is multiples interfaces for the mac address on next lines
+                    # we reuse the old variable 'vlan' 'mac' and 'mac_type'
                     elif len(split) < 7:
                         for i in range(0, len(split)):
-                            other_interfaces.append(split[i]) #using the power of reference and not a copy
+                            mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                        split[i]))
                         break
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
