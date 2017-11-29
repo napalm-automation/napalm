@@ -24,6 +24,9 @@ from napalm.base.utils.py23_compat import text_type
 from napalm.base.test import conftest
 
 
+inspect_getargspec = getattr(inspect, "getfullargspec", inspect.getargspec)
+
+
 def list_dicts_diff(prv, nxt):
     """Compare two lists of dicts."""
     result = []
@@ -133,17 +136,17 @@ class BaseTestGetters(object):
                 continue
             try:
                 orig = getattr(NetworkDriver, attr)
-                orig_spec = inspect.getargspec(orig)
+                orig_spec = inspect_getargspec(orig)
             except AttributeError:
                 orig_spec = 'Method does not exist in napalm.base'
-            func_spec = inspect.getargspec(func)
+            func_spec = inspect_getargspec(func)
             if orig_spec != func_spec:
                 errors[attr] = (orig_spec, func_spec)
 
         EXTRA_METHODS = ['__init__', ]
         for method in EXTRA_METHODS:
-            orig_spec = inspect.getargspec(getattr(NetworkDriver, method))
-            func_spec = inspect.getargspec(getattr(cls, method))
+            orig_spec = inspect_getargspec(getattr(NetworkDriver, method))
+            func_spec = inspect_getargspec(getattr(cls, method))
             if orig_spec != func_spec:
                 errors[attr] = (orig_spec, func_spec)
 

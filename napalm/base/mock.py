@@ -28,6 +28,9 @@ import re
 from pydoc import locate
 
 
+inspect_getargspec = getattr(inspect, "getfullargspec", inspect.getargspec)
+
+
 def raise_exception(result):
     exc = locate(result["exception"])
     if exc:
@@ -45,7 +48,7 @@ def is_mocked_method(method):
 
 def mocked_method(path, name, count):
     parent_method = getattr(NetworkDriver, name)
-    parent_method_args = inspect.getargspec(parent_method)
+    parent_method_args = inspect_getargspec(parent_method)
     modifier = 0 if 'self' not in parent_method_args.args else 1
 
     def _mocked_method(*args, **kwargs):
