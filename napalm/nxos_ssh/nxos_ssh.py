@@ -385,6 +385,10 @@ class NXOSSSHDriver(NetworkDriver):
         if optional_args is None:
             optional_args = {}
 
+        self.use_xml = False
+        if optional_args.get('use_xml'):
+            self.use_xml = True
+
         # Netmiko possible arguments
         netmiko_argument_map = {
             'port': None,
@@ -1244,7 +1248,17 @@ class NXOSSSHDriver(NetworkDriver):
         * 13       90e2.ba5a.9f30    dynamic      -       F    F    eth1/2
         * 13       90e2.ba4b.fc78    dynamic      -       F    F    eth1/1
         """
+        if self.use_xml:
+            return self._get_mac_address_table_xml()
+        else:
+            return self._get_mac_address_table_text()
 
+    def _get_mac_address_table_xml(self):
+        """Parse mac address table from XML output."""
+        pass
+
+    def _get_mac_address_table_text(self):
+        """Parse mac address table using screen-scraping."""
         #  The '*' is stripped out later
         RE_MACTABLE_FORMAT1 = r"^\s+{}\s+{}\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+".format(VLAN_REGEX,
                                                                                   MAC_REGEX)
