@@ -1,0 +1,6 @@
+{
+	"GigabitEthernet1": [{
+		"port": "Gi2/0",
+		"hostname": "MDB CSCT"
+	}]
+}

@@ -1295,8 +1295,11 @@ class NXOSSSHDriver(NetworkDriver):
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
-        # Strip any leading astericks or G character
-        output = re.sub(r"^[\*G]", "", output, flags=re.M)
+        # Strip any leading characters
+        output = re.sub(r"^[\*\+GO]", "", output, flags=re.M)
+        output = re.sub(r"^\(R\)", "", output, flags=re.M)
+        output = re.sub(r"^\(T\)", "", output, flags=re.M)
+        output = re.sub(r"^\(F\)", "", output, flags=re.M)
 
         for line in output.splitlines():
 

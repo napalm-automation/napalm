@@ -128,6 +128,8 @@ class IOSDriver(NetworkDriver):
 
         self.profile = ["ios"]
 
+        self.use_canonical_interface = optional_args.get('canonical_int', False)
+
     def open(self):
         """Open a connection to the device."""
         device_type = 'cisco_ios'
@@ -689,6 +691,18 @@ class IOSDriver(NetworkDriver):
 
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
+
+        def _device_id_expand(device_id, local_int_brief):
+            """Device id might be abbreviated: try to obtain the full device id."""
+            lldp_tmp = self._lldp_detail_parser(local_int_brief)
+            device_id_new = lldp_tmp[3][0]
+            # Verify abbreviated and full name are consistent
+            if device_id_new[:20] == device_id:
+                return device_id_new
+            else:
+                # Else return the original device_id
+                return device_id
+
         lldp = {}
         command = 'show lldp neighbors'
         output = self._send_command(command)
@@ -708,27 +722,22 @@ class IOSDriver(NetworkDriver):
 
         for lldp_entry in split_output.splitlines():
             # Example, twb-sf-hpsw1    Fa4   120   B   17
+            device_id = lldp_entry[:20].strip()
+            remaining_fields = lldp_entry[20:]
             try:
-                device_id, local_int_brief, hold_time, capability, remote_port = lldp_entry.split()
+                local_int_brief, hold_time, capability, remote_port = remaining_fields.split()
             except ValueError:
-                if len(lldp_entry.split()) == 4:
-                    # Four fields might be long_name or missing capability
-                    capability_missing = True if lldp_entry[46] == ' ' else False
+                if len(remaining_fields.split()) == 3:
+                    # Three fields might be missing capability
+                    capability_missing = True if remaining_fields[26] == ' ' else False
                     if capability_missing:
-                        device_id, local_int_brief, hold_time, remote_port = lldp_entry.split()
+                        local_int_brief, hold_time, remote_port = remaining_fields.split()
                     else:
-                        # Might be long_name issue
-                        tmp_field, hold_time, capability, remote_port = lldp_entry.split()
-                        device_id = tmp_field[:20]
-                        local_int_brief = tmp_field[20:]
-                        # device_id might be abbreviated, try to get full name
-                        lldp_tmp = self._lldp_detail_parser(local_int_brief)
-                        device_id_new = lldp_tmp[3][0]
-                        # Verify abbreviated and full name are consistent
-                        if device_id_new[:20] == device_id:
-                            device_id = device_id_new
-                        else:
-                            raise ValueError("Unable to obtain remote device name")
+                        raise ValueError("Unable to parse LLDP Info:\n{}".format(lldp_entry))
+
+            # device_id might be abbreviated, try to get full name
+            if len(device_id) == 20:
+                device_id = _device_id_expand(device_id, local_int_brief)
             local_port = self._expand_interface_name(local_int_brief)
 
             entry = {'port': remote_port, 'hostname': device_id}
@@ -1812,7 +1821,7 @@ class IOSDriver(NetworkDriver):
                 active = False
             return {
                 'mac': napalm.base.helpers.mac(mac),
-                'interface': interface,
+                'interface': self._canonical_int(interface),
                 'vlan': int(vlan),
                 'static': static,
                 'active': active,
@@ -1906,6 +1915,41 @@ class IOSDriver(NetworkDriver):
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
         return mac_address_table
+
+    def get_probes_config(self):
+        probes = {}
+        probes_regex = r"ip\s+sla\s+(?P<id>\d+)\n" \
+            "\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*" \
+            "\s+tag\s+(?P<name>\S+)\n.*" \
+            "\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*" \
+            "\s+frequency\s+(?P<interval>\d+)$"
+        probe_args = {
+            'icmp-echo': r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
+        }
+        probe_type_map = {
+            'icmp-echo': 'icmp-ping',
+        }
+        command = "show run | include ip sla [0-9]"
+        output = self._send_command(command)
+        for match in re.finditer(probes_regex, output, re.M):
+            probe = match.groupdict()
+            if probe["probe_type"] not in probe_args:
+                # Probe type not supported yet
+                continue
+            probe_args_match = re.match(probe_args[probe["probe_type"]],
+                                        probe["probe_args"])
+            probe_data = probe_args_match.groupdict()
+            probes[probe["id"]] = {
+                probe["name"]: {
+                    'probe_type': probe_type_map[probe["probe_type"]],
+                    'target': probe_data["target"],
+                    'source': probe_data["source"],
+                    'probe_count': int(probe["probe_count"]),
+                    'test_interval': int(probe["interval"])
+                }
+            }
+
+        return probes
 
     def get_snmp_information(self):
         """
@@ -2256,11 +2300,16 @@ class IOSDriver(NetworkDriver):
         command = 'show ipv6 neighbors'
         output = self._send_command(command)
 
-        for entry in output.split('\n')[1:]:
+        ipv6_neighbors = ''
+        fields = re.split(r"^IPv6\s+Address.*Interface$", output, flags=(re.M | re.I))
+        if len(fields) == 2:
+            ipv6_neighbors = fields[1].strip()
+        for entry in ipv6_neighbors.splitlines():
             # typical format of an entry in the IOS IPv6 neighbors table:
             # 2002:FFFF:233::1 0 2894.0fed.be30  REACH Fa3/1/2.233
             ip, age, mac, state, interface = entry.split()
             mac = '' if mac == '-' else napalm.base.helpers.mac(mac)
+            ip = napalm.base.helpers.ip(ip)
             ipv6_neighbors_table.append({
                                         'interface': interface,
                                         'mac': mac,

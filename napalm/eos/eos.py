@@ -54,6 +54,12 @@ class EOSDriver(NetworkDriver):
 
     SUPPORTED_OC_MODELS = []
 
+    HEREDOC_COMMANDS = [
+        ("banner login", 1),
+        ("banner motd", 1),
+        ("protocol https certificate", 2)
+    ]
+
     _RE_BGP_INFO = re.compile('BGP neighbor is (?P<neighbor>.*?), remote AS (?P<as>.*?), .*') # noqa
     _RE_BGP_RID_INFO = re.compile('.*BGP version 4, remote router ID (?P<rid>.*?), VRF (?P<vrf>.*?)$') # noqa
     _RE_BGP_DESC = re.compile('\s+Description: (?P<description>.*?)')
@@ -87,6 +93,8 @@ class EOSDriver(NetworkDriver):
         self.enablepwd = optional_args.get('enable_password', '')
 
         self.profile = ["eos"]
+
+        self.eos_autoComplete = optional_args.get('eos_autoComplete', None)
 
     def open(self):
         """Implementation of NAPALM method open."""
@@ -133,6 +141,23 @@ class EOSDriver(NetworkDriver):
         if [k for k, v in sess.items() if v['state'] == 'pending' and k != self.config_session]:
             raise SessionLockedException('Session is already in use')
 
+    @staticmethod
+    def _multiline_convert(config, start="banner login", end="EOF", depth=1):
+        """Converts running-config HEREDOC into EAPI JSON dict"""
+        ret = list(config)  # Don't modify list in-place
+        try:
+            s = ret.index(start)
+            e = s
+            while depth:
+                e = ret.index(end, e + 1)
+                depth = depth - 1
+        except ValueError:  # Couldn't find end, abort
+            return ret
+        ret[s] = {'cmd': ret[s], 'input': "\n".join(ret[s+1:e])}
+        del ret[s + 1:e + 1]
+
+        return ret
+
     def _load_config(self, filename=None, config=None, replace=True):
         commands = []
 
@@ -158,8 +183,14 @@ class EOSDriver(NetworkDriver):
                 continue
             commands.append(line)
 
+        for start, depth in [(s, d) for (s, d) in self.HEREDOC_COMMANDS if s in commands]:
+            commands = self._multiline_convert(commands, start=start, depth=depth)
+
         try:
-            self.device.run_commands(commands)
+            if self.eos_autoComplete is not None:
+                self.device.run_commands(commands, autoComplete=self.eos_autoComplete)
+            else:
+                self.device.run_commands(commands)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             if replace:
