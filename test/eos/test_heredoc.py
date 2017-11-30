@@ -7,7 +7,8 @@ from textwrap import dedent
 class TestConfigMangling(object):
     def test_heredoc(self):
 
-        raw_config = dedent("""hostname vEOS
+        raw_config = dedent("""\
+        hostname vEOS
         ip name-server 192.0.2.1
         !
         banner login
@@ -57,7 +58,8 @@ class TestConfigMangling(object):
         self.device.device.run_commands.assert_called_with(expected_result)
 
     def test_mode_comment(self):
-        raw_config = dedent("""ip access-list standard test1
+        raw_config = dedent("""\
+        ip access-list standard test1
             !! This is a
             !! multiline mode comment
             !! for standard ACL test1
