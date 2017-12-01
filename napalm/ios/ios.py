@@ -278,7 +278,7 @@ class IOSDriver(NetworkDriver):
     def _normalize_compare_config(diff):
         """Filter out strings that should not show up in the diff."""
         ignore_strings = ['Contextual Config Diffs', 'No changes were found',
-                          'file prompt quiet', 'ntp clock-period']
+                          'ntp clock-period']
 
         new_list = []
         for line in diff.splitlines():
@@ -538,12 +538,25 @@ class IOSDriver(NetworkDriver):
     def _enable_confirm(self):
         """Enable IOS confirmations on file operations (global config command)."""
         cmd = 'no file prompt quiet'
-        self.device.send_config_set([cmd])
+        try:
+            if self._do_enable_confirm:
+                self.device.send_config_set([cmd])
+        except AttributeError:
+            msg = "_enable_confirm was called without _do_enable_confirm set"
+            raise RuntimeError(msg)
 
     def _disable_confirm(self):
         """Disable IOS confirmations on file operations (global config command)."""
         cmd = 'file prompt quiet'
-        self.device.send_config_set([cmd])
+        # check if the command is already in the running-config
+        show_cmd = "show running-config | inc {}".format(cmd)
+        output = self.device.send_command_expect(show_cmd)
+        if cmd in output:
+            # set a flag to prevent later removal
+            self._do_enable_confirm = False
+        else:
+            self._do_enable_confirm = True
+            self.device.send_config_set([cmd])
 
     def _gen_full_path(self, filename, file_system=None):
         """Generate full file path on remote device."""
