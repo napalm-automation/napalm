@@ -26,6 +26,8 @@ import paramiko
 import hashlib
 import socket
 from datetime import datetime
+import xmltodict
+import json
 
 # import third party lib
 from netaddr import IPAddress
@@ -1249,13 +1251,95 @@ class NXOSSSHDriver(NetworkDriver):
         * 13       90e2.ba4b.fc78    dynamic      -       F    F    eth1/1
         """
         if self.use_xml:
-            return self._get_mac_address_table_xml()
+            return self._get_mac_address_table_xml
         else:
             return self._get_mac_address_table_text()
 
+    @property
     def _get_mac_address_table_xml(self):
         """Parse mac address table from XML output."""
-        pass
+        mac_address_table = []
+        command = 'show mac address-table | xml'
+        output = self.device.send_command(command)
+
+        def recursive_items(input_dict, input_key):
+            """XML headers vary across platforms, however, they begin and end
+            with the same fields. This function recursively searches through
+            JSON keys (converted from XML) to identify where MAC Table begins.
+            """
+            for key, value in input_dict.items():
+                if input_key not in value:
+                    return recursive_items(value, input_key)
+                else:
+                    return value
+
+        def verify_keys(value):
+            """Verify Key exists"""
+            try:
+                return value
+            except KeyError as e:
+                return False
+
+        #  Convert XML to Dictionary
+        show_mac_table_xml = xmltodict.parse(output, xml_attribs=True)
+
+        #  This process normalizes the data structure making it available for recursive lookups.
+        show_mac_table_data = json.loads(json.dumps(show_mac_table_xml))
+
+        #  Dictionary Keys required for search.
+        search_mac = (
+            show_mac_table_data['nf:rpc-reply']['nf:data']['show']['mac']['address-table']
+        )
+
+        #  'TABLE_mac_address' is the key which holds the MAC Table
+        simple_mac_table = recursive_items(search_mac, 'TABLE_mac_address')
+
+        # Verify Key's Exist
+        simple_mac_table_values = verify_keys(simple_mac_table['TABLE_mac_address']['ROW_mac_address'])
+
+        if simple_mac_table_values is not False:
+            for item in simple_mac_table_values:
+                #  Create Variables for MAC Values and verify key exists
+                mac = napalm.base.helpers.mac(verify_keys(item['disp_mac_addr']))
+                interface = verify_keys(item['disp_port'])
+                vlan = int(verify_keys(item['disp_vlan']))
+                static = verify_keys(item['disp_is_static'])
+                active = verify_keys(item['disp_type'])
+
+                if '(R)' in interface or '(T)' in interface or '(F)' in interface:
+                    interface = interface[:-3]
+
+                try:
+                    if 'disabled' in static.lower():
+                        static = False
+                    else:
+                        static = True
+                except Exception as e:
+                    static = True
+
+                try:
+                    if 'primary' in active.lower() or '*' in active:
+                        active = True
+                    else:
+                        active = False
+                except AttributeError as e:
+                    active = True
+
+                mac_address_table.append(
+                    {
+                        'mac': mac,
+                        'interface': interface,
+                        'vlan': vlan,
+                        'static': static,
+                        'active': active,
+                        'moves': -1,
+                        'last_move': -1.0
+                    }
+                )
+        else:
+            raise KeyError
+
+        return mac_address_table
 
     def _get_mac_address_table_text(self):
         """Parse mac address table using screen-scraping."""
