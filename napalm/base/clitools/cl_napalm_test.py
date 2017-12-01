@@ -21,10 +21,10 @@ import sys
 import logging
 
 logger = logging.getLogger('cl_napalm_test.py')
-warning()
 
 
 def main():
+    warning()
     args = build_help(connect_test=True)
     configure_logging(logger, args.debug)
 
