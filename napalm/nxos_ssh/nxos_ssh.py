@@ -1275,9 +1275,6 @@ class NXOSSSHDriver(NetworkDriver):
         #  Convert XML to Dictionary
         show_mac_table_xml = xmltodict.parse(output, xml_attribs=True)
 
-        #  This process normalizes the data structure making it available for recursive lookups.
-        # show_mac_table_data = json.loads(json.dumps(show_mac_table_xml))
-
         #  Dictionary Keys required for search.
         xml_search = show_mac_table_xml['nf:rpc-reply']['nf:data']['show']['mac']['address-table']
 
