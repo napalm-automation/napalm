@@ -27,7 +27,6 @@ import hashlib
 import socket
 from datetime import datetime
 import xmltodict
-import json
 
 # import third party lib
 from netaddr import IPAddress
@@ -366,6 +365,18 @@ def bgp_summary_parser(bgp_summary):
     bgp_return_dict[vrf]["peers"] = bgp_new_dict
 
     return bgp_return_dict
+
+
+def xml_recursive(xml_dict, search_key):
+    """XML headers vary across platforms, however, they begin and end
+    with the same fields. This function recursively searches through
+    JSON keys (converted from XML) to identify where search_key begins.
+    """
+    for key, value in xml_dict.items():
+        if search_key not in value:
+            return xml_recursive(value, search_key)
+        else:
+            return value
 
 
 class NXOSSSHDriver(NetworkDriver):
@@ -1251,93 +1262,62 @@ class NXOSSSHDriver(NetworkDriver):
         * 13       90e2.ba4b.fc78    dynamic      -       F    F    eth1/1
         """
         if self.use_xml:
-            return self._get_mac_address_table_xml
+            return self._get_mac_address_table_xml()
         else:
             return self._get_mac_address_table_text()
 
-    @property
     def _get_mac_address_table_xml(self):
         """Parse mac address table from XML output."""
         mac_address_table = []
         command = 'show mac address-table | xml'
         output = self.device.send_command(command)
 
-        def recursive_items(input_dict, input_key):
-            """XML headers vary across platforms, however, they begin and end
-            with the same fields. This function recursively searches through
-            JSON keys (converted from XML) to identify where MAC Table begins.
-            """
-            for key, value in input_dict.items():
-                if input_key not in value:
-                    return recursive_items(value, input_key)
-                else:
-                    return value
-
-        def verify_keys(value):
-            """Verify Key exists"""
-            try:
-                return value
-            except KeyError as e:
-                return False
-
         #  Convert XML to Dictionary
         show_mac_table_xml = xmltodict.parse(output, xml_attribs=True)
 
         #  This process normalizes the data structure making it available for recursive lookups.
-        show_mac_table_data = json.loads(json.dumps(show_mac_table_xml))
+        # show_mac_table_data = json.loads(json.dumps(show_mac_table_xml))
 
         #  Dictionary Keys required for search.
-        search_mac = (
-            show_mac_table_data['nf:rpc-reply']['nf:data']['show']['mac']['address-table']
-        )
+        xml_search = show_mac_table_xml['nf:rpc-reply']['nf:data']['show']['mac']['address-table']
 
         #  'TABLE_mac_address' is the key which holds the MAC Table
-        simple_mac_table = recursive_items(search_mac, 'TABLE_mac_address')
+        simple_mac_table = xml_recursive(xml_search, 'TABLE_mac_address')
 
-        # Verify Key's Exist
-        simple_mac_table_values = verify_keys(simple_mac_table['TABLE_mac_address']['ROW_mac_address'])
+        # Verify Keys Exist
+        simple_mac_table_values = simple_mac_table['TABLE_mac_address']['ROW_mac_address']
 
-        if simple_mac_table_values is not False:
-            for item in simple_mac_table_values:
-                #  Create Variables for MAC Values and verify key exists
-                mac = napalm.base.helpers.mac(verify_keys(item['disp_mac_addr']))
-                interface = verify_keys(item['disp_port'])
-                vlan = int(verify_keys(item['disp_vlan']))
-                static = verify_keys(item['disp_is_static'])
-                active = verify_keys(item['disp_type'])
+        # XML returns one element as a dict; multiple elements as list of dicts
+        if not isinstance(simple_mac_table_values, list):
+            simple_mac_table_values = [simple_mac_table_values]
 
-                if '(R)' in interface or '(T)' in interface or '(F)' in interface:
-                    interface = interface[:-3]
+        for mac_entry in simple_mac_table_values:
+            # Get rid of the ordered dictionary
+            mac_entry = dict(mac_entry)
+            mac = napalm.base.helpers.mac(mac_entry['disp_mac_addr'])
+            interface = mac_entry['disp_port']
+            vlan = int(mac_entry.get('disp_vlan', 0))
+            static = mac_entry.get('disp_is_static', 'disabled')
+            # FIX: revisit what an active/inactive mac is.
+            active = True
+            # active = mac_entry.get('disp_type', True)
 
-                try:
-                    if 'disabled' in static.lower():
-                        static = False
-                    else:
-                        static = True
-                except Exception as e:
-                    static = True
+            # NX-OS can do this for the ports, po1(R) strip the trailing characters
+            interface = re.sub(r'\([RTF]\)$', '', interface)
 
-                try:
-                    if 'primary' in active.lower() or '*' in active:
-                        active = True
-                    else:
-                        active = False
-                except AttributeError as e:
-                    active = True
+            static = True if 'enabled' in static.lower() else False
 
-                mac_address_table.append(
-                    {
-                        'mac': mac,
-                        'interface': interface,
-                        'vlan': vlan,
-                        'static': static,
-                        'active': active,
-                        'moves': -1,
-                        'last_move': -1.0
-                    }
-                )
-        else:
-            raise KeyError
+            mac_address_table.append(
+                {
+                    'mac': mac,
+                    'interface': interface,
+                    'vlan': vlan,
+                    'static': static,
+                    'active': active,
+                    'moves': -1,
+                    'last_move': -1.0
+                }
+            )
 
         return mac_address_table
 
