@@ -24,6 +24,7 @@ from napalm.base.utils.py23_compat import text_type
 from napalm.base.test import conftest
 
 
+# inspect.getargspec deprecated in Python 3.5, use getfullargspec if available
 inspect_getargspec = getattr(inspect, "getfullargspec", inspect.getargspec)
 
 

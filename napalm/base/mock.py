@@ -28,6 +28,7 @@ import re
 from pydoc import locate
 
 
+# inspect.getargspec deprecated in Python 3.5, use getfullargspec if available
 inspect_getargspec = getattr(inspect, "getfullargspec", inspect.getargspec)
 
 
