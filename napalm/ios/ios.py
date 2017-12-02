@@ -1012,7 +1012,7 @@ class IOSDriver(NetworkDriver):
                 mac_addr_match = re.search(mac_addr_regex, line)
                 mac_address = napalm.base.helpers.mac(mac_addr_match.groups()[0])
 
-            descr_regex = "^\s+Description:\s+(.+?)$"
+            descr_regex = r"^\s+Description:\s+(.+?)$"
             if re.search(descr_regex, line):
                 descr_match = re.search(descr_regex, line)
                 description = descr_match.groups()[0]
@@ -1741,7 +1741,7 @@ class IOSDriver(NetworkDriver):
 
             elif len(line.split()) == 9:
                 address, ref_clock, st, when, poll, reach, delay, offset, disp = line.split()
-                address_regex = re.match('(\W*)([0-9.*]*)', address)
+                address_regex = re.match(r'(\W*)([0-9.*]*)', address)
             try:
                 ntp_stats.append({
                     'remote': py23_compat.text_type(address_regex.group(2)),
@@ -1927,10 +1927,10 @@ class IOSDriver(NetworkDriver):
     def get_probes_config(self):
         probes = {}
         probes_regex = r"ip\s+sla\s+(?P<id>\d+)\n" \
-            "\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*" \
-            "\s+tag\s+(?P<name>\S+)\n.*" \
-            "\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*" \
-            "\s+frequency\s+(?P<interval>\d+)$"
+            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*" \
+            r"\s+tag\s+(?P<name>\S+)\n.*" \
+            r"\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*" \
+            r"\s+frequency\s+(?P<interval>\d+)$"
         probe_args = {
             'icmp-echo': r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
         }
@@ -2141,7 +2141,7 @@ class IOSDriver(NetworkDriver):
 
         results = dict()
         # Find all hops
-        hops = re.findall('\\n\s+[0-9]{1,3}\s', output)
+        hops = re.findall(r'\n\s+[0-9]{1,3}\s', output)
         for hop in hops:
             # Search for hop in the output
             hop_match = re.search(hop, output)
