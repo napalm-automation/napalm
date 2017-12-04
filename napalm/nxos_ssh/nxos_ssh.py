@@ -1256,7 +1256,7 @@ class NXOSSSHDriver(NetworkDriver):
         RE_MACTABLE_FORMAT2 = r"^\s+{}\s+{}\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+".format('-',
                                                                                   MAC_REGEX)
         # REGEX dedicated for lines with only interfaces (suite of the previous MAC address)
-        RE_MACTABLE_FORMAT3 = r"^\s+"
+        RE_MACTABLE_FORMAT3 = r"^\s+\S+"
 
         mac_address_table = []
         command = 'show mac address-table'
