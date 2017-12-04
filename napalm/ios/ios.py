@@ -678,7 +678,7 @@ class IOSDriver(NetworkDriver):
 
         def _device_id_expand(device_id, local_int_brief):
             """Device id might be abbreviated: try to obtain the full device id."""
-            # _lldp_detail_parser will execute a LLDP command on the device 
+            # _lldp_detail_parser will execute a LLDP command on the device
             lldp_tmp = self._lldp_detail_parser(local_int_brief)
             device_id_new = lldp_tmp[3][0]
             # Verify abbreviated and full name are consistent
