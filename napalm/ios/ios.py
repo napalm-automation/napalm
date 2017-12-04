@@ -125,10 +125,8 @@ class IOSDriver(NetworkDriver):
 
         self.device = None
         self.config_replace = False
-        self.interface_map = {}
 
         self.profile = ["ios"]
-
         self.use_canonical_interface = optional_args.get('canonical_int', False)
 
     def open(self):
@@ -586,24 +584,6 @@ class IOSDriver(NetworkDriver):
             return True
         return False
 
-    def _expand_interface_name(self, interface_brief):
-        """
-        Obtain the full interface name from the abbreviated name.
-
-        Cache mappings in self.interface_map.
-        """
-        if self.interface_map.get(interface_brief):
-            return self.interface_map.get(interface_brief)
-        command = 'show int {}'.format(interface_brief)
-        output = self._send_command(command)
-        first_line = output.splitlines()[0]
-        if 'line protocol' in first_line:
-            full_int_name = first_line.split()[0]
-            self.interface_map[interface_brief] = full_int_name
-            return self.interface_map.get(interface_brief)
-        else:
-            return interface_brief
-
     @staticmethod
     def _send_command_postprocess(output):
         """
@@ -645,7 +625,7 @@ class IOSDriver(NetworkDriver):
             output_power = split_list[3]
             input_power = split_list[4]
 
-            port = self._expand_interface_name(int_brief)
+            port = canonical_interface_name(int_brief)
 
             port_detail = {}
 
@@ -741,8 +721,6 @@ class IOSDriver(NetworkDriver):
 
             # device_id might be abbreviated, try to get full name
             if len(device_id) == 20:
-                local_int =  canonical_interface_name(local_int_brief)
-                dict_key = local_int + "_" + device_id
                 if expand_name:
                     device_id = _device_id_expand(device_id, local_int_brief)
             local_port = canonical_interface_name(local_int_brief)
@@ -790,14 +768,7 @@ class IOSDriver(NetworkDriver):
                 system_capabilities, enabled_capabilities, remote_address]
 
     def get_lldp_neighbors_detail(self, interface=''):
-        """
-        IOS implementation of get_lldp_neighbors_detail.
-
-        Calls get_lldp_neighbors.
-
-        Process execute 'show lldp neighbors detail' directly parse if local interface is present.
-        If local interface is not present call 'show lldp neighbors' and parse local interface from that.
-        """
+        """IOS implementation of get_lldp_neighbors_detail."""
         lldp = {}
 
         command = 'show lldp neighbors detail'
@@ -812,7 +783,7 @@ class IOSDriver(NetworkDriver):
         if not re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_detail_output, flags=re.M):
             # Older IOS local interface is not in LLDP detail output
             local_intf_detected = False
-    
+
             # Construct table of reverse mappings
             lldp_neighbors = self._get_lldp_neighbors(expand_name=False)
             reverse_neighbors = {}
@@ -834,7 +805,6 @@ class IOSDriver(NetworkDriver):
                     system_name = system_name_match.group(1)[:20]
                     key = "{}_{}".format(system_name, port_id)
                     local_intf = reverse_neighbors.get(key)
-
 
             if local_intf is None:
                 # Couldn't work out the local interface must execute command on the device
@@ -862,7 +832,7 @@ class IOSDriver(NetworkDriver):
                                       enabled_capabilities, remote_address)
 
             if local_intf:
-                local_intf =  canonical_interface_name(local_intf)
+                local_intf = canonical_interface_name(local_intf)
             lldp.setdefault(local_intf, [])
             for entry in standardized_fields:
                 remote_port_id, remote_port_description, remote_chassis_id, remote_system_name, \
