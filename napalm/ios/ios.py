@@ -678,6 +678,7 @@ class IOSDriver(NetworkDriver):
 
         def _device_id_expand(device_id, local_int_brief):
             """Device id might be abbreviated: try to obtain the full device id."""
+            # _lldp_detail_parser will execute a LLDP command on the device 
             lldp_tmp = self._lldp_detail_parser(local_int_brief)
             device_id_new = lldp_tmp[3][0]
             # Verify abbreviated and full name are consistent
@@ -770,7 +771,6 @@ class IOSDriver(NetworkDriver):
     def get_lldp_neighbors_detail(self, interface=''):
         """IOS implementation of get_lldp_neighbors_detail."""
         lldp = {}
-
         command = 'show lldp neighbors detail'
         # Filter to specific interface
         if interface:
@@ -779,12 +779,13 @@ class IOSDriver(NetworkDriver):
         lldp_detail_output = self._send_command(command)
         lldp_detail = re.split(r"^------------------.*$", lldp_detail_output, flags=re.M)[1:]
 
+        # Newer IOS versions have 'Local Intf' defined in LLDP detail; older IOS doesn't :-(
         local_intf_detected = True
         if not re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_detail_output, flags=re.M):
             # Older IOS local interface is not in LLDP detail output
             local_intf_detected = False
 
-            # Construct table of reverse mappings
+            # Construct table of reverse mappings (table to try to work out local_intf)
             lldp_neighbors = self._get_lldp_neighbors(expand_name=False)
             reverse_neighbors = {}
             for local_intf, v in lldp_neighbors.items():
@@ -800,17 +801,19 @@ class IOSDriver(NetworkDriver):
             else:
                 system_name_match = re.search(r"^System Name:\s+(\S.*)$", lldp_entry, flags=re.M)
                 port_id_match = re.search(r"^Port id:\s+(\S+)\s*$", lldp_entry, flags=re.M)
+                # Try to find the local_intf from the reverse_neighbors table
                 if system_name_match and port_id_match:
                     port_id = port_id_match.group(1)
                     system_name = system_name_match.group(1)[:20]
                     key = "{}_{}".format(system_name, port_id)
                     local_intf = reverse_neighbors.get(key)
 
-            if local_intf is None:
-                # Couldn't work out the local interface must execute command on the device
-                lldp_fields = self._lldp_detail_parser(local_intf)
-            else:
+            if local_intf is not None:
                 lldp_fields = self._lldp_detail_parser(local_intf, lldp_entry=lldp_entry)
+            else:
+                # Couldn't work out the local interface
+                raise ValueError("LLDP details could not determine the value of local interface:"
+                                 "\n{}\n{}".format(lldp_neighbors, lldp_entry))
 
             # Convert any 'not advertised' to 'N/A'
             for field in lldp_fields:
