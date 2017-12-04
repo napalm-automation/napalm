@@ -65,25 +65,6 @@ IOS_COMMANDS = {
 }
 
 
-def _parse_lldp_sections(lldp_detail):
-    lldp_sections = re.split(r"^------------------.*$", lldp_detail, flags=re.M)
-    if len(lldp_sections) >= 1:
-        lldp_sections.pop(0)
-    lldp_detail_dict = {}
-    for entry in lldp_sections:
-        match = re.search(r"^Local Intf:\s+(\S+)\s*$", entry, flags=re.M)
-        if match:
-            intf_name = match.group(1)
-            intf_name = canonical_interface_name(intf_name)
-            match_device_id = re.search(r"^System Name:\s+(\S+)\s*$", entry, flags=re.M)
-            if match_device_id:
-                # Only use first 20 characters here
-                device_id_tmp = match_device_id.group(1)[:20]
-                dict_key = intf_name + "_" + device_id_tmp
-                lldp_detail_dict[dict_key] = entry
-    return lldp_detail_dict
-
-
 class IOSDriver(NetworkDriver):
     """NAPALM Cisco IOS Handler."""
 
@@ -709,17 +690,15 @@ class IOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_lldp_neighbors(self, expand_name=True):
-        """IOS implementation of get_lldp_neighbors.
+    def get_lldp_neighbors(self):
+        return self._get_lldp_neighbors()
 
-        Call 'show lldp neighbors' parse. If the device_id is abbreviated then manually
-        call show lldp neighbors detail on that one interface.
-        """    
+    def _get_lldp_neighbors(self, expand_name=True):
+        """IOS implementation of get_lldp_neighbors."""
 
         def _device_id_expand(device_id, local_int_brief):
             """Device id might be abbreviated: try to obtain the full device id."""
             lldp_tmp = self._lldp_detail_parser(local_int_brief)
-            pdb.set_trace()
             device_id_new = lldp_tmp[3][0]
             # Verify abbreviated and full name are consistent
             if device_id_new[:20] == device_id:
@@ -731,9 +710,6 @@ class IOSDriver(NetworkDriver):
         lldp = {}
         command = 'show lldp neighbors'
         output = self._send_command(command)
-        command2 = 'show lldp neighbors detail'
-        lldp_detail_output = self._send_command(command2)
-        lldp_detail = _parse_lldp_sections(lldp_detail_output)
 
         # Check if router supports the command
         if '% Invalid input' in output:
@@ -769,7 +745,7 @@ class IOSDriver(NetworkDriver):
                 dict_key = local_int + "_" + device_id
                 if expand_name:
                     device_id = _device_id_expand(device_id, local_int_brief)
-            local_port = self._expand_interface_name(local_int_brief)
+            local_port = canonical_interface_name(local_int_brief)
 
             entry = {'port': remote_port, 'hostname': device_id}
             lldp.setdefault(local_port, [])
@@ -823,7 +799,6 @@ class IOSDriver(NetworkDriver):
         If local interface is not present call 'show lldp neighbors' and parse local interface from that.
         """
         lldp = {}
-        # lldp_neighbors = self.get_lldp_neighbors()
 
         command = 'show lldp neighbors detail'
         # Filter to specific interface
@@ -833,73 +808,76 @@ class IOSDriver(NetworkDriver):
         lldp_detail_output = self._send_command(command)
         lldp_detail = re.split(r"^------------------.*$", lldp_detail_output, flags=re.M)[1:]
 
-        import pdb
-        pdb.set_trace()
-
-        # Newer Cisco IOS has 'Local Intf' in LLDP detail
-        if re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_detail_output, flags=re.M):
-            for lldp_entry in lldp_detail:
-                match = re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_entry, flags=re.M)
-                if match:
-                    local_intf = match.group(1)
-                    lldp_fields = self._lldp_detail_parser(local_intf, lldp_entry=lldp_entry)
-
-                # Convert any 'not advertised' to 'N/A'
-                for field in lldp_fields:
-                    for i, value in enumerate(field):
-                        if 'not advertised' in value:
-                            field[i] = 'N/A'
-                number_entries = len(lldp_fields[0])
-    
-                # re.findall will return a list. Make sure same number of entries always returned.
-                for test_list in lldp_fields:
-                    if len(test_list) != number_entries:
-                        raise ValueError("Failure processing show lldp neighbors detail")
-    
-                # Standardize the fields
-                port_id, port_description, chassis_id, system_name, system_description, \
-                    system_capabilities, enabled_capabilities, remote_address = lldp_fields
-                standardized_fields = zip(port_id, port_description, chassis_id, system_name,
-                                          system_description, system_capabilities,
-                                          enabled_capabilities, remote_address)
-    
-                local_intf =  canonical_interface_name(local_intf)
-                lldp.setdefault(local_intf, [])
-                for entry in standardized_fields:
-                    remote_port_id, remote_port_description, remote_chassis_id, remote_system_name, \
-                        remote_system_description, remote_system_capab, remote_enabled_capab, \
-                        remote_mgmt_address = entry
-    
-                    lldp[local_intf].append({
-                        'parent_interface': u'N/A',
-                        'remote_port': remote_port_id,
-                        'remote_port_description': remote_port_description,
-                        'remote_chassis_id': remote_chassis_id,
-                        'remote_system_name': remote_system_name,
-                        'remote_system_description': remote_system_description,
-                        'remote_system_capab': remote_system_capab,
-                        'remote_system_enable_capab': remote_enabled_capab})
-
-        else:
+        local_intf_detected = True
+        if not re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_detail_output, flags=re.M):
             # Older IOS local interface is not in LLDP detail output
-            lldp_neighbors = self.get_lldp_neighbors(expand_name=False)
+            local_intf_detected = False
+    
+            # Construct table of reverse mappings
+            lldp_neighbors = self._get_lldp_neighbors(expand_name=False)
             reverse_neighbors = {}
             for local_intf, v in lldp_neighbors.items():
                 for entry in v:
                     key = "{hostname}_{port}".format(**entry)
                     reverse_neighbors[key] = local_intf
-            
-            for lldp_entry in lldp_detail:
+
+        for lldp_entry in lldp_detail:
+            if local_intf_detected:
+                match = re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_entry, flags=re.M)
+                if match:
+                    local_intf = match.group(1)
+            else:
                 system_name_match = re.search(r"^System Name:\s+(\S.*)$", lldp_entry, flags=re.M)
                 port_id_match = re.search(r"^Port id:\s+(\S+)\s*$", lldp_entry, flags=re.M)
                 if system_name_match and port_id_match:
-                    port_id = port_id_match.group(0)
-                    system_name = port_id_match.group(0)
+                    port_id = port_id_match.group(1)
+                    system_name = system_name_match.group(1)[:20]
                     key = "{}_{}".format(system_name, port_id)
-                    local_intf = reverse_neighbors[key]
+                    local_intf = reverse_neighbors.get(key)
 
-            pdb.set_trace()
-            pass
+
+            if local_intf is None:
+                # Couldn't work out the local interface must execute command on the device
+                lldp_fields = self._lldp_detail_parser(local_intf)
+            else:
+                lldp_fields = self._lldp_detail_parser(local_intf, lldp_entry=lldp_entry)
+
+            # Convert any 'not advertised' to 'N/A'
+            for field in lldp_fields:
+                for i, value in enumerate(field):
+                    if 'not advertised' in value:
+                        field[i] = 'N/A'
+            number_entries = len(lldp_fields[0])
+
+            # re.findall will return a list. Make sure same number of entries always returned.
+            for test_list in lldp_fields:
+                if len(test_list) != number_entries:
+                    raise ValueError("Failure processing show lldp neighbors detail")
+
+            # Standardize the fields
+            port_id, port_description, chassis_id, system_name, system_description, \
+                system_capabilities, enabled_capabilities, remote_address = lldp_fields
+            standardized_fields = zip(port_id, port_description, chassis_id, system_name,
+                                      system_description, system_capabilities,
+                                      enabled_capabilities, remote_address)
+
+            if local_intf:
+                local_intf =  canonical_interface_name(local_intf)
+            lldp.setdefault(local_intf, [])
+            for entry in standardized_fields:
+                remote_port_id, remote_port_description, remote_chassis_id, remote_system_name, \
+                    remote_system_description, remote_system_capab, remote_enabled_capab, \
+                    remote_mgmt_address = entry
+
+                lldp[local_intf].append({
+                    'parent_interface': u'N/A',
+                    'remote_port': remote_port_id,
+                    'remote_port_description': remote_port_description,
+                    'remote_chassis_id': remote_chassis_id,
+                    'remote_system_name': remote_system_name,
+                    'remote_system_description': remote_system_description,
+                    'remote_system_capab': remote_system_capab,
+                    'remote_system_enable_capab': remote_enabled_capab})
 
         return lldp
 
