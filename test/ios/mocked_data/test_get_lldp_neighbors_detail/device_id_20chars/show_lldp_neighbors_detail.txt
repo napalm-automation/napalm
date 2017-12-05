@@ -184,6 +184,25 @@ Physical media capabilities:
     Other/unknown
 Media Attachment Unit type: 16
 Vlan ID: - not advertised
+------------------------------------------------
+Chassis id: 192.168.2.44
+Port id: 30e4.db01.2345
+Port Description: Port 1
+System Name: Cisco IP Phone SPA504G
+System Description - not advertised
+
+Time remaining: 144 seconds
+System Capabilities: B,T
+Enabled Capabilities: B,T
+Management Addresses - not advertised
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    100base-TX(FD)
+    100base-TX(HD)
+    10base-T(FD)
+    10base-T(HD)
+Media Attachment Unit type: 16
+Vlan ID: - not advertised
 
 
-Total entries displayed: 7
+Total entries displayed: 8

@@ -671,10 +671,21 @@ class IOSDriver(NetworkDriver):
         return optics_detail
 
     def get_lldp_neighbors(self):
-        return self._get_lldp_neighbors()
+        """IOS implementation of get_lldp_neighbors."""
+        lldp = {}
+        neighbors_detail = self.get_lldp_neighbors_detail()
+        for intf_name, v in neighbors_detail.items():
+            lldp[intf_name] = []
+            for lldp_entry in v:
+                lldp_dict = {
+                    'port': lldp_entry['remote_port'],
+                    'hostname': lldp_entry['remote_system_name'],
+                }
+                lldp[intf_name].append(lldp_dict)
+
+        return lldp
 
     def _get_lldp_neighbors(self, expand_name=True):
-        """IOS implementation of get_lldp_neighbors."""
 
         def _device_id_expand(device_id, local_int_brief):
             """Device id might be abbreviated: try to obtain the full device id."""
