@@ -816,6 +816,7 @@ class IOSDriver(NetworkDriver):
                 if system_name_match and port_id_match:
                     port_id = port_id_match.group(1)
                     system_name = system_name_match.group(1)[:20]
+                    system_name = system_name.strip()
                     key = "{}_{}".format(system_name, port_id)
                     local_intf = reverse_neighbors.get(key)
 
