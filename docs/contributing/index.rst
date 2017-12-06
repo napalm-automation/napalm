@@ -49,6 +49,12 @@ Just do it! :)
 Proposing a new driver
 ----------------------
 
-This is a but more complex but completely doable. You can find more information `here <https://github.com/napalm-automation/napalm-skeleton>`_.
+This is a more complex process but completely doable. You can find more information `here <https://github.com/napalm-automation/napalm-skeleton>`_.
 
 Please check :ref:`contributing-drivers` to understand the process.
+
+.. toctree::
+   :maxdepth: 1
+
+   core
+   drivers
