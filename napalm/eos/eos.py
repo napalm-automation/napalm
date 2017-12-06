@@ -162,13 +162,15 @@ class EOSDriver(NetworkDriver):
     @staticmethod
     def _mode_comment_convert(config):
         ret = list(config)
-        d = 1
-        s, _ = next((idx, l) for idx, l in enumerate(ret) if isinstance(l, py23_compat.string_types)
-                    and re.match(r"^(\s+)?!!", l))
-        while re.match(r"^(\s+)?!!", config[s + d]):
-            d = d + 1
-        ret[s] = {'cmd': 'comment', 'input': "\n".join(map(lambda s: s.lstrip("! "), ret[s:s + d]))}
-        del ret[s + 1:s + d]
+        depth = 1
+        start, _ = next(
+            (idx, l) for idx, l in enumerate(ret) if isinstance(l, py23_compat.string_types)
+            and re.match(r"^(\s+)?!!", l))
+        while re.match(r"^(\s+)?!!", config[start + depth]):
+            depth = depth + 1
+        ret[start] = {'cmd': 'comment', 'input': "\n".join(
+            map(lambda s: s.lstrip("! "), ret[start:start + depth]))}
+        del ret[start + 1:start + depth]
 
         return ret
 
