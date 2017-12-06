@@ -50,3 +50,5 @@ Proposing a new driver
 ----------------------
 
 This is a but more complex but completely doable. You can find more information `here <https://github.com/napalm-automation/napalm-skeleton>`_.
+
+Please check :ref:`contributing-drivers` to understand the process.
