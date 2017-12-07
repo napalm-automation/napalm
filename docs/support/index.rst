@@ -1,3 +1,5 @@
+.. _supported-devices:
+
 Supported Devices
 =================
 
