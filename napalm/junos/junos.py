@@ -459,7 +459,7 @@ class JunOSDriver(NetworkDriver):
             'inet6': 'ipv6',
             'inetflow': 'flow'
         }
-        family = table.split('.')[-2]
+        family = table.rsplit('.',1)[-2]
         try:
             address_family = address_family_mapping[family]
         except KeyError:
