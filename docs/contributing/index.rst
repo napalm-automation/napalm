@@ -49,4 +49,4 @@ Just do it! :)
 Proposing a new driver
 ----------------------
 
-This is a but more complex but completely doable. You can find more information `here <https://github.com/napalm-automation/napalm-skeleton>`_.
+This is a bit more complex but completely doable. You can find more information `here <https://github.com/napalm-automation/napalm-skeleton>`_.
