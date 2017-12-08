@@ -57,6 +57,7 @@ class EOSDriver(NetworkDriver):
     HEREDOC_COMMANDS = [
         ("banner login", 1),
         ("banner motd", 1),
+        ("comment", 1),
         ("protocol https certificate", 2)
     ]
 
@@ -158,6 +159,41 @@ class EOSDriver(NetworkDriver):
 
         return ret
 
+    @staticmethod
+    def _mode_comment_convert(commands):
+        """
+        EOS has the concept of multi-line mode comments, shown in the running-config
+        as being inside a config stanza (router bgp, ACL definition, etc) and beginning
+        with the normal level of spaces and '!!', followed by comments.
+
+        Unfortunately, pyeapi does not accept mode comments in this format, and have to be
+        converted to a specific type of pyeapi call that accepts multi-line input
+
+        Copy the config list into a new return list, converting consecutive lines starting with
+        "!!" into a single multiline comment command
+
+        :param commands: List of commands to be sent to pyeapi
+        :return: Converted list of commands to be sent to pyeapi
+        """
+
+        ret = []
+        comment_count = 0
+        for idx, element in enumerate(commands):
+            # Check first for stringiness, as we may have dicts in the command list already
+            if isinstance(element, py23_compat.string_types) and element.startswith('!!'):
+                comment_count += 1
+                continue
+            else:
+                if comment_count > 0:
+                    # append the previous comment
+                    ret.append({"cmd": "comment",
+                                "input": "\n".join(map(lambda s: s.lstrip("! "),
+                                                       commands[idx - comment_count:idx]))})
+                    comment_count = 0
+                ret.append(element)
+
+        return ret
+
     def _load_config(self, filename=None, config=None, replace=True):
         commands = []
 
@@ -179,9 +215,11 @@ class EOSDriver(NetworkDriver):
             line = line.strip()
             if line == '':
                 continue
-            if line.startswith('!'):
+            if line.startswith('!') and not line.startswith('!!'):
                 continue
             commands.append(line)
+
+        commands = self._mode_comment_convert(commands)
 
         for start, depth in [(s, d) for (s, d) in self.HEREDOC_COMMANDS if s in commands]:
             commands = self._multiline_convert(commands, start=start, depth=depth)
