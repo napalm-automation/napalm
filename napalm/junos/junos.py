@@ -488,6 +488,9 @@ class JunOSDriver(NetworkDriver):
                 neighbor['sent_prefixes'] = [neighbor['sent_prefixes']]
             for idx, table in enumerate(neighbor['tables']):
                 family = self._get_address_family(table)
+                if family.startswith('__'):
+                    # junos internal instances
+                    continue
                 data[family] = {}
                 data[family]['received_prefixes'] = neighbor['received_prefixes'][idx]
                 data[family]['accepted_prefixes'] = neighbor['accepted_prefixes'][idx]
