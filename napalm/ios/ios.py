@@ -382,7 +382,7 @@ class IOSDriver(NetworkDriver):
 
         return diff.strip()
 
-    def _file_operation(f):
+    def _file_prompt_quiet(f):
         """Decorator to toggle 'file prompt quiet' around methods that perform file operations."""
         @functools.wraps(f)
         def wrapper(self, *args, **kwargs):
@@ -408,7 +408,7 @@ class IOSDriver(NetworkDriver):
                     raise CommandErrorException(msg)
         return wrapper
 
-    @_file_operation
+    @_file_prompt_quiet
     def _commit_hostname_handler(self, cmd):
         """Special handler for hostname change on commit operation."""
         current_prompt = self.device.find_prompt().strip()
@@ -469,7 +469,7 @@ class IOSDriver(NetworkDriver):
         """Discard loaded candidate configurations."""
         self._discard_config()
 
-    @_file_operation
+    @_file_prompt_quiet
     def _discard_config(self):
         """Set candidate_cfg to current running-config. Erase the merge_cfg file."""
         discard_candidate = 'copy running-config {}'.format(self._gen_full_path(self.candidate_cfg))
@@ -577,7 +577,7 @@ class IOSDriver(NetworkDriver):
                 raise ValueError("Invalid file_system specified: {}".format(file_system))
             return '{}/{}'.format(file_system, filename)
 
-    @_file_operation
+    @_file_prompt_quiet
     def _gen_rollback_cfg(self):
         """Save a configuration that can be used for rollback."""
         cfg_file = self._gen_full_path(self.rollback_cfg)
