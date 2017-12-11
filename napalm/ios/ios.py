@@ -391,7 +391,7 @@ class IOSDriver(NetworkDriver):
                 # disable file operation prompts
                 self.device.send_config_set(['file prompt quiet'])
                 # call wrapped function
-                f(self, *args, **kwargs)
+                retval = f(self, *args, **kwargs)
                 # re-enable prompts
                 self.device.send_config_set(['no file prompt quiet'])
             else:
@@ -401,11 +401,12 @@ class IOSDriver(NetworkDriver):
                 output = self.device.send_command_expect(show_cmd)
                 if cmd in output:
                     # call wrapped function
-                    f(self, *args, **kwargs)
+                    retval = f(self, *args, **kwargs)
                 else:
                     msg = "on-device file operations require prompts to be disabled. " \
                           "Configure 'file prompt quiet' or set 'auto_file_prompt=True'"
                     raise CommandErrorException(msg)
+            return retval
         return wrapper
 
     @_file_prompt_quiet
