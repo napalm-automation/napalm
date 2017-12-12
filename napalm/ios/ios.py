@@ -16,6 +16,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import functools
 import re
 import os
 import uuid
@@ -91,6 +92,9 @@ class IOSDriver(NetworkDriver):
         # None will cause autodetection of dest_file_system
         self._dest_file_system = optional_args.get('dest_file_system', None)
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
+
+        # Control automatic toggling of 'file prompt quiet' for file operations
+        self.auto_file_prompt = optional_args.get('auto_file_prompt', True)
 
         # Netmiko possible arguments
         netmiko_argument_map = {
@@ -273,11 +277,12 @@ class IOSDriver(NetworkDriver):
         if not return_status:
             raise MergeConfigException(msg)
 
-    @staticmethod
-    def _normalize_compare_config(diff):
+    def _normalize_compare_config(self, diff):
         """Filter out strings that should not show up in the diff."""
         ignore_strings = ['Contextual Config Diffs', 'No changes were found',
-                          'file prompt quiet', 'ntp clock-period']
+                          'ntp clock-period']
+        if self.auto_file_prompt:
+            ignore_strings.append('file prompt quiet')
 
         new_list = []
         for line in diff.splitlines():
@@ -376,6 +381,34 @@ class IOSDriver(NetworkDriver):
 
         return diff.strip()
 
+    def _file_prompt_quiet(f):
+        """Decorator to toggle 'file prompt quiet' around methods that perform file operations."""
+        @functools.wraps(f)
+        def wrapper(self, *args, **kwargs):
+            # only toggle config if 'auto_file_prompt' is true
+            if self.auto_file_prompt:
+                # disable file operation prompts
+                self.device.send_config_set(['file prompt quiet'])
+                # call wrapped function
+                retval = f(self, *args, **kwargs)
+                # re-enable prompts
+                self.device.send_config_set(['no file prompt quiet'])
+            else:
+                # check if the command is already in the running-config
+                cmd = 'file prompt quiet'
+                show_cmd = "show running-config | inc {}".format(cmd)
+                output = self.device.send_command_expect(show_cmd)
+                if cmd in output:
+                    # call wrapped function
+                    retval = f(self, *args, **kwargs)
+                else:
+                    msg = "on-device file operations require prompts to be disabled. " \
+                          "Configure 'file prompt quiet' or set 'auto_file_prompt=True'"
+                    raise CommandErrorException(msg)
+            return retval
+        return wrapper
+
+    @_file_prompt_quiet
     def _commit_hostname_handler(self, cmd):
         """Special handler for hostname change on commit operation."""
         current_prompt = self.device.find_prompt().strip()
@@ -422,9 +455,7 @@ class IOSDriver(NetworkDriver):
             if not self._check_file_exists(cfg_file):
                 raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
-            self._disable_confirm()
             output = self._commit_hostname_handler(cmd)
-            self._enable_confirm()
             if 'Invalid input detected' in output:
                 self.rollback()
                 err_header = "Configuration merge failed; automatic rollback attempted"
@@ -435,13 +466,16 @@ class IOSDriver(NetworkDriver):
         output += self.device.send_command_expect("write mem")
 
     def discard_config(self):
+        """Discard loaded candidate configurations."""
+        self._discard_config()
+
+    @_file_prompt_quiet
+    def _discard_config(self):
         """Set candidate_cfg to current running-config. Erase the merge_cfg file."""
         discard_candidate = 'copy running-config {}'.format(self._gen_full_path(self.candidate_cfg))
         discard_merge = 'copy null: {}'.format(self._gen_full_path(self.merge_cfg))
-        self._disable_confirm()
         self.device.send_command_expect(discard_candidate)
         self.device.send_command_expect(discard_merge)
-        self._enable_confirm()
 
     def rollback(self):
         """Rollback configuration to filename or to self.rollback_cfg file."""
@@ -534,16 +568,6 @@ class IOSDriver(NetworkDriver):
                 return (False, msg)
             return (False, '')
 
-    def _enable_confirm(self):
-        """Enable IOS confirmations on file operations (global config command)."""
-        cmd = 'no file prompt quiet'
-        self.device.send_config_set([cmd])
-
-    def _disable_confirm(self):
-        """Disable IOS confirmations on file operations (global config command)."""
-        cmd = 'file prompt quiet'
-        self.device.send_config_set([cmd])
-
     def _gen_full_path(self, filename, file_system=None):
         """Generate full file path on remote device."""
         if file_system is None:
@@ -553,13 +577,12 @@ class IOSDriver(NetworkDriver):
                 raise ValueError("Invalid file_system specified: {}".format(file_system))
             return '{}/{}'.format(file_system, filename)
 
+    @_file_prompt_quiet
     def _gen_rollback_cfg(self):
         """Save a configuration that can be used for rollback."""
         cfg_file = self._gen_full_path(self.rollback_cfg)
         cmd = 'copy running-config {}'.format(cfg_file)
-        self._disable_confirm()
         self.device.send_command_expect(cmd)
-        self._enable_confirm()
 
     def _check_file_exists(self, cfg_file):
         """
