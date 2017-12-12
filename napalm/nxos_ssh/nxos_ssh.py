@@ -1243,6 +1243,11 @@ class NXOSSSHDriver(NetworkDriver):
         * 16       0050.56bb.0164    dynamic      -       F    F    po2
         * 13       90e2.ba5a.9f30    dynamic      -       F    F    eth1/2
         * 13       90e2.ba4b.fc78    dynamic      -       F    F    eth1/1
+          39       0100.5e00.4b4b    igmp         0       F    F    Po1 Po2 Po22
+          110      0100.5e00.0118    igmp         0       F    F    Po1 Po2
+                                                                    Eth142/1/3 Eth112/1/5
+                                                                    Eth112/1/6 Eth122/1/5
+
         """
 
         #  The '*' is stripped out later
@@ -1250,6 +1255,8 @@ class NXOSSSHDriver(NetworkDriver):
                                                                                   MAC_REGEX)
         RE_MACTABLE_FORMAT2 = r"^\s+{}\s+{}\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+".format('-',
                                                                                   MAC_REGEX)
+        # REGEX dedicated for lines with only interfaces (suite of the previous MAC address)
+        RE_MACTABLE_FORMAT3 = r"^\s+\S+"
 
         mac_address_table = []
         command = 'show mac address-table'
@@ -1311,11 +1318,26 @@ class NXOSSSHDriver(NetworkDriver):
             elif re.search(r'^\s*$', line):
                 continue
 
-            for pattern in [RE_MACTABLE_FORMAT1, RE_MACTABLE_FORMAT2]:
+            for pattern in [RE_MACTABLE_FORMAT1, RE_MACTABLE_FORMAT2, RE_MACTABLE_FORMAT3]:
                 if re.search(pattern, line):
-                    if len(line.split()) == 7:
-                        vlan, mac, mac_type, _, _, _, interface = line.split()
-                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                    split = line.split()
+                    if len(split) >= 7:
+                        vlan, mac, mac_type, _, _, _, interface = split[:7]
+                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                    interface))
+
+                        # if there is multiples interfaces for the mac address on the same line
+                        for i in range(7, len(split)):
+                            mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                        split[i]))
+                        break
+
+                    # if there is multiples interfaces for the mac address on next lines
+                    # we reuse the old variable 'vlan' 'mac' and 'mac_type'
+                    elif len(split) < 7:
+                        for i in range(0, len(split)):
+                            mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                        split[i]))
                         break
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))

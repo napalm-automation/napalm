@@ -69,6 +69,16 @@
             "remote_system_description": "Siemens, SIMATIC NET, CP 443-1, 6GK7 443-1EX50-0XE0, HW: Version 7, FW: Version V3.0.23, VPH6201262", 
             "remote_system_enable_capab": "S", 
             "remote_system_name": "N/A"
+        },
+        {
+            "parent_interface": "N/A",
+            "remote_port": "30e4.db01.2345",
+            "remote_port_description": "Port 1",
+            "remote_chassis_id": "192.168.2.44",
+            "remote_system_name": "Cisco IP Phone SPA5 4G",
+            "remote_system_description": "N/A",
+            "remote_system_capab": "B,T",
+            "remote_system_enable_capab": "B,T"
         }
     ]
 }
