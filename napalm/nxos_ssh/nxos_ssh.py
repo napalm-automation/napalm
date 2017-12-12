@@ -1303,8 +1303,7 @@ class NXOSSSHDriver(NetworkDriver):
 
         for line in output.splitlines():
 
-            # Every 500 Mac's Legend is reprinted, regardless of term len.
-            # Above split will not help in this scenario
+            # Every 500 Mac's Legend is reprinted, regardless of terminal length
             if re.search(r'^Legend', line):
                 continue
             elif re.search(r'^\s+\* \- primary entry', line):
@@ -1320,24 +1319,23 @@ class NXOSSSHDriver(NetworkDriver):
 
             for pattern in [RE_MACTABLE_FORMAT1, RE_MACTABLE_FORMAT2, RE_MACTABLE_FORMAT3]:
                 if re.search(pattern, line):
-                    split = line.split()
-                    if len(split) >= 7:
-                        vlan, mac, mac_type, _, _, _, interface = split[:7]
+                    fields = line.split()
+                    if len(fields) >= 7:
+                        vlan, mac, mac_type, _, _, _, interface = fields[:7]
                         mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
                                                                     interface))
 
-                        # if there is multiples interfaces for the mac address on the same line
-                        for i in range(7, len(split)):
+                        # there can be multiples interfaces for the same MAC on the same line
+                        for interface in fields[7:]:
                             mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
-                                                                        split[i]))
+                                                                        interface))
                         break
 
-                    # if there is multiples interfaces for the mac address on next lines
-                    # we reuse the old variable 'vlan' 'mac' and 'mac_type'
-                    elif len(split) < 7:
-                        for i in range(0, len(split)):
+                    # interfaces can overhang to the next line (line only contains interfaces)
+                    elif len(fields) < 7:
+                        for interface in fields:
                             mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
-                                                                        split[i]))
+                                                                        interface))
                         break
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
