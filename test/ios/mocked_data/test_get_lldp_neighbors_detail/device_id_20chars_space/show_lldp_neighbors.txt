@@ -10,6 +10,7 @@ JNICEEL-LA          Gi1            120        S               port-001
 SWAAAER-LTA         Gi1            120        S               port-001
 RBERRRANN-LTA       Gi1            120        S               port-001
 not advertised      Gi1            120        S               port-001
+Cisco IP Phone SPA5 Gi1            120        B,T             30e4.db01.2345
 
-Total entries displayed: 7
+Total entries displayed: 8
 

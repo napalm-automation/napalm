@@ -32,6 +32,7 @@ from napalm.base.exceptions import ReplaceConfigException, MergeConfigException,
 from napalm.base.utils import py23_compat
 import napalm.base.constants as C
 import napalm.base.helpers
+from napalm.base.helpers import canonical_interface_name
 
 
 # Easier to store these as constants
@@ -124,10 +125,8 @@ class IOSDriver(NetworkDriver):
 
         self.device = None
         self.config_replace = False
-        self.interface_map = {}
 
         self.profile = ["ios"]
-
         self.use_canonical_interface = optional_args.get('canonical_int', False)
 
     def open(self):
@@ -585,24 +584,6 @@ class IOSDriver(NetworkDriver):
             return True
         return False
 
-    def _expand_interface_name(self, interface_brief):
-        """
-        Obtain the full interface name from the abbreviated name.
-
-        Cache mappings in self.interface_map.
-        """
-        if self.interface_map.get(interface_brief):
-            return self.interface_map.get(interface_brief)
-        command = 'show int {}'.format(interface_brief)
-        output = self._send_command(command)
-        first_line = output.splitlines()[0]
-        if 'line protocol' in first_line:
-            full_int_name = first_line.split()[0]
-            self.interface_map[interface_brief] = full_int_name
-            return self.interface_map.get(interface_brief)
-        else:
-            return interface_brief
-
     @staticmethod
     def _send_command_postprocess(output):
         """
@@ -644,7 +625,7 @@ class IOSDriver(NetworkDriver):
             output_power = split_list[3]
             input_power = split_list[4]
 
-            port = self._expand_interface_name(int_brief)
+            port = canonical_interface_name(int_brief)
 
             port_detail = {}
 
@@ -691,9 +672,24 @@ class IOSDriver(NetworkDriver):
 
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
+        lldp = {}
+        neighbors_detail = self.get_lldp_neighbors_detail()
+        for intf_name, v in neighbors_detail.items():
+            lldp[intf_name] = []
+            for lldp_entry in v:
+                lldp_dict = {
+                    'port': lldp_entry['remote_port'],
+                    'hostname': lldp_entry['remote_system_name'],
+                }
+                lldp[intf_name].append(lldp_dict)
+
+        return lldp
+
+    def _get_lldp_neighbors(self, expand_name=True):
 
         def _device_id_expand(device_id, local_int_brief):
             """Device id might be abbreviated: try to obtain the full device id."""
+            # _lldp_detail_parser will execute a LLDP command on the device
             lldp_tmp = self._lldp_detail_parser(local_int_brief)
             device_id_new = lldp_tmp[3][0]
             # Verify abbreviated and full name are consistent
@@ -737,8 +733,9 @@ class IOSDriver(NetworkDriver):
 
             # device_id might be abbreviated, try to get full name
             if len(device_id) == 20:
-                device_id = _device_id_expand(device_id, local_int_brief)
-            local_port = self._expand_interface_name(local_int_brief)
+                if expand_name:
+                    device_id = _device_id_expand(device_id, local_int_brief)
+            local_port = canonical_interface_name(local_int_brief)
 
             entry = {'port': remote_port, 'hostname': device_id}
             lldp.setdefault(local_port, [])
@@ -746,9 +743,12 @@ class IOSDriver(NetworkDriver):
 
         return lldp
 
-    def _lldp_detail_parser(self, interface):
-        command = "show lldp neighbors {} detail".format(interface)
-        output = self._send_command(command)
+    def _lldp_detail_parser(self, interface, lldp_entry=None):
+        if lldp_entry is None:
+            command = "show lldp neighbors {} detail".format(interface)
+            output = self._send_command(command)
+        else:
+            output = lldp_entry
 
         # Check if router supports the command
         if '% Invalid input' in output:
@@ -780,25 +780,53 @@ class IOSDriver(NetworkDriver):
                 system_capabilities, enabled_capabilities, remote_address]
 
     def get_lldp_neighbors_detail(self, interface=''):
-        """
-        IOS implementation of get_lldp_neighbors_detail.
-
-        Calls get_lldp_neighbors.
-        """
+        """IOS implementation of get_lldp_neighbors_detail."""
         lldp = {}
-        lldp_neighbors = self.get_lldp_neighbors()
-
+        command = 'show lldp neighbors detail'
         # Filter to specific interface
         if interface:
-            lldp_data = lldp_neighbors.get(interface)
-            if lldp_data:
-                lldp_neighbors = {interface: lldp_data}
-            else:
-                lldp_neighbors = {}
+            command = 'show lldp neighbors {} detail'.format(interface)
 
-        for interface in lldp_neighbors:
-            local_port = interface
-            lldp_fields = self._lldp_detail_parser(interface)
+        lldp_detail_output = self._send_command(command)
+        lldp_detail = re.split(r"^------------------.*$", lldp_detail_output, flags=re.M)[1:]
+
+        # Newer IOS versions have 'Local Intf' defined in LLDP detail; older IOS doesn't :-(
+        local_intf_detected = True
+        if not re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_detail_output, flags=re.M):
+            # Older IOS local interface is not in LLDP detail output
+            local_intf_detected = False
+
+            # Construct table of reverse mappings (table to try to work out local_intf)
+            lldp_neighbors = self._get_lldp_neighbors(expand_name=False)
+            reverse_neighbors = {}
+            for local_intf, v in lldp_neighbors.items():
+                for entry in v:
+                    key = "{hostname}_{port}".format(**entry)
+                    reverse_neighbors[key] = local_intf
+
+        for lldp_entry in lldp_detail:
+            if local_intf_detected:
+                match = re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_entry, flags=re.M)
+                if match:
+                    local_intf = match.group(1)
+            else:
+                system_name_match = re.search(r"^System Name:\s+(\S.*)$", lldp_entry, flags=re.M)
+                port_id_match = re.search(r"^Port id:\s+(\S+)\s*$", lldp_entry, flags=re.M)
+                # Try to find the local_intf from the reverse_neighbors table
+                if system_name_match and port_id_match:
+                    port_id = port_id_match.group(1)
+                    system_name = system_name_match.group(1)[:20]
+                    system_name = system_name.strip()
+                    key = "{}_{}".format(system_name, port_id)
+                    local_intf = reverse_neighbors.get(key)
+
+            if local_intf is not None:
+                lldp_fields = self._lldp_detail_parser(local_intf, lldp_entry=lldp_entry)
+            else:
+                # Couldn't work out the local interface
+                raise ValueError("LLDP details could not determine the value of local interface:"
+                                 "\n{}\n{}".format(lldp_neighbors, lldp_entry))
+
             # Convert any 'not advertised' to 'N/A'
             for field in lldp_fields:
                 for i, value in enumerate(field):
@@ -818,13 +846,15 @@ class IOSDriver(NetworkDriver):
                                       system_description, system_capabilities,
                                       enabled_capabilities, remote_address)
 
-            lldp.setdefault(local_port, [])
+            if local_intf:
+                local_intf = canonical_interface_name(local_intf)
+            lldp.setdefault(local_intf, [])
             for entry in standardized_fields:
                 remote_port_id, remote_port_description, remote_chassis_id, remote_system_name, \
                     remote_system_description, remote_system_capab, remote_enabled_capab, \
                     remote_mgmt_address = entry
 
-                lldp[local_port].append({
+                lldp[local_intf].append({
                     'parent_interface': u'N/A',
                     'remote_port': remote_port_id,
                     'remote_port_description': remote_port_description,
