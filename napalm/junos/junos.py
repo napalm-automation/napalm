@@ -463,7 +463,7 @@ class JunOSDriver(NetworkDriver):
         try:
             address_family = address_family_mapping[family]
         except KeyError:
-            address_family = family
+            address_family = None
         return address_family
 
     def _parse_route_stats(self, neighbor):
@@ -488,8 +488,7 @@ class JunOSDriver(NetworkDriver):
                 neighbor['sent_prefixes'] = [neighbor['sent_prefixes']]
             for idx, table in enumerate(neighbor['tables']):
                 family = self._get_address_family(table)
-                if family.startswith('__'):
-                    # junos internal instances
+                if family is None:
                     continue
                 data[family] = {}
                 data[family]['received_prefixes'] = neighbor['received_prefixes'][idx]
@@ -500,10 +499,11 @@ class JunOSDriver(NetworkDriver):
                     data[family]['sent_prefixes'] = 0
         else:
             family = self._get_address_family(neighbor['tables'])
-            data[family] = {}
-            data[family]['received_prefixes'] = neighbor['received_prefixes']
-            data[family]['accepted_prefixes'] = neighbor['accepted_prefixes']
-            data[family]['sent_prefixes'] = neighbor['sent_prefixes']
+            if family is not None:
+                data[family] = {}
+                data[family]['received_prefixes'] = neighbor['received_prefixes']
+                data[family]['accepted_prefixes'] = neighbor['accepted_prefixes']
+                data[family]['sent_prefixes'] = neighbor['sent_prefixes']
         return data
 
     @staticmethod
