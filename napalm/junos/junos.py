@@ -489,6 +489,9 @@ class JunOSDriver(NetworkDriver):
             for idx, table in enumerate(neighbor['tables']):
                 family = self._get_address_family(table)
                 if family is None:
+                    # Need to remove counter from sent_prefixes list anyway
+                    if 'in sync' in neighbor['send-state'][idx]:
+                        neighbor['sent_prefixes'].pop(0)
                     continue
                 data[family] = {}
                 data[family]['received_prefixes'] = neighbor['received_prefixes'][idx]
