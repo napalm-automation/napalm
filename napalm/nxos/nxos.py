@@ -522,15 +522,15 @@ class NXOSDriver(NetworkDriver):
         if not lldp_neighbors_list:
             return lldp_neighbors  # empty dict
 
-        CHASSIS_REGEX = '^(Chassis id:)\s+([a-z0-9\.]+)$'
-        PORT_REGEX = '^(Port id:)\s+([0-9]+)$'
-        LOCAL_PORT_ID_REGEX = '^(Local Port id:)\s+(.*)$'
-        PORT_DESCR_REGEX = '^(Port Description:)\s+(.*)$'
-        SYSTEM_NAME_REGEX = '^(System Name:)\s+(.*)$'
-        SYSTEM_DESCR_REGEX = '^(System Description:)\s+(.*)$'
-        SYST_CAPAB_REEGX = '^(System Capabilities:)\s+(.*)$'
-        ENABL_CAPAB_REGEX = '^(Enabled Capabilities:)\s+(.*)$'
-        VLAN_ID_REGEX = '^(Vlan ID:)\s+(.*)$'
+        CHASSIS_REGEX = r'^(Chassis id:)\s+([a-z0-9\.]+)$'
+        PORT_REGEX = r'^(Port id:)\s+([0-9]+)$'
+        LOCAL_PORT_ID_REGEX = r'^(Local Port id:)\s+(.*)$'
+        PORT_DESCR_REGEX = r'^(Port Description:)\s+(.*)$'
+        SYSTEM_NAME_REGEX = r'^(System Name:)\s+(.*)$'
+        SYSTEM_DESCR_REGEX = r'^(System Description:)\s+(.*)$'
+        SYST_CAPAB_REEGX = r'^(System Capabilities:)\s+(.*)$'
+        ENABL_CAPAB_REGEX = r'^(Enabled Capabilities:)\s+(.*)$'
+        VLAN_ID_REGEX = r'^(Vlan ID:)\s+(.*)$'
 
         lldp_neighbor = {}
         interface_name = None
@@ -870,24 +870,24 @@ class NXOSDriver(NetworkDriver):
                    timeout=c.TRACEROUTE_TIMEOUT,
                    vrf=c.TRACEROUTE_VRF):
         _HOP_ENTRY_PROBE = [
-            '\s+',
-            '(',  # beginning of host_name (ip_address) RTT group
-            '(',  # beginning of host_name (ip_address) group only
-            '([a-zA-Z0-9\.:-]*)',  # hostname
-            '\s+',
-            '\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
-            ')?',  # end of host_name (ip_address) group only
+            r'\s+',
+            r'(',  # beginning of host_name (ip_address) RTT group
+            r'(',  # beginning of host_name (ip_address) group only
+            r'([a-zA-Z0-9\.:-]*)',  # hostname
+            r'\s+',
+            r'\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
+            r')?',  # end of host_name (ip_address) group only
             # also hostname/ip are optional -- they can or cannot be specified
             # if not specified, means the current probe followed the same path as the previous
-            '\s+',
-            '(\d+\.\d+)\s+ms',  # RTT
-            '|\*',  # OR *, when non responsive hop
-            ')'  # end of host_name (ip_address) RTT group
+            r'\s+',
+            r'(\d+\.\d+)\s+ms',  # RTT
+            r'|\*',  # OR *, when non responsive hop
+            r')'  # end of host_name (ip_address) RTT group
         ]
 
         _HOP_ENTRY = [
-            '\s?',  # space before hop index?
-            '(\d+)',  # hop index
+            r'\s?',  # space before hop index?
+            r'(\d+)',  # hop index
         ]
 
         traceroute_result = {}
