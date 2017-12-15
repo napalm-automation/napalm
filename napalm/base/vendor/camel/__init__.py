@@ -265,8 +265,7 @@ class CamelRegistry(object):
 
         for add_method, dumpers in [
                 (dumper.add_representer, self.dumpers),
-                (dumper.add_multi_representer, self.multi_dumpers),
-            ]:
+                (dumper.add_multi_representer, self.multi_dumpers)]:
             for cls, versions in dumpers.items():
                 version = version_locks.get(cls, max)
                 if versions and version is max:
@@ -406,7 +405,7 @@ def _load_complex(data, version):
     return complex(data)
 
 
-@PYTHON_TYPES.dumper(frozenset, 'python/frozenset', version=None)
+@PYTHON_TYPES.dumper(frozenset, 'python/frozenset', version=None)  # noqa
 def _dump_frozenset(data):
     try:
         return list(sorted(data))
@@ -424,7 +423,6 @@ if hasattr(types, 'SimpleNamespace'):
     def _dump_simple_namespace(data):
         return data.__dict__
 
-
     @STANDARD_TYPES.loader('python/namespace', version=None)
     def _load_simple_namespace(data, version):
         return types.SimpleNamespace(**data)
@@ -432,4 +430,3 @@ if hasattr(types, 'SimpleNamespace'):
 
 STANDARD_TYPES.freeze()
 PYTHON_TYPES.freeze()
-
