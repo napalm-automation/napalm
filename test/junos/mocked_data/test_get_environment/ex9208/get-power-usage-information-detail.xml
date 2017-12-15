@@ -1,0 +1,88 @@
+<power-usage-information>
+    <power-usage-item>
+        <name>PEM 0</name>
+        <state>Online</state>
+        <ac-input-detail>
+            <ac-input>OK</ac-input>
+            <ac-expect-feed>1</ac-expect-feed>
+            <ac-actual-feed>1</ac-actual-feed>
+        </ac-input-detail>
+        <pem-capacity-detail>
+            <capacity-actual>2050</capacity-actual>
+            <capacity-max>2050</capacity-max>
+        </pem-capacity-detail>
+        <dc-output-detail>
+            <dc-power>399</dc-power>
+            <zone>0</zone>
+            <dc-current>7</dc-current>
+            <dc-voltage>57</dc-voltage>
+            <dc-load>19</dc-load>
+        </dc-output-detail>
+    </power-usage-item>
+    <power-usage-item>
+        <name>PEM 1</name>
+        <state>Online</state>
+        <ac-input-detail>
+            <ac-input>OK</ac-input>
+            <ac-expect-feed>1</ac-expect-feed>
+            <ac-actual-feed>1</ac-actual-feed>
+        </ac-input-detail>
+        <pem-capacity-detail>
+            <capacity-actual>2050</capacity-actual>
+            <capacity-max>2050</capacity-max>
+        </pem-capacity-detail>
+        <dc-output-detail>
+            <dc-power>399</dc-power>
+            <zone>0</zone>
+            <dc-current>7</dc-current>
+            <dc-voltage>57</dc-voltage>
+            <dc-load>19</dc-load>
+        </dc-output-detail>
+    </power-usage-item>
+    <power-usage-item>
+        <name>PEM 2</name>
+        <state>Online</state>
+        <ac-input-detail>
+            <ac-input>OK</ac-input>
+            <ac-expect-feed>1</ac-expect-feed>
+            <ac-actual-feed>1</ac-actual-feed>
+        </ac-input-detail>
+        <pem-capacity-detail>
+            <capacity-actual>2050</capacity-actual>
+            <capacity-max>2050</capacity-max>
+        </pem-capacity-detail>
+        <dc-output-detail>
+            <dc-power>342</dc-power>
+            <zone>0</zone>
+            <dc-current>6</dc-current>
+            <dc-voltage>57</dc-voltage>
+            <dc-load>16</dc-load>
+        </dc-output-detail>
+    </power-usage-item>
+    <power-usage-item>
+        <name>PEM 3</name>
+        <state>Empty</state>
+        <status>Absent</status>
+    </power-usage-item>
+    <power-usage-system>
+        <power-usage-zone-information>
+            <zone>0</zone>
+            <capacity-actual>4100</capacity-actual>
+            <capacity-max>4100</capacity-max>
+            <capacity-allocated>1683</capacity-allocated>
+            <capacity-remaining>2417</capacity-remaining>
+            <capacity-actual-usage>1140</capacity-actual-usage>
+        </power-usage-zone-information>
+        <capacity-sys-actual>4100</capacity-sys-actual>
+        <capacity-sys-max>4100</capacity-sys-max>
+        <capacity-sys-remaining>2417</capacity-sys-remaining>
+    </power-usage-system>
+    <power-usage-fru-item>
+        <name>FPC 4</name>
+        <dc-power>300</dc-power>
+    </power-usage-fru-item>
+    <power-usage-fru-item>
+        <name>FPC 5</name>
+        <dc-power>303</dc-power>
+    </power-usage-fru-item>
+</power-usage-information>

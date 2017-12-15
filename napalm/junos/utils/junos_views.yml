@@ -147,14 +147,14 @@ junos_iface_counter_view:
     tx_errors: { output-errors: int }
     tx_discards: { output-drops: int }
 
-junos_enviroment_table:
+junos_environment_table:
   rpc: get-environment-information
   args:
   item: environment-item
   key: name
-  view: junos_enviroment_view
+  view: junos_environment_view
 
-junos_enviroment_view:
+junos_environment_view:
   fields:
     class: class
     status: status
@@ -169,6 +169,7 @@ junos_pem_table:
 
 junos_pem_view:
   fields:
+    status: { state: True=Online }
     capacity: { pem-capacity-detail/capacity-actual: float }
     output: { dc-output-detail/dc-power: float }
 
