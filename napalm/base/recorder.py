@@ -64,6 +64,13 @@ def recorder(cls):
 def record(cls, exception_valid, func, *args, **kwargs):
     logger.debug("Recording {}".format(func.__name__))
 
+    data = {
+        "call": {
+            "func": func.__name__,
+            "args": args,
+            "kwargs": kwargs,
+        }
+    }
     try:
         r = func(*args, **kwargs)
         raised_exception = False
@@ -73,9 +80,11 @@ def record(cls, exception_valid, func, *args, **kwargs):
         raised_exception = True
         r = e
 
+    data["result"] = r
+
     filename = "{}.{}.yaml".format(func.__name__, cls.current_count)
     with open(os.path.join(cls.path, filename), 'w') as f:
-        f.write(camel.dump(r))
+        f.write(camel.dump(data))
 
     if raised_exception:
         raise r
@@ -87,11 +96,11 @@ def replay(cls, func, *args, **kwargs):
     logger.debug("Replaying {}".format(func.__name__))
     filename = "{}.{}.yaml".format(func.__name__, cls.current_count)
     with open(os.path.join(cls.path, filename), 'r') as f:
-        r = camel.load(py23_compat.text_type(f.read()))
+        data = camel.load(py23_compat.text_type(f.read()))
 
-    if isinstance(r, Exception):
-        raise r
-    return r
+    if isinstance(data["result"], Exception):
+        raise data["result"]
+    return data["result"]
 
 
 class Recorder(object):

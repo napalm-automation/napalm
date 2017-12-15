@@ -1,4 +1,11 @@
-- output: 'Fri Dec 15 15:12:47 2017
+call:
+  args:
+  - - show clock
+  func: run_commands
+  kwargs:
+    encoding: text
+result:
+- output: 'Fri Dec 15 15:44:16 2017
 
     Timezone: UTC
 
