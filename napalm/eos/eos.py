@@ -97,6 +97,11 @@ class EOSDriver(NetworkDriver):
 
         self.eos_autoComplete = optional_args.get('eos_autoComplete', None)
 
+        self.recorder_options = {
+            "mode": optional_args.get("recorder_mode", "pass"),
+            "path": optional_args.get("recorder_path", ""),
+        }
+
     def open(self):
         """Implementation of NAPALM method open."""
         try:
@@ -115,7 +120,10 @@ class EOSDriver(NetworkDriver):
                 raise ConnectionException("Unknown transport: {}".format(self.transport))
 
             if self.device is None:
-                self.device = pyeapi.client.Node(connection, enablepwd=self.enablepwd)
+                self.device = napalm.base.recorder.Recorder(pyeapi.client.Node,
+                                                            recorder_options=self.recorder_options,
+                                                            connection=connection,
+                                                            enablepwd=self.enablepwd)
             # does not raise an Exception if unusable
 
             # let's try to run a very simple command

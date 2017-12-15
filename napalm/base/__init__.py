@@ -28,10 +28,12 @@ from napalm.base.base import NetworkDriver
 from napalm.base.exceptions import ModuleImportError
 from napalm.base.mock import MockDriver
 from napalm.base.utils import py23_compat
+from napalm.base import recorder
 
 __all__ = [
     'get_network_driver',  # export the function
-    'NetworkDriver'  # also export the base class
+    'NetworkDriver',  # also export the base class
+    'recorder',
 ]
 
 
