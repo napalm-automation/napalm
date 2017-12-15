@@ -278,33 +278,40 @@ class JunOSDriver(NetworkDriver):
 
         interfaces = junos_views.junos_iface_table(self.device)
         interfaces.get()
+        interfaces_logical = junos_views.junos_logical_iface_table(self.device)
+        interfaces_logical.get()
 
         # convert all the tuples to our pre-defined dict structure
-        for iface in interfaces.keys():
-            result[iface] = {
-                'is_up': interfaces[iface]['is_up'],
-                'is_enabled': interfaces[iface]['is_enabled'],
-                'description': (interfaces[iface]['description'] or u''),
-                'last_flapped': float((interfaces[iface]['last_flapped'] or -1)),
-                'mac_address': napalm.base.helpers.convert(
-                    napalm.base.helpers.mac,
-                    interfaces[iface]['mac_address'],
-                    py23_compat.text_type(interfaces[iface]['mac_address'])),
-                'speed': -1
-            }
-            # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
+        def _convert_to_dict(interfaces):
+            for iface in interfaces.keys():
+                result[iface] = {
+                    'is_up': interfaces[iface]['is_up'],
+                    'is_enabled': interfaces[iface]['is_enabled'],
+                    'description': (interfaces[iface]['description'] or u''),
+                    'last_flapped': float((interfaces[iface]['last_flapped'] or -1)),
+                    'mac_address': napalm.base.helpers.convert(
+                        napalm.base.helpers.mac,
+                        interfaces[iface]['mac_address'],
+                        py23_compat.text_type(interfaces[iface]['mac_address'])),
+                    'speed': -1
+                }
+                # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
 
-            match = re.search(r'(\d+)(\w*)', interfaces[iface]['speed'] or u'')
-            if match is None:
-                continue
-            speed_value = napalm.base.helpers.convert(int, match.group(1), -1)
-            if speed_value == -1:
-                continue
-            speed_unit = match.group(2)
-            if speed_unit.lower() == 'gbps':
-                speed_value *= 1000
-            result[iface]['speed'] = speed_value
+                match = re.search(r'(\d+)(\w*)', interfaces[iface]['speed'] or u'')
+                if match is None:
+                    continue
+                speed_value = napalm.base.helpers.convert(int, match.group(1), -1)
+                if speed_value == -1:
+                    continue
+                speed_unit = match.group(2)
+                if speed_unit.lower() == 'gbps':
+                    speed_value *= 1000
+                result[iface]['speed'] = speed_value
 
+            return result
+
+        result = _convert_to_dict(interfaces)
+        result.update(_convert_to_dict(interfaces_logical))
         return result
 
     def get_interfaces_counters(self):
@@ -318,7 +325,7 @@ class JunOSDriver(NetworkDriver):
 
     def get_environment(self):
         """Return environment details."""
-        environment = junos_views.junos_enviroment_table(self.device)
+        environment = junos_views.junos_environment_table(self.device)
         routing_engine = junos_views.junos_routing_engine_table(self.device)
         temperature_thresholds = junos_views.junos_temperature_thresholds(self.device)
         power_supplies = junos_views.junos_pem_table(self.device)
@@ -393,11 +400,14 @@ class JunOSDriver(NetworkDriver):
                     environment_data['temperature'][sensor_object]['is_critical'] = False
                     # Check if the working temperature is equal to or higher than alerting threshold
                     temp = structured_object_data['temperature']
-                    if structured_temperature_data['red-alarm'] <= temp:
-                        environment_data['temperature'][sensor_object]['is_critical'] = True
-                        environment_data['temperature'][sensor_object]['is_alert'] = True
-                    elif structured_temperature_data['yellow-alarm'] <= temp:
-                        environment_data['temperature'][sensor_object]['is_alert'] = True
+                    if temp is not None:
+                        if structured_temperature_data['red-alarm'] <= temp:
+                            environment_data['temperature'][sensor_object]['is_critical'] = True
+                            environment_data['temperature'][sensor_object]['is_alert'] = True
+                        elif structured_temperature_data['yellow-alarm'] <= temp:
+                            environment_data['temperature'][sensor_object]['is_alert'] = True
+                    else:
+                        environment_data['temperature'][sensor_object]['temperature'] = 0.0
 
         # Try to correct Power Supply information
         pem_table = dict()
@@ -408,11 +418,25 @@ class JunOSDriver(NetworkDriver):
             pass
         else:
             # Format PEM information and correct capacity and output values
+            if 'power' not in environment_data.keys():
+                # Power supplies were not included from the environment table above
+                # Need to initialize data
+                environment_data['power'] = {}
+                for pem in power_supplies.items():
+                    pem_name = pem[0].replace("PEM", "Power Supply")
+                    environment_data['power'][pem_name] = {}
+                    environment_data['power'][pem_name]['output'] = -1.0
+                    environment_data['power'][pem_name]['capacity'] = -1.0
+                    environment_data['power'][pem_name]['status'] = False
             for pem in power_supplies.items():
                 pem_name = pem[0].replace("PEM", "Power Supply")
                 pem_table[pem_name] = dict(pem[1])
-                environment_data['power'][pem_name]['capacity'] = pem_table[pem_name]['capacity']
-                environment_data['power'][pem_name]['output'] = pem_table[pem_name]['output']
+                if pem_table[pem_name]['capacity'] is not None:
+                    environment_data['power'][pem_name]['capacity'] = \
+                        pem_table[pem_name]['capacity']
+                if pem_table[pem_name]['output'] is not None:
+                    environment_data['power'][pem_name]['output'] = pem_table[pem_name]['output']
+                environment_data['power'][pem_name]['status'] = pem_table[pem_name]['status']
 
         for routing_engine_object, routing_engine_data in routing_engine.items():
             structured_routing_engine_data = {k: v for k, v in routing_engine_data}
