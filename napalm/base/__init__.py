@@ -79,12 +79,17 @@ def get_network_driver(module_name, prepend=True):
         # Try to not raise error when users requests IOS-XR for e.g.
         module_install_name = module_name.replace('-', '')
         # Can also request using napalm_[SOMETHING]
+        community_module_name = "napalm_{name}".format(name=module_install_name)
         if 'napalm' not in module_install_name and prepend is True:
             module_install_name = 'napalm.{name}'.format(name=module_install_name)
+        # Order is custom_napalm_os (local only) ->  napalm.os (core) ->  napalm_os (community)
         try:
             module = importlib.import_module("custom_" + module_install_name)
         except ImportError:
-            module = importlib.import_module(module_install_name)
+            try:
+                module = importlib.import_module(module_install_name)
+            except ImportError:
+                module = importlib.import_module(community_module_name)
     except ImportError:
         raise ModuleImportError(
                 'Cannot import "{install_name}". Is the library installed?'.format(
