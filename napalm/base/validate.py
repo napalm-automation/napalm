@@ -15,7 +15,7 @@ import re
 
 
 # We put it here to compile it only once
-numeric_compare_regex = re.compile("^(<|>|<=|>=|==|!=)(\d+(\.\d+){0,1})$")
+numeric_compare_regex = re.compile(r"^(<|>|<=|>=|==|!=)(\d+(\.\d+){0,1})$")
 
 
 def _get_validation_file(validation_file):
