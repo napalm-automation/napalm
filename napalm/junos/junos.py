@@ -278,33 +278,40 @@ class JunOSDriver(NetworkDriver):
 
         interfaces = junos_views.junos_iface_table(self.device)
         interfaces.get()
+        interfaces_logical = junos_views.junos_logical_iface_table(self.device)
+        interfaces_logical.get()
 
         # convert all the tuples to our pre-defined dict structure
-        for iface in interfaces.keys():
-            result[iface] = {
-                'is_up': interfaces[iface]['is_up'],
-                'is_enabled': interfaces[iface]['is_enabled'],
-                'description': (interfaces[iface]['description'] or u''),
-                'last_flapped': float((interfaces[iface]['last_flapped'] or -1)),
-                'mac_address': napalm.base.helpers.convert(
-                    napalm.base.helpers.mac,
-                    interfaces[iface]['mac_address'],
-                    py23_compat.text_type(interfaces[iface]['mac_address'])),
-                'speed': -1
-            }
-            # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
+        def _convert_to_dict(interfaces):
+            for iface in interfaces.keys():
+                result[iface] = {
+                    'is_up': interfaces[iface]['is_up'],
+                    'is_enabled': interfaces[iface]['is_enabled'],
+                    'description': (interfaces[iface]['description'] or u''),
+                    'last_flapped': float((interfaces[iface]['last_flapped'] or -1)),
+                    'mac_address': napalm.base.helpers.convert(
+                        napalm.base.helpers.mac,
+                        interfaces[iface]['mac_address'],
+                        py23_compat.text_type(interfaces[iface]['mac_address'])),
+                    'speed': -1
+                }
+                # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
 
-            match = re.search(r'(\d+)(\w*)', interfaces[iface]['speed'] or u'')
-            if match is None:
-                continue
-            speed_value = napalm.base.helpers.convert(int, match.group(1), -1)
-            if speed_value == -1:
-                continue
-            speed_unit = match.group(2)
-            if speed_unit.lower() == 'gbps':
-                speed_value *= 1000
-            result[iface]['speed'] = speed_value
+                match = re.search(r'(\d+)(\w*)', interfaces[iface]['speed'] or u'')
+                if match is None:
+                    continue
+                speed_value = napalm.base.helpers.convert(int, match.group(1), -1)
+                if speed_value == -1:
+                    continue
+                speed_unit = match.group(2)
+                if speed_unit.lower() == 'gbps':
+                    speed_value *= 1000
+                result[iface]['speed'] = speed_value
 
+            return result
+
+        result = _convert_to_dict(interfaces)
+        result.update(_convert_to_dict(interfaces_logical))
         return result
 
     def get_interfaces_counters(self):
@@ -1277,11 +1284,11 @@ class JunOSDriver(NetworkDriver):
         ntp_stats = []
 
         REGEX = (
-            '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
-            '\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
-            '\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
-            '\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
-            '\s+([0-9\.]+)\s?$'
+            r'^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
+            r'\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
+            r'\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
+            r'\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
+            r'\s+([0-9\.]+)\s?$'
         )
 
         ntp_assoc_output = self.device.cli('show ntp associations no-resolve')

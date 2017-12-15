@@ -22,6 +22,20 @@ junos_iface_view:
     speed: speed
     mac_address: current-physical-address
 
+junos_logical_iface_table:
+  rpc: get-interface-information
+  item: physical-interface/logical-interface
+  view: junos_logical_iface_view
+
+junos_logical_iface_view:
+  fields:
+    is_up: { ../oper-status: True=up }
+    is_enabled: { if-config-flags/iff-up: flag }
+    description: { description: unicode }
+    last_flapped: { ../interface-flapped/@seconds: int }
+    speed: ../speed
+    mac_address: ../current-physical-address
+
 ####
 #### BGP tables
 ####

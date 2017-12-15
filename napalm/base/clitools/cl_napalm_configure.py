@@ -21,7 +21,6 @@ import sys
 import logging
 
 logger = logging.getLogger('cl-napalm-config.py')
-warning()
 
 
 def run(vendor, hostname, user, password, strategy, optional_args, config_file, dry_run):
@@ -55,6 +54,7 @@ def run(vendor, hostname, user, password, strategy, optional_args, config_file, 
 
 
 def main():
+    warning()
     args = build_help(configure=True)
     configure_logging(logger, args.debug)
 

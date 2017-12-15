@@ -26,38 +26,9 @@ You can also watch a [live demo](https://youtu.be/93q-dHC0u0I) of NAPALM to see 
 Install
 =======
 
-Full installation
------------------
-
-If you want to fully install NAPALM you can do it by executing:
-
 ```
 pip install napalm
 ```
-
-That will install all the drivers currently available.
-
-
-Partial Installation
---------------------
-
-If you want to install just a subset of the available modules you can just pick them as follows:
-
-```
-pip install --install-option="ios" napalm
-```
-
-To install multiple drivers:
-```
-pip install --install-option="eos" --install-option="junos" napalm
-```
-
-To add drivers to an existing instalation:
-```
-pip install --install-option="eos" --install-option="junos" --force-reinstall -U napalm
-```
-
-Check the ['Supported Network Operating Systems'](#supported-network-operating-systems) section for more information about supported modules.
 
 
 Upgrading
@@ -68,13 +39,6 @@ We plan to upgrade napalm as fast as possible. Adding new methods and bugfixes. 
 ```
 pip install napalm -U
 ```
-
-or:
-
-```
-pip install --install-option="eos" --install-option="junos" napalm -U
-```
-
 
 We will be posting news on our slack channel and on Twitter.
 
