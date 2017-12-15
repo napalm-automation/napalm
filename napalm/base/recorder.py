@@ -10,7 +10,7 @@ import pip
 import logging
 import os
 
-from camel import Camel, CamelRegistry
+from napalm.base.vendor.camel import Camel, CamelRegistry
 
 logger = logging.getLogger("napalm-base")
 

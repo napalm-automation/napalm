@@ -3,7 +3,7 @@
   hardwareRevision: ''
   internalBuildId: 8404cfa4-04c4-4008-838b-faf3f77ef6b8
   internalVersion: 4.15.2.1F-2759627.41521F
-  memFree: 94080
+  memFree: 116816
   memTotal: 1897596
   modelName: vEOS
   serialNumber: ''
@@ -22,7 +22,7 @@
       hardware: ethernet
       interfaceAddress: []
       interfaceCounters:
-        counterRefreshTime: 1513349381.697745
+        counterRefreshTime: 1513350767.798014
         inBroadcastPkts: 0
         inDiscards: 0
         inMulticastPkts: 0
@@ -38,8 +38,8 @@
         linkStatusChanges: 1
         outBroadcastPkts: 0
         outDiscards: 0
-        outMulticastPkts: 73
-        outOctets: 9347
+        outMulticastPkts: 804
+        outOctets: 101798
         outUcastPkts: 0
         outputErrorsDetail:
           collisions: 0
@@ -55,7 +55,7 @@
         outPktsRate: 0.0
         updateInterval: 300.0
       interfaceStatus: connected
-      lastStatusChangeTimestamp: 1513349248.876556
+      lastStatusChangeTimestamp: 1513349248.8765576
       lineProtocolStatus: up
       loopbackMode: loopbackNone
       mtu: 9214
@@ -71,7 +71,7 @@
       hardware: ethernet
       interfaceAddress: []
       interfaceCounters:
-        counterRefreshTime: 1513349381.695335
+        counterRefreshTime: 1513350767.794723
         inBroadcastPkts: 0
         inDiscards: 0
         inMulticastPkts: 0
@@ -84,12 +84,12 @@
           runtFrames: 0
           rxPause: 0
           symbolErrors: 0
-        lastClear: 1513349196.0830908
+        lastClear: 1513349196.0830986
         linkStatusChanges: 1
         outBroadcastPkts: 0
         outDiscards: 0
-        outMulticastPkts: 73
-        outOctets: 9347
+        outMulticastPkts: 804
+        outOctets: 101798
         outUcastPkts: 0
         outputErrorsDetail:
           collisions: 0
@@ -105,7 +105,7 @@
         outPktsRate: 0.0
         updateInterval: 300.0
       interfaceStatus: connected
-      lastStatusChangeTimestamp: 1513349248.8767133
+      lastStatusChangeTimestamp: 1513349248.876734
       lineProtocolStatus: up
       loopbackMode: loopbackNone
       mtu: 9214
@@ -130,11 +130,11 @@
           address: 0.0.0.0
           maskLen: 0
       interfaceCounters:
-        counterRefreshTime: 1513349381.692172
+        counterRefreshTime: 1513350767.791502
         inBroadcastPkts: 14
         inDiscards: 0
         inMulticastPkts: 0
-        inOctets: 76842
+        inOctets: 87629
         inUcastPkts: 0
         inputErrorsDetail:
           alignmentErrors: 0
@@ -147,8 +147,8 @@
         outBroadcastPkts: 0
         outDiscards: 0
         outMulticastPkts: 0
-        outOctets: 64703
-        outUcastPkts: 618
+        outOctets: 90577
+        outUcastPkts: 710
         outputErrorsDetail:
           collisions: 0
           deferredTransmissions: 0
@@ -157,13 +157,13 @@
         totalInErrors: 0
         totalOutErrors: 0
       interfaceStatistics:
-        inBitsRate: 1587.3257143371868
-        inPktsRate: 0.029928371992097004
-        outBitsRate: 1339.634894998991
-        outPktsRate: 1.5763655490711073
+        inBitsRate: 21.03605090746883
+        inPktsRate: 0.00029459432209921445
+        outBitsRate: 67.70569664058442
+        outPktsRate: 0.056446118114923165
         updateInterval: 300.0
       interfaceStatus: connected
-      lastStatusChangeTimestamp: 1513349263.0570662
+      lastStatusChangeTimestamp: 1513349263.0570693
       lineProtocolStatus: up
       loopbackMode: loopbackNone
       mtu: 1500
