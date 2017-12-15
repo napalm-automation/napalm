@@ -73,24 +73,28 @@ def get_network_driver(module_name, prepend=True):
     if not (isinstance(module_name, py23_compat.string_types) and len(module_name) > 0):
         raise ModuleImportError('Please provide a valid driver name.')
 
-    try:
-        # Only lowercase allowed
-        module_name = module_name.lower()
-        # Try to not raise error when users requests IOS-XR for e.g.
-        module_install_name = module_name.replace('-', '')
-        # Can also request using napalm_[SOMETHING]
-        if 'napalm' not in module_install_name and prepend is True:
-            module_install_name = 'napalm.{name}'.format(name=module_install_name)
+    # Only lowercase allowed
+    module_name = module_name.lower()
+    # Try to not raise error when users requests IOS-XR for e.g.
+    module_install_name = module_name.replace('-', '')
+    community_install_name = "napalm_{name}".format(name=module_install_name)
+    custom_install_name = "custom_napalm.{name}".format(name=module_install_name)
+    # Can also request using napalm_[SOMETHING]
+    if 'napalm' not in module_install_name and prepend is True:
+        module_install_name = 'napalm.{name}'.format(name=module_install_name)
+    # Order is custom_napalm_os (local only) ->  napalm.os (core) ->  napalm_os (community)
+    for module_name in [custom_install_name, module_install_name, community_install_name]:
         try:
-            module = importlib.import_module("custom_" + module_install_name)
+            module = importlib.import_module(module_name)
+            break
         except ImportError:
-            module = importlib.import_module(module_install_name)
-    except ImportError:
+            pass
+    else:
         raise ModuleImportError(
-                'Cannot import "{install_name}". Is the library installed?'.format(
-                    install_name=module_install_name
-                )
+            'Cannot import "{install_name}". Is the library installed?'.format(
+                install_name=module_install_name
             )
+        )
 
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj) and issubclass(obj, NetworkDriver):
