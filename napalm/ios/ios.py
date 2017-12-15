@@ -16,6 +16,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import functools
 import re
 import os
 import uuid
@@ -32,6 +33,7 @@ from napalm.base.exceptions import ReplaceConfigException, MergeConfigException,
 from napalm.base.utils import py23_compat
 import napalm.base.constants as C
 import napalm.base.helpers
+from napalm.base.helpers import canonical_interface_name
 
 
 # Easier to store these as constants
@@ -45,8 +47,8 @@ IP_ADDR_REGEX = r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"
 IPV4_ADDR_REGEX = IP_ADDR_REGEX
 IPV6_ADDR_REGEX_1 = r"::"
 IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
-IPV6_ADDR_REGEX_3 = r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:" \
-                     "[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}"
+IPV6_ADDR_REGEX_3 = r"[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:" \
+                     "[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}:[0-9a-fA-F]{1,4}"
 # Should validate IPv6 address using an IP address library after matching with this regex
 IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
 
@@ -91,6 +93,9 @@ class IOSDriver(NetworkDriver):
         self._dest_file_system = optional_args.get('dest_file_system', None)
         self.auto_rollback_on_error = optional_args.get('auto_rollback_on_error', True)
 
+        # Control automatic toggling of 'file prompt quiet' for file operations
+        self.auto_file_prompt = optional_args.get('auto_file_prompt', True)
+
         # Netmiko possible arguments
         netmiko_argument_map = {
             'port': None,
@@ -124,10 +129,8 @@ class IOSDriver(NetworkDriver):
 
         self.device = None
         self.config_replace = False
-        self.interface_map = {}
 
         self.profile = ["ios"]
-
         self.use_canonical_interface = optional_args.get('canonical_int', False)
 
     def open(self):
@@ -274,11 +277,12 @@ class IOSDriver(NetworkDriver):
         if not return_status:
             raise MergeConfigException(msg)
 
-    @staticmethod
-    def _normalize_compare_config(diff):
+    def _normalize_compare_config(self, diff):
         """Filter out strings that should not show up in the diff."""
         ignore_strings = ['Contextual Config Diffs', 'No changes were found',
-                          'file prompt quiet', 'ntp clock-period']
+                          'ntp clock-period']
+        if self.auto_file_prompt:
+            ignore_strings.append('file prompt quiet')
 
         new_list = []
         for line in diff.splitlines():
@@ -377,6 +381,34 @@ class IOSDriver(NetworkDriver):
 
         return diff.strip()
 
+    def _file_prompt_quiet(f):
+        """Decorator to toggle 'file prompt quiet' around methods that perform file operations."""
+        @functools.wraps(f)
+        def wrapper(self, *args, **kwargs):
+            # only toggle config if 'auto_file_prompt' is true
+            if self.auto_file_prompt:
+                # disable file operation prompts
+                self.device.send_config_set(['file prompt quiet'])
+                # call wrapped function
+                retval = f(self, *args, **kwargs)
+                # re-enable prompts
+                self.device.send_config_set(['no file prompt quiet'])
+            else:
+                # check if the command is already in the running-config
+                cmd = 'file prompt quiet'
+                show_cmd = "show running-config | inc {}".format(cmd)
+                output = self.device.send_command_expect(show_cmd)
+                if cmd in output:
+                    # call wrapped function
+                    retval = f(self, *args, **kwargs)
+                else:
+                    msg = "on-device file operations require prompts to be disabled. " \
+                          "Configure 'file prompt quiet' or set 'auto_file_prompt=True'"
+                    raise CommandErrorException(msg)
+            return retval
+        return wrapper
+
+    @_file_prompt_quiet
     def _commit_hostname_handler(self, cmd):
         """Special handler for hostname change on commit operation."""
         current_prompt = self.device.find_prompt().strip()
@@ -446,9 +478,7 @@ class IOSDriver(NetworkDriver):
             if not self._check_file_exists(cfg_file):
                 raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
-            self._disable_confirm()
             output = self._commit_hostname_handler(cmd)
-            self._enable_confirm()
             if 'Invalid input detected' in output:
                 self.rollback()
                 err_header = "Configuration merge failed; automatic rollback attempted"
@@ -459,13 +489,16 @@ class IOSDriver(NetworkDriver):
         output += self.device.send_command_expect("write mem")
 
     def discard_config(self):
+        """Discard loaded candidate configurations."""
+        self._discard_config()
+
+    @_file_prompt_quiet
+    def _discard_config(self):
         """Set candidate_cfg to current running-config. Erase the merge_cfg file."""
         discard_candidate = 'copy running-config {}'.format(self._gen_full_path(self.candidate_cfg))
         discard_merge = 'copy null: {}'.format(self._gen_full_path(self.merge_cfg))
-        self._disable_confirm()
         self.device.send_command_expect(discard_candidate)
         self.device.send_command_expect(discard_merge)
-        self._enable_confirm()
 
     def rollback(self):
         """Rollback configuration to filename or to self.rollback_cfg file."""
@@ -558,16 +591,6 @@ class IOSDriver(NetworkDriver):
                 return (False, msg)
             return (False, '')
 
-    def _enable_confirm(self):
-        """Enable IOS confirmations on file operations (global config command)."""
-        cmd = 'no file prompt quiet'
-        self.device.send_config_set([cmd])
-
-    def _disable_confirm(self):
-        """Disable IOS confirmations on file operations (global config command)."""
-        cmd = 'file prompt quiet'
-        self.device.send_config_set([cmd])
-
     def _gen_full_path(self, filename, file_system=None):
         """Generate full file path on remote device."""
         if file_system is None:
@@ -577,13 +600,12 @@ class IOSDriver(NetworkDriver):
                 raise ValueError("Invalid file_system specified: {}".format(file_system))
             return '{}/{}'.format(file_system, filename)
 
+    @_file_prompt_quiet
     def _gen_rollback_cfg(self):
         """Save a configuration that can be used for rollback."""
         cfg_file = self._gen_full_path(self.rollback_cfg)
         cmd = 'copy running-config {}'.format(cfg_file)
-        self._disable_confirm()
         self.device.send_command_expect(cmd)
-        self._enable_confirm()
 
     def _check_file_exists(self, cfg_file):
         """
@@ -607,24 +629,6 @@ class IOSDriver(NetworkDriver):
         elif success_pattern in output:
             return True
         return False
-
-    def _expand_interface_name(self, interface_brief):
-        """
-        Obtain the full interface name from the abbreviated name.
-
-        Cache mappings in self.interface_map.
-        """
-        if self.interface_map.get(interface_brief):
-            return self.interface_map.get(interface_brief)
-        command = 'show int {}'.format(interface_brief)
-        output = self._send_command(command)
-        first_line = output.splitlines()[0]
-        if 'line protocol' in first_line:
-            full_int_name = first_line.split()[0]
-            self.interface_map[interface_brief] = full_int_name
-            return self.interface_map.get(interface_brief)
-        else:
-            return interface_brief
 
     @staticmethod
     def _send_command_postprocess(output):
@@ -667,7 +671,7 @@ class IOSDriver(NetworkDriver):
             output_power = split_list[3]
             input_power = split_list[4]
 
-            port = self._expand_interface_name(int_brief)
+            port = canonical_interface_name(int_brief)
 
             port_detail = {}
 
@@ -715,6 +719,33 @@ class IOSDriver(NetworkDriver):
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
         lldp = {}
+        neighbors_detail = self.get_lldp_neighbors_detail()
+        for intf_name, v in neighbors_detail.items():
+            lldp[intf_name] = []
+            for lldp_entry in v:
+                lldp_dict = {
+                    'port': lldp_entry['remote_port'],
+                    'hostname': lldp_entry['remote_system_name'],
+                }
+                lldp[intf_name].append(lldp_dict)
+
+        return lldp
+
+    def _get_lldp_neighbors(self, expand_name=True):
+
+        def _device_id_expand(device_id, local_int_brief):
+            """Device id might be abbreviated: try to obtain the full device id."""
+            # _lldp_detail_parser will execute a LLDP command on the device
+            lldp_tmp = self._lldp_detail_parser(local_int_brief)
+            device_id_new = lldp_tmp[3][0]
+            # Verify abbreviated and full name are consistent
+            if device_id_new[:20] == device_id:
+                return device_id_new
+            else:
+                # Else return the original device_id
+                return device_id
+
+        lldp = {}
         command = 'show lldp neighbors'
         output = self._send_command(command)
 
@@ -733,34 +764,24 @@ class IOSDriver(NetworkDriver):
 
         for lldp_entry in split_output.splitlines():
             # Example, twb-sf-hpsw1    Fa4   120   B   17
+            device_id = lldp_entry[:20].strip()
+            remaining_fields = lldp_entry[20:]
             try:
-                device_id, local_int_brief, hold_time, capability, remote_port = lldp_entry.split()
+                local_int_brief, hold_time, capability, remote_port = remaining_fields.split()
             except ValueError:
-                if len(lldp_entry.split()) == 4:
-                    # Four fields might be long_name or missing capability
-                    capability_missing = True if lldp_entry[46] == ' ' else False
+                if len(remaining_fields.split()) == 3:
+                    # Three fields might be missing capability
+                    capability_missing = True if remaining_fields[26] == ' ' else False
                     if capability_missing:
-                        device_id, local_int_brief, hold_time, remote_port = lldp_entry.split()
+                        local_int_brief, hold_time, remote_port = remaining_fields.split()
                     else:
-                        # Might be long_name issue
-                        tmp_field, hold_time, capability, remote_port = lldp_entry.split()
-                        device_id = tmp_field[:20]
-                        local_int_brief = tmp_field[20:]
-                        # device_id might be abbreviated, try to get full name
-                        lldp_tmp = self._lldp_detail_parser(local_int_brief)
-                        device_id_new = lldp_tmp[3][0]
-                        # Verify abbreviated and full name are consistent
-                        if device_id_new[:20] == device_id:
-                            device_id = device_id_new
-                        else:
-                            raise ValueError("Unable to obtain remote device name")
-                elif len(lldp_entry.split()) > 5:
-                    # Assuming spaces only in device_id
-                    device_id = ' '.join(lldp_entry.split()[:len(lldp_entry.split())-4])
-                    local_int_brief = lldp_entry.split()[-4]
-                    remote_port = lldp_entry.split()[-1]
+                        raise ValueError("Unable to parse LLDP Info:\n{}".format(lldp_entry))
 
-            local_port = self._expand_interface_name(local_int_brief)
+            # device_id might be abbreviated, try to get full name
+            if len(device_id) == 20:
+                if expand_name:
+                    device_id = _device_id_expand(device_id, local_int_brief)
+            local_port = canonical_interface_name(local_int_brief)
 
             entry = {'port': remote_port, 'hostname': device_id}
             lldp.setdefault(local_port, [])
@@ -768,9 +789,12 @@ class IOSDriver(NetworkDriver):
 
         return lldp
 
-    def _lldp_detail_parser(self, interface):
-        command = "show lldp neighbors {} detail".format(interface)
-        output = self._send_command(command)
+    def _lldp_detail_parser(self, interface, lldp_entry=None):
+        if lldp_entry is None:
+            command = "show lldp neighbors {} detail".format(interface)
+            output = self._send_command(command)
+        else:
+            output = lldp_entry
 
         # Check if router supports the command
         if '% Invalid input' in output:
@@ -802,25 +826,53 @@ class IOSDriver(NetworkDriver):
                 system_capabilities, enabled_capabilities, remote_address]
 
     def get_lldp_neighbors_detail(self, interface=''):
-        """
-        IOS implementation of get_lldp_neighbors_detail.
-
-        Calls get_lldp_neighbors.
-        """
+        """IOS implementation of get_lldp_neighbors_detail."""
         lldp = {}
-        lldp_neighbors = self.get_lldp_neighbors()
-
+        command = 'show lldp neighbors detail'
         # Filter to specific interface
         if interface:
-            lldp_data = lldp_neighbors.get(interface)
-            if lldp_data:
-                lldp_neighbors = {interface: lldp_data}
-            else:
-                lldp_neighbors = {}
+            command = 'show lldp neighbors {} detail'.format(interface)
 
-        for interface in lldp_neighbors:
-            local_port = interface
-            lldp_fields = self._lldp_detail_parser(interface)
+        lldp_detail_output = self._send_command(command)
+        lldp_detail = re.split(r"^------------------.*$", lldp_detail_output, flags=re.M)[1:]
+
+        # Newer IOS versions have 'Local Intf' defined in LLDP detail; older IOS doesn't :-(
+        local_intf_detected = True
+        if not re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_detail_output, flags=re.M):
+            # Older IOS local interface is not in LLDP detail output
+            local_intf_detected = False
+
+            # Construct table of reverse mappings (table to try to work out local_intf)
+            lldp_neighbors = self._get_lldp_neighbors(expand_name=False)
+            reverse_neighbors = {}
+            for local_intf, v in lldp_neighbors.items():
+                for entry in v:
+                    key = "{hostname}_{port}".format(**entry)
+                    reverse_neighbors[key] = local_intf
+
+        for lldp_entry in lldp_detail:
+            if local_intf_detected:
+                match = re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_entry, flags=re.M)
+                if match:
+                    local_intf = match.group(1)
+            else:
+                system_name_match = re.search(r"^System Name:\s+(\S.*)$", lldp_entry, flags=re.M)
+                port_id_match = re.search(r"^Port id:\s+(\S+)\s*$", lldp_entry, flags=re.M)
+                # Try to find the local_intf from the reverse_neighbors table
+                if system_name_match and port_id_match:
+                    port_id = port_id_match.group(1)
+                    system_name = system_name_match.group(1)[:20]
+                    system_name = system_name.strip()
+                    key = "{}_{}".format(system_name, port_id)
+                    local_intf = reverse_neighbors.get(key)
+
+            if local_intf is not None:
+                lldp_fields = self._lldp_detail_parser(local_intf, lldp_entry=lldp_entry)
+            else:
+                # Couldn't work out the local interface
+                raise ValueError("LLDP details could not determine the value of local interface:"
+                                 "\n{}\n{}".format(lldp_neighbors, lldp_entry))
+
             # Convert any 'not advertised' to 'N/A'
             for field in lldp_fields:
                 for i, value in enumerate(field):
@@ -840,13 +892,15 @@ class IOSDriver(NetworkDriver):
                                       system_description, system_capabilities,
                                       enabled_capabilities, remote_address)
 
-            lldp.setdefault(local_port, [])
+            if local_intf:
+                local_intf = canonical_interface_name(local_intf)
+            lldp.setdefault(local_intf, [])
             for entry in standardized_fields:
                 remote_port_id, remote_port_description, remote_chassis_id, remote_system_name, \
                     remote_system_description, remote_system_capab, remote_enabled_capab, \
                     remote_mgmt_address = entry
 
-                lldp[local_port].append({
+                lldp[local_intf].append({
                     'parent_interface': u'N/A',
                     'remote_port': remote_port_id,
                     'remote_port_description': remote_port_description,
@@ -1021,7 +1075,7 @@ class IOSDriver(NetworkDriver):
                 mac_addr_match = re.search(mac_addr_regex, line)
                 mac_address = napalm.base.helpers.mac(mac_addr_match.groups()[0])
 
-            descr_regex = "^\s+Description:\s+(.+?)$"
+            descr_regex = r"^\s+Description:\s+(.+?)$"
             if re.search(descr_regex, line):
                 descr_match = re.search(descr_regex, line)
                 description = descr_match.groups()[0]
@@ -1750,7 +1804,7 @@ class IOSDriver(NetworkDriver):
 
             elif len(line.split()) == 9:
                 address, ref_clock, st, when, poll, reach, delay, offset, disp = line.split()
-                address_regex = re.match('(\W*)([0-9.*]*)', address)
+                address_regex = re.match(r'(\W*)([0-9.*]*)', address)
             try:
                 ntp_stats.append({
                     'remote': py23_compat.text_type(address_regex.group(2)),
@@ -1936,10 +1990,10 @@ class IOSDriver(NetworkDriver):
     def get_probes_config(self):
         probes = {}
         probes_regex = r"ip\s+sla\s+(?P<id>\d+)\n" \
-            "\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*" \
-            "\s+tag\s+(?P<name>\S+)\n.*" \
-            "\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*" \
-            "\s+frequency\s+(?P<interval>\d+)$"
+            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*" \
+            r"\s+tag\s+(?P<name>\S+)\n.*" \
+            r"\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*" \
+            r"\s+frequency\s+(?P<interval>\d+)$"
         probe_args = {
             'icmp-echo': r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
         }
@@ -2020,6 +2074,44 @@ class IOSDriver(NetworkDriver):
             snmp_chassis = self._send_command(command)
             snmp_dict['chassis_id'] = snmp_chassis
         return snmp_dict
+
+    def get_users(self):
+        """
+        Returns a dictionary with the configured users.
+        The keys of the main dictionary represents the username.
+        The values represent the details of the user,
+        represented by the following keys:
+
+            * level (int)
+            * password (str)
+            * sshkeys (list)
+
+        *Note: sshkeys on ios is the ssh key fingerprint
+
+        The level is an integer between 0 and 15, where 0 is the
+        lowest access and 15 represents full access to the device.
+        """
+        username_regex = r"^username\s+(?P<username>\S+)\s+(?:privilege\s+(?P<priv_level>\S+)" \
+            "\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
+        pub_keychain_regex = r"^\s+username\s+(?P<username>\S+)(?P<keys>(?:\n\s+key-hash\s+" \
+            "(?P<hash_type>\S+)\s+(?P<hash>\S+)(?:\s+\S+)?)+)$"
+        users = {}
+        command = "show run | section username"
+        output = self._send_command(command)
+        for match in re.finditer(username_regex, output, re.M):
+            users[match.groupdict()["username"]] = {
+                'level': int(match.groupdict()["priv_level"])
+                if match.groupdict()["priv_level"] else 1,
+                'password': match.groupdict()["pwd_hash"]
+                if match.groupdict()["pwd_hash"] else "",
+                'sshkeys': []
+            }
+        for match in re.finditer(pub_keychain_regex, output, re.M):
+            if match.groupdict()["username"] not in users:
+                continue
+            users[match.groupdict()["username"]]["sshkeys"] = list(map(lambda s: s.strip()[
+                9:], filter(None, match.groupdict()["keys"].splitlines())))
+        return users
 
     def ping(self, destination, source=C.PING_SOURCE, ttl=C.PING_TTL, timeout=C.PING_TIMEOUT,
              size=C.PING_SIZE, count=C.PING_COUNT, vrf=C.PING_VRF):
@@ -2150,7 +2242,7 @@ class IOSDriver(NetworkDriver):
 
         results = dict()
         # Find all hops
-        hops = re.findall('\\n\s+[0-9]{1,3}\s', output)
+        hops = re.findall(r'\n\s+[0-9]{1,3}\s', output)
         for hop in hops:
             # Search for hop in the output
             hop_match = re.search(hop, output)

@@ -56,10 +56,10 @@ IPV4_ADDR_REGEX = IP_ADDR_REGEX
 IPV6_ADDR_REGEX_1 = r"::"
 IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
 IPV6_ADDR_REGEX_3 = r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:" \
-                     "[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}"
+                     r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}"
 # Should validate IPv6 address using an IP address library after matching with this regex
-IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
-IPV4_OR_IPV6_REGEX = "(?:{}|{})".format(IPV4_ADDR_REGEX, IPV6_ADDR_REGEX)
+IPV6_ADDR_REGEX = r"(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
+IPV4_OR_IPV6_REGEX = r"(?:{}|{})".format(IPV4_ADDR_REGEX, IPV6_ADDR_REGEX)
 
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
 VLAN_REGEX = r"\d{1,4}"
@@ -964,15 +964,15 @@ class NXOSSSHDriver(NetworkDriver):
         if not lldp_neighbors_list:
             return lldp_neighbors  # empty dict
 
-        CHASSIS_REGEX = '^(Chassis id:)\s+([a-z0-9\.]+)$'
-        PORT_REGEX = '^(Port id:)\s+([0-9]+)$'
-        LOCAL_PORT_ID_REGEX = '^(Local Port id:)\s+(.*)$'
-        PORT_DESCR_REGEX = '^(Port Description:)\s+(.*)$'
-        SYSTEM_NAME_REGEX = '^(System Name:)\s+(.*)$'
-        SYSTEM_DESCR_REGEX = '^(System Description:)\s+(.*)$'
-        SYST_CAPAB_REEGX = '^(System Capabilities:)\s+(.*)$'
-        ENABL_CAPAB_REGEX = '^(Enabled Capabilities:)\s+(.*)$'
-        VLAN_ID_REGEX = '^(Vlan ID:)\s+(.*)$'
+        CHASSIS_REGEX = r'^(Chassis id:)\s+([a-z0-9\.]+)$'
+        PORT_REGEX = r'^(Port id:)\s+([0-9]+)$'
+        LOCAL_PORT_ID_REGEX = r'^(Local Port id:)\s+(.*)$'
+        PORT_DESCR_REGEX = r'^(Port Description:)\s+(.*)$'
+        SYSTEM_NAME_REGEX = r'^(System Name:)\s+(.*)$'
+        SYSTEM_DESCR_REGEX = r'^(System Description:)\s+(.*)$'
+        SYST_CAPAB_REEGX = r'^(System Capabilities:)\s+(.*)$'
+        ENABL_CAPAB_REGEX = r'^(Enabled Capabilities:)\s+(.*)$'
+        VLAN_ID_REGEX = r'^(Vlan ID:)\s+(.*)$'
 
         lldp_neighbor = {}
         interface_name = None
@@ -1246,6 +1246,11 @@ class NXOSSSHDriver(NetworkDriver):
         * 16       0050.56bb.0164    dynamic      -       F    F    po2
         * 13       90e2.ba5a.9f30    dynamic      -       F    F    eth1/2
         * 13       90e2.ba4b.fc78    dynamic      -       F    F    eth1/1
+          39       0100.5e00.4b4b    igmp         0       F    F    Po1 Po2 Po22
+          110      0100.5e00.0118    igmp         0       F    F    Po1 Po2
+                                                                    Eth142/1/3 Eth112/1/5
+                                                                    Eth112/1/6 Eth122/1/5
+
         """
 
         #  The '*' is stripped out later
@@ -1253,6 +1258,8 @@ class NXOSSSHDriver(NetworkDriver):
                                                                                   MAC_REGEX)
         RE_MACTABLE_FORMAT2 = r"^\s+{}\s+{}\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+".format('-',
                                                                                   MAC_REGEX)
+        # REGEX dedicated for lines with only interfaces (suite of the previous MAC address)
+        RE_MACTABLE_FORMAT3 = r"^\s+\S+"
 
         mac_address_table = []
         command = 'show mac address-table'
@@ -1291,31 +1298,49 @@ class NXOSSSHDriver(NetworkDriver):
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
-        # Strip any leading astericks or G character
-        output = re.sub(r"^[\*G]", "", output, flags=re.M)
+        # Strip any leading characters
+        output = re.sub(r"^[\*\+GO]", "", output, flags=re.M)
+        output = re.sub(r"^\(R\)", "", output, flags=re.M)
+        output = re.sub(r"^\(T\)", "", output, flags=re.M)
+        output = re.sub(r"^\(F\)", "", output, flags=re.M)
 
         for line in output.splitlines():
 
             # Every 500 Mac's Legend is reprinted, regardless of term len.
             # Above split will not help in this scenario
-            if re.search('^Legend', line):
+            if re.search(r'^Legend', line):
                 continue
-            elif re.search('^\s+\* \- primary entry', line):
+            elif re.search(r'^\s+\* \- primary entry', line):
                 continue
-            elif re.search('^\s+age \-', line):
+            elif re.search(r'^\s+age \-', line):
                 continue
-            elif re.search('^\s+VLAN', line):
+            elif re.search(r'^\s+VLAN', line):
                 continue
-            elif re.search('^------', line):
+            elif re.search(r'^------', line):
                 continue
-            elif re.search('^\s*$', line):
+            elif re.search(r'^\s*$', line):
                 continue
 
-            for pattern in [RE_MACTABLE_FORMAT1, RE_MACTABLE_FORMAT2]:
+            for pattern in [RE_MACTABLE_FORMAT1, RE_MACTABLE_FORMAT2, RE_MACTABLE_FORMAT3]:
                 if re.search(pattern, line):
-                    if len(line.split()) == 7:
-                        vlan, mac, mac_type, _, _, _, interface = line.split()
-                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                    split = line.split()
+                    if len(split) >= 7:
+                        vlan, mac, mac_type, _, _, _, interface = split[:7]
+                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                    interface))
+
+                        # if there is multiples interfaces for the mac address on the same line
+                        for i in range(7, len(split)):
+                            mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                        split[i]))
+                        break
+
+                    # if there is multiples interfaces for the mac address on next lines
+                    # we reuse the old variable 'vlan' 'mac' and 'mac_type'
+                    elif len(split) < 7:
+                        for i in range(0, len(split)):
+                            mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                        split[i]))
                         break
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
@@ -1420,24 +1445,24 @@ class NXOSSSHDriver(NetworkDriver):
                    vrf=c.TRACEROUTE_VRF):
 
         _HOP_ENTRY_PROBE = [
-            '\s+',
-            '(',  # beginning of host_name (ip_address) RTT group
-            '(',  # beginning of host_name (ip_address) group only
-            '([a-zA-Z0-9\.:-]*)',  # hostname
-            '\s+',
-            '\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
-            ')?',  # end of host_name (ip_address) group only
+            r'\s+',
+            r'(',  # beginning of host_name (ip_address) RTT group
+            r'(',  # beginning of host_name (ip_address) group only
+            r'([a-zA-Z0-9\.:-]*)',  # hostname
+            r'\s+',
+            r'\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
+            r')?',  # end of host_name (ip_address) group only
             # also hostname/ip are optional -- they can or cannot be specified
             # if not specified, means the current probe followed the same path as the previous
-            '\s+',
-            '(\d+\.\d+)\s+ms',  # RTT
-            '|\*',  # OR *, when non responsive hop
-            ')'  # end of host_name (ip_address) RTT group
+            r'\s+',
+            r'(\d+\.\d+)\s+ms',  # RTT
+            r'|\*',  # OR *, when non responsive hop
+            r')'  # end of host_name (ip_address) RTT group
         ]
 
         _HOP_ENTRY = [
-            '\s?',  # space before hop index?
-            '(\d+)',  # hop index
+            r'\s?',  # space before hop index?
+            r'(\d+)',  # hop index
         ]
 
         traceroute_result = {}

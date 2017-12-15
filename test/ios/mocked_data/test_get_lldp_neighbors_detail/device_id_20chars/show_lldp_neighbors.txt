@@ -1,0 +1,16 @@
+Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+
+Device ID           Local Intf     Hold-time  Capability      Port ID
+ABCD-U-DSW1.wan.acmeGi1            120        B,R             Te2/1/14
+ABCD-U-DSW1.wan.acmeGi1            120        B,R             Te1/1/14
+HMBBKKU-LA          Gi1            120        S               port-001
+JNICEEL-LA          Gi1            120        S               port-001
+SWAAAER-LTA         Gi1            120        S               port-001
+RBERRRANN-LTA       Gi1            120        S               port-001
+not advertised      Gi1            120        S               port-001
+Cisco IP Phone SPA50Gi1            120        B,T             30e4.db01.2345
+
+Total entries displayed: 8
+

@@ -526,7 +526,7 @@ class IOSXRDriver(NetworkDriver):
                 if napalm.base.helpers.find_txt(
                         card, 'Card/Attributes/FRUInfo/ModuleAdministrativeState') == "ADMIN_UP":
                     slot_name = napalm.base.helpers.find_txt(slot, 'Naming/Name')
-                    module_type = re.sub("\d+", "", slot_name)
+                    module_type = re.sub(r"\d+", "", slot_name)
                     if len(module_type) > 0:
                         active_modules[module_type].append(slot_name)
                     else:
