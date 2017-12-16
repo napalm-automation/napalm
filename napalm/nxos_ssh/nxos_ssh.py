@@ -756,13 +756,16 @@ class NXOSSSHDriver(NetworkDriver):
                 _, serial_number = line.split("Processor Board ID ")
                 serial_number = serial_number.strip()
 
-            if 'system: ' in line:
+            if 'system: ' in line or 'NXOS: ' in line:
                 line = line.strip()
                 os_version = line.split()[2]
                 os_version = os_version.strip()
 
             if 'cisco' in line and 'Chassis' in line:
-                _, model = line.split()[:2]
+                _, model = re.split(r".*cisco ", line)
+                model = re.search(r'.*cisco ([^\(]+)\(?.*\)?$', line)
+                if model:
+                    model = model.group(1)
                 model = model.strip()
 
         hostname = show_hostname.strip()
@@ -775,6 +778,9 @@ class NXOSSSHDriver(NetworkDriver):
                 break
         if hostname.count(".") >= 2:
             fqdn = hostname
+            # Remove domain name from hostname
+            if domain_name:
+                hostname = re.sub(re.escape(domain_name) + '$', '', hostname)[:-1]
         elif domain_name:
             fqdn = '{}.{}'.format(hostname, domain_name)
 
@@ -785,7 +791,15 @@ class NXOSSSHDriver(NetworkDriver):
             if line.startswith(' ') or line.startswith('-') or line.startswith('Port '):
                 continue
             interface = line.split()[0]
-            interface_list.append(interface)
+            # Return canonical interface name
+            if re.search(r'^Eth', interface):
+                interface_list.append(re.sub('Eth', 'Ethernet', interface))
+            elif re.search(r'^Po', interface):
+                interface_list.append(re.sub('Po', 'port-channel', interface))
+            elif re.search(r'^Lo', interface):
+                interface_list.append(re.sub('Lo', 'loopback', interface))
+            else:
+                interface_list.append(interface)
 
         return {
             'uptime': int(uptime),
