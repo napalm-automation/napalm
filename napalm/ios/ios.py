@@ -1617,19 +1617,27 @@ class IOSDriver(NetworkDriver):
         environment['memory']['available_ram'] = free_mem
 
         environment.setdefault('temperature', {})
+        re_temp_value = re.compile('(.*) Temperature Value')
         # The 'show env temperature status' is not ubiquitous in Cisco IOS
         output = self._send_command(temp_cmd)
         if '% Invalid' not in output:
             for line in output.splitlines():
-                if 'System Temperature Value' in line:
-                    system_temp = float(line.split(':')[1].split()[0])
+                m = re_temp_value.match(line)
+                if m is not None:
+                    temp_name = m.group(1).lower()
+                    temp_value = float(line.split(':')[1].split()[0])
+                    env_value = {'is_alert': False,
+                                 'is_critical': False,
+                                 'temperature': temp_value}
+                    environment['temperature'][temp_name] = env_value
                 elif 'Yellow Threshold' in line:
                     system_temp_alert = float(line.split(':')[1].split()[0])
+                    if temp_value > system_temp_alert:
+                        env_value['is_alert'] = True
                 elif 'Red Threshold' in line:
                     system_temp_crit = float(line.split(':')[1].split()[0])
-            env_value = {'is_alert': system_temp >= system_temp_alert,
-                         'is_critical': system_temp >= system_temp_crit, 'temperature': system_temp}
-            environment['temperature']['system'] = env_value
+                    if temp_value > system_temp_crit:
+                        env_value['is_critical'] = True
         else:
             env_value = {'is_alert': False, 'is_critical': False, 'temperature': -1.0}
             environment['temperature']['invalid'] = env_value
