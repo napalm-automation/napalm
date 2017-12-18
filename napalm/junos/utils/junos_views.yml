@@ -415,6 +415,8 @@ junos_arp_table:
   args:
     expiration-time: true
     no-resolve: true
+  args_key:
+    vpn
   item: arp-table-entry
   key: interface-name
   view: junos_arp_view

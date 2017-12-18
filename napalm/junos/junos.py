@@ -1199,7 +1199,11 @@ class JunOSDriver(NetworkDriver):
         arp_table = []
 
         arp_table_raw = junos_views.junos_arp_table(self.device)
-        arp_table_raw.get()
+        if vrf:
+            arp_table_raw.get(vpn=vrf)
+        else:
+            arp_table_raw.get()
+
         arp_table_items = arp_table_raw.items()
 
         for arp_table_entry in arp_table_items:
