@@ -447,7 +447,7 @@ class JunOSDriver(NetworkDriver):
         return environment_data
 
     @staticmethod
-    def _get_address_family(table):
+    def _get_address_family(table, instance):
         """
         Function to derive address family from a junos table name.
 
@@ -459,14 +459,17 @@ class JunOSDriver(NetworkDriver):
             'inet6': 'ipv6',
             'inetflow': 'flow'
         }
-        family = table.rsplit('.',1)[-2]
+        if instance == "master":
+            family = table.rsplit('.', 1)[-2]
+        else:
+            family = table.split('.')[-2]
         try:
             address_family = address_family_mapping[family]
         except KeyError:
             address_family = None
         return address_family
 
-    def _parse_route_stats(self, neighbor):
+    def _parse_route_stats(self, neighbor, instance):
         data = {
             'ipv4': {
                 'received_prefixes': -1,
@@ -487,7 +490,7 @@ class JunOSDriver(NetworkDriver):
                 # is of type int. Therefore convert attribute to list
                 neighbor['sent_prefixes'] = [neighbor['sent_prefixes']]
             for idx, table in enumerate(neighbor['tables']):
-                family = self._get_address_family(table)
+                family = self._get_address_family(table, instance)
                 if family is None:
                     # Need to remove counter from sent_prefixes list anyway
                     if 'in sync' in neighbor['send-state'][idx]:
@@ -501,7 +504,7 @@ class JunOSDriver(NetworkDriver):
                 else:
                     data[family]['sent_prefixes'] = 0
         else:
-            family = self._get_address_family(neighbor['tables'])
+            family = self._get_address_family(neighbor['tables'], instance)
             if family is not None:
                 data[family] = {}
                 data[family]['received_prefixes'] = neighbor['received_prefixes']
@@ -582,7 +585,7 @@ class JunOSDriver(NetworkDriver):
                 }
                 peer['local_as'] = napalm.base.helpers.as_number(peer['local_as'])
                 peer['remote_as'] = napalm.base.helpers.as_number(peer['remote_as'])
-                peer['address_family'] = self._parse_route_stats(neighbor_details)
+                peer['address_family'] = self._parse_route_stats(neighbor_details, instance)
                 if 'peers' not in bgp_neighbor_data[instance_name]:
                     bgp_neighbor_data[instance_name]['peers'] = {}
                 bgp_neighbor_data[instance_name]['peers'][peer_ip] = peer
