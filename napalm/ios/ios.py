@@ -540,9 +540,10 @@ class IOSDriver(NetworkDriver):
         elif source_config:
             kwargs = dict(ssh_conn=self.device, source_config=source_config, dest_file=dest_file,
                           direction='put', file_system=file_system)
-        enable_scp = True
+        use_scp = True
         if self.inline_transfer:
-            enable_scp = False
+            use_scp = False
+
         with TransferClass(**kwargs) as transfer:
 
             # Check if file already exists and has correct MD5
@@ -553,8 +554,14 @@ class IOSDriver(NetworkDriver):
                 msg = "Insufficient space available on remote device"
                 return (False, msg)
 
-            if enable_scp:
-                transfer.enable_scp()
+            if use_scp:
+                cmd = 'ip scp server enable'
+                show_cmd = "show running-config | inc {}".format(cmd)
+                output = self.device.send_command_expect(show_cmd)
+                if cmd not in output:
+                    msg = "SCP file transfers are not enabled. " \
+                          "Configure 'ip scp server enable' on the device."
+                    raise CommandErrorException(msg)
 
             # Transfer file
             transfer.transfer_file()

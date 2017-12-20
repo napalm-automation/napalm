@@ -125,9 +125,17 @@ This can be controlled using the `auto_file_prompt` optional arguement:
 * `auto_file_prompt=False`: Disable the above automated behaviour. The managed device must have `file prompt quiet` in its running-config already,
   otherwise a `CommandErrorException` will be raised when file operations are attempted.
 
-Notes
+SCP File Transfers
 _____
 
-* Will automatically enable secure copy ('ip scp server enable') on the network device. This is a configuration change.
+The NAPALM-ios driver requires SCP to be enabled on the managed device. SCP
+server functionality is disabled in IOS by default, and is configured using
+`ip scp server enable`.
+
+If an operation requiring a file transfer is attempted, but the necessary
+configuration is not present, a `CommandErrorException` will be raised.
+
+Notes
+_____
 
 * The NAPALM-ios driver supports all Netmiko arguments as either standard arguments (hostname, username, password, timeout) or as optional_args (everything else).
