@@ -40,6 +40,7 @@ from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 import napalm.base.constants as c
+from napalm.base.recorder import Recorder
 
 
 class NXOSDriver(NetworkDriver):
@@ -69,14 +70,21 @@ class NXOSDriver(NetworkDriver):
         elif self.transport == 'http':
             self.port = optional_args.get('port', 80)
 
+        self.recorder_options = {
+            "mode": optional_args.get("recorder_mode", "pass"),
+            "path": optional_args.get("recorder_path", ""),
+        }
+
     def open(self):
         try:
-            self.device = NXOSDevice(self.hostname,
-                                     self.username,
-                                     self.password,
-                                     timeout=self.timeout,
-                                     port=self.port,
-                                     transport=self.transport)
+            self.device = Recorder(NXOSDevice,
+                                   recorder_options=self.recorder_options,
+                                   hostname=self.hostname,
+                                   username=self.username,
+                                   password=self.password,
+                                   timeout=self.timeout,
+                                   port=self.port,
+                                   transport=self.transport)
             self.device.show('show hostname')
             self.up = True
         except (CLIError, ValueError):

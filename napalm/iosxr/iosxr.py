@@ -43,6 +43,7 @@ from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.exceptions import CommandTimeoutException
 from napalm.base.utils.py23_compat import text_type
+from napalm.base.recorder import Recorder
 
 
 class IOSXRDriver(NetworkDriver):
@@ -87,13 +88,21 @@ class IOSXRDriver(NetworkDriver):
                 self.netmiko_optional_args[k] = optional_args[k]
             except KeyError:
                 pass
-        self.device = IOSXR(hostname,
-                            username,
-                            password,
-                            timeout=timeout,
-                            port=self.port,
-                            lock=self.lock_on_connect,
-                            **self.netmiko_optional_args)
+
+        self.recorder_options = {
+            "mode": optional_args.get("recorder_mode", "pass"),
+            "path": optional_args.get("recorder_path", ""),
+        }
+
+        self.device = Recorder(IOSXR,
+                               recorder_options=self.recorder_options,
+                               hostname=hostname,
+                               username=username,
+                               password=password,
+                               timeout=timeout,
+                               port=self.port,
+                               lock=self.lock_on_connect,
+                               **self.netmiko_optional_args)
 
     def open(self):
         try:

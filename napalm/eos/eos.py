@@ -43,6 +43,7 @@ from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException, MergeConfigException, \
                         ReplaceConfigException, SessionLockedException, CommandErrorException
 
+from napalm.base.recorder import Recorder
 import napalm.base.constants as c
 # local modules
 # here add local imports
@@ -120,10 +121,10 @@ class EOSDriver(NetworkDriver):
                 raise ConnectionException("Unknown transport: {}".format(self.transport))
 
             if self.device is None:
-                self.device = napalm.base.recorder.Recorder(pyeapi.client.Node,
-                                                            recorder_options=self.recorder_options,
-                                                            connection=connection,
-                                                            enablepwd=self.enablepwd)
+                self.device = Recorder(pyeapi.client.Node,
+                                       recorder_options=self.recorder_options,
+                                       connection=connection,
+                                       enablepwd=self.enablepwd)
             # does not raise an Exception if unusable
 
             # let's try to run a very simple command

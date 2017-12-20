@@ -36,6 +36,9 @@ import napalm.base.helpers
 from napalm.base.helpers import canonical_interface_name
 
 
+from napalm.base.recorder import Recorder
+
+
 # Easier to store these as constants
 HOUR_SECONDS = 3600
 DAY_SECONDS = 24 * HOUR_SECONDS
@@ -133,16 +136,24 @@ class IOSDriver(NetworkDriver):
         self.profile = ["ios"]
         self.use_canonical_interface = optional_args.get('canonical_int', False)
 
+        self.recorder_options = {
+            "mode": optional_args.get("recorder_mode", "pass"),
+            "path": optional_args.get("recorder_path", ""),
+        }
+
     def open(self):
         """Open a connection to the device."""
         device_type = 'cisco_ios'
         if self.transport == 'telnet':
             device_type = 'cisco_ios_telnet'
-        self.device = ConnectHandler(device_type=device_type,
-                                     host=self.hostname,
-                                     username=self.username,
-                                     password=self.password,
-                                     **self.netmiko_optional_args)
+
+        self.device = Recorder(ConnectHandler,
+                               recorder_options=self.recorder_options,
+                               device_type=device_type,
+                               host=self.hostname,
+                               username=self.username,
+                               password=self.password,
+                               **self.netmiko_optional_args)
         # ensure in enable mode
         self.device.enable()
 

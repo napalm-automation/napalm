@@ -43,6 +43,7 @@ from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 import napalm.base.constants as c
+from napalm.base.recorder import Recorder
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
@@ -410,13 +411,20 @@ class NXOSSSHDriver(NetworkDriver):
         self.port = optional_args.get('port', 22)
         self.sudo_pwd = optional_args.get('sudo_pwd', self.password)
 
+        self.recorder_options = {
+            "mode": optional_args.get("recorder_mode", "pass"),
+            "path": optional_args.get("recorder_path", ""),
+        }
+
     def open(self):
         try:
-            self.device = ConnectHandler(device_type='cisco_nxos',
-                                         host=self.hostname,
-                                         username=self.username,
-                                         password=self.password,
-                                         **self.netmiko_optional_args)
+            self.device = Recorder(ConnectHandler,
+                                   recorder_options=self.recorder_options,
+                                   device_type='cisco_nxos',
+                                   host=self.hostname,
+                                   username=self.username,
+                                   password=self.password,
+                                   **self.netmiko_optional_args)
             self.device.enable()
         except NetMikoTimeoutException:
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
