@@ -1,0 +1,64 @@
+{{ name }}
+=====================
+
+{{ doc['description'][0] }}
+
+
+Parameters
+----------
+
+.. raw:: html
+
+	<table border="1" class="docutils">
+		<th>Parameter</th>
+		<th>Required</th>
+		<th>Default</th>
+		<th>Choices</th>
+		<th>Description</th>
+	{% for p in doc['options']|sort %}
+			<tr>
+				<td>{{ p }}</td>
+				<td>{{ doc['options'][p]['required'] }}</td>
+				<td>N/A</td>
+				<td>N/A</td>
+				<td>{{ doc['options'][p]['description'][0] }}</td>
+			</tr>
+	{% endfor %}
+
+	</table>
+
+
+Examples
+--------
+
+.. code-block:: yaml
+
+	{% for line in example_lines %}
+	{{ line }}
+	{% endfor %}
+
+{% if return_values %}
+
+Return
+------
+.. raw:: html
+
+	<table border="1" class="docutils">
+		<th>Name</th>
+		<th>Description</th>
+		<th>Returned</th>
+		<th>Type</th>
+		<th>Sample</th>
+	{% for value in return_values %}
+			<tr>
+				<td>{{ value }}</td>
+				<td>{{ return_values[value].description }}</td>
+				<td>{{ return_values[value].returned }}</td>
+				<td>{{ return_values[value].type }}</td>
+				<td>{{ return_values[value].sample|replace('\n', '\\n') }}</td>
+			</tr>
+	{% endfor %}
+	</table>
+
+
+{% endif %}

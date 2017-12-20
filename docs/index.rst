@@ -39,7 +39,7 @@ You can select the driver you need by doing the following:
    >>> get_network_driver('iosxr')
    <class napalm.iosxr.iosxr.IOSXRDriver at 0x10ec90050>
    >>> get_network_driver('junos')
-   <class napalm.ibm.ibm.IBMDriver at 0x10f8f61f0>
+   <class napalm.junos.junos.JunOSDriver at 0x10f8f61f0>
    >>> get_network_driver('nxos')
    <class napalm.nxos.nxos.NXOSDriver at 0x10f9304c8>
    >>> get_network_driver('ios')
@@ -60,6 +60,7 @@ Documentation
    base
    yang
    logs
+   integrations/index
    contributing/index
    development/index
    hackathons/index
