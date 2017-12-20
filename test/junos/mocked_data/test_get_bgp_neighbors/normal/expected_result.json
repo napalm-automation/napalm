@@ -12,9 +12,9 @@
             "accepted_prefixes": -1
           },
           "ipv4": {
-            "received_prefixes": 2,
-            "sent_prefixes": 9,
-            "accepted_prefixes": 2
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
           }
         },
         "remote_as": 30000,
@@ -33,9 +33,9 @@
             "accepted_prefixes": -1
           },
           "ipv4": {
-            "received_prefixes": 7,
-            "sent_prefixes": 4,
-            "accepted_prefixes": 7
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
           }
         },
         "remote_as": 29999,

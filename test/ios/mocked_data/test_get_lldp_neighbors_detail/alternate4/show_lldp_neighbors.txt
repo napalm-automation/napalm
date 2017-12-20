@@ -1,0 +1,12 @@
+Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+
+Device ID           Local Intf     Hold-time  Capability      Port ID
+csr9.bogus.com      Gi1            120        R               Gi1
+csr9.bogus.com      Gi2            120        R               Gi2
+csr8.bogus.com      Gi4            120        R               Gi4
+csr8.bogus.com      Gi1            120        R               Gi1
+csr12.bogus.com     Gi1            120        R               Gi1
+
+Total entries displayed: 5

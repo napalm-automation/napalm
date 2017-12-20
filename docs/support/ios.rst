@@ -8,7 +8,7 @@ _____________
 IOS has no native API to play with, that's the reason why we used the Netmiko library to interact with it.
 Having Netmiko installed in your working box is a prerequisite.
 
-Check napalm-ios/requirements.txt for Netmiko version requirement   
+Check napalm-ios/requirements.txt for Netmiko version requirement
 
 Full ios driver support requires configuration rollback on error::
 
@@ -61,11 +61,11 @@ Cisco IOS adds a tab character into the self-signed certificate. This exists on 
 
     crypto pki certificate chain TP-self-signed-1429897839
      certificate self-signed 01
-      3082022B 30820194 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+      3082022B 30820194 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
       ...
       ...
       ...
-      9353BD17 C345E1D7 71AFD125 D23D7940 2DECBE8E 46553314 396ACC63 34839EF7 
+      9353BD17 C345E1D7 71AFD125 D23D7940 2DECBE8E 46553314 396ACC63 34839EF7
       3C056A00 7E129168 F0CD3692 F53C62
       	quit
 
@@ -73,11 +73,11 @@ The quit line reads as follows::
 
     >>> for char in line:
     ...   print("{}: {}".format(repr(char), ord(char)))
-    ... 
+    ...
     ' ': 32     # space
     ' ': 32     # space
     '\t': 9     # tab
-    'q': 113    
+    'q': 113
     'u': 117
     'i': 105
     't': 116
@@ -104,7 +104,7 @@ IOS requires that the banner use the EXT character (ASCII 3). This looks like a 
     ...   f.write("banner motd {}\n".format(ext_char))
     ...   f.write("my banner test\n")
     ...   f.write("{}\n".format(ext_char))
-    ... 
+    ...
     >>> quit()
 
 Configure replace operations will reject a file with a banner unless it uses the ASCII character. Note, this likely also implies you cannot just copy-and-paste what you see on the screen.
@@ -112,12 +112,22 @@ Configure replace operations will reject a file with a banner unless it uses the
 In vim insert, you can also type <ctrl>+V, release only the V, then type C
 
 
+File Operation Prompts
+_____
+
+By default IOS will prompt for confirmation on file operations. These prompts need to be disabled before the NAPALM-ios driver performs any such operation on the device.
+This can be controlled using the `auto_file_prompt` optional arguement:
+
+* `auto_file_prompt=True` (default): NAPALM will automatically add `file prompt quiet` to the device configuration before performing file operations,
+  and un-configure it again afterwards. If the device already had the command in its configuration then it will be silently removed as a result, and
+  this change will not show up in the output of `compare_config()`.
+
+* `auto_file_prompt=False`: Disable the above automated behaviour. The managed device must have `file prompt quiet` in its running-config already,
+  otherwise a `CommandErrorException` will be raised when file operations are attempted.
 
 Notes
 _____
 
 * Will automatically enable secure copy ('ip scp server enable') on the network device. This is a configuration change.
-
-* During various operations, NAPALM ios driver will turn off the prompting for confirmations (`file prompt quiet`). It should re-enable prompting before exiting the device (`no file prompt quiet`).
 
 * The NAPALM-ios driver supports all Netmiko arguments as either standard arguments (hostname, username, password, timeout) or as optional_args (everything else).

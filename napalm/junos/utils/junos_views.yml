@@ -24,6 +24,20 @@ junos_iface_view:
     mtu: mtu
 
 
+junos_logical_iface_table:
+  rpc: get-interface-information
+  item: physical-interface/logical-interface
+  view: junos_logical_iface_view
+
+junos_logical_iface_view:
+  fields:
+    is_up: { ../oper-status: True=up }
+    is_enabled: { if-config-flags/iff-up: flag }
+    description: { description: unicode }
+    last_flapped: { ../interface-flapped/@seconds: int }
+    speed: ../speed
+    mac_address: ../current-physical-address
+
 ####
 #### BGP tables
 ####
@@ -135,14 +149,14 @@ junos_iface_counter_view:
     tx_errors: { output-errors: int }
     tx_discards: { output-drops: int }
 
-junos_enviroment_table:
+junos_environment_table:
   rpc: get-environment-information
   args:
   item: environment-item
   key: name
-  view: junos_enviroment_view
+  view: junos_environment_view
 
-junos_enviroment_view:
+junos_environment_view:
   fields:
     class: class
     status: status
@@ -157,6 +171,7 @@ junos_pem_table:
 
 junos_pem_view:
   fields:
+    status: { state: True=Online }
     capacity: { pem-capacity-detail/capacity-actual: float }
     output: { dc-output-detail/dc-power: float }
 
