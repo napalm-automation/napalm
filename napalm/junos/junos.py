@@ -355,8 +355,8 @@ class JunOSDriver(NetworkDriver):
                 except KeyError:
                     environment_data['power'] = {}
                     environment_data['power'][sensor_object] = {}
-                environment_data['power'][sensor_object]['capacity'] = pem_table[sensor_object]['capacity']
-                environment_data['power'][sensor_object]['output'] = pem_table[sensor_object]['output']
+                environment_data['power'][sensor_object]['capacity'] = -1.0
+                environment_data['power'][sensor_object]['output'] = -1.0
 
             if structured_object_data['class'] == 'Fans':
                 # Create a dict for the 'fans' key
