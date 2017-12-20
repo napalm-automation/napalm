@@ -703,12 +703,18 @@ class JunOSDriver(NetworkDriver):
         # and rpc for M, MX, and T Series is get-lldp-interface-neighbors
         # ref1: https://apps.juniper.net/xmlapi/operTags.jsp  (Junos 13.1 and later)
         # ref2: https://www.juniper.net/documentation/en_US/junos12.3/information-products/topic-collections/junos-xml-ref-oper/index.html  (Junos 12.3) # noqa
+        # Exceptions:
+        # EX9208    personality = SWITCH    RPC: <get-lldp-interface-neighbors><interface-device>
         lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
-        if self.device.facts.get('personality') not in ('MX', 'M', 'T'):
+        if 'EX9208' in self.device.facts.get('model'):
+            pass
+        elif self.device.facts.get('personality') not in ('MX', 'M', 'T'):
             lldp_table.GET_RPC = 'get-lldp-interface-neighbors-information'
 
         for interface in interfaces:
-            if self.device.facts.get('personality') not in ('MX', 'M', 'T'):
+            if 'EX9208' in self.device.facts.get('model'):
+                lldp_table.get(interface_device=interface)
+            elif self.device.facts.get('personality') not in ('MX', 'M', 'T'):
                 lldp_table.get(interface_name=interface)
             else:
                 lldp_table.get(interface_device=interface)
