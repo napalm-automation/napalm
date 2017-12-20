@@ -46,7 +46,6 @@ from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.exceptions import CommandTimeoutException
-from napalm.base.recorder import Recorder
 
 # import local modules
 from napalm.junos.utils import junos_views
@@ -96,14 +95,16 @@ class JunOSDriver(NetworkDriver):
         if self.key_file:
             connection_params["ssh_private_key_file"] = self.key_file
 
-        self.recorder_options = {
-            "mode": optional_args.get("recorder_mode", "pass"),
-            "path": optional_args.get("recorder_path", ""),
-        }
+        # NOT YET SUPPORTED
+        #  self.recorder_options = {
+        #      "mode": optional_args.get("recorder_mode", "pass"),
+        #      "path": optional_args.get("recorder_path", ""),
+        #  }
 
-        self.device = Recorder(Device,
-                               recorder_options=self.recorder_options,
-                               **connection_params)
+        #  self.device = Recorder(Device,
+        #                         recorder_options=self.recorder_options,
+        #                         **connection_params)
+        self.device = Device(**connection_params)
 
         self.profile = ["junos"]
 

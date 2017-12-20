@@ -129,7 +129,7 @@ ____________________________________
 * :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`use_keys` (iosxr, ios, panos) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
 * :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
-* :code:`recorder_mode` (all):
+* :code:`recorder_mode` (all but junos):
     * ``record``: Record all interactions between napalm and the underlying library
     * ``replay``: Replay previously saved interactions with napalm's underlying library.
     * ``pass`` (default): Do nothing
