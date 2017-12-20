@@ -447,6 +447,16 @@ class JunOSDriver(NetworkDriver):
             pass
         else:
             # Format PEM information and correct capacity and output values
+            if 'power' not in environment_data.keys():
+                # Power supplies were not included from the environment table above
+                # Need to initialize data
+                environment_data['power'] = {}
+                for pem in power_supplies.items():
+                    pem_name = pem[0].replace("PEM", "Power Supply")
+                    environment_data['power'][pem_name] = {}
+                    environment_data['power'][pem_name]['output'] = -1.0
+                    environment_data['power'][pem_name]['capacity'] = -1.0
+                    environment_data['power'][pem_name]['status'] = False
             for pem in power_supplies.items():
                 pem_name = pem[0].replace("PEM", "Power Supply")
                 pem_table[pem_name] = dict(pem[1])
