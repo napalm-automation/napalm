@@ -88,6 +88,7 @@ class JunOSDriver(NetworkDriver):
         if self.key_file:
             self.device = Device(hostname,
                                  user=username,
+                                 password=password,
                                  ssh_private_key_file=self.key_file,
                                  ssh_config=self.ssh_config_file,
                                  port=self.port)
@@ -788,6 +789,17 @@ class JunOSDriver(NetworkDriver):
             ]
             return '\n'.join(matched)
 
+        def _find(txt, pattern):
+            '''
+            Search for first occurrence of pattern.
+            '''
+            rgx = '^.*({pattern})(.*)$'.format(pattern=pattern)
+            match = re.search(rgx, txt, re.I | re.M | re.DOTALL)
+            if match:
+                return '{pattern}{rest}'.format(pattern=pattern, rest=match.group(2))
+            else:
+                return '\nPattern not found'
+
         def _process_pipe(cmd, txt):
             '''
             Process CLI output from Juniper device that
@@ -801,6 +813,7 @@ class JunOSDriver(NetworkDriver):
             _OF_MAP['last'] = _last
             _OF_MAP['trim'] = _trim
             _OF_MAP['count'] = _count
+            _OF_MAP['find'] = _find
             # the operations order matter in this case!
             exploded_cmd = cmd.split('|')
             pipe_oper_args = {}
