@@ -706,9 +706,9 @@ class JunOSDriver(NetworkDriver):
         # Exceptions:
         # EX9208    personality = SWITCH    RPC: <get-lldp-interface-neighbors><interface-device>
         lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
-        if 'EX9208' in self.device.facts.get('model'):
-            pass
-        elif self.device.facts.get('personality') not in ('MX', 'M', 'T'):
+        if self.device.facts.get('personality') not in ('MX', 'M', 'T')\
+           and self.device.facts.get('model') not in ('EX9208', 'QFX10008'):
+            # Still need to confirm for QFX10002 and other EX series
             lldp_table.GET_RPC = 'get-lldp-interface-neighbors-information'
 
         for interface in interfaces:
