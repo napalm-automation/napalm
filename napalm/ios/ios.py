@@ -693,7 +693,7 @@ class IOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_neighbors(self, proto = None):
+    def get_layer2_neighbors(self, proto = None):
         """IOS implementation of get_neighbors."""
         if not proto or proto == 'lldp':
             return self.get_lldp_neighbors_detail()
@@ -701,7 +701,7 @@ class IOSDriver(NetworkDriver):
             return self._get_cdp_neighbors()
         raise ValueError("Unsupported protocol:\n{}".format(proto))
 
-    def get_neighbors_detail(self, proto = None):
+    def get_layer2_neighbors_detail(self, proto = None):
         """IOS implementation of get_neighbors_detail."""
         if not proto or proto == 'lldp':
             return self.get_lldp_neighbors_detail()
