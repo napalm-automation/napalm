@@ -400,6 +400,9 @@ class NXOSDriver(NetworkDriver):
                 is_up = interface_details.get('admin_state', '') == 'up'
             else:
                 is_up = interface_details.get('state', '') == 'up'
+
+            # physicals interfaces have keys in eth_*
+            # whereas vlan interfaces have keys in svi_*
             if 'eth_mtu' in interface_details:
                 mtu = int(interface_details['eth_mtu'])
             elif 'svi_mtu' in interface_details:
