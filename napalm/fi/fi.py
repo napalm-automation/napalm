@@ -105,23 +105,24 @@ class FastIronDriver(NetworkDriver):
             'is_alive': self.device.remote_conn.transport.is_active()
         }
 
-    # def _send_command(self, command):
-    #    """Wrapper for self.device.send.command().
-    #
-    #    If command is a list will iterate through commands until valid command.
-    #   """
-    #    try:
-    #        if isinstance(command, list):
-    #            for cmd in command:
-    #                output = self.device.send_command(cmd)
-    #                # TODO Check exception handling
-    #                if "% Invalid" not in output:
-    #                    break
-    #        else:
-    #            output = self.device.send_command(command)
-    #        return output
-    #    except (socket.error, EOFError) as e:
-    #        raise ConnectionClosedException(str(e))
+    def _send_command(self, command):
+        """Wrapper for self.device.send.command().
+
+        If command is a list will iterate through commands until valid command.
+        """
+        output = ""
+
+        try:
+            if isinstance(command, list):
+                for cmd in command:
+                    output = self.device.send_command(cmd)
+                    if "% Invalid" not in output:
+                        break
+            else:
+                output = self.device.send_command(command)
+            return output
+        except (socket.error, EOFError) as e:
+            raise ConnectionClosedException(str(e))
 
     @staticmethod
     def retrieve_all_locations(long_string, word, pos):
@@ -146,7 +147,6 @@ class FastIronDriver(NetworkDriver):
             return None
 
         size = len(word_list)
-        print(size)
         sentence = output.split()                                       # breaks long string into separate strings
 
         for m in range(0, size):                                        # Iterates through size of word list
@@ -161,9 +161,9 @@ class FastIronDriver(NetworkDriver):
     @staticmethod
     def creates_list_of_nlines(my_string):
         """ Breaks a long string into separated substring"""
-        temp = ""  # sets empty string, will add char respectively
-        my_list = list()  # creates list
-        for val in range(0, len(my_string)):  # iterates through the length of input
+        temp = ""                                               # sets empty string, will add char respectively
+        my_list = list()                                        # creates list
+        for val in range(0, len(my_string)):                    # iterates through the length of input
             if my_string[val] != '\n':
                 temp += my_string[val]
             if my_string[val] == '\n' and temp == "":
@@ -174,9 +174,9 @@ class FastIronDriver(NetworkDriver):
         return my_list
 
     @staticmethod
-    def delete_if_contains(nline_list, del_word):
+    def delete_if_contains(nline_list, del_word):               #
         temp_list = list()
-        for a_string in nline_list:
+        for a_string in nline_list:                             #
             if a_string .__contains__(del_word):
                 continue
             else:
@@ -395,6 +395,15 @@ class FastIronDriver(NetworkDriver):
         return {'power': my_dic}                                                # returns dictionary containing pwr info
 
     @staticmethod
+    def fast_find(input_string, word):
+        index_list = list()
+        input_string = input_string.split()
+        for val in range(len(input_string)):
+            if input_string[val] == word:
+                index_list.append(val)
+        return index_list
+
+    @staticmethod
     def environment_fan(string):
         fan = FastIronDriver.retrieve_all_locations(string, "Fan", 1)           # finds all instances of fan in output
         unit = FastIronDriver.retrieve_all_locations(string, "Fan", 0)          # finds all instances of fan ID
@@ -419,34 +428,7 @@ class FastIronDriver(NetworkDriver):
 
         return {'memory': dic}
 
-    @staticmethod
-    def interface_counters(my_port, stat):
-        my_dict = {}
-        for val in range(len(stat)):
-            # port_info = char_to_words(new_line_segment(stat[val]))
-            port_info = FastIronDriver.creates_list_of_nlines(stat[val])
-            print(port_info)
-            sys.exit(0)
-            tx_err = int(port_info[7][3]);
-            rx_err = int(port_info[9][1]);
-            tx_discard = int(port_info[12][3])
-            rx_discard = int(port_info[7][1]);
-            tx_oct = int(port_info[0][3]);
-            rx_oct = int(port_info[0][1])
-            tx_uni = int(port_info[4][3]);
-            rx_uni = int(port_info[4][1]);
-            tx_mul = int(port_info[3][3])
-            rx_mul = int(port_info[3][1]);
-            tx_bro = int(port_info[2][3]);
-            rx_bro = int(port_info[2][1])
 
-            my_dict.update(
-                {my_port[val]: {'tx_multicast_packets': tx_mul, 'tx_discard': tx_discard, 'tx_octets': tx_oct,
-                                'tx_errors': tx_err, 'rx_octets': rx_oct, 'tx_unicast_packets': tx_uni,
-                                'rx_errors': rx_err,
-                                'tx_broadcast_packets': tx_bro, 'rx_multicast_packets': rx_mul,
-                                'rx_broadcast_packets': rx_bro,
-                                'rx_discards': rx_discard, 'rx_unicast_packets': rx_uni}})
 
         return my_dict
 
@@ -549,7 +531,7 @@ class FastIronDriver(NetworkDriver):
 
         return{
             'uptime': FastIronDriver.facts_uptime(version_output),                  # Returns up time of device in sec
-            'vendor': u'Ruckus',                                                    # Vendor of ICX switches
+            'vendor': 'Ruckus',                                                    # Vendor of ICX switches
             'model':  FastIronDriver.facts_model(version_output),                   # Model type of switch 12/24/24P etc
             'hostname':  FastIronDriver.facts_hostname(host_name),                  # Host name if configured
             'fqdn': None,
@@ -771,28 +753,36 @@ class FastIronDriver(NetworkDriver):
         interface_counters = dict()
         stats = self.device.send_command('show interface')
 
-        mul = [m.start() for m in re.finditer("multicasts,", stats)]
-        uni = [m.start() for m in re.finditer("unicasts", stats)]
-        bro = [m.start() for m in re.finditer("broadcasts,", stats)]
-        ier = [m.start() for m in re.finditer("input errors,", stats)]
-        oer = [m.start() for m in re.finditer("output errors,", stats)]
+        mul = FastIronDriver.retrieve_all_locations(stats, 'multicasts,', -2)
+        uni = FastIronDriver.retrieve_all_locations(stats, 'unicasts', -2)
+        bro = FastIronDriver.retrieve_all_locations(stats, 'broadcasts,', -2)
+        ier = FastIronDriver.retrieve_all_locations(stats, "errors,", -3)
+
+        # print(oer)
+        # mul = [m.start() for m in re.finditer("multicasts,", stats)]
+        # uni = [m.start() for m in re.finditer("unicasts", stats)]
+        # bro = [m.start() for m in re.finditer("broadcasts,", stats)]
+        # ier = [m.start() for m in re.finditer("input errors,", stats)]
+        # oer = [m.start() for m in re.finditer("output errors,", stats)]
         # dis = None
         # odis = None
 
+        # print(stats[oer[0] - 2])
+
         for val in range(len(ports)):
             interface_counters.update({ports[val]: {
-                'tx_errors': stats[oer[val] - 2],
-                'rx_errors': stats[ier[val] - 2],
+                'rx_errors': int(ier.pop(0)),
+                'tx_errors': int(ier.pop(0)),
                 'tx_discards': None,                    # discard is not put in output of current show int
                 'rx_discards': None,                    # alternative is to make individual calls which break
                 'tx_octets': None,                      # this function, must be taken with software to incorporate
                 'rx_octets': None,
-                'tx_unicast_packets': stats[uni[(val*2)+1] - 2],
-                'rx_unicast_packets': stats[uni[val*2] - 2],
-                'tx_multicast_packets': stats[mul[(val*2)+1] - 2],
-                'rx_multicast_packets': stats[mul[val*2] - 2],
-                'tx_broadcast_packets': stats[bro[(val*2)+1] - 2],
-                'rx_broadcast_packets': stats[bro[val*2] - 2]
+                'rx_unicast_packets': int(uni.pop(0)),
+                'tx_unicast_packets': int(uni.pop(0)),
+                'rx_multicast_packets': int(mul.pop(0)),
+                'tx_multicast_packets': int(mul.pop(0)),
+                'rx_broadcast_packets': int(bro.pop(0)),
+                'tx_broadcast_packets': int(bro.pop(0))
             }})
 
         return interface_counters
@@ -811,28 +801,25 @@ class FastIronDriver(NetworkDriver):
             * remote_system_description (string)
             * remote_system_capab (string)
             * remote_system_enabled_capab (string)
-
-        Example::
-
-            {
-                'TenGigE0/0/0/8': [
-                    {
-                        'parent_interface': u'Bundle-Ether8',
-                        'remote_chassis_id': u'8c60.4f69.e96c',
-                        'remote_system_name': u'switch',
-                        'remote_port': u'Eth2/2/1',
-                        'remote_port_description': u'Ethernet2/2/1',
-                        'remote_system_description': u'''Cisco Nexus Operating System (NX-OS)
-                              Software 7.1(0)N1(1a)
-                              TAC support: http://www.cisco.com/tac
-                              Copyright (c) 2002-2015, Cisco Systems, Inc. All rights reserved.''',
-                        'remote_system_capab': u'B, R',
-                        'remote_system_enable_capab': u'B'
-                    }
-                ]
-            }
         """
-        raise NotImplementedError
+        if interface == '':
+            return "No Interface Selected"
+
+        output = self.device.send_command('show lldp neighbors detail ports ethernet ' + interface)
+        output = output.replace(':', ' ')
+        output = output.replace('"', '')
+        output = (output.replace('+', ' ')).split()
+
+        return {interface: [{
+            'parent_interface': "",
+            'remote_chassis_id': "",
+            'remote_system_name': "",
+            'remote_port': "",
+            'remote_port_description': "",
+            'remote_system_description': "",
+            'remote_system_capab': None,
+            'remote_system_enable_capab': None
+        }]}
 
     def get_bgp_config(self, group='', neighbor=''):
         """
@@ -931,31 +918,18 @@ class FastIronDriver(NetworkDriver):
 
     def cli(self, commands):
 
-        """
-        Will execute a list of commands and return the output in a dictionary format.
+        cli_output = dict()
+        if type(commands) is not list:
+            raise TypeError('Please enter a valid list of commands!')
 
-        Example::
+        for command in commands:
+            output = self.device._send_command(command)
+            if 'Invalid input detected' in output:
+                raise ValueError('Unable to execute command "{}"'.format(command))
+            cli_output.setdefault(command, {})
+            cli_output[command] = output
 
-            {
-                u'show version and haiku':  u'''Hostname: re0.edge01.arn01
-                                                Model: mx480
-                                                Junos: 13.3R6.5
-
-                                                        Help me, Obi-Wan
-                                                        I just saw Episode Two
-                                                        You're my only hope
-                                            ''',
-                u'show chassis fan'     :   u'''
-                    Item               Status  RPM     Measurement
-                    Top Rear Fan       OK      3840    Spinning at intermediate-speed
-                    Bottom Rear Fan    OK      3840    Spinning at intermediate-speed
-                    Top Middle Fan     OK      3900    Spinning at intermediate-speed
-                    Bottom Middle Fan  OK      3840    Spinning at intermediate-speed
-                    Top Front Fan      OK      3810    Spinning at intermediate-speed
-                    Bottom Front Fan   OK      3840    Spinning at intermediate-speed'''
-            }
-        """
-        raise NotImplementedError
+        return cli_output
 
     def get_bgp_neighbors_detail(self, neighbor_address=''):
 
@@ -1018,7 +992,7 @@ class FastIronDriver(NetworkDriver):
                             'local_address_configured'  : True,
                             'local_port'                : 179,
                             'routing_table'             : u'inet.0',
-                            'remote_address'            : u'192.247.78.0',
+                            'remote_addressg'            : u'192.247.78.0',
                             'remote_port'               : 58380,
                             'multihop'                  : False,
                             'multipath'                 : True,
@@ -1145,26 +1119,39 @@ class FastIronDriver(NetworkDriver):
             * delay (float)
             * offset (float)
             * jitter (float)
-
-        Example::
-
-            [
-                {
-                    'remote'        : u'188.114.101.4',
-                    'referenceid'   : u'188.114.100.1',
-                    'synchronized'  : True,
-                    'stratum'       : 4,
-                    'type'          : u'-',
-                    'when'          : u'107',
-                    'hostpoll'      : 256,
-                    'reachability'  : 377,
-                    'delay'         : 164.228,
-                    'offset'        : -13.866,
-                    'jitter'        : 2.695
-                }
-            ]
         """
-        raise NotImplementedError
+        my_list = list()
+        output = self.device.send_command('show ntp associations')
+        token = output.find('disp') + len('disp') + 1
+        end_token = output.find('synced,') - 3
+        output = output[token:end_token]
+        nline = FastIronDriver.creates_list_of_nlines(output)
+
+        for sentence in nline:
+            isbool = False
+            sentence = sentence.split()
+
+            if sentence .__contains__('*'):
+                isbool = True
+
+            sentence[0] = sentence[0].replace('*', '')
+            sentence[0] = sentence[0].replace('+', '')
+            sentence[0] = sentence[0].replace('~', '')
+
+            my_list.append({
+                'remote': sentence[0],
+                'referenceid': sentence[1],
+                'synchronized': isbool,
+                'stratum': int(sentence[2]),
+                'type': u'-',
+                'when': int(sentence[3]),
+                'hostpoll': int(sentence[4]),
+                'reachability': float(sentence[5]),
+                'delay': float(sentence[6]),
+                'offset': float(sentence[7]),
+                'jitter': float(sentence[8])
+            })
+        return my_list
 
     def get_interfaces_ip(self):
 
@@ -1176,48 +1163,47 @@ class FastIronDriver(NetworkDriver):
         addresses as keys.
         Each IP Address dictionary has the following keys:
             * prefix_length (int)
+        """
 
-        Example::
+        ip_interface = dict()
+        ip4_dict = dict()
+        output = self.device.send_command('show ip interface')
+        ipv6_output = self.device.send_command('show ipv6 route')
+        token = output.find('VRF') + len('VRF') + 4
+        output = output[token:len(output)]
+        n_line = FastIronDriver.creates_list_of_nlines(output)
+        last_port = ""
 
-            {
-                u'FastEthernet8': {
-                    u'ipv4': {
-                        u'10.66.43.169': {
-                            'prefix_length': 22
-                        }
+        for sentence in n_line:
+            sentence = sentence.split()
+
+            if len(sentence) > 1:
+                last_port = sentence[0] + " " + sentence[1]
+                ip4_dict.update({
+                    sentence[2]: {
+                        'prefix_length': None
                     }
-                },
-                u'Loopback555': {
-                    u'ipv4': {
-                        u'192.168.1.1': {
-                            'prefix_length': 24
-                        }
-                    },
-                    u'ipv6': {
-                        u'1::1': {
-                            'prefix_length': 64
-                        },
-                        u'2001:DB8:1::1': {
-                            'prefix_length': 64
-                        },
-                        u'2::': {
-                            'prefix_length': 64
-                        },
-                        u'FE80::3': {
-                            'prefix_length': u'N/A'
-                        }
+                })
+            elif len(sentence) == 1:
+                ip4_dict.update({
+                    sentence[0]: {
+                        'prefix_length': None
                     }
-                },
-                u'Tunnel0': {
-                    u'ipv4': {
-                        u'10.63.100.9': {
-                            'prefix_length': 24
-                        }
+                })
+            else:
+                continue
+
+            print(ip4_dict)
+            """ 
+            ip_interface.update({
+                last_port: {
+                    'ipv4': {
+                        ip4_dict
                     }
                 }
-            }
-        """
-        raise NotImplementedError
+            })"""
+
+        # return ip_interface
 
     def get_mac_address_table(self):
 
@@ -1258,6 +1244,8 @@ class FastIronDriver(NetworkDriver):
                 'moves': None,
                 'last_move': None
             })
+
+        return mac_tbl
 
     def get_route_to(self, destination='', protocol=''):
 
@@ -1375,7 +1363,7 @@ class FastIronDriver(NetworkDriver):
         """
         raise NotImplementedError
 
-    def ping(self, destination, source=c.PING_SOURCE, ttl=c.PING_TTL, timeout=c.PING_TIMEOUT,
+    def ping(self, destination, source= c.PING_SOURCE, ttl=c.PING_TTL, timeout=c.PING_TIMEOUT,
              size=c.PING_SIZE, count=c.PING_COUNT, vrf=c.PING_VRF):
         """
         Executes ping on the device and returns a dictionary with the result
@@ -1561,25 +1549,30 @@ class FastIronDriver(NetworkDriver):
 
         The level is an integer between 0 and 15, where 0 is the lowest access and 15 represents
         full access to the device.
-
-        Example::
-
-            {
-                'mircea': {
-                    'level': 15,
-                    'password': '$1$0P70xKPa$z46fewjo/10cBTckk6I/w/',
-                    'sshkeys': [
-                        'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4pFn+shPwTb2yELO4L7NtQrKOJXNeCl1je\
-                         l9STXVaGnRAnuc2PXl35vnWmcUq6YbUEcgUTRzzXfmelJKuVJTJIlMXii7h2xkbQp0YZIEs4P\
-                         8ipwnRBAxFfk/ZcDsN3mjep4/yjN56eorF5xs7zP9HbqbJ1dsqk1p3A/9LIL7l6YewLBCwJj6\
-                         D+fWSJ0/YW+7oH17Fk2HH+tw0L5PcWLHkwA4t60iXn16qDbIk/ze6jv2hDGdCdz7oYQeCE55C\
-                         CHOHMJWYfN3jcL4s0qv8/u6Ka1FVkV7iMmro7ChThoV/5snI4Ljf2wKqgHH7TfNaCfpU0WvHA\
-                         nTs8zhOrGScSrtb mircea@master-roshi'
-                    ]
-                }
-            }
         """
-        raise NotImplementedError
+
+        output = self.device.send_command('show users')
+        # ssh_out = self.device.send_command('show ip ssh')
+        user_dict = dict()
+        token = output.rfind('=') + 1
+
+        n_line = FastIronDriver.creates_list_of_nlines(output[token:len(output)])
+        for line in n_line:
+            line = line.split()
+
+            if int(line[3]) == 0:
+                lv = 15
+            elif int(line[3]) == 4:
+                lv = 8
+            else:
+                lv = 3
+
+            user_dict.update({line[0]: {
+                'level': lv,
+                'password': line[1],
+                'sshkeys': []
+            }})
+        return user_dict
 
     def get_optics(self):
         """Fetches the power usage on the various transceivers installed
@@ -1608,42 +1601,34 @@ class FastIronDriver(NetworkDriver):
                                 * avg (float)
                                 * min (float)
                                 * max (float)
+        """
+        optics_output = list()
+        output_m = self.device.send_command('show media validation | i BROCADE')
+        n_line = FastIronDriver.creates_list_of_nlines(output_m)
 
-        Example:
+        for sentence in n_line:
+            sentence = sentence.split()
+            output = self.device.send_command('show optic ' + sentence[0])
+            optics_output.append(output)
 
-            {
-                    'et1': {
-                        'physical_channels': {
-                            'channel': [
-                                {
-                                    'index': 0,
-                                    'state': {
-                                        'input_power': {
-                                            'instant': 0.0,
-                                            'avg': 0.0,
-                                            'min': 0.0,
-                                            'max': 0.0,
-                                        },
-                                        'output_power': {
-                                            'instant': 0.0,
-                                            'avg': 0.0,
-                                            'min': 0.0,
-                                            'max': 0.0,
-                                        },
-                                        'laser_bias_current': {
-                                            'instant': 0.0,
-                                            'avg': 0.0,
-                                            'min': 0.0,
-                                            'max': 0.0,
-                                        },
-                                    }
-                                }
-                            ]
+        my_dict = {'inft_name': {
+            'physical_channels': {
+                'channel': [{
+                    'index': "", 'state': {
+                        'input_power': {
+                            'instant': 0.0, 'avg': 0.0, 'min': 0.0, 'max': 0.0
+                        },
+                        'output_power': {
+                            'instant': 0.0, 'avg': 0.0, 'min': 0.0, 'max': 0.0
+                        },
+                        'laser_bias_current': {
+                                'instant': 0.0, 'avg': 0.0, 'min': 0.0, 'max': 0.0
                         }
                     }
-                }
-        """
-        raise NotImplementedError
+                }]
+            }
+
+            }}
 
     def get_config(self, retrieve='all'):
         """
@@ -1663,7 +1648,36 @@ class FastIronDriver(NetworkDriver):
               device doesnt differentiate between running and startup configuration this will an
               empty string
         """
-        raise NotImplementedError
+        config_list = list()
+        config_dic = dict()
+        if retrieve == 'running':
+            config_list.append('show running-config')
+        elif retrieve == 'startup':
+            config_list.append('show config')
+        elif retrieve == 'candidate':
+            config_list.append('')
+        elif retrieve == 'all':
+            config_list.append('show running-config')
+            config_list.append(None)
+            config_list.append('show config')
+
+        for cmd in config_list:
+
+            if cmd is None:
+                config_dic.update({'candidate': {}})
+                continue
+
+            output = self.device.send_command(cmd)
+            n_line = FastIronDriver.creates_list_of_nlines(output)
+
+            if cmd == 'show running-config':
+                config_dic.update({'running': n_line})
+            elif cmd == '':
+                config_dic.update({'candidate': n_line})
+            else:
+                config_dic.update({'startup': n_line})
+
+        return config_dic
 
     def get_network_instances(self, name=''):
         """
@@ -1714,48 +1728,34 @@ class FastIronDriver(NetworkDriver):
             }
         }
         """
-        raise NotImplementedError
+        vrf_dict = dict()
 
-    def get_firewall_policies(self):
-        """
-        Returns a dictionary of lists of dictionaries where the first key is an unique policy
-        name and the inner dictionary contains the following keys:
+        if name != '':
+            output = self.device.send_command('show vrf ' + name)
+        else:
+            output = self.device.send_command('show vrf detail')
 
-        * position (int)
-        * packet_hits (int)
-        * byte_hits (int)
-        * id (text_type)
-        * enabled (bool)
-        * schedule (text_type)
-        * log (text_type)
-        * l3_src (text_type)
-        * l3_dst (text_type)
-        * service (text_type)
-        * src_zone (text_type)
-        * dst_zone (text_type)
-        * action (text_type)
+        s_output = output.split()
+        vrf_name_i_list = FastIronDriver.fast_find(s_output, 'VRF-Name:')
+        size = len(vrf_name_i_list)
 
-        Example::
+        for val in range(size):
+            vrf = vrf_name_i_list.pop()
+            vrf_dict.update({
+                vrf: {
+                    u'name': vrf, u'type': '', u'state': {
+                        u'route_distinguisher': ''
+                    },
+                    u'interfaces': {
+                        u'interface': {
+                            'forloopinterfaceshere': {}
+                        }
+                    }
 
-        {
-            'policy_name': [{
-                'position': 1,
-                'packet_hits': 200,
-                'byte_hits': 83883,
-                'id': '230',
-                'enabled': True,
-                'schedule': 'Always',
-                'log': 'all',
-                'l3_src': 'any',
-                'l3_dst': 'any',
-                'service': 'HTTP',
-                'src_zone': 'port2',
-                'dst_zone': 'port3',
-                'action': 'Permit'
-            }]
-        }
-        """
-        raise NotImplementedError
+                }
+            })
+
+        return vrf_dict
 
     def compliance_report(self, validation_file=None, validation_source=None):
         """
