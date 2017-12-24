@@ -428,9 +428,32 @@ class FastIronDriver(NetworkDriver):
 
         return {'memory': dic}
 
+    @staticmethod
+    def output_parser(output, word):
+        """If the word is found in the output, it will return the ip address until a new interface is found
+        for example."""
+        token = output.find(word) + len(word)
+        count = 0
+        output = output[token:len(output)].replace('/', ' ')
+        nline = FastIronDriver.creates_list_of_nlines(output)
+        ip6_dict = dict()
 
+        for sentence in nline:
+            sentence = sentence.split()
 
-        return my_dict
+            if len(sentence) > 2:
+                count += 1
+                if count > 1:
+                    break
+                ip6_dict.update({
+                        sentence[2]: {'prefix_length': sentence[3]}
+                })
+            if len(sentence) == 2:
+                ip6_dict.update({
+                        sentence[0]: {'prefix_length': sentence[1]}
+                })
+
+        return  ip6_dict
 
     def load_template(self, template_name, template_source=None,
                       template_path=None, **template_vars):
@@ -757,17 +780,6 @@ class FastIronDriver(NetworkDriver):
         uni = FastIronDriver.retrieve_all_locations(stats, 'unicasts', -2)
         bro = FastIronDriver.retrieve_all_locations(stats, 'broadcasts,', -2)
         ier = FastIronDriver.retrieve_all_locations(stats, "errors,", -3)
-
-        # print(oer)
-        # mul = [m.start() for m in re.finditer("multicasts,", stats)]
-        # uni = [m.start() for m in re.finditer("unicasts", stats)]
-        # bro = [m.start() for m in re.finditer("broadcasts,", stats)]
-        # ier = [m.start() for m in re.finditer("input errors,", stats)]
-        # oer = [m.start() for m in re.finditer("output errors,", stats)]
-        # dis = None
-        # odis = None
-
-        # print(stats[oer[0] - 2])
 
         for val in range(len(ports)):
             interface_counters.update({ports[val]: {
@@ -1165,45 +1177,44 @@ class FastIronDriver(NetworkDriver):
             * prefix_length (int)
         """
 
-        ip_interface = dict()
-        ip4_dict = dict()
-        output = self.device.send_command('show ip interface')
-        ipv6_output = self.device.send_command('show ipv6 route')
-        token = output.find('VRF') + len('VRF') + 4
-        output = output[token:len(output)]
-        n_line = FastIronDriver.creates_list_of_nlines(output)
-        last_port = ""
+        ip_interface = dict()                                   # Main dict, ip4/6 will be appended to this dict
+        ip4_dict = dict()                                       # ip4 dict
+        ip6_dict = dict()                                       # ip6 dict
+        output = self.device.send_command('show ip interface')  # obtains ip4 information
+        ipv6_output = self.device.send_command('show ipv6 interface')   # obtains ip6 information
+        token = output.find('VRF') + len('VRF') + 4                 # finds when to start parsing
+        output = output[token:len(output)]                          # grabs output within certain limits
+        n_line = FastIronDriver.creates_list_of_nlines(output)      # separate long string into substrings
+        last_port = ""                                          # saves last port information
 
-        for sentence in n_line:
-            sentence = sentence.split()
+        for index in range(len(n_line)):
+            pos = 0                                             # if interface more than one IP, list is size 1
+            sentence = n_line[index].split()                    # creates word list from string
 
-            if len(sentence) > 1:
-                last_port = sentence[0] + " " + sentence[1]
-                ip4_dict.update({
-                    sentence[2]: {
-                        'prefix_length': None
-                    }
-                })
-            elif len(sentence) == 1:
-                ip4_dict.update({
-                    sentence[0]: {
-                        'prefix_length': None
-                    }
-                })
-            else:
+            if len(sentence) == 0:                              # if empty skip
                 continue
 
-            print(ip4_dict)
-            """ 
-            ip_interface.update({
-                last_port: {
-                    'ipv4': {
-                        ip4_dict
-                    }
-                }
-            })"""
+            if len(sentence) > 2:                               # parent interface, means not a list of size of 1
+                last_port = sentence[0] + " " + sentence[1]     # grabs port description
+                pos = 2                                         # New position of IP address
 
-        # return ip_interface
+                if ipv6_output.__contains__(last_port):         # if interface has ipv6 address, will return
+                    ip6_dict = FastIronDriver.output_parser(ipv6_output, last_port)     # all ipv6 add of interface
+
+            ip4_dict.update({                                                       # updates ipv4 dictionary
+                    sentence[pos]: {'prefix_length': None}
+            })
+
+            if index == (len(n_line) - 1) or len(n_line[index + 1].split()) > 2:
+                ip_interface.update({                                               # if new parent interface is next
+                    last_port: {                                                    # save all current interfaces
+                        'ipv4': ip4_dict,
+                        'ipv6': ip6_dict}
+                })
+                ip4_dict = dict()                                                   # resets dictionary
+                ip6_dict = dict()
+
+        return ip_interface
 
     def get_mac_address_table(self):
 
@@ -1218,24 +1229,24 @@ class FastIronDriver(NetworkDriver):
             * moves (int)
             * last_move (float)
         """
-        mac_tbl = list()
-        output = self.device.send_command('show mac-address all')
-        token = output.find('Action') + len('Action') + 1
+        mac_tbl = list()                                            # creates list
+        output = self.device.send_command('show mac-address all')   # grabs mac address output
+        token = output.find('Action') + len('Action') + 1           # word used for parser
         new_out = FastIronDriver.creates_list_of_nlines(output[token: len(output)])
-        for words in new_out:
-            sentence = words.split()
+        for words in new_out:                                       # loop goes sentence by sentence
+            sentence = words.split()                                # breaks sentence into words
 
-            if sentence[2] == 'Dynamic':
+            if sentence[2] == 'Dynamic':                            # Checks word for dynamic or static
                 is_dynamic = True
             else:
                 is_dynamic = False
 
-            if sentence[4] == 'forward':
+            if sentence[4] == 'forward':                            # Checks if forwarding and not block, discarding
                 is_active = True
             else:
                 is_active = False
 
-            mac_tbl.append({
+            mac_tbl.append({                                        # appends data
                 'mac': sentence[0],
                 'interface': sentence[1],
                 'vlan': sentence[3],
