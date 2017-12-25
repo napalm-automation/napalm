@@ -25,7 +25,9 @@ import re
 # local modules
 import napalm.base.exceptions
 import napalm.base.helpers
-from napalm.base.exceptions import (ConnectionException, ConnectionClosedException)
+from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, ConnectionException, \
+    ConnectionClosedException
+
 import napalm.base.constants as c
 from napalm.base import validate
 from napalm.base import NetworkDriver
@@ -46,6 +48,8 @@ class FastIronDriver(NetworkDriver):
         self.password = password
         self.timeout = timeout
         self.port = optional_args.get('port', 22)
+        self.replace_config = False                             # command has not been run successfully
+        self.stored_config = ""
 
     def __del__(self):
         """
@@ -65,7 +69,7 @@ class FastIronDriver(NetworkDriver):
         """
         try:
             self.device = ConnectHandler(device_type='ruckus_fastiron',
-                                         ip=self.hostname,
+                                         ip=self.hostname,                      # saves device parameters
                                          port=self.port,
                                          username=self.username,
                                          password=self.password,
@@ -79,7 +83,7 @@ class FastIronDriver(NetworkDriver):
         """
         Closes the connection to the device.
         """
-        self.device.disconnect()
+        self.device.disconnect()                                        # Disconnects device
 
     def is_alive(self):
         """
@@ -102,7 +106,7 @@ class FastIronDriver(NetworkDriver):
                 'is_alive': False
             }
         return {
-            'is_alive': self.device.remote_conn.transport.is_active()
+            'is_alive': self.device.remote_conn.transport.is_active()       # returns if device is alive
         }
 
     def _send_command(self, command):
@@ -132,8 +136,8 @@ class FastIronDriver(NetworkDriver):
         values = []                                         # creates a list
         for m in split_string:                              # goes through substrings one by one
             count += 1                                      # increments counter
-            if m == word:                                   #
-                values.append(split_string[count + pos])    #
+            if m == word:                                   # if substring and word match then specific value
+                values.append(split_string[count + pos])    # is added to list that is returned
         return values
 
     @staticmethod
@@ -508,7 +512,27 @@ class FastIronDriver(NetworkDriver):
         :param config: String containing the desired configuration.
         :raise ReplaceConfigException: If there is an error on the configuration sent.
         """
-        raise NotImplementedError
+        file_content = ""
+
+        if filename is None and config is None:             # if nothing is entered returns none
+            print("No filename or config was entered")
+            return None
+
+        if filename is not None:
+            try:
+                file_content = open(filename, "r")              # attempts to open file
+                self.replace_config = True                      # file opened successfully
+                self.stored_config = file_content.read()        # stores file content
+                return
+            except:
+                print("file does not exist")
+
+        if config is not None:
+            self.stored_config = config                         # stores config
+            self.replace_config = True                          # string successfully saved
+            return
+
+        raise ReplaceConfigException("Configuration error")
 
     def load_merge_candidate(self, filename=None, config=None):
         """
