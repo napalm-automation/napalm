@@ -49,7 +49,7 @@ class FastIronDriver(NetworkDriver):
         self.timeout = timeout
         self.port = optional_args.get('port', 22)
         self.replace_config = False                             # command has not been run successfully
-        self.stored_config = ""
+        self.stored_config = None
 
     def __del__(self):
         """
@@ -522,14 +522,15 @@ class FastIronDriver(NetworkDriver):
             try:
                 file_content = open(filename, "r")              # attempts to open file
                 self.replace_config = True                      # file opened successfully
-                self.stored_config = file_content.read()        # stores file content
+                temp = file_content.read()                      # stores file content
+                self.stored_config = FastIronDriver.creates_list_of_nlines(temp)    # stores as list
                 return
             except:
                 print("file does not exist")
 
         if config is not None:
-            self.stored_config = config                         # stores config
-            self.replace_config = True                          # string successfully saved
+            self.stored_config = FastIronDriver.creates_list_of_nlines(config)  # stores config
+            self.replace_config = True                                          # string successfully saved
             return
 
         raise ReplaceConfigException("Configuration error")
@@ -568,7 +569,9 @@ class FastIronDriver(NetworkDriver):
         """
         Discards the configuration loaded into the candidate.
         """
-        raise NotImplementedError
+        if self.stored_config is not None:                    # removed stored configuration
+            self.stored_config = None
+
 
     def rollback(self):
         """
