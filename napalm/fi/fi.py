@@ -299,6 +299,22 @@ class FastIronDriver(NetworkDriver):
         return port_status
 
     @staticmethod
+    def unite_strings(output):
+        """ removes all the new line and excess spacing in a string"""
+        my_string = ""                                              # empty string
+
+        for index in range(len(output)):                            # iterates through all characters of output
+
+            if output[index] != '\n' and output[index] != ' ':      # skips newline and spaces
+                my_string += output[index]
+
+            if index != len(output) - 1:
+                if output[index] == ' ' and output[index+1] != ' ':     # only adds space to existing string if the
+                    my_string += ' '                                    # next char of string is not another space
+
+        return my_string                                            # returns stored string
+
+    @staticmethod
     def get_interface_flap(shw_int_up, shw_int_flapped):
         port_status = list()
 
@@ -453,7 +469,7 @@ class FastIronDriver(NetworkDriver):
                         sentence[0]: {'prefix_length': sentence[1]}
                 })
 
-        return  ip6_dict
+        return ip6_dict
 
     def load_template(self, template_name, template_source=None,
                       template_path=None, **template_vars):
@@ -611,43 +627,6 @@ class FastIronDriver(NetworkDriver):
         dictionaries with the following information:
             * hostname
             * port
-
-        Example::
-
-            {
-            u'Ethernet2':
-                [
-                    {
-                    'hostname': u'junos-unittest',
-                    'port': u'520',
-                    }
-                ],
-            u'Ethernet3':
-                [
-                    {
-                    'hostname': u'junos-unittest',
-                    'port': u'522',
-                    }
-                ],
-            u'Ethernet1':
-                [
-                    {
-                    'hostname': u'junos-unittest',
-                    'port': u'519',
-                    },
-                    {
-                    'hostname': u'ios-xrv-unittest',
-                    'port': u'Gi0/0/0/0',
-                    }
-                ],
-            u'Management1':
-                [
-                    {
-                    'hostname': u'junos-unittest',
-                    'port': u'508',
-                    }
-                ]
-            }
         """
         my_dict = {}
         shw_int_neg = self.device.send_command('show lldp neighbors')
@@ -814,22 +793,45 @@ class FastIronDriver(NetworkDriver):
             * remote_system_capab (string)
             * remote_system_enabled_capab (string)
         """
-        if interface == '':
-            return "No Interface Selected"
+        if interface == '':                         # no interface was entered
+            print("please enter an interface")
+            return None
 
-        output = self.device.send_command('show lldp neighbors detail ports ethernet ' + interface)
+        output = self.device.send_command('show lldp neighbor detail port ' + interface)
         output = output.replace(':', ' ')
         output = output.replace('"', '')
-        output = (output.replace('+', ' ')).split()
+        output = (output.replace('+', ' '))
+
+        if output.__contains__("No neighbors"):     # no neighbors found on this interface
+            return None
+
+        par_int = FastIronDriver.retrieve_all_locations(output, "Local", 1)[0]
+        chas_id = FastIronDriver.retrieve_all_locations(output, "Chassis", 3)[0]
+        sys_nam = FastIronDriver.retrieve_all_locations(output, "name", 0)[0]
+
+        e_token_sd = output.find("System description") + len("System description")      # token used as parser
+        s_token_sc = output.find("System capabilities")                                 # limits of interest
+        e_token_sc = output.find("System capabilities") + len("System capabilities")
+        s_token_ma = output.find("Management address")
+        s_token_la = output.find("Link aggregation")
+        e_token_pd = output.find("Port description") + len("Port description")
+
+        sys_des = output[e_token_sd:s_token_sc]                 # grabs system description
+        sys_cap = output[e_token_sc:s_token_ma]                 # grabs system capability
+        port_de = output[e_token_pd:s_token_la]                 # grabs ports description
+
+        sys_des = FastIronDriver.unite_strings(sys_des)         # removes excess spaces and n lines
+        sys_cap = FastIronDriver.unite_strings(sys_cap)
+        port_de = FastIronDriver.unite_strings(port_de)
 
         return {interface: [{
-            'parent_interface': "",
-            'remote_chassis_id': "",
-            'remote_system_name': "",
-            'remote_port': "",
-            'remote_port_description': "",
-            'remote_system_description': "",
-            'remote_system_capab': None,
+            'parent_interface': par_int,
+            'remote_chassis_id': chas_id,
+            'remote_system_name': sys_nam,
+            'remote_port': port_de,
+            'remote_port_description': '',
+            'remote_system_description': sys_des,
+            'remote_system_capab': sys_cap,
             'remote_system_enable_capab': None
         }]}
 
