@@ -1,6 +1,7 @@
 BGP neighbor is 192.168.0.2,  remote AS 65001, internal link
  Inherits from template iBGP for session parameters
   BGP version 4, remote router ID 0.0.0.0
+  BGP state = Idle
 
  For address family: IPv4 Unicast
                                  Sent       Rcvd
@@ -14,6 +15,7 @@ BGP neighbor is 192.168.0.2,  remote AS 65001, internal link
 BGP neighbor is 192.168.0.3,  remote AS 65010, internal link
  Inherits from template iBGP for session parameters
   BGP version 4, remote router ID 192.168.0.3
+  BGP state = Idle
 
  For address family: IPv4 Unicast
                                  Sent       Rcvd
