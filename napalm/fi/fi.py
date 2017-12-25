@@ -48,6 +48,7 @@ class FastIronDriver(NetworkDriver):
         self.password = password
         self.timeout = timeout
         self.port = optional_args.get('port', 22)
+        self.merge_config = False
         self.replace_config = False                             # command has not been run successfully
         self.stored_config = None
 
@@ -95,13 +96,8 @@ class FastIronDriver(NetworkDriver):
         """
         null = chr(0)
         try:
-            # Try sending ASCII null byte to maintain
-            #   the connection alive
             self.device.send_command(null)
         except (socket.error, EOFError):
-            # If unable to send, we can tell for sure
-            #   that the connection is unusable,
-            #   hence return False.
             return {
                 'is_alive': False
             }
@@ -316,7 +312,7 @@ class FastIronDriver(NetworkDriver):
                 if output[index] == ' ' and output[index+1] != ' ':     # only adds space to existing string if the
                     my_string += ' '                                    # next char of string is not another space
 
-        return my_string                                            # returns stored string
+        return my_string                                                # returns stored string
 
     @staticmethod
     def get_interface_flap(shw_int_up, shw_int_flapped):
@@ -348,8 +344,8 @@ class FastIronDriver(NetworkDriver):
         return port_status
 
     @staticmethod
-    def is_greater(value, threshold):  # compares two values returns true if value
-        if float(value) >= float(threshold):  # is greater or equal to threshold
+    def is_greater(value, threshold):                           # compares two values returns true if value
+        if float(value) >= float(threshold):                    # is greater or equal to threshold
             return True
         return False
 
@@ -378,7 +374,6 @@ class FastIronDriver(NetworkDriver):
 
     @staticmethod
     def environment_temperature(string):
-        # temp = max(FastIronDriver.retrieve_all_locations(string, "(Sensor", -3))#Grabs all temp sensor and returns max
         dic = dict()
         temp = FastIronDriver.retrieve_all_locations(string, "(Sensor", -3)
         warning = FastIronDriver.retrieve_all_locations(string, "Warning", 1)    # returns the current warning threshold
@@ -514,23 +509,23 @@ class FastIronDriver(NetworkDriver):
         """
         file_content = ""
 
-        if filename is None and config is None:             # if nothing is entered returns none
+        if filename is None and config is None:                                     # if nothing is entered returns none
             print("No filename or config was entered")
             return None
 
         if filename is not None:
             try:
-                file_content = open(filename, "r")              # attempts to open file
-                self.replace_config = True                      # file opened successfully
-                temp = file_content.read()                      # stores file content
+                file_content = open(filename, "r")                                  # attempts to open file
+                self.replace_config = True                                          # file opened successfully
+                temp = file_content.read()                                          # stores file content
                 self.stored_config = FastIronDriver.creates_list_of_nlines(temp)    # stores as list
                 return
             except:
                 print("file does not exist")
 
         if config is not None:
-            self.stored_config = FastIronDriver.creates_list_of_nlines(config)  # stores config
-            self.replace_config = True                                          # string successfully saved
+            self.stored_config = FastIronDriver.creates_list_of_nlines(config)      # stores config
+            self.replace_config = True                                              # string successfully saved
             return
 
         raise ReplaceConfigException("Configuration error")
@@ -549,7 +544,28 @@ class FastIronDriver(NetworkDriver):
         :param config: String containing the desired configuration.
         :raise MergeConfigException: If there is an error on the configuration sent.
         """
-        raise NotImplementedError
+        file_content = ""
+
+        if filename is None and config is None:                                     # if nothing is entered returns none
+            print("No filename or config was entered")
+            return None
+
+        if filename is not None:
+            try:
+                file_content = open(filename, "r")                                  # attempts to open file
+                self.merge_config = True                                            # file opened successfully
+                temp = file_content.read()                                          # stores file content
+                self.stored_config = FastIronDriver.creates_list_of_nlines(temp)    # stores as list
+                return
+            except:
+                print("file does not exist")
+
+        if config is not None:
+            self.stored_config = FastIronDriver.creates_list_of_nlines(config)      # stores config
+            self.merge_config = True                                                # string successfully saved
+            return
+
+        raise MergeConfigException("Configuration error")
 
     def compare_config(self):
         """
