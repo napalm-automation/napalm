@@ -105,7 +105,6 @@ class JunOSDriver(NetworkDriver):
         #                         recorder_options=self.recorder_options,
         #                         **connection_params)
         self.device = Device(**connection_params)
-
         self.profile = ["junos"]
 
     def open(self):
@@ -479,7 +478,7 @@ class JunOSDriver(NetworkDriver):
         return environment_data
 
     @staticmethod
-    def _get_address_family(table):
+    def _get_address_family(table, instance):
         """
         Function to derive address family from a junos table name.
 
@@ -491,14 +490,17 @@ class JunOSDriver(NetworkDriver):
             'inet6': 'ipv6',
             'inetflow': 'flow'
         }
-        family = table.split('.')[-2]
+        if instance == "master":
+            family = table.rsplit('.', 1)[-2]
+        else:
+            family = table.split('.')[-2]
         try:
             address_family = address_family_mapping[family]
         except KeyError:
-            address_family = family
+            address_family = None
         return address_family
 
-    def _parse_route_stats(self, neighbor):
+    def _parse_route_stats(self, neighbor, instance):
         data = {
             'ipv4': {
                 'received_prefixes': -1,
@@ -519,7 +521,12 @@ class JunOSDriver(NetworkDriver):
                 # is of type int. Therefore convert attribute to list
                 neighbor['sent_prefixes'] = [neighbor['sent_prefixes']]
             for idx, table in enumerate(neighbor['tables']):
-                family = self._get_address_family(table)
+                family = self._get_address_family(table, instance)
+                if family is None:
+                    # Need to remove counter from sent_prefixes list anyway
+                    if 'in sync' in neighbor['send-state'][idx]:
+                        neighbor['sent_prefixes'].pop(0)
+                    continue
                 data[family] = {}
                 data[family]['received_prefixes'] = neighbor['received_prefixes'][idx]
                 data[family]['accepted_prefixes'] = neighbor['accepted_prefixes'][idx]
@@ -528,11 +535,12 @@ class JunOSDriver(NetworkDriver):
                 else:
                     data[family]['sent_prefixes'] = 0
         else:
-            family = self._get_address_family(neighbor['tables'])
-            data[family] = {}
-            data[family]['received_prefixes'] = neighbor['received_prefixes']
-            data[family]['accepted_prefixes'] = neighbor['accepted_prefixes']
-            data[family]['sent_prefixes'] = neighbor['sent_prefixes']
+            family = self._get_address_family(neighbor['tables'], instance)
+            if family is not None:
+                data[family] = {}
+                data[family]['received_prefixes'] = neighbor['received_prefixes']
+                data[family]['accepted_prefixes'] = neighbor['accepted_prefixes']
+                data[family]['sent_prefixes'] = neighbor['sent_prefixes']
         return data
 
     @staticmethod
@@ -608,7 +616,7 @@ class JunOSDriver(NetworkDriver):
                 }
                 peer['local_as'] = napalm.base.helpers.as_number(peer['local_as'])
                 peer['remote_as'] = napalm.base.helpers.as_number(peer['remote_as'])
-                peer['address_family'] = self._parse_route_stats(neighbor_details)
+                peer['address_family'] = self._parse_route_stats(neighbor_details, instance)
                 if 'peers' not in bgp_neighbor_data[instance_name]:
                     bgp_neighbor_data[instance_name]['peers'] = {}
                 bgp_neighbor_data[instance_name]['peers'][peer_ip] = peer
@@ -701,12 +709,18 @@ class JunOSDriver(NetworkDriver):
         # and rpc for M, MX, and T Series is get-lldp-interface-neighbors
         # ref1: https://apps.juniper.net/xmlapi/operTags.jsp  (Junos 13.1 and later)
         # ref2: https://www.juniper.net/documentation/en_US/junos12.3/information-products/topic-collections/junos-xml-ref-oper/index.html  (Junos 12.3) # noqa
+        # Exceptions:
+        # EX9208    personality = SWITCH    RPC: <get-lldp-interface-neighbors><interface-device>
         lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
-        if self.device.facts.get('personality') not in ('MX', 'M', 'T'):
+        if 'EX9208' in self.device.facts.get('model'):
+            pass
+        elif self.device.facts.get('personality') not in ('MX', 'M', 'T'):
             lldp_table.GET_RPC = 'get-lldp-interface-neighbors-information'
 
         for interface in interfaces:
-            if self.device.facts.get('personality') not in ('MX', 'M', 'T'):
+            if 'EX9208' in self.device.facts.get('model'):
+                lldp_table.get(interface_device=interface)
+            elif self.device.facts.get('personality') not in ('MX', 'M', 'T'):
                 lldp_table.get(interface_name=interface)
             else:
                 lldp_table.get(interface_device=interface)
@@ -787,6 +801,17 @@ class JunOSDriver(NetworkDriver):
             ]
             return '\n'.join(matched)
 
+        def _find(txt, pattern):
+            '''
+            Search for first occurrence of pattern.
+            '''
+            rgx = '^.*({pattern})(.*)$'.format(pattern=pattern)
+            match = re.search(rgx, txt, re.I | re.M | re.DOTALL)
+            if match:
+                return '{pattern}{rest}'.format(pattern=pattern, rest=match.group(2))
+            else:
+                return '\nPattern not found'
+
         def _process_pipe(cmd, txt):
             '''
             Process CLI output from Juniper device that
@@ -800,6 +825,7 @@ class JunOSDriver(NetworkDriver):
             _OF_MAP['last'] = _last
             _OF_MAP['trim'] = _trim
             _OF_MAP['count'] = _count
+            _OF_MAP['find'] = _find
             # the operations order matter in this case!
             exploded_cmd = cmd.split('|')
             pipe_oper_args = {}

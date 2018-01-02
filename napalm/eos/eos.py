@@ -571,10 +571,12 @@ class EOSDriver(NetworkDriver):
         # Matches either of
         # Mem:   3844356k total,  3763184k used,    81172k free,    16732k buffers ( 4.16 > )
         # KiB Mem:  32472080 total,  5697604 used, 26774476 free,   372052 buffers ( 4.16 < )
-        mem_regex = r'.*total,\s+(?P<used>\d+)[k\s]+used,\s+(?P<free>\d+)[k\s]+free,.*'
+        mem_regex = (r'[^\d]*(?P<total>\d+)[k\s]+total,'
+                     r'\s+(?P<used>\d+)[k\s]+used,'
+                     r'\s+(?P<free>\d+)[k\s]+free,.*')
         m = re.match(mem_regex, cpu_lines[3])
         environment_counters['memory'] = {
-            'available_ram': int(m.group('free')),
+            'available_ram': int(m.group('total')),
             'used_ram': int(m.group('used'))
         }
         return environment_counters

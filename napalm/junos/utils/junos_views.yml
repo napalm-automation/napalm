@@ -310,7 +310,7 @@ junos_bgp_config_peers_view:
     local_as: {local-as/as-number: int}
     cluster: cluster
     remote_as: {peer-as: int}
-    authentication_key: {authentication_key: unicode}
+    authentication_key: {authentication-key: unicode}
     inet_unicast_limit_prefix_limit: {family/inet/unicast/prefix-limit/maximum: int}
     inet_unicast_teardown_threshold_prefix_limit: {family/inet/unicast/prefix-limit/teardown/limit-threshold: int}
     inet_unicast_teardown_timeout_prefix_limit: {family/inet/unicast/prefix-limit/teardown/idle-timeout/timeout: int}

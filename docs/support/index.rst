@@ -15,14 +15,14 @@ General support matrix
   **Driver Name**         eos         junos           iosxr        nxos          ios
   **Structured data**     Yes         Yes             No           Yes           No
   **Minimum version**     4.15.0F     12.1            5.1.0        6.1 [#g1]_    12.4(20)T
-  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pycsco`_     `netmiko`_
+  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pynxos`_     `netmiko`_
   **Caveats**             :doc:`eos`                               :doc:`nxos`   :doc:`ios`
   =====================   ==========  =============   ============ ============  ============
 
 .. _pyeapi: https://github.com/arista-eosplus/pyeapi
 .. _junos-eznc: https://github.com/Juniper/py-junos-eznc
 .. _pyIOSXR: https://github.com/fooelisa/pyiosxr
-.. _pycsco: https://github.com/jedelman8/pycsco
+.. _pynxos: https://github.com/networktocode/pynxos
 .. _netmiko: https://github.com/ktbyers/netmiko
 
 .. [#g1] NX-API support on the Nexus 5k, 6k and 7k families was introduced in version 7.2

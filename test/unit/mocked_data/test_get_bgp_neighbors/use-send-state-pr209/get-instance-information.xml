@@ -1,0 +1,24 @@
+<instance-information style="terse">
+    <instance-core>
+        <instance-name>master</instance-name>
+        <instance-type>forwarding</instance-type>
+        <instance-rib>
+            <irib-name>inet.0</irib-name>
+            <irib-active-count>12</irib-active-count>
+            <irib-holddown-count>0</irib-holddown-count>
+            <irib-hidden-count>0</irib-hidden-count>
+        </instance-rib>
+        <instance-rib>
+            <irib-name>inet6.0</irib-name>
+            <irib-active-count>2</irib-active-count>
+            <irib-holddown-count>0</irib-holddown-count>
+            <irib-hidden-count>0</irib-hidden-count>
+        </instance-rib>
+        <instance-rib>
+            <irib-name>evpn.0</irib-name>
+            <irib-active-count>20</irib-active-count>
+            <irib-holddown-count>0</irib-holddown-count>
+            <irib-hidden-count>0</irib-hidden-count>
+        </instance-rib>
+    </instance-core>
+</instance-information>
