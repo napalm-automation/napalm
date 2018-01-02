@@ -96,7 +96,8 @@ def get_network_driver(module_name,
             custom_install_name = lib
     elif prefix:
         if prepend:
-            custom_install_name = '{prefix}_napalm.{name}'.format(prefix=prefix, name=module_install_name)
+            custom_install_name = '{prefix}_napalm.{name}'.format(prefix=prefix,
+                                                                  name=module_install_name)
         else:
             custom_install_name = '{prefix}_napalm'.format(prefix=prefix)
     else:
