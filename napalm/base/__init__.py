@@ -35,7 +35,10 @@ __all__ = [
 ]
 
 
-def get_network_driver(module_name, prepend=True):
+def get_network_driver(module_name,
+                       prepend=True,
+                       prefix=None,
+                       lib=None):
     """
     Searches for a class derived form the base NAPALM class NetworkDriver in a specific library.
     The library name must repect the following pattern: napalm_[DEVICE_OS].
@@ -63,6 +66,14 @@ def get_network_driver(module_name, prepend=True):
         <class 'napalm.iosxr.iosxr.IOSXRDriver'>
         >>> get_network_driver('napalm.eos')
         <class 'napalm.eos.eos.EOSDriver'>
+        >>> get_network_driver('junos', lib='my_custom_library')
+        <class 'my_custom_library.junos.CustomJunOSDriver'>
+        >>> get_network_driver('junos', lib='my_custom_library', prepend=False)
+        <class 'my_custom_library.CustomJunOSDriver'>
+        >>> get_network_driver('junos', prefix='my')
+        <class 'my_napalm.junos.MyJunOSDriver'>
+        >>> get_network_driver('junos', prefix='my', prepend=False)
+        <class 'my_napalm.MyJunOSDriver'>
         >>> get_network_driver('wrong')
         napalm.base.exceptions.ModuleImportError: Cannot import "napalm_wrong". Is the library \
         installed?
@@ -78,7 +89,18 @@ def get_network_driver(module_name, prepend=True):
     # Try to not raise error when users requests IOS-XR for e.g.
     module_install_name = module_name.replace('-', '')
     community_install_name = "napalm_{name}".format(name=module_install_name)
-    custom_install_name = "custom_napalm.{name}".format(name=module_install_name)
+    if lib:
+        if prepend:
+            custom_install_name = '{lib}.{name}'.format(lib=lib, name=module_install_name)
+        else:
+            custom_install_name = lib
+    elif prefix:
+        if prepend:
+            custom_install_name = '{prefix}_napalm.{name}'.format(prefix=prefix, name=module_install_name)
+        else:
+            custom_install_name = '{prefix}_napalm'.format(prefix=prefix)
+    else:
+        custom_install_name = "custom_napalm.{name}".format(name=module_install_name)
     # Can also request using napalm_[SOMETHING]
     if 'napalm' not in module_install_name and prepend is True:
         module_install_name = 'napalm.{name}'.format(name=module_install_name)
