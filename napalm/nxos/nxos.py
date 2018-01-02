@@ -79,7 +79,7 @@ class NXOSDriver(NetworkDriver):
         try:
             self.device = Recorder(NXOSDevice,
                                    recorder_options=self.recorder_options,
-                                   hostname=self.hostname,
+                                   host=self.hostname,
                                    username=self.username,
                                    password=self.password,
                                    timeout=self.timeout,
