@@ -1,0 +1,7 @@
+<configuration junos:commit-seconds="1513812082" junos:commit-localtime="2017-12-20 23:21:22 UTC" junos:commit-user="paramvir">
+    <system>
+        <root-authentication>
+            <encrypted-password>$1$LiP5a8fwfefeert567ureg</encrypted-password>
+        </root-authentication>
+    </system>
+</configuration>
