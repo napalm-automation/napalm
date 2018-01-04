@@ -1826,7 +1826,7 @@ class JunOSDriver(NetworkDriver):
     def _get_root(self):
         """get root user password."""
         _DEFAULT_USER_DETAILS = {
-            'level': 0,
+            'level': 15,
             'password': '',
             'sshkeys': []
         }
@@ -1844,9 +1844,6 @@ class JunOSDriver(NetworkDriver):
                 key: py23_compat.text_type(user_details[key])
                 for key in user_details.keys()
             }
-            user_details.update({
-                'level': 15
-            })
             user_details['sshkeys'] = [
                 user_details.pop(key)
                 for key in ['ssh_rsa', 'ssh_dsa', 'ssh_ecdsa']
