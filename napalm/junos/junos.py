@@ -296,9 +296,11 @@ class JunOSDriver(NetworkDriver):
                     'speed': -1,
                     'mtu': -1
                 }
+
+                mtu = interfaces[iface]['mtu'] if 'mtu' in interfaces[iface].keys() else -1
                 # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
-            if interfaces[iface]['mtu'] != 'Unlimited':
-                result[iface]['mtu'] = int(interfaces[iface]['mtu'])
+                if mtu != 'Unlimited':
+                    result[iface]['mtu'] = int(mtu)
 
                 match = re.search(r'(\d+)(\w*)', interfaces[iface]['speed'] or u'')
                 if match is None:

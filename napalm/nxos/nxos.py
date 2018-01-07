@@ -400,6 +400,15 @@ class NXOSDriver(NetworkDriver):
                 is_up = interface_details.get('admin_state', '') == 'up'
             else:
                 is_up = interface_details.get('state', '') == 'up'
+
+            # physicals interfaces have keys in eth_*
+            # whereas vlan interfaces have keys in svi_*
+            if 'eth_mtu' in interface_details:
+                mtu = int(interface_details['eth_mtu'])
+            elif 'svi_mtu' in interface_details:
+                mtu = int(interface_details['svi_mtu'])
+            else:
+                mtu = -1
             interfaces[interface_name] = {
                 'is_up': is_up,
                 'is_enabled': (interface_details.get('state') == 'up'),
@@ -409,6 +418,7 @@ class NXOSDriver(NetworkDriver):
                 'speed': interface_speed,
                 'mac_address': napalm.base.helpers.convert(
                     napalm.base.helpers.mac, interface_details.get('eth_hw_addr')),
+                'mtu': mtu,
             }
         return interfaces
 

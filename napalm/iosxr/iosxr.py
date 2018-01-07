@@ -240,13 +240,16 @@ class IOSXRDriver(NetworkDriver):
                 int, napalm.base.helpers.convert(
                     int, napalm.base.helpers.find_txt(interface_tree, 'Bandwidth'), 0) * 1e-3)
             description = napalm.base.helpers.find_txt(interface_tree, 'Description')
+            mtu = napalm.base.helpers.convert(
+                int, napalm.base.helpers.find_txt(interface_tree, 'MTU'))
             interfaces[interface_name] = copy.deepcopy(INTERFACE_DEFAULTS)
             interfaces[interface_name].update({
                 'is_up': is_up,
                 'speed': speed,
                 'is_enabled': enabled,
                 'mac_address': mac_address,
-                'description': description
+                'description': description,
+                'mtu': mtu
             })
 
         return interfaces
