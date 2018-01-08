@@ -873,7 +873,7 @@ class JunOSDriver(NetworkDriver):
                 # Get both result1 and result2 and return True if any of the two
                 # is True, meaning the aciton "next-hop self" was found
                 for result, value in list(items[0][1]):
-                    if value == True:
+                    if value is True:
                         return True
             return False
 
