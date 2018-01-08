@@ -1,0 +1,25 @@
+<configuration>
+        <protocols>
+            <bgp>
+                <local-as>
+                    <as-number>65001</as-number>
+                </local-as>
+                <group>
+                    <name>internal</name>
+                    <type>internal</type>
+                    <neighbor>
+                        <name>10.10.10.1</name>
+                        <export>nhs</export>
+                    </neighbor>
+                </group>
+                <group>
+                    <name>internal-2</name>
+                    <type>internal</type>
+                    <neighbor>
+                        <name>10.10.10.2</name>
+                        <export>static</export>
+                    </neighbor>
+                </group>
+            </bgp>
+        </protocols>
+</configuration>
