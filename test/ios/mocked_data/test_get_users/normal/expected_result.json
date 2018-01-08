@@ -1,0 +1,15 @@
+{
+    "user2" : {
+        "password": "$1$xxxx$xxxxxxxxxxxXXXXXXXXXX.",
+        "level": 15,
+        "sshkeys": [
+            "ssh-rsa C792BBED783F3A3CB199BBDC6EACE6BC user2@macbook.local",
+            "ssh-rsa 46DD97448BF3EDBFE8E289E3F9ABFC53"
+        ]
+    },
+    "user3" : {
+        "password": "$1$yyyy$yyyyyyyyyyyYYYYYYYYYY.",
+        "level": 1,
+        "sshkeys": []
+    }
+}

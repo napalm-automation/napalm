@@ -1,0 +1,555 @@
+<environment-information>
+    <environment-item>
+        <name>PEM 0</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="30">30 degrees C / 86 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>PEM 1</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="30">30 degrees C / 86 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>PEM 2</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="30">30 degrees C / 86 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>PEM 3</name>
+        <class>Temp</class>
+        <status>Absent</status>
+    </environment-item>
+    <environment-item>
+        <name>Routing Engine 0</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="32">32 degrees C / 89 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>Routing Engine 0 CPU</name>
+        <status>OK</status>
+        <temperature celsius="31">31 degrees C / 87 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>Routing Engine 1</name>
+        <class>Temp</class>
+        <status>Absent</status>
+    </environment-item>
+    <environment-item>
+        <name>Routing Engine 1 CPU</name>
+        <status>Absent</status>
+    </environment-item>
+    <environment-item>
+        <name>CB 0 Intake</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="34">34 degrees C / 93 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>CB 0 Exhaust A</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="31">31 degrees C / 87 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>CB 0 Exhaust B</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>CB 0 ACBC</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="37">37 degrees C / 98 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>CB 0 XF A</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="48">48 degrees C / 118 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>CB 0 XF B</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="50">50 degrees C / 122 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>CB 1 Intake</name>
+        <class>Temp</class>
+        <status>Absent</status>
+    </environment-item>
+    <environment-item>
+        <name>CB 1 Exhaust A</name>
+        <class>Temp</class>
+        <status>Absent</status>
+    </environment-item>
+    <environment-item>
+        <name>CB 1 Exhaust B</name>
+        <class>Temp</class>
+        <status>Absent</status>
+    </environment-item>
+    <environment-item>
+        <name>CB 1 ACBC</name>
+        <class>Temp</class>
+        <status>Absent</status>
+    </environment-item>
+    <environment-item>
+        <name>CB 1 XF A</name>
+        <class>Temp</class>
+        <status>Absent</status>
+    </environment-item>
+    <environment-item>
+        <name>CB 1 XF B</name>
+        <class>Temp</class>
+        <status>Absent</status>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 Intake</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="31">31 degrees C / 87 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 Exhaust A</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="37">37 degrees C / 98 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 Exhaust B</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="35">35 degrees C / 95 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 LU 0 TCAM TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="41">41 degrees C / 105 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 LU 0 TCAM Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="43">43 degrees C / 109 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 LU 0 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="41">41 degrees C / 105 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 LU 0 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="47">47 degrees C / 116 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 MQ 0 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="41">41 degrees C / 105 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 2 MQ 0 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="43">43 degrees C / 109 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 3 Intake</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="32">32 degrees C / 89 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 3 Exhaust A</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="38">38 degrees C / 100 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 3 Exhaust B</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="36">36 degrees C / 96 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 3 LU 0 TCAM TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="42">42 degrees C / 107 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 3 LU 0 TCAM Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="44">44 degrees C / 111 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 3 LU 0 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="42">42 degrees C / 107 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 3 LU 0 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="48">48 degrees C / 118 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 3 MQ 0 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="42">42 degrees C / 107 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 3 MQ 0 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="45">45 degrees C / 113 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 Intake</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="35">35 degrees C / 95 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 Exhaust A</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="49">49 degrees C / 120 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 Exhaust B</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="45">45 degrees C / 113 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA0 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="39">39 degrees C / 102 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA0 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="48">48 degrees C / 118 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA0_XR0 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="39">39 degrees C / 102 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA0_XR0 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="48">48 degrees C / 118 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA0_XR1 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="39">39 degrees C / 102 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA0_XR1 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="52">52 degrees C / 125 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA1 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="39">39 degrees C / 102 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA1 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="51">51 degrees C / 123 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA1_XR0 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="39">39 degrees C / 102 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA1_XR0 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="53">53 degrees C / 127 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA1_XR1 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="39">39 degrees C / 102 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA1_XR1 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="52">52 degrees C / 125 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 PCIE_SW TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="39">39 degrees C / 102 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 PCIE_SW Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="48">48 degrees C / 118 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA0_HMC0 Logic die </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="45">45 degrees C / 113 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA0_HMC0 DRAM botm </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="42">42 degrees C / 107 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA0_HMC1 Logic die </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="48">48 degrees C / 118 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA0_HMC1 DRAM botm </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="45">45 degrees C / 113 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA1_HMC0 Logic die </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA1_HMC0 DRAM botm </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="37">37 degrees C / 98 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA1_HMC1 Logic die </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="46">46 degrees C / 114 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 4 EA1_HMC1 DRAM botm </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="44">44 degrees C / 109 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 Intake</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="35">35 degrees C / 95 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 Exhaust A</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="52">52 degrees C / 125 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 Exhaust B</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="47">47 degrees C / 116 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA0 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA0 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="51">51 degrees C / 123 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA0_XR0 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA0_XR0 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="52">52 degrees C / 125 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA0_XR1 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA0_XR1 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="56">56 degrees C / 132 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA1 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA1 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="53">53 degrees C / 127 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA1_XR0 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA1_XR0 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="57">57 degrees C / 134 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA1_XR1 TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA1_XR1 Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="55">55 degrees C / 131 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 PCIE_SW TSen</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 PCIE_SW Chip</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="49">49 degrees C / 120 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA0_HMC0 Logic die </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="45">45 degrees C / 113 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA0_HMC0 DRAM botm </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="42">42 degrees C / 107 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA0_HMC1 Logic die </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="50">50 degrees C / 122 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA0_HMC1 DRAM botm </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="47">47 degrees C / 116 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA1_HMC0 Logic die </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="45">45 degrees C / 113 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA1_HMC0 DRAM botm </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="42">42 degrees C / 107 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA1_HMC1 Logic die </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="47">47 degrees C / 116 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 5 EA1_HMC1 DRAM botm </name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="44">44 degrees C / 111 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>Top Rear Fan</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Bottom Rear Fan</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Top Middle Fan</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Bottom Middle Fan</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Top Front Fan</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Bottom Front Fan</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+</environment-information>

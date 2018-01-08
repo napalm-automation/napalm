@@ -1,0 +1,41 @@
+<route-engine-information>
+    <route-engine>
+        <slot>0</slot>
+        <mastership-state>master</mastership-state>
+        <mastership-priority>master (default)</mastership-priority>
+        <status>OK</status>
+        <temperature celsius="32">32 degrees C / 89 degrees F</temperature>
+        <cpu-temperature celsius="32">32 degrees C / 89 degrees F</cpu-temperature>
+        <memory-dram-size>16330 MB</memory-dram-size>
+        <memory-installed-size>(16384 MB installed)</memory-installed-size>
+        <memory-buffer-utilization>6</memory-buffer-utilization>
+        <cpu-user>0</cpu-user>
+        <cpu-background>0</cpu-background>
+        <cpu-system>1</cpu-system>
+        <cpu-interrupt>0</cpu-interrupt>
+        <cpu-idle>98</cpu-idle>
+        <cpu-user1>0</cpu-user1>
+        <cpu-background1>0</cpu-background1>
+        <cpu-system1>1</cpu-system1>
+        <cpu-interrupt1>0</cpu-interrupt1>
+        <cpu-idle1>99</cpu-idle1>
+        <cpu-user2>0</cpu-user2>
+        <cpu-background2>0</cpu-background2>
+        <cpu-system2>1</cpu-system2>
+        <cpu-interrupt2>0</cpu-interrupt2>
+        <cpu-idle2>99</cpu-idle2>
+        <cpu-user3>0</cpu-user3>
+        <cpu-background3>0</cpu-background3>
+        <cpu-system3>1</cpu-system3>
+        <cpu-interrupt3>0</cpu-interrupt3>
+        <cpu-idle3>99</cpu-idle3>
+        <model>RE-S-EX9200-1800X4</model>
+        <serial-number>9013061297</serial-number>
+        <start-time seconds="1510927195">2017-11-17 13:59:55 UTC</start-time>
+        <up-time seconds="600169">6 days, 22 hours, 42 minutes, 49 seconds</up-time>
+        <last-reboot-reason>Router rebooted after a normal shutdown.</last-reboot-reason>
+        <load-average-one>0.09</load-average-one>
+        <load-average-five>0.16</load-average-five>
+        <load-average-fifteen>0.16</load-average-fifteen>
+    </route-engine>
+</route-engine-information>

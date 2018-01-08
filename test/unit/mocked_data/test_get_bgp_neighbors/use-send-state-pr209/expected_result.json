@@ -1,0 +1,101 @@
+{
+  "global": {
+        "peers": {
+            "10.92.51.2": {
+                "address_family": {
+                    "ipv4": {
+                        "accepted_prefixes": 3, 
+                        "received_prefixes": 3, 
+                        "sent_prefixes": 6
+                    }, 
+                    "ipv6": {
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": -1, 
+                        "sent_prefixes": -1
+                    }
+                }, 
+                "description": "Leaf1_Underlay", 
+                "is_enabled": true, 
+                "is_up": true, 
+                "local_as": 65000, 
+                "remote_as": 65001, 
+                "remote_id": "10.92.99.91", 
+                "uptime": 61468
+            }, 
+            "10.92.52.2": {
+                "address_family": {
+                    "ipv4": {
+                        "accepted_prefixes": 4, 
+                        "received_prefixes": 4, 
+                        "sent_prefixes": 5
+                    }, 
+                    "ipv6": {
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": -1, 
+                        "sent_prefixes": -1
+                    }
+                }, 
+                "description": "Leaf2_Underlay", 
+                "is_enabled": true, 
+                "is_up": true, 
+                "local_as": 65000, 
+                "remote_as": 65002, 
+                "remote_id": "10.92.99.92", 
+                "uptime": 320020
+            }, 
+            "10.92.99.91": {
+                "address_family": {
+                    "evpn": {
+                        "accepted_prefixes": 5, 
+                        "received_prefixes": 5, 
+                        "sent_prefixes": 0
+                    }, 
+                    "ipv4": {
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": -1, 
+                        "sent_prefixes": -1
+                    }, 
+                    "ipv6": {
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": -1, 
+                        "sent_prefixes": -1
+                    }
+                }, 
+                "description": "Leaf1_Overlay", 
+                "is_enabled": true, 
+                "is_up": true, 
+                "local_as": 65005, 
+                "remote_as": 65005, 
+                "remote_id": "10.92.99.91", 
+                "uptime": 61458
+            }, 
+            "10.92.99.92": {
+                "address_family": {
+                    "evpn": {
+                        "accepted_prefixes": 3, 
+                        "received_prefixes": 3, 
+                        "sent_prefixes": 0
+                    }, 
+                    "ipv4": {
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": -1, 
+                        "sent_prefixes": -1
+                    }, 
+                    "ipv6": {
+                        "accepted_prefixes": -1, 
+                        "received_prefixes": -1, 
+                        "sent_prefixes": -1
+                    }
+                }, 
+                "description": "Leaf2_Overlay", 
+                "is_enabled": true, 
+                "is_up": true, 
+                "local_as": 65005, 
+                "remote_as": 65005, 
+                "remote_id": "10.92.99.92", 
+                "uptime": 320013
+            }
+        }, 
+        "router_id": "10.91.1.1"
+    }
+}

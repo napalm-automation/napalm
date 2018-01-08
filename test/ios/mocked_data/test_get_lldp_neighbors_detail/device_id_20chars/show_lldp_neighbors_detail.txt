@@ -1,0 +1,208 @@
+------------------------------------------------
+Chassis id: 0102.e2ff.fdb0
+Port id: Te2/1/14
+Port Description: ABCD-U1AC04-SW1
+System Name: ABCD-U-DSW1.wan.acme.com
+
+System Description: 
+Cisco IOS Software, IOS-XE Software, Catalyst 4500 L3 Switch  Software (cat4500e-UNIVERSALK9-M), Version 03.06.05.E RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2016 by Cisco Systems, Inc.
+Compiled Thu 02-J
+
+Time remaining: 99 seconds
+System Capabilities: B,R
+Enabled Capabilities: B
+Management Addresses:
+    IP: 192.168.1.13
+Auto Negotiation - not supported
+Physical media capabilities:
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 0102.e2ff.fdb0
+Port id: Te1/1/14
+Port Description: ABCD-U1AC04-SW1
+System Name: ABCD-U-DSW1.wan.acme.com
+
+System Description: 
+Cisco IOS Software, IOS-XE Software, Catalyst 4500 L3 Switch  Software (cat4500e-UNIVERSALK9-M), Version 03.06.05.E RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2016 by Cisco Systems, Inc.
+Compiled Thu 02-J
+
+Time remaining: 103 seconds
+System Capabilities: B,R
+Enabled Capabilities: B
+Management Addresses:
+    IP: 192.168.1.13
+Auto Negotiation - not supported
+Physical media capabilities:
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: hmbbkku-la
+Port id: port-001
+Port Description - not advertised
+System Name: HMBBKKU-LA
+
+System Description: 
+Hewlett-Packard HP ProBook 650 G1,A3112DD10303,5CG4543H13 + engineering
+
+Time remaining: 15 seconds
+System Capabilities: S
+Enabled Capabilities: S
+Management Addresses:
+    IP: 192.168.45..57
+    OID:
+        1.3.6.1.4.1.24686.
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    1000baseT(FD)
+    1000baseT(HD)
+    100base-TX(FD)
+    100base-TX(HD)
+    10base-T(FD)
+    10base-T(HD)
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: jniceel-la
+Port id: port-001
+Port Description - not advertised
+System Name: JNICEEL-LA
+
+System Description: 
+HP HP ProBook 650 G2,,5CG64565JFL + engineering
+          
+Time remaining: 18 seconds
+System Capabilities: S
+Enabled Capabilities: S
+Management Addresses:
+    IP: 192.168.45..71
+    OID:
+        1.3.6.1.4.1.24686.
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    1000baseT(FD)
+    1000baseT(HD)
+    100base-TX(FD)
+    100base-TX(HD)
+    10base-T(FD)
+    10base-T(HD)
+    Other/unknown
+Media Attachment Unit type: 16
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: swaaaer-lta
+Port id: port-001
+Port Description - not advertised
+System Name: SWAAAER-LTA
+
+System Description: 
+Hewlett-Packard HP ProBook 6570b,A10112D102,5CB40117ZP + engineering
+
+Time remaining: 16 seconds
+System Capabilities: S
+Enabled Capabilities: S
+Management Addresses:
+    IP: 192.168.45..58
+    OID:
+        1.3.6.1.4.1.24686.
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    1000baseT(FD)
+    1000baseT(HD)
+    100base-TX(FD)
+    100base-TX(HD)
+    10base-T(FD)
+    10base-T(HD)
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: rberrrann-lta
+Port id: port-001
+Port Description - not advertised
+System Name: RBERRRANN-LTA
+
+System Description: 
+Hewlett-Packard HP ProBook 650 G1,A3112DD11203,CNU444BMZ0 + engineering
+
+Time remaining: 19 seconds
+System Capabilities: S
+Enabled Capabilities: S
+Management Addresses:
+    IP: 192.168.45..104
+    OID:
+        1.3.6.1.4.1.24686.
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    1000baseT(FD)
+    1000baseT(HD)
+    100base-TX(FD)
+    100base-TX(HD)
+    10base-T(FD)
+    10base-T(HD)
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: cr-443-2
+Port id: port-001
+Port Description: Siemens, SIMATIC NET, CP 343-1, 6GK7 443-1EX50-0XE0 , HW: 7, FW: V3.0.23, Ethernet Port, X1 P1
+System Name - not advertised
+
+System Description: 
+Siemens, SIMATIC NET, CP 443-1, 6GK7 443-1EX50-0XE0, HW: Version 7, FW: Version V3.0.23, VPH6201262
+
+Time remaining: 16 seconds
+System Capabilities: S
+Enabled Capabilities: S
+Management Addresses:
+    IP: 192.168.24.197
+    OID:
+        1.3.6.1.4.1.24686.
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    100base-T2(FD)
+    100base-T2(HD)
+    100base-TX(FD)
+    100base-TX(HD)
+    100base-T4
+    10base-T(FD)
+    10base-T(HD)
+    Other/unknown
+Media Attachment Unit type: 16
+Vlan ID: - not advertised
+------------------------------------------------
+Chassis id: 192.168.2.44
+Port id: 30e4.db01.2345
+Port Description: Port 1
+System Name: Cisco IP Phone SPA504G
+System Description - not advertised
+
+Time remaining: 144 seconds
+System Capabilities: B,T
+Enabled Capabilities: B,T
+Management Addresses - not advertised
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    100base-TX(FD)
+    100base-TX(HD)
+    10base-T(FD)
+    10base-T(HD)
+Media Attachment Unit type: 16
+Vlan ID: - not advertised
+
+
+Total entries displayed: 8

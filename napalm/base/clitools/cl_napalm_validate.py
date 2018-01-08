@@ -23,10 +23,10 @@ import json
 import logging
 
 logger = logging.getLogger('cl_napalm_validate.py')
-warning()
 
 
 def main():
+    warning()
     args = build_help(validate=True)
     configure_logging(logger, args.debug)
 
