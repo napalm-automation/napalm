@@ -871,7 +871,7 @@ class JunOSDriver(NetworkDriver):
                 policy.get(policy_statement=p)
                 items = policy.items()
                 # Get both result1 and result2 and return True if any of the two
-                # is True, meaning the aciton "next-hop self" was found
+                # is True, meaning the action "next-hop self" was found
                 for result, value in list(items[0][1]):
                     if value is True:
                         return True
