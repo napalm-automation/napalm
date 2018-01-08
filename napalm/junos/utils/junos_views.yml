@@ -251,7 +251,16 @@ junos_lldp_neighbors_detail_view:
 ###
 ### BGP config
 ###
+junos_policy_config_table:
+  get: policy-options/policy-statement
+  view: junos_policy_config_view
+  required_keys:
+    policy_statement: name
 
+junos_policy_config_view:
+  fields:
+    result1: { term/then/next-hop/self: True=self }
+    result2: { then/next-hop/self: True=self }
 
 junos_bgp_config_table:
   get: protocols/bgp/group

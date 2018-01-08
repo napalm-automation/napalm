@@ -862,6 +862,21 @@ class JunOSDriver(NetworkDriver):
 
     def get_bgp_config(self, group='', neighbor=''):
         """Return BGP configuration."""
+        def _check_nhs(policies):
+            if not isinstance(policies, list):
+                # Make it a list if it is a single policy
+                policies = [policies]
+            for p in policies:
+                policy = junos_views.junos_policy_config_table(self.device)
+                policy.get(policy_statement=p)
+                items = policy.items()
+                # Get both result1 and result2 and return True if any of the two
+                # is True, meaning the aciton "next-hop self" was found
+                for result, value in list(items[0][1]):
+                    if value == True:
+                        return True
+            return False
+
         def update_dict(d, u):  # for deep dictionary update
             for k, v in u.items():
                 if isinstance(d, collections.Mapping):
@@ -995,6 +1010,9 @@ class JunOSDriver(NetworkDriver):
                 default = _DATATYPE_DEFAULT_.get(datatype)
                 key = elem[0]
                 value = elem[1]
+                if key in ['export_policy']:
+                    # next-hop self is applied on export IBGP sessions
+                    _check_nhs(value)
                 if key in ['export_policy', 'import_policy']:
                     if isinstance(value, list):
                         value = ' '.join(value)
@@ -1042,6 +1060,9 @@ class JunOSDriver(NetworkDriver):
                     default = _DATATYPE_DEFAULT_.get(datatype)
                     key = elem[0]
                     value = elem[1]
+                    if key in ['export_policy']:
+                        # next-hop self is applied on export IBGP sessions
+                        bgp_peer_details['nhs'] = _check_nhs(value)
                     if key in ['export_policy', 'import_policy']:
                         if isinstance(value, list):
                             value = ' '.join(value)
