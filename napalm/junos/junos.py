@@ -1010,9 +1010,6 @@ class JunOSDriver(NetworkDriver):
                 default = _DATATYPE_DEFAULT_.get(datatype)
                 key = elem[0]
                 value = elem[1]
-                if key in ['export_policy']:
-                    # next-hop self is applied on export IBGP sessions
-                    _check_nhs(value)
                 if key in ['export_policy', 'import_policy']:
                     if isinstance(value, list):
                         value = ' '.join(value)
