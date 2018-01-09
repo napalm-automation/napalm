@@ -257,6 +257,20 @@ junos_bgp_config_table:
   get: protocols/bgp/group
   view: junos_bgp_config_view
 
+junos_bgp_apply_groups_config_table:
+  get: protocols/bgp/group
+  view: junos_bgp_apply_groups_config_view
+
+junos_bgp_apply_groups_config_group_table:
+  get: protocols/bgp/group
+  view: junos_bgp_apply_groups_config_view
+  required_keys:
+    group: name
+
+junos_bgp_apply_groups_config_view:
+  fields:
+    apply_groups: {apply-groups: unicode}
+
 junos_bgp_config_group_table:
   get: protocols/bgp/group
   view: junos_bgp_config_view

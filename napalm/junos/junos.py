@@ -950,7 +950,7 @@ class JunOSDriver(NetworkDriver):
 
         _GROUP_FIELDS_DATATYPE_MAP_ = {
             'type': py23_compat.text_type,
-            'apply_groups': list,
+            'apply_groups': py23_compat.text_type,
             'remove_private_as': bool,
             'multipath': bool,
             'multihop_ttl': int
@@ -968,12 +968,31 @@ class JunOSDriver(NetworkDriver):
 
         bgp_config = {}
 
+        # By default, the options 'groups' and 'inherit' are used. In that case
+        # the 'apply-groups' are not reported
+        # If the option 'inherit' is not used, then the 'apply-groups' are reported
+        # but the options configured via 'apply-groups' will not be reported
+        # Therefore we need to call bgp.get() twice:
+        #  1) bgp.get()  => to get all data applied or not via apply-groups
+        #  2) apply_groups.get(options=apply_groups_options) => to get only the apply-groups being used
+        #
+        apply_groups_options = {
+                'groups': 'groups',
+                # 'inherit' needs to be disabled in order to get apply-groups
+                # 'inherit': 'inherit'
+        }
         if group:
             bgp = junos_views.junos_bgp_config_group_table(self.device)
             bgp.get(group=group)
+            apply_groups = junos_views.junos_bgp_apply_groups_config_group_table(self.device)
+            apply_groups.get(group=group, options=apply_groups_options)
+            apply_groups_items = apply_groups.items()
         else:
             bgp = junos_views.junos_bgp_config_table(self.device)
             bgp.get()
+            apply_groups = junos_views.junos_bgp_apply_groups_config_table(self.device)
+            apply_groups.get(options=apply_groups_options)
+            apply_groups_items = apply_groups.items()
             neighbor = ''  # if no group is set, no neighbor should be set either
         bgp_items = bgp.items()
 
@@ -1079,6 +1098,22 @@ class JunOSDriver(NetworkDriver):
             if 'cluster' in bgp_config[bgp_group_name].keys():
                 # we do not want cluster in the output
                 del bgp_config[bgp_group_name]['cluster']
+
+        # Update only apply-groups if needed
+        for bgp_group in apply_groups_items:
+            bgp_group_name = bgp_group[0]
+            bgp_group_details = bgp_group[1]
+            for elem in bgp_group_details:
+                key = elem[0]
+                value = elem[1]
+                datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(key)
+                default = _DATATYPE_DEFAULT_.get(datatype)
+                if key in ['apply_groups']:
+                    if isinstance(value, list):
+                        value = ' '.join(value)
+                    bgp_config[bgp_group_name].update({
+                        key: napalm.base.helpers.convert(py23_compat.text_type, value, default)
+                    })
 
         return bgp_config
 
