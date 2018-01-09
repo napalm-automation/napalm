@@ -950,7 +950,7 @@ class JunOSDriver(NetworkDriver):
 
         _GROUP_FIELDS_DATATYPE_MAP_ = {
             'type': py23_compat.text_type,
-            'apply_groups': py23_compat.text_type,
+            'apply_groups': list,
             'remove_private_as': bool,
             'multipath': bool,
             'multihop_ttl': int
@@ -1111,10 +1111,10 @@ class JunOSDriver(NetworkDriver):
                 datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(key)
                 default = _DATATYPE_DEFAULT_.get(datatype)
                 if key in ['apply_groups']:
-                    if isinstance(value, list):
-                        value = ' '.join(value)
+                    if isinstance(value, str):
+                        value = [value]
                     bgp_config[bgp_group_name].update({
-                        key: napalm.base.helpers.convert(py23_compat.text_type, value, default)
+                        key: napalm.base.helpers.convert(list, value, default)
                     })
 
         return bgp_config
