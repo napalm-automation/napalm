@@ -973,8 +973,10 @@ class JunOSDriver(NetworkDriver):
         # If the option 'inherit' is not used, then the 'apply-groups' are reported
         # but the options configured via 'apply-groups' will not be reported
         # Therefore we need to call bgp.get() twice:
-        #  1) bgp.get()  => to get all data applied or not via apply-groups
-        #  2) apply_groups.get(options=apply_groups_options) => to get only the apply-groups being used
+        #  1) bgp.get()
+        #  => to get all data applied or not via apply-groups
+        #  2) apply_groups.get(options=apply_groups_options)
+        #  => to get only the apply-groups being used
         #
         apply_groups_options = {
                 'groups': 'groups',
