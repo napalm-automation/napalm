@@ -258,7 +258,7 @@ class NXOSDriver(NetworkDriver):
                 'sot_file', self.replace_file.split('/')[-1]), raw_text=True)
         try:
             diff_out = diff_out.split(
-                '#Generating Rollback Patch')[1].replace(
+                'Generating Rollback Patch')[1].replace(
                     'Rollback Patch is Empty', '').strip()
             for line in diff_out.splitlines():
                 if line:
