@@ -84,8 +84,15 @@ class JunOSDriver(NetworkDriver):
         self.keepalive = optional_args.get('keepalive', 30)
         self.ssh_config_file = optional_args.get('ssh_config_file', None)
         self.ignore_warning = optional_args.get('ignore_warning', False)
+        self.allow_agent = optional_args.get('allow_agent', False)
 
-        if self.key_file:
+        if self.allow_agent:
+            self.device = Device(hostname,
+                                 user=username,
+                                 ssh_config=self.ssh_config_file,
+                                 port=self.port)
+
+        elif self.key_file:
             self.device = Device(hostname,
                                  user=username,
                                  password=password,
