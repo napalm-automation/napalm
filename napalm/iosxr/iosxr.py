@@ -235,7 +235,8 @@ class IOSXRDriver(NetworkDriver):
             if not interface_name:
                 continue
             is_up = (napalm.base.helpers.find_txt(interface_tree, 'LineState') == 'IM_STATE_UP')
-            enabled = (napalm.base.helpers.find_txt(interface_tree, 'State') == 'IM_STATE_UP')
+            enabled = (napalm.base.helpers.find_txt(
+                        interface_tree, 'State') != 'IM_STATE_ADMINDOWN')
             raw_mac = napalm.base.helpers.find_txt(interface_tree, 'MACAddress/Address')
             mac_address = napalm.base.helpers.convert(
                 napalm.base.helpers.mac, raw_mac, raw_mac)
