@@ -601,7 +601,7 @@ class NXOSSSHDriver(NetworkDriver):
         diff_out = self.device.send_command(command)
         try:
             diff_out = diff_out.split(
-                '#Generating Rollback Patch')[1].replace(
+                'Generating Rollback Patch')[1].replace(
                     'Rollback Patch is Empty', '').strip()
             for line in diff_out.splitlines():
                 if line:
