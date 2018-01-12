@@ -1113,9 +1113,12 @@ class JunOSDriver(NetworkDriver):
                 if key in ['apply_groups']:
                     if isinstance(value, str):
                         value = [value]
-                    bgp_config[bgp_group_name].update({
-                        key: napalm.base.helpers.convert(list, value, default)
-                    })
+                    # apply_groups_items can contain groups that are 'deactivated'!
+                    # so we need to check first if the group is in the dict
+                    if bgp_group_name in bgp_config:
+                        bgp_config[bgp_group_name].update({
+                            key: napalm.base.helpers.convert(list, value, default)
+                        })
 
         return bgp_config
 
