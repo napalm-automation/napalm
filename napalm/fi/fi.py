@@ -84,7 +84,7 @@ class FastIronDriver(NetworkDriver):
         """
         Closes the connection to the device.
         """
-        self.device.disconnect()                                        # Disconnects device
+        self.device.disconnect()                                                # Disconnects device
 
     def is_alive(self):
         """
@@ -102,7 +102,7 @@ class FastIronDriver(NetworkDriver):
                 'is_alive': False
             }
         return {
-            'is_alive': self.device.remote_conn.transport.is_active()       # returns if device is alive
+            'is_alive': self.device.remote_conn.transport.is_active()           # returns if device is alive
         }
 
     def _send_command(self, command):
@@ -174,23 +174,23 @@ class FastIronDriver(NetworkDriver):
         return my_list
 
     @staticmethod
-    def delete_if_contains(nline_list, del_word):               #
-        temp_list = list()
-        for a_string in nline_list:                             #
-            if a_string .__contains__(del_word):
+    def delete_if_contains(nline_list, del_word):
+        temp_list = list()                                      # Creates a list to store variables
+        for a_string in nline_list:                             # iterates through list
+            if a_string .__contains__(del_word):                # if word is found and matches, word is skipped
                 continue
             else:
-                temp_list.append(a_string.split())
+                temp_list.append(a_string.split())              # Word didn't match with deleted, stored in list
         return temp_list
 
     @staticmethod
     def facts_uptime(my_string):  # TODO check for hours its missing....
-        my_list = ["day(s)", "hour(s)", "minute(s)", "second(s)"]
-        my_pos = [-1, -1, -1, -1]
-        total_seconds = 0; multiplier = 0
-        t_dictionary = FastIronDriver.find_words(my_string, my_list, my_pos)
+        my_list = ["day(s)", "hour(s)", "minute(s)", "second(s)"]               # list of words to find
+        my_pos = [-1, -1, -1, -1]                                               # relative position of interest
+        total_seconds = 0; multiplier = 0                                       # data variables
+        t_dictionary = FastIronDriver.find_words(my_string, my_list, my_pos)    # If word is found retrieves pos
 
-        for m in t_dictionary.keys():
+        for m in t_dictionary.keys():                                           # Checks word found and its multiplier
             if m == "second(s)":
                 multiplier = 1
             elif m == "minute(s)":
@@ -199,68 +199,68 @@ class FastIronDriver(NetworkDriver):
                 multiplier = 3600
             elif m == "day(s)":
                 multiplier = 86400
-            total_seconds = int(t_dictionary.get(m))*multiplier + total_seconds
+            total_seconds = int(t_dictionary.get(m))*multiplier + total_seconds     # converts to seconds
         return total_seconds
 
     @staticmethod
     def facts_model(string):
         model = FastIronDriver.retrieve_all_locations(string, "Stackable", 0)[0]
-        return model                                            # returns the model of the switch
+        return model                                                                # returns the model of the switch
 
     @staticmethod
     def facts_hostname(string):
         if string.__contains__("hostname"):
             hostname = FastIronDriver.retrieve_all_locations(string, "hostname", 0)[0]
-            return hostname                                     # returns the hostname if configured
+            return hostname                                                         # returns the hostname if configured
         else:
             return None
 
     @staticmethod
     def facts_os_version(string):
         os_version = FastIronDriver.retrieve_all_locations(string, "SW:", 1)[0]
-        return os_version                                       # returns the os_version of switch
+        return os_version                                                           # returns the os_version of switch
 
     @staticmethod
     def facts_serial(string):
         serial = FastIronDriver.retrieve_all_locations(string, "Serial", 0)[0]
         serial = serial.replace('#:', '')
-        return serial                                           # returns serial number
+        return serial                                                               # returns serial number
 
     @staticmethod
-    def facts_interface_list(shw_int_brief, pos=0, del_word="Port", trigger=0):  # TODO Unicode
+    def facts_interface_list(shw_int_brief, pos=0, del_word="Port", trigger=0):         # TODO Unicode
         interfaces_list = list()                                                        # Creates a list
-        n_line_output = FastIronDriver.creates_list_of_nlines(shw_int_brief)            #
-        interface_details = FastIronDriver.delete_if_contains(n_line_output, del_word)  #
+        n_line_output = FastIronDriver.creates_list_of_nlines(shw_int_brief)            # Breaks into separate lines
+        interface_details = FastIronDriver.delete_if_contains(n_line_output, del_word)  # Removes words if contained
 
-        for port_det in interface_details:                                              #
+        for port_det in interface_details:                                              # Iterates through detail
 
             if trigger == 0:
-                interfaces_list.append(port_det[pos])                                   #
+                interfaces_list.append(port_det[pos])                                   # By default is 0
             else:
                 if port_det[pos].__contains__("ve") or port_det[pos].__contains__("lb") or \
-                        port_det[pos].__contains__("tunnel"):
+                        port_det[pos].__contains__("tunnel"):                           # removes non physical interface
                     continue
                 else:
-                    interfaces_list.append(port_det[pos])
+                    interfaces_list.append(port_det[pos])                               # adds phys interface to list
         return interfaces_list
 
     @staticmethod
     def port_time(shw_int_port):
-        t_port = list()
-        new_lines = FastIronDriver.creates_list_of_nlines(shw_int_port)
+        t_port = list()                                                     # Creates list
+        new_lines = FastIronDriver.creates_list_of_nlines(shw_int_port)     # Creates n lines of show int port
 
         for val in new_lines:
-            if val .__contains__("name"):
+            if val .__contains__("name"):                                   # If line contains "name" is skipped
                 continue
-            t_port.append(FastIronDriver.facts_uptime(val))
+            t_port.append(FastIronDriver.facts_uptime(val))                 # adds time to ports
 
         return t_port
 
     @staticmethod
     def get_interface_speed(shw_int_speed):
-        speed = list()
-        for val in shw_int_speed:
-            if val == 'auto,' or val == '1Gbit,':
+        speed = list()                                                      # creates list
+        for val in shw_int_speed:                                           # speed words contained and compared
+            if val == 'auto,' or val == '1Gbit,':                           # appends speed hat
                 speed.append(1000)
             elif val == '10Mbit,':
                 speed.append(10)
@@ -280,23 +280,23 @@ class FastIronDriver(NetworkDriver):
 
     @staticmethod
     def get_interface_up(shw_int_brief):
-        port_stat = list()
-        for line in shw_int_brief:
+        port_stat = list()                                          # Creates list
+        for line in shw_int_brief:                                  # input has a n x 1 of words
             if line == "Up":
-                port_stat.append(True)
+                port_stat.append(True)                              # appends true if up false if port is down
             else:
                 port_stat.append(False)
-        return port_stat
+        return port_stat                                            # returns list of port status true/false "up/down"
 
     @staticmethod
     def get_interfaces_en(shw_int_brief):
-        port_status = list()
-        for line in shw_int_brief:
-            if line == "None" or line == "N/A":
+        port_status = list()                                        # creates list
+        for line in shw_int_brief:                                  # input is a n x 1 of words
+            if line == "None" or line == "N/A":                     # if either match is found reports false
                 port_status.append(False)
             else:
-                port_status.append(True)
-        return port_status
+                port_status.append(True)                            # Otherwise true
+        return port_status                                          # return port status
 
     @staticmethod
     def unite_strings(output):
@@ -316,30 +316,30 @@ class FastIronDriver(NetworkDriver):
 
     @staticmethod
     def get_interface_flap(shw_int_up, shw_int_flapped):
-        port_status = list()
+        port_status = list()                                            # creates list
 
-        for val in range(0, len(shw_int_up)):
-            if shw_int_up[val] == "Down":
+        for val in range(0, len(shw_int_up)):                           # will use index iterate
+            if shw_int_up[val] == "Down":                               # checks if current value is "down"
                 port_status.append(-1)
             else:
-                if val < len(shw_int_flapped):
+                if val < len(shw_int_flapped):                          # checks physical inter with given interfaces
                     port_status.append(shw_int_flapped[val])
                 else:
-                    port_status.append(-1)
+                    port_status.append(-1)                              # error if both matrix not same size
         return port_status
 
     @staticmethod
     def get_interface_name(shw_int_name, size):
-        port_status = list()
-        shw_int_name = FastIronDriver.creates_list_of_nlines(shw_int_name)
-        for val in shw_int_name:
-            if val .__contains__("No port name"):
-                port_status.append("")
+        port_status = list()                                            # Creates list
+        shw_int_name = FastIronDriver.creates_list_of_nlines(shw_int_name)  # Separates output into n lines
+        for val in shw_int_name:                                        # iterates through n lines
+            if val .__contains__("No port name"):                       # port does not have name
+                port_status.append("")                                  # appends nothing for port name
             else:
-                port_status.append(val.replace("Port name is", ""))
+                port_status.append(val.replace("Port name is", ""))     # Removes fluff add name
 
-        for temp in range(0, size - len(port_status)):
-            port_status.append("")
+        for temp in range(0, size - len(port_status)):                  # adds no names to the remainder so that
+            port_status.append("")                                      # all matrix of data are the same size
 
         return port_status
 
@@ -351,26 +351,26 @@ class FastIronDriver(NetworkDriver):
 
     @staticmethod
     def get_interfaces_speed(shw_int_speed, size):
-        port_status = list()
+        port_status = list()                                    # Create a list
         for val in range(0, size):
             if val < len(shw_int_speed):
-                port_status.append(shw_int_speed[val])
+                port_status.append(shw_int_speed[val])          # appends string index into port list
             else:
                 port_status.append(0)
-        return port_status
+        return port_status                                      # returns port list
 
     @staticmethod
     def matrix_format(my_input):
-        my_list = list()
-        newline = FastIronDriver.creates_list_of_nlines(my_input)
-        for text in newline:
-            text = text.split()
-            if len(text) < 1:
+        my_list = list()                                                        # Creates list
+        newline = FastIronDriver.creates_list_of_nlines(my_input)               # Input separated into n lines
+        for text in newline:                                                    # Goes through n lines by n lines
+            text = text.split()                                                 # splits long string into words
+            if len(text) < 1:                                                   # if more than a single word skip
                 continue
             else:
-                my_list.append(text)
+                my_list.append(text)                                            # appends single word
 
-        return my_list
+        return my_list                                                          # returns list
 
     @staticmethod
     def environment_temperature(string):
@@ -411,12 +411,12 @@ class FastIronDriver(NetworkDriver):
 
     @staticmethod
     def fast_find(input_string, word):
-        index_list = list()
-        input_string = input_string.split()
-        for val in range(len(input_string)):
-            if input_string[val] == word:
-                index_list.append(val)
-        return index_list
+        index_list = list()                                                     # creates a list
+        input_string = input_string.split()                                     # breaks input into list of strings
+        for val in range(len(input_string)):                                    # iterates depending on size
+            if input_string[val] == word:                                       # if word is contained in list of words
+                index_list.append(val)                                          # append to index
+        return index_list                                                       # returns list
 
     @staticmethod
     def environment_fan(string):
@@ -447,28 +447,28 @@ class FastIronDriver(NetworkDriver):
     def output_parser(output, word):
         """If the word is found in the output, it will return the ip address until a new interface is found
         for example."""
-        token = output.find(word) + len(word)
-        count = 0
-        output = output[token:len(output)].replace('/', ' ')
-        nline = FastIronDriver.creates_list_of_nlines(output)
-        ip6_dict = dict()
+        token = output.find(word) + len(word)                           # saves pos of where word is contained
+        count = 0                                                       # counter variable
+        output = output[token:len(output)].replace('/', ' ')            # output display certain boundary and replaces
+        nline = FastIronDriver.creates_list_of_nlines(output)           # characters with spaces
+        ip6_dict = dict()                                               # creates dictionary
 
-        for sentence in nline:
-            sentence = sentence.split()
+        for sentence in nline:                                          # separated n lines goes n line by n line
+            sentence = sentence.split()                                 # sentence contains list of words
 
-            if len(sentence) > 2:
-                count += 1
-                if count > 1:
-                    break
-                ip6_dict.update({
+            if len(sentence) > 2:                                       # if length of list is greater than 2
+                count += 1                                              # its a parent interface
+                if count > 1:                                           # only a single parent interface at a time
+                    break                                               # breaks if another parent interface found
+                ip6_dict.update({                                       # Update ipv6 dictionary with ipv6 add and mask
                         sentence[2]: {'prefix_length': sentence[3]}
                 })
-            if len(sentence) == 2:
-                ip6_dict.update({
+            if len(sentence) == 2:                                      # child ipv6 interface is found
+                ip6_dict.update({                                       # updates dictionary with ipv6 and mask
                         sentence[0]: {'prefix_length': sentence[1]}
                 })
 
-        return ip6_dict
+        return ip6_dict                                                 # returns ipv6 dictionary
 
     def load_template(self, template_name, template_source=None,
                       template_path=None, **template_vars):
@@ -579,6 +579,19 @@ class FastIronDriver(NetworkDriver):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
         """
+        if self.replace_config is None and self.merge_config is None:
+            print("Please replace or merge a configuration ")
+            return -1                                           # returns failure
+
+        if self.replace_config is not None:                     # replace configuration will overwrite current config
+            print()
+            return 0                                            # returns success
+
+        if self.merge_config is not None:                       # merges candidate configuration with existing config
+            print()
+            return 0                                            # returns success
+
+
         raise NotImplementedError
 
     def discard_config(self):
@@ -1735,7 +1748,7 @@ class FastIronDriver(NetworkDriver):
 
         return config_dic
 
-    def get_network_instances(self, name=''):
+    def get_network_instances(self, name=''):   # TODO check with engineering about changing output, affects scale
         """
         Return a dictionary of network instances (VRFs) configured, including default/global
 
@@ -1784,30 +1797,61 @@ class FastIronDriver(NetworkDriver):
             }
         }
         """
-        vrf_dict = dict()
+        vrf_dict = dict()                                           # Dictionary that will append
+        vrf_type = ""                                               # Declaring variable for switch type
+        vrf_name_list = list()
+        vrf_interface = dict()
+        check = self.device.send_command('show version')            # will be used for checking version and model type
 
-        if name != '':
-            output = self.device.send_command('show vrf ' + name)
+        if check.__contains__('7150'):                              # Model ICX7150 does not support VRF
+            return {}
+
+        if check.__contains__('SPR'):                               # check if router version
+            vrf_type = 'L3VRF'                                      # adds vrf of type router
         else:
-            output = self.device.send_command('show vrf detail')
+            vrf_type = 'L2VRF'                                      # adds vrf of type switch
 
-        s_output = output.split()
-        vrf_name_i_list = FastIronDriver.fast_find(s_output, 'VRF-Name:')
-        size = len(vrf_name_i_list)
+        if name != '':                                              # Name was entered must look
+            output = self.device.send_command('show vrf ' + name)   # grabs vrf of specified name
+            token = output.find('Interfaces:') + len('Interfaces:') + 1
+            ioutput = output[token:len(output)]                         # limits scope of output range
+            sentence = ioutput.split()                                  # returns strings of interest
+            rid = FastIronDriver.retrieve_all_locations(output, 'RD', 0)[0]
+            rid = rid.replace(',', '')
 
-        for val in range(size):
-            vrf = vrf_name_i_list.pop()
-            vrf_dict.update({
+            for interface in sentence:
+                vrf_interface.update({interface: {}})                   # creates dictionary for interfaces of VRF
+
+            return {                                                    # returns a single vrf instances
+                name: {
+                    u'name': name, u'type': vrf_type, u'state': {
+                        u'route_distinguisher': rid
+                    },
+                    u'interfaces': {
+                        vrf_interface
+                        }}}
+
+        else:
+            output = self.device.send_command('show vrf detail')        # obtains vrf detail of default name
+            ftoken = output.find('Total number of IPv4')
+            output = output.replace('|', ' ')                           # Replaces line used as spacer
+            output = output.replace(',', '')                            # removes , with RD
+            vrf_name_list = FastIronDriver.retrieve_all_locations(output, 'VRF', 0)
+            vrf_rd = FastIronDriver.retrieve_all_locations(output, 'RD', 0)
+
+        for interface in range(0, len(vrf_name_list)):
+            vrf = vrf_name_list.pop()                                   # pops the next vrf name
+            rd = vrf_rd.pop()                                           # pops the next router id
+            vrf_dict.update({                                           # updates the dictionary
                 vrf: {
-                    u'name': vrf, u'type': '', u'state': {
-                        u'route_distinguisher': ''
+                    u'name': vrf, u'type': vrf_type, u'state': {
+                        u'route_distinguisher': rd
                     },
                     u'interfaces': {
                         u'interface': {
-                            'forloopinterfaceshere': {}
+                            '': {}
                         }
                     }
-
                 }
             })
 
