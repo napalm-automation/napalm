@@ -639,20 +639,24 @@ class NXOSSSHDriver(NetworkDriver):
             return diff
         return ''
 
-    def _save(self, filename='startup-config'):
+    def _copy_run_start(self, filename='startup-config'):
         command = 'copy run %s' % filename
         output = self.device.send_command(command)
         if 'complete' in output.lower():
             return True
-        return False
+        else:
+            raise CommandErrorException('Unable to save running-config to startup-config!')
 
     def _commit_merge(self):
-        commands = [command for command in self.merge_candidate.splitlines() if command]
-        output = self.device.send_config_set(commands)
+        try:
+            commands = [command for command in self.merge_candidate.splitlines() if command]
+            output = self.device.send_config_set(commands)
+        except Exception as e:
+            raise MergeConfigException(str(e))
         if 'Invalid command' in output:
             raise MergeConfigException('Error while applying config!')
-        if not self._save():
-            raise CommandErrorException('Unable to save running-config to startup!')
+        # clear the merge buffer
+        self.merge_candidate = ''  
 
     def _save_to_checkpoint(self, filename):
         """Save the current running config to the given file."""
@@ -669,24 +673,22 @@ class NXOSSSHDriver(NetworkDriver):
         if 'Rollback failed.' in rollback_result or 'ERROR' in rollback_result:
             raise ReplaceConfigException(rollback_result)
         elif rollback_result == []:
-            return False
-        return True
+            raise ReplaceConfigException
 
     def commit_config(self):
         if self.loaded:
+            # Create checkpoint from current running-config
             self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            # Create Checkpoint from current running-config
             self._save_to_checkpoint(self.backup_file)
+
             if self.replace:
-                cfg_replace_status = self._load_cfg_from_checkpoint()
-                if not cfg_replace_status:
-                    raise ReplaceConfigException
+                # Replace operation
+                self._load_cfg_from_checkpoint()
             else:
-                try:
-                    self._commit_merge()
-                    self.merge_candidate = ''  # clear the merge buffer
-                except Exception as e:
-                    raise MergeConfigException(str(e))
+                # Merge operation
+                self._commit_merge()
+
+            self._copy_run_start()
             self.changed = True
             self.loaded = False
         else:
