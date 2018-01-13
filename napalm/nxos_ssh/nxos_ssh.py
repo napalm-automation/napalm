@@ -640,12 +640,13 @@ class NXOSSSHDriver(NetworkDriver):
         return ''
 
     def _copy_run_start(self, filename='startup-config'):
-        command = 'copy run %s' % filename
+        command = 'copy run {}'.format(filename)
         output = self.device.send_command(command)
         if 'complete' in output.lower():
             return True
         else:
-            raise CommandErrorException('Unable to save running-config to startup-config!')
+            msg = 'Unable to save running-config to {}!'.format(filename)
+            raise CommandErrorException(msg)
 
     def _commit_merge(self):
         try:
