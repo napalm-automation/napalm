@@ -25,7 +25,6 @@ from scp import SCPClient
 import paramiko
 import hashlib
 import socket
-from datetime import datetime
 
 # import third party lib
 from netaddr import IPAddress
@@ -36,12 +35,12 @@ from netmiko.ssh_exception import NetMikoTimeoutException
 
 # import NAPALM Base
 import napalm.base.helpers
-from napalm.base import NetworkDriver
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.nxos import NXOSDriverBase
 import napalm.base.constants as c
 
 # Easier to store these as constants
@@ -366,7 +365,7 @@ def bgp_summary_parser(bgp_summary):
     return bgp_return_dict
 
 
-class NXOSSSHDriver(NetworkDriver):
+class NXOSSSHDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -657,7 +656,7 @@ class NXOSSSHDriver(NetworkDriver):
         if 'Invalid command' in output:
             raise MergeConfigException('Error while applying config!')
         # clear the merge buffer
-        self.merge_candidate = ''  
+        self.merge_candidate = ''
 
     def _save_to_checkpoint(self, filename):
         """Save the current running config to the given file."""
@@ -675,25 +674,6 @@ class NXOSSSHDriver(NetworkDriver):
             raise ReplaceConfigException(rollback_result)
         elif rollback_result == []:
             raise ReplaceConfigException
-
-    def commit_config(self):
-        if self.loaded:
-            # Create checkpoint from current running-config
-            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            self._save_to_checkpoint(self.backup_file)
-
-            if self.replace:
-                # Replace operation
-                self._load_cfg_from_checkpoint()
-            else:
-                # Merge operation
-                self._commit_merge()
-
-            self._copy_run_start()
-            self.changed = True
-            self.loaded = False
-        else:
-            raise ReplaceConfigException('No config loaded.')
 
     def _delete_file(self, filename):
         commands = [

@@ -45,25 +45,26 @@ import napalm.base.constants as c
 class NXOSDriverBase(NetworkDriver):
     """Common code shared between nx-api and nxos_ssh."""
     def commit_config(self):
-    if self.loaded:
-        # Create checkpoint from current running-config
-        self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_') 
-        self._save_to_checkpoint(self.backup_file)
+        if self.loaded:
+            # Create checkpoint from current running-config
+            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
+            self._save_to_checkpoint(self.backup_file)
 
-        if self.replace:
-            # Replace operation
-            self._load_cfg_from_checkpoint()
+            if self.replace:
+                # Replace operation
+                self._load_cfg_from_checkpoint()
+            else:
+                # Merge operation
+                self._commit_merge()
+
+            self._copy_run_start()
+            self.changed = True
+            self.loaded = False
         else:
-            # Merge operation
-            self._commit_merge()
+            raise ReplaceConfigException('No config loaded.')
 
-        self._copy_run_start()
-        self.changed = True 
-        self.loaded = False
-    else:
-        raise ReplaceConfigException('No config loaded.')
 
-class NXOSDriver(NetworkDriver):
+class NXOSDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -318,7 +319,7 @@ class NXOSDriver(NetworkDriver):
         return ''
 
     def _copy_run_start(self, filename='startup-config'):
-        results = self.device.save(filename=filename):
+        results = self.device.save(filename=filename)
         if not results:
             msg = 'Unable to save running-config to {}!'.format(filename)
             raise CommandErrorException(msg)
@@ -350,21 +351,6 @@ class NXOSDriver(NetworkDriver):
             return
         if 'Rollback failed.' in rollback_result['msg'] or 'ERROR' in rollback_result:
             raise ReplaceConfigException(rollback_result['msg'])
-
-    def commit_config(self):
-        if self.loaded:
-            # Create checkpoint from current running-config
-            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            self._save_to_checkpoint(self.backup_file)
-            if self.replace:
-                self._load_cfg_from_checkpoint()
-            else:
-                self._commit_merge()
-
-            self.changed = True
-            self.loaded = False
-        else:
-            raise ReplaceConfigException('No config loaded.')
 
     def _delete_file(self, filename):
         commands = ['terminal dont-ask',
