@@ -697,8 +697,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             result = self.device.send_command(command)
             if 'completed' not in result.lower():
                 raise ReplaceConfigException(result)
-            if not self._save():
-                raise CommandErrorException('Unable to save running-config to startup!')
+            self._copy_run_start()
             self.changed = False
 
     def _apply_key_map(self, key_map, table):

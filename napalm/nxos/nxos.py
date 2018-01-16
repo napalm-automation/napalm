@@ -371,7 +371,7 @@ class NXOSDriver(NXOSDriverBase):
     def rollback(self):
         if self.changed:
             self.device.rollback(self.backup_file)
-            self.device.save()
+            self._copy_run_start()
             self.changed = False
 
     def get_facts(self):
