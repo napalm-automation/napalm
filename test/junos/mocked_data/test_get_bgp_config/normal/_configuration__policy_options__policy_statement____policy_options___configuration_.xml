@@ -7,4 +7,12 @@
                 </then>
             </policy-statement>
         </policy-options>
+        <policy-options>
+            <policy-statement>
+                <name>PUBLIC-PEER-OUT</name>
+                <then>
+                    <accept/>
+                </then>
+            </policy-statement>
+        </policy-options>
 </configuration>
