@@ -862,17 +862,14 @@ class JunOSDriver(NetworkDriver):
 
     def get_bgp_config(self, group='', neighbor=''):
         """Return BGP configuration."""
-        def _check_nhs(policies):
+        def _check_nhs(policies, all_policies):
             if not isinstance(policies, list):
                 # Make it a list if it is a single policy
                 policies = [policies]
             for p in policies:
-                policy = junos_views.junos_policy_config_table(self.device)
-                policy.get(policy_statement=p)
-                items = policy.items()
                 # Get both result1 and result2 and return True if any of the two
                 # is True, meaning the action "next-hop self" was found
-                for result, value in list(items[0][1]):
+                for result, value in all_policies[p]:
                     if value is True:
                         return True
             return False
@@ -995,6 +992,12 @@ class JunOSDriver(NetworkDriver):
         if neighbor:
             neighbor_ip = napalm.base.helpers.ip(neighbor)
 
+        # Get all policies in one go
+        # They will be used only to check nhs attribute
+        policy = junos_views.junos_policy_config_table(self.device)
+        policy.get()
+        all_policies = dict(policy.items())
+
         for bgp_group in bgp_items:
             bgp_group_name = bgp_group[0]
             bgp_group_details = bgp_group[1]
@@ -1059,7 +1062,7 @@ class JunOSDriver(NetworkDriver):
                     value = elem[1]
                     if key in ['export_policy']:
                         # next-hop self is applied on export IBGP sessions
-                        bgp_peer_details['nhs'] = _check_nhs(value)
+                        bgp_peer_details['nhs'] = _check_nhs(value, all_policies)
                     if key in ['export_policy', 'import_policy']:
                         if isinstance(value, list):
                             value = ' '.join(value)
