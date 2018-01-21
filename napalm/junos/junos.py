@@ -240,7 +240,7 @@ class JunOSDriver(NetworkDriver):
         """
         Commit configuration.
 
-        if confirmed is passed, do not unlock when done.
+        if confirmed is passed, random string is generated for the commit log
         """
         pending_commit_string = None
         if confirmed:
