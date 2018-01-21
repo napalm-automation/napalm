@@ -192,7 +192,7 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     @property
-    def has_pending_confirm(self):
+    def has_pending_commit_confirm(self):
         """Checks if there is a commit pending confirmation"""
         raise NotImplementedError
 

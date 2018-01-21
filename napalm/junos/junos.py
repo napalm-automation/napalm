@@ -268,13 +268,13 @@ class JunOSDriver(NetworkDriver):
 
         Will send the commit even without a pending
         """
-        if self.has_pending_commit:
+        if self.has_pending_commit_confirm:
             self.commit_config()
             return
         log.warning('no pending commit to confirm on %s', self.hostname)
 
     @property
-    def has_pending_confirm(self):
+    def has_pending_commit_confirm(self):
         """
         Checks last commit message for matching pending commit
         """
@@ -297,7 +297,7 @@ class JunOSDriver(NetworkDriver):
         """
         reverts back pending confirm if there is one
         """
-        if self.has_pending_confirm:
+        if self.has_pending_commit_confirm:
             log.debug('rolling back pending commit on %s', self.hostname)
             self.device.cu.rollback(rb_id=1)
             self.commit_config()
