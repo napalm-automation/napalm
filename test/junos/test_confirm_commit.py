@@ -2,7 +2,7 @@
 
 from xml.etree import ElementTree as etree
 
-from unittest.mock import patch, Mock
+from mock import patch, Mock
 
 from napalm.junos import JunOSDriver
 
