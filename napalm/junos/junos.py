@@ -250,7 +250,6 @@ class JunOSDriver(NetworkDriver):
             else:
                 message = 'napalm_confirm_{}'.format(pending_commit_string)
 
-        #import pdb;pdb.set_trace()
         self.device.cu.commit(
             ignore_warning=self.ignore_warning,
             confirm=confirmed,
