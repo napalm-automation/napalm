@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 # import stdlib
 import re
+import uuid
 import json
 import logging
 import collections
@@ -99,9 +100,10 @@ class JunOSDriver(NetworkDriver):
                                  ssh_config=self.ssh_config_file)
 
         self.profile = ["junos"]
+        self._pending_commit_string = None
 
     def open(self):
-        """Open the connection wit the device."""
+        """Open the connection with the device."""
         try:
             self.device.open()
         except ConnectTimeoutError as cte:
@@ -235,13 +237,75 @@ class JunOSDriver(NetworkDriver):
             return diff.strip()
 
     def commit_config(self, confirmed=None, message=None):
-        """Commit configuration."""
-        if confirmed is not None:
-            raise NotImplementedError
+        """
+        Commit configuration.
 
-        self.device.cu.commit(ignore_warning=self.ignore_warning)
+        if confirmed is passed, do not unlock when done.
+        """
+        pending_commit_string = None
+        if confirmed:
+            pending_commit_string = str(uuid.uuid4()).split('-')[0]
+            if message:
+                message = '{}_napalm_confirm_{}'.format(message, pending_commit_string)
+            else:
+                message = 'napalm_confirm_{}'.format(pending_commit_string)
+
+        #import pdb;pdb.set_trace()
+        self.device.cu.commit(
+            ignore_warning=self.ignore_warning,
+            confirm=confirmed,
+            comment=message
+        )
+        self._pending_commit_string = pending_commit_string
         if not self.config_lock:
             self._unlock()
+
+    def commit_confirm(self):
+        """
+        Confirms a commit
+
+        Simply sends a commit to confirm a commit.
+
+        Will send the commit even without a pending
+        """
+        if self.has_pending_commit:
+            self.commit_config()
+            return
+        log.warning('no pending commit to confirm on %s', self.hostname)
+
+    @property
+    def has_pending_confirm(self):
+        """
+        Checks last commit message for matching pending commit
+        """
+        if self._pending_commit_string is None:
+            log.debug('appears there is no pending commit on %s', self.hostname)
+            return False
+        commits = self.device.rpc.get_commit_information()
+        last_commit = next(iter(commits.findall('commit-history')), None)
+        if last_commit is None:
+            log.debug('there is no commit history on device %s', self.hostname)
+            return False
+        # junos puts a pending rollback string in 'comment' and a comment in 'log' xml tags
+        commit_log = last_commit.findtext('.//log', '')
+        commit_comment = last_commit.findtext('.//comment', '')
+        if 'rollback' in commit_comment and commit_log.endswith(self._pending_commit_string):
+            return True
+        return False
+
+    def revert_commit_confirm(self):
+        """
+        reverts back pending confirm if there is one
+        """
+        if self.has_pending_confirm:
+            log.debug('rolling back pending commit on %s', self.hostname)
+            self.device.cu.rollback(rb_id=1)
+            self.commit_config()
+        else:
+            log.debug('no pending commit to rollback to on %s', self.hostname)
+        if not self.config_lock:
+            self._unlock()
+
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
