@@ -425,10 +425,19 @@ class IOSDriver(NetworkDriver):
         cmd = "configure confirm"
         self.device.send_command_expect(cmd)
 
-    def _commit_abort(self):
+    def commit_confirm_revert(self):
         """Immediately revert pending commit confirm."""
         cmd = "configure revert now"
         self.device.send_command_expect(cmd)
+
+    def has_pending_commit(self):
+        """
+        :return A boolean indicating whether any pending commit confirms exist.
+        """
+        cmd = "show archive config rollback timer"
+        search_pattern = r"No Rollback Confirmed Change pending"
+        output = self.device.send_command_expect(cmd)
+        return not bool(re.search(search_pattern, output, flags=re.I))
 
     def commit_config(self, confirmed=None, message=None):
         """If replacement operation, perform 'configure replace' for the entire config.

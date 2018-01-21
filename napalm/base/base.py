@@ -188,16 +188,22 @@ class NetworkDriver(object):
         """Confirm pending commit."""
         raise NotImplementedError
 
-    def discard_config(self):
+    def commit_confirm_revert(self):
+        """Abort pending commit confirm immediately and rollback to previous state"""
+        raise NotImplementedError
+
+    def has_pending_commit(self):
         """
-        Discards the configuration loaded into the candidate.
+        :return A boolean indicating whether any pending commit confirms exist.
         """
         raise NotImplementedError
 
+    def discard_config(self):
+        """Discards the configuration loaded into the candidate."""
+        raise NotImplementedError
+
     def rollback(self):
-        """
-        If changes were made, revert changes to the original state.
-        """
+        """If changes were made, revert changes to the original state."""
         raise NotImplementedError
 
     def get_facts(self):
