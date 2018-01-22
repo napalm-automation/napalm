@@ -19,7 +19,6 @@ from __future__ import unicode_literals
 
 # import stdlib
 import re
-import uuid
 import json
 import logging
 import collections
@@ -100,7 +99,7 @@ class JunOSDriver(NetworkDriver):
                                  ssh_config=self.ssh_config_file)
 
         self.profile = ["junos"]
-        self._pending_commit_string = None
+        self._pending_commit = False
 
     def open(self):
         """Open the connection with the device."""
@@ -242,20 +241,16 @@ class JunOSDriver(NetworkDriver):
 
         if confirmed is passed, random string is generated for the commit log
         """
-        pending_commit_string = None
-        if confirmed:
-            pending_commit_string = str(uuid.uuid4()).split('-')[0]
-            if message:
-                message = '{}_napalm_confirm_{}'.format(message, pending_commit_string)
-            else:
-                message = 'napalm_confirm_{}'.format(pending_commit_string)
-
+        
         self.device.cu.commit(
             ignore_warning=self.ignore_warning,
             confirm=confirmed,
             comment=message
         )
-        self._pending_commit_string = pending_commit_string
+        if confirmed is not None:
+            self._pending_commit = True
+        else:
+            self._pending_commit = False
         if not self.config_lock:
             self._unlock()
 
@@ -277,7 +272,7 @@ class JunOSDriver(NetworkDriver):
         """
         Checks last commit message for matching pending commit
         """
-        if self._pending_commit_string is None:
+        if not self._pending_commit:
             log.debug('appears there is no pending commit on %s', self.hostname)
             return False
         commits = self.device.rpc.get_commit_information()
@@ -285,10 +280,9 @@ class JunOSDriver(NetworkDriver):
         if last_commit is None:
             log.debug('there is no commit history on device %s', self.hostname)
             return False
-        # junos puts a pending rollback string in 'comment' and a comment in 'log' xml tags
-        commit_log = last_commit.findtext('.//log', '')
+        # junos puts a pending rollback string in 'comment'
         commit_comment = last_commit.findtext('.//comment', '')
-        if 'rollback' in commit_comment and commit_log.endswith(self._pending_commit_string):
+        if 'rollback' in commit_comment.lower():
             return True
         return False
 

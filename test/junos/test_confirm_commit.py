@@ -52,7 +52,6 @@ _COMMIT_NOT_PENDING = """
 """
 
 
-@patch('napalm.junos.junos.uuid.uuid4', lambda: 'ffff-ffff-ffff-fff')
 @patch('napalm.junos.junos.Device')
 def test_junos_commit_confirm_and_pending(mocked_device):
     commits = Mock(return_value=etree.fromstring(_COMMIT_PENDING))
@@ -62,7 +61,7 @@ def test_junos_commit_confirm_and_pending(mocked_device):
     j = JunOSDriver(username='someuser', password='somepass', hostname='foo')
     j.commit_config(confirmed=10, message='boo')
     commit_object.assert_called_with(
-        comment='boo_napalm_confirm_ffff',
+        comment='boo',
         confirm=10,
         ignore_warning=False
     )
@@ -96,12 +95,11 @@ def test_junos_no_pending_with_rpc_call(mocked_device):
     j = JunOSDriver(username='someuser', password='somepass', hostname='foo')
     commits = Mock(return_value=etree.fromstring(_COMMIT_NOT_PENDING))
     mocked_device.return_value.rpc.get_commit_information = commits
-    j._pending_commit_string = 'ffff'
+    j._pending_commit = True
     assert not j.has_pending_commit_confirm
     assert commits.called
     
 
-@patch('napalm.junos.junos.uuid.uuid4', lambda: 'ffff-ffff-ffff-fff')
 @patch('napalm.junos.junos.Device')
 def test_junos_revert_commit_confirm(mocked_device):
     commits = Mock(return_value=etree.fromstring(_COMMIT_PENDING))
