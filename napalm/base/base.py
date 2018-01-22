@@ -181,6 +181,9 @@ class NetworkDriver(object):
     def commit_config(self, confirmed=None, message=None):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
+
+        :param confirmed: int, if set, rollback after the supplied time in minutes. 
+        :param message: Add message on platform bound to the change.
         """
         raise NotImplementedError
 
@@ -188,14 +191,15 @@ class NetworkDriver(object):
         """Confirm pending commit."""
         raise NotImplementedError
 
-    def commit_confirm_revert(self):
-        """Abort pending commit confirm immediately and rollback to previous state"""
-        raise NotImplementedError
-
-    def has_pending_commit(self):
+    @property
+    def has_pending_commit_confirm(self):
         """
         :return A boolean indicating whether any pending commit confirms exist.
         """
+        raise NotImplementedError
+
+    def revert_commit_confirm(self):
+        """Abort pending commit confirm immediately and rollback to previous state"""
         raise NotImplementedError
 
     def discard_config(self):

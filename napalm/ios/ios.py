@@ -425,7 +425,7 @@ class IOSDriver(NetworkDriver):
         cmd = "configure confirm"
         self.device.send_command_expect(cmd)
 
-    def commit_confirm_revert(self):
+    def revert_commit_confirm(self):
         """Immediately revert pending commit confirm."""
         cmd = "configure revert now"
         self.device.send_command_expect(cmd)
