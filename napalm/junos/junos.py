@@ -862,16 +862,14 @@ class JunOSDriver(NetworkDriver):
 
     def get_bgp_config(self, group='', neighbor=''):
         """Return BGP configuration."""
-        def _check_nhs(policies, all_policies):
+        def _check_nhs(policies, nhs_policies):
             if not isinstance(policies, list):
                 # Make it a list if it is a single policy
                 policies = [policies]
+            # Return True if "next-hop self" was found in any of the policies p
             for p in policies:
-                # Get both result1 and result2 and return True if any of the two
-                # is True, meaning the action "next-hop self" was found
-                for result, value in all_policies[p]:
-                    if value is True:
-                        return True
+                if nhs_policies[p] is True:
+                    return True
             return False
 
         def update_dict(d, u):  # for deep dictionary update
@@ -992,11 +990,18 @@ class JunOSDriver(NetworkDriver):
         if neighbor:
             neighbor_ip = napalm.base.helpers.ip(neighbor)
 
-        # Get all policies in one go
-        # They will be used only to check nhs attribute
-        policy = junos_views.junos_policy_config_table(self.device)
+        # Get all policies configured in one go and check if "next-hop self" is found in each policy
+        # Save the result in a dict indexed by policy name (junos policy-statement)
+        # The value is a boolean. True if "next-hop self" was found
+        # The resulting dict (nhs_policies) will be used by _check_nhs to determine if "nhs"
+        # is configured or not in the policies applied to a BGP neighbor
+        policy = junos_views.junos_policy_nhs_config_table(self.device)
         policy.get()
-        all_policies = dict(policy.items())
+        nhs_policies = dict()
+        for policy_name, is_nhs_list in policy.items():
+            # is_nhs_list is a list with one element. Ex: [('is_nhs', True)]
+            is_nhs, boolean = is_nhs_list[0]
+            nhs_policies[policy_name] = boolean if boolean is not None else False
 
         for bgp_group in bgp_items:
             bgp_group_name = bgp_group[0]
@@ -1062,7 +1067,7 @@ class JunOSDriver(NetworkDriver):
                     value = elem[1]
                     if key in ['export_policy']:
                         # next-hop self is applied on export IBGP sessions
-                        bgp_peer_details['nhs'] = _check_nhs(value, all_policies)
+                        bgp_peer_details['nhs'] = _check_nhs(value, nhs_policies)
                     if key in ['export_policy', 'import_policy']:
                         if isinstance(value, list):
                             value = ' '.join(value)
