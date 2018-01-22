@@ -11,14 +11,6 @@
             </policy-statement>
             <policy-statement>
                 <name>nhs</name>
-                <term inactive="inactive">
-                    <name>1</name>
-                    <then>
-                        <next-hop>
-                            <self/>
-                        </next-hop>
-                    </then>
-                </term>
                 <term>
                     <name>0</name>
                     <then>
