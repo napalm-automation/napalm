@@ -106,10 +106,10 @@ class IOSXRDriver(NetworkDriver):
 
     def is_alive(self):
         """Returns a flag with the state of the connection."""
-        # Simply returns the flag from Netmiko
-        return {
-            'is_alive': self.device.device.is_alive()
-        }
+        if self.device is None:
+            return {'is_alive': False}
+        # Simply returns the flag from pyIOSXR
+        return {'is_alive': self.device.is_alive()}
 
     def load_replace_candidate(self, filename=None, config=None):
         self.pending_changes = True
