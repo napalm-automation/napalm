@@ -25,7 +25,6 @@ from scp import SCPClient
 import paramiko
 import hashlib
 import socket
-from datetime import datetime
 
 # import third party lib
 from netaddr import IPAddress
@@ -36,12 +35,12 @@ from netmiko.ssh_exception import NetMikoTimeoutException
 
 # import NAPALM Base
 import napalm.base.helpers
-from napalm.base import NetworkDriver
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.nxos import NXOSDriverBase
 import napalm.base.constants as c
 from napalm.base.recorder import Recorder
 
@@ -367,7 +366,7 @@ def bgp_summary_parser(bgp_summary):
     return bgp_return_dict
 
 
-class NXOSSSHDriver(NetworkDriver):
+class NXOSSSHDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -609,7 +608,7 @@ class NXOSSSHDriver(NetworkDriver):
         diff_out = self.device.send_command(command)
         try:
             diff_out = diff_out.split(
-                '#Generating Rollback Patch')[1].replace(
+                'Generating Rollback Patch')[1].replace(
                     'Rollback Patch is Empty', '').strip()
             for line in diff_out.splitlines():
                 if line:
@@ -647,20 +646,25 @@ class NXOSSSHDriver(NetworkDriver):
             return diff
         return ''
 
-    def _save(self, filename='startup-config'):
-        command = 'copy run %s' % filename
+    def _copy_run_start(self, filename='startup-config'):
+        command = 'copy run {}'.format(filename)
         output = self.device.send_command(command)
         if 'complete' in output.lower():
             return True
-        return False
+        else:
+            msg = 'Unable to save running-config to {}!'.format(filename)
+            raise CommandErrorException(msg)
 
     def _commit_merge(self):
-        commands = [command for command in self.merge_candidate.splitlines() if command]
-        output = self.device.send_config_set(commands)
+        try:
+            commands = [command for command in self.merge_candidate.splitlines() if command]
+            output = self.device.send_config_set(commands)
+        except Exception as e:
+            raise MergeConfigException(str(e))
         if 'Invalid command' in output:
             raise MergeConfigException('Error while applying config!')
-        if not self._save():
-            raise CommandErrorException('Unable to save running-config to startup!')
+        # clear the merge buffer
+        self.merge_candidate = ''
 
     def _save_to_checkpoint(self, filename):
         """Save the current running config to the given file."""
@@ -677,28 +681,7 @@ class NXOSSSHDriver(NetworkDriver):
         if 'Rollback failed.' in rollback_result or 'ERROR' in rollback_result:
             raise ReplaceConfigException(rollback_result)
         elif rollback_result == []:
-            return False
-        return True
-
-    def commit_config(self):
-        if self.loaded:
-            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            # Create Checkpoint from current running-config
-            self._save_to_checkpoint(self.backup_file)
-            if self.replace:
-                cfg_replace_status = self._load_cfg_from_checkpoint()
-                if not cfg_replace_status:
-                    raise ReplaceConfigException
-            else:
-                try:
-                    self._commit_merge()
-                    self.merge_candidate = ''  # clear the merge buffer
-                except Exception as e:
-                    raise MergeConfigException(str(e))
-            self.changed = True
-            self.loaded = False
-        else:
-            raise ReplaceConfigException('No config loaded.')
+            raise ReplaceConfigException
 
     def _delete_file(self, filename):
         commands = [
@@ -722,8 +705,7 @@ class NXOSSSHDriver(NetworkDriver):
             result = self.device.send_command(command)
             if 'completed' not in result.lower():
                 raise ReplaceConfigException(result)
-            if not self._save():
-                raise CommandErrorException('Unable to save running-config to startup!')
+            self._copy_run_start()
             self.changed = False
 
     def _apply_key_map(self, key_map, table):

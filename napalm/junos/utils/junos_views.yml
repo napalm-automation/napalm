@@ -251,7 +251,17 @@ junos_lldp_neighbors_detail_view:
 ###
 ### BGP config
 ###
+junos_policy_nhs_config_table:
+  get: policy-options/policy-statement
+  item: policy-statement
+  key: name
+  view: junos_policy_nhs_config_view
 
+junos_policy_nhs_config_view:
+  fields:
+    # "next-hop self" can be used with or without a term
+    # Return True if "next-hop self" was configured in any of the 2 ways
+    is_nhs: { term/then/next-hop/self | then/next-hop/self: True=self }
 
 junos_bgp_config_table:
   get: protocols/bgp/group

@@ -1,6 +1,6 @@
 {
 	"TenGigE0/0/0/14": {
-		"is_enabled": false,
+		"is_enabled": true,
 		"description": "",
 		"last_flapped": -1.0,
 		"is_up": false,
@@ -16,7 +16,7 @@
 		"speed": 10000
 	},
 	"TenGigE0/0/0/13": {
-		"is_enabled": false,
+		"is_enabled": true,
 		"description": "",
 		"last_flapped": -1.0,
 		"is_up": false,
