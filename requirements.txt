@@ -1,3 +1,5 @@
+setuptools>=38.4.0
+cffi>=1.11.3
 future
 jtextfsm
 jinja2
@@ -6,8 +8,6 @@ pyYAML
 pyeapi
 netmiko>=1.4.3
 pyIOSXR>=0.51
-netmiko>=1.4.3
 junos-eznc>=2.1.5
 pynxos
-netmiko>=1.4.3
 scp

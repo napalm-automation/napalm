@@ -540,9 +540,10 @@ class IOSDriver(NetworkDriver):
         elif source_config:
             kwargs = dict(ssh_conn=self.device, source_config=source_config, dest_file=dest_file,
                           direction='put', file_system=file_system)
-        enable_scp = True
+        use_scp = True
         if self.inline_transfer:
-            enable_scp = False
+            use_scp = False
+
         with TransferClass(**kwargs) as transfer:
 
             # Check if file already exists and has correct MD5
@@ -553,8 +554,14 @@ class IOSDriver(NetworkDriver):
                 msg = "Insufficient space available on remote device"
                 return (False, msg)
 
-            if enable_scp:
-                transfer.enable_scp()
+            if use_scp:
+                cmd = 'ip scp server enable'
+                show_cmd = "show running-config | inc {}".format(cmd)
+                output = self.device.send_command_expect(show_cmd)
+                if cmd not in output:
+                    msg = "SCP file transfers are not enabled. " \
+                          "Configure 'ip scp server enable' on the device."
+                    raise CommandErrorException(msg)
 
             # Transfer file
             transfer.transfer_file()
@@ -1607,29 +1614,37 @@ class IOSDriver(NetworkDriver):
         output = self._send_command(mem_cmd)
         for line in output.splitlines():
             if 'Processor' in line:
-                _, _, _, proc_used_mem, proc_free_mem = line.split()[:5]
+                _, _, proc_total_mem, proc_used_mem, _ = line.split()[:5]
             elif 'I/O' in line or 'io' in line:
-                _, _, _, io_used_mem, io_free_mem = line.split()[:5]
+                _, _, io_total_mem, io_used_mem, _ = line.split()[:5]
+        total_mem = int(proc_total_mem) + int(io_total_mem)
         used_mem = int(proc_used_mem) + int(io_used_mem)
-        free_mem = int(proc_free_mem) + int(io_free_mem)
         environment.setdefault('memory', {})
         environment['memory']['used_ram'] = used_mem
-        environment['memory']['available_ram'] = free_mem
+        environment['memory']['available_ram'] = total_mem
 
         environment.setdefault('temperature', {})
+        re_temp_value = re.compile('(.*) Temperature Value')
         # The 'show env temperature status' is not ubiquitous in Cisco IOS
         output = self._send_command(temp_cmd)
         if '% Invalid' not in output:
             for line in output.splitlines():
-                if 'System Temperature Value' in line:
-                    system_temp = float(line.split(':')[1].split()[0])
+                m = re_temp_value.match(line)
+                if m is not None:
+                    temp_name = m.group(1).lower()
+                    temp_value = float(line.split(':')[1].split()[0])
+                    env_value = {'is_alert': False,
+                                 'is_critical': False,
+                                 'temperature': temp_value}
+                    environment['temperature'][temp_name] = env_value
                 elif 'Yellow Threshold' in line:
                     system_temp_alert = float(line.split(':')[1].split()[0])
+                    if temp_value > system_temp_alert:
+                        env_value['is_alert'] = True
                 elif 'Red Threshold' in line:
                     system_temp_crit = float(line.split(':')[1].split()[0])
-            env_value = {'is_alert': system_temp >= system_temp_alert,
-                         'is_critical': system_temp >= system_temp_crit, 'temperature': system_temp}
-            environment['temperature']['system'] = env_value
+                    if temp_value > system_temp_crit:
+                        env_value['is_critical'] = True
         else:
             env_value = {'is_alert': False, 'is_critical': False, 'temperature': -1.0}
             environment['temperature']['invalid'] = env_value

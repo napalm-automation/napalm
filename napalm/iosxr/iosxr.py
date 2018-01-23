@@ -183,7 +183,10 @@ class IOSXRDriver(NetworkDriver):
         system_time_xpath = './/SystemTime/Uptime'
         platform_attr_xpath = './/RackTable/Rack/Attributes/BasicInfo'
         system_time_tree = facts_rpc_reply.xpath(system_time_xpath)[0]
-        platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)[0]
+        try:
+            platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)[0]
+        except IndexError:
+            platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)
 
         hostname = napalm.base.helpers.convert(
             text_type, napalm.base.helpers.find_txt(system_time_tree, 'Hostname'))
@@ -232,7 +235,8 @@ class IOSXRDriver(NetworkDriver):
             if not interface_name:
                 continue
             is_up = (napalm.base.helpers.find_txt(interface_tree, 'LineState') == 'IM_STATE_UP')
-            enabled = (napalm.base.helpers.find_txt(interface_tree, 'State') == 'IM_STATE_UP')
+            enabled = (napalm.base.helpers.find_txt(
+                        interface_tree, 'State') != 'IM_STATE_ADMINDOWN')
             raw_mac = napalm.base.helpers.find_txt(interface_tree, 'MACAddress/Address')
             mac_address = napalm.base.helpers.convert(
                 napalm.base.helpers.mac, raw_mac, raw_mac)

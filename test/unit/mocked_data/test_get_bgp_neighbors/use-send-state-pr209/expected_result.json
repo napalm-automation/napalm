@@ -45,6 +45,11 @@
             }, 
             "10.92.99.91": {
                 "address_family": {
+                    "evpn": {
+                        "accepted_prefixes": 5, 
+                        "received_prefixes": 5, 
+                        "sent_prefixes": 0
+                    }, 
                     "ipv4": {
                         "accepted_prefixes": -1, 
                         "received_prefixes": -1, 
@@ -66,6 +71,11 @@
             }, 
             "10.92.99.92": {
                 "address_family": {
+                    "evpn": {
+                        "accepted_prefixes": 3, 
+                        "received_prefixes": 3, 
+                        "sent_prefixes": 0
+                    }, 
                     "ipv4": {
                         "accepted_prefixes": -1, 
                         "received_prefixes": -1, 

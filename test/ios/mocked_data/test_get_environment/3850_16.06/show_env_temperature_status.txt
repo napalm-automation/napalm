@@ -1,0 +1,9 @@
+Inlet Temperature Value: 25 Degree Celsius
+Temperature State: GREEN
+Yellow Threshold : 46 Degree Celsius
+Red Threshold : 56 Degree Celsius
+
+Hotspot Temperature Value: 38 Degree Celsius
+Temperature State: GREEN
+Yellow Threshold : 105 Degree Celsius
+Red Threshold : 125 Degree Celsius
