@@ -1826,7 +1826,7 @@ class JunOSDriver(NetworkDriver):
     def _get_root(self):
         """get root user password."""
         _DEFAULT_USER_DETAILS = {
-            'level': 15,
+            'level': 20,
             'password': '',
             'sshkeys': []
         }
