@@ -1,0 +1,7 @@
+<configuration>
+        <routing-options>
+            <autonomous-system>
+                <as-number>13335</as-number>
+            </autonomous-system>
+        </routing-options>
+</configuration>
