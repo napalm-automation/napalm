@@ -1106,6 +1106,18 @@ class JunOSDriver(NetworkDriver):
                 # we do not want cluster in the output
                 del bgp_config[bgp_group_name]['cluster']
 
+            # Fix local autonomous-system (local_as) in each BGP group
+            # if local-as is 0 in the BGP group means we are not using local-as comand
+            # but the AS number from routing-options/autonomous-system
+            bgp_as = junos_views.junos_routing_options_autonomous_system(self.device)
+            bgp_as.get()
+            # asnumber contains a list with a single element
+            # Example: [('65002', [('as', '65002')])]
+            asnumber = bgp_as.items()[0][0]
+            for group in bgp_config.keys():
+                if bgp_config[group]['local_as'] == 0:
+                    bgp_config[group]['local_as'] = int(asnumber)
+
         return bgp_config
 
     def get_bgp_neighbors_detail(self, neighbor_address=''):

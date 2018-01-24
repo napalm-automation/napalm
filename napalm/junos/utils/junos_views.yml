@@ -39,6 +39,14 @@ junos_logical_iface_view:
 ####
 #### BGP tables
 ####
+junos_routing_options_autonomous_system:
+  get: routing-options/autonomous-system
+  key: as-number
+  view: junos_routing_options_autonomous_system_view
+
+junos_routing_options_autonomous_system_view:
+  fields:
+    as: { as-number: int }
 
 junos_route_instance_table:
   rpc: get-instance-information
