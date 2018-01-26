@@ -94,7 +94,7 @@ def get_network_driver(name, prepend=True):
     else:
         raise ModuleImportError(
             'Cannot import "{install_name}". Is the library installed?'.format(
-                install_name=module_install_name
+                install_name=name
             )
         )
 
