@@ -88,10 +88,15 @@ def get_network_driver(name, prepend=True):
             module = importlib.import_module(module_name)
             break
         except ImportError as e:
-            if "No module named" in e.message:
+            try:
+                # gotta love py23 differences
+                message = e.message
+            except AttributeError:
+                message = e.msg
+            if "No module named" in message:
                 # py2 doesn't have ModuleNotFoundError exception
-                failed_module = e.message.split()[-1]
-                if failed_module == module_name:
+                failed_module = message.split()[-1]
+                if failed_module.replace("'", "") in module_name:
                     continue
             raise e
     else:
