@@ -87,9 +87,12 @@ def get_network_driver(name, prepend=True):
         try:
             module = importlib.import_module(module_name)
             break
-        except ModuleNotFoundError as e:
-            if e.name == "custom_napalm" or e.name in module_name:
-                continue
+        except ImportError as e:
+            if "No module named" in e.message:
+                # py2 doesn't have ModuleNotFoundError exception
+                failed_module = e.message.split()[-1]
+                if failed_module == module_name:
+                    continue
             raise e
     else:
         raise ModuleImportError(
