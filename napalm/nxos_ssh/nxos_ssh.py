@@ -1054,10 +1054,8 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         arp_entries = arp_list[1].strip()
         for line in arp_entries.splitlines():
-            if len(line.split()) == 4:
-                address, age, mac, interface = line.split()
-            elif len(line.split()) == 5:
-                address, age, mac, interface, flag = line.split()
+            if len(line.split()) >= 4:
+                address, age, mac, interface = line.split()[:4]
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
 
