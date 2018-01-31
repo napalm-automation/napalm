@@ -1056,7 +1056,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         for line in arp_entries.splitlines():
             if len(line.split()) >= 4:
                 # Search for extra fields to strip, currently strip '*', '+', '#', 'D'
-                line = re.sub(r"\s+[\*\+\#D]\s*$", "", line, flags=re.M)
+                line = re.sub(r"\s+[\*\+\#D]{1,4}\s*$", "", line, flags=re.M)
                 address, age, mac, interface = line.split()
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
