@@ -1054,8 +1054,8 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         arp_entries = arp_list[1].strip()
         for line in arp_entries.splitlines():
-            if len(line.split()) == 4:
-                address, age, mac, interface = line.split()
+            if len(line.split()) >= 4:
+                address, age, mac, interface = line.split()[:4]
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
 
@@ -1282,6 +1282,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         output = re.sub(r"^\(R\)", "", output, flags=re.M)
         output = re.sub(r"^\(T\)", "", output, flags=re.M)
         output = re.sub(r"^\(F\)", "", output, flags=re.M)
+        output = re.sub(r"vPC Peer-Link", "vPC-Peer-Link", output, flags=re.M)
 
         for line in output.splitlines():
 
