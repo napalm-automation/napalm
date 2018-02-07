@@ -978,3 +978,112 @@ class NXOSDriver(NXOSDriverBase):
             _cmd = 'show startup-config'
             config['startup'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
         return config
+
+    def ping(self,
+             destination,
+             source=c.PING_SOURCE,
+             ttl=c.PING_TTL,
+             timeout=c.PING_TIMEOUT,
+             size=c.PING_SIZE,
+             count=c.PING_COUNT,
+             vrf=c.PING_VRF):
+        """
+        Execute ping on the device and returns a dictionary with the result.
+        Output dictionary has one of following keys:
+            * success
+            * error
+        In case of success, inner dictionary will have the followin keys:
+            * probes_sent (int)
+            * packet_loss (int)
+            * rtt_min (float)
+            * rtt_max (float)
+            * rtt_avg (float)
+            * rtt_stddev (float)
+            * results (list)
+        'results' is a list of dictionaries with the following keys:
+            * ip_address (str)
+            * rtt (float)
+        """
+        ping_dict = {}
+
+        version = ''
+        try:
+            version = '6' if IPAddress(destination).version == 6 else ''
+        except AddrFormatError:
+            # Allow use of DNS names
+            pass
+
+        command = 'ping{version} {destination}'.format(
+                version=version,
+                destination=destination)
+        command += ' timeout {}'.format(timeout)
+        command += ' packet-size {}'.format(size)
+        command += ' count {}'.format(count)
+        if source != '':
+            command += ' source {}'.format(source)
+
+        if vrf != '':
+            command += ' vrf {}'.format(vrf)
+        output = self.cli([command]).get(command)
+
+        if 'connect:' in output:
+            ping_dict['error'] = output
+        elif 'PING' in output:
+            ping_dict['success'] = {
+                                'probes_sent': 0,
+                                'packet_loss': 0,
+                                'rtt_min': 0.0,
+                                'rtt_max': 0.0,
+                                'rtt_avg': 0.0,
+                                'rtt_stddev': 0.0,
+                                'results': []
+            }
+            results_array = []
+            for line in output.splitlines():
+                fields = line.split()
+                if 'icmp' in line:
+                    if 'Unreachable' in line:
+                        if "(" in fields[2]:
+                            results_array.append(
+                                {
+                                    'ip_address': py23_compat.text_type(fields[2][1:-1]),
+                                    'rtt': 0.0,
+                                }
+                            )
+                        else:
+                            results_array.append({'ip_address': py23_compat.text_type(fields[1]),
+                                                  'rtt': 0.0})
+                    elif 'truncated' in line:
+                        if "(" in fields[4]:
+                            results_array.append(
+                                {
+                                    'ip_address': py23_compat.text_type(fields[4][1:-2]),
+                                    'rtt': 0.0,
+                                }
+                            )
+                        else:
+                            results_array.append(
+                                {
+                                    'ip_address': py23_compat.text_type(fields[3][:-1]),
+                                    'rtt': 0.0,
+                                }
+                            )
+                    elif fields[1] == 'bytes':
+                        if version == '6':
+                            m = fields[5][5:]
+                        else:
+                            m = fields[6][5:]
+                        results_array.append({'ip_address': py23_compat.text_type(fields[3][:-1]),
+                                              'rtt': float(m)})
+                elif 'packets transmitted' in line:
+                    ping_dict['success']['probes_sent'] = int(fields[0])
+                    ping_dict['success']['packet_loss'] = int(fields[0]) - int(fields[3])
+                elif 'min/avg/max' in line:
+                    m = fields[3].split('/')
+                    ping_dict['success'].update({
+                                    'rtt_min': float(m[0]),
+                                    'rtt_avg': float(m[1]),
+                                    'rtt_max': float(m[2]),
+                    })
+            ping_dict['success'].update({'results': results_array})
+        return ping_dict
