@@ -51,6 +51,9 @@ class FastIronDriver(NetworkDriver):
         self.merge_config = False
         self.replace_config = False                             # command has not been run successfully
         self.stored_config = None
+        self.config_replace = None
+        self.config_merge = None
+        self.rollback_cfg = optional_args.get('rollback_cfg', 'rollback_config.txt')
 
     def __del__(self):
         """
@@ -77,6 +80,7 @@ class FastIronDriver(NetworkDriver):
                                          timeout=self.timeout,
                                          verbose=True)
             self.device.session_preparation()
+
         except Exception:
             raise ConnectionException("Cannot connect to switch: %s:%s" % (self.hostname, self.port))
 
@@ -164,13 +168,16 @@ class FastIronDriver(NetworkDriver):
         temp = ""                                               # sets empty string, will add char respectively
         my_list = list()                                        # creates list
         for val in range(0, len(my_string)):                    # iterates through the length of input
-            if my_string[val] != '\n':
-                temp += my_string[val]
-            if my_string[val] == '\n' and temp == "":
+            if my_string[val] == '\n' and temp == "":           # Nothing to add after finding a nline, skip
                 continue
-            if my_string[val] == '\n' or val == len(my_string) - 1:
+            elif my_string[val] == '\n' or val >= len(my_string):    # End of file or nline, add what was found
                 my_list.append(temp)
                 temp = ""
+            else:
+                if my_string[val] == ' ' and my_string[val+1] == '\n':
+                    continue
+                temp += my_string[val]
+
         return my_list
 
     @staticmethod
@@ -470,28 +477,55 @@ class FastIronDriver(NetworkDriver):
 
         return ip6_dict                                                 # returns ipv6 dictionary
 
-    def load_template(self, template_name, template_source=None,
-                      template_path=None, **template_vars):
-        """
-        Will load a templated configuration on the device.
+    @staticmethod
+    def creates_config_block(list_1):
+        config_block = list()                                           #
+        temp_block = list()                                             #
 
-        :param cls: Instance of the driver class.
-        :param template_name: Identifies the template name.
-        :param template_source (optional): Custom config template rendered and loaded on device
-        :param template_path (optional): Absolute path to directory for the configuration templates
-        :param template_vars: Dictionary with arguments to be used when the template is rendered.
-        :raise DriverTemplateNotImplemented: No template defined for the device type.
-        :raise TemplateNotImplemented: The template specified in template_name does not exist in \
-        the default path or in the custom path if any specified using parameter `template_path`.
-        :raise TemplateRenderException: The template could not be rendered. Either the template \
-        source does not have the right format, either the arguments in `template_vars` are not \
-        properly specified.
-        """
-        return napalm.base.helpers.load_template(self,
-                                                 template_name,
-                                                 template_source=template_source,
-                                                 template_path=template_path,
-                                                 **template_vars)
+        for line_cmd in list_1:                                         #
+            cmd_position = list_1.index(line_cmd)                       #
+            if cmd_position != 0:                                       #
+                if list_1[cmd_position - 1] == '!':                     #
+                    while list_1[cmd_position] != '!' and cmd_position < len(list_1) - 1:   #
+                        temp_block.append(list_1[cmd_position])                             #
+                        cmd_position += 1                                                   #
+
+                    if len(temp_block) > 0:                             #
+                        config_block.append(temp_block)                 #
+                    temp_block = list()                                 #
+
+        return config_block
+
+    @staticmethod
+    def comparing_list(list_1, list_2, symbol):
+        diff_list = list()
+        config_blocks_1 = FastIronDriver.creates_config_block(list_1)   # Creates config blocks from config
+        config_blocks_2 = FastIronDriver.creates_config_block(list_2)
+
+        for cb_1 in config_blocks_1:                                    # Grabs a single config block
+            is_found = False
+            temp_list = list()
+
+            if cb_1 not in config_blocks_2:                             # checks if config block already exisit
+                cmd = cb_1[0]                                           # grabs first cmd of config block
+
+                for cb_2 in config_blocks_2:                            # grabs a single config block from the blocks
+                    if cmd == cb_2[0]:                                  # checks cmd not found, if it is in config_b_2
+                        is_found = True
+                        for single_cmd in cb_1:                         # iterates through cmd of config block
+                            if single_cmd == cmd:                       # if this is first command add as base
+                                temp_list.append(single_cmd)            # add to list with no changes
+                            elif single_cmd not in cb_2:
+                                temp_list.append(symbol + " " + single_cmd)
+
+                if is_found == 0:
+                    for value in cb_1:
+                        temp_list.append(symbol + " " + value)
+
+            if len(temp_list) > 1:
+                diff_list.append(temp_list)
+
+        return diff_list
 
     def load_replace_candidate(self, filename=None, config=None):
         """
@@ -516,17 +550,20 @@ class FastIronDriver(NetworkDriver):
         if filename is not None:
             try:
                 file_content = open(filename, "r")                                  # attempts to open file
-                self.replace_config = True                                          # file opened successfully
                 temp = file_content.read()                                          # stores file content
-                self.stored_config = FastIronDriver.creates_list_of_nlines(temp)    # stores as list
+                self.config_replace = FastIronDriver.creates_list_of_nlines(temp)   # stores as list
+                self.replace_config = True                                          # file opened successfully
                 return
             except:
-                print("file does not exist")
+                raise ReplaceConfigException("Configuration error")
 
         if config is not None:
-            self.stored_config = FastIronDriver.creates_list_of_nlines(config)      # stores config
-            self.replace_config = True                                              # string successfully saved
-            return
+            try:
+                self.config_replace = FastIronDriver.creates_list_of_nlines(config)     # stores config
+                self.replace_config = True                                              # string successfully saved
+                return
+            except:
+                raise ReplaceConfigException("Configuration error")
 
         raise ReplaceConfigException("Configuration error")
 
@@ -553,60 +590,131 @@ class FastIronDriver(NetworkDriver):
         if filename is not None:
             try:
                 file_content = open(filename, "r")                                  # attempts to open file
-                self.merge_config = True                                            # file opened successfully
                 temp = file_content.read()                                          # stores file content
-                self.stored_config = FastIronDriver.creates_list_of_nlines(temp)    # stores as list
+                self.config_merge = FastIronDriver.creates_list_of_nlines(temp)     # stores as list
+                self.merge_config = True                                            # file opened successfully
                 return
             except:
-                print("file does not exist")
+                raise MergeConfigException("Configuration error")
 
         if config is not None:
-            self.stored_config = FastIronDriver.creates_list_of_nlines(config)      # stores config
-            self.merge_config = True                                                # string successfully saved
-            return
+            try:
+                self.config_merge = FastIronDriver.creates_list_of_nlines(config)       # stores config
+                self.merge_config = True                                                # string successfully saved
+                return
+            except:
+                raise MergeConfigException("Configuration error")
 
         raise MergeConfigException("Configuration error")
 
-    def compare_config(self):
+    def compare_config(self):                   # optimize implementation
         """
         :return: A string showing the difference between the running configuration and the \
         candidate configuration. The running_config is loaded automatically just before doing the \
         comparison so there is no need for you to do it.
         """
-        raise NotImplementedError
+        compare_list = list()
+        if self.replace_config is not True and self.merge_config is not True:
+            return -1                           # Configuration was never loaded
+
+        mystring = ""
+        running_config = FastIronDriver.get_config(self, 'running')
+        rc = running_config.get('running')
+        stored_conf = None
+
+        if self.replace_config == True:
+            stored_conf = self.config_replace
+        elif self.merge_config == True:
+            stored_conf = self.config_merge
+        else:
+            return -1                           # No configuration was found
+
+        diff_1 = FastIronDriver.comparing_list(rc, stored_conf, "+")
+        diff_2 = FastIronDriver.comparing_list(stored_conf, rc, "-")
+
+        for cb_1 in diff_1:
+            mystring += cb_1[0] + '\n'
+            for cb_2 in diff_2:
+                if cb_1[0] in cb_2:
+                    for value_2 in range(1, len(cb_2)):
+                        mystring += cb_2[value_2] + '\n'
+            for input_1 in range(1, len(cb_1)):
+                mystring += cb_1[input_1] + '\n'
+
+        for cb_2 in diff_2:
+            found = False
+            for cb_1 in diff_1:
+                if cb_2[0] in cb_1:
+                    found = True
+
+            if found == 0:
+                for input_2 in cb_2:
+                    mystring += input_2 + '\n'
+
+        return mystring
 
     def commit_config(self):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
         """
-        if self.replace_config is None and self.merge_config is None:
+        config = ""
+        if self.replace_config is False and self.merge_config is False:
             print("Please replace or merge a configuration ")
             return -1                                           # returns failure
 
-        if self.replace_config is not None:                     # replace configuration will overwrite current config
-            print()
-            return 0                                            # returns success
+        if self.replace_config is not False:                    # replace configuration will overwrite current config
+            replace_list = list()
 
-        if self.merge_config is not None:                       # merges candidate configuration with existing config
-            print()
-            return 0                                            # returns success
+            diff_in_config = FastIronDriver.compare_config(self)
+            my_temp = FastIronDriver.creates_list_of_nlines(diff_in_config)
 
+            for sentence in my_temp:
 
-        raise NotImplementedError
+                if sentence[0] == '-':
+                    sentence = sentence[1:len(sentence)]
+                elif sentence[0] == '+':
+                    sentence = 'no' + sentence[1:len(sentence)]
+                replace_list.append(sentence)
+
+            self.device.config_mode()
+            self.device.send_config_set(replace_list)
+
+            return True
+
+        if self.merge_config is not False:                      # merges candidate configuration with existing config
+            self.device.config_mode()
+            self.device.send_config_set(self.config_merge)
+
+            return True                                         # returns success
 
     def discard_config(self):
         """
         Discards the configuration loaded into the candidate.
         """
-        if self.stored_config is not None:                    # removed stored configuration
-            self.stored_config = None
-
+        self.config_merge = None
+        self.config_replace = None
+        self.replace_config = False
+        self.merge_config = False
 
     def rollback(self):
         """
         If changes were made, revert changes to the original state.
         """
-        raise NotImplementedError
+        filename = self.rollback_cfg
+
+        if filename is not None:
+            try:
+                file_content = open(filename, "r")                                  # attempts to open file
+                temp = file_content.read()                                          # stores file content
+                # sends configuration
+                self.device.send_command(temp)
+
+                # Save config to startup
+                self.device.send_command_expect("write mem")
+            except:
+                raise MergeConfigException("Configuration error")
+        else:
+            print("no rollback file found, please insert")
 
     def get_facts(self):    # TODO check os_version as it returns general not switch or router
         """
@@ -626,7 +734,7 @@ class FastIronDriver(NetworkDriver):
 
         return{
             'uptime': FastIronDriver.facts_uptime(version_output),                  # Returns up time of device in sec
-            'vendor': 'Ruckus',                                                    # Vendor of ICX switches
+            'vendor': 'Ruckus',                                                     # Vendor of ICX switches
             'model':  FastIronDriver.facts_model(version_output),                   # Model type of switch 12/24/24P etc
             'hostname':  FastIronDriver.facts_hostname(host_name),                  # Host name if configured
             'fqdn': None,
@@ -697,63 +805,6 @@ class FastIronDriver(NetworkDriver):
             }})
 
         return my_dict
-
-    def get_bgp_neighbors(self):
-        """
-        Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf
-        (global if no vrf). The inner dictionary will contain the following data for each vrf:
-
-          * router_id
-          * peers - another dictionary of dictionaries. Outer keys are the IPs of the neighbors. \
-            The inner keys are:
-             * local_as (int)
-             * remote_as (int)
-             * remote_id - peer router id
-             * is_up (True/False)
-             * is_enabled (True/False)
-             * description (string)
-             * uptime (int in seconds)
-             * address_family (dictionary) - A dictionary of address families available for the \
-               neighbor. So far it can be 'ipv4' or 'ipv6'
-                * received_prefixes (int)
-                * accepted_prefixes (int)
-                * sent_prefixes (int)
-
-            Note, if is_up is False and uptime has a positive value then this indicates the
-            uptime of the last active BGP session.
-
-            Example response:
-            {
-              "global": {
-                "router_id": "10.0.1.1",
-                "peers": {
-                  "10.0.0.2": {
-                    "local_as": 65000,
-                    "remote_as": 65000,
-                    "remote_id": "10.0.1.2",
-                    "is_up": True,
-                    "is_enabled": True,
-                    "description": "internal-2",
-                    "uptime": 4838400,
-                    "address_family": {
-                      "ipv4": {
-                        "sent_prefixes": 637213,
-                        "accepted_prefixes": 3142,
-                        "received_prefixes": 3142
-                      },
-                      "ipv6": {
-                        "sent_prefixes": 36714,
-                        "accepted_prefixes": 148,
-                        "received_prefixes": 148
-                      }
-                    }
-                  }
-                }
-              }
-            }
-
-        """
-        raise NotImplementedError
 
     def get_environment(self):
         """
@@ -891,101 +942,6 @@ class FastIronDriver(NetworkDriver):
             'remote_system_enable_capab': None
         }]}
 
-    def get_bgp_config(self, group='', neighbor=''):
-        """
-        Returns a dictionary containing the BGP configuration.
-        Can return either the whole config, either the config only for a group or neighbor.
-
-        :param group: Returns the configuration of a specific BGP group.
-        :param neighbor: Returns the configuration of a specific BGP neighbor.
-
-        Main dictionary keys represent the group name and the values represent a dictionary having
-        the keys below. Neighbors which aren't members of a group will be stored in a key named "_":
-            * type (string)
-            * description (string)
-            * apply_groups (string list)
-            * multihop_ttl (int)
-            * multipath (True/False)
-            * local_address (string)
-            * local_as (int)
-            * remote_as (int)
-            * import_policy (string)
-            * export_policy (string)
-            * remove_private_as (True/False)
-            * prefix_limit (dictionary)
-            * neighbors (dictionary)
-        Neighbors is a dictionary of dictionaries with the following keys:
-            * description (string)
-            * import_policy (string)
-            * export_policy (string)
-            * local_address (string)
-            * local_as (int)
-            * remote_as (int)
-            * authentication_key (string)
-            * prefix_limit (dictionary)
-            * route_reflector_client (True/False)
-            * nhs (True/False)
-        The inner dictionary prefix_limit has the same structure for both layers::
-
-            {
-                [FAMILY_NAME]: {
-                    [FAMILY_TYPE]: {
-                        'limit': [LIMIT],
-                        ... other options
-                    }
-                }
-            }
-
-        Example::
-
-            {
-                'PEERS-GROUP-NAME':{
-                    'type'              : u'external',
-                    'description'       : u'Here we should have a nice description',
-                    'apply_groups'      : [u'BGP-PREFIX-LIMIT'],
-                    'import_policy'     : u'PUBLIC-PEER-IN',
-                    'export_policy'     : u'PUBLIC-PEER-OUT',
-                    'remove_private_as' : True,
-                    'multipath'         : True,
-                    'multihop_ttl'      : 30,
-                    'neighbors'         : {
-                        '192.168.0.1': {
-                            'description'   : 'Facebook [CDN]',
-                            'prefix_limit'  : {
-                                'inet': {
-                                    'unicast': {
-                                        'limit': 100,
-                                        'teardown': {
-                                            'threshold' : 95,
-                                            'timeout'   : 5
-                                        }
-                                    }
-                                }
-                            }
-                            'remote_as'             : 32934,
-                            'route_reflector_client': False,
-                            'nhs'                   : True
-                        },
-                        '172.17.17.1': {
-                            'description'   : 'Twitter [CDN]',
-                            'prefix_limit'  : {
-                                'inet': {
-                                    'unicast': {
-                                        'limit': 500,
-                                        'no-validate': 'IMPORT-FLOW-ROUTES'
-                                    }
-                                }
-                            }
-                            'remote_as'               : 13414
-                            'route_reflector_client': False,
-                            'nhs'                   : False
-                        }
-                    }
-                }
-            }
-        """
-        raise NotImplementedError
-
     def cli(self, commands):
 
         cli_output = dict()
@@ -1000,101 +956,6 @@ class FastIronDriver(NetworkDriver):
             cli_output[command] = output
 
         return cli_output
-
-    def get_bgp_neighbors_detail(self, neighbor_address=''):
-
-        """
-        Returns a detailed view of the BGP neighbors as a dictionary of lists.
-
-        :param neighbor_address: Retuns the statistics for a spcific BGP neighbor.
-
-        Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf
-        (global if no vrf).
-        The keys of the inner dictionary represent the AS number of the neighbors.
-        Leaf dictionaries contain the following fields:
-
-            * up (True/False)
-            * local_as (int)
-            * remote_as (int)
-            * router_id (string)
-            * local_address (string)
-            * routing_table (string)
-            * local_address_configured (True/False)
-            * local_port (int)
-            * remote_address (string)
-            * remote_port (int)
-            * multihop (True/False)
-            * multipath (True/False)
-            * remove_private_as (True/False)
-            * import_policy (string)
-            * export_policy (string)
-            * input_messages (int)
-            * output_messages (int)
-            * input_updates (int)
-            * output_updates (int)
-            * messages_queued_out (int)
-            * connection_state (string)
-            * previous_connection_state (string)
-            * last_event (string)
-            * suppress_4byte_as (True/False)
-            * local_as_prepend (True/False)
-            * holdtime (int)
-            * configured_holdtime (int)
-            * keepalive (int)
-            * configured_keepalive (int)
-            * active_prefix_count (int)
-            * received_prefix_count (int)
-            * accepted_prefix_count (int)
-            * suppressed_prefix_count (int)
-            * advertised_prefix_count (int)
-            * flap_count (int)
-
-        Example::
-
-            {
-                'global': {
-                    8121: [
-                        {
-                            'up'                        : True,
-                            'local_as'                  : 13335,
-                            'remote_as'                 : 8121,
-                            'local_address'             : u'172.101.76.1',
-                            'local_address_configured'  : True,
-                            'local_port'                : 179,
-                            'routing_table'             : u'inet.0',
-                            'remote_addressg'            : u'192.247.78.0',
-                            'remote_port'               : 58380,
-                            'multihop'                  : False,
-                            'multipath'                 : True,
-                            'remove_private_as'         : True,
-                            'import_policy'             : u'4-NTT-TRANSIT-IN',
-                            'export_policy'             : u'4-NTT-TRANSIT-OUT',
-                            'input_messages'            : 123,
-                            'output_messages'           : 13,
-                            'input_updates'             : 123,
-                            'output_updates'            : 5,
-                            'messages_queued_out'       : 23,
-                            'connection_state'          : u'Established',
-                            'previous_connection_state' : u'EstabSync',
-                            'last_event'                : u'RecvKeepAlive',
-                            'suppress_4byte_as'         : False,
-                            'local_as_prepend'          : False,
-                            'holdtime'                  : 90,
-                            'configured_holdtime'       : 90,
-                            'keepalive'                 : 30,
-                            'configured_keepalive'      : 30,
-                            'active_prefix_count'       : 132808,
-                            'received_prefix_count'     : 566739,
-                            'accepted_prefix_count'     : 566479,
-                            'suppressed_prefix_count'   : 0,
-                            'advertised_prefix_count'   : 0,
-                            'flap_count'                : 27
-                        }
-                    ]
-                }
-            }
-        """
-        raise NotImplementedError
 
     def get_arp_table(self):
 
@@ -1316,297 +1177,6 @@ class FastIronDriver(NetworkDriver):
 
         return mac_tbl
 
-    def get_route_to(self, destination='', protocol=''):
-
-        """
-        Returns a dictionary of dictionaries containing details of all available routes to a
-        destination.
-
-        :param destination: The destination prefix to be used when filtering the routes.
-        :param protocol (optional): Retrieve the routes only for a specific protocol.
-
-        Each inner dictionary contains the following fields:
-
-            * protocol (string)
-            * current_active (True/False)
-            * last_active (True/False)
-            * age (int)
-            * next_hop (string)
-            * outgoing_interface (string)
-            * selected_next_hop (True/False)
-            * preference (int)
-            * inactive_reason (string)
-            * routing_table (string)
-            * protocol_attributes (dictionary)
-
-        protocol_attributes is a dictionary with protocol-specific information, as follows:
-
-        - BGP
-            * local_as (int)
-            * remote_as (int)
-            * peer_id (string)
-            * as_path (string)
-            * communities (list)
-            * local_preference (int)
-            * preference2 (int)
-            * metric (int)
-            * metric2 (int)
-        - ISIS:
-            * level (int)
-
-        Example::
-
-            {
-                "1.0.0.0/24": [
-                    {
-                        "protocol"          : u"BGP",
-                        "inactive_reason"   : u"Local Preference",
-                        "last_active"       : False,
-                        "age"               : 105219,
-                        "next_hop"          : u"172.17.17.17",
-                        "selected_next_hop" : True,
-                        "preference"        : 170,
-                        "current_active"    : False,
-                        "outgoing_interface": u"ae9.0",
-                        "routing_table"     : "inet.0",
-                        "protocol_attributes": {
-                            "local_as"          : 13335,
-                            "as_path"           : u"2914 8403 54113 I",
-                            "communities"       : [
-                                u"2914:1234",
-                                u"2914:5678",
-                                u"8403:1717",
-                                u"54113:9999"
-                            ],
-                            "preference2"       : -101,
-                            "remote_as"         : 2914,
-                            "local_preference"  : 100
-                        }
-                    }
-                ]
-            }
-        """
-        raise NotImplementedError
-
-    def get_snmp_information(self):
-
-        """
-        Returns a dict of dicts containing SNMP configuration.
-        Each inner dictionary contains these fields
-
-            * chassis_id (string)
-            * community (dictionary)
-            * contact (string)
-            * location (string)
-
-        'community' is a dictionary with community string specific information, as follows:
-
-            * acl (string) # acl number or name
-            * mode (string) # read-write (rw), read-only (ro)
-
-        Example::
-
-            {
-                'chassis_id': u'Asset Tag 54670',
-                'community': {
-                    u'private': {
-                        'acl': u'12',
-                        'mode': u'rw'
-                    },
-                    u'public': {
-                        'acl': u'11',
-                        'mode': u'ro'
-                    },
-                    u'public_named_acl': {
-                        'acl': u'ALLOW-SNMP-ACL',
-                        'mode': u'ro'
-                    },
-                    u'public_no_acl': {
-                        'acl': u'N/A',
-                        'mode': u'ro'
-                    }
-                },
-                'contact' : u'Joe Smith',
-                'location': u'123 Anytown USA Rack 404'
-            }
-        """
-        raise NotImplementedError
-
-    def ping(self, destination, source= c.PING_SOURCE, ttl=c.PING_TTL, timeout=c.PING_TIMEOUT,
-             size=c.PING_SIZE, count=c.PING_COUNT, vrf=c.PING_VRF):
-        """
-        Executes ping on the device and returns a dictionary with the result
-
-        :param destination: Host or IP Address of the destination
-        :param source (optional): Source address of echo request
-        :param ttl (optional): Maximum number of hops
-        :param timeout (optional): Maximum seconds to wait after sending final packet
-        :param size (optional): Size of request (bytes)
-        :param count (optional): Number of ping request to send
-
-        Output dictionary has one of following keys:
-
-            * success
-            * error
-
-        In case of success, inner dictionary will have the followin keys:
-
-            * probes_sent (int)
-            * packet_loss (int)
-            * rtt_min (float)
-            * rtt_max (float)
-            * rtt_avg (float)
-            * rtt_stddev (float)
-            * results (list)
-
-        'results' is a list of dictionaries with the following keys:
-
-            * ip_address (str)
-            * rtt (float)
-
-        Example::
-
-            {
-                'success': {
-                    'probes_sent': 5,
-                    'packet_loss': 0,
-                    'rtt_min': 72.158,
-                    'rtt_max': 72.433,
-                    'rtt_avg': 72.268,
-                    'rtt_stddev': 0.094,
-                    'results': [
-                        {
-                            'ip_address': u'1.1.1.1',
-                            'rtt': 72.248
-                        },
-                        {
-                            'ip_address': '2.2.2.2',
-                            'rtt': 72.299
-                        }
-                    ]
-                }
-            }
-
-            OR
-
-            {
-                'error': 'unknown host 8.8.8.8.8'
-            }
-
-        """
-        raise NotImplementedError
-
-    def traceroute(self,
-                   destination,
-                   source=c.TRACEROUTE_SOURCE,
-                   ttl=c.TRACEROUTE_TTL,
-                   timeout=c.TRACEROUTE_TIMEOUT,
-                   vrf=c.TRACEROUTE_VRF):
-        """
-        Executes traceroute on the device and returns a dictionary with the result.
-
-        :param destination: Host or IP Address of the destination
-        :param source (optional): Use a specific IP Address to execute the traceroute
-        :param ttl (optional): Maimum number of hops
-        :param timeout (optional): Number of seconds to wait for response
-
-        Output dictionary has one of the following keys:
-
-            * success
-            * error
-
-        In case of success, the keys of the dictionary represent the hop ID, while values are
-        dictionaries containing the probes results:
-            * rtt (float)
-            * ip_address (str)
-            * host_name (str)
-
-        Example::
-
-            {
-                'success': {
-                    1: {
-                        'probes': {
-                            1: {
-                                'rtt': 1.123,
-                                'ip_address': u'206.223.116.21',
-                                'host_name': u'eqixsj-google-gige.google.com'
-                            },
-                            2: {
-                                'rtt': 1.9100000000000001,
-                                'ip_address': u'206.223.116.21',
-                                'host_name': u'eqixsj-google-gige.google.com'
-                            },
-                            3: {
-                                'rtt': 3.347,
-                                'ip_address': u'198.32.176.31',
-                                'host_name': u'core2-1-1-0.pao.net.google.com'}
-                            }
-                        },
-                        2: {
-                            'probes': {
-                                1: {
-                                    'rtt': 1.586,
-                                    'ip_address': u'209.85.241.171',
-                                    'host_name': u'209.85.241.171'
-                                    },
-                                2: {
-                                    'rtt': 1.6300000000000001,
-                                    'ip_address': u'209.85.241.171',
-                                    'host_name': u'209.85.241.171'
-                                },
-                                3: {
-                                    'rtt': 1.6480000000000001,
-                                    'ip_address': u'209.85.241.171',
-                                    'host_name': u'209.85.241.171'}
-                                }
-                            },
-                        3: {
-                            'probes': {
-                                1: {
-                                    'rtt': 2.529,
-                                    'ip_address': u'216.239.49.123',
-                                    'host_name': u'216.239.49.123'},
-                                2: {
-                                    'rtt': 2.474,
-                                    'ip_address': u'209.85.255.255',
-                                    'host_name': u'209.85.255.255'
-                                },
-                                3: {
-                                    'rtt': 7.813,
-                                    'ip_address': u'216.239.58.193',
-                                    'host_name': u'216.239.58.193'}
-                                }
-                            },
-                        4: {
-                            'probes': {
-                                1: {
-                                    'rtt': 1.361,
-                                    'ip_address': u'8.8.8.8',
-                                    'host_name': u'google-public-dns-a.google.com'
-                                },
-                                2: {
-                                    'rtt': 1.605,
-                                    'ip_address': u'8.8.8.8',
-                                    'host_name': u'google-public-dns-a.google.com'
-                                },
-                                3: {
-                                    'rtt': 0.989,
-                                    'ip_address': u'8.8.8.8',
-                                    'host_name': u'google-public-dns-a.google.com'}
-                                }
-                            }
-                        }
-                    }
-
-            OR
-
-            {
-                'error': 'unknown host 8.8.8.8.8'
-            }
-            """
-        raise NotImplementedError
-
     def get_users(self):
         """
         Returns a dictionary with the configured users.
@@ -1642,62 +1212,6 @@ class FastIronDriver(NetworkDriver):
                 'sshkeys': []
             }})
         return user_dict
-
-    def get_optics(self):
-        """Fetches the power usage on the various transceivers installed
-        on the switch (in dbm), and returns a view that conforms with the
-        openconfig model openconfig-platform-transceiver.yang
-
-        Returns a dictionary where the keys are as listed below:
-
-            * intf_name (unicode)
-                * physical_channels
-                    * channels (list of dicts)
-                        * index (int)
-                        * state
-                            * input_power
-                                * instant (float)
-                                * avg (float)
-                                * min (float)
-                                * max (float)
-                            * output_power
-                                * instant (float)
-                                * avg (float)
-                                * min (float)
-                                * max (float)
-                            * laser_bias_current
-                                * instant (float)
-                                * avg (float)
-                                * min (float)
-                                * max (float)
-        """
-        optics_output = list()
-        output_m = self.device.send_command('show media validation | i BROCADE')
-        n_line = FastIronDriver.creates_list_of_nlines(output_m)
-
-        for sentence in n_line:
-            sentence = sentence.split()
-            output = self.device.send_command('show optic ' + sentence[0])
-            optics_output.append(output)
-
-        my_dict = {'inft_name': {
-            'physical_channels': {
-                'channel': [{
-                    'index': "", 'state': {
-                        'input_power': {
-                            'instant': 0.0, 'avg': 0.0, 'min': 0.0, 'max': 0.0
-                        },
-                        'output_power': {
-                            'instant': 0.0, 'avg': 0.0, 'min': 0.0, 'max': 0.0
-                        },
-                        'laser_bias_current': {
-                                'instant': 0.0, 'avg': 0.0, 'min': 0.0, 'max': 0.0
-                        }
-                    }
-                }]
-            }
-
-            }}
 
     def get_config(self, retrieve='all'):
         """
@@ -1798,8 +1312,6 @@ class FastIronDriver(NetworkDriver):
         }
         """
         vrf_dict = dict()                                           # Dictionary that will append
-        vrf_type = ""                                               # Declaring variable for switch type
-        vrf_name_list = list()
         vrf_interface = dict()
         check = self.device.send_command('show version')            # will be used for checking version and model type
 
@@ -1856,18 +1368,3 @@ class FastIronDriver(NetworkDriver):
             })
 
         return vrf_dict
-
-    def compliance_report(self, validation_file=None, validation_source=None):
-        """
-        Return a compliance report.
-
-        Verify that the device complies with the given validation file and writes a compliance
-        report file. See https://napalm.readthedocs.io/en/latest/validate/index.html.
-
-        :param validation_file: Path to the file containing compliance definition. Default is None.
-        :param validation_source: Dictionary containing compliance rules.
-        :raise ValidationException: File is not valid.
-        :raise NotImplementedError: Method not implemented.
-        """
-        return validate.compliance_report(self, validation_file=validation_file,
-                                          validation_source=validation_source)
