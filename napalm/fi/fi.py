@@ -17,10 +17,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 # std libs
-import sys
+# import sys
 from netmiko import ConnectHandler
 import socket
-import re
+# import re
 
 # local modules
 import napalm.base.exceptions
@@ -613,7 +613,7 @@ class FastIronDriver(NetworkDriver):
         candidate configuration. The running_config is loaded automatically just before doing the \
         comparison so there is no need for you to do it.
         """
-        compare_list = list()
+        # compare_list = list()
         if self.replace_config is not True and self.merge_config is not True:
             return -1                           # Configuration was never loaded
 
@@ -1345,7 +1345,7 @@ class FastIronDriver(NetworkDriver):
 
         else:
             output = self.device.send_command('show vrf detail')        # obtains vrf detail of default name
-            ftoken = output.find('Total number of IPv4')
+            # ftoken = output.find('Total number of IPv4')
             output = output.replace('|', ' ')                           # Replaces line used as spacer
             output = output.replace(',', '')                            # removes , with RD
             vrf_name_list = FastIronDriver.retrieve_all_locations(output, 'VRF', 0)
