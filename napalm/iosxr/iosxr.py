@@ -106,10 +106,10 @@ class IOSXRDriver(NetworkDriver):
 
     def is_alive(self):
         """Returns a flag with the state of the connection."""
-        # Simply returns the flag from Netmiko
-        return {
-            'is_alive': self.device.device.is_alive()
-        }
+        if self.device is None:
+            return {'is_alive': False}
+        # Simply returns the flag from pyIOSXR
+        return {'is_alive': self.device.is_alive()}
 
     def load_replace_candidate(self, filename=None, config=None):
         self.pending_changes = True
@@ -183,7 +183,10 @@ class IOSXRDriver(NetworkDriver):
         system_time_xpath = './/SystemTime/Uptime'
         platform_attr_xpath = './/RackTable/Rack/Attributes/BasicInfo'
         system_time_tree = facts_rpc_reply.xpath(system_time_xpath)[0]
-        platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)[0]
+        try:
+            platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)[0]
+        except IndexError:
+            platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)
 
         hostname = napalm.base.helpers.convert(
             text_type, napalm.base.helpers.find_txt(system_time_tree, 'Hostname'))
@@ -232,7 +235,8 @@ class IOSXRDriver(NetworkDriver):
             if not interface_name:
                 continue
             is_up = (napalm.base.helpers.find_txt(interface_tree, 'LineState') == 'IM_STATE_UP')
-            enabled = (napalm.base.helpers.find_txt(interface_tree, 'State') == 'IM_STATE_UP')
+            enabled = (napalm.base.helpers.find_txt(
+                        interface_tree, 'State') != 'IM_STATE_ADMINDOWN')
             raw_mac = napalm.base.helpers.find_txt(interface_tree, 'MACAddress/Address')
             mac_address = napalm.base.helpers.convert(
                 napalm.base.helpers.mac, raw_mac, raw_mac)
@@ -523,7 +527,7 @@ class IOSXRDriver(NetworkDriver):
                 if napalm.base.helpers.find_txt(
                         card, 'Card/Attributes/FRUInfo/ModuleAdministrativeState') == "ADMIN_UP":
                     slot_name = napalm.base.helpers.find_txt(slot, 'Naming/Name')
-                    module_type = re.sub("\d+", "", slot_name)
+                    module_type = re.sub(r"\d+", "", slot_name)
                     if len(module_type) > 0:
                         active_modules[module_type].append(slot_name)
                     else:

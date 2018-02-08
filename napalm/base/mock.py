@@ -28,6 +28,10 @@ import re
 from pydoc import locate
 
 
+# inspect.getargspec deprecated in Python 3.5, use getfullargspec if available
+inspect_getargspec = getattr(inspect, "getfullargspec", inspect.getargspec)
+
+
 def raise_exception(result):
     exc = locate(result["exception"])
     if exc:
@@ -45,7 +49,7 @@ def is_mocked_method(method):
 
 def mocked_method(path, name, count):
     parent_method = getattr(NetworkDriver, name)
-    parent_method_args = inspect.getargspec(parent_method)
+    parent_method_args = inspect_getargspec(parent_method)
     modifier = 0 if 'self' not in parent_method_args.args else 1
 
     def _mocked_method(*args, **kwargs):
@@ -86,11 +90,12 @@ class MockDevice(object):
         self.profile = profile
 
     def run_commands(self, commands):
-        """Only useful for EOS"""
-        if "eos" in self.profile:
-            return list(self.parent.cli(commands).values())[0]
-        else:
-            raise AttributeError("MockedDriver instance has not attribute '_rpc'")
+        """Mock for EOS"""
+        return list(self.parent.cli(commands).values())[0]
+
+    def show(self, command):
+        """Mock for nxos"""
+        return self.run_commands([command])
 
 
 class MockDriver(NetworkDriver):

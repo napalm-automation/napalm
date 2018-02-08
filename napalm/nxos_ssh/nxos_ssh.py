@@ -25,7 +25,6 @@ from scp import SCPClient
 import paramiko
 import hashlib
 import socket
-from datetime import datetime
 
 # import third party lib
 from netaddr import IPAddress
@@ -36,12 +35,12 @@ from netmiko.ssh_exception import NetMikoTimeoutException
 
 # import NAPALM Base
 import napalm.base.helpers
-from napalm.base import NetworkDriver
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.nxos import NXOSDriverBase
 import napalm.base.constants as c
 
 # Easier to store these as constants
@@ -56,10 +55,10 @@ IPV4_ADDR_REGEX = IP_ADDR_REGEX
 IPV6_ADDR_REGEX_1 = r"::"
 IPV6_ADDR_REGEX_2 = r"[0-9a-fA-F:]{1,39}::[0-9a-fA-F:]{1,39}"
 IPV6_ADDR_REGEX_3 = r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:" \
-                     "[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}"
+                     r"[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}:[0-9a-fA-F]{1,3}"
 # Should validate IPv6 address using an IP address library after matching with this regex
-IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
-IPV4_OR_IPV6_REGEX = "(?:{}|{})".format(IPV4_ADDR_REGEX, IPV6_ADDR_REGEX)
+IPV6_ADDR_REGEX = r"(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IPV6_ADDR_REGEX_3)
+IPV4_OR_IPV6_REGEX = r"(?:{}|{})".format(IPV4_ADDR_REGEX, IPV6_ADDR_REGEX)
 
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
 VLAN_REGEX = r"\d{1,4}"
@@ -366,7 +365,7 @@ def bgp_summary_parser(bgp_summary):
     return bgp_return_dict
 
 
-class NXOSSSHDriver(NetworkDriver):
+class NXOSSSHDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -601,7 +600,7 @@ class NXOSSSHDriver(NetworkDriver):
         diff_out = self.device.send_command(command)
         try:
             diff_out = diff_out.split(
-                '#Generating Rollback Patch')[1].replace(
+                'Generating Rollback Patch')[1].replace(
                     'Rollback Patch is Empty', '').strip()
             for line in diff_out.splitlines():
                 if line:
@@ -639,20 +638,25 @@ class NXOSSSHDriver(NetworkDriver):
             return diff
         return ''
 
-    def _save(self, filename='startup-config'):
-        command = 'copy run %s' % filename
+    def _copy_run_start(self, filename='startup-config'):
+        command = 'copy run {}'.format(filename)
         output = self.device.send_command(command)
         if 'complete' in output.lower():
             return True
-        return False
+        else:
+            msg = 'Unable to save running-config to {}!'.format(filename)
+            raise CommandErrorException(msg)
 
     def _commit_merge(self):
-        commands = [command for command in self.merge_candidate.splitlines() if command]
-        output = self.device.send_config_set(commands)
+        try:
+            commands = [command for command in self.merge_candidate.splitlines() if command]
+            output = self.device.send_config_set(commands)
+        except Exception as e:
+            raise MergeConfigException(str(e))
         if 'Invalid command' in output:
             raise MergeConfigException('Error while applying config!')
-        if not self._save():
-            raise CommandErrorException('Unable to save running-config to startup!')
+        # clear the merge buffer
+        self.merge_candidate = ''
 
     def _save_to_checkpoint(self, filename):
         """Save the current running config to the given file."""
@@ -669,28 +673,7 @@ class NXOSSSHDriver(NetworkDriver):
         if 'Rollback failed.' in rollback_result or 'ERROR' in rollback_result:
             raise ReplaceConfigException(rollback_result)
         elif rollback_result == []:
-            return False
-        return True
-
-    def commit_config(self):
-        if self.loaded:
-            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            # Create Checkpoint from current running-config
-            self._save_to_checkpoint(self.backup_file)
-            if self.replace:
-                cfg_replace_status = self._load_cfg_from_checkpoint()
-                if not cfg_replace_status:
-                    raise ReplaceConfigException
-            else:
-                try:
-                    self._commit_merge()
-                    self.merge_candidate = ''  # clear the merge buffer
-                except Exception as e:
-                    raise MergeConfigException(str(e))
-            self.changed = True
-            self.loaded = False
-        else:
-            raise ReplaceConfigException('No config loaded.')
+            raise ReplaceConfigException
 
     def _delete_file(self, filename):
         commands = [
@@ -714,8 +697,7 @@ class NXOSSSHDriver(NetworkDriver):
             result = self.device.send_command(command)
             if 'completed' not in result.lower():
                 raise ReplaceConfigException(result)
-            if not self._save():
-                raise CommandErrorException('Unable to save running-config to startup!')
+            self._copy_run_start()
             self.changed = False
 
     def _apply_key_map(self, key_map, table):
@@ -961,15 +943,15 @@ class NXOSSSHDriver(NetworkDriver):
         if not lldp_neighbors_list:
             return lldp_neighbors  # empty dict
 
-        CHASSIS_REGEX = '^(Chassis id:)\s+([a-z0-9\.]+)$'
-        PORT_REGEX = '^(Port id:)\s+([0-9]+)$'
-        LOCAL_PORT_ID_REGEX = '^(Local Port id:)\s+(.*)$'
-        PORT_DESCR_REGEX = '^(Port Description:)\s+(.*)$'
-        SYSTEM_NAME_REGEX = '^(System Name:)\s+(.*)$'
-        SYSTEM_DESCR_REGEX = '^(System Description:)\s+(.*)$'
-        SYST_CAPAB_REEGX = '^(System Capabilities:)\s+(.*)$'
-        ENABL_CAPAB_REGEX = '^(Enabled Capabilities:)\s+(.*)$'
-        VLAN_ID_REGEX = '^(Vlan ID:)\s+(.*)$'
+        CHASSIS_REGEX = r'^(Chassis id:)\s+([a-z0-9\.]+)$'
+        PORT_REGEX = r'^(Port id:)\s+([0-9]+)$'
+        LOCAL_PORT_ID_REGEX = r'^(Local Port id:)\s+(.*)$'
+        PORT_DESCR_REGEX = r'^(Port Description:)\s+(.*)$'
+        SYSTEM_NAME_REGEX = r'^(System Name:)\s+(.*)$'
+        SYSTEM_DESCR_REGEX = r'^(System Description:)\s+(.*)$'
+        SYST_CAPAB_REEGX = r'^(System Capabilities:)\s+(.*)$'
+        ENABL_CAPAB_REGEX = r'^(Enabled Capabilities:)\s+(.*)$'
+        VLAN_ID_REGEX = r'^(Vlan ID:)\s+(.*)$'
 
         lldp_neighbor = {}
         interface_name = None
@@ -1072,7 +1054,9 @@ class NXOSSSHDriver(NetworkDriver):
 
         arp_entries = arp_list[1].strip()
         for line in arp_entries.splitlines():
-            if len(line.split()) == 4:
+            if len(line.split()) >= 4:
+                # Search for extra characters to strip, currently strip '*', '+', '#', 'D'
+                line = re.sub(r"\s+[\*\+\#D]{1,4}\s*$", "", line, flags=re.M)
                 address, age, mac, interface = line.split()
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
@@ -1243,6 +1227,11 @@ class NXOSSSHDriver(NetworkDriver):
         * 16       0050.56bb.0164    dynamic      -       F    F    po2
         * 13       90e2.ba5a.9f30    dynamic      -       F    F    eth1/2
         * 13       90e2.ba4b.fc78    dynamic      -       F    F    eth1/1
+          39       0100.5e00.4b4b    igmp         0       F    F    Po1 Po2 Po22
+          110      0100.5e00.0118    igmp         0       F    F    Po1 Po2
+                                                                    Eth142/1/3 Eth112/1/5
+                                                                    Eth112/1/6 Eth122/1/5
+
         """
 
         #  The '*' is stripped out later
@@ -1250,6 +1239,8 @@ class NXOSSSHDriver(NetworkDriver):
                                                                                   MAC_REGEX)
         RE_MACTABLE_FORMAT2 = r"^\s+{}\s+{}\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+".format('-',
                                                                                   MAC_REGEX)
+        # REGEX dedicated for lines with only interfaces (suite of the previous MAC address)
+        RE_MACTABLE_FORMAT3 = r"^\s+\S+"
 
         mac_address_table = []
         command = 'show mac address-table'
@@ -1288,31 +1279,48 @@ class NXOSSSHDriver(NetworkDriver):
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
-        # Strip any leading astericks or G character
-        output = re.sub(r"^[\*G]", "", output, flags=re.M)
+        # Strip any leading characters
+        output = re.sub(r"^[\*\+GO]", "", output, flags=re.M)
+        output = re.sub(r"^\(R\)", "", output, flags=re.M)
+        output = re.sub(r"^\(T\)", "", output, flags=re.M)
+        output = re.sub(r"^\(F\)", "", output, flags=re.M)
+        output = re.sub(r"vPC Peer-Link", "vPC-Peer-Link", output, flags=re.M)
 
         for line in output.splitlines():
 
-            # Every 500 Mac's Legend is reprinted, regardless of term len.
-            # Above split will not help in this scenario
-            if re.search('^Legend', line):
+            # Every 500 Mac's Legend is reprinted, regardless of terminal length
+            if re.search(r'^Legend', line):
                 continue
-            elif re.search('^\s+\* \- primary entry', line):
+            elif re.search(r'^\s+\* \- primary entry', line):
                 continue
-            elif re.search('^\s+age \-', line):
+            elif re.search(r'^\s+age \-', line):
                 continue
-            elif re.search('^\s+VLAN', line):
+            elif re.search(r'^\s+VLAN', line):
                 continue
-            elif re.search('^------', line):
+            elif re.search(r'^------', line):
                 continue
-            elif re.search('^\s*$', line):
+            elif re.search(r'^\s*$', line):
                 continue
 
-            for pattern in [RE_MACTABLE_FORMAT1, RE_MACTABLE_FORMAT2]:
+            for pattern in [RE_MACTABLE_FORMAT1, RE_MACTABLE_FORMAT2, RE_MACTABLE_FORMAT3]:
                 if re.search(pattern, line):
-                    if len(line.split()) == 7:
-                        vlan, mac, mac_type, _, _, _, interface = line.split()
-                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                    fields = line.split()
+                    if len(fields) >= 7:
+                        vlan, mac, mac_type, _, _, _, interface = fields[:7]
+                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                    interface))
+
+                        # there can be multiples interfaces for the same MAC on the same line
+                        for interface in fields[7:]:
+                            mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                        interface))
+                        break
+
+                    # interfaces can overhang to the next line (line only contains interfaces)
+                    elif len(fields) < 7:
+                        for interface in fields:
+                            mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
+                                                                        interface))
                         break
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
@@ -1417,24 +1425,24 @@ class NXOSSSHDriver(NetworkDriver):
                    vrf=c.TRACEROUTE_VRF):
 
         _HOP_ENTRY_PROBE = [
-            '\s+',
-            '(',  # beginning of host_name (ip_address) RTT group
-            '(',  # beginning of host_name (ip_address) group only
-            '([a-zA-Z0-9\.:-]*)',  # hostname
-            '\s+',
-            '\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
-            ')?',  # end of host_name (ip_address) group only
+            r'\s+',
+            r'(',  # beginning of host_name (ip_address) RTT group
+            r'(',  # beginning of host_name (ip_address) group only
+            r'([a-zA-Z0-9\.:-]*)',  # hostname
+            r'\s+',
+            r'\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
+            r')?',  # end of host_name (ip_address) group only
             # also hostname/ip are optional -- they can or cannot be specified
             # if not specified, means the current probe followed the same path as the previous
-            '\s+',
-            '(\d+\.\d+)\s+ms',  # RTT
-            '|\*',  # OR *, when non responsive hop
-            ')'  # end of host_name (ip_address) RTT group
+            r'\s+',
+            r'(\d+\.\d+)\s+ms',  # RTT
+            r'|\*',  # OR *, when non responsive hop
+            r')'  # end of host_name (ip_address) RTT group
         ]
 
         _HOP_ENTRY = [
-            '\s?',  # space before hop index?
-            '(\d+)',  # hop index
+            r'\s?',  # space before hop index?
+            r'(\d+)',  # hop index
         ]
 
         traceroute_result = {}

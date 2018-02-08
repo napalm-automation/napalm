@@ -1,0 +1,5 @@
+Tracekey : 1#bfcda4e05e635ef59d927d2feb906f16
+
+                Head    Total(b)     Used(b)     Free(b)   Lowest(b)  Largest(b)
+Processor  FF89570010   873745296   296643656   577101640   574894944   577041700
+ lsmpi_io  FF888CE1A8     6295128     6294304         824         824         412

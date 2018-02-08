@@ -54,11 +54,18 @@ class EOSDriver(NetworkDriver):
 
     SUPPORTED_OC_MODELS = []
 
-    _RE_BGP_INFO = re.compile('BGP neighbor is (?P<neighbor>.*?), remote AS (?P<as>.*?), .*') # noqa
-    _RE_BGP_RID_INFO = re.compile('.*BGP version 4, remote router ID (?P<rid>.*?), VRF (?P<vrf>.*?)$') # noqa
-    _RE_BGP_DESC = re.compile('\s+Description: (?P<description>.*?)')
-    _RE_BGP_LOCAL = re.compile('Local AS is (?P<as>.*?),.*')
-    _RE_BGP_PREFIX = re.compile('(\s*?)(?P<af>IPv[46]) Unicast:\s*(?P<sent>\d+)\s*(?P<received>\d+)') # noqa
+    HEREDOC_COMMANDS = [
+        ("banner login", 1),
+        ("banner motd", 1),
+        ("comment", 1),
+        ("protocol https certificate", 2)
+    ]
+
+    _RE_BGP_INFO = re.compile(r'BGP neighbor is (?P<neighbor>.*?), remote AS (?P<as>.*?), .*') # noqa
+    _RE_BGP_RID_INFO = re.compile(r'.*BGP version 4, remote router ID (?P<rid>.*?), VRF (?P<vrf>.*?)$') # noqa
+    _RE_BGP_DESC = re.compile(r'\s+Description: (?P<description>.*?)')
+    _RE_BGP_LOCAL = re.compile(r'Local AS is (?P<as>.*?),.*')
+    _RE_BGP_PREFIX = re.compile(r'(\s*?)(?P<af>IPv[46]) Unicast:\s*(?P<sent>\d+)\s*(?P<received>\d+)') # noqa
     _RE_SNMP_COMM = re.compile(r"""^snmp-server\s+community\s+(?P<community>\S+)
                                 (\s+view\s+(?P<view>\S+))?(\s+(?P<access>ro|rw)?)
                                 (\s+ipv6\s+(?P<v6_acl>\S+))?(\s+(?P<v4_acl>\S+))?$""", re.VERBOSE)
@@ -87,6 +94,8 @@ class EOSDriver(NetworkDriver):
         self.enablepwd = optional_args.get('enable_password', '')
 
         self.profile = ["eos"]
+
+        self.eos_autoComplete = optional_args.get('eos_autoComplete', None)
 
     def open(self):
         """Implementation of NAPALM method open."""
@@ -133,6 +142,58 @@ class EOSDriver(NetworkDriver):
         if [k for k, v in sess.items() if v['state'] == 'pending' and k != self.config_session]:
             raise SessionLockedException('Session is already in use')
 
+    @staticmethod
+    def _multiline_convert(config, start="banner login", end="EOF", depth=1):
+        """Converts running-config HEREDOC into EAPI JSON dict"""
+        ret = list(config)  # Don't modify list in-place
+        try:
+            s = ret.index(start)
+            e = s
+            while depth:
+                e = ret.index(end, e + 1)
+                depth = depth - 1
+        except ValueError:  # Couldn't find end, abort
+            return ret
+        ret[s] = {'cmd': ret[s], 'input': "\n".join(ret[s+1:e])}
+        del ret[s + 1:e + 1]
+
+        return ret
+
+    @staticmethod
+    def _mode_comment_convert(commands):
+        """
+        EOS has the concept of multi-line mode comments, shown in the running-config
+        as being inside a config stanza (router bgp, ACL definition, etc) and beginning
+        with the normal level of spaces and '!!', followed by comments.
+
+        Unfortunately, pyeapi does not accept mode comments in this format, and have to be
+        converted to a specific type of pyeapi call that accepts multi-line input
+
+        Copy the config list into a new return list, converting consecutive lines starting with
+        "!!" into a single multiline comment command
+
+        :param commands: List of commands to be sent to pyeapi
+        :return: Converted list of commands to be sent to pyeapi
+        """
+
+        ret = []
+        comment_count = 0
+        for idx, element in enumerate(commands):
+            # Check first for stringiness, as we may have dicts in the command list already
+            if isinstance(element, py23_compat.string_types) and element.startswith('!!'):
+                comment_count += 1
+                continue
+            else:
+                if comment_count > 0:
+                    # append the previous comment
+                    ret.append({"cmd": "comment",
+                                "input": "\n".join(map(lambda s: s.lstrip("! "),
+                                                       commands[idx - comment_count:idx]))})
+                    comment_count = 0
+                ret.append(element)
+
+        return ret
+
     def _load_config(self, filename=None, config=None, replace=True):
         commands = []
 
@@ -154,12 +215,20 @@ class EOSDriver(NetworkDriver):
             line = line.strip()
             if line == '':
                 continue
-            if line.startswith('!'):
+            if line.startswith('!') and not line.startswith('!!'):
                 continue
             commands.append(line)
 
+        commands = self._mode_comment_convert(commands)
+
+        for start, depth in [(s, d) for (s, d) in self.HEREDOC_COMMANDS if s in commands]:
+            commands = self._multiline_convert(commands, start=start, depth=depth)
+
         try:
-            self.device.run_commands(commands)
+            if self.eos_autoComplete is not None:
+                self.device.run_commands(commands, autoComplete=self.eos_autoComplete)
+            else:
+                self.device.run_commands(commands)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             if replace:
@@ -493,10 +562,12 @@ class EOSDriver(NetworkDriver):
         # Matches either of
         # Mem:   3844356k total,  3763184k used,    81172k free,    16732k buffers ( 4.16 > )
         # KiB Mem:  32472080 total,  5697604 used, 26774476 free,   372052 buffers ( 4.16 < )
-        mem_regex = '.*total,\s+(?P<used>\d+)[k\s]+used,\s+(?P<free>\d+)[k\s]+free,.*'
+        mem_regex = (r'[^\d]*(?P<total>\d+)[k\s]+total,'
+                     r'\s+(?P<used>\d+)[k\s]+used,'
+                     r'\s+(?P<free>\d+)[k\s]+free,.*')
         m = re.match(mem_regex, cpu_lines[3])
         environment_counters['memory'] = {
-            'available_ram': int(m.group('free')),
+            'available_ram': int(m.group('total')),
             'used_ram': int(m.group('used'))
         }
         return environment_counters
@@ -833,11 +904,11 @@ class EOSDriver(NetworkDriver):
         ntp_stats = []
 
         REGEX = (
-            '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
-            '\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
-            '\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
-            '\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
-            '\s+([0-9\.]+)\s?$'
+            r'^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
+            r'\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
+            r'\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
+            r'\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
+            r'\s+([0-9\.]+)\s?$'
         )
 
         commands = []
@@ -1202,24 +1273,24 @@ class EOSDriver(NetworkDriver):
                    vrf=c.TRACEROUTE_VRF):
 
         _HOP_ENTRY_PROBE = [
-            '\s+',
-            '(',  # beginning of host_name (ip_address) RTT group
-            '(',  # beginning of host_name (ip_address) group only
-            '([a-zA-Z0-9\.:-]*)',  # hostname
-            '\s+',
-            '\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
-            ')?',  # end of host_name (ip_address) group only
+            r'\s+',
+            r'(',  # beginning of host_name (ip_address) RTT group
+            r'(',  # beginning of host_name (ip_address) group only
+            r'([a-zA-Z0-9\.:-]*)',  # hostname
+            r'\s+',
+            r'\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
+            r')?',  # end of host_name (ip_address) group only
             # also hostname/ip are optional -- they can or cannot be specified
             # if not specified, means the current probe followed the same path as the previous
-            '\s+',
-            '(\d+\.\d+)\s+ms',  # RTT
-            '|\*',  # OR *, when non responsive hop
-            ')'  # end of host_name (ip_address) RTT group
+            r'\s+',
+            r'(\d+\.\d+)\s+ms',  # RTT
+            r'|\*',  # OR *, when non responsive hop
+            r')'  # end of host_name (ip_address) RTT group
         ]
 
         _HOP_ENTRY = [
-            '\s?',  # space before hop index?
-            '(\d+)',  # hop index
+            r'\s?',  # space before hop index?
+            r'(\d+)',  # hop index
         ]
 
         traceroute_result = {}

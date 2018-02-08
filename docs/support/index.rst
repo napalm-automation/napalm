@@ -1,3 +1,5 @@
+.. _supported-devices:
+
 Supported Devices
 =================
 
@@ -13,14 +15,14 @@ General support matrix
   **Driver Name**         eos         junos           iosxr        nxos          ios
   **Structured data**     Yes         Yes             No           Yes           No
   **Minimum version**     4.15.0F     12.1            5.1.0        6.1 [#g1]_    12.4(20)T
-  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pycsco`_     `netmiko`_
+  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pynxos`_     `netmiko`_
   **Caveats**             :doc:`eos`                               :doc:`nxos`   :doc:`ios`
   =====================   ==========  =============   ============ ============  ============
 
 .. _pyeapi: https://github.com/arista-eosplus/pyeapi
 .. _junos-eznc: https://github.com/Juniper/py-junos-eznc
 .. _pyIOSXR: https://github.com/fooelisa/pyiosxr
-.. _pycsco: https://github.com/jedelman8/pycsco
+.. _pynxos: https://github.com/networktocode/pynxos
 .. _netmiko: https://github.com/ktbyers/netmiko
 
 .. [#g1] NX-API support on the Nexus 5k, 6k and 7k families was introduced in version 7.2
@@ -108,23 +110,25 @@ NAPALM supports passing certain optional arguments to some drivers. To do that y
 List of supported optional arguments
 ____________________________________
 
-* :code:`port` (eos, iosxr, junos, ios, nxos) - Allows you to specify a port other than the default.
-* :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: ``False``).
-* :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
-* :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
-* :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: ``1``).
-* :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
-* :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
-* :code:`secret` (ios) - Password required to enter privileged exec (enable) (default: ``''``).
-* :code:`ssh_strict` (iosxr, ios) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
 * :code:`allow_agent` (ios, iosxr) - Paramiko argument, enable connecting to the SSH agent (default: ``False``).
-* :code:`use_keys` (iosxr, ios, panos) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
-* :code:`key_file` (junos, ios, iosxr) - Path to a private key file. (default: ``False``).
-* :code:`ssh_config_file` (junos, ios, iosxr) - File name of OpenSSH configuration file.
 * :code:`alt_host_keys` (ios, iosxr) - If ``True``, host keys will be loaded from the file specified in ``alt_key_file``.
 * :code:`alt_key_file` (ios, iosxr) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
-* :code:`keepalive` (junos, iosxr) - SSH keepalive interval, in seconds (default: ``30`` seconds).
+* :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
+* :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: ``False``).
+* :code:`canonical_int` (ios) - Convert operational interface's returned name to canonical name (fully expanded name) (default: ``False``).
+* :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
+* :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
+* :code:`global_delay_factor` (ios) - Allow for additional delay in command execution (default: ``1``).
 * :code:`ignore_warning` (junos) - Allows to set `ignore_warning` when loading configuration to avoid exceptions via junos-pyez. (default: ``False``).
+* :code:`keepalive` (junos, iosxr) - SSH keepalive interval, in seconds (default: ``30`` seconds).
+* :code:`key_file` (junos, ios, iosxr) - Path to a private key file. (default: ``False``).
+* :code:`port` (eos, iosxr, junos, ios, nxos) - Allows you to specify a port other than the default.
+* :code:`secret` (ios) - Password required to enter privileged exec (enable) (default: ``''``).
+* :code:`ssh_config_file` (junos, ios, iosxr) - File name of OpenSSH configuration file.
+* :code:`ssh_strict` (iosxr, ios) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
+* :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
+* :code:`use_keys` (iosxr, ios, panos) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
+* :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
 
 The transport argument
 ______________________

@@ -42,7 +42,29 @@ from napalm.base.exceptions import ReplaceConfigException
 import napalm.base.constants as c
 
 
-class NXOSDriver(NetworkDriver):
+class NXOSDriverBase(NetworkDriver):
+    """Common code shared between nx-api and nxos_ssh."""
+    def commit_config(self):
+        if self.loaded:
+            # Create checkpoint from current running-config
+            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
+            self._save_to_checkpoint(self.backup_file)
+
+            if self.replace:
+                # Replace operation
+                self._load_cfg_from_checkpoint()
+            else:
+                # Merge operation
+                self._commit_merge()
+
+            self._copy_run_start()
+            self.changed = True
+            self.loaded = False
+        else:
+            raise ReplaceConfigException('No config loaded.')
+
+
+class NXOSDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -211,7 +233,7 @@ class NXOSDriver(NetworkDriver):
 
         file_content = self.fix_checkpoint_string(file_content, self.replace_file)
         temp_file = tempfile.NamedTemporaryFile()
-        temp_file.write(file_content)
+        temp_file.write(file_content.encode())
         temp_file.flush()
         self.replace_file = cfg_filename
 
@@ -258,7 +280,7 @@ class NXOSDriver(NetworkDriver):
                 'sot_file', self.replace_file.split('/')[-1]), raw_text=True)
         try:
             diff_out = diff_out.split(
-                '#Generating Rollback Patch')[1].replace(
+                'Generating Rollback Patch')[1].replace(
                     'Rollback Patch is Empty', '').strip()
             for line in diff_out.splitlines():
                 if line:
@@ -296,51 +318,39 @@ class NXOSDriver(NetworkDriver):
             return diff
         return ''
 
-    def _commit_merge(self):
-        commands = [command for command in self.merge_candidate.splitlines() if command]
-        self.device.config_list(commands)
-        if not self.device.save():
-            raise CommandErrorException('Unable to commit config!')
+    def _copy_run_start(self, filename='startup-config'):
+        results = self.device.save(filename=filename)
+        if not results:
+            msg = 'Unable to save running-config to {}!'.format(filename)
+            raise CommandErrorException(msg)
 
-    def _save_config(self, filename):
+    def _commit_merge(self):
+        try:
+            commands = [command for command in self.merge_candidate.splitlines() if command]
+            self.device.config_list(commands)
+        except Exception as e:
+            raise MergeConfigException(str(e))
+        # clear the merge buffer
+        self.merge_candidate = ''
+
+    def _save_to_checkpoint(self, filename):
         """Save the current running config to the given file."""
-        self.device.show('checkpoint file {}'.format(filename), raw_text=True)
+        command = 'checkpoint file {}'.format(filename)
+        self.device.show(command, raw_text=True)
 
     def _disable_confirmation(self):
         self.device.config('terminal dont-ask')
 
-    def _load_config(self):
+    def _load_cfg_from_checkpoint(self):
         cmd = 'rollback running file {0}'.format(self.replace_file.split('/')[-1])
         self._disable_confirmation()
         try:
             rollback_result = self.device.config(cmd)
         except ConnectionError:
-            # requests will raise an error with verbose warning output
-            return True
-        except Exception:
-            return False
+            # requests will raise an error with verbose warning output (don't fail on this).
+            return
         if 'Rollback failed.' in rollback_result['msg'] or 'ERROR' in rollback_result:
             raise ReplaceConfigException(rollback_result['msg'])
-        return True
-
-    def commit_config(self):
-        if self.loaded:
-            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            self._save_config(self.backup_file)
-            if self.replace:
-                if self._load_config() is False:
-                    raise ReplaceConfigException
-            else:
-                try:
-                    self._commit_merge()
-                    self.merge_candidate = ''  # clear the merge buffer
-                except Exception as e:
-                    raise MergeConfigException(str(e))
-
-            self.changed = True
-            self.loaded = False
-        else:
-            raise ReplaceConfigException('No config loaded.')
 
     def _delete_file(self, filename):
         commands = ['terminal dont-ask',
@@ -361,7 +371,7 @@ class NXOSDriver(NetworkDriver):
     def rollback(self):
         if self.changed:
             self.device.rollback(self.backup_file)
-            self.device.save()
+            self._copy_run_start()
             self.changed = False
 
     def get_facts(self):
@@ -522,15 +532,15 @@ class NXOSDriver(NetworkDriver):
         if not lldp_neighbors_list:
             return lldp_neighbors  # empty dict
 
-        CHASSIS_REGEX = '^(Chassis id:)\s+([a-z0-9\.]+)$'
-        PORT_REGEX = '^(Port id:)\s+([0-9]+)$'
-        LOCAL_PORT_ID_REGEX = '^(Local Port id:)\s+(.*)$'
-        PORT_DESCR_REGEX = '^(Port Description:)\s+(.*)$'
-        SYSTEM_NAME_REGEX = '^(System Name:)\s+(.*)$'
-        SYSTEM_DESCR_REGEX = '^(System Description:)\s+(.*)$'
-        SYST_CAPAB_REEGX = '^(System Capabilities:)\s+(.*)$'
-        ENABL_CAPAB_REGEX = '^(Enabled Capabilities:)\s+(.*)$'
-        VLAN_ID_REGEX = '^(Vlan ID:)\s+(.*)$'
+        CHASSIS_REGEX = r'^(Chassis id:)\s+([a-z0-9\.]+)$'
+        PORT_REGEX = r'^(Port id:)\s+([0-9]+)$'
+        LOCAL_PORT_ID_REGEX = r'^(Local Port id:)\s+(.*)$'
+        PORT_DESCR_REGEX = r'^(Port Description:)\s+(.*)$'
+        SYSTEM_NAME_REGEX = r'^(System Name:)\s+(.*)$'
+        SYSTEM_DESCR_REGEX = r'^(System Description:)\s+(.*)$'
+        SYST_CAPAB_REEGX = r'^(System Capabilities:)\s+(.*)$'
+        ENABL_CAPAB_REGEX = r'^(Enabled Capabilities:)\s+(.*)$'
+        VLAN_ID_REGEX = r'^(Vlan ID:)\s+(.*)$'
 
         lldp_neighbor = {}
         interface_name = None
@@ -870,24 +880,24 @@ class NXOSDriver(NetworkDriver):
                    timeout=c.TRACEROUTE_TIMEOUT,
                    vrf=c.TRACEROUTE_VRF):
         _HOP_ENTRY_PROBE = [
-            '\s+',
-            '(',  # beginning of host_name (ip_address) RTT group
-            '(',  # beginning of host_name (ip_address) group only
-            '([a-zA-Z0-9\.:-]*)',  # hostname
-            '\s+',
-            '\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
-            ')?',  # end of host_name (ip_address) group only
+            r'\s+',
+            r'(',  # beginning of host_name (ip_address) RTT group
+            r'(',  # beginning of host_name (ip_address) group only
+            r'([a-zA-Z0-9\.:-]*)',  # hostname
+            r'\s+',
+            r'\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
+            r')?',  # end of host_name (ip_address) group only
             # also hostname/ip are optional -- they can or cannot be specified
             # if not specified, means the current probe followed the same path as the previous
-            '\s+',
-            '(\d+\.\d+)\s+ms',  # RTT
-            '|\*',  # OR *, when non responsive hop
-            ')'  # end of host_name (ip_address) RTT group
+            r'\s+',
+            r'(\d+\.\d+)\s+ms',  # RTT
+            r'|\*',  # OR *, when non responsive hop
+            r')'  # end of host_name (ip_address) RTT group
         ]
 
         _HOP_ENTRY = [
-            '\s?',  # space before hop index?
-            '(\d+)',  # hop index
+            r'\s?',  # space before hop index?
+            r'(\d+)',  # hop index
         ]
 
         traceroute_result = {}

@@ -1,0 +1,18 @@
+------------------------------------------------
+Chassis id: 0018.fe1e.b020
+Port id: Gi2/0
+Port Description: Gi2/0
+System Name: MDB CSCT
+System Description: 
+ProCurve J9019A Switch 2510-24, revision Q.10.01, ROM Q.10.02 (/sw/code/build/harp(harp))
+Time remaining: 119 seconds
+System Capabilities: B
+Enabled Capabilities: B
+Management Addresses:
+    Other: 00 18 FF 1E FF 20 00
+Auto Negotiation - not supported
+Physical media capabilities - not advertised
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+Total entries displayed: 1
+

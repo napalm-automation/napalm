@@ -1,0 +1,26 @@
+For address family: IPv4 Unicast
+BGP router identifier 192.168.0.1, local AS number 65000
+BGP table version is 1, main routing table version 1
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+192.168.0.2     4        65001       0       0        1    0    0 never    Idle
+192.168.0.3     4        65010       0       0        1    0    0 never    Active
+
+For address family: IPv6 Unicast
+BGP router identifier 192.168.0.1, local AS number 65000
+BGP table version is 2, main routing table version 2
+1 network entries using 168 bytes of memory
+1 path entries using 108 bytes of memory
+1/1 BGP path/bestpath attribute entries using 160 bytes of memory
+2 BGP AS-PATH entries using 48 bytes of memory
+1 BGP community entries using 24 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 508 total bytes of memory
+BGP activity 23/10 prefixes, 34/15 paths, scan interval 60 secs
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+2001:1:1:1:1:1:1:2
+                4         65010      5       4        2    0    0 00:00:50        1
+2001:1:1:1::2
+                4         65010      5       4        2    0    0 00:00:50        1
