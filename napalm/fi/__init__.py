@@ -16,4 +16,4 @@
 from napalm.fi.fi import FastIronDriver
 
 
-__all__ = ['ruckus_fastiron']
+__all__ = ['FastIronDriver']
