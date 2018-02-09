@@ -12,7 +12,7 @@ age - seconds since last seen,+ - primary entry using vPC Peer-Link,
 * 16       0050.56bb.2577    dynamic      -       F    F    po2
 * 16       0050.56bb.cccf    dynamic      -       F    F    po2
 * 33       0050.56bb.cccf    dynamic      -       F    F    po2
-* 17       0026.980a.df44    dynamic      -       F    F    po2
+* 17       0026.980a.df44    dynamic      -       F    F    vPC Peer-Link
 * 17       0050.56bb.ba9a    dynamic      -       F    F    po2
 * 40       0050.56bb.f532    dynamic      -       F    F    po2
 * 13       90e2.ba5a.9f30    dynamic      -       F    F    eth1/2

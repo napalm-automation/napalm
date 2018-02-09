@@ -1149,24 +1149,25 @@ class IOSDriver(NetworkDriver):
                 ipv4.update({ip: {"prefix_length": int(prefix)}})
                 interfaces[interface_name] = {'ipv4': ipv4}
 
-        for line in show_ipv6_interface.splitlines():
-            if(len(line.strip()) == 0):
-                continue
-            if(line[0] != ' '):
-                ifname = line.split()[0]
-                ipv6 = {}
-                if ifname not in interfaces:
-                    interfaces[ifname] = {'ipv6': ipv6}
-                else:
-                    interfaces[ifname].update({'ipv6': ipv6})
-            m = re.match(LINK_LOCAL_ADDRESS, line)
-            if m:
-                ip = m.group(1)
-                ipv6.update({ip: {"prefix_length": 10}})
-            m = re.match(GLOBAL_ADDRESS, line)
-            if m:
-                ip, prefix = m.groups()
-                ipv6.update({ip: {"prefix_length": int(prefix)}})
+        if '% Invalid input detected at' not in show_ipv6_interface:
+            for line in show_ipv6_interface.splitlines():
+                if(len(line.strip()) == 0):
+                    continue
+                if(line[0] != ' '):
+                    ifname = line.split()[0]
+                    ipv6 = {}
+                    if ifname not in interfaces:
+                        interfaces[ifname] = {'ipv6': ipv6}
+                    else:
+                        interfaces[ifname].update({'ipv6': ipv6})
+                m = re.match(LINK_LOCAL_ADDRESS, line)
+                if m:
+                    ip = m.group(1)
+                    ipv6.update({ip: {"prefix_length": 10}})
+                m = re.match(GLOBAL_ADDRESS, line)
+                if m:
+                    ip, prefix = m.groups()
+                    ipv6.update({ip: {"prefix_length": int(prefix)}})
 
         # Interface without ipv6 doesn't appears in show ipv6 interface
         return interfaces
