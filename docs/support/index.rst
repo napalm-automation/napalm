@@ -55,7 +55,7 @@ _                       EOS         JunOS   IOS-XR      NXOS            IOS
 Getters support matrix
 ----------------------
 
-.. note:: The following table is built automatically. Every time there is a release of a supported driver a built is triggered. The result of the tests are aggregated on the following table.
+.. note:: The following table is built automatically. Every time there is a release of a supported driver a build is triggered. The result of the tests are aggregated on the following table.
 
 .. include:: matrix.rst
 
