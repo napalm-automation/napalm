@@ -23,10 +23,10 @@ import socket
 # import re
 
 # local modules
-# import napalm.base.exceptions
+import napalm.base.exceptions
 # import napalm.base.helpers
-from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, ConnectionException, \
-    ConnectionClosedException
+from napalm.base.exceptions import ReplaceConfigException, \
+    MergeConfigException, ConnectionException, ConnectionClosedException
 
 # import napalm.base.constants as c
 # from napalm.base import validate
@@ -64,7 +64,7 @@ class FastIronDriver(NetworkDriver):
         try:
             if self.is_alive()["is_alive"]:
                 self.close()
-        except:
+        except napalm.base.exceptions.CommandErrorException:
             pass
 
     def open(self):
@@ -331,7 +331,7 @@ class FastIronDriver(NetworkDriver):
             if shw_int_up[val] == "Down":               # checks if current value is "down"
                 port_status.append(-1)
             else:
-                if val < len(shw_int_flapped):          # checks physical inter with given interfaces
+                if val < len(shw_int_flapped):
                     port_status.append(shw_int_flapped[val])
                 else:
                     port_status.append(-1)              # error if both matrix not same size
@@ -388,10 +388,11 @@ class FastIronDriver(NetworkDriver):
         warning = FastIronDriver.retrieve_all_locations(string, "Warning", 1)
         shutdown = FastIronDriver.retrieve_all_locations(string, "Shutdown", 1)
         for val in range(0, len(temp)):
-
+            crit = FastIronDriver.is_greater(temp[val], shutdown[0])
+            alert = FastIronDriver.is_greater(temp[val], warning[0])
             dic.update({'sensor ' + str(val + 1): {'temperature': float(temp[val]),
-                        'is_alert': FastIronDriver.is_greater(temp[val], warning[0]),
-                                                   'is_critical': FastIronDriver.is_greater(temp[val], shutdown[0])}})
+                                                   'is_alert': alert,
+                                                   'is_critical': crit}})
 
         return {'temperature': dic}                     # returns temperature of type dictionary
 
@@ -414,9 +415,13 @@ class FastIronDriver(NetworkDriver):
         my_dic = {}  # creates new list
         for val in range(0, len(status)):               # if power supply has failed will return
             if status[val] == 'failed':                 # false, if working will return true
-                my_dic["PSU" + potential_values[val]] = {'status': False, 'capacity': 0.0, 'output': 0.0}
+                my_dic["PSU" + potential_values[val]] = {'status': False,
+                                                         'capacity': 0.0,
+                                                         'output': 0.0}
             elif norm_stat[val] == "ok":
-                my_dic["PS" + potential_values[val]] = {'status': True, 'capacity': capacity, 'output': pwr_used}
+                my_dic["PS" + potential_values[val]] = {'status': True,
+                                                        'capacity': capacity,
+                                                        'output': pwr_used}
 
         return {'power': my_dic}                        # returns dictionary containing pwr info
 
@@ -558,7 +563,7 @@ class FastIronDriver(NetworkDriver):
                 self.config_replace = FastIronDriver.creates_list_of_nlines(temp)
                 self.replace_config = True                  # file opened successfully
                 return
-            except:
+            except ValueError:
                 raise ReplaceConfigException("Configuration error")
 
         if config is not None:
@@ -566,7 +571,7 @@ class FastIronDriver(NetworkDriver):
                 self.config_replace = FastIronDriver.creates_list_of_nlines(config)
                 self.replace_config = True                  # string successfully saved
                 return
-            except:
+            except ValueError:
                 raise ReplaceConfigException("Configuration error")
 
         raise ReplaceConfigException("Configuration error")
@@ -598,7 +603,7 @@ class FastIronDriver(NetworkDriver):
                 self.config_merge = FastIronDriver.creates_list_of_nlines(temp)
                 self.merge_config = True                    # file opened successfully
                 return
-            except:
+            except ValueError:
                 raise MergeConfigException("Configuration error")
 
         if config is not None:
@@ -606,7 +611,7 @@ class FastIronDriver(NetworkDriver):
                 self.config_merge = FastIronDriver.creates_list_of_nlines(config)
                 self.merge_config = True                    # string successfully saved
                 return
-            except:
+            except ValueError:
                 raise MergeConfigException("Configuration error")
 
         raise MergeConfigException("Configuration error")
@@ -714,7 +719,7 @@ class FastIronDriver(NetworkDriver):
 
                 # Save config to startup
                 self.device.send_command_expect("write mem")
-            except:
+            except ValueError:
                 raise MergeConfigException("Configuration error")
         else:
             print("no rollback file found, please insert")
@@ -736,9 +741,9 @@ class FastIronDriver(NetworkDriver):
         host_name = self.device.send_command('show running | i hostname')
 
         return{
-            'uptime': FastIronDriver.facts_uptime(version_output),  # Returns up time of device in sec
+            'uptime': FastIronDriver.facts_uptime(version_output),  # time of device in sec
             'vendor': 'Ruckus',                                     # Vendor of ICX switches
-            'model':  FastIronDriver.facts_model(version_output),   # Model type of switch 12/24/24P etc
+            'model':  FastIronDriver.facts_model(version_output),   # Model type of switch
             'hostname':  FastIronDriver.facts_hostname(host_name),  # Host name if configured
             'fqdn': None,
             'os_version':  FastIronDriver.facts_os_version(version_output),
@@ -930,7 +935,7 @@ class FastIronDriver(NetworkDriver):
         sys_cap = output[e_token_sc:s_token_ma]                 # grabs system capability
         port_de = output[e_token_pd:s_token_la]                 # grabs ports description
 
-        sys_des = FastIronDriver.unite_strings(sys_des) # removes excess spaces and n lines
+        sys_des = FastIronDriver.unite_strings(sys_des)     # removes excess spaces and n lines
         sys_cap = FastIronDriver.unite_strings(sys_cap)
         port_de = FastIronDriver.unite_strings(port_de)
 
