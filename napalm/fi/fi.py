@@ -23,13 +23,13 @@ import socket
 # import re
 
 # local modules
-import napalm.base.exceptions
-import napalm.base.helpers
+# import napalm.base.exceptions
+# import napalm.base.helpers
 from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, ConnectionException, \
     ConnectionClosedException
 
-import napalm.base.constants as c
-from napalm.base import validate
+# import napalm.base.constants as c
+# from napalm.base import validate
 from napalm.base import NetworkDriver
 
 
@@ -49,7 +49,7 @@ class FastIronDriver(NetworkDriver):
         self.timeout = timeout
         self.port = optional_args.get('port', 22)
         self.merge_config = False
-        self.replace_config = False                             # command has not been run successfully
+        self.replace_config = False
         self.stored_config = None
         self.config_replace = None
         self.config_merge = None
@@ -64,7 +64,7 @@ class FastIronDriver(NetworkDriver):
         try:
             if self.is_alive()["is_alive"]:
                 self.close()
-        except Exception:
+        except:
             pass
 
     def open(self):
@@ -73,7 +73,7 @@ class FastIronDriver(NetworkDriver):
         """
         try:
             self.device = ConnectHandler(device_type='ruckus_fastiron',
-                                         ip=self.hostname,                      # saves device parameters
+                                         ip=self.hostname,      # saves device parameters
                                          port=self.port,
                                          username=self.username,
                                          password=self.password,
@@ -82,20 +82,21 @@ class FastIronDriver(NetworkDriver):
             self.device.session_preparation()
 
         except Exception:
-            raise ConnectionException("Cannot connect to switch: %s:%s" % (self.hostname, self.port))
+            raise ConnectionException("Cannot connect to switch: %s:%s" % (self.hostname,
+                                                                           self.port))
 
     def close(self):
         """
         Closes the connection to the device.
         """
-        self.device.disconnect()                                                # Disconnects device
+        self.device.disconnect()
 
     def is_alive(self):
         """
         Returns a flag with the connection state.
         Depends on the nature of API used by each driver.
         The state does not reflect only on the connection status (when SSH), it must also take into
-        consideration other parameters, e.g.: NETCONF session might not be usable, althought the
+        consideration other parameters, e.g.: NETCONF session might not be usable, although the
         underlying SSH session is still open etc.
         """
         null = chr(0)
@@ -106,7 +107,7 @@ class FastIronDriver(NetworkDriver):
                 'is_alive': False
             }
         return {
-            'is_alive': self.device.remote_conn.transport.is_active()           # returns if device is alive
+            'is_alive': self.device.remote_conn.transport.is_active()
         }
 
     def _send_command(self, command):
@@ -131,12 +132,12 @@ class FastIronDriver(NetworkDriver):
     @staticmethod
     def retrieve_all_locations(long_string, word, pos):
         """Finds a word of a long_string and returns the value in the nth position"""
-        count = 0                                           # counter
-        split_string = long_string.split()                  # breaks long string into string of substring
-        values = []                                         # creates a list
-        for m in split_string:                              # goes through substrings one by one
-            count += 1                                      # increments counter
-            if m == word:                                   # if substring and word match then specific value
+        count = 0                           # counter
+        split_string = long_string.split()  # breaks long string into string of substring
+        values = []                         # creates a list
+        for m in split_string:              # goes through substrings one by one
+            count += 1                      # increments counter
+            if m == word:                   # if substring and word match then specific value
                 values.append(split_string[count + pos])    # is added to list that is returned
         return values
 
@@ -144,33 +145,33 @@ class FastIronDriver(NetworkDriver):
     def find_words(output, word_list, pos_list):
         """   """
         dictionary = {}
-        if len(word_list) != len(pos_list):                             # checks word, pos pair exist
+        if len(word_list) != len(pos_list):             # checks word, pos pair exist
             return None
 
-        if len(word_list) == 0 or len(pos_list) == 0:                   # returns NONE if list is empty
+        if len(word_list) == 0 or len(pos_list) == 0:   # returns NONE if list is empty
             return None
 
         size = len(word_list)
-        sentence = output.split()                                       # breaks long string into separate strings
+        sentence = output.split()                   # breaks long string into separate strings
 
-        for m in range(0, size):                                        # Iterates through size of word list
-            pos = int(pos_list.pop())                                   # pops element position and word pair in list
+        for m in range(0, size):                    # Iterates through size of word list
+            pos = int(pos_list.pop())               # pops element position and word pair in list
             word = word_list.pop()
-            if sentence.__contains__(word):                             # checks if word is contained in text
-                indx = sentence.index(word)                             # records the index of word
-                dictionary[word] = sentence[indx + pos]                 # word is obtain as key, index used as reference
+            if sentence.__contains__(word):         # checks if word is contained in text
+                indx = sentence.index(word)         # records the index of word
+                dictionary[word] = sentence[indx + pos]
 
         return dictionary
 
     @staticmethod
     def creates_list_of_nlines(my_string):
         """ Breaks a long string into separated substring"""
-        temp = ""                                               # sets empty string, will add char respectively
-        my_list = list()                                        # creates list
-        for val in range(0, len(my_string)):                    # iterates through the length of input
-            if my_string[val] == '\n' and temp == "":           # Nothing to add after finding a nline, skip
+        temp = ""                       # sets empty string, will add char respectively
+        my_list = list()                # creates list
+        for val in range(0, len(my_string)):    # iterates through the length of input
+            if my_string[val] == '\n' and temp == "":
                 continue
-            elif my_string[val] == '\n' or val >= len(my_string):    # End of file or nline, add what was found
+            elif my_string[val] == '\n' or val >= len(my_string):    # add what was found
                 my_list.append(temp)
                 temp = ""
             else:
@@ -182,23 +183,24 @@ class FastIronDriver(NetworkDriver):
 
     @staticmethod
     def delete_if_contains(nline_list, del_word):
-        temp_list = list()                                      # Creates a list to store variables
-        for a_string in nline_list:                             # iterates through list
-            if a_string .__contains__(del_word):                # if word is found and matches, word is skipped
+        temp_list = list()                          # Creates a list to store variables
+        for a_string in nline_list:                 # iterates through list
+            if a_string .__contains__(del_word):    # if word matches, word is skipped
                 continue
             else:
-                temp_list.append(a_string.split())              # Word didn't match with deleted, stored in list
+                temp_list.append(a_string.split())  # Word didn't match store in list
         return temp_list
 
     @staticmethod
     def facts_uptime(my_string):  # TODO check for hours its missing....
-        my_list = ["day(s)", "hour(s)", "minute(s)", "second(s)"]               # list of words to find
-        my_pos = [-1, -1, -1, -1]                                               # relative position of interest
-        total_seconds = 0; multiplier = 0                                       # data variables
-        t_dictionary = FastIronDriver.find_words(my_string, my_list, my_pos)    # If word is found retrieves pos
+        my_list = ["day(s)", "hour(s)", "minute(s)", "second(s)"]   # list of words to find
+        my_pos = [-1, -1, -1, -1]                   # relative position of interest
+        total_seconds = 0                           # data variables
+        multiplier = 0
+        t_dictionary = FastIronDriver.find_words(my_string, my_list, my_pos)    # retrieves pos
 
-        for m in t_dictionary.keys():                                           # Checks word found and its multiplier
-            if m == "second(s)":
+        for m in t_dictionary.keys():               # Checks word found and its multiplier
+            if m == "second(s)":                    # converts to seconds
                 multiplier = 1
             elif m == "minute(s)":
                 multiplier = 60
@@ -206,68 +208,68 @@ class FastIronDriver(NetworkDriver):
                 multiplier = 3600
             elif m == "day(s)":
                 multiplier = 86400
-            total_seconds = int(t_dictionary.get(m))*multiplier + total_seconds     # converts to seconds
+            total_seconds = int(t_dictionary.get(m))*multiplier + total_seconds
         return total_seconds
 
     @staticmethod
     def facts_model(string):
         model = FastIronDriver.retrieve_all_locations(string, "Stackable", 0)[0]
-        return model                                                                # returns the model of the switch
+        return model                                # returns the model of the switch
 
     @staticmethod
     def facts_hostname(string):
         if string.__contains__("hostname"):
             hostname = FastIronDriver.retrieve_all_locations(string, "hostname", 0)[0]
-            return hostname                                                         # returns the hostname if configured
+            return hostname                         # returns the hostname if configured
         else:
             return None
 
     @staticmethod
     def facts_os_version(string):
         os_version = FastIronDriver.retrieve_all_locations(string, "SW:", 1)[0]
-        return os_version                                                           # returns the os_version of switch
+        return os_version                           # returns the os_version of switch
 
     @staticmethod
     def facts_serial(string):
         serial = FastIronDriver.retrieve_all_locations(string, "Serial", 0)[0]
         serial = serial.replace('#:', '')
-        return serial                                                               # returns serial number
+        return serial                               # returns serial number
 
     @staticmethod
-    def facts_interface_list(shw_int_brief, pos=0, del_word="Port", trigger=0):         # TODO Unicode
-        interfaces_list = list()                                                        # Creates a list
-        n_line_output = FastIronDriver.creates_list_of_nlines(shw_int_brief)            # Breaks into separate lines
-        interface_details = FastIronDriver.delete_if_contains(n_line_output, del_word)  # Removes words if contained
+    def facts_interface_list(shw_int_brief, pos=0, del_word="Port", trigger=0):
+        interfaces_list = list()
+        n_line_output = FastIronDriver.creates_list_of_nlines(shw_int_brief)
+        interface_details = FastIronDriver.delete_if_contains(n_line_output, del_word)
 
-        for port_det in interface_details:                                              # Iterates through detail
+        for port_det in interface_details:
 
             if trigger == 0:
-                interfaces_list.append(port_det[pos])                                   # By default is 0
+                interfaces_list.append(port_det[pos])
             else:
                 if port_det[pos].__contains__("ve") or port_det[pos].__contains__("lb") or \
-                        port_det[pos].__contains__("tunnel"):                           # removes non physical interface
+                        port_det[pos].__contains__("tunnel"):   # removes non physical interface
                     continue
                 else:
-                    interfaces_list.append(port_det[pos])                               # adds phys interface to list
+                    interfaces_list.append(port_det[pos])       # adds phys interface to list
         return interfaces_list
 
     @staticmethod
     def port_time(shw_int_port):
-        t_port = list()                                                     # Creates list
-        new_lines = FastIronDriver.creates_list_of_nlines(shw_int_port)     # Creates n lines of show int port
+        t_port = list()                                         # Creates n lines of show int port
+        new_lines = FastIronDriver.creates_list_of_nlines(shw_int_port)
 
         for val in new_lines:
-            if val .__contains__("name"):                                   # If line contains "name" is skipped
+            if val .__contains__("name"):           # If line contains "name" is skipped
                 continue
-            t_port.append(FastIronDriver.facts_uptime(val))                 # adds time to ports
+            t_port.append(FastIronDriver.facts_uptime(val))     # adds time to ports
 
         return t_port
 
     @staticmethod
     def get_interface_speed(shw_int_speed):
-        speed = list()                                                      # creates list
-        for val in shw_int_speed:                                           # speed words contained and compared
-            if val == 'auto,' or val == '1Gbit,':                           # appends speed hat
+        speed = list()                                          # creates list
+        for val in shw_int_speed:                               # speed words contained and compared
+            if val == 'auto,' or val == '1Gbit,':               # appends speed hat
                 speed.append(1000)
             elif val == '10Mbit,':
                 speed.append(10)
@@ -287,166 +289,168 @@ class FastIronDriver(NetworkDriver):
 
     @staticmethod
     def get_interface_up(shw_int_brief):
-        port_stat = list()                                          # Creates list
-        for line in shw_int_brief:                                  # input has a n x 1 of words
+        port_stat = list()                          # Creates list
+        for line in shw_int_brief:                  # input has a n x 1 of words
             if line == "Up":
-                port_stat.append(True)                              # appends true if up false if port is down
+                port_stat.append(True)              # appends true if up false if port is down
             else:
                 port_stat.append(False)
-        return port_stat                                            # returns list of port status true/false "up/down"
+        return port_stat                            # returns list of port status "up/down"
 
     @staticmethod
     def get_interfaces_en(shw_int_brief):
-        port_status = list()                                        # creates list
-        for line in shw_int_brief:                                  # input is a n x 1 of words
-            if line == "None" or line == "N/A":                     # if either match is found reports false
+        port_status = list()                        # creates list
+        for line in shw_int_brief:                  # input is a n x 1 of words
+            if line == "None" or line == "N/A":     # if either match is found reports false
                 port_status.append(False)
             else:
-                port_status.append(True)                            # Otherwise true
-        return port_status                                          # return port status
+                port_status.append(True)            # Otherwise true
+        return port_status                          # return port status
 
     @staticmethod
     def unite_strings(output):
         """ removes all the new line and excess spacing in a string"""
-        my_string = ""                                              # empty string
+        my_string = ""                              # empty string
 
-        for index in range(len(output)):                            # iterates through all characters of output
+        for index in range(len(output)):            # iterates through all characters of output
 
-            if output[index] != '\n' and output[index] != ' ':      # skips newline and spaces
+            if output[index] != '\n' and output[index] != ' ':  # skips newline and spaces
                 my_string += output[index]
 
             if index != len(output) - 1:
-                if output[index] == ' ' and output[index+1] != ' ':     # only adds space to existing string if the
-                    my_string += ' '                                    # next char of string is not another space
+                if output[index] == ' ' and output[index+1] != ' ':
+                    my_string += ' '                # next char of string is not another space
 
-        return my_string                                                # returns stored string
+        return my_string                            # returns stored string
 
     @staticmethod
     def get_interface_flap(shw_int_up, shw_int_flapped):
-        port_status = list()                                            # creates list
+        port_status = list()                            # creates list
 
-        for val in range(0, len(shw_int_up)):                           # will use index iterate
-            if shw_int_up[val] == "Down":                               # checks if current value is "down"
+        for val in range(0, len(shw_int_up)):           # will use index iterate
+            if shw_int_up[val] == "Down":               # checks if current value is "down"
                 port_status.append(-1)
             else:
-                if val < len(shw_int_flapped):                          # checks physical inter with given interfaces
+                if val < len(shw_int_flapped):          # checks physical inter with given interfaces
                     port_status.append(shw_int_flapped[val])
                 else:
-                    port_status.append(-1)                              # error if both matrix not same size
+                    port_status.append(-1)              # error if both matrix not same size
         return port_status
 
     @staticmethod
     def get_interface_name(shw_int_name, size):
-        port_status = list()                                            # Creates list
-        shw_int_name = FastIronDriver.creates_list_of_nlines(shw_int_name)  # Separates output into n lines
-        for val in shw_int_name:                                        # iterates through n lines
-            if val .__contains__("No port name"):                       # port does not have name
-                port_status.append("")                                  # appends nothing for port name
+        port_status = list()                            # Creates list
+        shw_int_name = FastIronDriver.creates_list_of_nlines(shw_int_name)
+        for val in shw_int_name:                        # iterates through n lines
+            if val .__contains__("No port name"):       # port does not have name
+                port_status.append("")                  # appends nothing for port name
             else:
                 port_status.append(val.replace("Port name is", ""))     # Removes fluff add name
 
-        for temp in range(0, size - len(port_status)):                  # adds no names to the remainder so that
-            port_status.append("")                                      # all matrix of data are the same size
+        for temp in range(0, size - len(port_status)):  # adds no names to the remainder so that
+            port_status.append("")                      # all matrix of data are the same size
 
         return port_status
 
     @staticmethod
-    def is_greater(value, threshold):                           # compares two values returns true if value
-        if float(value) >= float(threshold):                    # is greater or equal to threshold
+    def is_greater(value, threshold):               # compares two values returns true if value
+        if float(value) >= float(threshold):        # is greater or equal to threshold
             return True
         return False
 
     @staticmethod
     def get_interfaces_speed(shw_int_speed, size):
-        port_status = list()                                    # Create a list
+        port_status = list()                            # Create a list
         for val in range(0, size):
             if val < len(shw_int_speed):
-                port_status.append(shw_int_speed[val])          # appends string index into port list
+                port_status.append(shw_int_speed[val])  # appends string index into port list
             else:
                 port_status.append(0)
-        return port_status                                      # returns port list
+        return port_status                              # returns port list
 
     @staticmethod
     def matrix_format(my_input):
-        my_list = list()                                                        # Creates list
-        newline = FastIronDriver.creates_list_of_nlines(my_input)               # Input separated into n lines
-        for text in newline:                                                    # Goes through n lines by n lines
-            text = text.split()                                                 # splits long string into words
-            if len(text) < 1:                                                   # if more than a single word skip
+        my_list = list()
+        newline = FastIronDriver.creates_list_of_nlines(my_input)
+        for text in newline:                            # Goes through n lines by n lines
+            text = text.split()                         # splits long string into words
+            if len(text) < 1:                           # if more than a single word skip
                 continue
             else:
-                my_list.append(text)                                            # appends single word
+                my_list.append(text)                    # appends single word
 
-        return my_list                                                          # returns list
+        return my_list                                  # returns list
 
     @staticmethod
     def environment_temperature(string):
         dic = dict()
         temp = FastIronDriver.retrieve_all_locations(string, "(Sensor", -3)
-        warning = FastIronDriver.retrieve_all_locations(string, "Warning", 1)    # returns the current warning threshold
-        shutdown = FastIronDriver.retrieve_all_locations(string, "Shutdown", 1)  # returns the shutdown threshold
+        warning = FastIronDriver.retrieve_all_locations(string, "Warning", 1)
+        shutdown = FastIronDriver.retrieve_all_locations(string, "Shutdown", 1)
         for val in range(0, len(temp)):
 
             dic.update({'sensor ' + str(val + 1): {'temperature': float(temp[val]),
                         'is_alert': FastIronDriver.is_greater(temp[val], warning[0]),
                                                    'is_critical': FastIronDriver.is_greater(temp[val], shutdown[0])}})
 
-        return {'temperature': dic}                                             # returns temperature of type dictionary
+        return {'temperature': dic}                     # returns temperature of type dictionary
 
     @staticmethod
     def environment_cpu(string):
-        cpu = max(FastIronDriver.retrieve_all_locations(string, "percent", -2))     # Grabs the max cpu value
+        cpu = max(FastIronDriver.retrieve_all_locations(string, "percent", -2))
         dic = {'%usage': cpu}
-        return {'cpu': dic}                                                         # returns dictionary with key cpu
+        return {'cpu': dic}                             # returns dictionary with key cpu
 
     @staticmethod
     def environment_power(chassis_string, inline_string):
-        status = FastIronDriver.retrieve_all_locations(chassis_string, "Power", 4)  # checks failed after string found
-        potential_values = FastIronDriver.retrieve_all_locations(chassis_string, "Power", 1)    # numerical PSU value
-        norm_stat = FastIronDriver.retrieve_all_locations(chassis_string, "Power", 7)           # checks working PSU
-        capacity = float(FastIronDriver.retrieve_all_locations(inline_string, "Free", -4)[0]) / 1000
-        pwr_used = capacity - float(FastIronDriver.retrieve_all_locations(inline_string, "Free", 1)[0]) / 1000
+        status = FastIronDriver.retrieve_all_locations(chassis_string, "Power", 4)
+        potential_values = FastIronDriver.retrieve_all_locations(chassis_string, "Power", 1)
+        norm_stat = FastIronDriver.retrieve_all_locations(chassis_string, "Power", 7)
+        capacity = float(FastIronDriver.retrieve_all_locations(inline_string,
+                                                               "Free", -4)[0]) / 1000
+        pwr_used = capacity - float(FastIronDriver.retrieve_all_locations(inline_string,
+                                                                          "Free", 1)[0]) / 1000
 
         my_dic = {}  # creates new list
-        for val in range(0, len(status)):                               # if power supply has failed will return
-            if status[val] == 'failed':                                 # false, if working will return true
+        for val in range(0, len(status)):               # if power supply has failed will return
+            if status[val] == 'failed':                 # false, if working will return true
                 my_dic["PSU" + potential_values[val]] = {'status': False, 'capacity': 0.0, 'output': 0.0}
             elif norm_stat[val] == "ok":
                 my_dic["PS" + potential_values[val]] = {'status': True, 'capacity': capacity, 'output': pwr_used}
 
-        return {'power': my_dic}                                                # returns dictionary containing pwr info
+        return {'power': my_dic}                        # returns dictionary containing pwr info
 
     @staticmethod
     def fast_find(input_string, word):
-        index_list = list()                                                     # creates a list
-        input_string = input_string.split()                                     # breaks input into list of strings
-        for val in range(len(input_string)):                                    # iterates depending on size
-            if input_string[val] == word:                                       # if word is contained in list of words
-                index_list.append(val)                                          # append to index
-        return index_list                                                       # returns list
+        index_list = list()                             # creates a list
+        input_string = input_string.split()             # breaks input into list of strings
+        for val in range(len(input_string)):            # iterates depending on size
+            if input_string[val] == word:               # if word is contained in list of words
+                index_list.append(val)                  # append to index
+        return index_list                               # returns list
 
     @staticmethod
     def environment_fan(string):
-        fan = FastIronDriver.retrieve_all_locations(string, "Fan", 1)           # finds all instances of fan in output
-        unit = FastIronDriver.retrieve_all_locations(string, "Fan", 0)          # finds all instances of fan ID
+        fan = FastIronDriver.retrieve_all_locations(string, "Fan", 1)
+        unit = FastIronDriver.retrieve_all_locations(string, "Fan", 0)
         my_dict = {}  # creates list
 
-        if string.__contains__("Fanless"):                                      # If string input contains word fanless
-            return {"fan": {None}}                                              # no fans are in unit and returns None
+        if string.__contains__("Fanless"):              # If string input contains word fanless
+            return {"fan": {None}}                      # no fans are in unit and returns None
 
-        for val in range(0, len(fan)):                                          #
-            if fan[val] == "ok,":                                               # checks if output is failed or ok
-                my_dict["fan" + unit[val]] = {'status': True}                   # if fan is functional will return true
-            elif fan[val] == "failed":                                          # if fan fails, will return false
+        for val in range(0, len(fan)):
+            if fan[val] == "ok,":                       # checks if output is failed or ok
+                my_dict["fan" + unit[val]] = {'status': True}
+            elif fan[val] == "failed":                  # if fan fails, will return false
                 my_dict["fan" + unit[val]] = {'status': False}
 
-        return {'fan': my_dict}                                                 # returns dictionary containing fan info
+        return {'fan': my_dict}                         # returns dictionary containing fan info
 
     @staticmethod
     def environment_memory(string):
-        mem_total = FastIronDriver.retrieve_all_locations(string, "Dynamic", 1)     # total amount of memory (bytes)
-        mem_used = FastIronDriver.retrieve_all_locations(string, "Dynamic", 4)      # amount of memory used (bytes)
-        dic = {'available_ram': int(mem_total[0]), 'used_ram': int(mem_used[0])}    # dictionary of memory info
+        mem_total = FastIronDriver.retrieve_all_locations(string, "Dynamic", 1)
+        mem_used = FastIronDriver.retrieve_all_locations(string, "Dynamic", 4)
+        dic = {'available_ram': int(mem_total[0]), 'used_ram': int(mem_used[0])}
 
         return {'memory': dic}
 
@@ -454,67 +458,67 @@ class FastIronDriver(NetworkDriver):
     def output_parser(output, word):
         """If the word is found in the output, it will return the ip address until a new interface is found
         for example."""
-        token = output.find(word) + len(word)                           # saves pos of where word is contained
-        count = 0                                                       # counter variable
-        output = output[token:len(output)].replace('/', ' ')            # output display certain boundary and replaces
-        nline = FastIronDriver.creates_list_of_nlines(output)           # characters with spaces
-        ip6_dict = dict()                                               # creates dictionary
+        token = output.find(word) + len(word)           # saves pos of where word is contained
+        count = 0                                       # counter variable
+        output = output[token:len(output)].replace('/', ' ')
+        nline = FastIronDriver.creates_list_of_nlines(output)
+        ip6_dict = dict()                               # creates dictionary
 
-        for sentence in nline:                                          # separated n lines goes n line by n line
-            sentence = sentence.split()                                 # sentence contains list of words
+        for sentence in nline:                          # separated n lines goes n line by n line
+            sentence = sentence.split()                 # sentence contains list of words
 
-            if len(sentence) > 2:                                       # if length of list is greater than 2
-                count += 1                                              # its a parent interface
-                if count > 1:                                           # only a single parent interface at a time
-                    break                                               # breaks if another parent interface found
-                ip6_dict.update({                                       # Update ipv6 dictionary with ipv6 add and mask
+            if len(sentence) > 2:                       # if length of list is greater than 2
+                count += 1                              # its a parent interface
+                if count > 1:                           # only a single parent interface at a time
+                    break                               # breaks if another parent interface found
+                ip6_dict.update({                       # Update ipv6 dict with ipv6 add and mask
                         sentence[2]: {'prefix_length': sentence[3]}
                 })
-            if len(sentence) == 2:                                      # child ipv6 interface is found
-                ip6_dict.update({                                       # updates dictionary with ipv6 and mask
+            if len(sentence) == 2:                      # child ipv6 interface is found
+                ip6_dict.update({                       # updates dictionary with ipv6 and mask
                         sentence[0]: {'prefix_length': sentence[1]}
                 })
 
-        return ip6_dict                                                 # returns ipv6 dictionary
+        return ip6_dict                                 # returns ipv6 dictionary
 
     @staticmethod
     def creates_config_block(list_1):
-        config_block = list()                                           #
-        temp_block = list()                                             #
+        config_block = list()
+        temp_block = list()
 
-        for line_cmd in list_1:                                         #
-            cmd_position = list_1.index(line_cmd)                       #
-            if cmd_position != 0:                                       #
-                if list_1[cmd_position - 1] == '!':                     #
-                    while list_1[cmd_position] != '!' and cmd_position < len(list_1) - 1:   #
-                        temp_block.append(list_1[cmd_position])                             #
-                        cmd_position += 1                                                   #
+        for line_cmd in list_1:
+            cmd_position = list_1.index(line_cmd)
+            if cmd_position != 0:
+                if list_1[cmd_position - 1] == '!':
+                    while list_1[cmd_position] != '!' and cmd_position < len(list_1) - 1:
+                        temp_block.append(list_1[cmd_position])
+                        cmd_position += 1
 
-                    if len(temp_block) > 0:                             #
-                        config_block.append(temp_block)                 #
-                    temp_block = list()                                 #
+                    if len(temp_block) > 0:
+                        config_block.append(temp_block)
+                    temp_block = list()
 
         return config_block
 
     @staticmethod
     def comparing_list(list_1, list_2, symbol):
         diff_list = list()
-        config_blocks_1 = FastIronDriver.creates_config_block(list_1)   # Creates config blocks from config
+        config_blocks_1 = FastIronDriver.creates_config_block(list_1)
         config_blocks_2 = FastIronDriver.creates_config_block(list_2)
 
-        for cb_1 in config_blocks_1:                                    # Grabs a single config block
+        for cb_1 in config_blocks_1:                # Grabs a single config block
             is_found = False
             temp_list = list()
 
-            if cb_1 not in config_blocks_2:                             # checks if config block already exisit
-                cmd = cb_1[0]                                           # grabs first cmd of config block
+            if cb_1 not in config_blocks_2:         # checks if config block already exisit
+                cmd = cb_1[0]                       # grabs first cmd of config block
 
-                for cb_2 in config_blocks_2:                            # grabs a single config block from the blocks
-                    if cmd == cb_2[0]:                                  # checks cmd not found, if it is in config_b_2
+                for cb_2 in config_blocks_2:        # grabs a single config block
+                    if cmd == cb_2[0]:              # checks cmd not found
                         is_found = True
-                        for single_cmd in cb_1:                         # iterates through cmd of config block
-                            if single_cmd == cmd:                       # if this is first command add as base
-                                temp_list.append(single_cmd)            # add to list with no changes
+                        for single_cmd in cb_1:     # iterates through cmd of config block
+                            if single_cmd == cmd:   # if this is first command add as base
+                                temp_list.append(single_cmd)    # add to list with no changes
                             elif single_cmd not in cb_2:
                                 temp_list.append(symbol + " " + single_cmd)
 
@@ -543,24 +547,24 @@ class FastIronDriver(NetworkDriver):
         """
         file_content = ""
 
-        if filename is None and config is None:                                     # if nothing is entered returns none
+        if filename is None and config is None:             # if nothing is entered returns none
             print("No filename or config was entered")
             return None
 
         if filename is not None:
             try:
-                file_content = open(filename, "r")                                  # attempts to open file
-                temp = file_content.read()                                          # stores file content
-                self.config_replace = FastIronDriver.creates_list_of_nlines(temp)   # stores as list
-                self.replace_config = True                                          # file opened successfully
+                file_content = open(filename, "r")          # attempts to open file
+                temp = file_content.read()                  # stores file content
+                self.config_replace = FastIronDriver.creates_list_of_nlines(temp)
+                self.replace_config = True                  # file opened successfully
                 return
             except:
                 raise ReplaceConfigException("Configuration error")
 
         if config is not None:
             try:
-                self.config_replace = FastIronDriver.creates_list_of_nlines(config)     # stores config
-                self.replace_config = True                                              # string successfully saved
+                self.config_replace = FastIronDriver.creates_list_of_nlines(config)
+                self.replace_config = True                  # string successfully saved
                 return
             except:
                 raise ReplaceConfigException("Configuration error")
@@ -583,31 +587,31 @@ class FastIronDriver(NetworkDriver):
         """
         file_content = ""
 
-        if filename is None and config is None:                                     # if nothing is entered returns none
+        if filename is None and config is None:             # if nothing is entered returns none
             print("No filename or config was entered")
             return None
 
         if filename is not None:
             try:
-                file_content = open(filename, "r")                                  # attempts to open file
-                temp = file_content.read()                                          # stores file content
-                self.config_merge = FastIronDriver.creates_list_of_nlines(temp)     # stores as list
-                self.merge_config = True                                            # file opened successfully
+                file_content = open(filename, "r")          # attempts to open file
+                temp = file_content.read()                  # stores file content
+                self.config_merge = FastIronDriver.creates_list_of_nlines(temp)
+                self.merge_config = True                    # file opened successfully
                 return
             except:
                 raise MergeConfigException("Configuration error")
 
         if config is not None:
             try:
-                self.config_merge = FastIronDriver.creates_list_of_nlines(config)       # stores config
-                self.merge_config = True                                                # string successfully saved
+                self.config_merge = FastIronDriver.creates_list_of_nlines(config)
+                self.merge_config = True                    # string successfully saved
                 return
             except:
                 raise MergeConfigException("Configuration error")
 
         raise MergeConfigException("Configuration error")
 
-    def compare_config(self):                   # optimize implementation
+    def compare_config(self):                               # optimize implementation
         """
         :return: A string showing the difference between the running configuration and the \
         candidate configuration. The running_config is loaded automatically just before doing the \
@@ -622,9 +626,9 @@ class FastIronDriver(NetworkDriver):
         rc = running_config.get('running')
         stored_conf = None
 
-        if self.replace_config == True:
+        if self.replace_config is True:
             stored_conf = self.config_replace
-        elif self.merge_config == True:
+        elif self.merge_config is True:
             stored_conf = self.config_merge
         else:
             return -1                           # No configuration was found
@@ -657,12 +661,11 @@ class FastIronDriver(NetworkDriver):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
         """
-        config = ""
         if self.replace_config is False and self.merge_config is False:
             print("Please replace or merge a configuration ")
             return -1                                           # returns failure
 
-        if self.replace_config is not False:                    # replace configuration will overwrite current config
+        if self.replace_config is not False:
             replace_list = list()
 
             diff_in_config = FastIronDriver.compare_config(self)
@@ -681,11 +684,11 @@ class FastIronDriver(NetworkDriver):
 
             return True
 
-        if self.merge_config is not False:                      # merges candidate configuration with existing config
+        if self.merge_config is not False:  # merges candidate configuration with existing config
             self.device.config_mode()
             self.device.send_config_set(self.config_merge)
 
-            return True                                         # returns success
+            return True                     # returns success
 
     def discard_config(self):
         """
@@ -704,8 +707,8 @@ class FastIronDriver(NetworkDriver):
 
         if filename is not None:
             try:
-                file_content = open(filename, "r")                                  # attempts to open file
-                temp = file_content.read()                                          # stores file content
+                file_content = open(filename, "r")          # attempts to open file
+                temp = file_content.read()                  # stores file content
                 # sends configuration
                 self.device.send_command(temp)
 
@@ -728,19 +731,19 @@ class FastIronDriver(NetworkDriver):
          * serial_number - Serial number of the device
          * interface_list - List of the interfaces of the device
         """
-        version_output = self.device.send_command('show version')                   # show version output
-        interfaces_up = self.device.send_command('show int brief')                  # show int brief output
-        host_name = self.device.send_command('show running | i hostname')           # show running output
+        version_output = self.device.send_command('show version')   # show version output
+        interfaces_up = self.device.send_command('show int brief')  # show int brief output
+        host_name = self.device.send_command('show running | i hostname')
 
         return{
-            'uptime': FastIronDriver.facts_uptime(version_output),                  # Returns up time of device in sec
-            'vendor': 'Ruckus',                                                     # Vendor of ICX switches
-            'model':  FastIronDriver.facts_model(version_output),                   # Model type of switch 12/24/24P etc
-            'hostname':  FastIronDriver.facts_hostname(host_name),                  # Host name if configured
+            'uptime': FastIronDriver.facts_uptime(version_output),  # Returns up time of device in sec
+            'vendor': 'Ruckus',                                     # Vendor of ICX switches
+            'model':  FastIronDriver.facts_model(version_output),   # Model type of switch 12/24/24P etc
+            'hostname':  FastIronDriver.facts_hostname(host_name),  # Host name if configured
             'fqdn': None,
-            'os_version':  FastIronDriver.facts_os_version(version_output),         # Returns image version
-            'serial_number':  FastIronDriver.facts_serial(version_output),          # Returns Serial number of switch
-            'interface_list':  FastIronDriver.facts_interface_list(interfaces_up)   # Returns interfaces that are up
+            'os_version':  FastIronDriver.facts_os_version(version_output),
+            'serial_number':  FastIronDriver.facts_serial(version_output),
+            'interface_list':  FastIronDriver.facts_interface_list(interfaces_up)
         }
 
     def get_interfaces(self):
@@ -760,15 +763,15 @@ class FastIronDriver(NetworkDriver):
         flap_output = self.device.send_command('show interface | i Port')
         speed_output = self.device.send_command('show interface | i speed')
         nombre = self.device.send_command('show interface | i name')
-        interfaces = FastIronDriver.facts_interface_list(int_brief)             # obtains interfaces of the switch
-        int_up = FastIronDriver.facts_interface_list(int_brief, pos=1, del_word="Link")     # obtains link status
-        mac_ad = FastIronDriver.facts_interface_list(int_brief, pos=9, del_word="MAC")      # obtains mac address
-        flapped = FastIronDriver.port_time(flap_output)                                     # obtains flapped info
+        interfaces = FastIronDriver.facts_interface_list(int_brief)
+        int_up = FastIronDriver.facts_interface_list(int_brief, pos=1, del_word="Link")
+        mac_ad = FastIronDriver.facts_interface_list(int_brief, pos=9, del_word="MAC")
+        flapped = FastIronDriver.port_time(flap_output)
         size = len(interfaces)
 
-        is_en = FastIronDriver.facts_interface_list(int_brief, pos=2, del_word="State")     # obtains the states of all
-        int_speed = FastIronDriver.facts_interface_list(speed_output, pos=2)                # obtains the speed in FI
-        actual_spd = FastIronDriver.get_interface_speed(int_speed)                          # converts speeds to ints
+        is_en = FastIronDriver.facts_interface_list(int_brief, pos=2, del_word="State")
+        int_speed = FastIronDriver.facts_interface_list(speed_output, pos=2)
+        actual_spd = FastIronDriver.get_interface_speed(int_speed)
 
         flapped = FastIronDriver.get_interfaces_speed(flapped, size)
         actual_spd = FastIronDriver.get_interfaces_speed(actual_spd, size)
@@ -826,16 +829,16 @@ class FastIronDriver(NetworkDriver):
                  * available_ram (int) - Total amount of RAM installed in the device
                  * used_ram (int) - RAM in use in the device
         """
-        main_dictionary = {}                                            #
-        chassis_output = self.device.send_command('show chassis')       #
-        cpu_output = self.device.send_command('show cpu')               #
-        mem_output = self.device.send_command('show memory')            #
-        pwr_output = self.device.send_command('show inline power')      #
-        main_dictionary.update(FastIronDriver.environment_fan(chassis_output))                 #
-        main_dictionary.update(FastIronDriver.environment_temperature(chassis_output))         #
-        main_dictionary.update(FastIronDriver.environment_power(chassis_output, pwr_output))   #
-        main_dictionary.update(FastIronDriver.environment_cpu(cpu_output))                     #
-        main_dictionary.update(FastIronDriver.environment_memory(mem_output))                  #
+        main_dictionary = {}
+        chassis_output = self.device.send_command('show chassis')
+        cpu_output = self.device.send_command('show cpu')
+        mem_output = self.device.send_command('show memory')
+        pwr_output = self.device.send_command('show inline power')
+        main_dictionary.update(FastIronDriver.environment_fan(chassis_output))
+        main_dictionary.update(FastIronDriver.environment_temperature(chassis_output))
+        main_dictionary.update(FastIronDriver.environment_power(chassis_output, pwr_output))
+        main_dictionary.update(FastIronDriver.environment_cpu(cpu_output))
+        main_dictionary.update(FastIronDriver.environment_memory(mem_output))
 
         return main_dictionary
 
@@ -857,8 +860,8 @@ class FastIronDriver(NetworkDriver):
             * tx_broadcast_packets (int)
             * rx_broadcast_packets (int)
         """
-        int_output = self.device.send_command('show interface brief')       # Returns the show int brief output
-        ports = FastIronDriver.facts_interface_list(int_output, trigger=1)  # returns the amount of physical ports
+        int_output = self.device.send_command('show interface brief')
+        ports = FastIronDriver.facts_interface_list(int_output, trigger=1)
         interface_counters = dict()
         stats = self.device.send_command('show interface')
 
@@ -871,9 +874,9 @@ class FastIronDriver(NetworkDriver):
             interface_counters.update({ports[val]: {
                 'rx_errors': int(ier.pop(0)),
                 'tx_errors': int(ier.pop(0)),
-                'tx_discards': None,                    # discard is not put in output of current show int
-                'rx_discards': None,                    # alternative is to make individual calls which break
-                'tx_octets': None,                      # this function, must be taken with software to incorporate
+                'tx_discards': None,    # discard is not put in output of current show int
+                'rx_discards': None,    # alternative is to make individual calls which break
+                'tx_octets': None,
                 'rx_octets': None,
                 'rx_unicast_packets': int(uni.pop(0)),
                 'tx_unicast_packets': int(uni.pop(0)),
@@ -916,8 +919,8 @@ class FastIronDriver(NetworkDriver):
         chas_id = FastIronDriver.retrieve_all_locations(output, "Chassis", 3)[0]
         sys_nam = FastIronDriver.retrieve_all_locations(output, "name", 0)[0]
 
-        e_token_sd = output.find("System description") + len("System description")      # token used as parser
-        s_token_sc = output.find("System capabilities")                                 # limits of interest
+        e_token_sd = output.find("System description") + len("System description")
+        s_token_sc = output.find("System capabilities")
         e_token_sc = output.find("System capabilities") + len("System capabilities")
         s_token_ma = output.find("Management address")
         s_token_la = output.find("Link aggregation")
@@ -927,7 +930,7 @@ class FastIronDriver(NetworkDriver):
         sys_cap = output[e_token_sc:s_token_ma]                 # grabs system capability
         port_de = output[e_token_pd:s_token_la]                 # grabs ports description
 
-        sys_des = FastIronDriver.unite_strings(sys_des)         # removes excess spaces and n lines
+        sys_des = FastIronDriver.unite_strings(sys_des) # removes excess spaces and n lines
         sys_cap = FastIronDriver.unite_strings(sys_cap)
         port_de = FastIronDriver.unite_strings(port_de)
 
@@ -999,14 +1002,14 @@ class FastIronDriver(NetworkDriver):
             }
 
         """
-        output = self.device.send_command('show ntp associations')      # obtains peers and servers output
-        token = output.find('disp') + len('disp') + 1                   # notes where to start parsing
-        output = output[token:len(output)]                              # using token to find first place of interest
-        nline = FastIronDriver.creates_list_of_nlines(output)           # splits strings when new line is found
-        ntp_peers = dict()                                              # creates a dictionary
-        for val in range(len(nline)-1):                                   # iterates through outputs
-            val = nline[val].replace("~", " ")                          # removes special character found in output
-            val = val.split()                                           # segregates words also, char to string
+        output = self.device.send_command('show ntp associations')
+        token = output.find('disp') + len('disp') + 1
+        output = output[token:len(output)]
+        nline = FastIronDriver.creates_list_of_nlines(output)
+        ntp_peers = dict()
+        for val in range(len(nline)-1):
+            val = nline[val].replace("~", " ")
+            val = val.split()
             ntp_peers.update({
                 val[1]: {}
             })
@@ -1020,14 +1023,14 @@ class FastIronDriver(NetworkDriver):
         The keys of the dictionary represent the IP Addresses of the servers.
         Inner dictionaries do not have yet any available keys.
         """
-        output = self.device.send_command('show ntp associations')      # obtains peers and servers output
-        token = output.find('disp') + len('disp') + 1                   # notes where to start parsing
-        output = output[token:len(output)]                              # using token to find first place of interest
-        nline = FastIronDriver.creates_list_of_nlines(output)           # splits strings when new line is found
-        ntp_servers = dict()                                            # creates a dictionary
-        for val in range(len(nline)-1):                                 # iterates through outputs
-            val = nline[val].replace("~", " ")                          # removes special character found in output
-            val = val.split()                                           # segregates words also, char to string
+        output = self.device.send_command('show ntp associations')
+        token = output.find('disp') + len('disp') + 1
+        output = output[token:len(output)]
+        nline = FastIronDriver.creates_list_of_nlines(output)
+        ntp_servers = dict()
+        for val in range(len(nline)-1):
+            val = nline[val].replace("~", " ")
+            val = val.split()
             ntp_servers.update({
                 val[2]: {}
             })
@@ -1096,41 +1099,41 @@ class FastIronDriver(NetworkDriver):
             * prefix_length (int)
         """
 
-        ip_interface = dict()                                   # Main dict, ip4/6 will be appended to this dict
+        ip_interface = dict()
         ip4_dict = dict()                                       # ip4 dict
         ip6_dict = dict()                                       # ip6 dict
         output = self.device.send_command('show ip interface')  # obtains ip4 information
         ipv6_output = self.device.send_command('show ipv6 interface')   # obtains ip6 information
         token = output.find('VRF') + len('VRF') + 4                 # finds when to start parsing
-        output = output[token:len(output)]                          # grabs output within certain limits
-        n_line = FastIronDriver.creates_list_of_nlines(output)      # separate long string into substrings
+        output = output[token:len(output)]              # grabs output within certain limits
+        n_line = FastIronDriver.creates_list_of_nlines(output)
         last_port = ""                                          # saves last port information
 
         for index in range(len(n_line)):
-            pos = 0                                             # if interface more than one IP, list is size 1
+            pos = 0                             # if interface more than one IP, list is size 1
             sentence = n_line[index].split()                    # creates word list from string
 
             if len(sentence) == 0:                              # if empty skip
                 continue
 
-            if len(sentence) > 2:                               # parent interface, means not a list of size of 1
+            if len(sentence) > 2:                               # parent interface,size not 1
                 last_port = sentence[0] + " " + sentence[1]     # grabs port description
                 pos = 2                                         # New position of IP address
 
-                if ipv6_output.__contains__(last_port):         # if interface has ipv6 address, will return
-                    ip6_dict = FastIronDriver.output_parser(ipv6_output, last_port)     # all ipv6 add of interface
+                if ipv6_output.__contains__(last_port):         # will return ipv6 address
+                    ip6_dict = FastIronDriver.output_parser(ipv6_output, last_port)
 
-            ip4_dict.update({                                                       # updates ipv4 dictionary
+            ip4_dict.update({                                   # updates ipv4 dictionary
                     sentence[pos]: {'prefix_length': None}
             })
 
             if index == (len(n_line) - 1) or len(n_line[index + 1].split()) > 2:
-                ip_interface.update({                                               # if new parent interface is next
-                    last_port: {                                                    # save all current interfaces
+                ip_interface.update({       # if new parent interface is next
+                    last_port: {            # save all current interfaces
                         'ipv4': ip4_dict,
                         'ipv6': ip6_dict}
                 })
-                ip4_dict = dict()                                                   # resets dictionary
+                ip4_dict = dict()           # resets dictionary
                 ip6_dict = dict()
 
         return ip_interface
@@ -1152,20 +1155,20 @@ class FastIronDriver(NetworkDriver):
         output = self.device.send_command('show mac-address all')   # grabs mac address output
         token = output.find('Action') + len('Action') + 1           # word used for parser
         new_out = FastIronDriver.creates_list_of_nlines(output[token: len(output)])
-        for words in new_out:                                       # loop goes sentence by sentence
+        for words in new_out:                            # loop goes sentence by sentence
             sentence = words.split()                                # breaks sentence into words
 
-            if sentence[2] == 'Dynamic':                            # Checks word for dynamic or static
+            if sentence[2] == 'Dynamic':
                 is_dynamic = True
             else:
                 is_dynamic = False
 
-            if sentence[4] == 'forward':                            # Checks if forwarding and not block, discarding
+            if sentence[4] == 'forward':
                 is_active = True
             else:
                 is_active = False
 
-            mac_tbl.append({                                        # appends data
+            mac_tbl.append({                            # appends data
                 'mac': sentence[0],
                 'interface': sentence[1],
                 'vlan': sentence[3],
@@ -1262,7 +1265,7 @@ class FastIronDriver(NetworkDriver):
 
         return config_dic
 
-    def get_network_instances(self, name=''):   # TODO check with engineering about changing output, affects scale
+    def get_network_instances(self, name=''):
         """
         Return a dictionary of network instances (VRFs) configured, including default/global
 
@@ -1313,9 +1316,9 @@ class FastIronDriver(NetworkDriver):
         """
         vrf_dict = dict()                                           # Dictionary that will append
         vrf_interface = dict()
-        check = self.device.send_command('show version')            # will be used for checking version and model type
+        check = self.device.send_command('show version')
 
-        if check.__contains__('7150'):                              # Model ICX7150 does not support VRF
+        if check.__contains__('7150'):                              # ICX7150 does not support VRF
             return {}
 
         if check.__contains__('SPR'):                               # check if router version
@@ -1326,15 +1329,15 @@ class FastIronDriver(NetworkDriver):
         if name != '':                                              # Name was entered must look
             output = self.device.send_command('show vrf ' + name)   # grabs vrf of specified name
             token = output.find('Interfaces:') + len('Interfaces:') + 1
-            ioutput = output[token:len(output)]                         # limits scope of output range
-            sentence = ioutput.split()                                  # returns strings of interest
+            ioutput = output[token:len(output)]                     # limits scope of output range
+            sentence = ioutput.split()                              # returns strings of interest
             rid = FastIronDriver.retrieve_all_locations(output, 'RD', 0)[0]
             rid = rid.replace(',', '')
 
             for interface in sentence:
-                vrf_interface.update({interface: {}})                   # creates dictionary for interfaces of VRF
+                vrf_interface.update({interface: {}})
 
-            return {                                                    # returns a single vrf instances
+            return {
                 name: {
                     u'name': name, u'type': vrf_type, u'state': {
                         u'route_distinguisher': rid
@@ -1344,10 +1347,10 @@ class FastIronDriver(NetworkDriver):
                         }}}
 
         else:
-            output = self.device.send_command('show vrf detail')        # obtains vrf detail of default name
+            output = self.device.send_command('show vrf detail')
             # ftoken = output.find('Total number of IPv4')
-            output = output.replace('|', ' ')                           # Replaces line used as spacer
-            output = output.replace(',', '')                            # removes , with RD
+            output = output.replace('|', ' ')
+            output = output.replace(',', '')
             vrf_name_list = FastIronDriver.retrieve_all_locations(output, 'VRF', 0)
             vrf_rd = FastIronDriver.retrieve_all_locations(output, 'RD', 0)
 
