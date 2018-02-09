@@ -6,4 +6,5 @@ SUPPORTED_DRIVERS = [
     "junos",
     "nxos",
     "nxos_ssh",
+    "fi"
 ]
