@@ -1,0 +1,53 @@
+------------------------------------------------
+Local Intf: Gi1
+Chassis id: 2cc2.603e.363b
+Port id: Management1
+Port Description - not advertised
+System Name: eos-spine1.ntc.com
+
+System Description:
+Arista Networks EOS version 4.15.2F running on an Arista Networks vEOS
+
+Time remaining: 95 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    Other: 2C FF 60 3E 36 3B 00
+Auto Negotiation - not supported
+Physical media capabilities - not advertised
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Local Intf: Gi1
+Chassis id: 0005.8671.58c0
+Port id: fxp0
+Port Description: fxp0
+System Name: vmx1
+
+System Description:
+Juniper Networks, Inc. vmx internet router, kernel JUNOS 15.1F4.15, Build date: 2015-12-23 19:22:55 UTC Copyright (c) 1996-2015 Juniper Networks, Inc.
+
+Time remaining: 116 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 10.0.0.31
+    OID:
+        0.1.3.6.1.2.1.31.1.1.1.1.1.
+Auto Negotiation - supported, disabled
+Physical media capabilities:
+    1000baseT(FD)
+    1000baseX(FD)
+    1000baseX(HD)
+    Symm, Asym Pause(FD)
+    100base-TX(FD)
+    100base-TX(HD)
+    10base-T(FD)
+    10base-T(HD)
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+
+Total entries displayed: 2
+
