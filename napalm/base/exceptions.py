@@ -22,6 +22,7 @@ class NapalmException(Exception):
     '''
     pass
 
+
 class ModuleImportError(NapalmException):
     pass
 
