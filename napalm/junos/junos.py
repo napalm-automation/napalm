@@ -1137,14 +1137,13 @@ class JunOSDriver(NetworkDriver):
                 datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(key)
                 default = _DATATYPE_DEFAULT_.get(datatype)
                 if key in ['apply_groups']:
-                    if isinstance(value, str):
-                        value = [value]
-                    # apply_groups_items can contain groups that are 'deactivated'!
-                    # so we need to check first if the group is in the dict
-                    if bgp_group_name in bgp_config:
-                        bgp_config[bgp_group_name].update({
-                            key: napalm.base.helpers.convert(list, value, default)
-                        })
+                    if value is not None:
+                        if not isinstance(value, list):
+                            value = [value]
+                        # apply_groups_items can contain groups that are 'deactivated'!
+                        # so we need to check first if the group is in the dict
+                        if bgp_group_name in bgp_config:
+                            bgp_config[bgp_group_name]['apply_groups'] = value
 
         return bgp_config
 
