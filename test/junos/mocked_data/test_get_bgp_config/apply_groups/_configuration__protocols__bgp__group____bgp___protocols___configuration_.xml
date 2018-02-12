@@ -1,0 +1,29 @@
+<configuration>
+        <protocols>
+            <bgp>
+                <group>
+                    <name>internal</name>
+                    <apply-groups>test1</apply-groups>
+                    <type>internal</type>
+                    <neighbor>
+                        <name>192.168.2.17</name>
+                        <export>nhs</export>
+                    </neighbor>
+                </group>
+                <group>
+                    <name>internal-2</name>
+                    <apply-groups>test2</apply-groups>
+                    <type>internal</type>
+                    <local-address>2.2.2.2</local-address>
+                    <export>nhs</export>
+                    <neighbor>
+                        <name>10.10.10.2</name>
+                        <local-address>1.1.1.1</local-address>
+                        <export>static</export>
+                        <export>nhs3</export>
+                        <export>nhs2</export>
+                    </neighbor>
+                </group>
+            </bgp>
+        </protocols>
+</configuration>

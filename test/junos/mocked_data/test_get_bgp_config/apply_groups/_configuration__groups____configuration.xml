@@ -1,0 +1,26 @@
+<configuration>
+        <groups>
+            <name>test1</name>
+            <protocols>
+                <bgp>
+                    <group>
+                        <name>&lt;*&gt;</name>
+                        <multipath>
+                        </multipath>
+                    </group>
+                </bgp>
+            </protocols>
+        </groups>
+        <groups>
+            <name>test2</name>
+            <protocols>
+                <bgp>
+                    <group>
+                        <name>&lt;*&gt;</name>
+                        <multihop>
+                        </multihop>
+                    </group>
+                </bgp>
+            </protocols>
+        </groups>
+</configuration>
