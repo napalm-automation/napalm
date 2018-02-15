@@ -36,7 +36,7 @@ then write the desired state using the same format the getter would retrieve it.
             '%usage': '<15.0'
 
     - get_bgp_neighbors:
-        default:
+        global:
           router_id: 192.0.2.2
           peers:
             _mode: strict
