@@ -17,11 +17,18 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-class ModuleImportError(Exception):
+class NapalmException(Exception):
+    '''
+    Base Exception Class.
+    '''
     pass
 
 
-class ConnectionException(Exception):
+class ModuleImportError(NapalmException):
+    pass
+
+
+class ConnectionException(NapalmException):
     '''
     Unable to connect to the network device.
     '''
@@ -59,15 +66,15 @@ class ConnectionClosedException(ConnectionException):
     pass
 
 
-class ReplaceConfigException(Exception):
+class ReplaceConfigException(NapalmException):
     pass
 
 
-class MergeConfigException(Exception):
+class MergeConfigException(NapalmException):
     pass
 
 
-class CommitError(Exception):
+class CommitError(NapalmException):
     '''
     Raised when unable to commit the candidate config
     into the running config.
@@ -75,43 +82,43 @@ class CommitError(Exception):
     pass
 
 
-class LockError(Exception):
+class LockError(NapalmException):
     '''
     Unable to lock the candidate config.
     '''
     pass
 
 
-class UnlockError(Exception):
+class UnlockError(NapalmException):
     '''
     Unable to unlock the candidate config.
     '''
     pass
 
 
-class SessionLockedException(Exception):
+class SessionLockedException(NapalmException):
     pass
 
 
-class CommandTimeoutException(Exception):
+class CommandTimeoutException(NapalmException):
     pass
 
 
-class CommandErrorException(Exception):
+class CommandErrorException(NapalmException):
     pass
 
 
-class DriverTemplateNotImplemented(Exception):
+class DriverTemplateNotImplemented(NapalmException):
     pass
 
 
-class TemplateNotImplemented(Exception):
+class TemplateNotImplemented(NapalmException):
     pass
 
 
-class TemplateRenderException(Exception):
+class TemplateRenderException(NapalmException):
     pass
 
 
-class ValidationException(Exception):
+class ValidationException(NapalmException):
     pass
