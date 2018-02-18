@@ -665,12 +665,11 @@ class JunOSDriver(NetworkDriver):
         lldp = junos_views.junos_lldp_table(self.device)
         try:
             lldp.get()
-        except RpcError as rpcerr:
+        except RpcError:
             # this assumes the library runs in an environment
             # able to handle logs
             # otherwise, the user just won't see this happening
-            log.error('Unable to retrieve the LLDP neighbors information:')
-            log.error(rpcerr.message)
+            log.exception('Unable to retrieve the LLDP neighbors information')
             return {}
         result = lldp.items()
 
@@ -689,12 +688,11 @@ class JunOSDriver(NetworkDriver):
         lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
         try:
             lldp_table.get()
-        except RpcError as rpcerr:
+        except RpcError:
             # this assumes the library runs in an environment
             # able to handle logs
             # otherwise, the user just won't see this happening
-            log.error('Unable to retrieve the LLDP neighbors information:')
-            log.error(rpcerr.message)
+            log.exception('Unable to retrieve the LLDP neighbors information')
             return {}
         interfaces = lldp_table.get().keys()
 

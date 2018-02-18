@@ -81,9 +81,9 @@ def load_template(cls, template_name, template_source=None, template_path=None,
         )
     except (jinja2.exceptions.UndefinedError, jinja2.exceptions.TemplateSyntaxError) as jinjaerr:
         raise napalm.base.exceptions.TemplateRenderException(
-            "Unable to render the Jinja config template {template_name}: {error}".format(
+            "Unable to render the Jinja config template {template_name}: {error!s}".format(
                 template_name=template_name,
-                error=jinjaerr.message
+                error=jinjaerr
             )
         )
     return cls.load_merge_candidate(config=configuration)
