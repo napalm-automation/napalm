@@ -106,7 +106,7 @@ class JunOSDriver(NetworkDriver):
         try:
             self.device.open()
         except ConnectTimeoutError as cte:
-            raise ConnectionException(cte.message)
+            raise ConnectionException(str(cte))
         self.device.timeout = self.timeout
         self.device._conn._session.transport.set_keepalive(self.keepalive)
         if hasattr(self.device, "cu"):

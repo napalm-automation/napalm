@@ -124,7 +124,7 @@ class EOSDriver(NetworkDriver):
             # and this is raised either if device not avaiable
             # either if HTTP(S) agent is not enabled
             # show management api http-commands
-            raise ConnectionException(ce.message)
+            raise ConnectionException(str(ce))
 
     def close(self):
         """Implementation of NAPALM method close."""
@@ -232,9 +232,9 @@ class EOSDriver(NetworkDriver):
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             if replace:
-                raise ReplaceConfigException(e.message)
+                raise ReplaceConfigException(str(e))
             else:
-                raise MergeConfigException(e.message)
+                raise MergeConfigException(str(e))
 
     def load_replace_candidate(self, filename=None, config=None):
         """Implementation of NAPALM method load_replace_candidate."""

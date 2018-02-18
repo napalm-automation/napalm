@@ -264,7 +264,7 @@ class NXOSDriver(NXOSDriverBase):
                 self.device.config_list(commands)
                 self.fc.send()
         except NXOSFileTransferError as fte:
-            raise ReplaceConfigException(fte.message)
+            raise ReplaceConfigException(str(fte))
 
     def _create_sot_file(self):
         """Create Source of Truth file to compare."""
