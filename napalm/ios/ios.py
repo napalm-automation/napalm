@@ -957,7 +957,7 @@ class IOSDriver(NetworkDriver):
             elif re.search(r"IOS \(tm\).+Software", line):
                 _, os_version = line.split("IOS (tm) ")
 
-            os_version = os_version.strip()
+            os_version = re.findall(r"\d+\.\d+\(\d+\)\w+", os_version)[0]
 
         # Determine domain_name and fqdn
         for line in show_hosts.splitlines():
