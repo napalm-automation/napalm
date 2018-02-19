@@ -63,6 +63,7 @@ test/unit/test_devices.py
 
 report.json
 tags
+.pytest_cache/
 
 docs/integrations/ansible/modules/napalm_*/
 docs/integrations/ansible/modules/source/*.json

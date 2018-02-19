@@ -426,6 +426,10 @@ class NXOSSSHDriver(NXOSDriverBase):
         self.device.disconnect()
         self.device = None
 
+    def _send_command(self, command):
+        """Wrapper for Netmiko's send_command method."""
+        return self.device.send_command(command)
+
     @staticmethod
     def parse_uptime(uptime_str):
         """
@@ -1068,7 +1072,9 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         arp_entries = arp_list[1].strip()
         for line in arp_entries.splitlines():
-            if len(line.split()) == 4:
+            if len(line.split()) >= 4:
+                # Search for extra characters to strip, currently strip '*', '+', '#', 'D'
+                line = re.sub(r"\s+[\*\+\#D]{1,4}\s*$", "", line, flags=re.M)
                 address, age, mac, interface = line.split()
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
@@ -1296,6 +1302,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         output = re.sub(r"^\(R\)", "", output, flags=re.M)
         output = re.sub(r"^\(T\)", "", output, flags=re.M)
         output = re.sub(r"^\(F\)", "", output, flags=re.M)
+        output = re.sub(r"vPC Peer-Link", "vPC-Peer-Link", output, flags=re.M)
 
         for line in output.splitlines():
 
