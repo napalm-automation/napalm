@@ -426,6 +426,10 @@ class NXOSSSHDriver(NXOSDriverBase):
         self.device.disconnect()
         self.device = None
 
+    def _send_command(self, command):
+        """Wrapper for Netmiko's send_command method."""
+        return self.device.send_command(command)
+
     @staticmethod
     def parse_uptime(uptime_str):
         """

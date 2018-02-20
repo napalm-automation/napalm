@@ -442,6 +442,7 @@ class IOSDriver(NetworkDriver):
             output = self._commit_hostname_handler(cmd)
             if ('original configuration has been successfully restored' in output) or \
                ('error' in output.lower()) or \
+               ('not a valid config file' in output.lower()) or \
                ('failed' in output.lower()):
                 msg = "Candidate config could not be applied\n{}".format(output)
                 raise ReplaceConfigException(msg)
