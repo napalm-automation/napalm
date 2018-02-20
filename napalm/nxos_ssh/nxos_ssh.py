@@ -40,6 +40,7 @@ from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.base.helpers import canonical_interface_name
 from napalm.nxos import NXOSDriverBase
 import napalm.base.constants as c
 
@@ -778,14 +779,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 continue
             interface = line.split()[0]
             # Return canonical interface name
-            if re.search(r'^Eth', interface):
-                interface_list.append(re.sub('Eth', 'Ethernet', interface))
-            elif re.search(r'^Po', interface):
-                interface_list.append(re.sub('Po', 'port-channel', interface))
-            elif re.search(r'^Lo', interface):
-                interface_list.append(re.sub('Lo', 'loopback', interface))
-            else:
-                interface_list.append(interface)
+            interface_list.append(canonical_interface_name(interface))
 
         return {
             'uptime': int(uptime),
