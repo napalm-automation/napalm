@@ -443,7 +443,6 @@ class IOSDriver(NetworkDriver):
             output = self._commit_hostname_handler(cmd)
             if ('original configuration has been successfully restored' in output) or \
                ('error' in output.lower()) or \
-               ('not a valid config file' in output.lower()) or \
                ('failed' in output.lower()):
                 msg = "Candidate config could not be applied\n{}".format(output)
                 raise ReplaceConfigException(msg)
@@ -704,6 +703,18 @@ class IOSDriver(NetworkDriver):
 
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
+
+        def _device_id_expand(device_id, local_int_brief):
+            """Device id might be abbreviated: try to obtain the full device id."""
+            lldp_tmp = self._lldp_detail_parser(local_int_brief)
+            device_id_new = lldp_tmp[3][0]
+            # Verify abbreviated and full name are consistent
+            if device_id_new[:20] == device_id:
+                return device_id_new
+            else:
+                # Else return the original device_id
+                return device_id
+
         lldp = {}
         neighbors_detail = self.get_lldp_neighbors_detail()
         for intf_name, v in neighbors_detail.items():
@@ -1139,25 +1150,24 @@ class IOSDriver(NetworkDriver):
                 ipv4.update({ip: {"prefix_length": int(prefix)}})
                 interfaces[interface_name] = {'ipv4': ipv4}
 
-        if '% Invalid input detected at' not in show_ipv6_interface:
-            for line in show_ipv6_interface.splitlines():
-                if(len(line.strip()) == 0):
-                    continue
-                if(line[0] != ' '):
-                    ifname = line.split()[0]
-                    ipv6 = {}
-                    if ifname not in interfaces:
-                        interfaces[ifname] = {'ipv6': ipv6}
-                    else:
-                        interfaces[ifname].update({'ipv6': ipv6})
-                m = re.match(LINK_LOCAL_ADDRESS, line)
-                if m:
-                    ip = m.group(1)
-                    ipv6.update({ip: {"prefix_length": 10}})
-                m = re.match(GLOBAL_ADDRESS, line)
-                if m:
-                    ip, prefix = m.groups()
-                    ipv6.update({ip: {"prefix_length": int(prefix)}})
+        for line in show_ipv6_interface.splitlines():
+            if(len(line.strip()) == 0):
+                continue
+            if(line[0] != ' '):
+                ifname = line.split()[0]
+                ipv6 = {}
+                if ifname not in interfaces:
+                    interfaces[ifname] = {'ipv6': ipv6}
+                else:
+                    interfaces[ifname].update({'ipv6': ipv6})
+            m = re.match(LINK_LOCAL_ADDRESS, line)
+            if m:
+                ip = m.group(1)
+                ipv6.update({ip: {"prefix_length": 10}})
+            m = re.match(GLOBAL_ADDRESS, line)
+            if m:
+                ip, prefix = m.groups()
+                ipv6.update({ip: {"prefix_length": int(prefix)}})
 
         # Interface without ipv6 doesn't appears in show ipv6 interface
         return interfaces
@@ -1867,7 +1877,7 @@ class IOSDriver(NetworkDriver):
         RE_MACTABLE_6500_3 = r"^\s{51}\S+"                               # Fill down from prior
         RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)     # 5 fields
         RE_MACTABLE_4500_2 = r"^\s{32,34}\S+"                               # Fill down from prior
-        RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)    # Matches PHY interface in Mac Table
+        RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)
         RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
         RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields (2960/4500)
 
@@ -1955,7 +1965,7 @@ class IOSDriver(NetworkDriver):
             elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 5:
                 vlan, mac, mac_type, _, interface = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            # Cat4500 w/PHY interface in Mac Table. Vlan will be -1.
+            # Cat4500 w/Phy interface in Mac Table. Vlan will be -1.
             elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 5:
                 interface, mac, mac_type, _, _ = line.split()
                 vlan = '-1'
@@ -1977,11 +1987,11 @@ class IOSDriver(NetworkDriver):
                                                                     single_interface))
                 else:
                     mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            # 4500 in case of unused Vlan1.
+            # 4500 in case of unused Vlan.
             elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 3:
                 vlan, mac, mac_type = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface=''))
-            #4500 w/PHY interface in Multicast table. Vlan will be -1.
+            #4500 w/Phy interface in Multicast table. Vlan will be -1.
             elif re.search(RE_MACTABLE_4500_3,line) and len(line.split()) == 4:
                 vlan, mac, mac_type, interface = line.split()
                 vlan = '-1'
