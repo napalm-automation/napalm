@@ -1977,7 +1977,7 @@ class IOSDriver(NetworkDriver):
                                                                     single_interface))
                 else:
                     mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            # 4500 in case of unused Vlan 1.
+            # 4500 in case of unused Vlan1.
             elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 3:
                 vlan, mac, mac_type = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface=''))
