@@ -1941,7 +1941,7 @@ class IOSDriver(NetworkDriver):
                 vlan, mac, mac_type = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface=''))
             # 4500 w/PHY interface in Multicast table. Vlan will be -1.
-            elif re.search(RE_MACTABLE_4500_3,line) and len(line.split()) == 4:
+            elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 4:
                 vlan, mac, mac_type, interface = line.split()
                 vlan = '-1'
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
