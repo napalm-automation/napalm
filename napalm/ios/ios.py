@@ -161,7 +161,6 @@ class IOSDriver(NetworkDriver):
 
     def _send_command(self, command):
         """Wrapper for self.device.send.command().
-
         If command is a list will iterate through commands until valid command.
         """
         try:
@@ -217,7 +216,6 @@ class IOSDriver(NetworkDriver):
                                 file_system=None):
         """
         Transfer file to remote device for either merge or replace operations
-
         Returns (return_status, msg)
         """
         return_status = False
@@ -253,7 +251,6 @@ class IOSDriver(NetworkDriver):
     def load_replace_candidate(self, filename=None, config=None):
         """
         SCP file to device filesystem, defaults to candidate_config.
-
         Return None or raise exception
         """
         self.config_replace = True
@@ -267,7 +264,6 @@ class IOSDriver(NetworkDriver):
     def load_merge_candidate(self, filename=None, config=None):
         """
         SCP file to remote device.
-
         Merge configuration in: copy <file> running-config
         """
         self.config_replace = False
@@ -297,9 +293,7 @@ class IOSDriver(NetworkDriver):
     @staticmethod
     def _normalize_merge_diff_incr(diff):
         """Make the compare config output look better.
-
         Cisco IOS incremental-diff output
-
         No changes:
         !List of Commands:
         end
@@ -347,7 +341,6 @@ class IOSDriver(NetworkDriver):
     def compare_config(self):
         """
         show archive config differences <base_file> <new_file>.
-
         Default operation is to compare system:running-config to self.candidate_cfg
         """
         # Set defaults
@@ -424,7 +417,6 @@ class IOSDriver(NetworkDriver):
     def commit_config(self):
         """
         If replacement operation, perform 'configure replace' for the entire config.
-
         If merge operation, perform copy <file> running-config.
         """
         # Always generate a rollback config on commit
@@ -443,6 +435,7 @@ class IOSDriver(NetworkDriver):
             output = self._commit_hostname_handler(cmd)
             if ('original configuration has been successfully restored' in output) or \
                ('error' in output.lower()) or \
+               ('not a valid config file' in output.lower()) or \
                ('failed' in output.lower()):
                 msg = "Candidate config could not be applied\n{}".format(output)
                 raise ReplaceConfigException(msg)
@@ -494,7 +487,6 @@ class IOSDriver(NetworkDriver):
                          file_system=None):
         """
         Use Netmiko InlineFileTransfer (TCL) to transfer file or config to remote device.
-
         Return (status, msg)
         status = boolean
         msg = details on what happened
@@ -510,7 +502,6 @@ class IOSDriver(NetworkDriver):
     def _scp_file(self, source_file, dest_file, file_system):
         """
         SCP file to remote device.
-
         Return (status, msg)
         status = boolean
         msg = details on what happened
@@ -521,11 +512,9 @@ class IOSDriver(NetworkDriver):
     def _xfer_file(self, source_file=None, source_config=None, dest_file=None, file_system=None,
                    TransferClass=FileTransfer):
         """Transfer file to remote device.
-
         By default, this will use Secure Copy if self.inline_transfer is set, then will use
         Netmiko InlineTransfer method to transfer inline using either SSH or telnet (plus TCL
         onbox).
-
         Return (status, msg)
         status = boolean
         msg = details on what happened
@@ -595,15 +584,11 @@ class IOSDriver(NetworkDriver):
     def _check_file_exists(self, cfg_file):
         """
         Check that the file exists on remote device using full path.
-
         cfg_file is full path i.e. flash:/file_name
-
         For example
         # dir flash:/candidate_config.txt
         Directory of flash:/candidate_config.txt
-
         33  -rw-        5592  Dec 18 2015 10:50:22 -08:00  candidate_config.txt
-
         return boolean
         """
         cmd = 'dir {}'.format(cfg_file)
@@ -619,7 +604,6 @@ class IOSDriver(NetworkDriver):
     def _send_command_postprocess(output):
         """
         Cleanup actions on send_command() for NAPALM getters.
-
         Remove "Load for five sec; one minute if in output"
         Remove "Time source is"
         """
@@ -703,18 +687,6 @@ class IOSDriver(NetworkDriver):
 
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
-
-        def _device_id_expand(device_id, local_int_brief):
-            """Device id might be abbreviated: try to obtain the full device id."""
-            lldp_tmp = self._lldp_detail_parser(local_int_brief)
-            device_id_new = lldp_tmp[3][0]
-            # Verify abbreviated and full name are consistent
-            if device_id_new[:20] == device_id:
-                return device_id_new
-            else:
-                # Else return the original device_id
-                return device_id
-
         lldp = {}
         neighbors_detail = self.get_lldp_neighbors_detail()
         for intf_name, v in neighbors_detail.items():
@@ -913,7 +885,6 @@ class IOSDriver(NetworkDriver):
     def parse_uptime(uptime_str):
         """
         Extract the uptime string from the given Cisco IOS Device.
-
         Return the uptime in seconds as an integer
         """
         # Initialize to zero
@@ -1010,11 +981,8 @@ class IOSDriver(NetworkDriver):
     def get_interfaces(self):
         """
         Get interface details.
-
         last_flapped is not implemented
-
         Example Output:
-
         {   u'Vlan1': {   'description': u'N/A',
                       'is_enabled': True,
                       'is_up': True,
@@ -1107,11 +1075,8 @@ class IOSDriver(NetworkDriver):
     def get_interfaces_ip(self):
         """
         Get interface ip details.
-
         Returns a dict of dicts
-
         Example Output:
-
         {   u'FastEthernet8': {   'ipv4': {   u'10.66.43.169': {   'prefix_length': 22}}},
             u'Loopback555': {   'ipv4': {   u'192.168.1.1': {   'prefix_length': 24}},
                                 'ipv6': {   u'1::1': {   'prefix_length': 64},
@@ -1150,24 +1115,25 @@ class IOSDriver(NetworkDriver):
                 ipv4.update({ip: {"prefix_length": int(prefix)}})
                 interfaces[interface_name] = {'ipv4': ipv4}
 
-        for line in show_ipv6_interface.splitlines():
-            if(len(line.strip()) == 0):
-                continue
-            if(line[0] != ' '):
-                ifname = line.split()[0]
-                ipv6 = {}
-                if ifname not in interfaces:
-                    interfaces[ifname] = {'ipv6': ipv6}
-                else:
-                    interfaces[ifname].update({'ipv6': ipv6})
-            m = re.match(LINK_LOCAL_ADDRESS, line)
-            if m:
-                ip = m.group(1)
-                ipv6.update({ip: {"prefix_length": 10}})
-            m = re.match(GLOBAL_ADDRESS, line)
-            if m:
-                ip, prefix = m.groups()
-                ipv6.update({ip: {"prefix_length": int(prefix)}})
+        if '% Invalid input detected at' not in show_ipv6_interface:
+            for line in show_ipv6_interface.splitlines():
+                if(len(line.strip()) == 0):
+                    continue
+                if(line[0] != ' '):
+                    ifname = line.split()[0]
+                    ipv6 = {}
+                    if ifname not in interfaces:
+                        interfaces[ifname] = {'ipv6': ipv6}
+                    else:
+                        interfaces[ifname].update({'ipv6': ipv6})
+                m = re.match(LINK_LOCAL_ADDRESS, line)
+                if m:
+                    ip = m.group(1)
+                    ipv6.update({ip: {"prefix_length": 10}})
+                m = re.match(GLOBAL_ADDRESS, line)
+                if m:
+                    ip, prefix = m.groups()
+                    ipv6.update({ip: {"prefix_length": int(prefix)}})
 
         # Interface without ipv6 doesn't appears in show ipv6 interface
         return interfaces
@@ -1176,7 +1142,6 @@ class IOSDriver(NetworkDriver):
     def bgp_time_conversion(bgp_uptime):
         """
         Convert string time to seconds.
-
         Examples
         00:14:23
         00:13:40
@@ -1224,7 +1189,6 @@ class IOSDriver(NetworkDriver):
 
     def get_bgp_neighbors(self):
         """BGP neighbor information.
-
         Currently no VRF support. Supports both IPv4 and IPv6.
         """
         supported_afi = ['ipv4', 'ipv6']
@@ -1503,7 +1467,6 @@ class IOSDriver(NetworkDriver):
     def get_interfaces_counters(self):
         """
         Return interface counters and errors.
-
         'tx_errors': int,
         'rx_errors': int,
         'tx_discards': int,
@@ -1516,7 +1479,6 @@ class IOSDriver(NetworkDriver):
         'rx_multicast_packets': int,
         'tx_broadcast_packets': int,
         'rx_broadcast_packets': int,
-
         Currently doesn't determine output broadcasts, multicasts
         """
         counters = {}
@@ -1602,7 +1564,6 @@ class IOSDriver(NetworkDriver):
     def get_environment(self):
         """
         Get environment facts.
-
         power and fan are currently not implemented
         cpu is using 1-minute average
         cpu hard-coded to cpu0 (i.e. only a single CPU)
@@ -1673,13 +1634,11 @@ class IOSDriver(NetworkDriver):
     def get_arp_table(self):
         """
         Get arp table information.
-
         Return a list of dictionaries having the following set of keys:
             * interface (string)
             * mac (string)
             * ip (string)
             * age (float)
-
         For example::
             [
                 {
@@ -1743,14 +1702,11 @@ class IOSDriver(NetworkDriver):
         """
         Execute a list of commands and return the output in a dictionary format using the command
         as the key.
-
         Example input:
         ['show clock', 'show calendar']
-
         Output example:
         {   'show calendar': u'22:02:01 UTC Thu Feb 18 2016',
             'show clock': u'*22:01:51.165 UTC Thu Feb 18 2016'}
-
         """
         cli_output = dict()
         if type(commands) is not list:
@@ -1767,7 +1723,6 @@ class IOSDriver(NetworkDriver):
 
     def get_ntp_servers(self):
         """Implementation of get_ntp_servers for IOS.
-
         Returns the NTP servers configuration as dictionary.
         The keys of the dictionary represent the IP Addresses of the servers.
         Inner dictionaries do not have yet any available keys.
@@ -1840,32 +1795,26 @@ class IOSDriver(NetworkDriver):
             * static (boolean)
             * moves (int)
             * last_move (float)
-
         Format1:
         Destination Address  Address Type  VLAN  Destination Port
         -------------------  ------------  ----  --------------------
         6400.f1cf.2cc6          Dynamic       1     Wlan-GigabitEthernet0
-
         Cat 6500:
         Legend: * - primary entry
                 age - seconds since last seen
                 n/a - not available
-
           vlan   mac address     type    learn     age              ports
         ------+----------------+--------+-----+----------+--------------------------
         *  999  1111.2222.3333   dynamic  Yes          0   Port-channel1
            999  1111.2222.3333   dynamic  Yes          0   Port-channel1
-
         Cat 4948
         Unicast Entries
          vlan   mac address     type        protocols               port
         -------+---------------+--------+---------------------+--------------------
          999    1111.2222.3333   dynamic ip                    Port-channel1
-
         Cat 2960
         Mac Address Table
         -------------------------------------------
-
         Vlan    Mac Address       Type        Ports
         ----    -----------       --------    -----
         All    1111.2222.3333    STATIC      CPU
@@ -1877,7 +1826,7 @@ class IOSDriver(NetworkDriver):
         RE_MACTABLE_6500_3 = r"^\s{51}\S+"                               # Fill down from prior
         RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)     # 5 fields
         RE_MACTABLE_4500_2 = r"^\s{32,34}\S+"                               # Fill down from prior
-        RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)
+        RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)    # Matches PHY interface in Mac Table
         RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
         RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields (2960/4500)
 
@@ -1965,7 +1914,7 @@ class IOSDriver(NetworkDriver):
             elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 5:
                 vlan, mac, mac_type, _, interface = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            # Cat4500 w/Phy interface in Mac Table. Vlan will be -1.
+            # Cat4500 w/PHY interface in Mac Table. Vlan will be -1.
             elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 5:
                 interface, mac, mac_type, _, _ = line.split()
                 vlan = '-1'
@@ -1987,12 +1936,12 @@ class IOSDriver(NetworkDriver):
                                                                     single_interface))
                 else:
                     mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            # 4500 in case of unused Vlan.
+            # 4500 in case of unused Vlan 1.
             elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 3:
                 vlan, mac, mac_type = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface=''))
-            # 4500 w/Phy interface in Multicast table. Vlan will be -1.
-            elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 4:
+            # 4500 w/PHY interface in Multicast table. Vlan will be -1.
+            elif re.search(RE_MACTABLE_4500_3,line) and len(line.split()) == 4:
                 vlan, mac, mac_type, interface = line.split()
                 vlan = '-1'
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
@@ -2045,9 +1994,7 @@ class IOSDriver(NetworkDriver):
     def get_snmp_information(self):
         """
         Returns a dict of dicts
-
         Example Output:
-
         {   'chassis_id': u'Asset Tag 54670',
         'community': {   u'private': {   'acl': u'12', 'mode': u'rw'},
                          u'public': {   'acl': u'11', 'mode': u'ro'},
@@ -2056,7 +2003,6 @@ class IOSDriver(NetworkDriver):
                          u'public_no_acl': {   'acl': u'N/A', 'mode': u'ro'}},
         'contact': u'Joe Smith',
         'location': u'123 Anytown USA Rack 404'}
-
         """
         # default values
         snmp_dict = {
@@ -2101,13 +2047,10 @@ class IOSDriver(NetworkDriver):
         The keys of the main dictionary represents the username.
         The values represent the details of the user,
         represented by the following keys:
-
             * level (int)
             * password (str)
             * sshkeys (list)
-
         *Note: sshkeys on ios is the ssh key fingerprint
-
         The level is an integer between 0 and 15, where 0 is the
         lowest access and 15 represents full access to the device.
         """
@@ -2137,7 +2080,6 @@ class IOSDriver(NetworkDriver):
              size=C.PING_SIZE, count=C.PING_COUNT, vrf=C.PING_VRF):
         """
         Execute ping on the device and returns a dictionary with the result.
-
         Output dictionary has one of following keys:
             * success
             * error
@@ -2212,17 +2154,13 @@ class IOSDriver(NetworkDriver):
                    ttl=C.TRACEROUTE_TTL, timeout=C.TRACEROUTE_TIMEOUT, vrf=C.TRACEROUTE_VRF):
         """
         Executes traceroute on the device and returns a dictionary with the result.
-
         :param destination: Host or IP Address of the destination
         :param source (optional): Use a specific IP Address to execute the traceroute
         :param ttl (optional): Maimum number of hops -> int (0-255)
         :param timeout (optional): Number of seconds to wait for response -> int (1-3600)
-
         Output dictionary has one of the following keys:
-
             * success
             * error
-
         In case of success, the keys of the dictionary represent the hop ID, while values are
         dictionaries containing the probes results:
             * rtt (float)
@@ -2372,7 +2310,6 @@ class IOSDriver(NetworkDriver):
 
     def get_config(self, retrieve='all'):
         """Implementation of get_config for IOS.
-
         Returns the startup or/and running configuration as dictionary.
         The keys of the dictionary represent the type of configuration
         (startup or running). The candidate is always empty string,
