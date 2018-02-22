@@ -1826,7 +1826,7 @@ class IOSDriver(NetworkDriver):
         RE_MACTABLE_6500_3 = r"^\s{51}\S+"                               # Fill down from prior
         RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)     # 5 fields
         RE_MACTABLE_4500_2 = r"^\s{32,34}\S+"                               # Fill down from prior
-        RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)    # Matches PHY interface in Mac Table
+        RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)    # Matches PHY interface
         RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
         RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields (2960/4500)
 
