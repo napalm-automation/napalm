@@ -1296,7 +1296,7 @@ class NXOSSSHDriver(NetworkDriver):
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
         # Strip any leading characters
-        output = re.sub(r"^[\*\+GO]", "", output, flags=re.M)
+        output = re.sub(r"^[\*\+GOCE]", "", output, flags=re.M)
         output = re.sub(r"^\(R\)", "", output, flags=re.M)
         output = re.sub(r"^\(T\)", "", output, flags=re.M)
         output = re.sub(r"^\(F\)", "", output, flags=re.M)
