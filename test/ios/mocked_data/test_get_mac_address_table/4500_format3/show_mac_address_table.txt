@@ -1,0 +1,20 @@
+ 205      c057.bc28.0f65   dynamic ip,ipx,assigned,other GigabitEthernet8/8         
+ 205      c057.bc28.0f9e   dynamic ip,ipx,assigned,other GigabitEthernet8/35        
+Te5/1     0078.88e7.5a3f    static ip,ipx,assigned,other Switch                     
+Te5/1     500f.80b5.4340   dynamic ip,ipx,assigned,other TenGigabitEthernet5/1      
+Te6/1     0078.88e7.5a3f    static ip,ipx,assigned,other Switch                     
+Te6/1     286f.7f68.0980   dynamic ip,ipx,assigned,other TenGigabitEthernet6/1      
+
+Multicast Entries
+ vlan     mac address     type    ports
+---------+---------------+-------+--------------------------------------------
+   1      ffff.ffff.ffff   system 
+   2      0100.5e7f.fffa     igmp Gi1/35,Gi1/45,Gi1/46,Gi1/47,Gi2/1,Gi2/3
+                                  Gi2/7,Gi2/12,Gi2/17,Gi2/21,Gi2/23,Gi2/30
+                                  Gi3/2,Gi3/5,Gi3/7,Gi3/9,Gi3/12,Gi3/17,Gi3/18
+                                  Gi3/20,Gi3/21,Gi3/23,Gi3/25,Gi3/26,Gi3/27
+                                  Gi3/28,Gi3/29,Gi3/30,Gi3/31,Gi3/32,Gi3/33
+                                  Gi3/34,Gi3/35,Gi3/36,Gi4/5,Gi4/7,Gi4/8
+                                  Gi4/9,Gi4/10,Gi4/13,Gi4/14,Gi4/18,Gi4/22
+                                  Gi4/23,Gi4/26,Gi4/28,Gi4/30,Gi4/32,Gi4/36
+                                  Gi4/38,Gi4/40,Gi4/44,Switch
