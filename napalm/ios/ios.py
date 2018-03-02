@@ -1882,16 +1882,13 @@ class IOSDriver(NetworkDriver):
                     interface = ''
             else:
                 static = False
-            if mac_type.lower() in ['dynamic']:
-                active = True
-            else:
-                active = False
+
             return {
                 'mac': napalm.base.helpers.mac(mac),
                 'interface': self._canonical_int(interface),
                 'vlan': int(vlan),
                 'static': static,
-                'active': active,
+                'active': True,
                 'moves': -1,
                 'last_move': -1.0
             }
@@ -1958,6 +1955,7 @@ class IOSDriver(NetworkDriver):
             # Cat4500 w/PHY interface in Mac Table. Vlan will be -1.
             elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 5:
                 interface, mac, mac_type, _, _ = line.split()
+                interface = canonical_interface_name(interface)
                 vlan = '-1'
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             # Cat2960 format - ignore extra header line
