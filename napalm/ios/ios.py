@@ -54,6 +54,7 @@ IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IP
 
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
 VLAN_REGEX = r"\d{1,4}"
+INT_REGEX = r"(^\w{1,2}\d{1,3}/\d{1,2}|^\w{1,2}\d{1,3})"
 RE_IPADDR = re.compile(r"{}".format(IP_ADDR_REGEX))
 RE_IPADDR_STRIP = re.compile(r"({})\n".format(IP_ADDR_REGEX))
 RE_MAC = re.compile(r"{}".format(MAC_REGEX))
@@ -1862,12 +1863,13 @@ class IOSDriver(NetworkDriver):
 
         RE_MACTABLE_DEFAULT = r"^" + MAC_REGEX
         RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 7 fields
-        RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 6 fields
-        RE_MACTABLE_6500_3 = r"^\s{51}\S+"                               # Fill down from prior
-        RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)     # 5 fields
-        RE_MACTABLE_4500_2 = r"^\s{32}\S+"                               # Fill down from prior
+        RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 6 fields
+        RE_MACTABLE_6500_3 = r"^\s{51}\S+"                                      # Fill down prior
+        RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 5 fields
+        RE_MACTABLE_4500_2 = r"^\s{32,34}\S+"                                   # Fill down prior
+        RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)        # Matches PHY int
         RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
-        RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields (2960/4500)
+        RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)        # 4 fields-2960/4500
 
         def process_mac_fields(vlan, mac, mac_type, interface):
             """Return proper data for mac address fields."""
@@ -1880,16 +1882,13 @@ class IOSDriver(NetworkDriver):
                     interface = ''
             else:
                 static = False
-            if mac_type.lower() in ['dynamic']:
-                active = True
-            else:
-                active = False
+
             return {
                 'mac': napalm.base.helpers.mac(mac),
                 'interface': self._canonical_int(interface),
                 'vlan': int(vlan),
                 'static': static,
-                'active': active,
+                'active': True,
                 'moves': -1,
                 'last_move': -1.0
             }
@@ -1901,11 +1900,11 @@ class IOSDriver(NetworkDriver):
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
-        # Strip any leading astericks
+        # Strip any leading asterisks
         output = re.sub(r"^\*", "", output, flags=re.M)
         fill_down_vlan = fill_down_mac = fill_down_mac_type = ''
         for line in output.splitlines():
-            # Cat6500 one off anf 4500 multicast format
+            # Cat6500 one off and 4500 multicast format
             if (re.search(RE_MACTABLE_6500_3, line) or re.search(RE_MACTABLE_4500_2, line)):
                 interface = line.strip()
                 if ',' in interface:
@@ -1953,6 +1952,12 @@ class IOSDriver(NetworkDriver):
             elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 5:
                 vlan, mac, mac_type, _, interface = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            # Cat4500 w/PHY interface in Mac Table. Vlan will be -1.
+            elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 5:
+                interface, mac, mac_type, _, _ = line.split()
+                interface = canonical_interface_name(interface)
+                vlan = '-1'
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             # Cat2960 format - ignore extra header line
             elif re.search(r"^Vlan\s+Mac Address\s+", line):
                 continue
@@ -1970,6 +1975,15 @@ class IOSDriver(NetworkDriver):
                                                                     single_interface))
                 else:
                     mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            # 4500 in case of unused Vlan 1.
+            elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 3:
+                vlan, mac, mac_type = line.split()
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface=''))
+            # 4500 w/PHY interface in Multicast table. Vlan will be -1.
+            elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 4:
+                vlan, mac, mac_type, interface = line.split()
+                vlan = '-1'
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             elif re.search(r"Total Mac Addresses", line):
                 continue
             elif re.search(r"Multicast Entries", line):
