@@ -421,7 +421,7 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self):
+    def commit_config(self, message=None):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
