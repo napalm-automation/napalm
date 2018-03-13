@@ -27,7 +27,7 @@ import copy
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from napalm.base.base import NetworkDriver
-from napalm.base.netmiko_helper import netmiko_args
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
             ConnectionClosedException, CommandErrorException
 
