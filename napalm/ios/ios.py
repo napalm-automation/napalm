@@ -427,6 +427,8 @@ class IOSDriver(NetworkDriver):
 
         If merge operation, perform copy <file> running-config.
         """
+        if message is not None:
+            raise NotImplementedError('Commit message not implemented for IOS')
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 

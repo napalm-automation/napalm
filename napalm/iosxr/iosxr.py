@@ -147,7 +147,7 @@ class IOSXRDriver(NetworkDriver):
 
     def commit_config(self, message=None):
         if message is not None:
-            raise ValueError('Commit message not yet implemented for IOS-XR')
+            raise NotImplementedError('Commit message not implemented for IOS-XR')
         if self.replace:
             self.device.commit_replace_config()
         else:
