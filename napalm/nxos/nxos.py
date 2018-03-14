@@ -44,9 +44,9 @@ import napalm.base.constants as c
 
 class NXOSDriverBase(NetworkDriver):
     """Common code shared between nx-api and nxos_ssh."""
-    def commit_config(self, message=None):
-        if message is not None:
-            raise NotImplementedError('Commit message not implemented for NXOS')
+    def commit_config(self, message=""):
+        if not message:
+            raise NotImplementedError('Commit message not implemented for this platform')
         if self.loaded:
             # Create checkpoint from current running-config
             self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
