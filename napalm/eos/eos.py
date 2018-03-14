@@ -256,7 +256,7 @@ class EOSDriver(NetworkDriver):
 
             return result.strip()
 
-    def commit_config(self, message=""):
+    def commit_config(self, message=''):
         """Implementation of NAPALM method commit_config."""
         if not message:
             raise NotImplementedError('Commit message not implemented for this platform')
