@@ -775,7 +775,8 @@ class NXOSSSHDriver(NXOSDriverBase):
         interface_list = []
         show_int_status = show_int_status.strip()
         for line in show_int_status.splitlines():
-            if line.startswith(' ') or line.startswith('-') or line.startswith('Port ') or line == "":
+            if line.startswith(' ') or line.startswith('-') or line.startswith('Port ') \
+                                    or line == "":
                 continue
             interface = line.split()[0]
             # Return canonical interface name
