@@ -8,7 +8,7 @@
 	"last_move": -1.0
 }, {
 	"static": true,
-	"active": false,
+	"active": true,
 	"vlan": 1,
 	"mac": "A4:93:4C:C1:67:A7",
 	"interface": "Vlan1",
@@ -64,7 +64,7 @@
 	"last_move": -1.0
 }, {
 	"static": true,
-	"active": false,
+	"active": true,
 	"vlan": 100,
 	"mac": "A4:93:4C:C1:67:A7",
 	"interface": "Vlan100",
@@ -144,7 +144,7 @@
 	"last_move": -1.0
 }, {
 	"static": true,
-	"active": false,
+	"active": true,
 	"vlan": 200,
 	"mac": "A4:93:4C:C1:67:A7",
 	"interface": "Vlan200",

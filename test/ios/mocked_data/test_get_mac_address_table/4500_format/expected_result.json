@@ -77,7 +77,7 @@
     "vlan": 1,
     "static": true,
     "mac": "01:00:0C:CC:CC:CE",
-    "active": false,
+    "active": true,
     "last_move": -1
   },
   {
@@ -86,7 +86,7 @@
     "vlan": 1,
     "static": true,
     "mac": "FF:FF:FF:FF:FF:FF",
-    "active": false,
+    "active": true,
     "last_move": -1
   },
   {
@@ -95,7 +95,7 @@
     "vlan": 39,
     "static": true,
     "mac": "FF:FF:FF:FF:FF:FF",
-    "active": false,
+    "active": true,
     "last_move": -1
   },
   {
@@ -104,7 +104,7 @@
     "vlan": 39,
     "static": true,
     "mac": "FF:FF:FF:FF:FF:FF",
-    "active": false,
+    "active": true,
     "last_move": -1
   },
   {
@@ -113,7 +113,7 @@
     "vlan": 39,
     "static": true,
     "mac": "FF:FF:FF:FF:FF:FF",
-    "active": false,
+    "active": true,
     "last_move": -1
   },
   {
@@ -122,7 +122,7 @@
     "vlan": 39,
     "static": true,
     "mac": "FF:FF:FF:FF:FF:FF",
-    "active": false,
+    "active": true,
     "last_move": -1
   }
 ]
