@@ -145,13 +145,11 @@ class IOSXRDriver(NetworkDriver):
         else:
             return self.device.compare_config().strip()
 
-    def commit_config(self, message=''):
-        if not message:
-            raise NotImplementedError('Commit message not implemented for this platform')
+    def commit_config(self, message=None):
         if self.replace:
-            self.device.commit_replace_config()
+            self.device.commit_replace_config(comment=message)
         else:
-            self.device.commit_config()
+            self.device.commit_config(comment=message)
         self.pending_changes = False
         if not self.lock_on_connect:
             self.device.unlock()

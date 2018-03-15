@@ -178,7 +178,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def commit_config(self, message=''):
+    def commit_config(self, message=None):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
         """
