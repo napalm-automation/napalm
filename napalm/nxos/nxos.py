@@ -191,12 +191,8 @@ class NXOSDriver(NXOSDriverBase):
         self.replace_file = None
         self.merge_candidate = ''
 
-        if optional_args is None:
-            optional_args = {}
-
         # nxos_protocol is there for backwards compatibility, transport is the preferred method
         self.transport = optional_args.get('transport', optional_args.get('nxos_protocol', 'https'))
-
         if self.transport == 'https':
             self.port = optional_args.get('port', 443)
         elif self.transport == 'http':
