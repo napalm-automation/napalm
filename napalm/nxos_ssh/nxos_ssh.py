@@ -40,6 +40,7 @@ from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.base.helpers import canonical_interface_name
 from napalm.nxos import NXOSDriverBase
 import napalm.base.constants as c
 
@@ -742,13 +743,16 @@ class NXOSSSHDriver(NXOSDriverBase):
                 _, serial_number = line.split("Processor Board ID ")
                 serial_number = serial_number.strip()
 
-            if 'system: ' in line:
+            if 'system: ' in line or 'NXOS: ' in line:
                 line = line.strip()
                 os_version = line.split()[2]
                 os_version = os_version.strip()
 
-            if 'cisco' in line and 'Chassis' in line:
-                _, model = line.split()[:2]
+            if 'cisco' in line and 'hassis' in line:
+                _, model = re.split(r".*cisco ", line)
+                model = re.search(r'.*cisco ([^\(]+)\(?.*\)?$', line)
+                if model:
+                    model = model.group(1)
                 model = model.strip()
 
         hostname = show_hostname.strip()
@@ -761,6 +765,9 @@ class NXOSSSHDriver(NXOSDriverBase):
                 break
         if hostname.count(".") >= 2:
             fqdn = hostname
+            # Remove domain name from hostname
+            if domain_name:
+                hostname = re.sub(re.escape(domain_name) + '$', '', hostname)[:-1]
         elif domain_name:
             fqdn = '{}.{}'.format(hostname, domain_name)
 
@@ -768,10 +775,12 @@ class NXOSSSHDriver(NXOSDriverBase):
         interface_list = []
         show_int_status = show_int_status.strip()
         for line in show_int_status.splitlines():
-            if line.startswith(' ') or line.startswith('-') or line.startswith('Port '):
+            if line.startswith(' ') or line.startswith('-') or line.startswith('Port ') \
+                                    or line == "":
                 continue
             interface = line.split()[0]
-            interface_list.append(interface)
+            # Return canonical interface name
+            interface_list.append(canonical_interface_name(interface))
 
         return {
             'uptime': int(uptime),
