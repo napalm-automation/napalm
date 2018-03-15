@@ -18,7 +18,7 @@
     ], 
     "vendor": "Cisco", 
     "serial_number": "JAF1602BKEN", 
-    "model": "Nexus7000 C7009", 
+    "model": "Nexus7000 C7009 (9 Slot) Chassis",
     "hostname": "EGGS-SW01", 
     "fqdn": "EGGS-SW01.spam.com"
 }

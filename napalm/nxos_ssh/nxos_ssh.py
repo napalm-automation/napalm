@@ -725,7 +725,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         # default values.
         vendor = u'Cisco'
         uptime = -1
-        serial_number, fqdn, os_version, hostname, domain_name = ('',) * 5
+        serial_number, fqdn, os_version, hostname, domain_name, model = ('',) * 6
 
         # obtain output from device
         show_ver = self.device.send_command('show version')
@@ -749,11 +749,12 @@ class NXOSSSHDriver(NXOSDriverBase):
                 os_version = os_version.strip()
 
             if 'cisco' in line and 'hassis' in line:
-                _, model = re.split(r".*cisco ", line)
-                model = re.search(r'.*cisco ([^\(]+)\(?.*\)?$', line)
-                if model:
-                    model = model.group(1)
-                model = model.strip()
+                match = re.search(r'.cisco (.*) \(', line)
+                if match:
+                    model = match.group(1).strip()
+                match = re.search(r'.cisco (.* [cC]hassis)', line)
+                if match:
+                    model = match.group(1).strip()
 
         hostname = show_hostname.strip()
 
@@ -767,16 +768,18 @@ class NXOSSSHDriver(NXOSDriverBase):
             fqdn = hostname
             # Remove domain name from hostname
             if domain_name:
-                hostname = re.sub(re.escape(domain_name) + '$', '', hostname)[:-1]
+                hostname = re.sub(re.escape(domain_name) + '$', '', hostname)
+                hostname = hostname.strip('.')
         elif domain_name:
             fqdn = '{}.{}'.format(hostname, domain_name)
 
         # interface_list filter
         interface_list = []
         show_int_status = show_int_status.strip()
+        # Remove the header information
+        show_int_status = re.split(r'^---------+', show_int_status, flags=re.M)[-1]
         for line in show_int_status.splitlines():
-            if line.startswith(' ') or line.startswith('-') or line.startswith('Port ') \
-                                    or line == "":
+            if not line:
                 continue
             interface = line.split()[0]
             # Return canonical interface name
