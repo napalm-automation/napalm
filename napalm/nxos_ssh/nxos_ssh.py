@@ -41,6 +41,7 @@ from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.base.helpers import canonical_interface_name
 from napalm.nxos import NXOSDriverBase
 import napalm.base.constants as c
 
@@ -697,7 +698,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         # default values.
         vendor = u'Cisco'
         uptime = -1
-        serial_number, fqdn, os_version, hostname, domain_name = ('',) * 5
+        serial_number, fqdn, os_version, hostname, domain_name, model = ('',) * 6
 
         # obtain output from device
         show_ver = self.device.send_command('show version')
@@ -715,14 +716,18 @@ class NXOSSSHDriver(NXOSDriverBase):
                 _, serial_number = line.split("Processor Board ID ")
                 serial_number = serial_number.strip()
 
-            if 'system: ' in line:
+            if 'system: ' in line or 'NXOS: ' in line:
                 line = line.strip()
                 os_version = line.split()[2]
                 os_version = os_version.strip()
 
-            if 'cisco' in line and 'Chassis' in line:
-                _, model = line.split()[:2]
-                model = model.strip()
+            if 'cisco' in line and 'hassis' in line:
+                match = re.search(r'.cisco (.*) \(', line)
+                if match:
+                    model = match.group(1).strip()
+                match = re.search(r'.cisco (.* [cC]hassis)', line)
+                if match:
+                    model = match.group(1).strip()
 
         hostname = show_hostname.strip()
 
@@ -734,17 +739,24 @@ class NXOSSSHDriver(NXOSDriverBase):
                 break
         if hostname.count(".") >= 2:
             fqdn = hostname
+            # Remove domain name from hostname
+            if domain_name:
+                hostname = re.sub(re.escape(domain_name) + '$', '', hostname)
+                hostname = hostname.strip('.')
         elif domain_name:
             fqdn = '{}.{}'.format(hostname, domain_name)
 
         # interface_list filter
         interface_list = []
         show_int_status = show_int_status.strip()
+        # Remove the header information
+        show_int_status = re.split(r'^---------+', show_int_status, flags=re.M)[-1]
         for line in show_int_status.splitlines():
-            if line.startswith(' ') or line.startswith('-') or line.startswith('Port '):
+            if not line:
                 continue
             interface = line.split()[0]
-            interface_list.append(interface)
+            # Return canonical interface name
+            interface_list.append(canonical_interface_name(interface))
 
         return {
             'uptime': int(uptime),
