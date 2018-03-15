@@ -27,6 +27,7 @@ import copy
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from napalm.base.base import NetworkDriver
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
             ConnectionClosedException, CommandErrorException
 
@@ -97,36 +98,14 @@ class IOSDriver(NetworkDriver):
         # Control automatic toggling of 'file prompt quiet' for file operations
         self.auto_file_prompt = optional_args.get('auto_file_prompt', True)
 
-        # Netmiko possible arguments
-        netmiko_argument_map = {
-            'port': None,
-            'secret': '',
-            'verbose': False,
-            'keepalive': 30,
-            'global_delay_factor': 1,
-            'use_keys': False,
-            'key_file': None,
-            'ssh_strict': False,
-            'system_host_keys': False,
-            'alt_host_keys': False,
-            'alt_key_file': '',
-            'ssh_config_file': None,
-            'allow_agent': False,
-        }
+        self.netmiko_optional_args = netmiko_args(optional_args)
 
-        # Build dict of any optional Netmiko args
-        self.netmiko_optional_args = {}
-        for k, v in netmiko_argument_map.items():
-            try:
-                self.netmiko_optional_args[k] = optional_args[k]
-            except KeyError:
-                pass
-
+        # Set the default port if not set
         default_port = {
             'ssh': 22,
             'telnet': 23
         }
-        self.port = optional_args.get('port', default_port[self.transport])
+        self.netmiko_optional_args.setdefault('port', default_port[self.transport])
 
         self.device = None
         self.config_replace = False

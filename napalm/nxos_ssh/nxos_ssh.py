@@ -35,6 +35,7 @@ from netmiko.ssh_exception import NetMikoTimeoutException
 
 # import NAPALM Base
 import napalm.base.helpers
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
@@ -373,41 +374,13 @@ class NXOSSSHDriver(NXOSDriverBase):
         self.username = username
         self.password = password
         self.timeout = timeout
-        self.up = False
         self.replace = True
         self.loaded = False
-        self.fc = None
         self.changed = False
         self.replace_file = None
         self.merge_candidate = ''
-
-        if optional_args is None:
-            optional_args = {}
-
-        # Netmiko possible arguments
-        netmiko_argument_map = {
-            'port': None,
-            'verbose': False,
-            'timeout': self.timeout,
-            'global_delay_factor': 1,
-            'use_keys': False,
-            'key_file': None,
-            'ssh_strict': False,
-            'system_host_keys': False,
-            'alt_host_keys': False,
-            'alt_key_file': '',
-            'ssh_config_file': None,
-            'allow_agent': False
-        }
-
-        # Build dict of any optional Netmiko args
-        self.netmiko_optional_args = {
-            k: optional_args.get(k, v)
-            for k, v in netmiko_argument_map.items()
-        }
-
-        self.port = optional_args.get('port', 22)
-        self.sudo_pwd = optional_args.get('sudo_pwd', self.password)
+        self.netmiko_optional_args = netmiko_args(optional_args)
+        self.device = None
 
     def open(self):
         try:
