@@ -27,6 +27,7 @@ import copy
 
 from netmiko import ConnectHandler, FileTransfer, InLineTransfer
 from napalm.base.base import NetworkDriver
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
             ConnectionClosedException, CommandErrorException
 
@@ -54,6 +55,7 @@ IPV6_ADDR_REGEX = "(?:{}|{}|{})".format(IPV6_ADDR_REGEX_1, IPV6_ADDR_REGEX_2, IP
 
 MAC_REGEX = r"[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}\.[a-fA-F0-9]{4}"
 VLAN_REGEX = r"\d{1,4}"
+INT_REGEX = r"(^\w{1,2}\d{1,3}/\d{1,2}|^\w{1,2}\d{1,3})"
 RE_IPADDR = re.compile(r"{}".format(IP_ADDR_REGEX))
 RE_IPADDR_STRIP = re.compile(r"({})\n".format(IP_ADDR_REGEX))
 RE_MAC = re.compile(r"{}".format(MAC_REGEX))
@@ -96,36 +98,14 @@ class IOSDriver(NetworkDriver):
         # Control automatic toggling of 'file prompt quiet' for file operations
         self.auto_file_prompt = optional_args.get('auto_file_prompt', True)
 
-        # Netmiko possible arguments
-        netmiko_argument_map = {
-            'port': None,
-            'secret': '',
-            'verbose': False,
-            'keepalive': 30,
-            'global_delay_factor': 1,
-            'use_keys': False,
-            'key_file': None,
-            'ssh_strict': False,
-            'system_host_keys': False,
-            'alt_host_keys': False,
-            'alt_key_file': '',
-            'ssh_config_file': None,
-            'allow_agent': False,
-        }
+        self.netmiko_optional_args = netmiko_args(optional_args)
 
-        # Build dict of any optional Netmiko args
-        self.netmiko_optional_args = {}
-        for k, v in netmiko_argument_map.items():
-            try:
-                self.netmiko_optional_args[k] = optional_args[k]
-            except KeyError:
-                pass
-
+        # Set the default port if not set
         default_port = {
             'ssh': 22,
             'telnet': 23
         }
-        self.port = optional_args.get('port', default_port[self.transport])
+        self.netmiko_optional_args.setdefault('port', default_port[self.transport])
 
         self.device = None
         self.config_replace = False
@@ -442,6 +422,7 @@ class IOSDriver(NetworkDriver):
             output = self._commit_hostname_handler(cmd)
             if ('original configuration has been successfully restored' in output) or \
                ('error' in output.lower()) or \
+               ('not a valid config file' in output.lower()) or \
                ('failed' in output.lower()):
                 msg = "Candidate config could not be applied\n{}".format(output)
                 raise ReplaceConfigException(msg)
@@ -540,9 +521,10 @@ class IOSDriver(NetworkDriver):
         elif source_config:
             kwargs = dict(ssh_conn=self.device, source_config=source_config, dest_file=dest_file,
                           direction='put', file_system=file_system)
-        enable_scp = True
+        use_scp = True
         if self.inline_transfer:
-            enable_scp = False
+            use_scp = False
+
         with TransferClass(**kwargs) as transfer:
 
             # Check if file already exists and has correct MD5
@@ -553,8 +535,14 @@ class IOSDriver(NetworkDriver):
                 msg = "Insufficient space available on remote device"
                 return (False, msg)
 
-            if enable_scp:
-                transfer.enable_scp()
+            if use_scp:
+                cmd = 'ip scp server enable'
+                show_cmd = "show running-config | inc {}".format(cmd)
+                output = self.device.send_command_expect(show_cmd)
+                if cmd not in output:
+                    msg = "SCP file transfers are not enabled. " \
+                          "Configure 'ip scp server enable' on the device."
+                    raise CommandErrorException(msg)
 
             # Transfer file
             transfer.transfer_file()
@@ -1130,24 +1118,25 @@ class IOSDriver(NetworkDriver):
                 ipv4.update({ip: {"prefix_length": int(prefix)}})
                 interfaces[interface_name] = {'ipv4': ipv4}
 
-        for line in show_ipv6_interface.splitlines():
-            if(len(line.strip()) == 0):
-                continue
-            if(line[0] != ' '):
-                ifname = line.split()[0]
-                ipv6 = {}
-                if ifname not in interfaces:
-                    interfaces[ifname] = {'ipv6': ipv6}
-                else:
-                    interfaces[ifname].update({'ipv6': ipv6})
-            m = re.match(LINK_LOCAL_ADDRESS, line)
-            if m:
-                ip = m.group(1)
-                ipv6.update({ip: {"prefix_length": 10}})
-            m = re.match(GLOBAL_ADDRESS, line)
-            if m:
-                ip, prefix = m.groups()
-                ipv6.update({ip: {"prefix_length": int(prefix)}})
+        if '% Invalid input detected at' not in show_ipv6_interface:
+            for line in show_ipv6_interface.splitlines():
+                if(len(line.strip()) == 0):
+                    continue
+                if(line[0] != ' '):
+                    ifname = line.split()[0]
+                    ipv6 = {}
+                    if ifname not in interfaces:
+                        interfaces[ifname] = {'ipv6': ipv6}
+                    else:
+                        interfaces[ifname].update({'ipv6': ipv6})
+                m = re.match(LINK_LOCAL_ADDRESS, line)
+                if m:
+                    ip = m.group(1)
+                    ipv6.update({ip: {"prefix_length": 10}})
+                m = re.match(GLOBAL_ADDRESS, line)
+                if m:
+                    ip, prefix = m.groups()
+                    ipv6.update({ip: {"prefix_length": int(prefix)}})
 
         # Interface without ipv6 doesn't appears in show ipv6 interface
         return interfaces
@@ -1607,29 +1596,37 @@ class IOSDriver(NetworkDriver):
         output = self._send_command(mem_cmd)
         for line in output.splitlines():
             if 'Processor' in line:
-                _, _, _, proc_used_mem, proc_free_mem = line.split()[:5]
+                _, _, proc_total_mem, proc_used_mem, _ = line.split()[:5]
             elif 'I/O' in line or 'io' in line:
-                _, _, _, io_used_mem, io_free_mem = line.split()[:5]
+                _, _, io_total_mem, io_used_mem, _ = line.split()[:5]
+        total_mem = int(proc_total_mem) + int(io_total_mem)
         used_mem = int(proc_used_mem) + int(io_used_mem)
-        free_mem = int(proc_free_mem) + int(io_free_mem)
         environment.setdefault('memory', {})
         environment['memory']['used_ram'] = used_mem
-        environment['memory']['available_ram'] = free_mem
+        environment['memory']['available_ram'] = total_mem
 
         environment.setdefault('temperature', {})
+        re_temp_value = re.compile('(.*) Temperature Value')
         # The 'show env temperature status' is not ubiquitous in Cisco IOS
         output = self._send_command(temp_cmd)
         if '% Invalid' not in output:
             for line in output.splitlines():
-                if 'System Temperature Value' in line:
-                    system_temp = float(line.split(':')[1].split()[0])
+                m = re_temp_value.match(line)
+                if m is not None:
+                    temp_name = m.group(1).lower()
+                    temp_value = float(line.split(':')[1].split()[0])
+                    env_value = {'is_alert': False,
+                                 'is_critical': False,
+                                 'temperature': temp_value}
+                    environment['temperature'][temp_name] = env_value
                 elif 'Yellow Threshold' in line:
                     system_temp_alert = float(line.split(':')[1].split()[0])
+                    if temp_value > system_temp_alert:
+                        env_value['is_alert'] = True
                 elif 'Red Threshold' in line:
                     system_temp_crit = float(line.split(':')[1].split()[0])
-            env_value = {'is_alert': system_temp >= system_temp_alert,
-                         'is_critical': system_temp >= system_temp_crit, 'temperature': system_temp}
-            environment['temperature']['system'] = env_value
+                    if temp_value > system_temp_crit:
+                        env_value['is_critical'] = True
         else:
             env_value = {'is_alert': False, 'is_critical': False, 'temperature': -1.0}
             environment['temperature']['invalid'] = env_value
@@ -1845,12 +1842,13 @@ class IOSDriver(NetworkDriver):
 
         RE_MACTABLE_DEFAULT = r"^" + MAC_REGEX
         RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 7 fields
-        RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 6 fields
-        RE_MACTABLE_6500_3 = r"^\s{51}\S+"                               # Fill down from prior
-        RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)     # 5 fields
-        RE_MACTABLE_4500_2 = r"^\s{32}\S+"                               # Fill down from prior
+        RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 6 fields
+        RE_MACTABLE_6500_3 = r"^\s{51}\S+"                                      # Fill down prior
+        RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 5 fields
+        RE_MACTABLE_4500_2 = r"^\s{32,34}\S+"                                   # Fill down prior
+        RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)        # Matches PHY int
         RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
-        RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)   # 4 fields (2960/4500)
+        RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)        # 4 fields-2960/4500
 
         def process_mac_fields(vlan, mac, mac_type, interface):
             """Return proper data for mac address fields."""
@@ -1863,16 +1861,13 @@ class IOSDriver(NetworkDriver):
                     interface = ''
             else:
                 static = False
-            if mac_type.lower() in ['dynamic']:
-                active = True
-            else:
-                active = False
+
             return {
                 'mac': napalm.base.helpers.mac(mac),
                 'interface': self._canonical_int(interface),
                 'vlan': int(vlan),
                 'static': static,
-                'active': active,
+                'active': True,
                 'moves': -1,
                 'last_move': -1.0
             }
@@ -1884,11 +1879,11 @@ class IOSDriver(NetworkDriver):
         # Skip the header lines
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
-        # Strip any leading astericks
+        # Strip any leading asterisks
         output = re.sub(r"^\*", "", output, flags=re.M)
         fill_down_vlan = fill_down_mac = fill_down_mac_type = ''
         for line in output.splitlines():
-            # Cat6500 one off anf 4500 multicast format
+            # Cat6500 one off and 4500 multicast format
             if (re.search(RE_MACTABLE_6500_3, line) or re.search(RE_MACTABLE_4500_2, line)):
                 interface = line.strip()
                 if ',' in interface:
@@ -1936,6 +1931,12 @@ class IOSDriver(NetworkDriver):
             elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 5:
                 vlan, mac, mac_type, _, interface = line.split()
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            # Cat4500 w/PHY interface in Mac Table. Vlan will be -1.
+            elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 5:
+                interface, mac, mac_type, _, _ = line.split()
+                interface = canonical_interface_name(interface)
+                vlan = '-1'
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             # Cat2960 format - ignore extra header line
             elif re.search(r"^Vlan\s+Mac Address\s+", line):
                 continue
@@ -1953,6 +1954,15 @@ class IOSDriver(NetworkDriver):
                                                                     single_interface))
                 else:
                     mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            # 4500 in case of unused Vlan 1.
+            elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 3:
+                vlan, mac, mac_type = line.split()
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface=''))
+            # 4500 w/PHY interface in Multicast table. Vlan will be -1.
+            elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 4:
+                vlan, mac, mac_type, interface = line.split()
+                vlan = '-1'
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
             elif re.search(r"Total Mac Addresses", line):
                 continue
             elif re.search(r"Multicast Entries", line):

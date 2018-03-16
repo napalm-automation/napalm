@@ -1,0 +1,141 @@
+<bgp-information>
+    <bgp-peer style="detail">
+        <peer-address>192.168.2.15+179</peer-address>
+        <peer-as>65002</peer-as>
+        <local-address>192.168.2.16+61771</local-address>
+        <local-as>65001</local-as>
+        <peer-type>External</peer-type>
+        <peer-state>Established</peer-state>
+        <peer-flags>Sync</peer-flags>
+        <last-state>OpenConfirm</last-state>
+        <last-event>RecvKeepAlive</last-event>
+        <last-error>Hold Timer Expired Error</last-error>
+        <bgp-option-information xmlns="http://xml.juniper.net/junos/14.1R1/junos-routing">
+            <export-policy>
+                static
+            </export-policy>
+            <bgp-options>Multihop Preference AddressFamily PeerAS LocalAS Rib-group Refresh</bgp-options>
+            <bgp-options2></bgp-options2>
+            <bgp-options-extended></bgp-options-extended>
+            <address-families>inet-unicast inet-vpn-unicast inet6-unicast</address-families>
+            <holdtime>90</holdtime>
+            <preference>170</preference>
+            <local-as>65001</local-as>
+            <local-system-as>0</local-system-as>
+        </bgp-option-information>
+        <flap-count>1</flap-count>
+        <last-flap-event>HoldTime</last-flap-event>
+        <bgp-error>
+            <name>Hold Timer Expired Error</name>
+            <send-count>1</send-count>
+            <receive-count>0</receive-count>
+        </bgp-error>
+        <peer-id>192.168.2.15</peer-id>
+        <local-id>192.168.2.16</local-id>
+        <active-holdtime>90</active-holdtime>
+        <keepalive-interval>30</keepalive-interval>
+        <group-index>2</group-index>
+        <peer-index>0</peer-index>
+        <bgp-bfd>
+            <bfd-configuration-state>disabled</bfd-configuration-state>
+            <bfd-operational-state>down</bfd-operational-state>
+        </bgp-bfd>
+        <peer-restart-nlri-configured>inet-unicast inet-vpn-unicast inet6-unicast</peer-restart-nlri-configured>
+        <nlri-type-peer>inet-unicast inet-vpn-unicast inet6-unicast</nlri-type-peer>
+        <nlri-type-session>inet-unicast inet-vpn-unicast inet6-unicast</nlri-type-session>
+        <peer-refresh-capability>2</peer-refresh-capability>
+        <peer-stale-route-time-configured>300</peer-stale-route-time-configured>
+        <peer-no-restart/>
+        <peer-restart-nlri-negotiated>inet-unicast inet-vpn-unicast inet6-unicast</peer-restart-nlri-negotiated>
+        <peer-end-of-rib-received>inet-unicast inet-vpn-unicast inet6-unicast</peer-end-of-rib-received>
+        <peer-end-of-rib-sent>inet-unicast inet-vpn-unicast inet6-unicast</peer-end-of-rib-sent>
+        <peer-end-of-rib-scheduled></peer-end-of-rib-scheduled>
+        <peer-4byte-as-capability-advertised>65002</peer-4byte-as-capability-advertised>
+        <peer-addpath-not-supported/>
+        <bgp-rib style="detail">
+            <name>inet.0</name>
+            <rib-bit>40000</rib-bit>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <send-state>in sync</send-state>
+            <active-prefix-count>2</active-prefix-count>
+            <received-prefix-count>2</received-prefix-count>
+            <accepted-prefix-count>2</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>1</advertised-prefix-count>
+        </bgp-rib>
+        <bgp-rib style="detail">  
+            <name>bgp.l3vpn.0</name>
+            <rib-bit>50000</rib-bit>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <vpn-rib-state>VPN restart is complete</vpn-rib-state>
+            <send-state>in sync</send-state>
+            <active-prefix-count>0</active-prefix-count>
+            <received-prefix-count>4</received-prefix-count>
+            <accepted-prefix-count>4</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>1</advertised-prefix-count>
+        </bgp-rib>
+        <bgp-rib style="detail">
+            <name>inet6.0</name>
+            <rib-bit>60000</rib-bit>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <send-state>in sync</send-state>
+            <active-prefix-count>0</active-prefix-count>
+            <received-prefix-count>0</received-prefix-count>
+            <accepted-prefix-count>0</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+            <advertised-prefix-count>0</advertised-prefix-count>
+        </bgp-rib>
+        <bgp-rib style="detail">
+            <name>vrf.inet.0</name>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <vpn-rib-state>VPN restart is complete</vpn-rib-state>
+            <send-state>not advertising</send-state>
+            <active-prefix-count>0</active-prefix-count>
+            <received-prefix-count>3</received-prefix-count>
+            <accepted-prefix-count>3</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+        </bgp-rib>
+        <bgp-rib style="detail">
+            <name>vrf2.inet.0</name>
+            <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+            <vpn-rib-state>VPN restart is complete</vpn-rib-state>
+            <send-state>not advertising</send-state>
+            <active-prefix-count>0</active-prefix-count>
+            <received-prefix-count>1</received-prefix-count>
+            <accepted-prefix-count>1</accepted-prefix-count>
+            <suppressed-prefix-count>0</suppressed-prefix-count>
+        </bgp-rib>
+        <last-received>20</last-received>
+        <last-sent>20</last-sent>
+        <last-checked>29</last-checked>
+        <input-messages>46</input-messages>
+        <input-updates>18</input-updates>
+        <input-refreshes>9</input-refreshes>
+        <input-octets>1628</input-octets>
+        <output-messages>40</output-messages>
+        <output-updates>12</output-updates>
+        <output-refreshes>0</output-refreshes>
+        <output-octets>1370</output-octets>
+        <bgp-output-queue>
+            <number>3</number>
+            <count>0</count>
+        </bgp-output-queue>
+        <bgp-output-queue>
+            <number>4</number>
+            <count>0</count>
+        </bgp-output-queue>
+        <bgp-output-queue>
+            <number>5</number>
+            <count>0</count>
+        </bgp-output-queue>
+        <bgp-output-queue>              
+            <number>6</number>
+            <count>0</count>
+        </bgp-output-queue>
+        <bgp-output-queue>
+            <number>7</number>
+            <count>0</count>
+        </bgp-output-queue>
+    </bgp-peer>
+</bgp-information>

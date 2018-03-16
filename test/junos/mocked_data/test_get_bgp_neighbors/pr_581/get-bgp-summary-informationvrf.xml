@@ -1,0 +1,89 @@
+<bgp-information>
+    <group-count>0</group-count>
+    <peer-count>0</peer-count>
+    <down-peer-count>0</down-peer-count>
+    <bgp-rib style="brief">
+        <name>vrf.inet.0</name>
+        <total-prefix-count>3</total-prefix-count>
+        <received-prefix-count>3</received-prefix-count>
+        <accepted-prefix-count>3</accepted-prefix-count>
+        <active-prefix-count>0</active-prefix-count>
+        <suppressed-prefix-count>0</suppressed-prefix-count>
+        <history-prefix-count>0</history-prefix-count>
+        <damped-prefix-count>0</damped-prefix-count>
+        <total-external-prefix-count>3</total-external-prefix-count>
+        <active-external-prefix-count>0</active-external-prefix-count>
+        <accepted-external-prefix-count>3</accepted-external-prefix-count>
+        <suppressed-external-prefix-count>0</suppressed-external-prefix-count>
+        <total-internal-prefix-count>0</total-internal-prefix-count>
+        <active-internal-prefix-count>0</active-internal-prefix-count>
+        <accepted-internal-prefix-count>0</accepted-internal-prefix-count>
+        <suppressed-internal-prefix-count>0</suppressed-internal-prefix-count>
+        <pending-prefix-count>0</pending-prefix-count>
+        <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+        <vpn-rib-state>VPN restart is complete</vpn-rib-state>
+    </bgp-rib>
+    <bgp-rib style="brief">
+        <name>vrf2.inet.0</name>
+        <total-prefix-count>1</total-prefix-count>
+        <received-prefix-count>1</received-prefix-count>
+        <accepted-prefix-count>1</accepted-prefix-count>
+        <active-prefix-count>0</active-prefix-count>
+        <suppressed-prefix-count>0</suppressed-prefix-count>
+        <history-prefix-count>0</history-prefix-count>
+        <damped-prefix-count>0</damped-prefix-count>
+        <total-external-prefix-count>1</total-external-prefix-count>
+        <active-external-prefix-count>0</active-external-prefix-count>
+        <accepted-external-prefix-count>1</accepted-external-prefix-count>
+        <suppressed-external-prefix-count>0</suppressed-external-prefix-count>
+        <total-internal-prefix-count>0</total-internal-prefix-count>
+        <active-internal-prefix-count>0</active-internal-prefix-count>
+        <accepted-internal-prefix-count>0</accepted-internal-prefix-count>
+        <suppressed-internal-prefix-count>0</suppressed-internal-prefix-count>
+        <pending-prefix-count>0</pending-prefix-count>
+        <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+        <vpn-rib-state>VPN restart is complete</vpn-rib-state>
+    </bgp-rib>
+    <bgp-rib style="brief">
+        <name>vrf.mdt.0</name>
+        <total-prefix-count>0</total-prefix-count>
+        <received-prefix-count>0</received-prefix-count>
+        <accepted-prefix-count>0</accepted-prefix-count>
+        <active-prefix-count>0</active-prefix-count>
+        <suppressed-prefix-count>0</suppressed-prefix-count>
+        <history-prefix-count>0</history-prefix-count>
+        <damped-prefix-count>0</damped-prefix-count>
+        <total-external-prefix-count>0</total-external-prefix-count>
+        <active-external-prefix-count>0</active-external-prefix-count>
+        <accepted-external-prefix-count>0</accepted-external-prefix-count>
+        <suppressed-external-prefix-count>0</suppressed-external-prefix-count>
+        <total-internal-prefix-count>0</total-internal-prefix-count>
+        <active-internal-prefix-count>0</active-internal-prefix-count>
+        <accepted-internal-prefix-count>0</accepted-internal-prefix-count>
+        <suppressed-internal-prefix-count>0</suppressed-internal-prefix-count>
+        <pending-prefix-count>0</pending-prefix-count>
+        <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+        <vpn-rib-state>VPN restart is complete</vpn-rib-state>
+    </bgp-rib>
+    <bgp-rib style="brief">
+        <name>vrf2.mdt.0</name>
+        <total-prefix-count>0</total-prefix-count>
+        <received-prefix-count>0</received-prefix-count>
+        <accepted-prefix-count>0</accepted-prefix-count>
+        <active-prefix-count>0</active-prefix-count>
+        <suppressed-prefix-count>0</suppressed-prefix-count>
+        <history-prefix-count>0</history-prefix-count>
+        <damped-prefix-count>0</damped-prefix-count>
+        <total-external-prefix-count>0</total-external-prefix-count>
+        <active-external-prefix-count>0</active-external-prefix-count>
+        <accepted-external-prefix-count>0</accepted-external-prefix-count>
+        <suppressed-external-prefix-count>0</suppressed-external-prefix-count>
+        <total-internal-prefix-count>0</total-internal-prefix-count>
+        <active-internal-prefix-count>0</active-internal-prefix-count>
+        <accepted-internal-prefix-count>0</accepted-internal-prefix-count>
+        <suppressed-internal-prefix-count>0</suppressed-internal-prefix-count>
+        <pending-prefix-count>0</pending-prefix-count>
+        <bgp-rib-state>BGP restart is complete</bgp-rib-state>
+        <vpn-rib-state>VPN restart is complete</vpn-rib-state>
+    </bgp-rib>
+</bgp-information>

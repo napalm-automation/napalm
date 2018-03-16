@@ -42,7 +42,138 @@ from napalm.base.exceptions import ReplaceConfigException
 import napalm.base.constants as c
 
 
-class NXOSDriver(NetworkDriver):
+class NXOSDriverBase(NetworkDriver):
+    """Common code shared between nx-api and nxos_ssh."""
+    def commit_config(self):
+        if self.loaded:
+            # Create checkpoint from current running-config
+            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
+            self._save_to_checkpoint(self.backup_file)
+
+            if self.replace:
+                # Replace operation
+                self._load_cfg_from_checkpoint()
+            else:
+                # Merge operation
+                self._commit_merge()
+
+            self._copy_run_start()
+            self.changed = True
+            self.loaded = False
+        else:
+            raise ReplaceConfigException('No config loaded.')
+
+    def ping(self,
+             destination,
+             source=c.PING_SOURCE,
+             ttl=c.PING_TTL,
+             timeout=c.PING_TIMEOUT,
+             size=c.PING_SIZE,
+             count=c.PING_COUNT,
+             vrf=c.PING_VRF):
+        """
+        Execute ping on the device and returns a dictionary with the result.
+        Output dictionary has one of following keys:
+            * success
+            * error
+        In case of success, inner dictionary will have the followin keys:
+            * probes_sent (int)
+            * packet_loss (int)
+            * rtt_min (float)
+            * rtt_max (float)
+            * rtt_avg (float)
+            * rtt_stddev (float)
+            * results (list)
+        'results' is a list of dictionaries with the following keys:
+            * ip_address (str)
+            * rtt (float)
+        """
+        ping_dict = {}
+
+        version = ''
+        try:
+            version = '6' if IPAddress(destination).version == 6 else ''
+        except AddrFormatError:
+            # Allow use of DNS names
+            pass
+
+        command = 'ping{version} {destination}'.format(
+                version=version,
+                destination=destination)
+        command += ' timeout {}'.format(timeout)
+        command += ' packet-size {}'.format(size)
+        command += ' count {}'.format(count)
+        if source != '':
+            command += ' source {}'.format(source)
+
+        if vrf != '':
+            command += ' vrf {}'.format(vrf)
+        output = self._send_command(command)
+
+        if 'connect:' in output:
+            ping_dict['error'] = output
+        elif 'PING' in output:
+            ping_dict['success'] = {
+                                'probes_sent': 0,
+                                'packet_loss': 0,
+                                'rtt_min': 0.0,
+                                'rtt_max': 0.0,
+                                'rtt_avg': 0.0,
+                                'rtt_stddev': 0.0,
+                                'results': []
+            }
+            results_array = []
+            for line in output.splitlines():
+                fields = line.split()
+                if 'icmp' in line:
+                    if 'Unreachable' in line:
+                        if "(" in fields[2]:
+                            results_array.append(
+                                {
+                                    'ip_address': py23_compat.text_type(fields[2][1:-1]),
+                                    'rtt': 0.0,
+                                }
+                            )
+                        else:
+                            results_array.append({'ip_address': py23_compat.text_type(fields[1]),
+                                                  'rtt': 0.0})
+                    elif 'truncated' in line:
+                        if "(" in fields[4]:
+                            results_array.append(
+                                {
+                                    'ip_address': py23_compat.text_type(fields[4][1:-2]),
+                                    'rtt': 0.0,
+                                }
+                            )
+                        else:
+                            results_array.append(
+                                {
+                                    'ip_address': py23_compat.text_type(fields[3][:-1]),
+                                    'rtt': 0.0,
+                                }
+                            )
+                    elif fields[1] == 'bytes':
+                        if version == '6':
+                            m = fields[5][5:]
+                        else:
+                            m = fields[6][5:]
+                        results_array.append({'ip_address': py23_compat.text_type(fields[3][:-1]),
+                                              'rtt': float(m)})
+                elif 'packets transmitted' in line:
+                    ping_dict['success']['probes_sent'] = int(fields[0])
+                    ping_dict['success']['packet_loss'] = int(fields[0]) - int(fields[3])
+                elif 'min/avg/max' in line:
+                    m = fields[3].split('/')
+                    ping_dict['success'].update({
+                                    'rtt_min': float(m[0]),
+                                    'rtt_avg': float(m[1]),
+                                    'rtt_max': float(m[2]),
+                    })
+            ping_dict['success'].update({'results': results_array})
+        return ping_dict
+
+
+class NXOSDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -58,12 +189,8 @@ class NXOSDriver(NetworkDriver):
         self.replace_file = None
         self.merge_candidate = ''
 
-        if optional_args is None:
-            optional_args = {}
-
         # nxos_protocol is there for backwards compatibility, transport is the preferred method
         self.transport = optional_args.get('transport', optional_args.get('nxos_protocol', 'https'))
-
         if self.transport == 'https':
             self.port = optional_args.get('port', 443)
         elif self.transport == 'http':
@@ -87,6 +214,13 @@ class NXOSDriver(NetworkDriver):
         if self.changed:
             self._delete_file(self.backup_file)
         self.device = None
+
+    def _send_command(self, command):
+        """Wrapper for CLI method in NX-API.
+
+        Allows more code sharing between NX-API and SSH.
+        """
+        return self.cli([command]).get(command)
 
     @staticmethod
     def _compute_timestamp(stupid_cisco_output):
@@ -258,7 +392,7 @@ class NXOSDriver(NetworkDriver):
                 'sot_file', self.replace_file.split('/')[-1]), raw_text=True)
         try:
             diff_out = diff_out.split(
-                '#Generating Rollback Patch')[1].replace(
+                'Generating Rollback Patch')[1].replace(
                     'Rollback Patch is Empty', '').strip()
             for line in diff_out.splitlines():
                 if line:
@@ -296,51 +430,39 @@ class NXOSDriver(NetworkDriver):
             return diff
         return ''
 
-    def _commit_merge(self):
-        commands = [command for command in self.merge_candidate.splitlines() if command]
-        self.device.config_list(commands)
-        if not self.device.save():
-            raise CommandErrorException('Unable to commit config!')
+    def _copy_run_start(self, filename='startup-config'):
+        results = self.device.save(filename=filename)
+        if not results:
+            msg = 'Unable to save running-config to {}!'.format(filename)
+            raise CommandErrorException(msg)
 
-    def _save_config(self, filename):
+    def _commit_merge(self):
+        try:
+            commands = [command for command in self.merge_candidate.splitlines() if command]
+            self.device.config_list(commands)
+        except Exception as e:
+            raise MergeConfigException(str(e))
+        # clear the merge buffer
+        self.merge_candidate = ''
+
+    def _save_to_checkpoint(self, filename):
         """Save the current running config to the given file."""
-        self.device.show('checkpoint file {}'.format(filename), raw_text=True)
+        command = 'checkpoint file {}'.format(filename)
+        self.device.show(command, raw_text=True)
 
     def _disable_confirmation(self):
         self.device.config('terminal dont-ask')
 
-    def _load_config(self):
+    def _load_cfg_from_checkpoint(self):
         cmd = 'rollback running file {0}'.format(self.replace_file.split('/')[-1])
         self._disable_confirmation()
         try:
             rollback_result = self.device.config(cmd)
         except ConnectionError:
-            # requests will raise an error with verbose warning output
-            return True
-        except Exception:
-            return False
+            # requests will raise an error with verbose warning output (don't fail on this).
+            return
         if 'Rollback failed.' in rollback_result['msg'] or 'ERROR' in rollback_result:
             raise ReplaceConfigException(rollback_result['msg'])
-        return True
-
-    def commit_config(self):
-        if self.loaded:
-            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            self._save_config(self.backup_file)
-            if self.replace:
-                if self._load_config() is False:
-                    raise ReplaceConfigException
-            else:
-                try:
-                    self._commit_merge()
-                    self.merge_candidate = ''  # clear the merge buffer
-                except Exception as e:
-                    raise MergeConfigException(str(e))
-
-            self.changed = True
-            self.loaded = False
-        else:
-            raise ReplaceConfigException('No config loaded.')
 
     def _delete_file(self, filename):
         commands = ['terminal dont-ask',
@@ -361,7 +483,7 @@ class NXOSDriver(NetworkDriver):
     def rollback(self):
         if self.changed:
             self.device.rollback(self.backup_file)
-            self.device.save()
+            self._copy_run_start()
             self.changed = False
 
     def get_facts(self):
