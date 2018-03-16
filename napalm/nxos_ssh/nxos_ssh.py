@@ -147,13 +147,12 @@ def parse_intf_section(interface):
     else:
         mac_address = ""
 
-        
     match = re.search(re_hardware, interface, flags=re.M)
     speed_exist = True
     if match:
         if match.group('hardware') == "NVE":
             speed_exist = False
-    
+
     if speed_exist:
         match = re.search(re_speed, interface, flags=re.M)
         speed = int(match.group('speed'))
@@ -764,7 +763,8 @@ class NXOSSSHDriver(NXOSDriverBase):
         interface_list = []
         show_int_status = show_int_status.strip()
         # Remove the header information
-        show_int_status = re.sub(r'(?:^---------+$|^Port .*$|^ .*$)', '', show_int_status, flags=re.M)
+        show_int_status = re.sub(r'(?:^---------+$|^Port .*$|^ .*$)', '',
+                                 show_int_status, flags=re.M)
         for line in show_int_status.splitlines():
             if not line:
                 continue
