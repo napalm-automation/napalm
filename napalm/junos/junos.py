@@ -467,7 +467,7 @@ class JunOSDriver(NetworkDriver):
             # Sadly, bacause of this, results are not 100% accurate to the truth.
             environment_data['memory']['used_ram'] = \
                 int(round(environment_data['memory']['available_ram'] / 100.0 *
-                    structured_routing_engine_data['memory-buffer-utilization']))
+                          structured_routing_engine_data['memory-buffer-utilization']))
 
         return environment_data
 
@@ -779,7 +779,7 @@ class JunOSDriver(NetworkDriver):
             '''
             try:
                 return '\n'.join(
-                    txt.splitlines()[(-1)*int(length):]
+                    txt.splitlines()[(-1) * int(length):]
                 )
             except ValueError:
                 return txt
@@ -852,7 +852,7 @@ class JunOSDriver(NetworkDriver):
                 safe_pipe = pipe_oper if not pipe_args else '{fun} {args}'.format(fun=pipe_oper,
                                                                                   args=pipe_args)
                 command_safe_parts.append(safe_pipe)
-            safe_command = exploded_cmd[0] if not command_safe_parts else\
+            safe_command = exploded_cmd[0] if not command_safe_parts else \
                 '{base} | {pipes}'.format(base=exploded_cmd[0],
                                           pipes=' | '.join(command_safe_parts))
             raw_txt = self.device.cli(safe_command, warning=False)
@@ -862,6 +862,7 @@ class JunOSDriver(NetworkDriver):
 
     def get_bgp_config(self, group='', neighbor=''):
         """Return BGP configuration."""
+
         def _check_nhs(policies, nhs_policies):
             if not isinstance(policies, list):
                 # Make it a list if it is a single policy
@@ -913,7 +914,7 @@ class JunOSDriver(NetworkDriver):
 
             for key, value in args.items():
                 key_levels = key.split('_')
-                length = len(key_levels)-1
+                length = len(key_levels) - 1
                 temp_dict = {
                     key_levels[length]: value
                 }
@@ -1012,7 +1013,7 @@ class JunOSDriver(NetworkDriver):
                 if '_prefix_limit' not in field
             }
             for elem in bgp_group_details:
-                if not('_prefix_limit' not in elem[0] and elem[1] is not None):
+                if not ('_prefix_limit' not in elem[0] and elem[1] is not None):
                     continue
                 datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
                 default = _DATATYPE_DEFAULT_.get(datatype)
@@ -1059,7 +1060,7 @@ class JunOSDriver(NetworkDriver):
                     if '_prefix_limit' not in field
                 }
                 for elem in bgp_group_details:
-                    if not('_prefix_limit' not in elem[0] and elem[1] is not None):
+                    if not ('_prefix_limit' not in elem[0] and elem[1] is not None):
                         continue
                     datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
                     default = _DATATYPE_DEFAULT_.get(datatype)
@@ -1552,10 +1553,10 @@ class JunOSDriver(NetworkDriver):
             d.update({key: False for key in _BOOLEAN_FIELDS_ if d.get(key) is None})
             as_path = d.get('as_path')
             if as_path is not None:
-                d['as_path'] = as_path.split(' I ')[0]\
-                                      .replace('AS path:', '')\
-                                      .replace('I', '')\
-                                      .strip()
+                d['as_path'] = as_path.split(' I ')[0] \
+                    .replace('AS path:', '') \
+                    .replace('I', '') \
+                    .strip()
                 # to be sure that contains only AS Numbers
             if d.get('inactive_reason') is None:
                 d['inactive_reason'] = u''
@@ -1830,7 +1831,6 @@ class JunOSDriver(NetworkDriver):
 
             results_array = []
             for probe_result in tmp.findall('probe-result'):
-
                 ip_address = napalm.base.helpers.convert(
                     napalm.base.helpers.ip,
                     napalm.base.helpers.find_txt(probe_result, 'ip-address'), '*')
@@ -1956,40 +1956,37 @@ class JunOSDriver(NetworkDriver):
             # Defaulting avg, min, max values to 0.0 since device does not
             # return these values
             intf_optics = {
-                            'index': int(lane),
-                            'state': {
-                                'input_power': {
-                                    'instant': (
-                                        float(optics['input_power'])
-                                        if optics['input_power'] not in
-                                        INVALID_LIGHT_LEVEL
-                                        else 0.0),
-                                    'avg': 0.0,
-                                    'max': 0.0,
-                                    'min': 0.0
-                                    },
-                                'output_power': {
-                                    'instant': (
-                                        float(optics['output_power'])
-                                        if optics['output_power'] not in
-                                        INVALID_LIGHT_LEVEL
-                                        else 0.0),
-                                    'avg': 0.0,
-                                    'max': 0.0,
-                                    'min': 0.0
-                                    },
-                                'laser_bias_current': {
-                                    'instant': (
-                                        float(optics['laser_bias_current'])
-                                        if optics['laser_bias_current'] not in
-                                        INVALID_LIGHT_LEVEL
-                                        else 0.0),
-                                    'avg': 0.0,
-                                    'max': 0.0,
-                                    'min': 0.0
-                                    }
-                                }
-                            }
+                'index': int(lane),
+                'state': {
+                    'input_power': {
+                        'instant': (
+                            float(optics['input_power'])
+                            if optics['input_power'] not in INVALID_LIGHT_LEVEL
+                            else 0.0),
+                        'avg': 0.0,
+                        'max': 0.0,
+                        'min': 0.0
+                    },
+                    'output_power': {
+                        'instant': (
+                            float(optics['output_power'])
+                            if optics['output_power'] not in INVALID_LIGHT_LEVEL
+                            else 0.0),
+                        'avg': 0.0,
+                        'max': 0.0,
+                        'min': 0.0
+                    },
+                    'laser_bias_current': {
+                        'instant': (
+                            float(optics['laser_bias_current'])
+                            if optics['laser_bias_current'] not in INVALID_LIGHT_LEVEL
+                            else 0.0),
+                        'avg': 0.0,
+                        'max': 0.0,
+                        'min': 0.0
+                    }
+                }
+            }
             optics_detail[interface_name]['physical_channels']['channel'].append(intf_optics)
 
         return optics_detail
