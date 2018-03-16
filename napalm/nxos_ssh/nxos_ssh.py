@@ -95,7 +95,8 @@ def parse_intf_section(interface):
     re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
     re_mac = r"^\s+Hardware:\s+(?P<hardware>.*), address:\s+(?P<mac_address>\S+) "
     re_speed = r"\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
-    re_description = r"^\s+Description:\s+(?P<description>.*)$"
+    re_description_1 = r"^\s+Description:\s+(?P<description>.*)  (?:MTU|Internet)"
+    re_description_2 = r"^\s+Description:\s+(?P<description>.*)$"
     re_hardware = r"^.* Hardware: (?P<hardware>\S+)$"
 
     # Check for 'protocol is ' lines
@@ -166,9 +167,11 @@ def parse_intf_section(interface):
         speed = -1
 
     description = ''
-    match = re.search(re_description, interface, flags=re.M)
-    if match:
-        description = match.group('description')
+    for x_pattern in [re_description_1, re_description_2]:
+        match = re.search(x_pattern, interface, flags=re.M)
+        if match:
+            description = match.group('description')
+            break
 
     return {
              intf_name: {
