@@ -761,7 +761,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         interface_list = []
         show_int_status = show_int_status.strip()
         # Remove the header information
-        show_int_status = re.split(r'^---------+', show_int_status, flags=re.M)[-1]
+        show_int_status = re.sub(r'(?:^---------+$|^Port .*$|^ .*$)', '', show_int_status, flags=re.M)
         for line in show_int_status.splitlines():
             if not line:
                 continue
