@@ -731,6 +731,9 @@ class JunOSDriver(NetworkDriver):
             'T': {
                 'default': rpc_call_without_information
             },
+            'PTX': {
+                'default': rpc_call_without_information
+            },
             'SWITCH': {
                 'default': rpc_call_with_information,
                 'EX9208': rpc_call_without_information,
