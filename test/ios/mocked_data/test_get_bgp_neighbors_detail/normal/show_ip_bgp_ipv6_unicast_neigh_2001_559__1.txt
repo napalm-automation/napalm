@@ -1,0 +1,128 @@
+
+BGP neighbor is 2001:559::1,  remote AS 7922, external link
+ Description: Comcast IPv6 Transit
+ Inherits from template PEER-SESSION-AS7922 for session parameters
+  BGP version 4, remote router ID 68.86.1.1
+  BGP state = Established, up for 12w2d
+  Last read 00:00:01, last write 00:00:35, hold time is 180, keepalive interval is 60 seconds
+  Neighbor sessions:
+    1 active, is not multisession capable (disabled)
+  Neighbor capabilities:
+    Route refresh: advertised and received(new)
+    Four-octets ASN Capability: advertised and received
+    Address family IPv6 Unicast: advertised and received
+    Graceful Restart Capability: advertised and received
+      Remote Restart timer is 120 seconds
+      Address families advertised by peer:
+        IPv6 Unicast (was preserved
+    Enhanced Refresh Capability: advertised
+    Multisession Capability: 
+    Stateful switchover support enabled: NO for session 1
+  Message statistics:
+    InQ depth is 0
+    OutQ depth is 0
+    
+                         Sent       Rcvd
+    Opens:                  1          1
+    Notifications:          0          0
+    Updates:             2480    6974616
+    Keepalives:        136309         69
+    Route Refresh:          0          0
+    Total:             138790    6974686
+  Do log neighbor state changes (via global configuration)
+  Default minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv6 Unicast
+  Session: 2001:559::1
+  BGP table version 117061141, neighbor version 117061129/117061141
+  Output queue size : 0
+  Index 1, Advertise bit 0
+  1 update-group member
+  Inherits from template PEER-POLICY-COMCAST-IPv6
+  My AS number is allowed for 10 number of times
+  NEXT_HOP is always this router for eBGP paths
+  Inbound path policy configured
+  Outbound path policy configured
+  Incoming update prefix filter list is BGP-BOGONS-IPv6-IN
+  Outgoing update prefix filter list is BGP-TRANSIT-IPv6-OUT
+  Route map for incoming advertisements is BGP-COMCAST-IPv6-IN
+  Route map for outgoing advertisements is BGP-TRANSIT-IPv6-OUT
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:               2      45717 (Consumes 6948984 bytes)
+    Prefixes Total:              4958    8328487
+    Implicit Withdraw:           4956    7470835
+    Explicit Withdraw:              0     811935
+    Used as bestpath:             n/a      45715
+    Used as multipath:            n/a          0
+    Used as secondary:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Other Policies:               112415977        n/a
+    Total:                        112415977          0
+  Number of NLRIs in the update sent: max 2, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 1
+  Last Sent Refresh Start-of-rib: never
+  Last Sent Refresh End-of-rib: never
+  Last Received Refresh Start-of-rib: never
+  Last Received Refresh End-of-rib: never
+				       Sent	  Rcvd
+	Refresh activity:	       ----	  ----
+	  Refresh Start-of-RIB          0          0
+	  Refresh End-of-RIB            0          0
+
+  Address tracking is enabled, the RIB does have a route to 2001:559::1
+  Connections established 1; dropped 0
+  Last reset never
+  External BGP neighbor configured for connected checks (single-hop no-disable-connected-check)
+  Interface associated: GigabitEthernet0/0/4 (peering address in same link)
+  Transport(tcp) path-mtu-discovery is enabled
+  Graceful-Restart is enabled, restart-time 120 seconds, stalepath-time 360 seconds
+  SSO is disabled
+Connection state is ESTAB, I/O status: 1, unread input bytes: 0            
+Connection is ECN Disabled, Mininum incoming TTL 0, Outgoing TTL 1
+Local host: 2001:559::2, Local port: 21958
+Foreign host: 2001:559::1, Foreign port: 179
+Connection tableid (VRF): 0
+Maximum output segment queue size: 50
+
+Enqueued packets for retransmit: 0, input: 0  mis-ordered: 0 (0 bytes)
+
+Event Timers (current time is 0x1BED85262):
+Timer          Starts    Wakeups            Next
+Retrans        138767          0             0x0
+TimeWait            0          0             0x0
+AckHold       2425311    1956394             0x0
+SendWnd             0          0             0x0
+KeepAlive           0          0             0x0
+GiveUp              0          0             0x0
+PmtuAger      7470660    7470659     0x1BED853C2
+DeadWait            0          0             0x0
+Linger              0          0             0x0
+ProcessQ            0          0             0x0
+
+iss: 3500006922  snduna: 3502837353  sndnxt: 3502837353
+irs: 2409182929  rcvnxt: 3188305548
+
+sndwnd:  65022  scale:      0  maxrcvwnd:  16384
+rcvwnd:  16164  scale:      0  delrcvwnd:    220
+
+SRTT: 1000 ms, RTTO: 1003 ms, RTV: 3 ms, KRTT: 0 ms
+minRTT: 1 ms, maxRTT: 1000 ms, ACK hold: 200 ms
+uptime: -1 ms, Sent idletime: 1099 ms, Receive idletime: 1299 ms 
+Status Flags: active open
+Option Flags: nagle, path mtu capable
+IP Precedence value : 6
+
+Datagrams (max data segment is 1440 bytes):
+Rcvd: 2561857 (out of order: 0), with data: 2431970, total data bytes: 779122618
+Sent: 2570215 (retransmit: 0, fastretransmit: 0, partialack: 0, Second Congestion: 0), with data: 2570215, total data bytes: 105639038
+
+ Packets received in fast path: 0, fast processed: 0, slow path: 0
+ fast lock acquisition failures: 0, slow path: 0
+TCP Semaphore      0x7F2543BB2160  FREE 
