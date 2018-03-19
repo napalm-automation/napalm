@@ -303,7 +303,7 @@ def bgp_summary_parser(bgp_summary):
 
     allowed_afi = ['ipv4', 'ipv6']
     vrf_regex = r"^BGP summary information for VRF\s+(?P<vrf>\S+),"
-    afi_regex = r"^BGP summary information.*address family (?P<afi>\S+ Unicast)"
+    afi_regex = r"^BGP summary information.*address family (?P<afi>\S+ (?:Unicast|EVPN))"
     local_router_regex = (r"^BGP router identifier\s+(?P<router_id>\S+)"
                           r",\s+local AS number\s+(?P<local_as>\S+)")
 
