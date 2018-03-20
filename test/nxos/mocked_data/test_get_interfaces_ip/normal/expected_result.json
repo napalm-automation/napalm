@@ -19,7 +19,17 @@
                 "prefix_length": 128
             }
         }
-    }, 
+    },
+    "Ethernet1/8": {
+        "ipv6": {
+            "2001:db8:800:200c::2": {
+                "prefix_length": 64
+            },
+            "2001:db8:800:200d::2": {
+                "prefix_length": 64
+            }
+        }
+    },
     "loopback103": {
         "ipv4": {
             "192.168.3.100": {
