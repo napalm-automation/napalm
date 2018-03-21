@@ -1,6 +1,6 @@
 [{
 	"static": true,
-	"active": false,
+	"active": true,
 	"vlan": 0,
 	"mac": "11:11:22:22:33:33",
 	"interface": "",

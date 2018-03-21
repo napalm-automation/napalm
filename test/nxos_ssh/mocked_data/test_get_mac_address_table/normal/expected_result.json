@@ -74,7 +74,7 @@
   {
     "vlan": 17,
     "last_move": -1,
-    "interface": "po2",
+    "interface": "vPC-Peer-Link",
     "mac": "00:26:98:0A:DF:44",
     "static": false,
     "active": true,

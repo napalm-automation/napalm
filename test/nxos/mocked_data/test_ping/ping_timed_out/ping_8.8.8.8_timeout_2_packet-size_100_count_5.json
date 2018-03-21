@@ -1,0 +1,9 @@
+PING 8.8.8.8 (8.8.8.8): 100 data bytes
+Request 0 timed out
+Request 1 timed out
+Request 2 timed out
+Request 3 timed out
+Request 4 timed out
+
+--- 8.8.8.8 ping statistics ---
+5 packets transmitted, 0 packets received, 100.00% packet loss

@@ -35,11 +35,13 @@ from netmiko.ssh_exception import NetMikoTimeoutException
 
 # import NAPALM Base
 import napalm.base.helpers
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.base.helpers import canonical_interface_name
 from napalm.nxos import NXOSDriverBase
 import napalm.base.constants as c
 
@@ -373,41 +375,13 @@ class NXOSSSHDriver(NXOSDriverBase):
         self.username = username
         self.password = password
         self.timeout = timeout
-        self.up = False
         self.replace = True
         self.loaded = False
-        self.fc = None
         self.changed = False
         self.replace_file = None
         self.merge_candidate = ''
-
-        if optional_args is None:
-            optional_args = {}
-
-        # Netmiko possible arguments
-        netmiko_argument_map = {
-            'port': None,
-            'verbose': False,
-            'timeout': self.timeout,
-            'global_delay_factor': 1,
-            'use_keys': False,
-            'key_file': None,
-            'ssh_strict': False,
-            'system_host_keys': False,
-            'alt_host_keys': False,
-            'alt_key_file': '',
-            'ssh_config_file': None,
-            'allow_agent': False
-        }
-
-        # Build dict of any optional Netmiko args
-        self.netmiko_optional_args = {
-            k: optional_args.get(k, v)
-            for k, v in netmiko_argument_map.items()
-        }
-
-        self.port = optional_args.get('port', 22)
-        self.sudo_pwd = optional_args.get('sudo_pwd', self.password)
+        self.netmiko_optional_args = netmiko_args(optional_args)
+        self.device = None
 
     def open(self):
         try:
@@ -425,6 +399,10 @@ class NXOSSSHDriver(NXOSDriverBase):
             self._delete_file(self.backup_file)
         self.device.disconnect()
         self.device = None
+
+    def _send_command(self, command):
+        """Wrapper for Netmiko's send_command method."""
+        return self.device.send_command(command)
 
     @staticmethod
     def parse_uptime(uptime_str):
@@ -720,7 +698,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         # default values.
         vendor = u'Cisco'
         uptime = -1
-        serial_number, fqdn, os_version, hostname, domain_name = ('',) * 5
+        serial_number, fqdn, os_version, hostname, domain_name, model = ('',) * 6
 
         # obtain output from device
         show_ver = self.device.send_command('show version')
@@ -738,14 +716,18 @@ class NXOSSSHDriver(NXOSDriverBase):
                 _, serial_number = line.split("Processor Board ID ")
                 serial_number = serial_number.strip()
 
-            if 'system: ' in line:
+            if 'system: ' in line or 'NXOS: ' in line:
                 line = line.strip()
                 os_version = line.split()[2]
                 os_version = os_version.strip()
 
-            if 'cisco' in line and 'Chassis' in line:
-                _, model = line.split()[:2]
-                model = model.strip()
+            if 'cisco' in line and 'hassis' in line:
+                match = re.search(r'.cisco (.*) \(', line)
+                if match:
+                    model = match.group(1).strip()
+                match = re.search(r'.cisco (.* [cC]hassis)', line)
+                if match:
+                    model = match.group(1).strip()
 
         hostname = show_hostname.strip()
 
@@ -757,17 +739,24 @@ class NXOSSSHDriver(NXOSDriverBase):
                 break
         if hostname.count(".") >= 2:
             fqdn = hostname
+            # Remove domain name from hostname
+            if domain_name:
+                hostname = re.sub(re.escape(domain_name) + '$', '', hostname)
+                hostname = hostname.strip('.')
         elif domain_name:
             fqdn = '{}.{}'.format(hostname, domain_name)
 
         # interface_list filter
         interface_list = []
         show_int_status = show_int_status.strip()
+        # Remove the header information
+        show_int_status = re.split(r'^---------+', show_int_status, flags=re.M)[-1]
         for line in show_int_status.splitlines():
-            if line.startswith(' ') or line.startswith('-') or line.startswith('Port '):
+            if not line:
                 continue
             interface = line.split()[0]
-            interface_list.append(interface)
+            # Return canonical interface name
+            interface_list.append(canonical_interface_name(interface))
 
         return {
             'uptime': int(uptime),
@@ -1054,7 +1043,9 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         arp_entries = arp_list[1].strip()
         for line in arp_entries.splitlines():
-            if len(line.split()) == 4:
+            if len(line.split()) >= 4:
+                # Search for extra characters to strip, currently strip '*', '+', '#', 'D'
+                line = re.sub(r"\s+[\*\+\#D]{1,4}\s*$", "", line, flags=re.M)
                 address, age, mac, interface = line.split()
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
@@ -1282,6 +1273,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         output = re.sub(r"^\(R\)", "", output, flags=re.M)
         output = re.sub(r"^\(T\)", "", output, flags=re.M)
         output = re.sub(r"^\(F\)", "", output, flags=re.M)
+        output = re.sub(r"vPC Peer-Link", "vPC-Peer-Link", output, flags=re.M)
 
         for line in output.splitlines():
 

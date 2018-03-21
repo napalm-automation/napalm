@@ -102,11 +102,11 @@ class JunOSDriver(NetworkDriver):
         self.profile = ["junos"]
 
     def open(self):
-        """Open the connection wit the device."""
+        """Open the connection with the device."""
         try:
             self.device.open()
         except ConnectTimeoutError as cte:
-            raise ConnectionException(cte.message)
+            raise ConnectionException(cte.msg)
         self.device.timeout = self.timeout
         self.device._conn._session.transport.set_keepalive(self.keepalive)
         if hasattr(self.device, "cu"):
@@ -706,7 +706,7 @@ class JunOSDriver(NetworkDriver):
         # Exceptions:
         # EX9208    personality = SWITCH    RPC: <get-lldp-interface-neighbors><interface-device>
         lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
-        if self.device.facts.get('personality') not in ('MX', 'M', 'T')\
+        if self.device.facts.get('personality') not in ('MX', 'M', 'PTX', 'T')\
            and self.device.facts.get('model') not in ('EX9208', 'QFX10008'):
             # Still need to confirm for QFX10002 and other EX series
             lldp_table.GET_RPC = 'get-lldp-interface-neighbors-information'
@@ -714,7 +714,7 @@ class JunOSDriver(NetworkDriver):
         for interface in interfaces:
             if 'EX9208' in self.device.facts.get('model'):
                 lldp_table.get(interface_device=interface)
-            elif self.device.facts.get('personality') not in ('MX', 'M', 'T'):
+            elif self.device.facts.get('personality') not in ('MX', 'M', 'PTX', 'T'):
                 lldp_table.get(interface_name=interface)
             else:
                 lldp_table.get(interface_device=interface)

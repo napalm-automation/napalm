@@ -1,0 +1,32 @@
+{
+  "success": {
+    "rtt_stddev": 0,
+    "rtt_min": 18.104,
+    "results": [
+      {
+        "ip_address": "8.8.8.8",
+        "rtt": 18.411
+      },
+      {
+        "ip_address": "8.8.8.8",
+        "rtt": 18.189
+      },
+      {
+        "ip_address": "8.8.8.8",
+        "rtt": 18.13
+      },
+      {
+        "ip_address": "8.8.8.8",
+        "rtt": 18.16
+      },
+      {
+        "ip_address": "8.8.8.8",
+        "rtt": 18.104
+      }
+    ],
+    "rtt_max": 18.411,
+    "packet_loss": 0,
+    "rtt_avg": 18.198,
+    "probes_sent": 5
+  }
+}
