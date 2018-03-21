@@ -1290,6 +1290,9 @@ class IOSDriver(NetworkDriver):
                 {'regexp': re.compile(r'^\s+BGP version \d+, remote router ID '
                                       r'(?P<remote_id>{})'.format(IPV4_ADDR_REGEX)),
                  'record': False},
+                # Capture state
+                {'regexp': re.compile(r'^\s+BGP state = (?P<state>\w+)'),
+                 'record': False},
                 # Capture AFI and SAFI names, e.g.:
                 # For address family: IPv4 Unicast
                 {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) '),
@@ -1397,8 +1400,8 @@ class IOSDriver(NetworkDriver):
             # parse uptime value
             uptime = self.bgp_time_conversion(entry['uptime'])
 
-            # Uptime should be -1 if BGP session not up
-            is_up = True if uptime >= 0 else False
+            # BGP is up if state is Established
+            is_up = 'Established' in neighbor_entry['state']
 
             # check whether session is up for address family and get prefix count
             try:
@@ -1422,6 +1425,7 @@ class IOSDriver(NetworkDriver):
             else:
                 received_prefixes = -1
                 sent_prefixes = -1
+                uptime = -1
 
             # get description
             try:
