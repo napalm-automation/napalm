@@ -161,6 +161,30 @@
         }
     }, {
         "ROW_intf": {
+            "intf-name": "Ethernet1/2",
+            "proto-state": "up",
+            "link-state": "up",
+            "admin-state": "up",
+            "iod": "5",
+            "num-addr": "0",
+            "ip-disabled": "FALSE",
+            "num-maddr": "0",
+            "mtu": "1500",
+            "pref": "0",
+            "tag": "0",
+            "proxy-arp": "disabled",
+            "lcl-proxy-arp": "disabled",
+            "mrouting": "disabled",
+            "icmp-redirect": "enabled",
+            "dir-bcast": "disabled",
+            "ip-unreach": "disabled",
+            "port-unreach": "enabled",
+            "urpf-mode": "none",
+            "ip-ls-type": "none",
+            "unnum-intf": "loopback101"
+        }
+    }, {
+        "ROW_intf": {
             "intf-name": "Ethernet2/5",
             "proto-state": "down",
             "link-state": "down",
