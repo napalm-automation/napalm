@@ -93,9 +93,11 @@ def parse_intf_section(interface):
     re_is_enabled_1 = r"^admin state is (?P<is_enabled>\S+)$"
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
-    re_mac = r"^\s+Hardware.*address:\s+(?P<mac_address>\S+) "
-    re_speed = r"^\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
-    re_description = r"^\s+Description:\s+(?P<description>.*)$"
+    re_mac = r"^\s+Hardware:\s+(?P<hardware>.*), address:\s+(?P<mac_address>\S+) "
+    re_speed = r"\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
+    re_description_1 = r"^\s+Description:\s+(?P<description>.*)  (?:MTU|Internet)"
+    re_description_2 = r"^\s+Description:\s+(?P<description>.*)$"
+    re_hardware = r"^.* Hardware: (?P<hardware>\S+)$"
 
     # Check for 'protocol is ' lines
     match = re.search(re_protocol, interface, flags=re.M)
@@ -124,7 +126,7 @@ def parse_intf_section(interface):
                 match = re.search(x_pattern, interface, flags=re.M)
                 if match:
                     is_enabled = match.group('is_enabled').strip()
-                    is_enabled = True if is_enabled == 'up' else False
+                    is_enabled = True if re.search("up", is_enabled) else False
                     break
             else:
                 msg = "Error parsing intf, 'admin state' never detected:\n\n{}".format(interface)
@@ -145,19 +147,30 @@ def parse_intf_section(interface):
     else:
         mac_address = ""
 
-    match = re.search(re_speed, interface, flags=re.M)
-    speed = int(match.group('speed'))
-    speed_unit = match.group('speed_unit')
-    # This was alway in Kbit (in the data I saw)
-    if speed_unit != "Kbit":
-        msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface)
-        raise ValueError(msg)
-    speed = int(round(speed / 1000.0))
+    match = re.search(re_hardware, interface, flags=re.M)
+    speed_exist = True
+    if match:
+        if match.group('hardware') == "NVE":
+            speed_exist = False
+
+    if speed_exist:
+        match = re.search(re_speed, interface, flags=re.M)
+        speed = int(match.group('speed'))
+        speed_unit = match.group('speed_unit')
+        # This was alway in Kbit (in the data I saw)
+        if speed_unit != "Kbit":
+            msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface)
+            raise ValueError(msg)
+        speed = int(round(speed / 1000.0))
+    else:
+        speed = -1
 
     description = ''
-    match = re.search(re_description, interface, flags=re.M)
-    if match:
-        description = match.group('description')
+    for x_pattern in [re_description_1, re_description_2]:
+        match = re.search(x_pattern, interface, flags=re.M)
+        if match:
+            description = match.group('description')
+            break
 
     return {
              intf_name: {
@@ -750,7 +763,8 @@ class NXOSSSHDriver(NXOSDriverBase):
         interface_list = []
         show_int_status = show_int_status.strip()
         # Remove the header information
-        show_int_status = re.split(r'^---------+', show_int_status, flags=re.M)[-1]
+        show_int_status = re.sub(r'(?:^---------+$|^Port .*$|^ .*$)', '',
+                                 show_int_status, flags=re.M)
         for line in show_int_status.splitlines():
             if not line:
                 continue
@@ -1269,7 +1283,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
         # Strip any leading characters
-        output = re.sub(r"^[\*\+GO]", "", output, flags=re.M)
+        output = re.sub(r"^[\*\+GOCE]", "", output, flags=re.M)
         output = re.sub(r"^\(R\)", "", output, flags=re.M)
         output = re.sub(r"^\(T\)", "", output, flags=re.M)
         output = re.sub(r"^\(F\)", "", output, flags=re.M)
