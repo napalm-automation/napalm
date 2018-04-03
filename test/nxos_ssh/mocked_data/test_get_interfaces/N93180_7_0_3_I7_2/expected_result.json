@@ -1,0 +1,730 @@
+{
+	"Ethernet1/1": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"Ethernet1/2": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:17",
+		"speed": 1000
+	},
+	"Ethernet1/3": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:18",
+		"speed": 1000
+	},
+	"Ethernet1/4": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:19",
+		"speed": 10000
+	},
+	"Ethernet1/5": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:1A",
+		"speed": 10000
+	},
+	"Ethernet1/6": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:1B",
+		"speed": 1000
+	},
+	"Ethernet1/7": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:1C",
+		"speed": 1000
+	},
+	"Ethernet1/8": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:1D",
+		"speed": 10000
+	},
+	"Ethernet1/9": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:1E",
+		"speed": 10000
+	},
+	"Ethernet1/49": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 100000
+	},
+	"Ethernet1/42": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"port-channel93": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:18",
+		"speed": 1000
+	},
+	"Vlan333": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "",
+		"speed": 1000
+	},
+	"Ethernet1/34": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:37",
+		"speed": 10000
+	},
+	"Ethernet1/35": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:38",
+		"speed": 10000
+	},
+	"Ethernet1/36": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"Ethernet1/37": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:3A",
+		"speed": 25000
+	},
+	"Ethernet1/30": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:33",
+		"speed": 10000
+	},
+	"Ethernet1/31": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:34",
+		"speed": 10000
+	},
+	"Ethernet1/32": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:35",
+		"speed": 10000
+	},
+	"Ethernet1/33": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:36",
+		"speed": 10000
+	},
+	"Ethernet1/38": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:3B",
+		"speed": 25000
+	},
+	"Ethernet1/39": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"Vlan650": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "",
+		"speed": 1000
+	},
+	"nve1": {
+		"is_enabled": true,
+		"description": "",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "",
+		"speed": -1
+	},
+	"port-channel1": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:56",
+		"speed": 200000
+	},
+	"Ethernet1/27": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:30",
+		"speed": 25000
+	},
+	"Ethernet1/26": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2F",
+		"speed": 10000
+	},
+	"Ethernet1/25": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2E",
+		"speed": 10000
+	},
+	"Ethernet1/24": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2D",
+		"speed": 10000
+	},
+	"Ethernet1/23": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2C",
+		"speed": 10000
+	},
+	"Ethernet1/22": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2B",
+		"speed": 10000
+	},
+	"Ethernet1/21": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2A",
+		"speed": 10000
+	},
+	"Ethernet1/20": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:29",
+		"speed": 10000
+	},
+	"port-channel34": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:37",
+		"speed": 10000
+	},
+	"port-channel37": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "00:00:00:00:00:00",
+		"speed": 100
+	},
+	"port-channel30": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:33",
+		"speed": 10000
+	},
+	"Ethernet1/29": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:32",
+		"speed": 10000
+	},
+	"port-channel33": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:36",
+		"speed": 10000
+	},
+	"port-channel20": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:29",
+		"speed": 10000
+	},
+	"Vlan600": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "",
+		"speed": 1000
+	},
+	"Vlan1": {
+		"is_enabled": false,
+		"description": "",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "",
+		"speed": 1000
+	},
+	"mgmt0": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:0E",
+		"speed": 1000
+	},
+	"Ethernet1/54": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:5A",
+		"speed": 100000
+	},
+	"Ethernet1/52": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 100000
+	},
+	"Ethernet1/53": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:56",
+		"speed": 100000
+	},
+	"Ethernet1/50": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 100000
+	},
+	"Ethernet1/51": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 100000
+	},
+	"Ethernet1/28": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:31",
+		"speed": 25000
+	},
+	"Ethernet1/12": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"Ethernet1/13": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:22",
+		"speed": 10000
+	},
+	"port-channel29": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:32",
+		"speed": 10000
+	},
+	"Ethernet1/11": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:20",
+		"speed": 25000
+	},
+	"Ethernet1/16": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:25",
+		"speed": 10000
+	},
+	"Ethernet1/17": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:26",
+		"speed": 10000
+	},
+	"Ethernet1/14": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:23",
+		"speed": 10000
+	},
+	"Ethernet1/15": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:24",
+		"speed": 10000
+	},
+	"port-channel23": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2C",
+		"speed": 10000
+	},
+	"port-channel22": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2B",
+		"speed": 10000
+	},
+	"Ethernet1/18": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:27",
+		"speed": 10000
+	},
+	"Ethernet1/19": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:28",
+		"speed": 10000
+	},
+	"port-channel26": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2F",
+		"speed": 10000
+	},
+	"port-channel25": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2E",
+		"speed": 10000
+	},
+	"port-channel24": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2D",
+		"speed": 10000
+	},
+	"port-channel16": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:25",
+		"speed": 10000
+	},
+	"loopback1": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "",
+		"speed": 8000
+	},
+	"Ethernet1/10": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:1F",
+		"speed": 10000
+	},
+	"Ethernet1/41": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"Ethernet1/40": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"Ethernet1/43": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"port-channel99": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:1E",
+		"speed": 10000
+	},
+	"Ethernet1/45": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"Ethernet1/44": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"Ethernet1/47": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"Ethernet1/46": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"port-channel92": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:17",
+		"speed": 1000
+	},
+	"Ethernet1/48": {
+		"is_enabled": false,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "50:0F:80:FD:0A:15",
+		"speed": 25000
+	},
+	"port-channel96": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:1B",
+		"speed": 1000
+	},
+	"port-channel97": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:1C",
+		"speed": 1000
+	},
+	"port-channel94": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:19",
+		"speed": 10000
+	},
+	"port-channel95": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:1A",
+		"speed": 10000
+	},
+	"port-channel13": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:22",
+		"speed": 10000
+	},
+	"port-channel10": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:1F",
+		"speed": 10000
+	},
+	"port-channel11": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": false,
+		"mac_address": "00:00:00:00:00:00",
+		"speed": 100
+	},
+	"loopback0": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "",
+		"speed": 8000
+	},
+	"port-channel17": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:26",
+		"speed": 10000
+	},
+	"port-channel14": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:23",
+		"speed": 10000
+	},
+	"port-channel15": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:24",
+		"speed": 10000
+	},
+	"port-channel18": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:27",
+		"speed": 10000
+	},
+	"port-channel19": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:28",
+		"speed": 10000
+	},
+	"port-channel21": {
+		"is_enabled": true,
+		"description": "*** LIBRE ***",
+		"last_flapped": -1.0,
+		"is_up": true,
+		"mac_address": "50:0F:80:FD:0A:2A",
+		"speed": 10000
+	}
+}
