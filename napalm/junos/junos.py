@@ -467,7 +467,7 @@ class JunOSDriver(NetworkDriver):
             # Sadly, bacause of this, results are not 100% accurate to the truth.
             environment_data['memory']['used_ram'] = \
                 int(round(environment_data['memory']['available_ram'] / 100.0 *
-                    structured_routing_engine_data['memory-buffer-utilization']))
+                          structured_routing_engine_data['memory-buffer-utilization']))
 
         return environment_data
 
@@ -697,7 +697,14 @@ class JunOSDriver(NetworkDriver):
             log.error(rpcerr.message)
             return {}
         interfaces = lldp_table.get().keys()
-
+        rpc_call_without_information = {
+            'get_rpc': 'get-lldp-interface-neighbors',
+            'interface_rpc': 'interface_device'
+        }
+        rpc_call_with_information = {
+            'get_rpc': 'get-lldp-interface-neighbors-information',
+            'interface_rpc': 'interface_name'
+        }
         # get lldp neighbor by interface rpc for EX Series, QFX Series, J Series
         # and SRX Series is get-lldp-interface-neighbors-information,
         # and rpc for M, MX, and T Series is get-lldp-interface-neighbors
@@ -705,19 +712,63 @@ class JunOSDriver(NetworkDriver):
         # ref2: https://www.juniper.net/documentation/en_US/junos12.3/information-products/topic-collections/junos-xml-ref-oper/index.html  (Junos 12.3) # noqa
         # Exceptions:
         # EX9208    personality = SWITCH    RPC: <get-lldp-interface-neighbors><interface-device>
-        lldp_table.GET_RPC = 'get-lldp-interface-neighbors'
-        if self.device.facts.get('personality') not in ('MX', 'M', 'PTX', 'T')\
-           and self.device.facts.get('model') not in ('EX9208', 'QFX10008'):
-            # Still need to confirm for QFX10002 and other EX series
-            lldp_table.GET_RPC = 'get-lldp-interface-neighbors-information'
+        # QFX10008  personality = SWITCH    RPC: <get-lldp-interface-neighbors><interface-device>
+        # QFX5110-48S-4C personality = SWITCH RPC: <get-lldp-interface-neighbors><interface-device>
+        # EX3400    personality = SWITCH    RPC: <get-lldp-interface-neighbors><interface-device>
+        # SRX4100   personality = SRX_HIGHEND  RPC: <get-lldp-interface-neighbors><interface-device>
+        #
+        # This is very inconsistent and diverges from the documented behaviour.
+        # The following object permits a per personality (a junos-pyEZ library feature) and per
+        # model mapping to the correct rpc call
+        rpc_call_map = {
+            'default': rpc_call_with_information,
+            'MX': {
+                'default': rpc_call_without_information
+            },
+            'M': {
+                'default': rpc_call_without_information
+            },
+            'T': {
+                'default': rpc_call_without_information
+            },
+            'PTX': {
+                'default': rpc_call_without_information
+            },
+            'SWITCH': {
+                'default': rpc_call_with_information,
+                'EX9208': rpc_call_without_information,
+                'EX3400': rpc_call_without_information,
+                'EX4600-40F': rpc_call_without_information,
+                'QFX5110-48S-4C': rpc_call_without_information,
+                'QFX10002-36Q': rpc_call_without_information,
+                'QFX10008': rpc_call_without_information
+            },
+            'SRX_BRANCH': {
+                'default': rpc_call_with_information
+            },
+            'SRX_HIGHEND': {
+                'default': rpc_call_without_information
+            }
+        }
+
+        personality = self.device.facts.get('personality')
+        model = self.device.facts.get('model')
+
+        if rpc_call_map.get(personality) is not None:
+            if rpc_call_map.get(personality).get(model) is not None:
+                lldp_table.GET_RPC = rpc_call_map.get(personality).get(model).get('get_rpc')
+                interface_variable = rpc_call_map.get(personality).get(model).get('interface_rpc')
+            else:
+                lldp_table.GET_RPC = rpc_call_map.get(personality).get('default').get('get_rpc')
+                interface_variable = rpc_call_map.get(personality).get('default').get(
+                    'interface_rpc')
+        else:
+            lldp_table.GET_RPC = rpc_call_map.get('default').get('get_rpc')
+            interface_variable = rpc_call_map.get('default').get('interface_rpc')
 
         for interface in interfaces:
-            if 'EX9208' in self.device.facts.get('model'):
-                lldp_table.get(interface_device=interface)
-            elif self.device.facts.get('personality') not in ('MX', 'M', 'PTX', 'T'):
-                lldp_table.get(interface_name=interface)
-            else:
-                lldp_table.get(interface_device=interface)
+            interface_args = {interface_variable: interface}
+            lldp_table.get(**interface_args)
             for item in lldp_table:
                 if interface not in lldp_neighbors.keys():
                     lldp_neighbors[interface] = []
@@ -779,7 +830,7 @@ class JunOSDriver(NetworkDriver):
             '''
             try:
                 return '\n'.join(
-                    txt.splitlines()[(-1)*int(length):]
+                    txt.splitlines()[(-1) * int(length):]
                 )
             except ValueError:
                 return txt
@@ -852,7 +903,7 @@ class JunOSDriver(NetworkDriver):
                 safe_pipe = pipe_oper if not pipe_args else '{fun} {args}'.format(fun=pipe_oper,
                                                                                   args=pipe_args)
                 command_safe_parts.append(safe_pipe)
-            safe_command = exploded_cmd[0] if not command_safe_parts else\
+            safe_command = exploded_cmd[0] if not command_safe_parts else \
                 '{base} | {pipes}'.format(base=exploded_cmd[0],
                                           pipes=' | '.join(command_safe_parts))
             raw_txt = self.device.cli(safe_command, warning=False)
@@ -862,6 +913,7 @@ class JunOSDriver(NetworkDriver):
 
     def get_bgp_config(self, group='', neighbor=''):
         """Return BGP configuration."""
+
         def _check_nhs(policies, nhs_policies):
             if not isinstance(policies, list):
                 # Make it a list if it is a single policy
@@ -913,7 +965,7 @@ class JunOSDriver(NetworkDriver):
 
             for key, value in args.items():
                 key_levels = key.split('_')
-                length = len(key_levels)-1
+                length = len(key_levels) - 1
                 temp_dict = {
                     key_levels[length]: value
                 }
@@ -1012,7 +1064,7 @@ class JunOSDriver(NetworkDriver):
                 if '_prefix_limit' not in field
             }
             for elem in bgp_group_details:
-                if not('_prefix_limit' not in elem[0] and elem[1] is not None):
+                if not ('_prefix_limit' not in elem[0] and elem[1] is not None):
                     continue
                 datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
                 default = _DATATYPE_DEFAULT_.get(datatype)
@@ -1059,7 +1111,7 @@ class JunOSDriver(NetworkDriver):
                     if '_prefix_limit' not in field
                 }
                 for elem in bgp_group_details:
-                    if not('_prefix_limit' not in elem[0] and elem[1] is not None):
+                    if not ('_prefix_limit' not in elem[0] and elem[1] is not None):
                         continue
                     datatype = _PEER_FIELDS_DATATYPE_MAP_.get(elem[0])
                     default = _DATATYPE_DEFAULT_.get(datatype)
@@ -1552,10 +1604,10 @@ class JunOSDriver(NetworkDriver):
             d.update({key: False for key in _BOOLEAN_FIELDS_ if d.get(key) is None})
             as_path = d.get('as_path')
             if as_path is not None:
-                d['as_path'] = as_path.split(' I ')[0]\
-                                      .replace('AS path:', '')\
-                                      .replace('I', '')\
-                                      .strip()
+                d['as_path'] = as_path.split(' I ')[0] \
+                    .replace('AS path:', '') \
+                    .replace('I', '') \
+                    .strip()
                 # to be sure that contains only AS Numbers
             if d.get('inactive_reason') is None:
                 d['inactive_reason'] = u''
@@ -1830,7 +1882,6 @@ class JunOSDriver(NetworkDriver):
 
             results_array = []
             for probe_result in tmp.findall('probe-result'):
-
                 ip_address = napalm.base.helpers.convert(
                     napalm.base.helpers.ip,
                     napalm.base.helpers.find_txt(probe_result, 'ip-address'), '*')
@@ -1956,40 +2007,37 @@ class JunOSDriver(NetworkDriver):
             # Defaulting avg, min, max values to 0.0 since device does not
             # return these values
             intf_optics = {
-                            'index': int(lane),
-                            'state': {
-                                'input_power': {
-                                    'instant': (
-                                        float(optics['input_power'])
-                                        if optics['input_power'] not in
-                                        INVALID_LIGHT_LEVEL
-                                        else 0.0),
-                                    'avg': 0.0,
-                                    'max': 0.0,
-                                    'min': 0.0
-                                    },
-                                'output_power': {
-                                    'instant': (
-                                        float(optics['output_power'])
-                                        if optics['output_power'] not in
-                                        INVALID_LIGHT_LEVEL
-                                        else 0.0),
-                                    'avg': 0.0,
-                                    'max': 0.0,
-                                    'min': 0.0
-                                    },
-                                'laser_bias_current': {
-                                    'instant': (
-                                        float(optics['laser_bias_current'])
-                                        if optics['laser_bias_current'] not in
-                                        INVALID_LIGHT_LEVEL
-                                        else 0.0),
-                                    'avg': 0.0,
-                                    'max': 0.0,
-                                    'min': 0.0
-                                    }
-                                }
-                            }
+                'index': int(lane),
+                'state': {
+                    'input_power': {
+                        'instant': (
+                            float(optics['input_power'])
+                            if optics['input_power'] not in INVALID_LIGHT_LEVEL
+                            else 0.0),
+                        'avg': 0.0,
+                        'max': 0.0,
+                        'min': 0.0
+                    },
+                    'output_power': {
+                        'instant': (
+                            float(optics['output_power'])
+                            if optics['output_power'] not in INVALID_LIGHT_LEVEL
+                            else 0.0),
+                        'avg': 0.0,
+                        'max': 0.0,
+                        'min': 0.0
+                    },
+                    'laser_bias_current': {
+                        'instant': (
+                            float(optics['laser_bias_current'])
+                            if optics['laser_bias_current'] not in INVALID_LIGHT_LEVEL
+                            else 0.0),
+                        'avg': 0.0,
+                        'max': 0.0,
+                        'min': 0.0
+                    }
+                }
+            }
             optics_detail[interface_name]['physical_channels']['channel'].append(intf_optics)
 
         return optics_detail
