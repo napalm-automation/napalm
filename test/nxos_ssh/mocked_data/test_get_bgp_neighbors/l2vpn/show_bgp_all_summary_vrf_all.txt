@@ -1,0 +1,36 @@
+BGP summary information for VRF default, address family IPv4 Unicast
+
+BGP summary information for VRF default, address family IPv6 Unicast
+
+BGP summary information for VRF default, address family L2VPN EVPN
+BGP router identifier 10.1.80.134, local AS number 64861
+BGP table version is 1425650, L2VPN EVPN config peers 24, capable peers 8
+9475 network entries and 9475 paths using 2236100 bytes of memory
+BGP attribute entries [338/54080], BGP AS path entries [1/6]
+BGP community entries [0/0], BGP clusterlist entries [0/0]
+
+Neighbor        V    AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.1.81.136    4 64861  139713  112024  1425650    0    0    3d03h 266       
+10.1.81.137    4 64861  141973  111362  1425650    0    0    3d02h 321       
+10.1.81.142    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.143    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.144    4 64861   47902   38685  1425650    0    0     3w6d 454       
+10.1.81.145    4 64861   47849   38805  1425650    0    0     3w6d 454       
+10.1.81.146    4 64861   84256   77621  1425650    0    0     6w5d 84        
+10.1.81.147    4 64861   84261   77606  1425650    0    0     6w5d 84        
+10.1.81.148    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.149    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.152    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.153    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.154    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.155    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.156    4 64861  268777  110412  1425650    0    0     6w5d 3906      
+10.1.81.157    4 64861  269043  110390  1425650    0    0     6w5d 3906      
+10.1.81.158    4 64861   40465   39445        0    0    0     8w2d Idle     
+10.1.81.159    4 64861   40525   39453        0    0    0     8w2d Idle     
+10.1.81.160    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.161    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.162    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.163    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.168    4 64861       0       0        0    0    0    1d21h Idle     
+10.1.81.169    4 64861       0       0        0    0    0    1d21h Idle     

@@ -1,0 +1,391 @@
+{
+	"global": {
+		"router_id": "10.1.80.134",
+		"peers": {
+			"10.1.81.152": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.153": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.154": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.155": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.156": {
+				"is_enabled": true,
+				"uptime": 4060800,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": 3906
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": true,
+				"description": ""
+			},
+			"10.1.81.157": {
+				"is_enabled": true,
+				"uptime": 4060800,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": 3906
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": true,
+				"description": ""
+			},
+			"10.1.81.158": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.159": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.136": {
+				"is_enabled": true,
+				"uptime": 270000,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": 266
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": true,
+				"description": ""
+			},
+			"10.1.81.137": {
+				"is_enabled": true,
+				"uptime": 266400,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": 321
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": true,
+				"description": ""
+			},
+			"10.1.81.169": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.168": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.161": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.160": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.163": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.162": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.143": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.142": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.147": {
+				"is_enabled": true,
+				"uptime": 4060800,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": 84
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": true,
+				"description": ""
+			},
+			"10.1.81.146": {
+				"is_enabled": true,
+				"uptime": 4060800,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": 84
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": true,
+				"description": ""
+			},
+			"10.1.81.145": {
+				"is_enabled": true,
+				"uptime": 2332800,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": 454
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": true,
+				"description": ""
+			},
+			"10.1.81.144": {
+				"is_enabled": true,
+				"uptime": 2332800,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": 454
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": true,
+				"description": ""
+			},
+			"10.1.81.149": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			},
+			"10.1.81.148": {
+				"is_enabled": true,
+				"uptime": -1,
+				"remote_as": 64861,
+				"address_family": {
+					"l2vpn": {
+						"sent_prefixes": -1,
+						"accepted_prefixes": -1,
+						"received_prefixes": -1
+					}
+				},
+				"remote_id": "0.0.0.0",
+				"local_as": 64861,
+				"is_up": false,
+				"description": ""
+			}
+		}
+	}
+}
