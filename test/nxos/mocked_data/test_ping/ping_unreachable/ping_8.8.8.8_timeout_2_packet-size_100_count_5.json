@@ -1,0 +1,16 @@
+5 packets transmitted, 0 packets received, 100.00% packet loss
+
+PING 8.8.8.8 (8.8.8.8): 100 data bytes
+36 bytes from 10.150.102.3: Destination Host Unreachable
+Request 0 timed out
+36 bytes from 10.150.102.3: Destination Host Unreachable
+Request 1 timed out
+36 bytes from 10.150.102.3: Destination Host Unreachable
+Request 2 timed out
+36 bytes from 10.150.102.3: Destination Host Unreachable
+Request 3 timed out
+36 bytes from 10.150.102.3: Destination Host Unreachable
+Request 4 timed out
+
+--- 8.8.8.8 ping statistics ---
+5 packets transmitted, 0 packets received, 100.00% packet loss

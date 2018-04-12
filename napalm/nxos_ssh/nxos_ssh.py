@@ -25,7 +25,6 @@ from scp import SCPClient
 import paramiko
 import hashlib
 import socket
-from datetime import datetime
 
 # import third party lib
 from netaddr import IPAddress
@@ -36,12 +35,14 @@ from netmiko.ssh_exception import NetMikoTimeoutException
 
 # import NAPALM Base
 import napalm.base.helpers
-from napalm.base import NetworkDriver
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.base.helpers import canonical_interface_name
+from napalm.nxos import NXOSDriverBase
 import napalm.base.constants as c
 
 # Easier to store these as constants
@@ -92,9 +93,11 @@ def parse_intf_section(interface):
     re_is_enabled_1 = r"^admin state is (?P<is_enabled>\S+)$"
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
-    re_mac = r"^\s+Hardware.*address:\s+(?P<mac_address>\S+) "
-    re_speed = r"^\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
-    re_description = r"^\s+Description:\s+(?P<description>.*)$"
+    re_mac = r"^\s+Hardware:\s+(?P<hardware>.*), address:\s+(?P<mac_address>\S+) "
+    re_speed = r"\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
+    re_description_1 = r"^\s+Description:\s+(?P<description>.*)  (?:MTU|Internet)"
+    re_description_2 = r"^\s+Description:\s+(?P<description>.*)$"
+    re_hardware = r"^.* Hardware: (?P<hardware>\S+)$"
 
     # Check for 'protocol is ' lines
     match = re.search(re_protocol, interface, flags=re.M)
@@ -123,7 +126,7 @@ def parse_intf_section(interface):
                 match = re.search(x_pattern, interface, flags=re.M)
                 if match:
                     is_enabled = match.group('is_enabled').strip()
-                    is_enabled = True if is_enabled == 'up' else False
+                    is_enabled = True if re.search("up", is_enabled) else False
                     break
             else:
                 msg = "Error parsing intf, 'admin state' never detected:\n\n{}".format(interface)
@@ -144,19 +147,30 @@ def parse_intf_section(interface):
     else:
         mac_address = ""
 
-    match = re.search(re_speed, interface, flags=re.M)
-    speed = int(match.group('speed'))
-    speed_unit = match.group('speed_unit')
-    # This was alway in Kbit (in the data I saw)
-    if speed_unit != "Kbit":
-        msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface)
-        raise ValueError(msg)
-    speed = int(round(speed / 1000.0))
+    match = re.search(re_hardware, interface, flags=re.M)
+    speed_exist = True
+    if match:
+        if match.group('hardware') == "NVE":
+            speed_exist = False
+
+    if speed_exist:
+        match = re.search(re_speed, interface, flags=re.M)
+        speed = int(match.group('speed'))
+        speed_unit = match.group('speed_unit')
+        # This was alway in Kbit (in the data I saw)
+        if speed_unit != "Kbit":
+            msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface)
+            raise ValueError(msg)
+        speed = int(round(speed / 1000.0))
+    else:
+        speed = -1
 
     description = ''
-    match = re.search(re_description, interface, flags=re.M)
-    if match:
-        description = match.group('description')
+    for x_pattern in [re_description_1, re_description_2]:
+        match = re.search(x_pattern, interface, flags=re.M)
+        if match:
+            description = match.group('description')
+            break
 
     return {
              intf_name: {
@@ -366,7 +380,7 @@ def bgp_summary_parser(bgp_summary):
     return bgp_return_dict
 
 
-class NXOSSSHDriver(NetworkDriver):
+class NXOSSSHDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -374,41 +388,13 @@ class NXOSSSHDriver(NetworkDriver):
         self.username = username
         self.password = password
         self.timeout = timeout
-        self.up = False
         self.replace = True
         self.loaded = False
-        self.fc = None
         self.changed = False
         self.replace_file = None
         self.merge_candidate = ''
-
-        if optional_args is None:
-            optional_args = {}
-
-        # Netmiko possible arguments
-        netmiko_argument_map = {
-            'port': None,
-            'verbose': False,
-            'timeout': self.timeout,
-            'global_delay_factor': 1,
-            'use_keys': False,
-            'key_file': None,
-            'ssh_strict': False,
-            'system_host_keys': False,
-            'alt_host_keys': False,
-            'alt_key_file': '',
-            'ssh_config_file': None,
-            'allow_agent': False
-        }
-
-        # Build dict of any optional Netmiko args
-        self.netmiko_optional_args = {
-            k: optional_args.get(k, v)
-            for k, v in netmiko_argument_map.items()
-        }
-
-        self.port = optional_args.get('port', 22)
-        self.sudo_pwd = optional_args.get('sudo_pwd', self.password)
+        self.netmiko_optional_args = netmiko_args(optional_args)
+        self.device = None
 
     def open(self):
         try:
@@ -426,6 +412,10 @@ class NXOSSSHDriver(NetworkDriver):
             self._delete_file(self.backup_file)
         self.device.disconnect()
         self.device = None
+
+    def _send_command(self, command):
+        """Wrapper for Netmiko's send_command method."""
+        return self.device.send_command(command)
 
     @staticmethod
     def parse_uptime(uptime_str):
@@ -601,7 +591,7 @@ class NXOSSSHDriver(NetworkDriver):
         diff_out = self.device.send_command(command)
         try:
             diff_out = diff_out.split(
-                '#Generating Rollback Patch')[1].replace(
+                'Generating Rollback Patch')[1].replace(
                     'Rollback Patch is Empty', '').strip()
             for line in diff_out.splitlines():
                 if line:
@@ -639,20 +629,25 @@ class NXOSSSHDriver(NetworkDriver):
             return diff
         return ''
 
-    def _save(self, filename='startup-config'):
-        command = 'copy run %s' % filename
+    def _copy_run_start(self, filename='startup-config'):
+        command = 'copy run {}'.format(filename)
         output = self.device.send_command(command)
         if 'complete' in output.lower():
             return True
-        return False
+        else:
+            msg = 'Unable to save running-config to {}!'.format(filename)
+            raise CommandErrorException(msg)
 
     def _commit_merge(self):
-        commands = [command for command in self.merge_candidate.splitlines() if command]
-        output = self.device.send_config_set(commands)
+        try:
+            commands = [command for command in self.merge_candidate.splitlines() if command]
+            output = self.device.send_config_set(commands)
+        except Exception as e:
+            raise MergeConfigException(str(e))
         if 'Invalid command' in output:
             raise MergeConfigException('Error while applying config!')
-        if not self._save():
-            raise CommandErrorException('Unable to save running-config to startup!')
+        # clear the merge buffer
+        self.merge_candidate = ''
 
     def _save_to_checkpoint(self, filename):
         """Save the current running config to the given file."""
@@ -669,28 +664,7 @@ class NXOSSSHDriver(NetworkDriver):
         if 'Rollback failed.' in rollback_result or 'ERROR' in rollback_result:
             raise ReplaceConfigException(rollback_result)
         elif rollback_result == []:
-            return False
-        return True
-
-    def commit_config(self):
-        if self.loaded:
-            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            # Create Checkpoint from current running-config
-            self._save_to_checkpoint(self.backup_file)
-            if self.replace:
-                cfg_replace_status = self._load_cfg_from_checkpoint()
-                if not cfg_replace_status:
-                    raise ReplaceConfigException
-            else:
-                try:
-                    self._commit_merge()
-                    self.merge_candidate = ''  # clear the merge buffer
-                except Exception as e:
-                    raise MergeConfigException(str(e))
-            self.changed = True
-            self.loaded = False
-        else:
-            raise ReplaceConfigException('No config loaded.')
+            raise ReplaceConfigException
 
     def _delete_file(self, filename):
         commands = [
@@ -714,8 +688,7 @@ class NXOSSSHDriver(NetworkDriver):
             result = self.device.send_command(command)
             if 'completed' not in result.lower():
                 raise ReplaceConfigException(result)
-            if not self._save():
-                raise CommandErrorException('Unable to save running-config to startup!')
+            self._copy_run_start()
             self.changed = False
 
     def _apply_key_map(self, key_map, table):
@@ -738,7 +711,7 @@ class NXOSSSHDriver(NetworkDriver):
         # default values.
         vendor = u'Cisco'
         uptime = -1
-        serial_number, fqdn, os_version, hostname, domain_name = ('',) * 5
+        serial_number, fqdn, os_version, hostname, domain_name, model = ('',) * 6
 
         # obtain output from device
         show_ver = self.device.send_command('show version')
@@ -756,14 +729,18 @@ class NXOSSSHDriver(NetworkDriver):
                 _, serial_number = line.split("Processor Board ID ")
                 serial_number = serial_number.strip()
 
-            if 'system: ' in line:
+            if 'system: ' in line or 'NXOS: ' in line:
                 line = line.strip()
                 os_version = line.split()[2]
                 os_version = os_version.strip()
 
-            if 'cisco' in line and 'Chassis' in line:
-                _, model = line.split()[:2]
-                model = model.strip()
+            if 'cisco' in line and 'hassis' in line:
+                match = re.search(r'.cisco (.*) \(', line)
+                if match:
+                    model = match.group(1).strip()
+                match = re.search(r'.cisco (.* [cC]hassis)', line)
+                if match:
+                    model = match.group(1).strip()
 
         hostname = show_hostname.strip()
 
@@ -775,17 +752,25 @@ class NXOSSSHDriver(NetworkDriver):
                 break
         if hostname.count(".") >= 2:
             fqdn = hostname
+            # Remove domain name from hostname
+            if domain_name:
+                hostname = re.sub(re.escape(domain_name) + '$', '', hostname)
+                hostname = hostname.strip('.')
         elif domain_name:
             fqdn = '{}.{}'.format(hostname, domain_name)
 
         # interface_list filter
         interface_list = []
         show_int_status = show_int_status.strip()
+        # Remove the header information
+        show_int_status = re.sub(r'(?:^---------+$|^Port .*$|^ .*$)', '',
+                                 show_int_status, flags=re.M)
         for line in show_int_status.splitlines():
-            if line.startswith(' ') or line.startswith('-') or line.startswith('Port '):
+            if not line:
                 continue
             interface = line.split()[0]
-            interface_list.append(interface)
+            # Return canonical interface name
+            interface_list.append(canonical_interface_name(interface))
 
         return {
             'uptime': int(uptime),
@@ -1072,7 +1057,9 @@ class NXOSSSHDriver(NetworkDriver):
 
         arp_entries = arp_list[1].strip()
         for line in arp_entries.splitlines():
-            if len(line.split()) == 4:
+            if len(line.split()) >= 4:
+                # Search for extra characters to strip, currently strip '*', '+', '#', 'D'
+                line = re.sub(r"\s+[\*\+\#D]{1,4}\s*$", "", line, flags=re.M)
                 address, age, mac, interface = line.split()
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
@@ -1296,10 +1283,11 @@ class NXOSSSHDriver(NetworkDriver):
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
         # Strip any leading characters
-        output = re.sub(r"^[\*\+GO]", "", output, flags=re.M)
+        output = re.sub(r"^[\*\+GOCE]", "", output, flags=re.M)
         output = re.sub(r"^\(R\)", "", output, flags=re.M)
         output = re.sub(r"^\(T\)", "", output, flags=re.M)
         output = re.sub(r"^\(F\)", "", output, flags=re.M)
+        output = re.sub(r"vPC Peer-Link", "vPC-Peer-Link", output, flags=re.M)
 
         for line in output.splitlines():
 

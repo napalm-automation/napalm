@@ -1,0 +1,7 @@
+DNS lookup disabled
+Vrf Name: default Default domain is dcn.fr.tld.com
+Name/address lookup uses domain service
+Name servers are 255.255.255.255
+
+
+Host            Address
