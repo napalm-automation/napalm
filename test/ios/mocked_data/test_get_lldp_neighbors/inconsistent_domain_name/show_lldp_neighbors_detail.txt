@@ -2,7 +2,7 @@ foo-vsc-a#sh lldp nei det
 ------------------------------------------------
 Chassis id: 3820.56c1.4d29
 Port id: Te1/3
-Port Description: bld/vWD35a-vSCa/global
+Port Description: foo/vWD35a-vSCa/global
 System Name: foo-vwd-d35a.foo.domain.com
 
 System Description: 
@@ -26,7 +26,7 @@ Vlan ID: - not advertised
 ------------------------------------------------
 Chassis id: 40a6.77dd.63c0
 Port id: xe-0/0/2
-Port Description: bld/vWD34a-vSCa/global</[local description]>
+Port Description: foo/vWD34a-vSCa/global</[local description]>
 System Name: foo-vwd-d34a
 
 System Description: 
@@ -141,7 +141,7 @@ Vlan ID: - not advertised
 ------------------------------------------------
 Chassis id: 8478.ac56.60b8
 Port id: Eth3/1
-Port Description: bld/vDD33a-vSCa/global
+Port Description: foo/vDD33a-vSCa/global
 System Name: foo-vdd-d33a.foo.domain.com
 
 System Description: 
@@ -160,7 +160,7 @@ Vlan ID: - not advertised
 ------------------------------------------------
 Chassis id: 84b5.9ccc.8440
 Port id: xe-0/0/2
-Port Description: bld/vDD37b-vSCa/global</[local description]>
+Port Description: foo/vDD37b-vSCa/global</[local description]>
 System Name: foo-vdd-d37b
 
 System Description: 
@@ -182,7 +182,7 @@ Vlan ID: - not advertised
 ------------------------------------------------
 Chassis id: 8478.ac56.6080
 Port id: Eth3/1
-Port Description: bld/vDD33b-vSCa/global
+Port Description: foo/vDD33b-vSCa/global
 System Name: foo-vdd-d33b.foo.domain.com
 
 System Description: 
@@ -224,7 +224,7 @@ Vlan ID: - not advertised
 ------------------------------------------------
 Chassis id: 84b5.9cca.d8c0
 Port id: xe-0/0/2
-Port Description: bld/vDD37a-vSCa/global</[local description]>
+Port Description: foo/vDD37a-vSCa/global</[local description]>
 System Name: foo-vdd-d37a
 
 System Description: 
@@ -270,7 +270,7 @@ Vlan ID: - not advertised
 ------------------------------------------------
 Chassis id: dc38.e156.7e40
 Port id: xe-0/0/2
-Port Description: bld/vWD34b-vSCa/global</[local description]>
+Port Description: foo/vWD34b-vSCa/global</[local description]>
 System Name: foo-vwd-d34b
 
 System Description: 
@@ -292,7 +292,7 @@ Vlan ID: - not advertised
 ------------------------------------------------
 Chassis id: 3820.56c1.558c
 Port id: Te1/3
-Port Description: bld/vWD35b-vSCa/global
+Port Description: foo/vWD35b-vSCa/global
 System Name: foo-vwd-d35b.foo.domain.com
 
 System Description: 
