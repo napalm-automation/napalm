@@ -2083,9 +2083,9 @@ class IOSDriver(NetworkDriver):
         lowest access and 15 represents full access to the device.
         """
         username_regex = r"^username\s+(?P<username>\S+)\s+(?:privilege\s+(?P<priv_level>\S+)" \
-            "\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
+            r"\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
         pub_keychain_regex = r"^\s+username\s+(?P<username>\S+)(?P<keys>(?:\n\s+key-hash\s+" \
-            "(?P<hash_type>\S+)\s+(?P<hash>\S+)(?:\s+\S+)?)+)$"
+            r"(?P<hash_type>\S+)\s+(?P<hash>\S+)(?:\s+\S+)?)+)$"
         users = {}
         command = "show run | section username"
         output = self._send_command(command)
