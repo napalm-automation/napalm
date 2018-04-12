@@ -1315,23 +1315,32 @@ class IOSXRDriver(NetworkDriver):
             raise TypeError('Wrong destination IP Address!')
 
         if ipv == 6:
-            route_info_rpc_command = '<Get><Operational><IPV6_RIB><VRFTable><VRF><Naming><VRFName>\
-            default</VRFName></Naming><AFTable><AF><Naming><AFName>IPv6</AFName></Naming><SAFTable>\
-            <SAF><Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><IP_RIBRoute><Naming>\
-            <RouteTableName>default</RouteTableName></Naming><RouteTable><Route><Naming><Address>\
-            {network}</Address>{prefix}</Naming></Route></RouteTable></IP_RIBRoute>\
-            </IP_RIBRouteTable></SAF></SAFTable></AF></AFTable></VRF></VRFTable></IPV6_RIB>\
-            </Operational></Get>'.format(network=network, prefix=prefix_tag)
+            route_info_rpc_command = (
+                '<Get><Operational><IPV6_RIB><VRFTable><VRF><Naming><VRFName>'
+                'default</VRFName></Naming><AFTable><AF><Naming><AFName>IPv6</AFName></Naming>'
+                '<SAFTable>'
+                '<SAF><Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><IP_RIBRoute>'
+                '<Naming>'
+                '<RouteTableName>default</RouteTableName></Naming><RouteTable><Route><Naming>'
+                '<Address>'
+                '{network}</Address>{prefix}</Naming></Route></RouteTable></IP_RIBRoute>'
+                '</IP_RIBRouteTable></SAF></SAFTable></AF></AFTable></VRF></VRFTable></IPV6_RIB>'
+                '</Operational></Get>'
+            ).format(network=network, prefix=prefix_tag)
         else:
-            route_info_rpc_command = '<Get><Operational><RIB><VRFTable><VRF><Naming><VRFName>default\
-            </VRFName></Naming><AFTable><AF><Naming><AFName>IPv4</AFName></Naming><SAFTable><SAF>\
-            <Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><IP_RIBRoute><Naming>\
-            <RouteTableName>default</RouteTableName></Naming><RouteTable><Route><Naming><Address>\
-            {network}</Address>{prefix}</Naming></Route></RouteTable></IP_RIBRoute></IP_RIBRouteTable>\
-            </SAF></SAFTable></AF></AFTable></VRF></VRFTable></RIB></Operational></Get>'.format(
-                network=network,
-                prefix=prefix_tag
-            )
+            route_info_rpc_command = (
+                '<Get><Operational><RIB><VRFTable><VRF><Naming><VRFName>'
+                'default'
+                '</VRFName></Naming><AFTable><AF><Naming><AFName>IPv4</AFName></Naming>'
+                '<SAFTable><SAF>'
+                '<Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><IP_RIBRoute>'
+                '<Naming>'
+                '<RouteTableName>default</RouteTableName></Naming><RouteTable><Route><Naming>'
+                '<Address>'
+                '{network}</Address>{prefix}</Naming></Route></RouteTable></IP_RIBRoute>'
+                '</IP_RIBRouteTable>'
+                '</SAF></SAFTable></AF></AFTable></VRF></VRFTable></RIB></Operational></Get>'
+            ).format(network=network, prefix=prefix_tag)
 
         routes_tree = ETREE.fromstring(self.device.make_rpc_call(route_info_rpc_command))
 
