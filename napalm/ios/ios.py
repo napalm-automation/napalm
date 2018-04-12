@@ -833,8 +833,6 @@ class IOSDriver(NetworkDriver):
                     key = "{}_{}".format(system_name, port_id)
                     local_intf = reverse_neighbors.get(key)
                     if local_intf is None and system_name_alt:
-                        # import pdb
-                        # pdb.set_trace()
                         system_name_alt = system_name_alt.group(1)[:20]
                         system_name_alt = system_name_alt.strip()
                         alt_key = "{}_{}".format(system_name_alt, port_id)

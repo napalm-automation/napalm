@@ -2,85 +2,85 @@
     "TenGigabitEthernet1/6": [
         {
             "port": "Te1/3",
-            "hostname": "bld-vwd-d35a.foo.domain.com"
+            "hostname": "foo-vwd-d35a.foo.domain.com"
         }
     ],
     "TenGigabitEthernet1/5": [
         {
             "port": "xe-0/0/2",
-            "hostname": "bld-vwd-d34a"
+            "hostname": "foo-vwd-d34a"
         }
     ],
     "TenGigabitEthernet5/4": [
         {
             "port": "Te3/2",
-            "hostname": "bld-vsl-a.wan.domain.com"
+            "hostname": "foo-vsl-a.wan.domain.com"
         }
     ],
     "TenGigabitEthernet2/3": [
         {
             "port": "Te5/4",
-            "hostname": "bld-vsd-d32b.foo.domain.com"
+            "hostname": "foo-vsd-d32b.foo.domain.com"
         }
     ],
     "GigabitEthernet9/16": [
         {
             "port": "Gi2/1",
-            "hostname": "bld-sc-b.subd.domain.com"
+            "hostname": "foo-sc-b.subd.domain.com"
         }
     ],
     "GigabitEthernet8/16": [
         {
             "port": "Gi2/1",
-            "hostname": "bld-sc-a.subd.domain.com"
+            "hostname": "foo-sc-a.subd.domain.com"
         }
     ],
     "TenGigabitEthernet1/4": [
         {
             "port": "Eth3/1",
-            "hostname": "bld-vdd-d33a.foo.domain.com"
+            "hostname": "foo-vdd-d33a.foo.domain.com"
         }
     ],
     "TenGigabitEthernet2/8": [
         {
             "port": "xe-0/0/2",
-            "hostname": "bld-vdd-d37b"
+            "hostname": "foo-vdd-d37b"
         }
     ],
     "TenGigabitEthernet2/4": [
         {
             "port": "Eth3/1",
-            "hostname": "bld-vdd-d33b.foo.domain.com"
+            "hostname": "foo-vdd-d33b.foo.domain.com"
         }
     ],
     "GigabitEthernet8/18": [
         {
             "port": "Gi1/25",
-            "hostname": "bld-vsd-d17a.subd.domain.com"
+            "hostname": "foo-vsd-d17a.subd.domain.com"
         }
     ],
     "TenGigabitEthernet1/8": [
         {
             "port": "xe-0/0/2",
-            "hostname": "bld-vdd-d37a"
+            "hostname": "foo-vdd-d37a"
         }
     ],
     "TenGigabitEthernet2/2": [
         {
             "port": "Te5/4",
-            "hostname": "bld-vid-31b.foo.domain.com"
+            "hostname": "foo-vid-31b.foo.domain.com"
         }
     ],
     "TenGigabitEthernet2/5": [
         {
             "port": "xe-0/0/2",
-            "hostname": "bld-vwd-d34b"
+            "hostname": "foo-vwd-d34b"
         }
     ],
     "TenGigabitEthernet2/6": [
         {
             "port": "Te1/3",
-            "hostname": "bld-vwd-d35b.foo.domain.com"
+            "hostname": "foo-vwd-d35b.foo.domain.com"
         }
     ]
 }
