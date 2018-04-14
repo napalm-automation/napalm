@@ -35,9 +35,9 @@ Create a file named ``Vagrantfile`` (no file extension) in your working director
 
 The above content is also available on `GitHub <https://raw.githubusercontent.com/napalm-automation/napalm/master/docs/tutorials/Vagrantfile>`_.
 
-This Vagrantfile creates a base box and a vEOS box when you call "vagrant up"::
+This Vagrantfile creates a base box and a vEOS box when you call ``vagrant up``::
 
-    $ vagrant up
+    $ vagrant up --provider virtualbox
     ... [output omitted] ...
 
     $ vagrant status

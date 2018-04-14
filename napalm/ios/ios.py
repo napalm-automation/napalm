@@ -1292,6 +1292,9 @@ class IOSDriver(NetworkDriver):
                 {'regexp': re.compile(r'^\s+BGP version \d+, remote router ID '
                                       r'(?P<remote_id>{})'.format(IPV4_ADDR_REGEX)),
                  'record': False},
+                # Capture state
+                {'regexp': re.compile(r'^\s+BGP state = (?P<state>\w+)'),
+                 'record': False},
                 # Capture AFI and SAFI names, e.g.:
                 # For address family: IPv4 Unicast
                 {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) '),
@@ -1399,8 +1402,8 @@ class IOSDriver(NetworkDriver):
             # parse uptime value
             uptime = self.bgp_time_conversion(entry['uptime'])
 
-            # Uptime should be -1 if BGP session not up
-            is_up = True if uptime >= 0 else False
+            # BGP is up if state is Established
+            is_up = 'Established' in neighbor_entry['state']
 
             # check whether session is up for address family and get prefix count
             try:
@@ -1424,6 +1427,7 @@ class IOSDriver(NetworkDriver):
             else:
                 received_prefixes = -1
                 sent_prefixes = -1
+                uptime = -1
 
             # get description
             try:
@@ -2081,9 +2085,9 @@ class IOSDriver(NetworkDriver):
         lowest access and 15 represents full access to the device.
         """
         username_regex = r"^username\s+(?P<username>\S+)\s+(?:privilege\s+(?P<priv_level>\S+)" \
-            "\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
+            r"\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
         pub_keychain_regex = r"^\s+username\s+(?P<username>\S+)(?P<keys>(?:\n\s+key-hash\s+" \
-            "(?P<hash_type>\S+)\s+(?P<hash>\S+)(?:\s+\S+)?)+)$"
+            r"(?P<hash_type>\S+)\s+(?P<hash>\S+)(?:\s+\S+)?)+)$"
         users = {}
         command = "show run | section username"
         output = self._send_command(command)

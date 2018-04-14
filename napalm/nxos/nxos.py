@@ -811,17 +811,36 @@ class NXOSDriver(NXOSDriverBase):
 
         for interface in ipv4_interf_table_vrf:
             interface_name = py23_compat.text_type(interface.get('intf-name', ''))
-            address = napalm.base.helpers.ip(interface.get('prefix'))
-            prefix = int(interface.get('masklen', ''))
-            if interface_name not in interfaces_ip.keys():
-                interfaces_ip[interface_name] = {}
-            if 'ipv4' not in interfaces_ip[interface_name].keys():
-                interfaces_ip[interface_name]['ipv4'] = {}
-            if address not in interfaces_ip[interface_name].get('ipv4'):
-                interfaces_ip[interface_name]['ipv4'][address] = {}
-            interfaces_ip[interface_name]['ipv4'][address].update({
-                'prefix_length': prefix
-            })
+            addr_str = interface.get('prefix')
+            unnumbered = py23_compat.text_type(interface.get('unnum-intf', ''))
+            if addr_str:
+                address = napalm.base.helpers.ip(addr_str)
+                prefix = int(interface.get('masklen', ''))
+                if interface_name not in interfaces_ip.keys():
+                    interfaces_ip[interface_name] = {}
+                if 'ipv4' not in interfaces_ip[interface_name].keys():
+                    interfaces_ip[interface_name]['ipv4'] = {}
+                if address not in interfaces_ip[interface_name].get('ipv4'):
+                    interfaces_ip[interface_name]['ipv4'][address] = {}
+                interfaces_ip[interface_name]['ipv4'][address].update({
+                    'prefix_length': prefix
+                })
+            elif unnumbered:
+                for interf in ipv4_interf_table_vrf:
+                    interf_name = py23_compat.text_type(interf.get('intf-name', ''))
+                    if interf_name == unnumbered:
+                        address = napalm.base.helpers.ip(interf.get('prefix'))
+                        prefix = int(interf.get('masklen', ''))
+                        if interface_name not in interfaces_ip.keys():
+                            interfaces_ip[interface_name] = {}
+                        if 'ipv4' not in interfaces_ip[interface_name].keys():
+                            interfaces_ip[interface_name]['ipv4'] = {}
+                        if address not in interfaces_ip[interface_name].get('ipv4'):
+                            interfaces_ip[interface_name]['ipv4'][address] = {}
+                        interfaces_ip[interface_name]['ipv4'][address].update({
+                            'prefix_length': prefix
+                        })
+
             secondary_addresses = interface.get('TABLE_secondary_address', {})\
                                            .get('ROW_secondary_address', [])
             if type(secondary_addresses) is dict:
@@ -842,7 +861,10 @@ class NXOSDriver(NXOSDriverBase):
 
         for interface in ipv6_interf_table_vrf:
             interface_name = py23_compat.text_type(interface.get('intf-name', ''))
-            address = napalm.base.helpers.ip(interface.get('addr', '').split('/')[0])
+            addr_str = interface.get('addr', '').split('/')[0]
+            if not addr_str:
+                continue
+            address = napalm.base.helpers.ip(addr_str)
             prefix = interface.get('prefix', '').split('/')[-1]
             if prefix:
                 prefix = int(interface.get('prefix', '').split('/')[-1])
