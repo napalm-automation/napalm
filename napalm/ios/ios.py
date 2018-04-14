@@ -400,12 +400,15 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self):
+    def commit_config(self, message=''):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """
+        if message:
+            raise NotImplementedError('Commit message not implemented for this platform')
+
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
@@ -683,6 +686,18 @@ class IOSDriver(NetworkDriver):
 
     def get_lldp_neighbors(self):
         """IOS implementation of get_lldp_neighbors."""
+
+        def _device_id_expand(device_id, local_int_brief):
+            """Device id might be abbreviated: try to obtain the full device id."""
+            lldp_tmp = self._lldp_detail_parser(local_int_brief)
+            device_id_new = lldp_tmp[3][0]
+            # Verify abbreviated and full name are consistent
+            if device_id_new[:20] == device_id:
+                return device_id_new
+            else:
+                # Else return the original device_id
+                return device_id
+
         lldp = {}
         neighbors_detail = self.get_lldp_neighbors_detail()
         for intf_name, v in neighbors_detail.items():
