@@ -7,7 +7,6 @@ python:
   - 3.6
 
 install:
-  - pip install pip==9.0.3
   - pip install tox-travis
   - pip install coveralls
 deploy:
