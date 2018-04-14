@@ -400,7 +400,7 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self, message=None):
+    def commit_config(self, message=''):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
@@ -408,6 +408,7 @@ class IOSDriver(NetworkDriver):
         """
         if message:
             raise NotImplementedError('Commit message not implemented for this platform')
+
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
