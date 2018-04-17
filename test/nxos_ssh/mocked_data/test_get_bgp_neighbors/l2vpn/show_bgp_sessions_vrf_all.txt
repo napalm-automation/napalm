@@ -1,0 +1,31 @@
+Total peers 24, established peers 8
+ASN 64861
+VRF default, local ASN 64861
+peers 24, established peers 8, local router-id 10.1.80.134
+State: I-Idle, A-Active, O-Open, E-Established, C-Closing, S-Shutdown
+
+Neighbor        ASN    Flaps LastUpDn|LastRead|LastWrit St Port(L/R)  Notif(S/R)
+10.1.81.136    64861 11    3d03h   |00:00:37|00:00:15 E   18455/179        6/1
+10.1.81.137    64861 19    3d03h   |00:00:37|00:00:15 E   26446/179        11/1
+10.1.81.142    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.143    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.144    64861 0     3w6d    |00:00:27|00:00:15 E   32089/179        0/0
+10.1.81.145    64861 0     3w6d    |00:00:27|00:00:15 E   40591/179        0/0
+10.1.81.146    64861 1     6w5d    |00:00:49|00:00:15 E   179/17722      1/0
+10.1.81.147    64861 1     6w5d    |00:00:49|00:00:15 E   179/21587      1/0
+10.1.81.148    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.149    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.152    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.153    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.154    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.155    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.156    64861 3     6w5d    |00:00:15|00:00:15 E   33863/179        2/1
+10.1.81.157    64861 4     6w5d    |00:00:15|00:00:15 E   179/43532      3/1
+10.1.81.158    64861 1     8w2d    |never   |never    I   0/0          1/0
+10.1.81.159    64861 1     8w2d    |never   |never    I   0/0          1/0
+10.1.81.160    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.161    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.162    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.163    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.168    64861 0     1d22h   |never   |never    I   0/0          0/0
+10.1.81.169    64861 0     1d22h   |never   |never    I   0/0          0/0

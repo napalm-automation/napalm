@@ -256,8 +256,10 @@ class EOSDriver(NetworkDriver):
 
             return result.strip()
 
-    def commit_config(self):
+    def commit_config(self, message=""):
         """Implementation of NAPALM method commit_config."""
+        if message:
+            raise NotImplementedError('Commit message not implemented for this platform')
         commands = []
         commands.append('copy startup-config flash:rollback-0')
         commands.append('configure session {}'.format(self.config_session))

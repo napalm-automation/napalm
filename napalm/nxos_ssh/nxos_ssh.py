@@ -314,9 +314,9 @@ def bgp_summary_parser(bgp_summary):
     if len(bgp_summary.strip().splitlines()) <= 1:
         return {}
 
-    allowed_afi = ['ipv4', 'ipv6']
+    allowed_afi = ['ipv4', 'ipv6', 'l2vpn']
     vrf_regex = r"^BGP summary information for VRF\s+(?P<vrf>\S+),"
-    afi_regex = r"^BGP summary information.*address family (?P<afi>\S+ Unicast)"
+    afi_regex = r"^BGP summary information.*address family (?P<afi>\S+ (?:Unicast|EVPN))"
     local_router_regex = (r"^BGP router identifier\s+(?P<router_id>\S+)"
                           r",\s+local AS number\s+(?P<local_as>\S+)")
 
