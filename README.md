@@ -60,6 +60,11 @@ SaltStack
 
 Beginning with release code named `Carbon` (2016.11), [NAPALM is fully integrated](https://mirceaulinic.net/2016-11-30-salt-carbon-released/) in SaltStack - no additional modules required. For setup recommendations, please see [napalm-salt](https://github.com/napalm-automation/napalm-salt). For documentation and usage examples, you can check the modules documentation, starting from the [release notes](https://docs.saltstack.com/en/develop/topics/releases/2016.11.0.html#network-automation-napalm) and [this blog post](https://mirceaulinic.net/2016-11-17-network-orchestration-with-salt-and-napalm/).
 
+StackStorm
+----------
+
+NAPALM is usable from StackStorm using the [NAPALM integration pack](https://github.com/StackStorm-Exchange/stackstorm-napalm). See that repository for instructions on installing and configuring the pack to work with StackStorm. General StackStorm documentation can be found at [https://docs.stackstorm.com/](https://docs.stackstorm.com/), and StackStorm can be easily spun up for testing using [Vagrant](https://github.com/StackStorm/st2vagrant) or [Docker](https://github.com/StackStorm/st2-docker).
+
 
 Contact
 =======
@@ -105,6 +110,7 @@ Blog Posts
 * [NAPALM, Ansible, and Cisco IOS](https://pynet.twb-tech.com/blog/automation/napalm-ios.html) by Kirk Byers
 * [Adding Cisco IOS support to NAPALM (Network Automation and Programmability Abstraction Layer with Multivendor support)](https://projectme10.wordpress.com/2015/12/07/adding-cisco-ios-support-to-napalm-network-automation-and-programmability-abstraction-layer-with-multivendor-support/) by Gabriele Gerbino
 * [Network orchestration with Salt and NAPALM](https://mirceaulinic.net/2016-11-17-network-orchestration-with-salt-and-napalm/) by Mircea Ulinic
+* [Network Configuration Consistency with StackStorm and NAPALM](https://stackstorm.com/2017/04/11/ensuring-network-configuration-consistency-stackstorm-napalm/) by Matt Oswalt
 
 Presentations
 -------------
