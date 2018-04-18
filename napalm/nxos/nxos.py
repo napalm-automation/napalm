@@ -861,37 +861,33 @@ class NXOSDriver(NXOSDriverBase):
 
         for interface in ipv6_interf_table_vrf:
             interface_name = py23_compat.text_type(interface.get('intf-name', ''))
-            addr_str = interface.get('addr', '').split('/')[0]
-            if not addr_str:
-                continue
-            address = napalm.base.helpers.ip(addr_str)
-            prefix = interface.get('prefix', '').split('/')[-1]
-            if prefix:
-                prefix = int(interface.get('prefix', '').split('/')[-1])
-            else:
-                prefix = 128
+
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = {}
             if 'ipv6' not in interfaces_ip[interface_name].keys():
                 interfaces_ip[interface_name]['ipv6'] = {}
-            if address not in interfaces_ip[interface_name].get('ipv6'):
-                interfaces_ip[interface_name]['ipv6'][address] = {}
-            interfaces_ip[interface_name]['ipv6'][address].update({
-                'prefix_length': prefix
-            })
-            secondary_addresses = interface.get('TABLE_sec_addr', {}).get('ROW_sec_addr', [])
-            if type(secondary_addresses) is dict:
-                secondary_addresses = [secondary_addresses]
-            for secondary_address in secondary_addresses:
-                sec_prefix = secondary_address.get('sec-prefix', '').split('/')
-                secondary_address_ip = napalm.base.helpers.ip(sec_prefix[0])
-                secondary_address_prefix = int(sec_prefix[-1])
-                if 'ipv6' not in interfaces_ip[interface_name].keys():
-                    interfaces_ip[interface_name]['ipv6'] = {}
-                if secondary_address_ip not in interfaces_ip[interface_name].get('ipv6'):
-                    interfaces_ip[interface_name]['ipv6'][secondary_address_ip] = {}
-                interfaces_ip[interface_name]['ipv6'][secondary_address_ip].update({
-                    'prefix_length': secondary_address_prefix
+
+            if type(interface.get('addr', '')) is list:
+                for ipv6_address in interface.get('addr', ''):
+                    address = napalm.base.helpers.ip(ipv6_address.split('/')[0])
+                    prefix = int(ipv6_address.split('/')[-1])
+                    if address not in interfaces_ip[interface_name].get('ipv6'):
+                        interfaces_ip[interface_name]['ipv6'][address] = {}
+                    interfaces_ip[interface_name]['ipv6'][address].update({
+                        'prefix_length': prefix
+                    })
+            else:
+                address = napalm.base.helpers.ip(interface.get('addr', '').split('/')[0])
+                prefix = interface.get('prefix', '').split('/')[-1]
+                if prefix:
+                    prefix = int(interface.get('prefix', '').split('/')[-1])
+                else:
+                    prefix = 128
+
+                if address not in interfaces_ip[interface_name].get('ipv6'):
+                    interfaces_ip[interface_name]['ipv6'][address] = {}
+                interfaces_ip[interface_name]['ipv6'][address].update({
+                    'prefix_length': prefix
                 })
         return interfaces_ip
 
