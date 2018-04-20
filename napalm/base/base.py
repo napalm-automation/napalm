@@ -80,9 +80,10 @@ class NetworkDriver(object):
                                                   username=self.username,
                                                   password=self.password,
                                                   **netmiko_optional_args)
-        # ensure in enable mode
         except NetMikoTimeoutException:
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
+
+        # ensure in enable mode
         self._netmiko_device.enable()
         return self._netmiko_device
 
