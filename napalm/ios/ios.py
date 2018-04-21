@@ -400,12 +400,14 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self):
+    def commit_config(self, message=""):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """
+        if message:
+            raise NotImplementedError('Commit message not implemented for this platform')
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
@@ -822,6 +824,8 @@ class IOSDriver(NetworkDriver):
                     local_intf = match.group(1)
             else:
                 system_name_match = re.search(r"^System Name:\s+(\S.*)$", lldp_entry, flags=re.M)
+                # Cisco is inconsistent on whether the domain name appears in LLDP brief output
+                system_name_alt = re.search(r"^System Name:\s+(\S.*?)\.", lldp_entry, flags=re.M)
                 port_id_match = re.search(r"^Port id:\s+(\S+)\s*$", lldp_entry, flags=re.M)
                 # Try to find the local_intf from the reverse_neighbors table
                 if system_name_match and port_id_match:
@@ -830,6 +834,11 @@ class IOSDriver(NetworkDriver):
                     system_name = system_name.strip()
                     key = "{}_{}".format(system_name, port_id)
                     local_intf = reverse_neighbors.get(key)
+                    if local_intf is None and system_name_alt:
+                        system_name_alt = system_name_alt.group(1)[:20]
+                        system_name_alt = system_name_alt.strip()
+                        alt_key = "{}_{}".format(system_name_alt, port_id)
+                        local_intf = reverse_neighbors.get(alt_key)
 
             if local_intf is not None:
                 lldp_fields = self._lldp_detail_parser(local_intf, lldp_entry=lldp_entry)

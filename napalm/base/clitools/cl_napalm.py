@@ -7,11 +7,11 @@ from napalm.base import get_network_driver
 from napalm.base.clitools import helpers
 
 # stdlib
-import pip
 import json
 import logging
 import argparse
 import getpass
+import pkg_resources
 from functools import wraps
 
 
@@ -143,9 +143,8 @@ def build_help():
 
 def check_installed_packages():
     logger.debug("Gathering napalm packages")
-    installed_packages = pip.get_installed_distributions()
     napalm_packages = sorted(["{}=={}".format(i.key, i.version)
-                              for i in installed_packages if i.key.startswith("napalm")])
+                              for i in pkg_resources.working_set if i.key.startswith("napalm")])
     for n in napalm_packages:
         logger.debug(n)
 
