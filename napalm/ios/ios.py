@@ -1205,7 +1205,7 @@ class IOSDriver(NetworkDriver):
 
         Currently no VRF support. Supports both IPv4 and IPv6.
         """
-        supported_afi = ['ipv4', 'ipv6']
+        supported_afi = ['ipv4 unicast', 'ipv6 unicast', 'ipv4 multicast', 'ipv6 multicast']
 
         bgp_neighbor_data = dict()
         bgp_neighbor_data['global'] = {}
@@ -1217,7 +1217,7 @@ class IOSDriver(NetworkDriver):
         # get neighbor output from device
         neighbor_output = ''
         for afi in supported_afi:
-            cmd_bgp_neighbor = 'show bgp %s unicast neighbors' % afi
+            cmd_bgp_neighbor = 'show bgp %s neighbors' % afi
             neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
             # trailing newline required for parsing
             neighbor_output += "\n"
@@ -1226,7 +1226,7 @@ class IOSDriver(NetworkDriver):
         parse_summary = {
             'patterns': [
                 # For address family: IPv4 Unicast
-                {'regexp': re.compile(r'^For address family: (?P<afi>\S+) '),
+                {'regexp': re.compile(r'^For address family: (?P<afi>\S+\s\S+)'),
                  'record': False},
                 # Capture router_id and local_as values, e.g.:
                 # BGP router identifier 10.0.1.1, local AS number 65000
@@ -1304,7 +1304,7 @@ class IOSDriver(NetworkDriver):
                  'record': False},
                 # Capture AFI and SAFI names, e.g.:
                 # For address family: IPv4 Unicast
-                {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) '),
+                {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+\s\S+)'),
                  'record': False},
                 # Capture current sent and accepted prefixes, e.g.:
                 #     Prefixes Current:          637213       3142 (Consumes 377040 bytes)
