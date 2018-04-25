@@ -2151,7 +2151,6 @@ class IOSDriver(NetworkDriver):
         elif 'Sending' in output:
             ping_dict['success'] = {
                                 'probes_sent': 0,
-                                'probes_sent': 0,
                                 'packet_loss': 0,
                                 'rtt_min': 0.0,
                                 'rtt_max': 0.0,
