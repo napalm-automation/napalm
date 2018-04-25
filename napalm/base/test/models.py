@@ -92,7 +92,6 @@ lldp_neighbors_detail = {
     'parent_interface': text_type,
     'remote_port': text_type,
     'remote_chassis_id': text_type,
-    'remote_port': text_type,
     'remote_port_description': text_type,
     'remote_system_name': text_type,
     'remote_system_description': text_type,
