@@ -83,10 +83,10 @@ If you have any issues using NAPALM or encounter any errors, before submitting a
 - Double check you are able to access the device using the credentials provided.
 - Does your device meet the minimum [requirements](http://napalm.readthedocs.io/en/latest/support/index.html#general-support-matrix)?
 - Some operating systems have some specific [constraints](http://napalm.readthedocs.io/en/latest/support/index.html#caveats). (e.g. have you enabled the XML agent on IOS-XR, or the NXAPI feature on NXOS?)
-- Are you able to connect to the device using NAPALM? Check using the CLI test tool:
+- Are you able to connect to the device using NAPALM? Check using napalm CLI to get_facts:
 
 ```bash
-$ cl_napalm_test --vendor VENDOR --user USERNAME --password PASSWORD --optional_args OPTIONAL_ARGS HOSTNAME
+$ napalm --vendor VENDOR --user USERNAME --password PASSWORD --optional_args OPTIONAL_ARGS HOSTNAME call get_facts
 ```
 
 Where vendor, username, password and hostname are mandatory. [Optional arguments](http://napalm.readthedocs.io/en/latest/support/index.html#optional-arguments) are specified as comma separated values.
@@ -94,7 +94,7 @@ Where vendor, username, password and hostname are mandatory. [Optional arguments
 Example:
 
 ```bash
-$ cl_napalm_test --vendor junos --user napalm --password dbejmujz --optional_args 'port=12202, config_lock=False' edge01.bjm01
+$ napalm --vendor junos --user napalm --password dbejmujz --optional_args 'port=12202, config_lock=False' edge01.bjm01 call get_facts
 ```
 
 In case you have any errors, please review the steps above - this looks like a problem with your environment setup.
