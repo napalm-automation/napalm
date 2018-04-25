@@ -214,7 +214,7 @@ class IOSXRDriver(NetworkDriver):
                 continue
             is_up = (napalm.base.helpers.find_txt(interface_tree, 'LineState') == 'IM_STATE_UP')
             enabled = (napalm.base.helpers.find_txt(
-                        interface_tree, 'State') != 'IM_STATE_ADMINDOWN')
+                interface_tree, 'State') != 'IM_STATE_ADMINDOWN')
             raw_mac = napalm.base.helpers.find_txt(interface_tree, 'MACAddress/Address')
             mac_address = napalm.base.helpers.convert(
                 napalm.base.helpers.mac, raw_mac, raw_mac)
@@ -242,79 +242,118 @@ class IOSXRDriver(NetworkDriver):
 
         for interface in result_tree.xpath('.//Interface'):
             interface_name = napalm.base.helpers.find_txt(interface, 'InterfaceHandle')
-            interface_stats = {}
             if not interface.xpath('InterfaceStatistics'):
                 continue
             else:
-                interface_stats = {}
-                interface_stats['tx_multicast_packets'] = napalm.base.helpers.convert(
-                    int,
-                    napalm.base.helpers.find_txt(
-                        interface,
-                        'InterfaceStatistics/FullInterfaceStats/MulticastPacketsSent'
-                    )
-                )
-                interface_stats['tx_discards'] = napalm.base.helpers.convert(
-                    int,
-                    napalm.base.helpers.find_txt(
-                        interface,
-                        'InterfaceStatistics/FullInterfaceStats/OutputDrops'
-                    )
-                )
-                interface_stats['tx_octets'] = napalm.base.helpers.convert(
-                    int,
-                    napalm.base.helpers.find_txt(
-                        interface,
-                        'InterfaceStatistics/FullInterfaceStats/BytesSent'
-                    )
-                )
-                interface_stats['tx_errors'] = napalm.base.helpers.convert(
-                    int,
-                    napalm.base.helpers.find_txt(
-                        interface,
-                        'InterfaceStatistics/FullInterfaceStats/OutputErrors'
-                    )
-                )
-                interface_stats['rx_octets'] = napalm.base.helpers.convert(
-                    int,
-                    napalm.base.helpers.find_txt(
-                        interface,
-                        'InterfaceStatistics/FullInterfaceStats/BytesReceived'
-                    )
-                )
-                interface_stats['tx_unicast_packets'] = napalm.base.helpers.convert(
-                    int,
-                    napalm.base.helpers.find_txt(
-                        interface,
-                        'InterfaceStatistics/FullInterfaceStats/PacketsSent'
-                    )
-                )
-                interface_stats['rx_errors'] = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(
-                        interface, 'InterfaceStatistics/FullInterfaceStats/InputErrors'))
-                interface_stats['tx_broadcast_packets'] = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(
-                        interface, 'InterfaceStatistics/FullInterfaceStats/BroadcastPacketsSent'))
-                interface_stats['rx_multicast_packets'] = napalm.base.helpers.convert(
-                    int,
-                    napalm.base.helpers.find_txt(
-                        interface,
-                        'InterfaceStatistics/FullInterfaceStats/MulticastPacketsReceived'
-                    )
-                )
-                interface_stats['rx_broadcast_packets'] = napalm.base.helpers.convert(
-                    int,
-                    napalm.base.helpers.find_txt(
-                        interface,
-                        'InterfaceStatistics/FullInterfaceStats/BroadcastPacketsReceived'
-                    )
-                )
-                interface_stats['rx_discards'] = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(
-                        interface, 'InterfaceStatistics/FullInterfaceStats/InputDrops'))
-                interface_stats['rx_unicast_packets'] = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(
-                        interface, 'InterfaceStatistics/FullInterfaceStats/PacketsReceived'))
+                tx_multicast_packets = napalm.base.helpers.convert(int,
+                                                                   napalm.base.helpers.find_txt(
+                                                                       interface,
+                                                                       'InterfaceStatistics'
+                                                                       '/FullInterfaceStats'
+                                                                       '/MulticastPacketsSent'
+                                                                   ))
+
+                tx_discards = napalm.base.helpers.convert(int,
+                                                          napalm.base.helpers.find_txt(
+                                                              interface,
+                                                              'InterfaceStatistics'
+                                                              '/FullInterfaceStats'
+                                                              '/OutputDrops'
+                                                          ))
+
+                tx_octets = napalm.base.helpers.convert(int,
+                                                        napalm.base.helpers.find_txt(
+                                                            interface,
+                                                            'InterfaceStatistics'
+                                                            '/FullInterfaceStats'
+                                                            '/BytesSent'
+                                                        ))
+
+                tx_errors = napalm.base.helpers.convert(int,
+                                                        napalm.base.helpers.find_txt(
+                                                            interface,
+                                                            'InterfaceStatistics'
+                                                            '/FullInterfaceStats'
+                                                            '/OutputErrors'
+                                                        ))
+                rx_octets = napalm.base.helpers.convert(int,
+                                                        napalm.base.helpers.find_txt(
+                                                            interface,
+                                                            'InterfaceStatistics'
+                                                            '/FullInterfaceStats'
+                                                            '/BytesReceived'
+                                                        ))
+
+                tx_unicast_packets = napalm.base.helpers.convert(int,
+                                                                 napalm.base.helpers.find_txt(
+                                                                     interface,
+                                                                     'InterfaceStatistics'
+                                                                     '/FullInterfaceStats'
+                                                                     '/PacketsSent'
+                                                                 ))
+
+                rx_errors = napalm.base.helpers.convert(int,
+                                                        napalm.base.helpers.find_txt(
+                                                            interface,
+                                                            'InterfaceStatistics'
+                                                            '/FullInterfaceStats'
+                                                            '/InputErrors'
+                                                        ))
+
+                tx_broadcast_packets = napalm.base.helpers.convert(int,
+                                                                   napalm.base.helpers.find_txt(
+                                                                       interface,
+                                                                       'InterfaceStatistics'
+                                                                       '/FullInterfaceStats'
+                                                                       '/BroadcastPacketsSent'
+                                                                   ))
+
+                rx_multicast_packets = napalm.base.helpers.convert(int,
+                                                                   napalm.base.helpers.find_txt(
+                                                                       interface,
+                                                                       'InterfaceStatistics'
+                                                                       '/FullInterfaceStats'
+                                                                       '/MulticastPacketsReceived '
+                                                                   ))
+
+                rx_broadcast_packets = napalm.base.helpers.convert(int,
+                                                                   napalm.base.helpers.find_txt(
+                                                                       interface,
+                                                                       'InterfaceStatistics'
+                                                                       '/FullInterfaceStats'
+                                                                       '/BroadcastPacketsReceived '
+                                                                   ))
+
+                rx_discards = napalm.base.helpers.convert(int,
+                                                          napalm.base.helpers.find_txt(
+                                                              interface,
+                                                              'InterfaceStatistics'
+                                                              '/FullInterfaceStats'
+                                                              '/InputDrops'
+                                                          ))
+
+                rx_unicast_packets = napalm.base.helpers.convert(int,
+                                                                 napalm.base.helpers.find_txt(
+                                                                     interface,
+                                                                     'InterfaceStatistics'
+                                                                     '/FullInterfaceStats'
+                                                                     '/PacketsReceived'
+                                                                 ))
+
+                interface_stats = {
+                    'tx_multicast_packets': tx_multicast_packets,
+                    'tx_discards': tx_discards,
+                    'tx_octets': tx_octets,
+                    'tx_errors': tx_errors,
+                    'rx_octets': rx_octets,
+                    'tx_unicast_packets': tx_unicast_packets,
+                    'rx_errors': rx_errors,
+                    'tx_broadcast_packets': tx_broadcast_packets,
+                    'rx_multicast_packets': rx_multicast_packets,
+                    'rx_broadcast_packets': rx_broadcast_packets,
+                    'rx_discards': rx_discards,
+                    'rx_unicast_packets': rx_unicast_packets,
+                }
             interface_counters[interface_name] = interface_stats
 
         return interface_counters
@@ -362,8 +401,7 @@ class IOSXRDriver(NetworkDriver):
             rpc_command = generate_vrf_query(vrf)
             result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
-            this_vrf = {}
-            this_vrf['peers'] = {}
+            this_vrf = {'peers': {}}
 
             if vrf == "global":
                 this_vrf['router_id'] = napalm.base.helpers.convert(
@@ -385,13 +423,23 @@ class IOSXRDriver(NetworkDriver):
             neighbors = {}
 
             for neighbor in result_tree.xpath('.//Neighbor'):
-                this_neighbor = {}
-                this_neighbor['local_as'] = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(neighbor, 'LocalAS'))
-                this_neighbor['remote_as'] = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(neighbor, 'RemoteAS'))
-                this_neighbor['remote_id'] = napalm.base.helpers.convert(
-                    text_type, napalm.base.helpers.find_txt(neighbor, 'RouterID'))
+                local_as = napalm.base.helpers.convert(int,
+                                                       napalm.base.helpers.find_txt(neighbor,
+                                                                                    'LocalAS'))
+
+                remote_as = napalm.base.helpers.convert(int,
+                                                        napalm.base.helpers.find_txt(neighbor,
+                                                                                     'RemoteAS'
+                                                                                     ))
+
+                remote_id = napalm.base.helpers.convert(text_type,
+                                                        napalm.base.helpers.find_txt(neighbor,
+                                                                                     'RouterID'))
+                this_neighbor = {
+                    'local_as': local_as,
+                    'remote_as': remote_as,
+                    'remote_id': remote_id
+                }
 
                 if napalm.base.helpers.find_txt(neighbor, 'ConnectionAdminStatus') is "1":
                     this_neighbor['is_enabled'] = True
@@ -402,7 +450,7 @@ class IOSXRDriver(NetworkDriver):
                     this_neighbor['description'] = u''
 
                 this_neighbor['is_enabled'] = (
-                    napalm.base.helpers.find_txt(neighbor, 'ConnectionAdminStatus') == "1")
+                        napalm.base.helpers.find_txt(neighbor, 'ConnectionAdminStatus') == "1")
 
                 if str(napalm.base.helpers.find_txt(neighbor, 'ConnectionAdminStatus')) is "1":
                     this_neighbor['is_enabled'] = True
@@ -483,12 +531,13 @@ class IOSXRDriver(NetworkDriver):
             </Slot></SlotTable></Rack></RackTable></EnvironmentalMonitoring></AdminOperational>\
             </Get>'.format(slot=module, name=selection)
 
-        environment_status = {}
-        environment_status['fans'] = {}
-        environment_status['temperature'] = {}
-        environment_status['power'] = {}
-        environment_status['cpu'] = {}
-        environment_status['memory'] = 0.0
+        environment_status = {
+            'fans': {},
+            'temperature': {},
+            'power': {},
+            'cpu': {},
+            'memory': 0.0
+        }
 
         # finding slots with equipment we're interested in
         rpc_command = '<Get><AdminOperational><PlatformInventory><RackTable><Rack><Naming>\
@@ -516,16 +565,13 @@ class IOSXRDriver(NetworkDriver):
         #
 
         for psu in active_modules['PM']:
-            if psu in ["PM6", "PM7"]:    # Cisco bug, chassis difference V01<->V02
+            if psu in ["PM6", "PM7"]:  # Cisco bug, chassis difference V01<->V02
                 continue
 
             rpc_command = get_module_xml_query(psu, '')
             result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
-            psu_status = {}
-            psu_status['status'] = False
-            psu_status['capacity'] = 0.0
-            psu_status['output'] = 0.0
+            psu_status = {'status': False, 'capacity': 0.0, 'output': 0.0}
 
             for sensor in result_tree.xpath('.//SensorName'):
                 if napalm.base.helpers.find_txt(sensor, 'Naming/Name') == "host__VOLT":
@@ -571,13 +617,11 @@ class IOSXRDriver(NetworkDriver):
                         int, napalm.base.helpers.find_txt(node, 'Summary/SystemRAMMemory'))
                     free_ram = napalm.base.helpers.convert(
                         int, napalm.base.helpers.find_txt(node, 'Summary/FreeApplicationMemory'))
-                    break    # we're only looking at one of the RSP's
+                    break  # we're only looking at one of the RSP's
 
             if available_ram and free_ram:
                 used_ram = available_ram - free_ram
-                memory = {}
-                memory['available_ram'] = available_ram
-                memory['used_ram'] = used_ram
+                memory = {'available_ram': available_ram, 'used_ram': used_ram}
                 environment_status['memory'] = memory
 
             #
@@ -607,9 +651,8 @@ class IOSXRDriver(NetworkDriver):
         result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
         for module in result_tree.xpath('.//CPUUtilization'):
-            this_cpu = {}
-            this_cpu["%usage"] = napalm.base.helpers.convert(
-                float, napalm.base.helpers.find_txt(module, 'TotalCPUFiveMinute'))
+            this_cpu = {"%usage": napalm.base.helpers.convert(
+                float, napalm.base.helpers.find_txt(module, 'TotalCPUFiveMinute'))}
 
             rack = napalm.base.helpers.find_txt(module, 'Naming/NodeName/Rack')
             slot = napalm.base.helpers.find_txt(module, 'Naming/NodeName/Slot')
@@ -635,9 +678,8 @@ class IOSXRDriver(NetworkDriver):
                 for sensor in result_tree.xpath(".//SensorName"):
                     if not napalm.base.helpers.find_txt(sensor, 'Naming/Name') == "host__Inlet0":
                         continue
-                    this_reading = {}
-                    this_reading['temperature'] = napalm.base.helpers.convert(
-                        float, napalm.base.helpers.find_txt(sensor, 'ValueBrief'))
+                    this_reading = {'temperature': napalm.base.helpers.convert(
+                        float, napalm.base.helpers.find_txt(sensor, 'ValueBrief'))}
                     threshold_value = [
                         napalm.base.helpers.convert(float, x.text)
                         for x in sensor.xpath("ThresholdTable/Threshold/ValueBrief")
@@ -646,7 +688,7 @@ class IOSXRDriver(NetworkDriver):
                         threshold_value[2] <= this_reading['temperature'] <= threshold_value[3]
                     this_reading['is_critical'] = \
                         threshold_value[4] <= this_reading['temperature'] <= threshold_value[5]
-                    this_reading['temperature'] = this_reading['temperature']/10
+                    this_reading['temperature'] = this_reading['temperature'] / 10
                     environment_status["temperature"][slot] = this_reading
 
         return environment_status
@@ -710,7 +752,7 @@ class IOSXRDriver(NetworkDriver):
                 'remote_system_name': system_name,
                 'remote_system_description': system_descr,
                 'remote_system_capab': system_capabilities,
-                'remote_system_enable_capab':  enabled_capabilities
+                'remote_system_enable_capab': enabled_capabilities
             })
 
         return lldp_neighbors
@@ -779,31 +821,64 @@ class IOSXRDriver(NetworkDriver):
             )
             if neighbor and peer != neighbor:
                 continue
+
             description = napalm.base.helpers.find_txt(bgp_neighbor, 'Description')
-            peer_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.find_txt(bgp_neighbor, 'RemoteAS/AS_YY'), 0)
-            local_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.find_txt(bgp_neighbor, 'LocalAS/AS_YY'), 0)
-            af_table = napalm.base.helpers.find_txt(
-                bgp_neighbor, 'NeighborAFTable/NeighborAF/Naming/AFName')
-            prefix_limit = napalm.base.helpers.convert(int, napalm.base.helpers.find_txt(
-                bgp_neighbor, 'NeighborAFTable/NeighborAF/MaximumPrefixes/PrefixLimit'), 0)
-            prefix_percent = napalm.base.helpers.convert(int, napalm.base.helpers.find_txt(
-                bgp_neighbor, 'NeighborAFTable/NeighborAF/MaximumPrefixes/WarningPercentage'), 0)
-            prefix_timeout = napalm.base.helpers.convert(int, napalm.base.helpers.find_txt(
-                bgp_neighbor, 'NeighborAFTable/NeighborAF/MaximumPrefixes/RestartTime'), 0)
-            import_policy = napalm.base.helpers.find_txt(
-                bgp_neighbor, 'NeighborAFTable/NeighborAF/RoutePolicyIn')
-            export_policy = napalm.base.helpers.find_txt(
-                bgp_neighbor, 'NeighborAFTable/NeighborAF/RoutePolicyOut')
+
+            peer_as = napalm.base.helpers.convert(int,
+                                                  napalm.base.helpers.find_txt(bgp_neighbor,
+                                                                               'RemoteAS/AS_YY'),
+                                                  0)
+
+            local_as = napalm.base.helpers.convert(int,
+                                                   napalm.base.helpers.find_txt(bgp_neighbor,
+                                                                                'LocalAS/AS_YY'),
+                                                   0)
+
+            af_table = napalm.base.helpers.find_txt(bgp_neighbor,
+                                                    'NeighborAFTable/NeighborAF/Naming/AFName')
+
+            prefix_limit_q = 'NeighborAFTable/NeighborAF/MaximumPrefixes/PrefixLimit'
+            prefix_limit = napalm.base.helpers.convert(int,
+                                                       napalm.base.helpers.find_txt(bgp_neighbor,
+                                                                                    prefix_limit_q),
+                                                       0)
+
+            prefix_percent = napalm.base.helpers.convert(int,
+                                                         napalm.base.helpers.find_txt(
+                                                             bgp_neighbor,
+                                                             'NeighborAFTable'
+                                                             '/NeighborAF'
+                                                             '/MaximumPrefixes'
+                                                             '/WarningPercentage'),
+                                                         0)
+
+            prefix_timeout = napalm.base.helpers.convert(int,
+                                                         napalm.base.helpers.find_txt(
+                                                             bgp_neighbor,
+                                                             'NeighborAFTable'
+                                                             '/NeighborAF'
+                                                             '/MaximumPrefixes'
+                                                             '/RestartTime'),
+                                                         0)
+
+            import_policy = napalm.base.helpers.find_txt(bgp_neighbor,
+                                                         'NeighborAFTable'
+                                                         '/NeighborAF'
+                                                         '/RoutePolicyIn')
+
+            export_policy = napalm.base.helpers.find_txt(bgp_neighbor,
+                                                         'NeighborAFTable'
+                                                         '/NeighborAF'
+                                                         '/RoutePolicyOut')
+
             local_addr_raw = (
-                napalm.base.helpers.find_txt(
-                    bgp_neighbor,
-                    'LocalAddress/LocalIPAddress/IPV4Address'
-                ) or napalm.base.helpers.find_txt(
-                    bgp_neighbor,
-                    'LocalAddress/LocalIPAddress/IPV6Address'
-                )
+                    napalm.base.helpers.find_txt(bgp_neighbor,
+                                                 'LocalAddress/LocalIPAddress/IPV4Address'
+                                                 )
+                    or
+                    napalm.base.helpers.find_txt(bgp_neighbor,
+                                                 'LocalAddress/LocalIPAddress/IPV6Address'
+                                                 )
             )
             local_address = napalm.base.helpers.convert(napalm.base.helpers.ip,
                                                         local_addr_raw, local_addr_raw)
@@ -836,9 +911,9 @@ class IOSXRDriver(NetworkDriver):
             # must check
             description = napalm.base.helpers.find_txt(bgp_group, 'Description')
             import_policy = napalm.base.helpers.find_txt(
-                    bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/RoutePolicyIn')
+                bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/RoutePolicyIn')
             export_policy = napalm.base.helpers.find_txt(
-                    bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/RoutePolicyOut')
+                bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/RoutePolicyOut')
             multipath = napalm.base.helpers.find_txt(
                 bgp_group, 'NeighborGroupAFTable/NeighborGroupAF/Multipath') == 'true'
             peer_as = napalm.base.helpers.convert(
@@ -848,9 +923,9 @@ class IOSXRDriver(NetworkDriver):
             multihop_ttl = napalm.base.helpers.convert(
                 int, napalm.base.helpers.find_txt(bgp_group, 'EBGPMultihop/MaxHopCount'), 0)
             local_addr_raw = (napalm.base.helpers.find_txt(
-                    bgp_group, 'LocalAddress/LocalIPAddress/IPV4Address') or
-                napalm.base.helpers.find_txt(
-                    bgp_group, 'LocalAddress/LocalIPAddress/IPV6Address'))
+                bgp_group, 'LocalAddress/LocalIPAddress/IPV4Address') or
+                              napalm.base.helpers.find_txt(
+                                  bgp_group, 'LocalAddress/LocalIPAddress/IPV6Address'))
             local_address = napalm.base.helpers.convert(
                 napalm.base.helpers.ip, local_addr_raw, local_addr_raw)
             af_table = napalm.base.helpers.find_txt(
@@ -1008,41 +1083,60 @@ class IOSXRDriver(NetworkDriver):
                     int, napalm.base.helpers.find_txt(neighbor, 'MessagesQueuedOut'), 0)
                 connection_state = napalm.base.helpers.find_txt(
                     neighbor, 'ConnectionState').replace('BGP_ST_', '').title()
+
                 if connection_state == u'Estab':
                     connection_state = u'Established'
+
                 previous_connection_state = napalm.base.helpers.convert(
                     text_type, _BGP_STATE_.get(napalm.base.helpers.find_txt(
                         neighbor, 'PreviousConnectionState', '0')))
+
                 active_prefix_count = napalm.base.helpers.convert(
                     int, napalm.base.helpers.find_txt(
                         neighbor, 'AFData/Entry/NumberOfBestpaths'), 0)
+
                 accepted_prefix_count = napalm.base.helpers.convert(
                     int, napalm.base.helpers.find_txt(
                         neighbor, 'AFData/Entry/PrefixesAccepted'), 0)
+
                 suppressed_prefix_count = napalm.base.helpers.convert(
                     int, napalm.base.helpers.find_txt(neighbor, 'AFData/Entry/PrefixesDenied'), 0)
+
                 received_prefix_count = accepted_prefix_count + suppressed_prefix_count
+
                 advertised_prefix_count = napalm.base.helpers.convert(
                     int, napalm.base.helpers.find_txt(
                         neighbor, 'AFData/Entry/PrefixesAdvertised'), 0)
+
                 suppress_4byte_as = napalm.base.helpers.find_txt(
                     neighbor, 'Suppress4ByteAs') == 'true'
+
                 local_as_prepend = napalm.base.helpers.find_txt(
                     neighbor, 'LocalASNoPrepend') != 'true'
+
                 holdtime = napalm.base.helpers.convert(
                     int, napalm.base.helpers.find_txt(neighbor, 'HoldTime'), 0) or vrf_holdtime
+
                 configured_holdtime = napalm.base.helpers.convert(
                     int, napalm.base.helpers.find_txt(neighbor, 'ConfiguredHoldTime'), 0)
-                keepalive = napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(neighbor, 'KeepAliveTime'), 0) \
-                    or vrf_keepalive
+
+                keepalive = napalm.base.helpers.convert(int,
+                                                        napalm.base.helpers.find_txt(neighbor,
+                                                                                     'KeepAliveTime'
+                                                                                     ),
+                                                        0) or vrf_keepalive
+
                 configured_keepalive = napalm.base.helpers.convert(
                     int, napalm.base.helpers.find_txt(neighbor, 'ConfiguredKeepalive'), 0)
+
                 flap_count = int(connection_down_count / 2)
+
                 if up:
                     flap_count -= 1
+
                 if remote_as not in bgp_neighbors_detail[vrf_name].keys():
                     bgp_neighbors_detail[vrf_name][remote_as] = []
+
                 bgp_neighbors_detail[vrf_name][remote_as].append({
                     'up': up,
                     'local_as': local_as,
@@ -1218,7 +1312,7 @@ class IOSXRDriver(NetworkDriver):
             interface_name = napalm.base.helpers.convert(
                 text_type, napalm.base.helpers.find_txt(interface, 'Naming/InterfaceName'))
             primary_ip = napalm.base.helpers.ip(napalm.base.helpers.find_txt(
-                    interface, 'VRFTable/VRF/Detail/PrimaryAddress'))
+                interface, 'VRFTable/VRF/Detail/PrimaryAddress'))
             primary_prefix = napalm.base.helpers.convert(
                 int, napalm.base.helpers.find_txt(interface, 'VRFTable/VRF/Detail/PrefixLength'))
             if interface_name not in interfaces_ip.keys():
@@ -1277,7 +1371,7 @@ class IOSXRDriver(NetworkDriver):
                 int, napalm.base.helpers.find_txt(
                     mac_entry, 'Naming/Name', '').replace('vlan', ''), 0)
             interface = napalm.base.helpers.find_txt(
-                    mac_entry, 'Segment/AC/InterfaceHandle', u'')
+                mac_entry, 'Segment/AC/InterfaceHandle', u'')
 
             mac_table.append({
                 'mac': napalm.base.helpers.mac(mac_raw),
@@ -1432,17 +1526,21 @@ class IOSXRDriver(NetworkDriver):
                             napalm.base.helpers.find_txt(
                                 bgp_path, 'PathInformation/NeighborAddress/IPV6Address')
                         )
-                        as_path = ' '.join(
-                            [
-                                bgp_as.text
-                                for bgp_as in bgp_path.xpath(
-                                    'AttributesAfterPolicyIn/CommonAttributes/NeighborAS/Entry')
-                            ]
-                        )
-                        next_hop = napalm.base.helpers.find_txt(
-                            bgp_path, 'PathInformation/NextHop/IPV4Address') \
-                            or napalm.base.helpers.find_txt(
-                                bgp_path, 'PathInformation/NextHop/IPV6Address')
+                        as_path = ' '.join([bgp_as.text
+                                            for bgp_as in bgp_path.xpath('AttributesAfterPolicyIn'
+                                                                         '/CommonAttributes'
+                                                                         '/NeighborAS'
+                                                                         '/Entry')])
+
+                        next_hop = napalm.base.helpers.find_txt(bgp_path,
+                                                                'PathInformation'
+                                                                '/NextHop'
+                                                                '/IPV4Address') \
+                            or napalm.base.helpers.find_txt(bgp_path,
+                                                            'PathInformation'
+                                                            '/NextHop'
+                                                            '/IPV6Address')
+
                         single_route_details['current_active'] = best_path
                         single_route_details['next_hop'] = next_hop
                         single_route_details['protocol_attributes'] = {
@@ -1581,7 +1679,7 @@ class IOSXRDriver(NetworkDriver):
             rtt = 0.0
 
             if len(response_times):
-                rtt = sum(response_times, 0.0)/len(response_times)
+                rtt = sum(response_times, 0.0) / len(response_times)
             return_codes = probe.xpath(
                 'History/Target/LifeTable/Life[last()]/BucketTable/Bucket/ReturnCode')
             return_codes = [
@@ -1592,7 +1690,8 @@ class IOSXRDriver(NetworkDriver):
             last_test_loss = 0.0
             if len(return_codes):
                 last_test_loss = napalm.base.helpers.convert(
-                    int, 100*(1-return_codes.count('ipslaRetCodeOK')/napalm.base.helpers.convert(
+                    int,
+                    100 * (1 - return_codes.count('ipslaRetCodeOK') / napalm.base.helpers.convert(
                         float, len(return_codes))))
             rms = napalm.base.helpers.convert(
                 float, napalm.base.helpers.find_txt(probe, 'Statistics/Aggregated/HourTable/Hour\
@@ -1605,7 +1704,7 @@ class IOSXRDriver(NetworkDriver):
 
             jitter = 0.0
             if global_test_updates:
-                jitter = rtt-(rms/global_test_updates)**0.5
+                jitter = rtt - (rms / global_test_updates) ** 0.5
             # jitter = max(rtt - max(response_times), rtt - min(response_times))
             current_test_min_delay = 0.0  # no stats for undergoing test :(
             current_test_max_delay = 0.0
@@ -1624,7 +1723,7 @@ class IOSXRDriver(NetworkDriver):
                     probe, 'Statistics/Latest/Target/CommonStats/UpdateCount'))
             last_test_avg_delay = 0.0
             if last_test_updates:
-                last_test_avg_delay = last_test_sum_delay/last_test_updates
+                last_test_avg_delay = last_test_sum_delay / last_test_updates
             global_test_min_delay = napalm.base.helpers.convert(
                 float, napalm.base.helpers.find_txt(probe,
                                                     'Statistics/Aggregated/HourTable/Hour/Distributed/Target\
@@ -1639,7 +1738,7 @@ class IOSXRDriver(NetworkDriver):
                     /CommonStats/SumResponseTime'))
             global_test_avg_delay = 0.0
             if global_test_updates:
-                global_test_avg_delay = global_test_sum_delay/global_test_updates
+                global_test_avg_delay = global_test_sum_delay / global_test_updates
             if probe_name not in sla_results.keys():
                 sla_results[probe_name] = {}
             sla_results[probe_name][test_name] = {
