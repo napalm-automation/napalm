@@ -677,7 +677,6 @@ class EOSDriver(NetworkDriver):
             'local-as': 'local_as',
             'next-hop-self': 'nhs',
             'route-reflector-client': 'route_reflector_client',
-            'description': 'description',
             'import-policy': 'import_policy',
             'export-policy': 'export_policy',
             'passwd': 'authentication_key'
