@@ -260,11 +260,12 @@ class EOSDriver(NetworkDriver):
         """Implementation of NAPALM method commit_config."""
         if message:
             raise NotImplementedError('Commit message not implemented for this platform')
-        commands = []
-        commands.append('copy startup-config flash:rollback-0')
-        commands.append('configure session {}'.format(self.config_session))
-        commands.append('commit')
-        commands.append('write memory')
+        commands = [
+            'copy startup-config flash:rollback-0',
+            'configure session {}'.format(self.config_session),
+            'commit',
+            'write memory'
+        ]
 
         self.device.run_commands(commands)
         self.config_session = None
@@ -272,25 +273,18 @@ class EOSDriver(NetworkDriver):
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
-            commands = []
-            commands.append('configure session {}'.format(self.config_session))
-            commands.append('abort')
+            commands = ['configure session {}'.format(self.config_session), 'abort']
             self.device.run_commands(commands)
             self.config_session = None
 
     def rollback(self):
         """Implementation of NAPALM method rollback."""
-        commands = []
-        commands.append('configure replace flash:rollback-0')
-        commands.append('write memory')
+        commands = ['configure replace flash:rollback-0', 'write memory']
         self.device.run_commands(commands)
 
     def get_facts(self):
         """Implementation of NAPALM method get_facts."""
-        commands = []
-        commands.append('show version')
-        commands.append('show hostname')
-        commands.append('show interfaces')
+        commands = ['show version', 'show hostname', 'show interfaces']
 
         result = self.device.run_commands(commands)
 
@@ -315,8 +309,7 @@ class EOSDriver(NetworkDriver):
         }
 
     def get_interfaces(self):
-        commands = []
-        commands.append('show interfaces')
+        commands = ['show interfaces']
         output = self.device.run_commands(commands)[0]
 
         interfaces = {}
@@ -345,8 +338,7 @@ class EOSDriver(NetworkDriver):
         return interfaces
 
     def get_lldp_neighbors(self):
-        commands = []
-        commands.append('show lldp neighbors')
+        commands = ['show lldp neighbors']
         output = self.device.run_commands(commands)[0]['lldpNeighbors']
 
         lldp = {}
@@ -582,12 +574,9 @@ class EOSDriver(NetworkDriver):
         if interface:
             filters.append(interface)
 
-        commands = []
-        commands.append(
-            'show lldp neighbors {filters} detail'.format(
-                filters=' '.join(filters)
-            )
-        )
+        commands = [
+            'show lldp neighbors {filters} detail'.format(filters=' '.join(filters))
+        ]
 
         lldp_neighbors_in = {}
         lldp_neighbors_in = self.device.run_commands(commands)[0].get('lldpNeighbors', {})
@@ -786,8 +775,7 @@ class EOSDriver(NetworkDriver):
 
         bgp_config = {}
 
-        commands = []
-        commands.append('show running-config | section router bgp')
+        commands = ['show running-config | section router bgp']
         bgp_conf = self.device.run_commands(commands, encoding='text')[0].get('output', '\n\n')
         bgp_conf_lines = bgp_conf.splitlines()
 
@@ -912,8 +900,7 @@ class EOSDriver(NetworkDriver):
             r'\s+([0-9\.]+)\s?$'
         )
 
-        commands = []
-        commands.append('show ntp associations')
+        commands = ['show ntp associations']
 
         # output = self.device.run_commands(commands)
         # pyeapi.eapilib.CommandError: CLI command 2 of 2 'show ntp associations'
