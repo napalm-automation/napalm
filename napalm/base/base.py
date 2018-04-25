@@ -18,11 +18,12 @@ from __future__ import unicode_literals
 
 # local modules
 import napalm.base.exceptions
+from napalm.base.exceptions import ConnectionException
 import napalm.base.helpers
-
 from napalm.base import constants as c
-
 from napalm.base import validate
+
+from netmiko import ConnectHandler, NetMikoTimeoutException
 
 
 class NetworkDriver(object):
@@ -68,6 +69,29 @@ class NetworkDriver(object):
                 self.close()
         except Exception:
             pass
+
+    def _netmiko_open(self, device_type, netmiko_optional_args=None):
+        """Standardized method of creating a Netmiko connection using napalm attributes."""
+        if netmiko_optional_args is None:
+            netmiko_optional_args = {}
+        try:
+            self._netmiko_device = ConnectHandler(device_type=device_type,
+                                                  host=self.hostname,
+                                                  username=self.username,
+                                                  password=self.password,
+                                                  **netmiko_optional_args)
+        except NetMikoTimeoutException:
+            raise ConnectionException('Cannot connect to {}'.format(self.hostname))
+
+        # ensure in enable mode
+        self._netmiko_device.enable()
+        return self._netmiko_device
+
+    def _netmiko_close(self):
+        """Standardized method of closing a Netmiko connection."""
+        self.device.disconnect()
+        self._netmiko_device = None
+        self.device = None
 
     def open(self):
         """
