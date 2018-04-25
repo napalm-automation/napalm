@@ -1902,8 +1902,7 @@ class IOSDriver(NetworkDriver):
                 if ',' in interface:
                     interfaces = interface.split(',')
                 else:
-                    interfaces = []
-                    interfaces.append(interface)
+                    interfaces = [interface]
                 for single_interface in interfaces:
                     mac_address_table.append(process_mac_fields(fill_down_vlan, fill_down_mac,
                                                                 fill_down_mac_type,
