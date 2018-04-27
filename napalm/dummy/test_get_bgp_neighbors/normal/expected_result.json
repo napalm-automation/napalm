@@ -1,0 +1,180 @@
+{
+  "global": {
+    "router_id": "10.255.255.1",
+    "peers": {
+      "192.168.0.0": {
+        "description": "",
+        "remote_id": "10.255.255.240",
+        "address_family": {
+          "ipv6": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          },
+          "ipv4": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          }
+        },
+        "remote_as": 30000,
+        "is_up": true,
+        "local_as": 30001,
+        "is_enabled": true,
+        "uptime": 699262
+      },
+      "10.3.1.254": {
+        "description": "",
+        "remote_id": "10.48.71.105",
+        "address_family": {
+          "ipv6": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          },
+          "ipv4": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          }
+        },
+        "remote_as": 29999,
+        "is_up": true,
+        "local_as": 30001,
+        "is_enabled": true,
+        "uptime": 12688391
+      },
+      "192.169.1.0": {
+        "description": "",
+        "remote_id": "",
+        "address_family": {
+          "ipv6": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          },
+          "ipv4": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          }
+        },
+        "remote_as": 30000,
+        "is_up": false,
+        "local_as": 30001,
+        "is_enabled": true,
+        "uptime": 10808600
+      }
+    }
+  },
+  "frontend": {
+    "router_id": "10.255.254.1",
+    "peers": {
+      "2a01:280:100::1": {
+        "description": "",
+        "remote_id": "",
+        "address_family": {
+          "ipv6": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          },
+          "ipv4": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          }
+        },
+        "remote_as": 20000,
+        "is_up": false,
+        "local_as": 20001,
+        "is_enabled": true,
+        "uptime": 697008
+      },
+      "10.2.1.254": {
+        "description": "",
+        "remote_id": "10.48.71.105",
+        "address_family": {
+          "ipv6": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          },
+          "ipv4": {
+            "received_prefixes": 4,
+            "sent_prefixes": 7,
+            "accepted_prefixes": 4
+          }
+        },
+        "remote_as": 29999,
+        "is_up": true,
+        "local_as": 20001,
+        "is_enabled": true,
+        "uptime": 12688392
+      },
+      "192.168.0.0": {
+        "description": "",
+        "remote_id": "10.255.254.240",
+        "address_family": {
+          "ipv6": {
+            "received_prefixes": 0,
+            "sent_prefixes": 1,
+            "accepted_prefixes": 0
+          },
+          "ipv4": {
+            "received_prefixes": 3,
+            "sent_prefixes": 8,
+            "accepted_prefixes": 3
+          }
+        },
+        "remote_as": 20000,
+        "is_up": true,
+        "local_as": 20001,
+        "is_enabled": true,
+        "uptime": 696446
+      },
+      "10.2.1.253": {
+        "description": "",
+        "remote_id": "10.255.254.252",
+        "address_family": {
+          "ipv6": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          },
+          "ipv4": {
+            "received_prefixes": 2,
+            "sent_prefixes": 9,
+            "accepted_prefixes": 2
+          }
+        },
+        "remote_as": 29998,
+        "is_up": true,
+        "local_as": 20001,
+        "is_enabled": true,
+        "uptime": 12688372
+      },
+      "192.169.1.0": {
+        "description": "",
+        "remote_id": "",
+        "address_family": {
+          "ipv6": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          },
+          "ipv4": {
+            "received_prefixes": -1,
+            "sent_prefixes": -1,
+            "accepted_prefixes": -1
+          }
+        },
+        "remote_as": 20000,
+        "is_up": false,
+        "local_as": 20001,
+        "is_enabled": true,
+        "uptime": 696506
+      }
+    }
+  }
+}
