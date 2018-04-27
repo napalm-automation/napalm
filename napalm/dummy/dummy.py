@@ -124,7 +124,7 @@ router 1234
         '''
         Not much to compare, but let's return something though.
         '''
-        return difflib.unified_diff(self.candiate_config, self.running_config)
+        return '\n'.join(difflib.unified_diff(self.candiate_config, self.running_config))
 
     def commit_config(self, message=''):
         '''
