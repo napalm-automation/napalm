@@ -26,19 +26,3 @@ class TestGetter(BaseTestGetters):
             assert helpers.test_model(models.interface, interface_data)
 
         return get_interfaces
-
-    @wrap_test_cases
-    def test_get_interfaces_ip_multiple_ipv6(self, test_case):
-        """Test get_interfaces_ip. Covers cases when multiple IPv6 addresses are returned"""
-        get_interfaces_ip = self.device.get_interfaces_ip()
-        assert len(get_interfaces_ip) > 0
-
-        for interface, interface_details in get_interfaces_ip.items():
-            ipv4 = interface_details.get('ipv4', {})
-            ipv6 = interface_details.get('ipv6', {})
-            for ip, ip_details in ipv4.items():
-                assert helpers.test_model(models.interfaces_ip, ip_details)
-            for ip, ip_details in ipv6.items():
-                assert helpers.test_model(models.interfaces_ip, ip_details)
-
-        return get_interfaces_ip
