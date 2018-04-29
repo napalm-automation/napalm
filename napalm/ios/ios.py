@@ -637,10 +637,9 @@ class IOSDriver(NetworkDriver):
 
             port = canonical_interface_name(int_brief)
 
-            port_detail = {}
-
-            port_detail['physical_channels'] = {}
-            port_detail['physical_channels']['channel'] = []
+            port_detail = {
+                'physical_channels': {'channel': []}
+            }
 
             # If interface is shutdown it returns "N/A" as output power.
             # Converting that to -100.0 float

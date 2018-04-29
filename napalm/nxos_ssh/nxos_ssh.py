@@ -850,9 +850,8 @@ class NXOSSSHDriver(NXOSDriverBase):
                 if local_iface not in results:
                     results[local_iface] = []
 
-            neighbor_dict = {}
-            neighbor_dict['hostname'] = py23_compat.text_type(neighbor.get('neighbor'))
-            neighbor_dict['port'] = py23_compat.text_type(neighbor.get('neighbor_interface'))
+            neighbor_dict = {'hostname': py23_compat.text_type(neighbor.get('neighbor')),
+                             'port': py23_compat.text_type(neighbor.get('neighbor_interface'))}
 
             results[local_iface].append(neighbor_dict)
         return results
