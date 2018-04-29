@@ -12,9 +12,7 @@ matrix:
         env: TOXENV=sphinx
 
 install:
-  - pip install tox
-  - pip install tox-travis
-  - pip install coveralls
+  - pip install tox tox-travis coveralls
 
 deploy:
   provider: pypi
