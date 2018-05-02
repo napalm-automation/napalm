@@ -1,0 +1,317 @@
+foo-vsc-a#sh lldp nei det
+------------------------------------------------
+Chassis id: 3820.56c1.4d29
+Port id: Te1/3
+Port Description: foo/vWD35a-vSCa/global
+System Name: foo-vwd-d35a.foo.domain.com
+
+System Description: 
+Cisco IOS Software, c6848x Software (c6848x-ADVENTERPRISEK9-M), Version 15.4(1)SY1, RELEASE SOFTWARE (fc8)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2016 by Cisco Systems, Inc.
+Compiled Fri 09-Dec-16 07:37 by prod_rel_team
+
+Time remaining: 111 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 10.0.1.89
+    IPV6: 2001:DB8:9C2:C388::A
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 40a6.77dd.63c0
+Port id: xe-0/0/2
+Port Description: foo/vWD34a-vSCa/global</[local description]>
+System Name: foo-vwd-d34a
+
+System Description: 
+Juniper Networks, Inc. qfx5100-48s-6q Ethernet Switch, kernel JUNOS 16.1R5.7, Build date: 2017-08-18 17:55:45 UTC Copyright (c) 1996-2017 Juniper Networks, Inc.
+
+Time remaining: 104 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 10.0.1.69
+    OID:
+        0.1.3.6.1.2.1.31.1.1.1.1.0.
+Auto Negotiation - not supported
+Physical media capabilities:
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 68ef.bdeb.6940
+Port id: Te3/2
+Port Description: TenGigabitEthernet3/2
+System Name: foo-vsl-a.wan.domain.com
+
+System Description: 
+Cisco IOS Software, s72033_rp Software (s72033_rp-ADVIPSERVICESK9-M), Version 15.1(2)SY9, RELEASE SOFTWARE (fc1)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2016 by Cisco Systems, Inc.
+Compiled Thu 29-Sep-16 04:07 by prod_rel_te
+
+Time remaining: 106 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 9.0.41.207
+Auto Negotiation - not supported
+Physical media capabilities:
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: 4094
+
+------------------------------------------------
+Chassis id: 00d0.7990.e800
+Port id: Te5/4
+Port Description: TenGigabitEthernet5/4
+System Name: foo-vsd-d32b.foo.domain.com
+
+System Description: 
+Cisco IOS Software, s72033_rp Software (s72033_rp-ADVIPSERVICESK9-M), Version 15.1(2)SY9, RELEASE SOFTWARE (fc1)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2016 by Cisco Systems, Inc.
+Compiled Thu 29-Sep-16 04:07 by prod_rel_te
+
+Time remaining: 98 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 10.0.1.43
+    IPV6: 2001:DB8:0:8D01::B
+Auto Negotiation - not supported
+Physical media capabilities:
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 0007.b30f.c7c0
+Port id: Gi2/1
+Port Description: GigabitEthernet2/1
+System Name: foo-sc-b.subd.domain.com
+
+System Description: 
+Cisco IOS Software, s72033_rp Software (s72033_rp-IPSERVICESK9-M), Version 15.1(2)SY6, RELEASE SOFTWARE (fc4)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2015 by Cisco Systems, Inc.
+Compiled Thu 10-Sep-15 01:59 by prod_rel_team
+
+Time remaining: 115 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 9.17.4.6
+Auto Negotiation - not supported
+Physical media capabilities:
+    1000baseX(FD)
+Media Attachment Unit type: 26
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 0007.b30f.cbc0
+Port id: Gi2/1
+Port Description: GigabitEthernet2/1
+System Name: foo-sc-a.subd.domain.com
+
+System Description: 
+Cisco IOS Software, s72033_rp Software (s72033_rp-IPSERVICESK9-M), Version 15.1(2)SY6, RELEASE SOFTWARE (fc4)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2015 by Cisco Systems, Inc.
+Compiled Thu 10-Sep-15 01:59 by prod_rel_team
+
+Time remaining: 110 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 9.17.4.2
+Auto Negotiation - not supported
+Physical media capabilities:
+    1000baseX(FD)
+Media Attachment Unit type: 26
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 8478.ac56.60b8
+Port id: Eth3/1
+Port Description: foo/vDD33a-vSCa/global
+System Name: foo-vdd-d33a.foo.domain.com
+
+System Description: 
+Cisco NX-OS(tm) n7000, Software (n7000-s2-dk9), Version 6.2(16), RELEASE SOFTWARE Copyright (c) 2002-2013 by Cisco Systems, Inc. Compiled 1/27/2016 9:00:00
+
+Time remaining: 92 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 9.0.43.231
+Auto Negotiation - not supported
+Physical media capabilities - not advertised
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 84b5.9ccc.8440
+Port id: xe-0/0/2
+Port Description: foo/vDD37b-vSCa/global</[local description]>
+System Name: foo-vdd-d37b
+
+System Description: 
+Juniper Networks, Inc. qfx5100-48s-6q Ethernet Switch, kernel JUNOS 14.1X53-D30.3, Build date: 2015-10-02 10:44:32 UTC Copyright (c) 1996-2015 Juniper Networks, Inc.
+
+Time remaining: 96 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 10.0.1.118
+    OID:
+        0.1.3.6.1.2.1.31.1.1.1.1.0.
+Auto Negotiation - not supported
+Physical media capabilities:
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 8478.ac56.6080
+Port id: Eth3/1
+Port Description: foo/vDD33b-vSCa/global
+System Name: foo-vdd-d33b.foo.domain.com
+
+System Description: 
+Cisco NX-OS(tm) n7000, Software (n7000-s2-dk9), Version 6.2(16), RELEASE SOFTWARE Copyright (c) 2002-2013 by Cisco Systems, Inc. Compiled 1/27/2016 9:00:00
+
+Time remaining: 92 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 9.0.43.233
+Auto Negotiation - not supported
+Physical media capabilities - not advertised
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 001d.7048.1386
+Port id: Gi1/25
+Port Description: GigabitEthernet1/25
+System Name: foo-vsd-d17a.subd.domain.com
+
+System Description: 
+Cisco IOS Software, s6523_rp Software (s6523_rp-ADVIPSERVICESK9-M), Version 12.2(33)SXI13, RELEASE SOFTWARE (fc3)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2014 by Cisco Systems, Inc.
+Compiled Tue 11-Mar-14 10:52 by prod_rel_t
+
+Time remaining: 94 seconds
+System Capabilities: B,R
+Enabled Capabilities: R
+Management Addresses:
+    IP: 10.0.2.41
+Auto Negotiation - not supported
+Physical media capabilities:
+    1000baseT(FD)
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 84b5.9cca.d8c0
+Port id: xe-0/0/2
+Port Description: foo/vDD37a-vSCa/global</[local description]>
+System Name: foo-vdd-d37a
+
+System Description: 
+Juniper Networks, Inc. qfx5100-48s-6q Ethernet Switch, kernel JUNOS 14.1X53-D30.3, Build date: 2015-10-02 10:44:32 UTC Copyright (c) 1996-2015 Juniper Networks, Inc.
+
+Time remaining: 107 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 10.0.1.117
+    OID:
+        0.1.3.6.1.2.1.31.1.1.1.1.0.
+Auto Negotiation - not supported
+Physical media capabilities:
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 0019.07c3.b400
+Port id: Te5/4
+Port Description: TenGigabitEthernet5/4
+System Name: foo-vid-31b.foo.domain.com
+
+System Description: 
+Cisco IOS Software, s72033_rp Software (s72033_rp-ADVIPSERVICESK9-M), Version 15.1(2)SY9, RELEASE SOFTWARE (fc1)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2016 by Cisco Systems, Inc.
+Compiled Thu 29-Sep-16 04:07 by prod_rel_te
+
+Time remaining: 90 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 10.0.1.27
+    IPV6: 2001:DB8:9C2::1F:9C02:B
+Auto Negotiation - not supported
+Physical media capabilities:
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: dc38.e156.7e40
+Port id: xe-0/0/2
+Port Description: foo/vWD34b-vSCa/global</[local description]>
+System Name: foo-vwd-d34b
+
+System Description: 
+Juniper Networks, Inc. qfx5100-48s-6q Ethernet Switch, kernel JUNOS 16.1R5.7, Build date: 2017-08-18 17:55:45 UTC Copyright (c) 1996-2017 Juniper Networks, Inc.
+
+Time remaining: 96 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 10.0.1.70
+    OID:
+        0.1.3.6.1.2.1.31.1.1.1.1.0.
+Auto Negotiation - not supported
+Physical media capabilities:
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+------------------------------------------------
+Chassis id: 3820.56c1.558c
+Port id: Te1/3
+Port Description: foo/vWD35b-vSCa/global
+System Name: foo-vwd-d35b.foo.domain.com
+
+System Description: 
+Cisco IOS Software, c6848x Software (c6848x-ADVENTERPRISEK9-M), Version 15.4(1)SY1, RELEASE SOFTWARE (fc8)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2016 by Cisco Systems, Inc.
+Compiled Fri 09-Dec-16 07:37 by prod_rel_team
+
+Time remaining: 91 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses:
+    IP: 10.0.1.91
+    IPV6: 2001:DB8:9C2:C388::B
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    Other/unknown
+Media Attachment Unit type - not advertised
+Vlan ID: - not advertised
+
+
+Total entries displayed: 14
