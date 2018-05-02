@@ -25,7 +25,7 @@ import tempfile
 import telnetlib
 import copy
 
-from netmiko import ConnectHandler, FileTransfer, InLineTransfer
+from netmiko import FileTransfer, InLineTransfer
 from napalm.base.base import NetworkDriver
 from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
@@ -118,13 +118,10 @@ class IOSDriver(NetworkDriver):
         device_type = 'cisco_ios'
         if self.transport == 'telnet':
             device_type = 'cisco_ios_telnet'
-        self.device = ConnectHandler(device_type=device_type,
-                                     host=self.hostname,
-                                     username=self.username,
-                                     password=self.password,
-                                     **self.netmiko_optional_args)
-        # ensure in enable mode
-        self.device.enable()
+        self.device = self._netmiko_open(
+            device_type,
+            netmiko_optional_args=self.netmiko_optional_args,
+        )
 
     def _discover_file_system(self):
         try:
@@ -136,7 +133,7 @@ class IOSDriver(NetworkDriver):
 
     def close(self):
         """Close the connection to the device."""
-        self.device.disconnect()
+        self._netmiko_close()
 
     def _send_command(self, command):
         """Wrapper for self.device.send.command().
@@ -640,10 +637,9 @@ class IOSDriver(NetworkDriver):
 
             port = canonical_interface_name(int_brief)
 
-            port_detail = {}
-
-            port_detail['physical_channels'] = {}
-            port_detail['physical_channels']['channel'] = []
+            port_detail = {
+                'physical_channels': {'channel': []}
+            }
 
             # If interface is shutdown it returns "N/A" as output power.
             # Converting that to -100.0 float
@@ -1902,8 +1898,7 @@ class IOSDriver(NetworkDriver):
                 if ',' in interface:
                     interfaces = interface.split(',')
                 else:
-                    interfaces = []
-                    interfaces.append(interface)
+                    interfaces = [interface]
                 for single_interface in interfaces:
                     mac_address_table.append(process_mac_fields(fill_down_vlan, fill_down_mac,
                                                                 fill_down_mac_type,
@@ -2150,7 +2145,6 @@ class IOSDriver(NetworkDriver):
             ping_dict['error'] = output
         elif 'Sending' in output:
             ping_dict['success'] = {
-                                'probes_sent': 0,
                                 'probes_sent': 0,
                                 'packet_loss': 0,
                                 'rtt_min': 0.0,
