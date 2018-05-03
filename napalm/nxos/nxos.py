@@ -1111,3 +1111,50 @@ class NXOSDriver(NXOSDriverBase):
             _cmd = 'show startup-config'
             config['startup'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
         return config
+
+    def get_route_to(self, destination, protocol='', vrf='default'):
+        routes = {}
+        routes[destination] = []
+        command = "show ip route {destination} {protocol} detail vrf {vrf}".format(destination=destination, \
+                   protocol=protocol, vrf=vrf)
+        route_out = self.device.show(command).get('TABLE_vrf',{}).get('ROW_vrf',{}).get('TABLE_addrf',{})\
+                    .get('ROW_addrf',{}).get('TABLE_prefix',{}).get('ROW_prefix',{}).get('TABLE_path',{}).get('ROW_path',[])
+        if isinstance(route_out, dict):
+            route_out = [route_out]
+        for item in route_out:
+           route_details = {}
+           route_details['protocol'] = item.get('clientname', '')
+           route_details['routing_table'] = vrf
+           route_details['next_hop'] = item.get('ipnexthop', '')
+           route_details['preference'] = item.get('pref', '')
+           route_details['metric'] = item.get('metric', '')
+           route_details['best'] = item.get('ubest', 'FALSE')
+           route_details['type'] = item.get('type', '')
+           route_details['protocol_attributes'] = {}
+           if protocol == 'bgp':
+              command = "show bgp ipv4 unicast {destination} vrf {vrf}".format(destination=destination, vrf=vrf)
+              bgp_routes = self.device.show(command).get('TABLE_vrf',{}).get('ROW_vrf',{}).get('TABLE_afi',{}).get('ROW_afi')\
+                        .get('TABLE_safi',{}).get('ROW_safi',{}).get('TABLE_rd',{}).get('ROW_rd',{}).get('TABLE_prefix',{})\
+                        .get('ROW_prefix',{}).get('TABLE_path',{}).get('ROW_path',[])
+              # cisco returns dict if there is only one next hop
+              if isinstance(bgp_routes, dict):
+                bgp_routes = [bgp_routes]
+              for my_route in bgp_routes:
+                if route_details['next_hop'] == my_route['ipnexthop']:
+                    route_details['protocol_attributes']['local_preference'] = my_route.get('localpref', '')
+                    route_details['protocol_attributes']['as_path'] = my_route.get('aspath', '')
+                    route_details['protocol_attributes']['origin'] = my_route.get('origin', '')
+                    route_details['protocol_attributes']['extcommunity'] = [] 
+                    extcommunity_line = my_route.get('TABLE_extcommunity', {}).get('ROW_extcommunity', {}).get('extcommunity',[])
+                    if len(extcommunity_line) != 0:
+                      route_details['protocol_attributes']['extcommunity'] = re.sub('Extcommunity:|\n\s+',\
+                                                                           ' ', extcommunity_line).lstrip().split(' ')
+                    community_list = my_route.get('TABLE_community', {}).get('ROW_community', [])
+                    if isinstance(community_list, dict):
+                      community_list = [community_list]
+                    route_details['protocol_attributes']['community'] = []
+                    if len(community_list) != 0:
+                      for item in community_list:
+                          route_details['protocol_attributes']['community'].append(item['community'])
+           routes[destination].append(route_details)
+        return routes
