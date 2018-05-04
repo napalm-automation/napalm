@@ -33,7 +33,7 @@ Create a file named ``Vagrantfile`` (no file extension) in your working director
 .. literalinclude:: Vagrantfile
    :language: ruby
 
-The above content is also available on `GitHub <https://raw.githubusercontent.com/napalm-automation/napalm/master/docs/tutorials/Vagrantfile>`_.
+The above content is also available `on GitHub <https://raw.githubusercontent.com/napalm-automation/napalm/master/docs/tutorials/Vagrantfile>`_.
 
 This Vagrantfile creates a base box and a vEOS box when you call ``vagrant up``::
 
