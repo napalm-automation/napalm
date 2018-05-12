@@ -1979,7 +1979,11 @@ class IOSDriver(NetworkDriver):
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
                 continue
             elif re.search(RE_MACTABLE_6500_5, line):
-                # Skip
+                line = re.sub(r"^R\s+", "", line)
+                vlan, mac, mac_type, _, _, interface = line.split()
+                # Convert 'N/A' VLAN to to 0
+                vlan = re.sub(r"N/A", "0", vlan)
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
                 continue
             elif re.search(r"Total Mac Addresses", line):
                 continue
