@@ -35,6 +35,8 @@ from jnpr.junos.exception import RpcError
 from jnpr.junos.exception import ConfigLoadError
 from jnpr.junos.exception import RpcTimeoutError
 from jnpr.junos.exception import ConnectTimeoutError
+from jnpr.junos.exception import LockError as JnprLockError
+from jnpr.junos.exception import UnlockError as JnrpUnlockError
 
 # import NAPALM Base
 import napalm.base.helpers
@@ -46,6 +48,8 @@ from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.exceptions import CommandTimeoutException
+from napalm.base.exceptions import LockError
+from napalm.base.exceptions import UnlockError
 
 # import local modules
 from napalm.junos.utils import junos_views
@@ -126,14 +130,20 @@ class JunOSDriver(NetworkDriver):
     def _lock(self):
         """Lock the config DB."""
         if not self.locked:
-            self.device.cu.lock()
-            self.locked = True
+            try:
+                self.device.cu.lock()
+                self.locked = True
+            except JnprLockError as jle:
+                raise LockError(jle.message)
 
     def _unlock(self):
         """Unlock the config DB."""
         if self.locked:
-            self.device.cu.unlock()
-            self.locked = False
+            try:
+                self.device.cu.unlock()
+                self.locked = False
+            except JnrpUnlockError as jue:
+                raise UnlockError(jue.messsage)
 
     def _rpc(self, get, child=None, **kwargs):
         """
