@@ -26,8 +26,9 @@ import telnetlib
 import copy
 from collections import defaultdict
 
-from netmiko import ConnectHandler, FileTransfer, InLineTransfer
+from netmiko import FileTransfer, InLineTransfer
 from napalm.base.base import NetworkDriver
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
             ConnectionClosedException, CommandErrorException
 
@@ -112,36 +113,14 @@ class IOSDriver(NetworkDriver):
         # Control automatic toggling of 'file prompt quiet' for file operations
         self.auto_file_prompt = optional_args.get('auto_file_prompt', True)
 
-        # Netmiko possible arguments
-        netmiko_argument_map = {
-            'port': None,
-            'secret': '',
-            'verbose': False,
-            'keepalive': 30,
-            'global_delay_factor': 1,
-            'use_keys': False,
-            'key_file': None,
-            'ssh_strict': False,
-            'system_host_keys': False,
-            'alt_host_keys': False,
-            'alt_key_file': '',
-            'ssh_config_file': None,
-            'allow_agent': False,
-        }
+        self.netmiko_optional_args = netmiko_args(optional_args)
 
-        # Build dict of any optional Netmiko args
-        self.netmiko_optional_args = {}
-        for k, v in netmiko_argument_map.items():
-            try:
-                self.netmiko_optional_args[k] = optional_args[k]
-            except KeyError:
-                pass
-
+        # Set the default port if not set
         default_port = {
             'ssh': 22,
             'telnet': 23
         }
-        self.port = optional_args.get('port', default_port[self.transport])
+        self.netmiko_optional_args.setdefault('port', default_port[self.transport])
 
         self.device = None
         self.config_replace = False
@@ -154,13 +133,10 @@ class IOSDriver(NetworkDriver):
         device_type = 'cisco_ios'
         if self.transport == 'telnet':
             device_type = 'cisco_ios_telnet'
-        self.device = ConnectHandler(device_type=device_type,
-                                     host=self.hostname,
-                                     username=self.username,
-                                     password=self.password,
-                                     **self.netmiko_optional_args)
-        # ensure in enable mode
-        self.device.enable()
+        self.device = self._netmiko_open(
+            device_type,
+            netmiko_optional_args=self.netmiko_optional_args,
+        )
 
     def _discover_file_system(self):
         try:
@@ -172,7 +148,7 @@ class IOSDriver(NetworkDriver):
 
     def close(self):
         """Close the connection to the device."""
-        self.device.disconnect()
+        self._netmiko_close()
 
     def _send_command(self, command):
         """Wrapper for self.device.send.command().
@@ -436,12 +412,14 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self):
+    def commit_config(self, message=""):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """
+        if message:
+            raise NotImplementedError('Commit message not implemented for this platform')
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
@@ -674,10 +652,9 @@ class IOSDriver(NetworkDriver):
 
             port = canonical_interface_name(int_brief)
 
-            port_detail = {}
-
-            port_detail['physical_channels'] = {}
-            port_detail['physical_channels']['channel'] = []
+            port_detail = {
+                'physical_channels': {'channel': []}
+            }
 
             # If interface is shutdown it returns "N/A" as output power.
             # Converting that to -100.0 float
@@ -858,6 +835,8 @@ class IOSDriver(NetworkDriver):
                     local_intf = match.group(1)
             else:
                 system_name_match = re.search(r"^System Name:\s+(\S.*)$", lldp_entry, flags=re.M)
+                # Cisco is inconsistent on whether the domain name appears in LLDP brief output
+                system_name_alt = re.search(r"^System Name:\s+(\S.*?)\.", lldp_entry, flags=re.M)
                 port_id_match = re.search(r"^Port id:\s+(\S+)\s*$", lldp_entry, flags=re.M)
                 # Try to find the local_intf from the reverse_neighbors table
                 if system_name_match and port_id_match:
@@ -866,6 +845,11 @@ class IOSDriver(NetworkDriver):
                     system_name = system_name.strip()
                     key = "{}_{}".format(system_name, port_id)
                     local_intf = reverse_neighbors.get(key)
+                    if local_intf is None and system_name_alt:
+                        system_name_alt = system_name_alt.group(1)[:20]
+                        system_name_alt = system_name_alt.strip()
+                        alt_key = "{}_{}".format(system_name_alt, port_id)
+                        local_intf = reverse_neighbors.get(alt_key)
 
             if local_intf is not None:
                 lldp_fields = self._lldp_detail_parser(local_intf, lldp_entry=lldp_entry)
@@ -1326,6 +1310,9 @@ class IOSDriver(NetworkDriver):
                 {'regexp': re.compile(r'^\s+BGP version \d+, remote router ID '
                                       r'(?P<remote_id>{})'.format(IPV4_ADDR_REGEX)),
                  'record': False},
+                # Capture state
+                {'regexp': re.compile(r'^\s+BGP state = (?P<state>\w+)'),
+                 'record': False},
                 # Capture AFI and SAFI names, e.g.:
                 # For address family: IPv4 Unicast
                 {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) '),
@@ -1433,8 +1420,8 @@ class IOSDriver(NetworkDriver):
             # parse uptime value
             uptime = self.bgp_time_conversion(entry['uptime'])
 
-            # Uptime should be -1 if BGP session not up
-            is_up = True if uptime >= 0 else False
+            # BGP is up if state is Established
+            is_up = 'Established' in neighbor_entry['state']
 
             # check whether session is up for address family and get prefix count
             try:
@@ -1458,6 +1445,7 @@ class IOSDriver(NetworkDriver):
             else:
                 received_prefixes = -1
                 sent_prefixes = -1
+                uptime = -1
 
             # get description
             try:
@@ -1978,6 +1966,8 @@ class IOSDriver(NetworkDriver):
         RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 7 fields
         RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 6 fields
         RE_MACTABLE_6500_3 = r"^\s{51}\S+"                                      # Fill down prior
+        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(VLAN_REGEX, MAC_REGEX)  # Router field
+        RE_MACTABLE_6500_5 = r"^R\s+N/A\s+{}.*Router".format(MAC_REGEX)         # Router skipped
         RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 5 fields
         RE_MACTABLE_4500_2 = r"^\s{32,34}\S+"                                   # Fill down prior
         RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)        # Matches PHY int
@@ -2023,8 +2013,7 @@ class IOSDriver(NetworkDriver):
                 if ',' in interface:
                     interfaces = interface.split(',')
                 else:
-                    interfaces = []
-                    interfaces.append(interface)
+                    interfaces = [interface]
                 for single_interface in interfaces:
                     mac_address_table.append(process_mac_fields(fill_down_vlan, fill_down_mac,
                                                                 fill_down_mac_type,
@@ -2097,6 +2086,18 @@ class IOSDriver(NetworkDriver):
                 vlan, mac, mac_type, interface = line.split()
                 vlan = '-1'
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            elif re.search(RE_MACTABLE_6500_4, line) and len(line.split()) == 7:
+                line = re.sub(r"^R\s+", "", line)
+                vlan, mac, mac_type, _, _, interface = line.split()
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                continue
+            elif re.search(RE_MACTABLE_6500_5, line):
+                line = re.sub(r"^R\s+", "", line)
+                vlan, mac, mac_type, _, _, interface = line.split()
+                # Convert 'N/A' VLAN to to 0
+                vlan = re.sub(r"N/A", "0", vlan)
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                continue
             elif re.search(r"Total Mac Addresses", line):
                 continue
             elif re.search(r"Multicast Entries", line):
@@ -2213,9 +2214,9 @@ class IOSDriver(NetworkDriver):
         lowest access and 15 represents full access to the device.
         """
         username_regex = r"^username\s+(?P<username>\S+)\s+(?:privilege\s+(?P<priv_level>\S+)" \
-            "\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
+            r"\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
         pub_keychain_regex = r"^\s+username\s+(?P<username>\S+)(?P<keys>(?:\n\s+key-hash\s+" \
-            "(?P<hash_type>\S+)\s+(?P<hash>\S+)(?:\s+\S+)?)+)$"
+            r"(?P<hash_type>\S+)\s+(?P<hash>\S+)(?:\s+\S+)?)+)$"
         users = {}
         command = "show run | section username"
         output = self._send_command(command)
@@ -2271,7 +2272,6 @@ class IOSDriver(NetworkDriver):
             ping_dict['error'] = output
         elif 'Sending' in output:
             ping_dict['success'] = {
-                                'probes_sent': 0,
                                 'probes_sent': 0,
                                 'packet_loss': 0,
                                 'rtt_min': 0.0,

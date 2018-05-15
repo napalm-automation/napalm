@@ -1,0 +1,86 @@
+{
+    "TenGigabitEthernet1/6": [
+        {
+            "port": "Te1/3",
+            "hostname": "foo-vwd-d35a.foo.domain.com"
+        }
+    ],
+    "TenGigabitEthernet1/5": [
+        {
+            "port": "xe-0/0/2",
+            "hostname": "foo-vwd-d34a"
+        }
+    ],
+    "TenGigabitEthernet5/4": [
+        {
+            "port": "Te3/2",
+            "hostname": "foo-vsl-a.wan.domain.com"
+        }
+    ],
+    "TenGigabitEthernet2/3": [
+        {
+            "port": "Te5/4",
+            "hostname": "foo-vsd-d32b.foo.domain.com"
+        }
+    ],
+    "GigabitEthernet9/16": [
+        {
+            "port": "Gi2/1",
+            "hostname": "foo-sc-b.subd.domain.com"
+        }
+    ],
+    "GigabitEthernet8/16": [
+        {
+            "port": "Gi2/1",
+            "hostname": "foo-sc-a.subd.domain.com"
+        }
+    ],
+    "TenGigabitEthernet1/4": [
+        {
+            "port": "Eth3/1",
+            "hostname": "foo-vdd-d33a.foo.domain.com"
+        }
+    ],
+    "TenGigabitEthernet2/8": [
+        {
+            "port": "xe-0/0/2",
+            "hostname": "foo-vdd-d37b"
+        }
+    ],
+    "TenGigabitEthernet2/4": [
+        {
+            "port": "Eth3/1",
+            "hostname": "foo-vdd-d33b.foo.domain.com"
+        }
+    ],
+    "GigabitEthernet8/18": [
+        {
+            "port": "Gi1/25",
+            "hostname": "foo-vsd-d17a.subd.domain.com"
+        }
+    ],
+    "TenGigabitEthernet1/8": [
+        {
+            "port": "xe-0/0/2",
+            "hostname": "foo-vdd-d37a"
+        }
+    ],
+    "TenGigabitEthernet2/2": [
+        {
+            "port": "Te5/4",
+            "hostname": "foo-vid-31b.foo.domain.com"
+        }
+    ],
+    "TenGigabitEthernet2/5": [
+        {
+            "port": "xe-0/0/2",
+            "hostname": "foo-vwd-d34b"
+        }
+    ],
+    "TenGigabitEthernet2/6": [
+        {
+            "port": "Te1/3",
+            "hostname": "foo-vwd-d35b.foo.domain.com"
+        }
+    ]
+}
