@@ -1853,6 +1853,8 @@ class IOSDriver(NetworkDriver):
         RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 7 fields
         RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 6 fields
         RE_MACTABLE_6500_3 = r"^\s{51}\S+"                                      # Fill down prior
+        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(VLAN_REGEX, MAC_REGEX)  # Router field
+        RE_MACTABLE_6500_5 = r"^R\s+N/A\s+{}.*Router".format(MAC_REGEX)         # Router skipped
         RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 5 fields
         RE_MACTABLE_4500_2 = r"^\s{32,34}\S+"                                   # Fill down prior
         RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)        # Matches PHY int
@@ -1971,6 +1973,18 @@ class IOSDriver(NetworkDriver):
                 vlan, mac, mac_type, interface = line.split()
                 vlan = '-1'
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            elif re.search(RE_MACTABLE_6500_4, line) and len(line.split()) == 7:
+                line = re.sub(r"^R\s+", "", line)
+                vlan, mac, mac_type, _, _, interface = line.split()
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                continue
+            elif re.search(RE_MACTABLE_6500_5, line):
+                line = re.sub(r"^R\s+", "", line)
+                vlan, mac, mac_type, _, _, interface = line.split()
+                # Convert 'N/A' VLAN to to 0
+                vlan = re.sub(r"N/A", "0", vlan)
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                continue
             elif re.search(r"Total Mac Addresses", line):
                 continue
             elif re.search(r"Multicast Entries", line):
