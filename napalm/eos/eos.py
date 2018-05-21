@@ -138,9 +138,11 @@ class EOSDriver(NetworkDriver):
     def _lock(self):
         if self.config_session is None:
             self.config_session = 'napalm_{}'.format(datetime.now().microsecond)
+        else:
+            raise SessionLockedException('Session is already in use: {}'.format(self.config_session))
         sess = self.device.run_commands(['show configuration sessions'])[0]['sessions']
         if [k for k, v in sess.items() if v['state'] == 'pending' and k != self.config_session]:
-            raise SessionLockedException('Session is already in use')
+            raise SessionLockedException('Session is already in use: {}'.format(k))
 
     @staticmethod
     def _multiline_convert(config, start="banner login", end="EOF", depth=1):
