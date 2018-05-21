@@ -154,7 +154,7 @@ class EOSDriver(NetworkDriver):
                 depth = depth - 1
         except ValueError:  # Couldn't find end, abort
             return ret
-        ret[s] = {'cmd': ret[s], 'input': "\n".join(ret[s+1:e])}
+        ret[s] = {'cmd': ret[s], 'input': "\n".join([ele['input'] for ele in ret[s+1:e]])}
         del ret[s + 1:e + 1]
 
         return ret
