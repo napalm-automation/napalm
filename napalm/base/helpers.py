@@ -11,7 +11,7 @@ import itertools
 
 # third party libs
 import jinja2
-import jtextfsm as textfsm
+import textfsm
 from netaddr import EUI
 from netaddr import mac_unix
 from netaddr import IPAddress
