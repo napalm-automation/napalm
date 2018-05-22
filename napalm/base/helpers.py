@@ -83,7 +83,7 @@ def load_template(cls, template_name, template_source=None, template_path=None,
         raise napalm.base.exceptions.TemplateRenderException(
             "Unable to render the Jinja config template {template_name}: {error}".format(
                 template_name=template_name,
-                error=jinjaerr.message
+                error=py23_compat.text_type(jinjaerr),
             )
         )
     return cls.load_merge_candidate(config=configuration)

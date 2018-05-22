@@ -134,7 +134,7 @@ class JunOSDriver(NetworkDriver):
                 self.device.cu.lock()
                 self.locked = True
             except JnprLockError as jle:
-                raise LockError(jle.message)
+                raise LockError(py23_compat.text_type(jle))
 
     def _unlock(self):
         """Unlock the config DB."""
@@ -681,7 +681,7 @@ class JunOSDriver(NetworkDriver):
             # able to handle logs
             # otherwise, the user just won't see this happening
             log.error('Unable to retrieve the LLDP neighbors information:')
-            log.error(rpcerr.message)
+            log.error(py23_compat.text_type(rpcerr))
             return {}
         result = lldp.items()
 
@@ -705,7 +705,7 @@ class JunOSDriver(NetworkDriver):
             # able to handle logs
             # otherwise, the user just won't see this happening
             log.error('Unable to retrieve the LLDP neighbors information:')
-            log.error(rpcerr.message)
+            log.error(py23_compat.text_type(rpcerr))
             return {}
         interfaces = lldp_table.get().keys()
         rpc_call_without_information = {
