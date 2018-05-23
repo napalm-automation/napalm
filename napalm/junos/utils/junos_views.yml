@@ -734,3 +734,66 @@ junos_nw_instances_view:
     instance_type: {instance-type: unicode}
     interfaces: {interface/name: unicode}
     route_distinguisher: {route-distinguisher/rd-type: unicode}
+
+###
+### Get MPLS LSP Tables
+###
+
+junos_mpls_lsp_table_ingress:
+    rpc: get-mpls-lsp-information
+    args:
+        ingress: True
+    item: rsvp-session-data/rsvp-session
+    key: name
+    view: junos_mpls_lsp_view_ingress
+
+junos_mpls_lsp_view_ingress:
+    fields:
+        destination_address: mpls-lsp/destination-address
+        source_address: mpls-lsp/source-address
+        lsp_state: mpls-lsp/lsp-state
+        route_count: { mpls-lsp/route-count : int }
+        active_path: mpls-lsp/active-path
+        is_primary: { mpls-lsp/is-primary : flag }
+        name: mpls-lsp/name
+        lsp_description: mpls-lsp/lsp-description
+
+junos_mpls_lsp_table_egress:
+    rpc: get-mpls-lsp-information
+    args:
+        egress: True
+    item: rsvp-session-data/rsvp-session
+    key: name
+    view: junos_mpls_lsp_view_egress
+
+junos_mpls_lsp_view_egress:
+    fields:
+        destination_address: destination-address
+        source_address: source-address
+        lsp_state: lsp-state
+        route_count: route-count
+        rsb_count: rsb-count
+        resv_style: resv-style
+        label_in: label-in
+        label_out: label-out
+        name: name
+
+junos_mpls_lsp_table_transit:
+    rpc: get-mpls-lsp-information
+    args:
+        transit: True
+    item: rsvp-session-data/rsvp-session
+    key: name
+    view: junos_mpls_lsp_view_transit
+
+junos_mpls_lsp_view_transit:
+    fields:
+        destination_address: destination-address
+        source_address: source-address
+        lsp_state: lsp-state
+        route_count: route-count
+        rsb_count: rsb-count
+        resv_style: resv-style
+        label_in: label-in
+        label_out: label-out
+        name: name

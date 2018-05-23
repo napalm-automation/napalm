@@ -2132,3 +2132,125 @@ class JunOSDriver(NetworkDriver):
         if name not in network_instances:
             return {}
         return {name: network_instances[name]}
+
+    def get_mpls_lsp(self, lsp_type=""):
+
+        if lsp_type == 'ingress':
+            ingress_lsps = junos_views.junos_mpls_lsp_table_ingress(self.device)
+            ingress_lsps.get()
+            lsp_dict = {}
+            lsp_ingress_lict = []
+            for lsp in ingress_lsps:
+                if lsp.active_path == 'active-path':
+                    lsp.active_path = ''
+                if lsp.lsp_description == 'lsp-description':
+                    lsp.lsp_description = ''
+                lsp_ingress_lict.append({
+                                            'destination_address': lsp.destination_address, 
+                                            'source_address': lsp.source_address, 
+                                            'lsp_state': lsp.lsp_state, 
+                                            'route_count': lsp.route_count, 
+                                            'active_path': lsp.active_path, 
+                                            'is_primary': lsp.is_primary, 
+                                            'name': lsp.name, 
+                                            'lsp_description': lsp.lsp_description
+                                            })
+            lsp_dict['ingress'] = lsp_ingress_lict
+
+        elif lsp_type == 'egress':
+            
+            lsp_dict = {}
+
+            egress_lsps = junos_views.junos_mpls_lsp_table_egress(self.device)
+            egress_lsps.get()
+            lsp_egress_lict = []
+            for lsp in egress_lsps:
+                lsp_egress_lict.append({
+                                        'destination_address': lsp.destination_address,
+                                        'source_address': lsp.source_address,
+                                        'lsp_state': lsp.lsp_state, 
+                                        'route_count': lsp.route_count, 
+                                        'rsb_count': lsp.rsb_count, 
+                                        'resv_style': lsp.resv_style, 
+                                        'label_in': lsp.label_in, 
+                                        'label_out': lsp.label_out, 
+                                        'name': lsp.name
+                                        })
+            lsp_dict['egress'] = lsp_egress_lict
+
+        elif lsp_type == 'transit':
+
+            lsp_dict = {}
+
+            transit_lsps = junos_views.junos_mpls_lsp_table_transit(self.device)
+            transit_lsps.get()
+            lsp_transit_lict = []
+            for lsp in transit_lsps:
+                lsp_transit_lict.append({
+                                        'destination_address': lsp.destination_address,
+                                        'source_address': lsp.source_address,
+                                        'lsp_state': lsp.lsp_state, 
+                                        'route_count': lsp.route_count, 
+                                        'rsb_count': lsp.rsb_count, 
+                                        'resv_style': lsp.resv_style, 
+                                        'label_in': lsp.label_in, 
+                                        'label_out': lsp.label_out, 
+                                        'name': lsp.name
+                                        })
+            lsp_dict['transit'] = lsp_transit_lict
+
+        else:
+
+            lsp_dict = {}
+
+            ingress_lsps = junos_views.junos_mpls_lsp_table_ingress(self.device)
+            ingress_lsps.get()
+            lsp_ingress_lict = []
+            for lsp in ingress_lsps:
+                lsp_ingress_lict.append({
+                                            'destination_address': lsp.destination_address, 
+                                            'source_address': lsp.source_address, 
+                                            'lsp_state': lsp.lsp_state, 
+                                            'route_count': lsp.route_count, 
+                                            'active_path': lsp.active_path, 
+                                            'is_primary': lsp.is_primary, 
+                                            'name': lsp.name, 
+                                            'lsp_description': lsp.lsp_description
+                                            })
+            lsp_dict['ingress'] = lsp_ingress_lict
+
+            egress_lsps = junos_views.junos_mpls_lsp_table_egress(self.device)
+            egress_lsps.get()
+            lsp_egress_lict = []
+            for lsp in egress_lsps:
+                lsp_egress_lict.append({
+                                        'destination_address': lsp.destination_address,
+                                        'source_address': lsp.source_address,
+                                        'lsp_state': lsp.lsp_state, 
+                                        'route_count': lsp.route_count, 
+                                        'rsb_count': lsp.rsb_count, 
+                                        'resv_style': lsp.resv_style, 
+                                        'label_in': lsp.label_in, 
+                                        'label_out': lsp.label_out, 
+                                        'name': lsp.name
+                                        })
+            lsp_dict['egress'] = lsp_egress_lict
+
+            transit_lsps = junos_views.junos_mpls_lsp_table_transit(self.device)
+            transit_lsps.get()
+            lsp_transit_lict = []
+            for lsp in transit_lsps:
+                lsp_transit_lict.append({
+                                        'destination_address': lsp.destination_address,
+                                        'source_address': lsp.source_address,
+                                        'lsp_state': lsp.lsp_state, 
+                                        'route_count': lsp.route_count, 
+                                        'rsb_count': lsp.rsb_count, 
+                                        'resv_style': lsp.resv_style, 
+                                        'label_in': lsp.label_in, 
+                                        'label_out': lsp.label_out, 
+                                        'name': lsp.name
+                                        })
+            lsp_dict['transit'] = lsp_transit_lict
+
+        return lsp_dict
