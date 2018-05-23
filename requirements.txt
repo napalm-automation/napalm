@@ -1,7 +1,7 @@
 setuptools>=38.4.0
 cffi>=1.11.3
 future
-jtextfsm
+textfsm
 jinja2
 netaddr
 pyYAML
