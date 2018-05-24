@@ -1575,8 +1575,7 @@ class NetworkDriver(object):
         Example::
 
             {
-                'egress': [
-                    {
+                'egress': [{
                         'destination_address': '192.168.100.100',
                         'label_in': '262146',
                         'label_out': '-',
@@ -1597,10 +1596,8 @@ class NetworkDriver(object):
                         'route_count': '0',
                         'rsb_count': '1',
                         'source_address': '192.168.2.2'
-                        }
-                    ],
-                'ingress': [
-                    {
+                }],
+                'ingress': [{
                         'active_path': 'active-path',
                         'destination_address': '10.0.0.10',
                         'is_primary': True,
@@ -1619,9 +1616,8 @@ class NetworkDriver(object):
                         'name': 'LSP-04',
                         'route_count': 0,
                         'source_address': '192.168.100.100'
-                        }
-                    ]
-                }
+                }]
+            }
         """
         raise NotImplementedError
 
