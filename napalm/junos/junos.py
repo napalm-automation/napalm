@@ -2133,7 +2133,7 @@ class JunOSDriver(NetworkDriver):
             return {}
         return {name: network_instances[name]}
 
-    def get_mpls_lsp(self, lsp_type=""):
+    def get_mpls_lsp(self, lsp_type=''):
 
         if lsp_type == 'ingress':
             ingress_lsps = junos_views.junos_mpls_lsp_table_ingress(self.device)
