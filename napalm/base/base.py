@@ -1534,7 +1534,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_mpls_lsp(self, lsptype=''):
+    def get_mpls_lsp(self, lsp_type=''):
         """
         Return a dictionary of MPLS label switch paths
 
