@@ -2207,6 +2207,10 @@ class JunOSDriver(NetworkDriver):
             ingress_lsps.get()
             lsp_ingress_lict = []
             for lsp in ingress_lsps:
+                if lsp.active_path == 'active-path':
+                    lsp.active_path = ''
+                if lsp.lsp_description == 'lsp-description':
+                    lsp.lsp_description = ''
                 lsp_ingress_lict.append({
                                             'destination_address': lsp.destination_address, 
                                             'source_address': lsp.source_address, 
