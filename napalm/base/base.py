@@ -1547,7 +1547,7 @@ class NetworkDriver(object):
             * transit
 
         Returns (for ingress LSPs):
-            A dictionary of label-switched-paths in OC format:
+            A dictionary of label-switched-paths in OC format
             * lsptype (list of dictionaries)
                 * destination_address (unicode)
                 * source_address (unicode)
@@ -1559,7 +1559,7 @@ class NetworkDriver(object):
                 * lsp_description: (unicode)
 
         Returns (for egress and transit LSPs):
-            A dictionary of label-switched-paths in OC format:
+            A dictionary of label-switched-paths in OC format
             * lsptype (list of dictionaries)
                 * destination_address (unicode)
                 * source_address (unicode)
