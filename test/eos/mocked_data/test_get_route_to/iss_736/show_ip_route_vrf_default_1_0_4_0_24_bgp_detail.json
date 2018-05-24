@@ -1,0 +1,33 @@
+{
+    "vrfs": {
+        "default": {
+            "routes": {
+                "1.0.4.0/24": {
+                    "kernelProgrammed": true,
+                    "directlyConnected": false,
+                    "preference": 200,
+                    "routeAction": "forward",
+                    "vias": [
+                        {
+                            "interface": "Ethernet51/1",
+                            "interfaceDescription": "veos1:e5-21-1:",
+                            "nexthopAddr": "1.0.4.221"
+                        },
+                        {
+                            "interface": "Ethernet52/1",
+                            "interfaceDescription": "veos2:e5-21-1:",
+                            "nexthopAddr": "1.0.4.223"
+                        }
+                    ],
+                    "metric": 175,
+                    "hardwareProgrammed": true,
+                    "routeType": "eBGP"
+                }
+            },
+            "allRoutesProgrammedKernel": true,
+            "routingDisabled": false,
+            "allRoutesProgrammedHardware": true,
+            "defaultRouteState": "reachable"
+        }
+    }
+}
