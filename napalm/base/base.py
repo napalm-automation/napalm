@@ -1556,7 +1556,7 @@ class NetworkDriver(object):
                 * active_path (unicode)
                 * is_primary (bool)
                 * name (unicode)
-                * lsp_description: (unicode)
+                * lsp_description (unicode)
 
         Returns (for egress and transit LSPs):
             A dictionary of label-switched-paths in OC format
@@ -1568,8 +1568,8 @@ class NetworkDriver(object):
                 * rsb_count (int)
                 * resv_style (bool)
                 * label_in (unicode)
-                * label_out: (unicode)
-                * name: (unicode)
+                * label_out (unicode)
+                * name (unicode)
 
         Example::
 
