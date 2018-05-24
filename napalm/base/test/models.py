@@ -340,3 +340,26 @@ firewall_policies = {
     'dst_zone': text_type,
     'action': text_type
 }
+
+lsp_model_ingress = {
+    'destination-address': text_type,
+    'source-address': text_type,
+    'lsp-state': text_type,
+    'route-count': int,
+    'active-path': text_type,
+    'is-primary': bool,
+    'name': text_type,
+    'lsp-description': text_type
+}
+
+lsp_model_egress_or_transit = {
+    'destination-address': text_type,
+    'source-address': text_type,
+    'lsp-state': text_type,
+    'route-count': int,
+    'rsb-count': int,
+    'resv-style': text_type,
+    'label-in': text_type,
+    'label-out': text_type,
+    'name': text_type
+}

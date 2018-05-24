@@ -520,6 +520,23 @@ class BaseTestGetters(object):
         return get_network_instances
 
     @wrap_test_cases
+    def test_get_mpls_lsp(self, test_case):
+        """Test get_mpls_lsp method."""
+        get_mpls_lsp = self.device.get_mpls_lsp()
+
+        assert isinstance(get_mpls_lsp, dict)
+        for lsp_type, lsp_data in get_mpls_lsp.items():
+            assert isinstance(lsp_data, list)
+            for lsp in lsp_data:
+                assert isinstance(lsp, dict)
+                if lsp_type == 'Ingress':
+                    assert test_model(models.lsp_model_ingress, lsp)
+                elif lsp_type == 'Egress' or lsp_type == 'Transit':
+                    assert test_model(models.lsp_model_egress_or_transit, lsp)
+
+        return get_mpls_lsp
+
+    @wrap_test_cases
     def test_get_firewall_policies(self, test_case):
         """Test get_firewall_policies method."""
         get_firewall_policies = self.device.get_firewall_policies()
