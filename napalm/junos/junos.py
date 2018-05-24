@@ -2146,18 +2146,19 @@ class JunOSDriver(NetworkDriver):
                 if lsp.lsp_description == 'lsp-description':
                     lsp.lsp_description = ''
                 lsp_ingress_lict.append({
-                                            'destination_address': lsp.destination_address,
-                                            'source_address': lsp.source_address,
-                                            'lsp_state': lsp.lsp_state,
-                                            'route_count': lsp.route_count,
-                                            'active_path': lsp.active_path,
-                                            'is_primary': lsp.is_primary,
-                                            'name': lsp.name,
+                                            'destination_address': lsp.destination_address, 
+                                            'source_address': lsp.source_address, 
+                                            'lsp_state': lsp.lsp_state, 
+                                            'route_count': lsp.route_count, 
+                                            'active_path': lsp.active_path, 
+                                            'is_primary': lsp.is_primary, 
+                                            'name': lsp.name, 
                                             'lsp_description': lsp.lsp_description
                                             })
             lsp_dict['ingress'] = lsp_ingress_lict
 
         elif lsp_type == 'egress':
+            
             lsp_dict = {}
 
             egress_lsps = junos_views.junos_mpls_lsp_table_egress(self.device)
@@ -2167,17 +2168,18 @@ class JunOSDriver(NetworkDriver):
                 lsp_egress_lict.append({
                                         'destination_address': lsp.destination_address,
                                         'source_address': lsp.source_address,
-                                        'lsp_state': lsp.lsp_state,
-                                        'route_count': lsp.route_count,
-                                        'rsb_count': lsp.rsb_count,
-                                        'resv_style': lsp.resv_style,
-                                        'label_in': lsp.label_in,
-                                        'label_out': lsp.label_out,
+                                        'lsp_state': lsp.lsp_state, 
+                                        'route_count': lsp.route_count, 
+                                        'rsb_count': lsp.rsb_count, 
+                                        'resv_style': lsp.resv_style, 
+                                        'label_in': lsp.label_in, 
+                                        'label_out': lsp.label_out, 
                                         'name': lsp.name
                                         })
             lsp_dict['egress'] = lsp_egress_lict
 
         elif lsp_type == 'transit':
+
             lsp_dict = {}
 
             transit_lsps = junos_views.junos_mpls_lsp_table_transit(self.device)
@@ -2187,17 +2189,18 @@ class JunOSDriver(NetworkDriver):
                 lsp_transit_lict.append({
                                         'destination_address': lsp.destination_address,
                                         'source_address': lsp.source_address,
-                                        'lsp_state': lsp.lsp_state,
-                                        'route_count': lsp.route_count,
-                                        'rsb_count': lsp.rsb_count,
-                                        'resv_style': lsp.resv_style,
-                                        'label_in': lsp.label_in,
-                                        'label_out': lsp.label_out,
+                                        'lsp_state': lsp.lsp_state, 
+                                        'route_count': lsp.route_count, 
+                                        'rsb_count': lsp.rsb_count, 
+                                        'resv_style': lsp.resv_style, 
+                                        'label_in': lsp.label_in, 
+                                        'label_out': lsp.label_out, 
                                         'name': lsp.name
                                         })
             lsp_dict['transit'] = lsp_transit_lict
 
         else:
+
             lsp_dict = {}
 
             ingress_lsps = junos_views.junos_mpls_lsp_table_ingress(self.device)
@@ -2209,13 +2212,13 @@ class JunOSDriver(NetworkDriver):
                 if lsp.lsp_description == 'lsp-description':
                     lsp.lsp_description = ''
                 lsp_ingress_lict.append({
-                                            'destination_address': lsp.destination_address,
-                                            'source_address': lsp.source_address,
-                                            'lsp_state': lsp.lsp_state,
-                                            'route_count': lsp.route_count,
-                                            'active_path': lsp.active_path,
-                                            'is_primary': lsp.is_primary,
-                                            'name': lsp.name,
+                                            'destination_address': lsp.destination_address, 
+                                            'source_address': lsp.source_address, 
+                                            'lsp_state': lsp.lsp_state, 
+                                            'route_count': lsp.route_count, 
+                                            'active_path': lsp.active_path, 
+                                            'is_primary': lsp.is_primary, 
+                                            'name': lsp.name, 
                                             'lsp_description': lsp.lsp_description
                                             })
             lsp_dict['ingress'] = lsp_ingress_lict
@@ -2227,12 +2230,12 @@ class JunOSDriver(NetworkDriver):
                 lsp_egress_lict.append({
                                         'destination_address': lsp.destination_address,
                                         'source_address': lsp.source_address,
-                                        'lsp_state': lsp.lsp_state,
-                                        'route_count': lsp.route_count,
-                                        'rsb_count': lsp.rsb_count,
-                                        'resv_style': lsp.resv_style,
-                                        'label_in': lsp.label_in,
-                                        'label_out': lsp.label_out,
+                                        'lsp_state': lsp.lsp_state, 
+                                        'route_count': lsp.route_count, 
+                                        'rsb_count': lsp.rsb_count, 
+                                        'resv_style': lsp.resv_style, 
+                                        'label_in': lsp.label_in, 
+                                        'label_out': lsp.label_out, 
                                         'name': lsp.name
                                         })
             lsp_dict['egress'] = lsp_egress_lict
@@ -2244,12 +2247,12 @@ class JunOSDriver(NetworkDriver):
                 lsp_transit_lict.append({
                                         'destination_address': lsp.destination_address,
                                         'source_address': lsp.source_address,
-                                        'lsp_state': lsp.lsp_state,
-                                        'route_count': lsp.route_count,
-                                        'rsb_count': lsp.rsb_count,
-                                        'resv_style': lsp.resv_style,
-                                        'label_in': lsp.label_in,
-                                        'label_out': lsp.label_out,
+                                        'lsp_state': lsp.lsp_state, 
+                                        'route_count': lsp.route_count, 
+                                        'rsb_count': lsp.rsb_count, 
+                                        'resv_style': lsp.resv_style, 
+                                        'label_in': lsp.label_in, 
+                                        'label_out': lsp.label_out, 
                                         'name': lsp.name
                                         })
             lsp_dict['transit'] = lsp_transit_lict
