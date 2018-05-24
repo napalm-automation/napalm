@@ -1542,7 +1542,6 @@ class NetworkDriver(object):
             lsptype(string) - Type of LSP (ingress, egress, transit), default is all.
 
         Output dictionary has one of the following keys:
-
             * ingress
             * egress
             * transit
