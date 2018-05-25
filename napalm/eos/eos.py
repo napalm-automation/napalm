@@ -1129,7 +1129,7 @@ class EOSDriver(NetworkDriver):
                     for bgp_route_details in bgp_routes:
                         bgp_route = route.copy()
                         as_path = bgp_route_details.get('asPathEntry', {}).get('asPath', u'')
-                        remote_as = int(as_path.split()[-1])
+                        remote_as = int(as_path.strip("()").split()[-1])
                         remote_address = napalm.base.helpers.ip(bgp_route_details.get(
                             'routeDetail', {}).get('peerEntry', {}).get('peerAddr', ''))
                         local_preference = bgp_route_details.get('localPreference')
