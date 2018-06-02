@@ -1849,29 +1849,52 @@ class IOSDriver(NetworkDriver):
         All    1111.2222.3333    STATIC      CPU
         """
 
-        RE_MACTABLE_DEFAULT = r"^" + MAC_REGEX
-        RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 7 fields
-        RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 6 fields
-        RE_MACTABLE_6500_3 = r"^\s{51}\S+"                                      # Fill down prior
-        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(VLAN_REGEX, MAC_REGEX)  # Router field
-        RE_MACTABLE_6500_5 = r"^R\s+N/A\s+{}.*Router".format(MAC_REGEX)         # Router skipped
-        RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 5 fields
-        RE_MACTABLE_4500_2 = r"^\s{32,34}\S+"                                   # Fill down prior
-        RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)        # Matches PHY int
-        RE_MACTABLE_2960_1 = r"^All\s+{}".format(MAC_REGEX)
-        RE_MACTABLE_GEN_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)        # 4 fields-2960/4500
+        NOISE = ['Legend: * - primary entry',
+                 'age - seconds since last seen',
+                 '----',
+                 'n/a - not available',
+                 'Unicast Entries',
+                 'Multicast Entries',
+                 'Total Mac Addr',
+                 'Mac Address Table']
+
+        mac_address_table = []
+        header_indices = {}
+        vlan = mac = mac_type = interface = ''
+
+        command = IOS_COMMANDS['show_mac_address']
+        output = self._send_command(command)
 
         def process_mac_fields(vlan, mac, mac_type, interface):
-            """Return proper data for mac address fields."""
+            """
+            Return proper data for mac address fields.
+            """
+            # Non-dynamic type handler
             if mac_type.lower() in ['self', 'static', 'system']:
                 static = True
                 if vlan.lower() == 'all':
                     vlan = 0
+                # Check for phy and '-' in 'vlan'
+                # DISCUSS: Can the 'vlan' field be standardized for return?
+                if re.search(INT_REGEX, str(vlan)):
+                    interface = vlan
+                    vlan = -1
+                if '-' in str(vlan):
+                    vlan = 0
+                # Checking for Router, Switch or CPU in the interface field
                 if interface.lower() == 'cpu' or re.search(r'router', interface.lower()) or \
                         re.search(r'switch', interface.lower()):
                     interface = ''
+            # Other types...
             else:
                 static = False
+                # Check for phy and '-' in 'vlan'
+                # DISCUSS: Can the 'vlan' field be standardized for return?
+                if re.search(INT_REGEX, vlan):
+                    interface = vlan
+                    vlan = -1
+                if '-' in str(vlan):
+                    vlan = 0
 
             return {
                 'mac': napalm.base.helpers.mac(mac),
@@ -1883,117 +1906,73 @@ class IOSDriver(NetworkDriver):
                 'last_move': -1.0
             }
 
-        mac_address_table = []
-        command = IOS_COMMANDS['show_mac_address']
-        output = self._send_command(command)
+        for row in output.splitlines():
+            # Condition A: If row appears to be a header, split and index the column names
+            if 'address' in row.lower():
+                # COLUMN LAYOUT: Establish the column layout (header_indices) if the row is a header
+                # Condition 1: Matches nearly all test header rows
+                if re.search(r'vlan', row.lower()) and re.search(r'mac', row.lower()):
+                    # Split row by any whitespace NOT followed by 'address'
+                    split = re.split(r'\s+(?!address)', row.lower())
+                    header_indices = {'vlan': split.index(''.join(s for s in split if 'vlan' in s)),
+                            'mac': split.index(''.join(s for s in split if 'mac' in s)),
+                            'type': split.index(''.join(s for s in split if 'type' in s)),
+                            'port': split.index(''.join(s for s in split if 'port' in s))}
+                # Condition 2: the one-offs... normal and alt_show_cmd headers
+                elif re.search(r'Destination', row):
+                    # Split row by two or more whitespace characters
+                    split = re.split(r'\s{2,}', row.lower())
+                    header_indices = {'vlan': split.index(''.join(s for s in split if 'vlan' in s)),
+                            'mac': split.index(''.join(s for s in split if 'on ad' in s)),
+                            'type': split.index(''.join(s for s in split if 'type' in s)),
+                            'port': split.index(''.join(s for s in split if 'port' in s))}
+                # Condition 3: In case something else with 'address' appears
+                # In test files, only 'Total Mac Addresses for this criterion:' matches here
+                # For the moment, don't know if I should handle it explicitly or just move on...?
+                else:
+                    continue
 
-        # Skip the header lines
-        output = re.split(r'^----.*', output, flags=re.M)[1:]
-        output = "\n".join(output).strip()
-        # Strip any leading asterisks
-        output = re.sub(r"^\*", "", output, flags=re.M)
-        fill_down_vlan = fill_down_mac = fill_down_mac_type = ''
-        for line in output.splitlines():
-            # Cat6500 one off and 4500 multicast format
-            if (re.search(RE_MACTABLE_6500_3, line) or re.search(RE_MACTABLE_4500_2, line)):
-                interface = line.strip()
-                if ',' in interface:
-                    interfaces = interface.split(',')
-                else:
-                    interfaces = [interface]
-                for single_interface in interfaces:
-                    mac_address_table.append(process_mac_fields(fill_down_vlan, fill_down_mac,
-                                                                fill_down_mac_type,
-                                                                single_interface))
+            # Condition B: Skip any unwanted rows
+            # Uses a list of known junk rows called NOISE
+            elif ''.join(junk for junk in NOISE if junk in row.strip()) or row.strip() == '':
                 continue
-            line = line.strip()
-            if line == '':
-                continue
-            if re.search(r"^---", line):
-                # Convert any '---' to VLAN 0
-                line = re.sub(r"^---", "0", line, flags=re.M)
 
-            # Format1
-            if re.search(RE_MACTABLE_DEFAULT, line):
-                if len(line.split()) == 4:
-                    mac, mac_type, vlan, interface = line.split()
-                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-                else:
-                    raise ValueError("Unexpected output from: {}".format(line.split()))
-            # Cat6500 format
-            elif (re.search(RE_MACTABLE_6500_1, line) or re.search(RE_MACTABLE_6500_2, line)) and \
-                    len(line.split()) >= 6:
-                if len(line.split()) == 7:
-                    _, vlan, mac, mac_type, _, _, interface = line.split()
-                elif len(line.split()) == 6:
-                    vlan, mac, mac_type, _, _, interface = line.split()
-                if ',' in interface:
-                    interfaces = interface.split(',')
-                    fill_down_vlan = vlan
-                    fill_down_mac = mac
-                    fill_down_mac_type = mac_type
-                    for single_interface in interfaces:
-                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
-                                                                    single_interface))
-                else:
-                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            # Cat4500 format
-            elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 5:
-                vlan, mac, mac_type, _, interface = line.split()
-                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            # Cat4500 w/PHY interface in Mac Table. Vlan will be -1.
-            elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 5:
-                interface, mac, mac_type, _, _ = line.split()
-                interface = canonical_interface_name(interface)
-                vlan = '-1'
-                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            # Cat2960 format - ignore extra header line
-            elif re.search(r"^Vlan\s+Mac Address\s+", line):
-                continue
-            # Cat2960 format (Cat4500 format multicast entries)
-            elif (re.search(RE_MACTABLE_2960_1, line) or re.search(RE_MACTABLE_GEN_1, line)) and \
-                    len(line.split()) == 4:
-                vlan, mac, mac_type, interface = line.split()
-                if ',' in interface:
-                    interfaces = interface.split(',')
-                    fill_down_vlan = vlan
-                    fill_down_mac = mac
-                    fill_down_mac_type = mac_type
-                    for single_interface in interfaces:
-                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type,
-                                                                    single_interface))
-                else:
-                    mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            # 4500 in case of unused Vlan 1.
-            elif re.search(RE_MACTABLE_4500_1, line) and len(line.split()) == 3:
-                vlan, mac, mac_type = line.split()
-                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface=''))
-            # 4500 w/PHY interface in Multicast table. Vlan will be -1.
-            elif re.search(RE_MACTABLE_4500_3, line) and len(line.split()) == 4:
-                vlan, mac, mac_type, interface = line.split()
-                vlan = '-1'
-                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-            elif re.search(RE_MACTABLE_6500_4, line) and len(line.split()) == 7:
-                line = re.sub(r"^R\s+", "", line)
-                vlan, mac, mac_type, _, _, interface = line.split()
-                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-                continue
-            elif re.search(RE_MACTABLE_6500_5, line):
-                line = re.sub(r"^R\s+", "", line)
-                vlan, mac, mac_type, _, _, interface = line.split()
-                # Convert 'N/A' VLAN to to 0
-                vlan = re.sub(r"N/A", "0", vlan)
-                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
-                continue
-            elif re.search(r"Total Mac Addresses", line):
-                continue
-            elif re.search(r"Multicast Entries", line):
-                continue
-            elif re.search(r"vlan.*mac.*address.*type.*", line):
-                continue
+            # Condition C: Any other row... likeliest to contain desired data.
+            # Should this be before Condition B? Or should Condition B be attached at the end of this clause?
             else:
-                raise ValueError("Unexpected output from: {}".format(repr(line)))
-
+                # PARSE ROW:
+                # Condition 1 (COMMON): Look for a MAC address in row, determine the column offset, find needed details
+                if re.search(MAC_REGEX, row):
+                    mac_index = 0
+                    split = row.split()
+                    # Find distance between mac index and header_indices position in current row
+                    for x in split:
+                        if re.search(MAC_REGEX, x):
+                            mac_index = split.index(x)
+                    offset = (mac_index - header_indices['mac'])
+                    # Load variables
+                    vlan = split[(header_indices['vlan'] + offset)]
+                    mac = split[(header_indices['mac'] + offset)]
+                    mac_type = split[(header_indices['type'] + offset)]
+                    # Test for NULL in the interface column (Yuk)
+                    if len(row.split()) < len(header_indices):
+                        interface = ''
+                    else:
+                        interface = split[(header_indices['port'] + offset)]
+                    # Test for multiple interfaces within 'interface'
+                    if ',' in interface:
+                        for iface in interface.split(','):
+                            mac_address_table.append(process_mac_fields(vlan, mac, mac_type, iface))
+                    else:
+                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                # Condition 2: For when there are multiple interfaces with one associated mac
+                elif re.search(r'^\s{32,51}\S+', row):
+                    interfaces = row.lstrip().split(',')
+                    for iface in interfaces:
+                        mac_address_table.append(process_mac_fields(vlan, mac, mac_type, iface))
+                # NO MATCH AT ALL (Raise Exception)
+                else:
+                    raise ValueError("Unexpected output from: {}".format(repr(row)))
         return mac_address_table
 
     def get_probes_config(self):
