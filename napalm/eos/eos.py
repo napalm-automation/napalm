@@ -124,7 +124,7 @@ class EOSDriver(NetworkDriver):
             # and this is raised either if device not avaiable
             # either if HTTP(S) agent is not enabled
             # show management api http-commands
-            raise ConnectionException(ce.message)
+            raise ConnectionException(py23_compat.text_type(ce))
 
     def close(self):
         """Implementation of NAPALM method close."""
@@ -231,10 +231,11 @@ class EOSDriver(NetworkDriver):
                 self.device.run_commands(commands)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
+            msg = py23_compat.text_type(e)
             if replace:
-                raise ReplaceConfigException(e.message)
+                raise ReplaceConfigException(msg)
             else:
-                raise MergeConfigException(e.message)
+                raise MergeConfigException(msg)
 
     def load_replace_candidate(self, filename=None, config=None):
         """Implementation of NAPALM method load_replace_candidate."""
@@ -942,7 +943,8 @@ class EOSDriver(NetworkDriver):
         try:
             interfaces_ipv6_out = self.device.run_commands(['show ipv6 interface'])[0]['interfaces']
         except pyeapi.eapilib.CommandError as e:
-            if 'No IPv6 configured interfaces' in e.message:
+            msg = py23_compat.text_type(e)
+            if 'No IPv6 configured interfaces' in msg:
                 interfaces_ipv6_out = {}
             else:
                 raise
@@ -1127,7 +1129,7 @@ class EOSDriver(NetworkDriver):
                     for bgp_route_details in bgp_routes:
                         bgp_route = route.copy()
                         as_path = bgp_route_details.get('asPathEntry', {}).get('asPath', u'')
-                        remote_as = int(as_path.split()[-1])
+                        remote_as = int(as_path.strip("()").split()[-1])
                         remote_address = napalm.base.helpers.ip(bgp_route_details.get(
                             'routeDetail', {}).get('peerEntry', {}).get('peerAddr', ''))
                         local_preference = bgp_route_details.get('localPreference')
