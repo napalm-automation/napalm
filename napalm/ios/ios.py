@@ -24,6 +24,7 @@ import socket
 import tempfile
 import telnetlib
 import copy
+from collections import defaultdict
 
 from netmiko import FileTransfer, InLineTransfer
 from napalm.base.base import NetworkDriver
@@ -65,6 +66,20 @@ ASN_REGEX = r"[\d\.]+"
 
 IOS_COMMANDS = {
    'show_mac_address': ['show mac-address-table', 'show mac address-table'],
+}
+
+AFI_COMMAND_MAP = {
+    'IPv4 Unicast': 'ipv4 unicast',
+    'IPv6 Unicast': 'ipv6 unicast',
+    'VPNv4 Unicast': 'vpnv4 all',
+    'VPNv6 Unicast': 'vpnv6 unicast all',
+    'IPv4 Multicast': 'ipv4 multicast',
+    'IPv6 Multicast': 'ipv6 multicast',
+    'L2VPN E-VPN': 'l2vpn evpn',
+    'MVPNv4 Unicast': 'ipv4 mvpn all',
+    'MVPNv6 Unicast': 'ipv6 mvpn all',
+    'VPNv4 Flowspec': 'ipv4 flowspec',
+    'VPNv6 Flowspec': 'ipv6 flowspec',
 }
 
 
@@ -1477,6 +1492,104 @@ class IOSDriver(NetworkDriver):
                     'sent_prefixes': sent_prefixes
                 }
         return bgp_neighbor_data
+
+    def get_bgp_neighbors_detail(self, neighbor_address=''):
+        bgp_detail = defaultdict(lambda: defaultdict(lambda: []))
+
+        raw_bgp_sum = self._send_command('show ip bgp all sum').strip()
+        bgp_sum = napalm.base.helpers.textfsm_extractor(
+            self, 'ip_bgp_all_sum', raw_bgp_sum)
+        for neigh in bgp_sum:
+            if neighbor_address and neighbor_address != neigh['neighbor']:
+                continue
+            raw_bgp_neigh = self._send_command('show ip bgp {} neigh {}'.format(
+                AFI_COMMAND_MAP[neigh['addr_family']], neigh['neighbor']))
+            bgp_neigh = napalm.base.helpers.textfsm_extractor(
+                self, 'ip_bgp_neigh', raw_bgp_neigh)[0]
+            details = {
+                'up': neigh['up'] != 'never',
+                'local_as': napalm.base.helpers.as_number(neigh['local_as']),
+                'remote_as': napalm.base.helpers.as_number(neigh['remote_as']),
+                'router_id': napalm.base.helpers.ip(
+                    bgp_neigh['router_id']) if bgp_neigh['router_id'] else '',
+                'local_address': napalm.base.helpers.ip(
+                    bgp_neigh['local_address']) if bgp_neigh['local_address'] else '',
+                'local_address_configured': False,
+                'local_port': napalm.base.helpers.as_number(
+                    bgp_neigh['local_port']) if bgp_neigh['local_port'] else 0,
+                'routing_table': bgp_neigh['vrf'] if bgp_neigh['vrf'] else 'global',
+                'remote_address': napalm.base.helpers.ip(bgp_neigh['neighbor']),
+                'remote_port': napalm.base.helpers.as_number(
+                    bgp_neigh['remote_port']) if bgp_neigh['remote_port'] else 0,
+                'multihop': False,
+                'multipath': False,
+                'remove_private_as': False,
+                'import_policy': '',
+                'export_policy': '',
+                'input_messages': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_total_in']) if bgp_neigh['msg_total_in'] else 0,
+                'output_messages': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_total_out']) if bgp_neigh['msg_total_out'] else 0,
+                'input_updates': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_update_in']) if bgp_neigh['msg_update_in'] else 0,
+                'output_updates': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_update_out']) if bgp_neigh['msg_update_out'] else 0,
+                'messages_queued_out': napalm.base.helpers.as_number(neigh['out_q']),
+                'connection_state': bgp_neigh['bgp_state'],
+                'previous_connection_state': '',
+                'last_event': '',
+                'suppress_4byte_as': (
+                    bgp_neigh['four_byte_as'] != 'advertised and received' if
+                    bgp_neigh['four_byte_as'] else False),
+                'local_as_prepend': False,
+                'holdtime': napalm.base.helpers.as_number(
+                    bgp_neigh['holdtime']) if bgp_neigh['holdtime'] else 0,
+                'configured_holdtime': 0,
+                'keepalive': napalm.base.helpers.as_number(
+                    bgp_neigh['keepalive']) if bgp_neigh['keepalive'] else 0,
+                'configured_keepalive': 0,
+                'active_prefix_count': 0,
+                'received_prefix_count': 0,
+                'accepted_prefix_count': 0,
+                'suppressed_prefix_count': 0,
+                'advertised_prefix_count': 0,
+                'flap_count': 0,
+            }
+
+            bgp_neigh_afi = napalm.base.helpers.textfsm_extractor(
+                self, 'ip_bgp_neigh_afi', raw_bgp_neigh)
+            if len(bgp_neigh_afi) > 1:
+                bgp_neigh_afi = bgp_neigh_afi[1]
+                details.update({
+                    'local_address_configured': bgp_neigh_afi['local_addr_conf'] != '',
+                    'multipath': bgp_neigh_afi['multipaths'] != '0',
+                    'import_policy': bgp_neigh_afi['policy_in'],
+                    'export_policy': bgp_neigh_afi['policy_out'],
+                    'last_event': (
+                        bgp_neigh_afi['last_event'] if
+                        bgp_neigh_afi['last_event'] != 'never' else ''),
+                    'active_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['bestpaths']),
+                    'received_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['prefix_curr_in']) + napalm.base.helpers.as_number(
+                            bgp_neigh_afi['rejected_prefix_in']),
+                    'accepted_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['prefix_curr_in']),
+                    'suppressed_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['rejected_prefix_in']),
+                    'advertised_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['prefix_curr_out']),
+                    'flap_count': napalm.base.helpers.as_number(bgp_neigh_afi['flap_count'])
+                })
+            else:
+                bgp_neigh_afi = bgp_neigh_afi[0]
+                details.update({
+                    'import_policy': bgp_neigh_afi['policy_in'],
+                    'export_policy': bgp_neigh_afi['policy_out'],
+                })
+            bgp_detail[details['routing_table']][
+                details['remote_as']].append(details)
+        return bgp_detail
 
     def get_interfaces_counters(self):
         """
