@@ -1,0 +1,23 @@
+Power Supply:
+Voltage: 12 Volts
+Power                             Actual      Actual        Total
+Supply    Model                   Output      Input      Capacity    Status
+                                (Watts )    (Watts )     (Watts )
+-------  -------------------  ----------  ----------  ----------  --------------
+1        NXA-PAC-650W-PI             0 W         0 W         0 W     Shutdown  
+2        NXA-PAC-650W-PI            95 W       110 W       650 W     Ok        
+
+
+Power Usage Summary:
+--------------------
+Power Supply redundancy mode (configured)                PS-Redundant
+Power Supply redundancy mode (operational)               Non-Redundant
+
+Total Power Capacity (based on configured mode)             650.00 W
+Total Grid-A (first half of PS slots) Power Capacity          0.00 W
+Total Grid-B (second half of PS slots) Power Capacity       650.00 W
+Total Power of all Inputs (cumulative)                      650.00 W
+Total Power Output (actual draw)                             95.00 W
+Total Power Input (actual draw)                             110.00 W
+Total Power Allocated (budget)                                N/A   
+Total Power Available for additional modules                  N/A
