@@ -30,8 +30,8 @@ from netaddr import IPNetwork
 from netmiko import FileTransfer, InLineTransfer
 from napalm.base.base import NetworkDriver
 from napalm.base.netmiko_helpers import netmiko_args
-from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
-            ConnectionClosedException, CommandErrorException
+from napalm.base.exceptions import ReplaceConfigException, \
+    MergeConfigException, ConnectionClosedException, CommandErrorException
 
 from napalm.base.utils import py23_compat
 import napalm.base.constants as C
@@ -83,10 +83,11 @@ AFI_COMMAND_MAP = {
     'VPNv6 Flowspec': 'ipv6 flowspec',
 }
 
+
 def bgp_time_conversion(bgp_uptime):
         """
         Copied from rom nxos_ssh.py
-        
+
         Convert string time to seconds.
         Examples
         00:14:23
@@ -2202,7 +2203,7 @@ class IOSDriver(NetworkDriver):
         """
         vrfs = []
 
-        if ipv not in ['','4','6']:
+        if ipv not in ['', '4', '6']:
             return(vrfs)
         command = 'show vrf'
         output = self._send_command(command)
@@ -2210,39 +2211,26 @@ class IOSDriver(NetworkDriver):
         out_lines = output.split('\n')
 
         for line in out_lines[1:]:
-            vrfstr = re.match(r"[ ]+(\S+)[ ]+[<> a-z:0-9]+[ ]+([a-z0-9,]+)",line)
+            vrfstr = re.match(r"[ ]+(\S+)[ ]+[<> a-z:0-9]+[ ]+([a-z0-9,]+)", line)
             if vrfstr:
                 if ipv == '' or ipv in vrfstr.group(2):
                     vrfs.append(vrfstr.group(1))
-        
         return(vrfs)
-
-
-
-
-
-
 
     def get_route_to(self, destination='', protocol=''):
         """
         """
-
-        
         output = []
         bgpas = ''      # local BGP AS
-
         # Placeholder for vrf arg
         vrf = ''
-
         try:
             ipv = ''
             if IPNetwork(destination).version == 6:
                 ipv = 'v6'
         except AddrFormatError:
             return 'Please specify a valid destination!'
-        
         if ipv == '':           # IPv4
-            
             if vrf == '':
                 vrfs = sorted(self._get_vrfs('4'))
             else:
@@ -2251,7 +2239,7 @@ class IOSDriver(NetworkDriver):
             ipnet_dest = IPNetwork(destination)
             prefix = str(ipnet_dest.network)
             netmask = str(ipnet_dest.netmask)
-            routes = {destination:[]}
+            routes = {destination: []}
             commands = []
             for _vrf in vrfs:
                 if _vrf == 'default':
@@ -2268,7 +2256,6 @@ class IOSDriver(NetworkDriver):
             for cmditem in commands:
                 outvrf = self._send_command(cmditem)
                 output.append(outvrf)
-            
             for (outitem, _vrf) in zip(output, vrfs):
                 route_proto_regex = re.search('Known via \"(\S+)', outitem)
                 if route_proto_regex:
@@ -2288,42 +2275,37 @@ class IOSDriver(NetworkDriver):
                         if matchstr:
                             rmetric = matchstr.group(1)
                             route_entry = {
-                                "protocol":route_proto,
-                                "outgoing_interface":napalm.base.helpers.canonical_interface_name(viaraw),
-                                "age":bgp_time_conversion(ageraw),
-                                "current_active":True,
-                                "routing_table":_vrf,
-                                "last_active":False,
-                                "protocol_attributes":{  
-                        
+                                "protocol": route_proto,
+                                "outgoing_interface": napalm.base.helpers.canonical_interface_name(viaraw),
+                                "age": bgp_time_conversion(ageraw),
+                                "current_active": True,
+                                "routing_table": _vrf,
+                                "last_active": False,
+                                "protocol_attributes": {                
                                 },
-                                "next_hop":napalm.base.helpers.ip(nh),
-                                "selected_next_hop":False,
-                                "inactive_reason":"",
-                                "preference":int(rmetric)
+                                "next_hop": napalm.base.helpers.ip(nh),
+                                "selected_next_hop": False,
+                                "inactive_reason": "",
+                                "preference": int(rmetric)
                             }
                             if protocol == '' or protocol == route_entry['protocol']:
                                 if route_proto == 'bgp':
                                     if not bgpas:
-                                        outbgp = self._send_command('show ip protocol | inc bgp')           # find local AS number
+                                        outbgp = self._send_command('show ip protocols | include bgp')           # find local AS number
                                         matchbgpattr = re.search(r"Routing Protocol is \"bgp ([0-9]+)", outbgp)
                                         if matchbgpattr:
                                             bgpas = matchbgpattr.group(1)
 
                                     if _vrf == 'default':
-                                        bgpcmd = 'sh ip bgp {destination}'.format(destination=destination)
+                                        bgpcmd = 'show ip bgp {destination}'.format(destination=destination)
                                     else:
-                                        bgpcmd = 'sh ip bgp vpnv4 vrf {vrf} {destination}'.format(vrf=_vrf, destination=destination)
+                                        bgpcmd = 'show ip bgp vpnv4 vrf {vrf} {destination}'.format(vrf=_vrf, destination=destination)
                                     outbgp = self._send_command(bgpcmd)
-                                    outbgpsec =  outbgp.split('Refresh Epoch')
+                                    outbgpsec = outbgp.split('Refresh Epoch')
                                     for bgppath in outbgpsec[1:]:
                                         matchbgpattr = re.search(r"best", bgppath)
-                                        if matchbgpattr:
-                                            bgpbest = True
-                                        else:
-                                            bgpbest = False
-                                            continue        # only best path is added to protocol attributes
-                                        
+                                        if not matchbgpattr:
+                                            continue        # only best path is added to protocol attributes                       
                                         bgppathlines = bgppath.split('\n')
                                         matchpath = re.match(r"^[ ]+([0-9 ]+)$", bgppathlines[1])
                                         if matchpath:           # AS-PATH found
@@ -2333,8 +2315,8 @@ class IOSDriver(NetworkDriver):
                                                 bgpnh = matchbgpattr.group(1)
                                             else:
                                                 bgpnh = ''
-                                            if bgpnh != nh: # check if next hop from routing table is the same as next hop from sh ip bgp
-                                                continue    # ... if not continue with processing of next path
+                                            if bgpnh != nh:     # check if next hop from routing table is the same as next hop from sh ip bgp
+                                                continue        # ... if not continue with processing of next path
                                             matchbgpattr = re.search(r"from (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})", bgppathlines[2])
                                             if matchbgpattr:
                                                 bgpfrom = matchbgpattr.group(1)
@@ -2352,9 +2334,9 @@ class IOSDriver(NetworkDriver):
                                                 bgplp = ''
 
                                             if _vrf == 'default':
-                                                bgpcmd = 'sh ip bgp neighbor | inc is {neigh}'.format(neigh=bgpnh)
+                                                bgpcmd = 'show ip bgp neighbors | include is {neigh}'.format(neigh=bgpnh)
                                             else:
-                                                bgpcmd = 'sh ip bgp vpnv4 vrf {vrf} neighbor | inc is {neigh}'.format(vrf=_vrf, neigh=bgpnh)
+                                                bgpcmd = 'show ip bgp vpnv4 vrf {vrf} neighbors | include is {neigh}'.format(vrf=_vrf, neigh=bgpnh)
                                             outbgpnei = self._send_command(bgpcmd)
                                             matchbgpattr = re.search(r"remote AS ([0-9]+)", outbgpnei)
                                             if matchbgpattr:
@@ -2364,18 +2346,13 @@ class IOSDriver(NetworkDriver):
 
                                             route_entry['protocol_attributes'] = {
                                                 "as_path": bgpaspathlist,
-                                                "remote_address":bgpfrom,
-                                                "communities":bgpcomm,
-                                                "local_preference":int(bgplp),
-                                                "remote_as":int(bgpras),
-                                                "local_as":int(bgpas)
+                                                "remote_address": bgpfrom,
+                                                "communities": bgpcomm,
+                                                "local_preference": int(bgplp),
+                                                "remote_as": napalm.base.helpers.as_number(bgpras),
+                                                "local_as": napalm.base.helpers.as_number(bgpas)
 
                                             }
-
-                                            
-
-                                    
-
                                 routes[destination].append(route_entry)
         return(routes)
 
