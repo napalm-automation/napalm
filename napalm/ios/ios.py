@@ -2219,23 +2219,106 @@ class IOSDriver(NetworkDriver):
                     vrfs.append(vrfstr.group(1))
         return(vrfs)
 
-    def get_route_to(self, destination='', protocol=''):
+    def _get_bgp_route_attr(self, destination, vrf, next_hop):
         """
+        Descr
         """
         #    10.105.113.164 (metric 3840) (via vrf TEST) from 10.105.113.164 (10.105.113.242)
         RE_NH_BGP = r"^[ ]+("+IP_ADDR_REGEX+r")"
-        #  * 10.105.113.164, from 10.105.113.164, 1w6d ago
-        RE_RDB1 = r"[ ]+([*| ]?)[ ]("+IP_ADDR_REGEX+r"), from " + IP_ADDR_REGEX + \
-            r", ([\ddhwy:]+) ago(, via (\S+))?"
         # Routing Protocol is "bgp 65417"
         RE_RP_BGP = r"Routing Protocol is \"bgp (\d+)"
-        # 10.105.49.101 (via vrf TEST) from 10.105.49.101 (10.106.0.174)
         RE_BGP_FROM = r"from ("+IP_ADDR_REGEX+r")"
         CMD_SHIBN = 'show ip bgp neighbors | include is {neigh}'
         CMD_SHIBNV = 'show ip bgp vpnv4 vrf {vrf} neighbors | include is {neigh}'
+        
+        bgp_attr = {}
+        # find local AS number
+        outbgp = \
+            self._send_command('show ip protocols | include bgp')
+        matchbgpattr = re.search(RE_RP_BGP, outbgp)
+        if matchbgpattr:
+            bgpas = matchbgpattr.group(1)
+
+        if vrf == 'default':
+            bgpcmd = 'show ip bgp {destination}'.\
+                format(destination=destination)
+        else:
+            bgpcmd = 'show ip bgp vpnv4 vrf {vrf} {destination}'.\
+                format(vrf=vrf, destination=destination)
+        outbgp = self._send_command(bgpcmd)
+        outbgpsec = outbgp.split('Refresh Epoch')
+        # process all bgp paths
+        for bgppath in outbgpsec[1:]:
+            matchbgpattr = re.search(r"best", bgppath)
+            if not matchbgpattr:
+                # only best path is added to protocol attributes
+                continue
+            bgppathlines = bgppath.split('\n')
+            matchpath = re.match(r"^[ ]+([\d\(\) ]+)$", bgppathlines[1])
+            if matchpath:           # AS-PATH found
+                bgpaspathlist = matchpath.group(1)
+            else:
+                bgpaspathlist = []  # Local prefix
+            matchbgpattr = re.search(RE_NH_BGP, bgppathlines[2])
+            if matchbgpattr:
+                bgpnh = matchbgpattr.group(1)
+            else:
+                bgpnh = ''
+            # check if next hop from routing
+            # table is the same as next hop from sh ip bgp
+            if bgpnh != next_hop:
+                # ... if not continue with processing of next path
+                continue
+            matchbgpattr = \
+                re.search(RE_BGP_FROM, bgppathlines[2])
+            if matchbgpattr:
+                bgpfrom = matchbgpattr.group(1)
+            else:
+                bgpfrom = ''
+            matchbgpattr = \
+                re.search(r"Community: ([RT\:\d ]+)", bgppath)
+            if matchbgpattr:
+                bgpcomm = matchbgpattr.group(1).split()
+            else:
+                bgpcomm = ''
+            matchbgpattr = re.search(r"localpref (\d+)", bgppath)
+            if matchbgpattr:
+                bgplp = matchbgpattr.group(1)
+            else:
+                bgplp = ''
+
+            if vrf == 'default':
+                bgpcmd = CMD_SHIBN.format(neigh=bgpnh)
+            else:
+                bgpcmd = CMD_SHIBNV.format(vrf=vrf, neigh=bgpnh)
+            outbgpnei = self._send_command(bgpcmd)
+            matchbgpattr = \
+                re.search(r"remote AS ("+ASN_REGEX+r")", outbgpnei)
+            if matchbgpattr:
+                bgpras = matchbgpattr.group(1)
+            else:
+                bgpras = ''
+
+            bgp_attr = {
+                "as_path": bgpaspathlist,
+                "remote_address": bgpfrom,
+                "communities": bgpcomm,
+                "local_preference": int(bgplp),
+                "remote_as": napalm.base.helpers.as_number(bgpras),
+                "local_as": napalm.base.helpers.as_number(bgpas)
+
+            }
+        return bgp_attr
+
+    def get_route_to(self, destination='', protocol=''):
+        """
+        """
+
+        #  * 10.105.113.164, from 10.105.113.164, 1w6d ago
+        RE_RDB1 = r"[ ]+([*| ]?)[ ]("+IP_ADDR_REGEX+r"), from " + IP_ADDR_REGEX + \
+            r", ([\ddhwy:]+) ago(, via (\S+))?"
 
         output = []
-        bgpas = ''      # local BGP AS
         # Placeholder for vrf arg
         vrf = ''
         try:
@@ -2314,83 +2397,8 @@ class IOSDriver(NetworkDriver):
                             # was not specified
                             if protocol == '' or protocol == route_entry['protocol']:
                                 if route_proto == 'bgp':
-                                    if not bgpas:
-                                        # find local AS number
-                                        outbgp = \
-                                            self._send_command('show ip protocols | include bgp')
-                                        matchbgpattr = re.search(RE_RP_BGP, outbgp)
-                                        if matchbgpattr:
-                                            bgpas = matchbgpattr.group(1)
-
-                                    if _vrf == 'default':
-                                        bgpcmd = 'show ip bgp {destination}'.\
-                                            format(destination=destination)
-                                    else:
-                                        bgpcmd = 'show ip bgp vpnv4 vrf {vrf} {destination}'.\
-                                            format(vrf=_vrf, destination=destination)
-                                    outbgp = self._send_command(bgpcmd)
-                                    outbgpsec = outbgp.split('Refresh Epoch')
-                                    # process all bgp paths
-                                    for bgppath in outbgpsec[1:]:
-                                        matchbgpattr = re.search(r"best", bgppath)
-                                        if not matchbgpattr:
-                                            # only best path is added to protocol attributes
-                                            continue
-                                        bgppathlines = bgppath.split('\n')
-                                        matchpath = re.match(r"^[ ]+([\d\(\) ]+)$", bgppathlines[1])
-                                        if matchpath:           # AS-PATH found
-                                            bgpaspathlist = matchpath.group(1)
-                                        else:
-                                            bgpaspathlist = []  # Local prefix
-                                        matchbgpattr = re.search(RE_NH_BGP, bgppathlines[2])
-                                        if matchbgpattr:
-                                            bgpnh = matchbgpattr.group(1)
-                                        else:
-                                            bgpnh = ''
-                                        # check if next hop from routing
-                                        # table is the same as next hop from sh ip bgp
-                                        if bgpnh != nh:
-                                            # ... if not continue with processing of next path
-                                            continue
-                                        matchbgpattr = \
-                                            re.search(RE_BGP_FROM, bgppathlines[2])
-                                        if matchbgpattr:
-                                            bgpfrom = matchbgpattr.group(1)
-                                        else:
-                                            bgpfrom = ''
-                                        matchbgpattr = \
-                                            re.search(r"Community: ([RT\:\d ]+)", bgppath)
-                                        if matchbgpattr:
-                                            bgpcomm = matchbgpattr.group(1).split()
-                                        else:
-                                            bgpcomm = ''
-                                        matchbgpattr = re.search(r"localpref (\d+)", bgppath)
-                                        if matchbgpattr:
-                                            bgplp = matchbgpattr.group(1)
-                                        else:
-                                            bgplp = ''
-
-                                        if _vrf == 'default':
-                                            bgpcmd = CMD_SHIBN.format(neigh=bgpnh)
-                                        else:
-                                            bgpcmd = CMD_SHIBNV.format(vrf=_vrf, neigh=bgpnh)
-                                        outbgpnei = self._send_command(bgpcmd)
-                                        matchbgpattr = \
-                                            re.search(r"remote AS ("+ASN_REGEX+r")", outbgpnei)
-                                        if matchbgpattr:
-                                            bgpras = matchbgpattr.group(1)
-                                        else:
-                                            bgpras = ''
-
-                                        route_entry['protocol_attributes'] = {
-                                            "as_path": bgpaspathlist,
-                                            "remote_address": bgpfrom,
-                                            "communities": bgpcomm,
-                                            "local_preference": int(bgplp),
-                                            "remote_as": napalm.base.helpers.as_number(bgpras),
-                                            "local_as": napalm.base.helpers.as_number(bgpas)
-
-                                        }
+                                    route_entry['protocol_attributes'] = \
+                                        self._get_bgp_route_attr(destination, _vrf, nh)
                                 nh_line_found = False  # for next RT entry processing ...
                                 routes[destination].append(route_entry)
         return(routes)
