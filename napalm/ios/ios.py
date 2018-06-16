@@ -2206,7 +2206,7 @@ class IOSDriver(NetworkDriver):
 
         if ipv not in ['', '4', '6']:
             return(vrfs)
-        command = 'show vrf'
+        command = 'show ip vrf'
         output = self._send_command(command)
 
         out_lines = output.split('\n')
@@ -2224,7 +2224,7 @@ class IOSDriver(NetworkDriver):
         Descr
         """
         #    10.105.113.164 (metric 3840) (via vrf TEST) from 10.105.113.164 (10.105.113.242)
-        RE_NH_BGP = r"^[ ]+("+IP_ADDR_REGEX+r")"
+        RE_NH_BGP = r"[^|\\n][ ]{4}("+IP_ADDR_REGEX+r")"
         # Routing Protocol is "bgp 65417"
         RE_RP_BGP = r"Routing Protocol is \"bgp (\d+)"
         RE_BGP_FROM = r"from ("+IP_ADDR_REGEX+r")"
@@ -2246,7 +2246,26 @@ class IOSDriver(NetworkDriver):
             bgpcmd = 'show ip bgp vpnv4 vrf {vrf} {destination}'.\
                 format(vrf=vrf, destination=destination)
         outbgp = self._send_command(bgpcmd)
-        outbgpsec = outbgp.split('Refresh Epoch')
+        if 'Refresh Epoch' in outbgp:
+            outbgpsec = outbgp.split('Refresh Epoch')
+        else:   # sections are not separated by 'Refresh Epoch' string
+            outbgpsec = []
+            outbgplines = outbgp.split('\n')
+            sec_borders = ['0']
+            process_line = 0
+            for bgpline in outbgplines:
+                # find line with AS-PATH
+                if re.match(r"^[ ]{2}([\d\(]([\d\) ]+)|Local)", bgpline):
+                    sec_borders.append(process_line)
+                process_line += 1
+            nritems = len(sec_borders)
+            for item in range(0, nritems):
+                if item == nritems-1:
+                    block = '\n'.join(outbgplines[int(sec_borders[item]):])
+                else:
+                    block = '\n'.join(outbgplines[int(sec_borders[item]):int(sec_borders[item+1])-1])
+                outbgpsec.append(block)
+         
         # process all bgp paths
         for bgppath in outbgpsec[1:]:
             matchbgpattr = re.search(r"best", bgppath)
@@ -2254,12 +2273,12 @@ class IOSDriver(NetworkDriver):
                 # only best path is added to protocol attributes
                 continue
             bgppathlines = bgppath.split('\n')
-            matchpath = re.match(r"^[ ]+([\d\(\) ]+)$", bgppathlines[1])
+            matchpath = re.search(r"[^|\\n][ ]{2}([\d\(\) ]+)", bgppath)
             if matchpath:           # AS-PATH found
                 bgpaspathlist = matchpath.group(1)
             else:
                 bgpaspathlist = []  # Local prefix
-            matchbgpattr = re.search(RE_NH_BGP, bgppathlines[2])
+            matchbgpattr = re.search(RE_NH_BGP, bgppath)
             if matchbgpattr:
                 bgpnh = matchbgpattr.group(1)
             else:
@@ -2270,7 +2289,7 @@ class IOSDriver(NetworkDriver):
                 # ... if not continue with processing of next path
                 continue
             matchbgpattr = \
-                re.search(RE_BGP_FROM, bgppathlines[2])
+                re.search(RE_BGP_FROM, bgppath)
             if matchbgpattr:
                 bgpfrom = matchbgpattr.group(1)
             else:
@@ -2315,8 +2334,8 @@ class IOSDriver(NetworkDriver):
         """
 
         #  * 10.105.113.164, from 10.105.113.164, 1w6d ago
-        RE_RDB1 = r"[ ]+([*| ]?)[ ]("+IP_ADDR_REGEX+r"), from " + IP_ADDR_REGEX + \
-            r", ([\ddhwy:]+) ago(, via (\S+))?"
+        RE_RDB1 = r"[ ]{2}([*| ])[ ]("+IP_ADDR_REGEX+r")(, from " + IP_ADDR_REGEX + \
+            r", ([\ddhwy:]+) ago(, via (\S+))?)?"
 
         output = []
         # Placeholder for vrf arg
@@ -2336,6 +2355,8 @@ class IOSDriver(NetworkDriver):
             ipnet_dest = IPNetwork(destination)
             prefix = str(ipnet_dest.network)
             netmask = str(ipnet_dest.netmask)
+            # prefix = '0.0.0.0'
+            # netmask = '0.0.0.0'
             routes = {destination: []}
             commands = []
             for _vrf in vrfs:
@@ -2354,7 +2375,7 @@ class IOSDriver(NetworkDriver):
                 outvrf = self._send_command(cmditem)
                 output.append(outvrf)
             for (outitem, _vrf) in zip(output, vrfs):   # for all VRFs
-                route_proto_regex = re.search(r'Known via \"(\S+)', outitem)
+                route_proto_regex = re.search(r'Known via \"([a-z]+)[ \"]', outitem)
                 if route_proto_regex:
                     # routing protocol name (bgp, ospf, ...)
                     route_proto = route_proto_regex.group(1)
@@ -2365,23 +2386,28 @@ class IOSDriver(NetworkDriver):
                         matchstr = re.match(RE_RDB1, rdbline)
                         if matchstr:
                             nh = matchstr.group(2)
-                            ageraw = matchstr.group(3)
+                            ageraw = matchstr.group(4)
+                            if not ageraw:
+                                ageraw = ''
                             # line with next hop, age, etc. found
                             nh_line_found = True
-                            if route_proto != "bgp":
-                                viaraw = matchstr.group(5)
-                            else:
+                            viaraw = matchstr.group(5)
+                            if not viaraw:
                                 viaraw = ''
                             continue
                         # process next line
                         matchstr = re.match(r"[ ]+Route metric is (\d+)", rdbline)
                         if matchstr and nh_line_found:
                             rmetric = matchstr.group(1)
+                            if ageraw:
+                                age = bgp_time_conversion(ageraw)
+                            else:
+                                age = ''
                             route_entry = {
                                 "protocol": route_proto,
                                 "outgoing_interface":
                                     napalm.base.helpers.canonical_interface_name(viaraw),
-                                "age": bgp_time_conversion(ageraw),
+                                "age": age,
                                 "current_active": True,
                                 "routing_table": _vrf,
                                 "last_active": True,
