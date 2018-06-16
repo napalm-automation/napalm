@@ -2231,6 +2231,34 @@ class IOSDriver(NetworkDriver):
         CMD_SHIBN = 'show ip bgp neighbors | include is {neigh}'
         CMD_SHIBNV = 'show ip bgp vpnv4 vrf {vrf} neighbors | include is {neigh}'
         
+        search_re_dict = {
+            'aspath': {
+                're': r"[^|\\n][ ]{2}([\d\(\) ]+)",
+                'group': 1,
+                'default':''
+            },
+            'bgpnh' : {
+                're': RE_NH_BGP,
+                'group': 1,
+                'default':''
+            },
+            'bgpfrom' : {
+                're': RE_BGP_FROM,
+                'group': 1,
+                'default': ''
+            },
+            'bgpcomm' : {
+                're': r"Community: ([RT\:\d ]+)",
+                'group': 1,
+                'default': ''
+            },
+            'bgplp': {
+                're': r"localpref (\d+)",
+                'group': 1,
+                'default': ''
+            }
+            
+        }
         bgp_attr = {}
         # find local AS number
         outbgp = \
@@ -2272,40 +2300,15 @@ class IOSDriver(NetworkDriver):
             if not matchbgpattr:
                 # only best path is added to protocol attributes
                 continue
-            bgppathlines = bgppath.split('\n')
-            matchpath = re.search(r"[^|\\n][ ]{2}([\d\(\) ]+)", bgppath)
-            if matchpath:           # AS-PATH found
-                bgpaspathlist = matchpath.group(1)
-            else:
-                bgpaspathlist = []  # Local prefix
-            matchbgpattr = re.search(RE_NH_BGP, bgppath)
-            if matchbgpattr:
-                bgpnh = matchbgpattr.group(1)
-            else:
-                bgpnh = ''
-            # check if next hop from routing
-            # table is the same as next hop from sh ip bgp
-            if bgpnh != next_hop:
-                # ... if not continue with processing of next path
-                continue
-            matchbgpattr = \
-                re.search(RE_BGP_FROM, bgppath)
-            if matchbgpattr:
-                bgpfrom = matchbgpattr.group(1)
-            else:
-                bgpfrom = ''
-            matchbgpattr = \
-                re.search(r"Community: ([RT\:\d ]+)", bgppath)
-            if matchbgpattr:
-                bgpcomm = matchbgpattr.group(1).split()
-            else:
-                bgpcomm = ''
-            matchbgpattr = re.search(r"localpref (\d+)", bgppath)
-            if matchbgpattr:
-                bgplp = matchbgpattr.group(1)
-            else:
-                bgplp = ''
-
+            
+            for key in search_re_dict:
+                matchre = re.search(search_re_dict[key]['re'], bgppath)
+                if matchre:
+                    groupnr = int(search_re_dict[key]['group'])
+                    search_re_dict[key]['result'] = matchre.group(groupnr)
+                else:
+                    search_re_dict[key]['result'] = search_re_dict[key]['default']
+            bgpnh = search_re_dict['bgpnh']['result']
             if vrf == 'default':
                 bgpcmd = CMD_SHIBN.format(neigh=bgpnh)
             else:
@@ -2317,12 +2320,12 @@ class IOSDriver(NetworkDriver):
                 bgpras = matchbgpattr.group(1)
             else:
                 bgpras = ''
-
+            
             bgp_attr = {
-                "as_path": bgpaspathlist,
-                "remote_address": bgpfrom,
-                "communities": bgpcomm,
-                "local_preference": int(bgplp),
+                "as_path": search_re_dict['aspath']['result'],
+                "remote_address": search_re_dict['bgpfrom']['result'],
+                "communities": search_re_dict['bgpcomm']['result'].split(),
+                "local_preference": int(search_re_dict['bgplp']['result']),
                 "remote_as": napalm.base.helpers.as_number(bgpras),
                 "local_as": napalm.base.helpers.as_number(bgpas)
 
