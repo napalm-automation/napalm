@@ -2200,54 +2200,59 @@ class IOSDriver(NetworkDriver):
     def _get_vrfs(self, ipv=''):
         """
         Returns list of all VRFs or VRFs where ipv4 or ipv6 is configured
-        param ipv can contain '','4' or '6'
+        param ipv can contain '','v4' or 'v6'
         """
         vrfs = []
 
-        if ipv not in ['', '4', '6']:
+        if ipv not in ['', 'v4', 'v6']:
             return(vrfs)
-        command = 'show ip vrf'
+        command = 'show vrf'
         output = self._send_command(command)
 
-        out_lines = output.split('\n')
-
-        for line in out_lines[1:]:
-            #   TEST                             65417:2               ipv4,ipv6
-            vrfstr = re.match(r"[ ]+(\S+)[ ]+[<> a-z:\d]+[ ]+([a-z\d,]+)", line)
-            if vrfstr:
-                if ipv == '' or ipv in vrfstr.group(2):
+        if '% Invalid input detected' in output:
+            # 'sh vrf' command is not supported
+            # try 'sh ip vrf' command and return all vrf names regardless of ip version ...
+            command = 'show ip vrf'
+            output = self._send_command(command)
+            out_lines = output.split('\n')
+            for line in out_lines[1:]:
+                vrfstr = re.match(r"[ ]{2}(\S+)", line)
+                if vrfstr:
                     vrfs.append(vrfstr.group(1))
+        else:
+            out_lines = output.split('\n')
+            for line in out_lines[1:]:
+                #   TEST                             65417:2               ipv4,ipv6
+                vrfstr = re.match(r"[ ]{2}(\S+)[ ]+[<> a-z:\d]+[ ]+([a-z\d,]+)", line)
+                if vrfstr:
+                    if ipv == '' or ipv in vrfstr.group(2):
+                        vrfs.append(vrfstr.group(1))
         return(vrfs)
 
-    def _get_bgp_route_attr(self, destination, vrf, next_hop):
+    def _get_bgp_route_attr(self, destination, vrf, next_hop, ipv='v4'):
         """
         Descr
         """
-        #    10.105.113.164 (metric 3840) (via vrf TEST) from 10.105.113.164 (10.105.113.242)
-        RE_NH_BGP = r"[^|\\n][ ]{4}("+IP_ADDR_REGEX+r")"
-        # Routing Protocol is "bgp 65417"
-        RE_RP_BGP = r"Routing Protocol is \"bgp (\d+)"
-        RE_BGP_FROM = r"from ("+IP_ADDR_REGEX+r")"
         CMD_SHIBN = 'show ip bgp neighbors | include is {neigh}'
         CMD_SHIBNV = 'show ip bgp vpnv4 vrf {vrf} neighbors | include is {neigh}'
-        
+
         search_re_dict = {
             'aspath': {
-                're': r"[^|\\n][ ]{2}([\d\(\) ]+)",
-                'group': 1,
-                'default':''
-            },
-            'bgpnh' : {
-                're': RE_NH_BGP,
-                'group': 1,
-                'default':''
-            },
-            'bgpfrom' : {
-                're': RE_BGP_FROM,
+                're': r"[^|\\n]{2}([\d\(\)]([ \d\(\) ])*)",
                 'group': 1,
                 'default': ''
             },
-            'bgpcomm' : {
+            'bgpnh': {
+                're': r"[^|\\n][ ]{4}("+IP_ADDR_REGEX+r")",
+                'group': 1,
+                'default': ''
+            },
+            'bgpfrom': {
+                're': r"from ("+IP_ADDR_REGEX+r")",
+                'group': 1,
+                'default': ''
+            },
+            'bgpcomm': {
                 're': r"Community: ([RT\:\d ]+)",
                 'group': 1,
                 'default': ''
@@ -2257,79 +2262,83 @@ class IOSDriver(NetworkDriver):
                 'group': 1,
                 'default': ''
             }
-            
+
         }
         bgp_attr = {}
         # find local AS number
         outbgp = \
             self._send_command('show ip protocols | include bgp')
-        matchbgpattr = re.search(RE_RP_BGP, outbgp)
+        matchbgpattr = re.search(r"Routing Protocol is \"bgp (\d+)", outbgp)
         if matchbgpattr:
             bgpas = matchbgpattr.group(1)
-
-        if vrf == 'default':
-            bgpcmd = 'show ip bgp {destination}'.\
-                format(destination=destination)
-        else:
-            bgpcmd = 'show ip bgp vpnv4 vrf {vrf} {destination}'.\
-                format(vrf=vrf, destination=destination)
-        outbgp = self._send_command(bgpcmd)
-        if 'Refresh Epoch' in outbgp:
-            outbgpsec = outbgp.split('Refresh Epoch')
-        else:   # sections are not separated by 'Refresh Epoch' string
-            outbgpsec = []
-            outbgplines = outbgp.split('\n')
-            sec_borders = ['0']
-            process_line = 0
-            for bgpline in outbgplines:
-                # find line with AS-PATH
-                if re.match(r"^[ ]{2}([\d\(]([\d\) ]+)|Local)", bgpline):
-                    sec_borders.append(process_line)
-                process_line += 1
-            nritems = len(sec_borders)
-            for item in range(0, nritems):
-                if item == nritems-1:
-                    block = '\n'.join(outbgplines[int(sec_borders[item]):])
-                else:
-                    block = '\n'.join(outbgplines[int(sec_borders[item]):int(sec_borders[item+1])-1])
-                outbgpsec.append(block)
-         
-        # process all bgp paths
-        for bgppath in outbgpsec[1:]:
-            matchbgpattr = re.search(r"best", bgppath)
-            if not matchbgpattr:
-                # only best path is added to protocol attributes
-                continue
-            
-            for key in search_re_dict:
-                matchre = re.search(search_re_dict[key]['re'], bgppath)
-                if matchre:
-                    groupnr = int(search_re_dict[key]['group'])
-                    search_re_dict[key]['result'] = matchre.group(groupnr)
-                else:
-                    search_re_dict[key]['result'] = search_re_dict[key]['default']
-            bgpnh = search_re_dict['bgpnh']['result']
+        if ipv == 'v4':
             if vrf == 'default':
-                bgpcmd = CMD_SHIBN.format(neigh=bgpnh)
+                bgpcmd = 'show ip bgp {destination}'.\
+                    format(destination=destination)
             else:
-                bgpcmd = CMD_SHIBNV.format(vrf=vrf, neigh=bgpnh)
-            outbgpnei = self._send_command(bgpcmd)
-            matchbgpattr = \
-                re.search(r"remote AS ("+ASN_REGEX+r")", outbgpnei)
-            if matchbgpattr:
-                bgpras = matchbgpattr.group(1)
-            else:
-                bgpras = ''
-            
-            bgp_attr = {
-                "as_path": search_re_dict['aspath']['result'],
-                "remote_address": search_re_dict['bgpfrom']['result'],
-                "communities": search_re_dict['bgpcomm']['result'].split(),
-                "local_preference": int(search_re_dict['bgplp']['result']),
-                "remote_as": napalm.base.helpers.as_number(bgpras),
-                "local_as": napalm.base.helpers.as_number(bgpas)
+                bgpcmd = 'show ip bgp vpnv4 vrf {vrf} {destination}'.\
+                    format(vrf=vrf, destination=destination)
+            outbgp = self._send_command(bgpcmd)
+            if 'Refresh Epoch' in outbgp:
+                outbgpsec = outbgp.split('Refresh Epoch')
+            else:   # sections are not separated by 'Refresh Epoch' string
+                outbgpsec = []
+                outbgplines = outbgp.split('\n')
+                sec_bord = ['0']
+                process_line = 0
+                for bgpline in outbgplines:
+                    # find line with AS-PATH
+                    if re.match(r"^[ ]{2}([\d\(]([\d\) ]+)|Local)", bgpline):
+                        sec_bord.append(process_line)
+                    process_line += 1
+                nritems = len(sec_bord)
+                for item in range(0, nritems):
+                    if item == nritems-1:
+                        block = '\n'.join(outbgplines[int(sec_bord[item]):])
+                    else:
+                        block = \
+                            '\n'.join(outbgplines[int(sec_bord[item]):int(sec_bord[item+1])-1])
+                    # hack to have the same format of block as with 'Refresh epoch' split
+                    block = '\n' + block
+                    outbgpsec.append(block)
 
-            }
+            # process all bgp paths
+            for bgppath in outbgpsec[1:]:
+                matchbgpattr = re.search(r"best", bgppath)
+                if not matchbgpattr:
+                    # only best path is added to protocol attributes
+                    continue
+                # find BGP attributes
+                for key in search_re_dict:
+                    matchre = re.search(search_re_dict[key]['re'], bgppath)
+                    if matchre:
+                        groupnr = int(search_re_dict[key]['group'])
+                        search_re_dict[key]['result'] = matchre.group(groupnr)
+                    else:
+                        search_re_dict[key]['result'] = search_re_dict[key]['default']
+                bgpnh = search_re_dict['bgpnh']['result']
+                # find remote AS nr. of this neighbor
+                if vrf == 'default':
+                    bgpcmd = CMD_SHIBN.format(neigh=bgpnh)
+                else:
+                    bgpcmd = CMD_SHIBNV.format(vrf=vrf, neigh=bgpnh)
+                outbgpnei = self._send_command(bgpcmd)
+                matchbgpattr = \
+                    re.search(r"remote AS ("+ASN_REGEX+r")", outbgpnei)
+                if matchbgpattr:
+                    bgpras = matchbgpattr.group(1)
+                else:
+                    bgpras = ''
+
+                bgp_attr = {
+                    "as_path": search_re_dict['aspath']['result'],
+                    "remote_address": search_re_dict['bgpfrom']['result'],
+                    "communities": search_re_dict['bgpcomm']['result'].split(),
+                    "local_preference": int(search_re_dict['bgplp']['result']),
+                    "remote_as": napalm.base.helpers.as_number(bgpras),
+                    "local_as": napalm.base.helpers.as_number(bgpas)
+
+                }
         return bgp_attr
 
     def get_route_to(self, destination='', protocol=''):
@@ -2349,9 +2358,15 @@ class IOSDriver(NetworkDriver):
                 ipv = 'v6'
         except AddrFormatError:
             return 'Please specify a valid destination!'
-        if ipv == '':           # process IPv4 routing table
+        try:
+            ipv = ''
+            if IPNetwork(destination).version == 4:
+                ipv = 'v4'
+        except AddrFormatError:
+            return 'Please specify a valid destination!'
+        if ipv == 'v4':           # process IPv4 routing table
             if vrf == '':
-                vrfs = sorted(self._get_vrfs('4'))
+                vrfs = sorted(self._get_vrfs(ipv))
             else:
                 vrfs = [vrf]    # VRFs where IPv4 is enabled
             vrfs.append('default')  # global VRF
@@ -2403,6 +2418,7 @@ class IOSDriver(NetworkDriver):
                         if matchstr and nh_line_found:
                             rmetric = matchstr.group(1)
                             if ageraw:
+                                # 3w4d -> secs
                                 age = bgp_time_conversion(ageraw)
                             else:
                                 age = ''
@@ -2427,7 +2443,7 @@ class IOSDriver(NetworkDriver):
                             if protocol == '' or protocol == route_entry['protocol']:
                                 if route_proto == 'bgp':
                                     route_entry['protocol_attributes'] = \
-                                        self._get_bgp_route_attr(destination, _vrf, nh)
+                                        self._get_bgp_route_attr(destination, _vrf, nh, ipv)
                                 nh_line_found = False  # for next RT entry processing ...
                                 routes[destination].append(route_entry)
         return(routes)
