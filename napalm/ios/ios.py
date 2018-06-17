@@ -2238,7 +2238,7 @@ class IOSDriver(NetworkDriver):
 
         search_re_dict = {
             'aspath': {
-                're': r"[^|\\n]{2}([\d\(\)]([ \d\(\) ])*)",
+                're': r"[^|\\n][ ]{2}([\d\(\)]([\d\(\) ])*)",
                 'group': 1,
                 'default': ''
             },
@@ -2309,6 +2309,7 @@ class IOSDriver(NetworkDriver):
                     # only best path is added to protocol attributes
                     continue
                 # find BGP attributes
+                # print(bgppath)
                 for key in search_re_dict:
                     matchre = re.search(search_re_dict[key]['re'], bgppath)
                     if matchre:
@@ -2326,19 +2327,21 @@ class IOSDriver(NetworkDriver):
                 matchbgpattr = \
                     re.search(r"remote AS ("+ASN_REGEX+r")", outbgpnei)
                 if matchbgpattr:
+                    # !!! predelat, remote AS z AS-PATH stringu !!!
                     bgpras = matchbgpattr.group(1)
                 else:
-                    bgpras = ''
+                    bgpras = ''     # route leaked from other vrf?
 
                 bgp_attr = {
                     "as_path": search_re_dict['aspath']['result'],
                     "remote_address": search_re_dict['bgpfrom']['result'],
                     "communities": search_re_dict['bgpcomm']['result'].split(),
                     "local_preference": int(search_re_dict['bgplp']['result']),
-                    "remote_as": napalm.base.helpers.as_number(bgpras),
                     "local_as": napalm.base.helpers.as_number(bgpas)
 
                 }
+                if bgpras:
+                    bgp_attr['remote_as'] = napalm.base.helpers.as_number(bgpras)
         return bgp_attr
 
     def get_route_to(self, destination='', protocol=''):
