@@ -38,7 +38,6 @@ from jnpr.junos.exception import ConnectTimeoutError
 from jnpr.junos.exception import LockError as JnprLockError
 from jnpr.junos.exception import UnlockError as JnrpUnlockError
 
-# import NAPALM Base
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
 from napalm.base.utils import py23_compat
@@ -66,6 +65,7 @@ class JunOSDriver(NetworkDriver):
 
         Optional args:
             * config_lock (True/False): lock configuration DB after the connection is established.
+            * config_private (True/False): use juniper configure private command, without locking the DB
             * port (int): custom port
             * key_file (string): SSH key file path
             * keepalive (int): Keepalive interval
@@ -88,6 +88,7 @@ class JunOSDriver(NetworkDriver):
         self.keepalive = optional_args.get('keepalive', 30)
         self.ssh_config_file = optional_args.get('ssh_config_file', None)
         self.ignore_warning = optional_args.get('ignore_warning', False)
+        self.config_private = optional_args.get('config_private', False)
 
         if self.key_file:
             self.device = Device(hostname,
@@ -206,7 +207,7 @@ class JunOSDriver(NetworkDriver):
             with open(filename) as f:
                 configuration = f.read()
 
-        if not self.config_lock:
+        if not self.config_lock and self.config_private is False:
             # if not locked during connection time
             # will try to lock it if not already aquired
             self._lock()
@@ -217,7 +218,12 @@ class JunOSDriver(NetworkDriver):
 
             if fmt == "xml":
                 configuration = etree.XML(configuration)
-
+            if self.config_private:
+                try:
+                    self.device.rpc.open_configuration(private=True, normalize=True)
+                except RpcError as e:
+                    if e.message == "uncommitted changes will be discarded on exit":
+                        pass
             self.device.cu.load(configuration, format=fmt, overwrite=overwrite,
                                 ignore_warning=self.ignore_warning)
         except ConfigLoadError as e:
