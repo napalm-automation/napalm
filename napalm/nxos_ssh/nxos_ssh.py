@@ -837,14 +837,14 @@ class NXOSSSHDriver(NXOSDriverBase):
             # Module   Sensor        MajorThresh   MinorThres   CurTemp     Status
             # 1        Intake          70              42          28         Ok
             if re.match(r'^[0-9]', line):
-                _, _, is_critical, is_alert, temp, _ = line.split()
+                module, sensor, is_critical, is_alert, temp, _ = line.split()
                 is_critical = float(is_critical)
                 is_alert = float(is_alert)
                 temp = float(temp)
                 env_value = {'is_alert': temp >= is_alert,
                              'is_critical': temp >= is_critical,
                              'temperature': temp}
-                location = line.split()[1]
+                location = '{0}-{1}'.format(sensor, module)
                 environment['temperature'][location] = env_value
 
         # Initialize 'power' and 'fan' to default values (not implemented)
