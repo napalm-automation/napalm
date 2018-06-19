@@ -38,6 +38,7 @@ from jnpr.junos.exception import ConnectTimeoutError
 from jnpr.junos.exception import LockError as JnprLockError
 from jnpr.junos.exception import UnlockError as JnrpUnlockError
 
+# import NAPALM Base
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
 from napalm.base.utils import py23_compat
@@ -65,7 +66,7 @@ class JunOSDriver(NetworkDriver):
 
         Optional args:
             * config_lock (True/False): lock configuration DB after the connection is established.
-            * config_private (True/False): use juniper configure private command, without locking the DB
+            * config_private (True/False): juniper configure private command, no DB locking
             * port (int): custom port
             * key_file (string): SSH key file path
             * keepalive (int): Keepalive interval
