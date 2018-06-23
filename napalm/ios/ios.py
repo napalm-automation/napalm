@@ -2199,7 +2199,8 @@ class IOSDriver(NetworkDriver):
 
     def _get_vrfs(self, ipv=''):
         """
-        Returns list of all VRFs (if ipv='') or VRFs which have ipv4 (ipv='v4') or ipv6 (ipv='v6') is configured
+        Returns list of all VRFs (if ipv='') or VRFs which have ipv4 (ipv='v4') or
+        ipv6 (ipv='v6') is configured
         param ipv can contain '','v4' or 'v6'
         """
         vrfs = []
@@ -2231,7 +2232,8 @@ class IOSDriver(NetworkDriver):
 
     def _get_bgp_route_attr(self, destination, vrf, next_hop, ipv='v4'):
         """
-        Returns bgp attributes of specific prefix. Result is used as a value of 'protocol_attributes' key used in get_route_to function 
+        Returns bgp attributes of specific prefix. Result is used as a value
+        of 'protocol_attributes' key used in get_route_to function
         """
         CMD_SHIBN = 'show ip bgp neighbors | include is {neigh}'
         CMD_SHIBNV = 'show ip bgp vpnv4 vrf {vrf} neighbors | include is {neigh}'
@@ -2336,7 +2338,6 @@ class IOSDriver(NetworkDriver):
                 matchbgpattr = \
                     re.search(r"remote AS ("+ASN_REGEX+r")", outbgpnei)
                 if matchbgpattr:
-                    # !!! predelat, remote AS z AS-PATH stringu !!!
                     bgpras = matchbgpattr.group(1)
                 else:
                     # next-hop is not known in this vrf, route leaked from
@@ -2349,7 +2350,7 @@ class IOSDriver(NetworkDriver):
                         bgpras = bgpas
                 # community + extended community
                 bothcomm = search_re_dict['bgpcomm']['result']+' ' + \
-                    search_re_dict['bgpexcomm']['result']   
+                    search_re_dict['bgpexcomm']['result']
                 bgp_attr = {
                     "as_path": search_re_dict['aspath']['result'],
                     "remote_address": search_re_dict['bgpfrom']['result'],
