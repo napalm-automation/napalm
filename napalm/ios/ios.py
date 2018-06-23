@@ -2330,7 +2330,9 @@ class IOSDriver(NetworkDriver):
                     # !!! predelat, remote AS z AS-PATH stringu !!!
                     bgpras = matchbgpattr.group(1)
                 else:
-                    bgpras = ''     # route leaked from other vrf?
+                    # leftmost AS from AS-PATH
+                    bgpras = search_re_dict['aspath']['result'].split(' ')[0].replace('(', '')
+                    # bgpras = ''     # route leaked from other vrf?
 
                 bgp_attr = {
                     "as_path": search_re_dict['aspath']['result'],
@@ -2349,8 +2351,9 @@ class IOSDriver(NetworkDriver):
         """
 
         #  * 10.105.113.164, from 10.105.113.164, 1w6d ago
-        RE_RDB1 = r"[ ]{2}([*| ])[ ]("+IP_ADDR_REGEX+r")(, from " + IP_ADDR_REGEX + \
-            r", ([\ddhwy:]+) ago(, via (\S+))?)?"
+        #  * 10.33.4.10 (default), from 10.33.4.10, 2w2d ago 
+        RE_RDB1 = r"[ ]{2}([*| ])[ ]("+IP_ADDR_REGEX+r")( [\(\)a-z\d\.]+)?(, from " + \
+            IP_ADDR_REGEX + r", ([\ddhwy:]+) ago(, via (\S+))?)?"
 
         output = []
         # Placeholder for vrf arg
@@ -2407,15 +2410,24 @@ class IOSDriver(NetworkDriver):
                         matchstr = re.match(RE_RDB1, rdbline)
                         if matchstr:
                             nh = matchstr.group(2)
-                            ageraw = matchstr.group(4)
+                            ageraw = matchstr.group(5)
                             if not ageraw:
                                 ageraw = ''
                             # line with next hop, age, etc. found
                             nh_line_found = True
-                            viaraw = matchstr.group(5)
+                            viaraw = matchstr.group(7)
                             if not viaraw:
                                 viaraw = ''
                             continue
+                        elif route_proto == 'connected':
+                            #  * directly connected, via Vlan781
+                            matchstr = re.search(r"via (\S+)", rdbline)
+                            if matchstr:
+                                viaraw = matchstr.group(1)
+                                ageraw = ''
+                                nh = ''
+                                # interface is like next hop in this case ...
+                                nh_line_found = True
                         # process next line
                         matchstr = re.match(r"[ ]+Route metric is (\d+)", rdbline)
                         if matchstr and nh_line_found:
@@ -2435,7 +2447,7 @@ class IOSDriver(NetworkDriver):
                                 "last_active": True,
                                 "protocol_attributes": {
                                     },
-                                "next_hop": napalm.base.helpers.ip(nh),
+                                "next_hop": nh,
                                 "selected_next_hop": True,
                                 "inactive_reason": "",
                                 "preference": int(rmetric)
