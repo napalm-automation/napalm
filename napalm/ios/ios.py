@@ -2199,7 +2199,7 @@ class IOSDriver(NetworkDriver):
 
     def _get_vrfs(self, ipv=''):
         """
-        Returns list of all VRFs or VRFs where ipv4 or ipv6 is configured
+        Returns list of all VRFs (if ipv='') or VRFs which have ipv4 (ipv='v4') or ipv6 (ipv='v6') is configured
         param ipv can contain '','v4' or 'v6'
         """
         vrfs = []
@@ -2231,7 +2231,7 @@ class IOSDriver(NetworkDriver):
 
     def _get_bgp_route_attr(self, destination, vrf, next_hop, ipv='v4'):
         """
-        Descr
+        Returns bgp attributes of specific prefix. Result is used as a value of 'protocol_attributes' key used in get_route_to function 
         """
         CMD_SHIBN = 'show ip bgp neighbors | include is {neigh}'
         CMD_SHIBNV = 'show ip bgp vpnv4 vrf {vrf} neighbors | include is {neigh}'
@@ -2253,7 +2253,12 @@ class IOSDriver(NetworkDriver):
                 'default': ''
             },
             'bgpcomm': {
-                're': r"Community: ([RT\:\d ]+)",
+                're': r"  Community: ([RT\:\d ]+)",
+                'group': 1,
+                'default': ''
+            },
+            'bgpexcomm': {
+                're': r"Extended Community: ([RT\:\d ]+)",
                 'group': 1,
                 'default': ''
             },
@@ -2261,6 +2266,11 @@ class IOSDriver(NetworkDriver):
                 're': r"localpref (\d+)",
                 'group': 1,
                 'default': ''
+            },
+            'bgpie': {
+                're': r"(external)",
+                'group': 1,
+                'default': 'internal'
             }
 
         }
@@ -2309,7 +2319,6 @@ class IOSDriver(NetworkDriver):
                     # only best path is added to protocol attributes
                     continue
                 # find BGP attributes
-                # print(bgppath)
                 for key in search_re_dict:
                     matchre = re.search(search_re_dict[key]['re'], bgppath)
                     if matchre:
@@ -2330,14 +2339,21 @@ class IOSDriver(NetworkDriver):
                     # !!! predelat, remote AS z AS-PATH stringu !!!
                     bgpras = matchbgpattr.group(1)
                 else:
-                    # leftmost AS from AS-PATH
-                    bgpras = search_re_dict['aspath']['result'].split(' ')[0].replace('(', '')
-                    # bgpras = ''     # route leaked from other vrf?
-
+                    # next-hop is not known in this vrf, route leaked from
+                    # other vrf or from vpnv4 table?
+                    # get remote AS nr. from as-path if it is neighbor is ebgp
+                    # localy sourced prefix is not in routing table as a bgp route (i hope...)
+                    if search_re_dict['bgpie']['result'] == 'external':
+                        bgpras = search_re_dict['aspath']['result'].split(' ')[0].replace('(', '')
+                    else:
+                        bgpras = bgpas
+                # community + extended community
+                bothcomm = search_re_dict['bgpcomm']['result']+' ' + \
+                    search_re_dict['bgpexcomm']['result']   
                 bgp_attr = {
                     "as_path": search_re_dict['aspath']['result'],
                     "remote_address": search_re_dict['bgpfrom']['result'],
-                    "communities": search_re_dict['bgpcomm']['result'].split(),
+                    "communities": bothcomm.split(),
                     "local_preference": int(search_re_dict['bgplp']['result']),
                     "local_as": napalm.base.helpers.as_number(bgpas)
 
@@ -2348,10 +2364,42 @@ class IOSDriver(NetworkDriver):
 
     def get_route_to(self, destination='', protocol=''):
         """
+        Only IPv4 is supported
+        VRFs are supported
+
+        Output example:
+
+        {
+            "1.0.4.0/24": [
+                {
+                    "protocol": "bgp",
+                    "outgoing_interface": "",
+                    "age": 1123200,
+                    "current_active": true,
+                    "routing_table": "TEST",
+                    "last_active": true,
+                    "protocol_attributes": {
+                        "as_path": "65201 8244 3269 65020 65017",
+                        "remote_address": "10.105.113.164",
+                        "communities": [
+                            "RT:65417:2"
+                        ],
+                        "local_preference": 100,
+                        "remote_as": 65417,
+                        "local_as": 65417
+                    },
+                    "next_hop": "10.105.113.164",
+                    "selected_next_hop": true,
+                    "inactive_reason": "",
+                    "preference": 0
+                }
+            ]
+        }
         """
 
         #  * 10.105.113.164, from 10.105.113.164, 1w6d ago
-        #  * 10.33.4.10 (default), from 10.33.4.10, 2w2d ago 
+        #  * 10.33.4.10 (default), from 10.33.4.10, 2w2d ago
+        #    19.22.18.4, from 19.22.18.4, 7w0d ago, via GigabitEthernet0/2
         RE_RDB1 = r"[ ]{2}([*| ])[ ]("+IP_ADDR_REGEX+r")( [\(\)a-z\d\.]+)?(, from " + \
             IP_ADDR_REGEX + r", ([\ddhwy:]+) ago(, via (\S+))?)?"
 
@@ -2379,8 +2427,6 @@ class IOSDriver(NetworkDriver):
             ipnet_dest = IPNetwork(destination)
             prefix = str(ipnet_dest.network)
             netmask = str(ipnet_dest.netmask)
-            # prefix = '0.0.0.0'
-            # netmask = '0.0.0.0'
             routes = {destination: []}
             commands = []
             for _vrf in vrfs:
@@ -2426,7 +2472,7 @@ class IOSDriver(NetworkDriver):
                                 viaraw = matchstr.group(1)
                                 ageraw = ''
                                 nh = ''
-                                # interface is like next hop in this case ...
+                                # outgoing interface (via) is like next hop in this case ...
                                 nh_line_found = True
                         # process next line
                         matchstr = re.match(r"[ ]+Route metric is (\d+)", rdbline)
