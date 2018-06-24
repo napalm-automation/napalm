@@ -1,2 +1,2 @@
   Name                             Default RD          Interfaces
-  Test                             <not set>
+  TEST                             <not set>
