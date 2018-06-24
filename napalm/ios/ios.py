@@ -2200,7 +2200,7 @@ class IOSDriver(NetworkDriver):
     def _get_vrfs(self, ipv=''):
         """
         Returns list of all VRFs (if ipv='') or VRFs which have ipv4 (ipv='v4') or
-        ipv6 (ipv='v6') is configured
+        ipv6 (ipv='v6') configured
         param ipv can contain '','v4' or 'v6'
         """
         vrfs = []
