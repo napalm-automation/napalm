@@ -2401,8 +2401,9 @@ class IOSDriver(NetworkDriver):
         #  * 10.105.113.164, from 10.105.113.164, 1w6d ago
         #  * 10.33.4.10 (default), from 10.33.4.10, 2w2d ago
         #    19.22.18.4, from 19.22.18.4, 7w0d ago, via GigabitEthernet0/2
+        #  * 10.106.14.157, via Vlan406
         RE_RDB1 = r"[ ]{2}([*| ])[ ]("+IP_ADDR_REGEX+r")( [\(\)a-z\d\.]+)?(, from " + \
-            IP_ADDR_REGEX + r", ([\ddhwy:]+) ago(, via (\S+))?)?"
+            IP_ADDR_REGEX + r", ([\ddhwy:]+) ago)?(, via (\S+))?"
 
         output = []
         # Placeholder for vrf arg
