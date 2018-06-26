@@ -2363,7 +2363,7 @@ class IOSDriver(NetworkDriver):
                     bgp_attr['remote_as'] = napalm.base.helpers.as_number(bgpras)
         return bgp_attr
 
-    def get_route_to(self, destination='', protocol='', longer=False):
+    def get_route_to(self, destination='', protocol=''):
         """
         Only IPv4 is supported
         VRFs are supported
@@ -2408,8 +2408,6 @@ class IOSDriver(NetworkDriver):
         output = []
         # Placeholder for vrf arg
         vrf = ''
-        if longer:
-            raise NotImplementedError("Longer prefixes not yet supported for IOS")
         try:
             ipv = ''
             if IPNetwork(destination).version == 6:
