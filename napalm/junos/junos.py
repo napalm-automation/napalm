@@ -749,6 +749,7 @@ class JunOSDriver(NetworkDriver):
                 'default': rpc_call_with_information,
                 'EX9208': rpc_call_without_information,
                 'EX3400': rpc_call_without_information,
+                'EX4300-48P': rpc_call_without_information,
                 'EX4600-40F': rpc_call_without_information,
                 'QFX5110-48S-4C': rpc_call_without_information,
                 'QFX10002-36Q': rpc_call_without_information,
