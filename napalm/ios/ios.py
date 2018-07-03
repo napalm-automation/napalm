@@ -701,9 +701,14 @@ class IOSDriver(NetworkDriver):
         for intf_name, entries in neighbors_detail.items():
             lldp[intf_name] = []
             for lldp_entry in entries:
+                hostname = lldp_entry['remote_system_name']
+                # Match IOS behaviour of taking remote chassis ID
+                # When lacking a system name (in show lldp neighbors)
+                if hostname == "N/A":
+                    hostname = lldp_entry['remote_chassis_id']
                 lldp_dict = {
                     'port': lldp_entry['remote_port'],
-                    'hostname': lldp_entry['remote_system_name'],
+                    'hostname': hostname,
                 }
                 lldp[intf_name].append(lldp_dict)
 
@@ -768,6 +773,7 @@ class IOSDriver(NetworkDriver):
                 lldp_interfaces = [x[20:20+15].strip() for x in lldp_brief.strip().splitlines()]
             except IndexError:
                 return {}
+
         for idx, lldp_entry in enumerate(lldp_entries):
             try:
                 if local_intf_detected:
