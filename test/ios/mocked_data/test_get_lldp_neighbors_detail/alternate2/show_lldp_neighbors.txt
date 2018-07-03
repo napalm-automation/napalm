@@ -6,5 +6,5 @@ Device ID           Local Intf     Hold-time  Capability      Port ID
 switch1             Fa0/24         120        B               Fa0/19
 480f.cf28.8a1b      Fa0/17         3601                       480f.cf28.8a1b
 
-Total entries displayed: 3
+Total entries displayed: 2
 
