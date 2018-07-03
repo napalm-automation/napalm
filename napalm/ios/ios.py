@@ -715,7 +715,8 @@ class IOSDriver(NetworkDriver):
         port_description = re.search(r"Port Description\s*?[:-]\s+(.+)", lldp_entry)
         chassis_id = re.search(r"Chassis id\s*?[:-]\s+(.+)", lldp_entry)
         system_name = re.search(r"System Name\s*?[:-]\s+(.+)", lldp_entry)
-        system_descr = re.search(r"System Description\s*?[:-]\s*(not advertised|\s*\n.+)", lldp_entry)
+        system_descr = re.search(r"System Description\s*?[:-]\s*(not advertised|\s*\n.+)",
+                                 lldp_entry)
         system_capab = re.search(r"System Capabilities\s*?[:-]\s+(.+)", lldp_entry)
         enabled_capab = re.search(r"Enabled Capabilities\s*?[:-]\s+(.+)", lldp_entry)
 
