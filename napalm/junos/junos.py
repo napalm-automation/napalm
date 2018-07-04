@@ -190,6 +190,8 @@ class JunOSDriver(NetworkDriver):
             'protect',
             'rename',
             'unprotect',
+            'edit',
+            'top',
         ]
         if config.strip().startswith('<'):
             return 'xml'
