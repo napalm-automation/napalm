@@ -16,27 +16,27 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import functools
-import re
-import os
-import uuid
-import socket
-import tempfile
-import telnetlib
 import copy
+import functools
+import os
+import re
+import socket
+import telnetlib
+import tempfile
+import uuid
 from collections import defaultdict
 
 from netmiko import FileTransfer, InLineTransfer
-from napalm.base.base import NetworkDriver
-from napalm.base.netmiko_helpers import netmiko_args
-from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
-            ConnectionClosedException, CommandErrorException
 
-from napalm.base.utils import py23_compat
 import napalm.base.constants as C
 import napalm.base.helpers
+from napalm.base.base import NetworkDriver
+from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
+    ConnectionClosedException, CommandErrorException
 from napalm.base.helpers import canonical_interface_name
-
+from napalm.base.helpers import textfsm_extractor
+from napalm.base.netmiko_helpers import netmiko_args
+from napalm.base.utils import py23_compat
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
@@ -714,45 +714,16 @@ class IOSDriver(NetworkDriver):
 
         return lldp
 
-    def _lldp_detail_parser(self, lldp_entry):
-        # Cisco generally use : for string divider, but sometimes has ' - '
-        port_id = re.search(r"Port id\s*?[:-]\s+(.+)", lldp_entry)
-        port_description = re.search(r"Port Description\s*?[:-]\s+(.+)", lldp_entry)
-        chassis_id = re.search(r"Chassis id\s*?[:-]\s+(.+)", lldp_entry)
-        system_name = re.search(r"System Name\s*?[:-]\s+(.+)", lldp_entry)
-        system_descr = re.search(r"System Description\s*?[:-]\s*(not advertised|\s*\n.+)",
-                                 lldp_entry)
-        system_capab = re.search(r"System Capabilities\s*?[:-]\s+(.+)", lldp_entry)
-        enabled_capab = re.search(r"Enabled Capabilities\s*?[:-]\s+(.+)", lldp_entry)
-
-        port_id = port_id.group(1) if port_id else 'N/A'
-        port_description = port_description.group(1) if port_description else 'N/A'
-        chassis_id = chassis_id.group(1) if chassis_id else 'N/A'
-        system_name = system_name.group(1) if system_name else 'N/A'
-        system_description = system_descr.group(1) if system_descr else 'N/A'
-        system_capab = system_capab.group(1) if system_capab else 'N/A'
-        enabled_capab = enabled_capab.group(1) if enabled_capab else 'N/A'
-
-        return {
-            'parent_interface': u'N/A',
-            'remote_port': port_id.strip(),
-            'remote_port_description': port_description.strip(),
-            'remote_chassis_id': chassis_id.strip(),
-            'remote_system_name': system_name.strip(),
-            'remote_system_description': system_description.strip(),
-            'remote_system_capab': system_capab.strip(),
-            'remote_system_enable_capab': enabled_capab.strip(),
-        }
-
     def get_lldp_neighbors_detail(self, interface=''):
         lldp = {}
         lldp_interfaces = []
 
         if interface:
-            lldp_entries = self._send_command('show lldp neighbors {} detail'.format(interface))
+            command = 'show lldp neighbors {} detail'.format(interface)
         else:
-            lldp_entries = self._send_command('show lldp neighbors detail')
-        lldp_entries = re.split(r"^------------------.*$", lldp_entries, flags=re.M)[1:]
+            command = 'show lldp neighbors detail'
+        lldp_entries = self._send_command(command)
+        lldp_entries = textfsm_extractor(self, 'show_lldp_neighbors_detail', lldp_entries)
 
         if len(lldp_entries) == 0:
             return {}
@@ -760,39 +731,23 @@ class IOSDriver(NetworkDriver):
         # Older IOS versions don't have 'Local Intf' defined in LLDP detail.
         # We need to get them from the non-detailed command
         # which is in the same sequence as the detailed output
-        local_intf_detected = "Local Intf:" in lldp_entries[0]
-        if not local_intf_detected:
+        if not lldp_entries[0]["local_interface"]:
             if interface:
-                lldp_brief = self._send_command('show lldp neighbors {}'.format(interface))
+                command = 'show lldp neighbors {}'.format(interface)
             else:
-                lldp_brief = self._send_command('show lldp neighbors')
-            # Process the output to obtain only the interfaces
-            try:
-                lldp_brief = re.split(r'^Device ID.*$', lldp_brief, flags=re.M)[1]
-                lldp_brief = re.split(r'^Total entries displayed.*$', lldp_brief, flags=re.M)[0]
-                lldp_interfaces = [x[20:20+15].strip() for x in lldp_brief.strip().splitlines()]
-            except IndexError:
-                return {}
+                command = 'show lldp neighbors'
+            lldp_brief = self._send_command(command)
+            lldp_interfaces = textfsm_extractor(self, 'show_lldp_neighbors', lldp_brief)
+            lldp_interfaces = [x['local_interface'] for x in lldp_interfaces]
 
         for idx, lldp_entry in enumerate(lldp_entries):
-            try:
-                if local_intf_detected:
-                    # The local interface is in the output
-                    local_intf = re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_entry, flags=re.M)
-                    local_intf = local_intf.group(1)
-                else:
-                    # Older IOS version, get is from the lookup list
-                    local_intf = lldp_interfaces[idx]
-            except KeyError:
-                # Couldn't work out the local interface
-                raise ValueError("LLDP details could not determine the value of local interface:"
-                                 "\n{}".format(lldp_entry))
-            # Extract the needed fields from the lldp entry
-            lldp_entry = self._lldp_detail_parser(lldp_entry)
+            local_intf = lldp_entry.pop('local_interface') or lldp_interfaces[idx]
             # Convert any 'not advertised' to 'N/A'
             for field in lldp_entry:
                 if 'not advertised' in lldp_entry[field]:
                     lldp_entry[field] = 'N/A'
+            # Add field missing on IOS
+            lldp_entry['parent_interface'] = u'N/A'
             # Turn the interfaces into their long version
             local_intf = canonical_interface_name(local_intf)
             lldp.setdefault(local_intf, [])
