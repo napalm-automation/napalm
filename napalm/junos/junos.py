@@ -631,7 +631,8 @@ class JunOSDriver(NetworkDriver):
                     normalized_neighbor = napalm.base.helpers.ip(neighbor)
                     if normalized_neighbor not in bgp_neighbor_data[instance_name]['peers']:
                         bgp_neighbor_data[instance_name]['peers'][normalized_neighbor] = {}
-                    bgp_neighbor_data[instance_name]['peers'][normalized_neighbor]['uptime'] = uptime[0][1]
+                    bgp_neighbor_data[instance_name]['peers'][normalized_neighbor]['uptime'] = \
+                        uptime[0][1]
 
         # Commenting out the following sections, till Junos
         #   will provide a way to identify the routing instance name
