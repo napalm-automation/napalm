@@ -1608,6 +1608,9 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
+    def get_bgp_receive_routes(self, neighbor='', vrf=''):
+        raise NotImplementedError
+
     def compliance_report(self, validation_file=None, validation_source=None):
         """
         Return a compliance report.
