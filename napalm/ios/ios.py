@@ -739,6 +739,11 @@ class IOSDriver(NetworkDriver):
             lldp_brief = self._send_command(command)
             lldp_interfaces = textfsm_extractor(self, 'show_lldp_neighbors', lldp_brief)
             lldp_interfaces = [x['local_interface'] for x in lldp_interfaces]
+            if len(lldp_interfaces) != len(lldp_entries):
+                raise ValueError(
+                    "LLDP neighbor count has changed between commands. "
+                    "Interface: {}\nEntries: {}".format(lldp_interfaces, lldp_entries)
+                )
 
         for idx, lldp_entry in enumerate(lldp_entries):
             local_intf = lldp_entry.pop('local_interface') or lldp_interfaces[idx]
