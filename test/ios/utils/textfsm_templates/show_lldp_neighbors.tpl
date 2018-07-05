@@ -5,7 +5,8 @@ Start
   ^Device ID -> Record Neighbor
 
 Neighbor
-  # Skip 20 characters for the Device ID
-  ^.{20}${LOCAL_INTERFACE} -> Record
+  ^Total entries displayed -> End
   # Stop at the first empty line
   ^$$ -> End
+  # Skip 20 characters for the Device ID
+  ^.{20}${LOCAL_INTERFACE} -> Record
