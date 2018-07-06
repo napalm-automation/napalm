@@ -2133,3 +2133,19 @@ class JunOSDriver(NetworkDriver):
         if name not in network_instances:
             return {}
         return {name: network_instances[name]}
+
+    def get_bgp_receive_routes(self, neighbor, vrf='inet.0'):
+        bgp_receive_route_table = junos_views.junos_received_routes_bgp(self.device)
+        bgp_receive_route_table.get()
+        bgp_receive_route_kargs = {
+            'table': vrf,
+            'peer': neighbor
+        }
+        bgp_receive_route_table.get(**bgp_receive_route_kargs)
+        bgp_receive_route_item = bgp_receive_route_table.items()
+        list_result = []
+        for bgp_receive_route in bgp_receive_route_item:
+            list_result.append({
+                'received_route': bgp_receive_route
+            })
+        return list_result

@@ -734,3 +734,14 @@ junos_nw_instances_view:
     instance_type: {instance-type: unicode}
     interfaces: {interface/name: unicode}
     route_distinguisher: {route-distinguisher/rd-type: unicode}
+
+junos_received_routes_bgp:
+  rpc: get_route_information
+  args:
+    receive_protocol_name: 'bgp'
+  args_key:
+    table: vrf
+    peer: neighbor
+  key: rt-destination
+  item: route-table/rt
+
