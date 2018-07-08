@@ -2610,14 +2610,12 @@ class IOSDriver(NetworkDriver):
                                 pass
                             else:
                                 nexthop = n[1]
-                            attr = {'outint': n[5], 'metric': n[3], 'type': type, 'AD': n[2]}
-                            path.update({nexthop: attr})
+                            path.update({nexthop: {'outint': n[5], 'metric': n[3], 'type': type, 'AD': n[2]}})
                         route_table.update({route: path})
                     else:
                         continue
                 else:
                     continue
-            route_table.update({'result': route_table})
             return True, route_table
         else:
             return False, {}
