@@ -1629,3 +1629,22 @@ class NetworkDriver(object):
             return napalm.base.helpers.canonical_interface_name(interface, addl_name_map=None)
         else:
             return interface
+
+    def get_route_table(self):
+        """Get route table.
+
+        :return:
+            bool status: True or False
+            dict route_table: A dict of route table. For example:
+                {
+                    "192.168.0.0/24": {  # route
+                        "192.168.1.1": {  # nexthop
+                            "outint": "TenGigabitEthernet1/1",
+                            "metric": 1024,
+                            "type": "D",
+                            "AD": 90"
+                        }
+                    }
+                }
+        """
+        raise NotImplementedError
