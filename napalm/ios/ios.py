@@ -2617,6 +2617,7 @@ class IOSDriver(NetworkDriver):
                         continue
                 else:
                     continue
+            route_table.update({'result': route_table})
             return True, route_table
         else:
             return False, {}
