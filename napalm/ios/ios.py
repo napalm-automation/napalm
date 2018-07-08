@@ -2601,6 +2601,7 @@ class IOSDriver(NetworkDriver):
                 type = m[1]
                 route = m[4]
                 if route:
+                    route_table.update({route: {}})
                     result1 = re.findall(path_entry_reg, m[0])
                     if result1:
                         path = {}
@@ -2611,7 +2612,7 @@ class IOSDriver(NetworkDriver):
                             else:
                                 nexthop = n[1]
                             path.update({nexthop: {'outint': n[5], 'metric': n[3], 'type': type, 'AD': n[2]}})
-                        route_table.update({route: path})
+                        route_table[route] = path
                     else:
                         continue
                 else:
