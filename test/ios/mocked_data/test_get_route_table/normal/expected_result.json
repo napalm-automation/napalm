@@ -9,7 +9,7 @@
     },
     "127.1.239.52/30": {
         "is directly connected": {
-            "outint": "Ethernet5/0",
+            "outint": "FastEthernet5/0",
             "metric": "",
             "type": "C",
             "AD": ""

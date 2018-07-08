@@ -12,7 +12,7 @@ Gateway of last resort is not set
 
       127.0.0.0/8 is variably subnetted, 75 subnets, 6 masks
 S        127.0.0.0/16 is directly connected, Null0
-C        127.1.239.52/30 is directly connected, Ethernet5/0
+C        127.1.239.52/30 is directly connected, FastEthernet5/0
 L        127.1.239.53/32 is directly connected, Ethernet5/0
 D        127.1.254.0/24 is a summary, 04:41:01, Null0
 D        127.1.254.12/30 [90/30720] via 127.2.240.126, 00:00:33, FastEthernet2/0
