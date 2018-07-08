@@ -2597,33 +2597,28 @@ class IOSDriver(NetworkDriver):
 
         result = re.findall(route_entry_reg, output)
         if result:
-            pass
+            for m in result:
+                type = m[1]
+                route = m[4]
+                if route:
+                    result1 = re.findall(path_entry_reg, m[0])
+                    if result1:
+                        path = {}
+                        for n in result1:
+                            nexthop = n[4]
+                            if nexthop:
+                                pass
+                            else:
+                                nexthop = n[1]
+                            attr = {'outint': n[5], 'metric': n[3], 'type': type, 'AD': n[2]}
+                            path.update({nexthop: attr})
+                        route_table.update({route: path})
+                    else:
+                        continue
+                else:
+                    continue
+            return True, route_table
         else:
             return False, {}
 
-        for m in result:
-            type = m[1]
-            route = m[4]
-            if route:
-                pass
-            else:
-                continue
 
-            result1 = re.findall(path_entry_reg, m[0])
-            if result1:
-                pass
-            else:
-                continue
-
-            path = {}
-            for n in result1:
-                nexthop = n[4]
-                if nexthop:
-                    pass
-                else:
-                    nexthop = n[1]
-                attr = {'outint': n[5], 'metric': n[3], 'type': type, 'AD': n[2]}
-                path.update({nexthop: attr})
-            route_table.update({route: path})
-
-        return True, route_table
