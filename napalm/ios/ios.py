@@ -2583,12 +2583,12 @@ class IOSDriver(NetworkDriver):
         route_entry_reg = re.compile(
             r'(([LCSRMBDOi]([* ]{1,2}(EX|IA|N1|N2|E1|E2|su|L1|L2|ia))?) +([\d.]+/\d+)\s+'
             r'((is directly connected|is a summary|\[(\d+/\d+)\] via ([\d.]+)).+'
-            r'((TenGigabitEthernet|GigabitEthernet|FastEthernet|Ethernet|Serial)[\d/.:]+|(Loopback|Port-channel|Vlan)\d*|Null0)\s*)+)'
+            r', ((TenGigabitEthernet|GigabitEthernet|FastEthernet|Ethernet|Serial)[\d/.:]+|(Loopback|Port-channel|Vlan)\d*|Null0)\s*)+)'
         )
 
         path_entry_reg = re.compile(
             r'((is directly connected|is a summary|\[(\d+)+/(\d+)\] via ([\d.]+)).+'
-            r'((TenGigabitEthernet|GigabitEthernet|FastEthernet|Ethernet|Serial)[\d/.:]+|(Loopback|Port-channel|Vlan)\d*|Null0))'
+            r', ((TenGigabitEthernet|GigabitEthernet|FastEthernet|Ethernet|Serial)[\d/.:]+|(Loopback|Port-channel|Vlan)\d*|Null0))'
         )
 
         route_table = {}
