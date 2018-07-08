@@ -2592,7 +2592,7 @@ class IOSDriver(NetworkDriver):
         )
 
         route_table = {}
-        command = 'show running-config'
+        command = 'show ip route'
         output = self._send_command(command)
 
         result = re.findall(route_entry_reg, output)
