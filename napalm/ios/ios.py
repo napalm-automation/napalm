@@ -2572,9 +2572,9 @@ class IOSDriver(NetworkDriver):
                     "192.168.0.0/24": {  # route
                         "192.168.1.1": {  # nexthop
                             "outint": "TenGigabitEthernet1/1",
-                            "metric": "1024",
+                            "metric": 1024,
                             "type": "D",
-                            "AD": "90"
+                            "AD": 90"
                         }
                     }
                 }
@@ -2622,8 +2622,8 @@ class IOSDriver(NetworkDriver):
                     pass
                 else:
                     nexthop = n[1]
-                attr = {'outint': n[5], 'metric': n[3], 'type': type, 'AD': n[2]}
-                path.update({nexthop: {'attr': attr}})
+                attr = {'outint': n[5], 'metric': int(n[3]), 'type': type, 'AD': int(n[2])}
+                path.update({nexthop: attr})
             route_table.update({route: path})
 
         return True, route_table

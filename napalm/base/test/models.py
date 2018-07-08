@@ -340,3 +340,10 @@ firewall_policies = {
     'dst_zone': text_type,
     'action': text_type
 }
+
+route_path_attr = {
+    'outint': text_type,
+    'metric': int,
+    'type': text_type,
+    'AD': int
+}
