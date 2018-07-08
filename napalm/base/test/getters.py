@@ -536,7 +536,7 @@ class BaseTestGetters(object):
         assert len(get_route_table) > 0
 
         for route, path in get_route_table.items():
-            for hexthop, attr in path.items():
+            for nexthop, attr in path.items():
                 assert helpers.test_model(models.route_path_attr, attr)
 
         return get_route_table

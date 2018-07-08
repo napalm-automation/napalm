@@ -1640,9 +1640,9 @@ class NetworkDriver(object):
                     "192.168.0.0/24": {  # route
                         "192.168.1.1": {  # nexthop
                             "outint": "TenGigabitEthernet1/1",
-                            "metric": 1024,
+                            "metric": "1024",
                             "type": "D",
-                            "AD": 90"
+                            "AD": "90"
                         }
                     }
                 }

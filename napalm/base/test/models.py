@@ -343,7 +343,7 @@ firewall_policies = {
 
 route_path_attr = {
     'outint': text_type,
-    'metric': int,
+    'metric': text_type,
     'type': text_type,
-    'AD': int
+    'AD': text_type
 }
