@@ -532,7 +532,7 @@ class BaseTestGetters(object):
     @wrap_test_cases
     def test_get_route_table(self, test_case):
         """Test get_route_table."""
-        get_route_table = self.device.get_route_table()
+        status, get_route_table = self.device.get_route_table()
         assert len(get_route_table) > 0
 
         for route, path in get_route_table.items():
