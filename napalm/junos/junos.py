@@ -300,7 +300,7 @@ class JunOSDriver(NetworkDriver):
                     'is_up': interfaces[iface]['is_up'],
                     # For physical interfaces <admin-status> will always be there, so just
                     # return the value interfaces[iface]['is_enabled']
-                    # For logical interfaces if <iff-down> is present interface is disabled, 
+                    # For logical interfaces if <iff-down> is present interface is disabled,
                     # otherwise interface is enabled
                     'is_enabled': (True if interfaces[iface]['is_enabled'] is None
                                    else interfaces[iface]['is_enabled']),
