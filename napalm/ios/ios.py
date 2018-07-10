@@ -1856,6 +1856,12 @@ class IOSDriver(NetworkDriver):
 
         return cli_output
 
+    def get_ntp_peers(self):
+        """Implementation of get_ntp_peers for IOS."""
+        ntp_stats = self.get_ntp_stats()
+
+        return {ntp_peer.get('remote'): {} for ntp_peer in ntp_stats if ntp_peer.get('remote')}
+
     def get_ntp_servers(self):
         """Implementation of get_ntp_servers for IOS.
 
