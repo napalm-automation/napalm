@@ -1216,8 +1216,8 @@ class IOSDriver(NetworkDriver):
 
         Supports both IPv4 and IPv6. VRFs supported for IPv4 (vpnv4 unicast)
         """
-        # `supported_afi = ['ipv4', 'ipv6', 'vpnv4', 'vpnv6']` vpnv6 support
-        supported_afi = ['ipv4', 'ipv6', 'vpnv4', 'vpnv6']
+        supported_afi = ['ipv4 unicast', 'ipv4 multicast', 'ipv6 unicast', 'ipv6 multicast',
+                         'vpnv4 unicast' 'vpnv6 unicast']
 
         bgp_neighbor_data = dict()
         bgp_neighbor_data['global'] = {}
@@ -1233,8 +1233,8 @@ class IOSDriver(NetworkDriver):
         # get neighbor output from device
         neighbor_output = ''
         for afi in supported_afi:
-            if afi in ['ipv4', 'ipv6']:
-                cmd_bgp_neighbor = 'show bgp %s unicast neighbors' % afi
+            if afi in ['ipv4 unicast', 'ipv4 multicast', 'ipv6 unicast', 'ipv6 multicast']:
+                cmd_bgp_neighbor = 'show bgp %s neighbors' % afi
                 neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
                 neighbor_output += "\n"
@@ -1242,8 +1242,8 @@ class IOSDriver(NetworkDriver):
 #                neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
 #                neighbor_output += "\n"
-            elif afi in ['vpnv4', 'vpnv6']:  # `elif afi in ['vpnv4','vpnv6']` vpnv6 support
-                cmd_bgp_neighbor = 'show bgp %s unicast all neighbors' % afi
+            elif afi in ['vpnv4 unicast', 'vpnv6 unicast']:
+                cmd_bgp_neighbor = 'show bgp %s all neighbors' % afi
                 neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
                 neighbor_output += "\n"
@@ -1420,7 +1420,7 @@ class IOSDriver(NetworkDriver):
             remote_addr = napalm.base.helpers.ip(entry['remote_addr'])
             afi = entry['afi'].lower()
             # check that we're looking at a supported afi (first word of afi string)
-            if afi.split(' ', 1)[0] not in supported_afi:
+            if afi not in supported_afi:
                 continue
             # get neighbor_entry out of neighbor data
             neighbor_entry = None
