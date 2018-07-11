@@ -1217,7 +1217,7 @@ class IOSDriver(NetworkDriver):
         Supports both IPv4 and IPv6. VRFs supported for IPv4 (vpnv4 unicast)
         """
         # `supported_afi = ['ipv4', 'ipv6', 'vpnv4', 'vpnv6']` vpnv6 support
-        supported_afi = ['ipv4', 'ipv6', 'vpnv4']
+        supported_afi = ['ipv4', 'ipv6', 'vpnv4', 'vpnv6']
 
         bgp_neighbor_data = dict()
         bgp_neighbor_data['global'] = {}
@@ -1235,17 +1235,16 @@ class IOSDriver(NetworkDriver):
         for afi in supported_afi:
             if afi in ['ipv4', 'ipv6']:
                 cmd_bgp_neighbor = 'show bgp %s unicast neighbors' % afi
-                cur_neighbor_output = self._send_command(cmd_bgp_neighbor).strip()
-                if cur_neighbor_output != '':
-                    neighbor_output += cur_neighbor_output
-                    # trailing newline required for parsing
-                    neighbor_output += "\n"
-                    if 'global' not in bgp_config_vrfs:
-                        bgp_config_vrfs.append('global')
-            elif afi in ['vpnv4']:  # `elif afi in ['vpnv4','vpnv6']` vpnv6 support                
+                neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
+                # trailing newline required for parsing
+                neighbor_output += "\n"
+#                cmd_bgp_neighbor = 'show bgp %s mdt all neighbors' % afi
+#                neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
+                # trailing newline required for parsing
+#                neighbor_output += "\n"
+            elif afi in ['vpnv4', 'vpnv6']:  # `elif afi in ['vpnv4','vpnv6']` vpnv6 support
                 cmd_bgp_neighbor = 'show bgp %s unicast all neighbors' % afi
-                cur_neighbor_output = self._send_command(cmd_bgp_neighbor).strip()
-                neighbor_output += cur_neighbor_output
+                neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
                 neighbor_output += "\n"
 
