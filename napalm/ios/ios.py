@@ -1214,16 +1214,12 @@ class IOSDriver(NetworkDriver):
     def get_bgp_neighbors(self):
         """BGP neighbor information.
 
-        Supports both IPv4 and IPv6. VRFs supported for IPv4 (vpnv4 unicast)
+        Supports both IPv4 and IPv6.
         """
         supported_afi = ['ipv4 unicast', 'ipv4 multicast', 'ipv6 unicast', 'ipv6 multicast',
-                         'vpnv4 unicast' 'vpnv6 unicast']
+                         'vpnv4 unicast', 'vpnv6 unicast', 'ipv4 mdt']
 
         bgp_neighbor_data = dict()
-        bgp_neighbor_data['global'] = {}
-        vrfs = self._get_vrfs('')
-        for vrf in vrfs:
-            bgp_neighbor_data[vrf] = {}
         # vrfs where bgp is configured
         bgp_config_vrfs = []
         # get summary output from device
@@ -1238,11 +1234,7 @@ class IOSDriver(NetworkDriver):
                 neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
                 neighbor_output += "\n"
-#                cmd_bgp_neighbor = 'show bgp %s mdt all neighbors' % afi
-#                neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
-                # trailing newline required for parsing
-#                neighbor_output += "\n"
-            elif afi in ['vpnv4 unicast', 'vpnv6 unicast']:
+            elif afi in ['vpnv4 unicast', 'vpnv6 unicast', 'ipv4 mdt']:
                 cmd_bgp_neighbor = 'show bgp %s all neighbors' % afi
                 neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
@@ -1383,6 +1375,7 @@ class IOSDriver(NetworkDriver):
                     # a match was found, so update the temp entry with the match's groupdict
                     neighbor_data_entry.update(match.groupdict())
                     if item['record']:
+                        # update list of vrfs where bgp is configured
                         if not neighbor_data_entry['vrf']:
                             vrf_to_add = 'global'
                         else:
@@ -1413,13 +1406,14 @@ class IOSDriver(NetworkDriver):
 
         # create dict keys in vrfs where bgp is configured
         for vrf in bgp_config_vrfs:
+            bgp_neighbor_data[vrf] = {}
             bgp_neighbor_data[vrf]['router_id'] = router_id
             bgp_neighbor_data[vrf]['peers'] = {}
         # add parsed data to output dict
         for entry in summary_data:
             remote_addr = napalm.base.helpers.ip(entry['remote_addr'])
             afi = entry['afi'].lower()
-            # check that we're looking at a supported afi (first word of afi string)
+            # check that we're looking at a supported afi
             if afi not in supported_afi:
                 continue
             # get neighbor_entry out of neighbor data
@@ -2173,39 +2167,6 @@ class IOSDriver(NetworkDriver):
             }
 
         return probes
-
-    def _get_vrfs(self, ipv=''):
-        """
-        Returns list of all VRFs (if ipv='') or VRFs which have ipv4 (ipv='v4') or
-        ipv6 (ipv='v6') configured
-        param ipv can contain '','v4' or 'v6'
-        """
-        vrfs = []
-
-        if ipv not in ['', 'v4', 'v6']:
-            return(vrfs)
-        command = 'show vrf'
-        output = self._send_command(command)
-
-        if '% Invalid input detected' in output:
-            # 'sh vrf' command is not supported
-            # try 'sh ip vrf' command and return all vrf names regardless of ip version ...
-            command = 'show ip vrf'
-            output = self._send_command(command)
-            out_lines = output.split('\n')
-            for line in out_lines[1:]:
-                vrfstr = re.match(r"[ ]{2}(\S+)", line)
-                if vrfstr:
-                    vrfs.append(vrfstr.group(1))
-        else:
-            out_lines = output.split('\n')
-            for line in out_lines[1:]:
-                #   TEST                             65417:2               ipv4,ipv6
-                vrfstr = re.match(r"[ ]{2}(\S+)[ ]+[<> a-z:\d]+[ ]+([a-z\d,]+)", line)
-                if vrfstr:
-                    if ipv == '' or ipv in vrfstr.group(2):
-                        vrfs.append(vrfstr.group(1))
-        return(vrfs)
 
     def get_snmp_information(self):
         """
