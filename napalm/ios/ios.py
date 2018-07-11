@@ -1242,22 +1242,19 @@ class IOSDriver(NetworkDriver):
                     neighbor_output += "\n"
                     if 'global' not in bgp_config_vrfs:
                         bgp_config_vrfs.append('global')
-            elif afi in ['vpnv4']:  # `elif afi in ['vpnv4','vpnv6']` vpnv6 support
-                for vrf in vrfs:
-                    cmd_bgp_neighbor = 'show bgp %s unicast vrf %s neighbors' % (afi, vrf)
-                    cur_neighbor_output = self._send_command(cmd_bgp_neighbor).strip()
-                    if '% Unknown VRF' not in cur_neighbor_output and cur_neighbor_output != '':
-                        neighbor_output += cur_neighbor_output
-                        # trailing newline required for parsing
-                        neighbor_output += "\n"
-                        if vrf not in bgp_config_vrfs:
-                            bgp_config_vrfs.append(vrf)
+            elif afi in ['vpnv4']:  # `elif afi in ['vpnv4','vpnv6']` vpnv6 support                
+                cmd_bgp_neighbor = 'show bgp %s unicast all neighbors' % afi
+                cur_neighbor_output = self._send_command(cmd_bgp_neighbor).strip()
+                neighbor_output += cur_neighbor_output
+                # trailing newline required for parsing
+                neighbor_output += "\n"
 
         # Regular expressions used for parsing BGP summary
         parse_summary = {
             'patterns': [
                 # For address family: IPv4 Unicast
-                {'regexp': re.compile(r'^For address family: (?P<afi>\S+) '),
+                # variable afi contains both afi and afi modifier, i.e 'IPv4 Unicast'
+                {'regexp': re.compile(r'^For address family: (?P<afi>[\S ]+)$'),
                  'record': False},
                 # Capture router_id and local_as values, e.g.:
                 # BGP router identifier 10.0.1.1, local AS number 65000
@@ -1336,7 +1333,7 @@ class IOSDriver(NetworkDriver):
                  'record': False},
                 # Capture AFI and SAFI names, e.g.:
                 # For address family: IPv4 Unicast
-                {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) '),
+                {'regexp': re.compile(r'^\s+For address family: (?P<afi>[\S ]+)$'),
                  'record': False},
                 # Capture current sent and accepted prefixes, e.g.:
                 #     Prefixes Current:          637213       3142 (Consumes 377040 bytes)
@@ -1387,6 +1384,12 @@ class IOSDriver(NetworkDriver):
                     # a match was found, so update the temp entry with the match's groupdict
                     neighbor_data_entry.update(match.groupdict())
                     if item['record']:
+                        if not neighbor_data_entry['vrf']:
+                            vrf_to_add = 'global'
+                        else:
+                            vrf_to_add = neighbor_data_entry['vrf']
+                        if vrf_to_add not in bgp_config_vrfs:
+                            bgp_config_vrfs.append(vrf_to_add)
                         # Record indicates the last piece of data has been obtained; move
                         # on to next entry
                         neighbor_data.append(copy.deepcopy(neighbor_data_entry))
@@ -1417,8 +1420,8 @@ class IOSDriver(NetworkDriver):
         for entry in summary_data:
             remote_addr = napalm.base.helpers.ip(entry['remote_addr'])
             afi = entry['afi'].lower()
-            # check that we're looking at a supported afi
-            if afi not in supported_afi:
+            # check that we're looking at a supported afi (first word of afi string)
+            if afi.split(' ', 1)[0] not in supported_afi:
                 continue
             # get neighbor_entry out of neighbor data
             neighbor_entry = None
