@@ -1214,7 +1214,7 @@ class IOSDriver(NetworkDriver):
     def get_bgp_neighbors(self):
         """BGP neighbor information.
 
-        Supports both IPv4 and IPv6. Vrf aware
+        Supports both IPv4 and IPv6. vrf aware
         """
         supported_afi = ['ipv4 unicast', 'ipv4 multicast', 'ipv6 unicast', 'ipv6 multicast',
                          'vpnv4 unicast', 'vpnv6 unicast', 'ipv4 mdt']
