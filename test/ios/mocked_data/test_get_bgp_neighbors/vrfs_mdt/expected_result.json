@@ -1,0 +1,86 @@
+{
+    "TEST": {
+        "router_id": "10.23.4.9",
+        "peers": {
+            "10.124.238.162": {
+                "local_as": 65904,
+                "remote_as": 65221,
+                "remote_id": "10.23.17.238",
+                "is_up": true,
+                "is_enabled": true,
+                "description": "eBGP to ro03",
+                "uptime": 6652800,
+                "address_family": {
+                    "vpnv4 unicast": {
+                        "received_prefixes": 5,
+                        "accepted_prefixes": 5,
+                        "sent_prefixes": 9
+                    }
+                }
+            },
+            "10.124.238.174": {
+                "local_as": 65904,
+                "remote_as": 65221,
+                "remote_id": "10.23.17.239",
+                "is_up": true,
+                "is_enabled": true,
+                "description": "eBGP to ro04",
+                "uptime": 6652800,
+                "address_family": {
+                    "vpnv4 unicast": {
+                        "received_prefixes": 5,
+                        "accepted_prefixes": 5,
+                        "sent_prefixes": 9
+                    }
+                }
+            }
+        }
+    },
+    "global": {
+        "router_id": "10.23.4.9",
+        "peers": {
+            "10.23.4.1": {
+                "local_as": 65904,
+                "remote_as": 65904,
+                "remote_id": "10.23.4.1",
+                "is_up": true,
+                "is_enabled": true,
+                "description": "iBGP_RouteReflectorClient",
+                "uptime": 33955200,
+                "address_family": {
+                    "ipv4 mdt": {
+                        "received_prefixes": 2,
+                        "accepted_prefixes": 2,
+                        "sent_prefixes": 44
+                    },
+                    "vpnv4 unicast": {
+                        "received_prefixes": 28,
+                        "accepted_prefixes": 28,
+                        "sent_prefixes": 11825
+                    }
+                }
+            },
+            "10.23.4.2": {
+                "local_as": 65904,
+                "remote_as": 65904,
+                "remote_id": "10.23.4.2",
+                "is_up": true,
+                "is_enabled": true,
+                "description": "iBGP_RouteReflectorClient",
+                "uptime": 33955200,
+                "address_family": {
+                    "ipv4 mdt": {
+                        "received_prefixes": 2,
+                        "accepted_prefixes": 2,
+                        "sent_prefixes": 44
+                    },
+                    "vpnv4 unicast": {
+                        "received_prefixes": 28,
+                        "accepted_prefixes": 28,
+                        "sent_prefixes": 11825
+                    }
+                }
+            }
+        }
+    }
+}
