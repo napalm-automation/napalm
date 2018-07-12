@@ -1214,7 +1214,7 @@ class IOSDriver(NetworkDriver):
     def get_bgp_neighbors(self):
         """BGP neighbor information.
 
-        Supports both IPv4 and IPv6.
+        Supports both IPv4 and IPv6. Vrf aware
         """
         supported_afi = ['ipv4 unicast', 'ipv4 multicast', 'ipv6 unicast', 'ipv6 multicast',
                          'vpnv4 unicast', 'vpnv6 unicast', 'ipv4 mdt']
@@ -1244,7 +1244,7 @@ class IOSDriver(NetworkDriver):
         parse_summary = {
             'patterns': [
                 # For address family: IPv4 Unicast
-                # variable afi contains both afi and afi modifier, i.e 'IPv4 Unicast'
+                # variable afi contains both afi and safi, i.e 'IPv4 Unicast'
                 {'regexp': re.compile(r'^For address family: (?P<afi>[\S ]+)$'),
                  'record': False},
                 # Capture router_id and local_as values, e.g.:
@@ -1404,7 +1404,7 @@ class IOSDriver(NetworkDriver):
         # check the router_id looks like an ipv4 address
         router_id = napalm.base.helpers.ip(router_id, version=4)
 
-        # create dict keys in vrfs where bgp is configured
+        # create dict keys for vrfs where bgp is configured
         for vrf in bgp_config_vrfs:
             bgp_neighbor_data[vrf] = {}
             bgp_neighbor_data[vrf]['router_id'] = router_id
@@ -1475,6 +1475,7 @@ class IOSDriver(NetworkDriver):
             # check the remote router_id looks like an ipv4 address
             remote_id = napalm.base.helpers.ip(neighbor_entry['remote_id'], version=4)
 
+            # get vrf name, if None use 'global'
             if neighbor_entry['vrf']:
                 vrf = neighbor_entry['vrf']
             else:
