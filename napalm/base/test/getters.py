@@ -528,3 +528,15 @@ class BaseTestGetters(object):
             for policy_term in policy_details:
                 assert helpers.test_model(models.firewall_policies, policy_term)
         return get_firewall_policies
+
+    @wrap_test_cases
+    def test_get_route_table(self, test_case):
+        """Test get_route_table."""
+        status, get_route_table = self.device.get_route_table()
+        assert len(get_route_table) > 0
+
+        for route, path in get_route_table.items():
+            for nexthop, attr in path.items():
+                assert helpers.test_model(models.route_path_attr, attr)
+
+        return get_route_table

@@ -1,0 +1,60 @@
+{
+    "127.0.0.0/16": {
+        "is directly connected": {
+            "outint": "Null0",
+            "metric": "",
+            "type": "S",
+            "AD": ""
+        }
+    },
+    "127.1.239.52/30": {
+        "is directly connected": {
+            "outint": "FastEthernet5/0",
+            "metric": "",
+            "type": "C",
+            "AD": ""
+        }
+    },
+    "127.1.239.53/32": {
+        "is directly connected": {
+            "outint": "Ethernet5/0",
+            "metric": "",
+            "type": "L",
+            "AD": ""
+        }
+    },
+    "127.1.254.0/24": {
+        "is a summary": {
+            "outint": "Null0",
+            "metric": "",
+            "type": "D",
+            "AD": ""
+        }
+    },
+    "127.1.254.12/30": {
+        "127.2.240.126": {
+            "outint": "FastEthernet2/0",
+            "metric": "30720",
+            "type": "D",
+            "AD": "90"
+        },
+        "127.2.240.26": {
+            "outint": "FastEthernet1/0",
+            "metric": "30720",
+            "type": "D",
+            "AD": "90"
+        },
+        "127.2.240.6": {
+            "outint": "FastEthernet3/0",
+            "metric": "30720",
+            "type": "D",
+            "AD": "90"
+        },
+        "127.2.240.2": {
+            "outint": "FastEthernet0/0",
+            "metric": "30720",
+            "type": "D",
+            "AD": "90"
+        }
+    }
+}

@@ -1,0 +1,21 @@
+show ip route
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       + - replicated route, % - next hop override
+
+Gateway of last resort is not set
+
+      127.0.0.0/8 is variably subnetted, 75 subnets, 6 masks
+S        127.0.0.0/16 is directly connected, Null0
+C        127.1.239.52/30 is directly connected, FastEthernet5/0
+L        127.1.239.53/32 is directly connected, Ethernet5/0
+D        127.1.254.0/24 is a summary, 04:41:01, Null0
+D        127.1.254.12/30 [90/30720] via 127.2.240.126, 00:00:33, FastEthernet2/0
+                        [90/30720] via 127.2.240.26, 00:00:33, FastEthernet1/0
+                        [90/30720] via 127.2.240.6, 00:00:33, FastEthernet3/0
+                        [90/30720] via 127.2.240.2, 00:00:33, FastEthernet0/0

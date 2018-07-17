@@ -2424,3 +2424,64 @@ class IOSDriver(NetworkDriver):
         if self.device and self._dest_file_system is None:
             self._dest_file_system = self._discover_file_system()
         return self._dest_file_system
+    
+    def get_route_table(self):
+        """Get route table.
+
+        :return:
+            bool status: True or False
+            dict route_table: A dict of route table. For example:
+                {
+                    "192.168.0.0/24": {  # route
+                        "192.168.1.1": {  # nexthop
+                            "outint": "TenGigabitEthernet1/1",
+                            "metric": "1024",
+                            "type": "D",
+                            "AD": "90"
+                        }
+                    }
+                }
+        """
+
+        route_entry_reg = re.compile(
+            r'(([LCSRMBDOi]([* ]{1,2}(EX|IA|N1|N2|E1|E2|su|L1|L2|ia))?) +([\d.]+/\d+)\s+'
+            r'((is directly connected|is a summary|\[(\d+/\d+)\] via ([\d.]+)).+'
+            r', ((TenGigabitEthernet|GigabitEthernet|FastEthernet|Ethernet|Serial)[\d/.:]+|(Loopback|Port-channel|Vlan)\d*|Null0)\s*)+)'
+        )
+
+        path_entry_reg = re.compile(
+            r'((is directly connected|is a summary|\[(\d+)+/(\d+)\] via ([\d.]+)).+'
+            r', ((TenGigabitEthernet|GigabitEthernet|FastEthernet|Ethernet|Serial)[\d/.:]+|(Loopback|Port-channel|Vlan)\d*|Null0))'
+        )
+
+        route_table = {}
+        command = 'show ip route'
+        output = self._send_command(command)
+
+        result = re.findall(route_entry_reg, output)
+        if result:
+            for m in result:
+                type = m[1]
+                route = m[4]
+                if route:
+                    route_table.update({route: {}})
+                    result1 = re.findall(path_entry_reg, m[0])
+                    if result1:
+                        path = {}
+                        for n in result1:
+                            nexthop = n[4]
+                            if nexthop:
+                                pass
+                            else:
+                                nexthop = n[1]
+                            path.update({nexthop: {'outint': n[5], 'metric': n[3], 'type': type, 'AD': n[2]}})
+                        route_table[route] = path
+                    else:
+                        continue
+                else:
+                    continue
+            return True, route_table
+        else:
+            return False, {}
+
+
