@@ -1342,6 +1342,11 @@ class NXOSSSHDriver(NXOSDriverBase):
                 'group': 1,
                 'default': ''
             },
+            'bgpcomm': {
+                're': r"  Community: ([\w\d\-\: ]+)",
+                'group': 1,
+                'default': ''
+            },
             'bgplp': {
                 're': r"localpref (\d+)",
                 'group': 1,
@@ -1388,6 +1393,9 @@ class NXOSSSHDriver(NXOSDriverBase):
                         search_re_dict[key]['result'] = search_re_dict[key]['default']
                 bgpnh = search_re_dict['bgpnh']['result']
                 
+                if bgpnh != next_hop:
+                    # this is not the right route
+                    continue
                 # find remote AS nr. of this neighbor
                 bgpcmd = CMD_SHIBNV.format(vrf=vrf, neigh=bgpnh)
                 outbgpnei = self._send_command(bgpcmd)
@@ -1406,17 +1414,19 @@ class NXOSSSHDriver(NXOSDriverBase):
                         bgpras = bgpas
                 # community
                 bothcomm = []
-                for commname in ['Extcommunity:', 'Community:']:
-                    commsplit = bgppath.split(commname)
-                    if len(commsplit) == 2:
-                        for line in commsplit[1].split('\n')[1:]:
-                            #          RT:65004:22
-                            matchcommun = re.match(r"[ ]{10}(\S+)", line)
-                            if matchcommun:
-                                bothcomm.append(matchcommun.group(1))
-                            else:
-                                # we've reached end of the community section
-                                continue
+                extcomm = []
+                stdcomm = search_re_dict['bgpcomm']['result'].split()                
+                commsplit = bgppath.split("Extcommunity:")
+                if len(commsplit) == 2:
+                    for line in commsplit[1].split('\n')[1:]:
+                        #          RT:65004:22
+                        matchcommun = re.match(r"[ ]{10}(\S+)", line)
+                        if matchcommun:
+                            extcomm.append(matchcommun.group(1))
+                        else:
+                            # we've reached end of the community section
+                            continue
+                bothcomm = stdcomm + extcomm
                 bgp_attr = {
                     "as_path": search_re_dict['aspath']['result'].strip(),
                     "remote_address": search_re_dict['bgpfrom']['result'],
