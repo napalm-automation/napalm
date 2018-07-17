@@ -28,6 +28,7 @@ import socket
 
 # import third party lib
 from netaddr import IPAddress
+from netaddr import IPNetwork
 from netaddr.core import AddrFormatError
 
 # import NAPALM Base
@@ -1318,6 +1319,117 @@ class NXOSSSHDriver(NXOSDriverBase):
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
         return mac_address_table
+
+    def _get_vrfs(self):
+        """
+        Returns list of all VRFs
+        """
+        vrfs = []
+        command = 'show vrf'
+        output = self._send_command(command)
+
+        out_lines = output.split('\n')
+        for line in out_lines[1:]:
+            # default                                 1 Up      --
+            vrfstr = re.match(r"(\S+)[ ]+[\d]+\s.*", line)
+            if vrfstr:
+                vrfs.append(vrfstr.group(1))
+        return(vrfs)
+
+    def get_route_to(self, destination='', protocol=''):
+        '''
+        '''
+        longer_pref = ''    # for future use
+        vrf = ''
+        try:
+            ipv = ''
+            if IPNetwork(destination).version == 6:
+                ipv = 'v6'
+        except AddrFormatError:
+            return 'Please specify a valid destination!'
+        try:
+            ipv = ''
+            if IPNetwork(destination).version == 4:
+                ipv = 'v4'
+        except AddrFormatError:
+            return 'Please specify a valid destination!'
+        if ipv == 'v4':           # process IPv4 routing table
+            routes = {}
+            if vrf:
+                send_cmd = 'show ip route vrf {vrf} {destination} {longer}'.format(
+                    vrf=vrf,
+                    destination=destination,
+                    longer=longer_pref)
+            else:
+                send_cmd = 'show ip route vrf all {destination} {longer}'.format(
+                    destination=destination,
+                    longer=longer_pref)
+            out_sh_ip_rou = self._send_command(send_cmd)
+            # IP Route Table for VRF "TEST"
+            for vrfsec in out_sh_ip_rou.split('IP Route Table for ')[1:]:
+                if 'Route not found' in vrfsec:
+                    continue
+                vrffound = False
+                preffound = False
+                nh_list = []
+                for line in vrfsec.split('\n'):
+                    if not vrffound:
+                        vrfstr = re.match(r"VRF \"(\S+)\"", line)
+                        if vrfstr:
+                            curvrf = vrfstr.group(1)
+                            vrffound = True
+                    else:
+                        # 10.10.56.0/24, ubest/mbest: 2/0
+                        prefstr = re.match(r"("+IPV4_ADDR_REGEX+r"/\d{1,2}), ubest.*", line)
+                        if prefstr:
+                            if preffound:   # precess previous prefix
+                                if cur_prefix not in routes:
+                                    routes[cur_prefix] = []
+                                for nh in nh_list:
+                                    routes[cur_prefix].append(nh)
+                                nh_list = []
+                            else:
+                                cur_prefix = prefstr.group(1)
+                                preffound = True
+                            continue
+                        #     *via 10.2.49.60, Vlan3013, [0/0], 1y18w, direct
+                        #      via 10.17.205.132, Po77.3602, [110/20], 1y18w, ospf-1000, type-2, tag 2112
+                        #     *via 10.17.207.42, Eth3/7.212, [110/20], 02:19:36, ospf-1000, type-2, tag 2121
+                        #     *via 10.17.207.73, [1/0], 1y18w, static
+                        viastr = re.match(r"    ([\*| ])via (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}), (([\w./:]+), )?\[(\d+)/(\d+)\], ([\d\w:]+), ([\w\-]+).*", line)
+                        if viastr:
+                            if viastr.group(1) == '*':
+                                nh_used = True
+                            else:
+                                nh_used = False
+                            nh_ip = viastr.group(2)
+                            nh_int = viastr.group(4)
+                            nh_metric = viastr.group(6)
+                            nh_age = bgp_time_conversion(viastr.group(7))
+                            nh_source = viastr.group(8)
+                            route_entry = {
+                                "protocol": nh_source,
+                                "outgoing_interface":
+                                    napalm.base.helpers.canonical_interface_name(nh_int),
+                                "age": nh_age,
+                                "current_active": nh_used,
+                                "routing_table": curvrf,
+                                "last_active": nh_used,
+                                "protocol_attributes": {
+                                    },
+                                "next_hop": nh_ip,
+                                "selected_next_hop": nh_used,
+                                "inactive_reason": "",
+                                "preference": int(nh_metric)
+                            }
+                            nh_list.append(route_entry)
+                # process last next hop entries
+                if preffound:
+                    if cur_prefix not in routes:
+                        routes[cur_prefix] = []
+                    for nh in nh_list:
+                        routes[cur_prefix].append(nh)
+        return(routes)
 
     def get_snmp_information(self):
         snmp_information = {}
