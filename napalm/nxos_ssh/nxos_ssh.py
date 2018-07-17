@@ -1320,22 +1320,6 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         return mac_address_table
 
-    def _get_vrfs(self):
-        """
-        Returns list of all VRFs
-        """
-        vrfs = []
-        command = 'show vrf'
-        output = self._send_command(command)
-
-        out_lines = output.split('\n')
-        for line in out_lines[1:]:
-            # default                                 1 Up      --
-            vrfstr = re.match(r"(\S+)[ ]+[\d]+\s.*", line)
-            if vrfstr:
-                vrfs.append(vrfstr.group(1))
-        return(vrfs)
-
     def get_route_to(self, destination='', protocol=''):
         '''
         '''
