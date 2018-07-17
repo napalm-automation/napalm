@@ -1320,6 +1320,114 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         return mac_address_table
 
+    def _get_bgp_route_attr(self, destination, vrf, next_hop, ipv='v4'):
+        '''
+        '''
+
+        CMD_SHIBNV = 'show ip bgp neighbors vrf {vrf} | include "is {neigh}"'
+
+        search_re_dict = {
+            'aspath': {
+                're': r"AS-Path: ([\d\(\)]([\d\(\) ])*)",
+                'group': 1,
+                'default': ''
+            },
+            'bgpnh': {
+                're': r"[^|\\n][ ]{4}("+IP_ADDR_REGEX+r")",
+                'group': 1,
+                'default': ''
+            },
+            'bgpfrom': {
+                're': r"from ("+IP_ADDR_REGEX+r")",
+                'group': 1,
+                'default': ''
+            },
+            'bgplp': {
+                're': r"localpref (\d+)",
+                'group': 1,
+                'default': ''
+            },
+            'bgpie': {
+                're': r"^: (external)",
+                'group': 1,
+                'default': 'internal'
+            }
+        }
+        
+        bgp_attr = {}
+        outbgp = \
+            self._send_command('show bgp process | include "BGP Protocol Tag"')
+        matchbgpattr = re.search(r"BGP Protocol Tag\s+: (\d+)", outbgp)
+        if matchbgpattr:
+            bgpas = matchbgpattr.group(1)
+        else:
+            return bgp_attr
+        if ipv == 'v4':
+            bgpcmd = 'show ip bgp vrf {vrf} {destination}'.\
+                format(vrf=vrf, destination=destination)
+            outbgp = self._send_command(bgpcmd)
+            outbgpsec = outbgp.split('Path type')
+
+            # this should not happen ...
+            if len(outbgpsec) == 1:
+                return bgp_attr
+            
+            # process all bgp paths
+            for bgppath in outbgpsec[1:]:
+                matchbgpattr = re.search(r"is best path", bgppath)
+                if not matchbgpattr:
+                    # only best path is added to protocol attributes
+                    continue
+                # find BGP attributes
+                for key in search_re_dict:
+                    matchre = re.search(search_re_dict[key]['re'], bgppath)
+                    if matchre:
+                        groupnr = int(search_re_dict[key]['group'])
+                        search_re_dict[key]['result'] = matchre.group(groupnr)
+                    else:
+                        search_re_dict[key]['result'] = search_re_dict[key]['default']
+                bgpnh = search_re_dict['bgpnh']['result']
+                
+                # find remote AS nr. of this neighbor
+                bgpcmd = CMD_SHIBNV.format(vrf=vrf, neigh=bgpnh)
+                outbgpnei = self._send_command(bgpcmd)
+                matchbgpattr = \
+                    re.search(r"remote AS ("+ASN_REGEX+r")", outbgpnei)
+                if matchbgpattr:
+                    bgpras = matchbgpattr.group(1)
+                else:
+                    # next-hop is not known in this vrf, route leaked from
+                    #  other vrf or from vpnv4 table?
+                    # get remote AS nr. from as-path if it is ebgp neighbor
+                    # localy sourced prefix is not in routing table as a bgp route (i hope...)
+                    if search_re_dict['bgpie']['result'] == 'external':
+                        bgpras = search_re_dict['aspath']['result'].split(' ')[0].replace('(', '')
+                    else:
+                        bgpras = bgpas
+                # community
+                bothcomm = []
+                for commname in ['Extcommunity:', 'Community:']:
+                    commsplit = bgppath.split(commname)
+                    if len(commsplit) == 2:
+                        for line in commsplit[1].split('\n')[1:]:
+                            #          RT:65004:22
+                            matchcommun = re.match(r"[ ]{10}(\S+)", line)
+                            if matchcommun:
+                                bothcomm.append(matchcommun.group(1))
+                            else:
+                                # we've reached end of the community section
+                                continue
+                bgp_attr = {
+                    "as_path": search_re_dict['aspath']['result'].strip(),
+                    "remote_address": search_re_dict['bgpfrom']['result'],
+                    "local_preference": int(search_re_dict['bgplp']['result']),
+                    "communities": bothcomm,
+                    "local_as": napalm.base.helpers.as_number(bgpas)
+                }
+                if bgpras:
+                    bgp_attr['remote_as'] = napalm.base.helpers.as_number(bgpras)
+        return bgp_attr
+
     def get_route_to(self, destination='', protocol=''):
         '''
         '''
@@ -1408,13 +1516,15 @@ class NXOSSSHDriver(NXOSDriverBase):
                                 "current_active": nh_used,
                                 "routing_table": curvrf,
                                 "last_active": nh_used,
-                                "protocol_attributes": {
-                                    },
                                 "next_hop": nh_ip,
                                 "selected_next_hop": nh_used,
                                 "inactive_reason": "",
                                 "preference": int(nh_metric)
                             }
+                            if nh_source == 'bgp':
+                                route_entry['protocol_attributes'] = self._get_bgp_route_attr(cur_prefix, curvrf, nh_ip)
+                            else:
+                                route_entry['protocol_attributes'] = {}
                             nh_list.append(route_entry)
                 # process last next hop entries
                 if preffound:
