@@ -1396,21 +1396,30 @@ class NXOSSSHDriver(NXOSDriverBase):
                         #      via 10.17.205.132, Po77.3602, [110/20], 1y18w, ospf-1000, type-2, tag 2112
                         #     *via 10.17.207.42, Eth3/7.212, [110/20], 02:19:36, ospf-1000, type-2, tag 2121
                         #     *via 10.17.207.73, [1/0], 1y18w, static
-                        viastr = re.match(r"    ([\*| ])via (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}), (([\w./:]+), )?\[(\d+)/(\d+)\], ([\d\w:]+), ([\w\-]+).*", line)
+                        #     *via 10.17.209.132%vrf2, Po87.3606, [20/20], 1y25w, bgp-65000, external, tag 65000
+                        viastr = re.match(r"    ([\*| ])via (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(%(\S+))?, (([\w./:]+), )?\[(\d+)/(\d+)\], ([\d\w:]+), ([\w]+)(-(\d+))?(.*)", line)
                         if viastr:
                             if viastr.group(1) == '*':
                                 nh_used = True
                             else:
                                 nh_used = False
                             nh_ip = viastr.group(2)
-                            nh_int = viastr.group(4)
-                            nh_metric = viastr.group(6)
-                            nh_age = bgp_time_conversion(viastr.group(7))
-                            nh_source = viastr.group(8)
+                            # when next hop is leaked from other vrf
+                            nh_vrf = viastr.group(4)
+                            nh_int = viastr.group(6)
+                            nh_metric = viastr.group(8)
+                            nh_age = bgp_time_conversion(viastr.group(9))
+                            nh_source = viastr.group(10)
+                            rest_of_line = viastr.group(13)
+                            # routing protocol process number
+                            nh_source_proc_nr = viastr.group(12)
+                            if nh_int:
+                                nh_int_canon = napalm.base.helpers.canonical_interface_name(nh_int)
+                            else:
+                                nh_int_canon = ''
                             route_entry = {
                                 "protocol": nh_source,
-                                "outgoing_interface":
-                                    napalm.base.helpers.canonical_interface_name(nh_int),
+                                "outgoing_interface": nh_int_canon,
                                 "age": nh_age,
                                 "current_active": nh_used,
                                 "routing_table": curvrf,
