@@ -55,6 +55,8 @@ docs/_static/
 
 .idea
 .DS_Store
+.vagrant
+.venv
 
 env
 *.swp
