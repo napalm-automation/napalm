@@ -2204,12 +2204,12 @@ class IOSDriver(NetworkDriver):
                 'default': ''
             },
             'bgpcomm': {
-                're': r"  Community: ([RT\:\d ]+)",
+                're': r"  Community: ([\w\d\-\: ]+)",
                 'group': 1,
                 'default': ''
             },
             'bgpexcomm': {
-                're': r"Extended Community: ([RT\:\d ]+)",
+                're': r"Extended Community: ([\w\d\-\: ]+)",
                 'group': 1,
                 'default': ''
             },

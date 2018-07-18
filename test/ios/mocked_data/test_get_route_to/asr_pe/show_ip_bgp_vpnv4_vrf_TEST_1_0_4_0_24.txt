@@ -5,7 +5,7 @@ Paths: (3 available, best #1, table TEST)
   64560 60676, (aggregated by 64560 10.48.191.64), imported path from 315:46:1.0.4.0/24 (global)
     10.33.4.10 (metric 11) (via default) from 10.33.4.10 (10.33.4.10)
       Origin incomplete, metric 0, localpref 110, valid, internal, best
-      Community: 560
+      Community: 560 no-export
       Extended Community: RT:65404:46
       mpls labels in/out nolabel/6038
       rx pathid: 0, tx pathid: 0x0
@@ -13,7 +13,7 @@ Paths: (3 available, best #1, table TEST)
   64560 60676, (aggregated by 64560 10.48.191.52)
     10.105.106.1 (via vrf TEST) from 10.105.106.1 (10.48.191.52)
       Origin incomplete, metric 0, localpref 90, valid, external
-      Community: 560
+      Community: 560 no-export
       Extended Community: RT:65404:46
       rx pathid: 0, tx pathid: 0
   Refresh Epoch 1
