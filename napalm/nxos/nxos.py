@@ -645,7 +645,7 @@ class NXOSDriver(NXOSDriverBase):
             return lldp_neighbors  # empty dict
 
         CHASSIS_REGEX = r'^(Chassis id:)\s+([a-z0-9\.]+)$'
-        PORT_REGEX = r'^(Port id:)\s+([0-9]+)$'
+        PORT_REGEX = r'^(Port id:)\s+(.*)$'
         LOCAL_PORT_ID_REGEX = r'^(Local Port id:)\s+(.*)$'
         PORT_DESCR_REGEX = r'^(Port Description:)\s+(.*)$'
         SYSTEM_NAME_REGEX = r'^(System Name:)\s+(.*)$'
@@ -667,7 +667,7 @@ class NXOSDriver(NXOSDriverBase):
             lldp_neighbor['parent_interface'] = ''
             port_rgx = re.search(PORT_REGEX, line, re.I)
             if port_rgx:
-                lldp_neighbor['parent_interface'] = py23_compat.text_type(port_rgx.groups()[1])
+                lldp_neighbor['remote_port'] = py23_compat.text_type(port_rgx.groups()[1])
                 continue
             local_port_rgx = re.search(LOCAL_PORT_ID_REGEX, line, re.I)
             if local_port_rgx:
@@ -675,7 +675,6 @@ class NXOSDriver(NXOSDriverBase):
                 continue
             port_descr_rgx = re.search(PORT_DESCR_REGEX, line, re.I)
             if port_descr_rgx:
-                lldp_neighbor['remote_port'] = py23_compat.text_type(port_descr_rgx.groups()[1])
                 lldp_neighbor['remote_port_description'] = py23_compat.text_type(
                                                             port_descr_rgx.groups()[1])
                 continue
