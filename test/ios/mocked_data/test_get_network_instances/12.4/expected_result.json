@@ -1,0 +1,30 @@
+{
+   "default":{
+      "interfaces":{
+         "interface":{
+            "FastEthernet0/0":{
+
+            }
+	 }
+      },
+      "state":{
+         "route_distinguisher":""
+      },
+      "type":"DEFAULT_INSTANCE",
+      "name":"default"
+   },
+   "ios-124":{
+      "interfaces":{
+         "interface":{
+            "FastEthernet0/1":{
+
+            }
+	 }
+      },
+      "state":{
+         "route_distinguisher":"65000:1"
+      },
+      "type":"L3VRF",
+      "name":"ios-124"
+   }
+}

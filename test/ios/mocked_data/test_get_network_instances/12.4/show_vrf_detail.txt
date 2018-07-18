@@ -1,0 +1,12 @@
+VRF ios-124; default RD 65000:1; default VPNID <not set>
+  Interfaces:
+    FastEthernet0/1
+Address family ipv4 (Table ID = 0x4):
+  No Export VPN route-target communities
+  No Import VPN route-target communities
+  No import route-map
+  No export route-map
+  VRF label distribution protocol: not configured
+  VRF label allocation mode: per-prefix
+Address family ipv6 not active.
+
