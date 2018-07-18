@@ -1425,7 +1425,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                             extcomm.append(matchcommun.group(1))
                         else:
                             # we've reached end of the community section
-                            continue
+                            break
                 bothcomm = stdcomm + extcomm
                 bgp_attr = {
                     "as_path": search_re_dict['aspath']['result'].strip(),
