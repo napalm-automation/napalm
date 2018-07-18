@@ -14,7 +14,7 @@
     "mgmt0": [
         {
             "remote_port_description": "FastEthernet1/0/9", 
-            "remote_port": "FastEthernet1/0/9", 
+            "remote_port": "Fa1/0/9", 
             "remote_system_description": "Cisco IOS Software, C3750 Software (C3750-IPBASEK9-M), Version 12.2(44)SE2, RELEASE SOFTWARE (fc2)", 
             "remote_chassis_id": "00:14:1C:57:A4:8B", 
             "remote_system_enable_capab": "B, R", 
