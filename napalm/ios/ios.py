@@ -2297,12 +2297,13 @@ class IOSDriver(NetworkDriver):
     def get_network_instances(self, name=''):
 
         instances = {}
-        sh_vrf_detail = self._send_command('show vrf detail')
+        show_vrf_detail = self._send_command('show vrf detail')
         show_ip_int_br = self._send_command('show ip interface brief')
 
         # retrieve all interfaces for the default VRF
         interface_dict = {}
         show_ip_int_br = show_ip_int_br.strip()
+        show_vrf_detail = show_vrf_detail.strip()
         for line in show_ip_int_br.splitlines():
             if 'Interface ' in line:
                 continue
@@ -2316,12 +2317,12 @@ class IOSDriver(NetworkDriver):
                                 'interfaces': {'interface': interface_dict}
                                 }
 
-        for vrf in sh_vrf_detail.split('\n\n'):
+        for vrf in show_vrf_detail.split('\n\n'):
 
-            first_part = vrf.split('Address family')[0]
+            first_part = vrf.split('Address family')[0].strip()
 
             # retrieve the name of the VRF and the Route Distinguisher
-            vrf_name, RD = re.match(r'^VRF (\S+).*RD (.*);', first_part).groups()
+            vrf_name, RD = re.match(r'^VRF (\S+)(?:;| \(VRF Id = \d+\)).*RD (.*);', first_part).groups()
             if RD == '<not set>':
                 RD = ''
 
@@ -2332,12 +2333,29 @@ class IOSDriver(NetworkDriver):
             else:
                 interfaces = {itf: {} for itf in if_regex.group(1).split()}
 
+            # expand 'Gi' into 'GigabitEthernet'
+            long_name_gig = "GigabitEthernet"
+
+            expanded_interfaces = {}
+            for item in interfaces:
+                try:
+                    int_type, int_number = re.match(r'^(Gi)(\d.*)',item).groups()
+                    expanded_interfaces[long_name_gig + int_number] = interfaces[item] 
+                except AttributeError:
+                    expanded_interfaces[item] = interfaces[item]
+
             instances[vrf_name] = {
                                    'name': vrf_name,
                                    'type': 'L3VRF',
                                    'state': {'route_distinguisher': RD},
-                                   'interfaces': {'interface': interfaces}
+                                   'interfaces': {'interface': expanded_interfaces}
                                    }
+
+            # remove interaces in the VRF from the default VRF
+            for item in expanded_interfaces:
+
+                del instances['default']['interfaces']['interface'][item]
+
         return instances if not name else instances[name]
 
     def get_config(self, retrieve='all'):

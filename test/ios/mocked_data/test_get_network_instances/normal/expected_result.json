@@ -29,9 +29,6 @@
             "GigabitEthernet0/0/1":{
 
             },
-            "GigabitEthernet0":{
-
-            },
             "Gi0/0/0.1776":{
 
             },
@@ -52,7 +49,7 @@
    "Mgmt-intf":{
       "interfaces":{
          "interface":{
-            "Gi0":{
+            "GigabitEthernet0":{
 
             }
          }
