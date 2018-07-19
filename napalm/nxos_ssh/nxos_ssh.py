@@ -1107,7 +1107,7 @@ class NXOSSSHDriver(NXOSDriverBase):
     def __get_ntp_stats(self):
         ntp_stats = []
         command = 'show ntp peer-status'
-        output = self.device.send_command(command) # noqa
+        output = self.device.send_command(command)  # noqa
         return ntp_stats
 
     def get_interfaces_ip(self):
@@ -1237,7 +1237,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         mac_address_table = []
         command = 'show mac address-table'
-        output = self.device.send_command(command) # noqa
+        output = self.device.send_command(command)  # noqa
 
         def remove_prefix(s, prefix):
             return s[len(prefix):] if s.startswith(prefix) else s
@@ -1352,14 +1352,21 @@ class NXOSSSHDriver(NXOSDriverBase):
                 'group': 1,
                 'default': ''
             },
+            # external, internal, redist
             'bgpie': {
-                're': r"^: (external)",
+                're': r"^: (\w+),",
                 'group': 1,
-                'default': 'internal'
+                'default': ''
+            },
+            'vrfimp': {
+                're': r"Imported from [\S]+ \(VRF (\S+)\)",
+                'group': 1,
+                'default': ''
             }
         }
-        
+
         bgp_attr = {}
+        # get BGP AS number
         outbgp = \
             self._send_command('show bgp process | include "BGP Protocol Tag"')
         matchbgpattr = re.search(r"BGP Protocol Tag\s+: (\d+)", outbgp)
@@ -1373,10 +1380,10 @@ class NXOSSSHDriver(NXOSDriverBase):
             outbgp = self._send_command(bgpcmd)
             outbgpsec = outbgp.split('Path type')
 
-            # this should not happen ...
+            # this should not happen (zero BGP paths)...
             if len(outbgpsec) == 1:
                 return bgp_attr
-            
+
             # process all bgp paths
             for bgppath in outbgpsec[1:]:
                 matchbgpattr = re.search(r"is best path", bgppath)
@@ -1392,8 +1399,9 @@ class NXOSSSHDriver(NXOSDriverBase):
                     else:
                         search_re_dict[key]['result'] = search_re_dict[key]['default']
                 bgpnh = search_re_dict['bgpnh']['result']
-                
-                if bgpnh != next_hop:
+
+                # if route is not leaked next hops have to match
+                if (not (search_re_dict['bgpie']['result'] == 'redist')) and (bgpnh != next_hop):
                     # this is not the right route
                     continue
                 # find remote AS nr. of this neighbor
@@ -1407,24 +1415,26 @@ class NXOSSSHDriver(NXOSDriverBase):
                     # next-hop is not known in this vrf, route leaked from
                     #  other vrf or from vpnv4 table?
                     # get remote AS nr. from as-path if it is ebgp neighbor
-                    # localy sourced prefix is not in routing table as a bgp route (i hope...)
+                    # if locally sourced remote AS if undefined
                     if search_re_dict['bgpie']['result'] == 'external':
                         bgpras = search_re_dict['aspath']['result'].split(' ')[0].replace('(', '')
-                    else:
+                    elif search_re_dict['bgpie']['result'] == 'internal':
                         bgpras = bgpas
+                    else:    # redist, local
+                        bgpras = ''
                 # community
                 bothcomm = []
                 extcomm = []
-                stdcomm = search_re_dict['bgpcomm']['result'].split()                
+                stdcomm = search_re_dict['bgpcomm']['result'].split()
                 commsplit = bgppath.split("Extcommunity:")
                 if len(commsplit) == 2:
                     for line in commsplit[1].split('\n')[1:]:
                         #          RT:65004:22
-                        matchcommun = re.match(r"[ ]{10}(\S+)", line)
+                        matchcommun = re.match(r"[ ]{10}([\S ]+)", line)
                         if matchcommun:
                             extcomm.append(matchcommun.group(1))
                         else:
-                            # we've reached end of the community section
+                            # we've reached end of the extended community section
                             break
                 bothcomm = stdcomm + extcomm
                 bgp_attr = {
@@ -1436,11 +1446,15 @@ class NXOSSSHDriver(NXOSDriverBase):
                 }
                 if bgpras:
                     bgp_attr['remote_as'] = napalm.base.helpers.as_number(bgpras)
+                else:
+                    bgp_attr['remote_as'] = 0  # 0? , locally sourced
         return bgp_attr
 
     def get_route_to(self, destination='', protocol=''):
         '''
         '''
+        RE_VIASTR = re.compile(r"    ([\*| ])via ("+IPV4_ADDR_REGEX+r")(%(\S+))?, "
+                               r"(([\w./:]+), )?\[(\d+)/(\d+)\], ([\d\w:]+), ([\w]+)(-(\d+))?(.*)")
         longer_pref = ''    # for future use
         vrf = ''
         try:
@@ -1461,11 +1475,11 @@ class NXOSSSHDriver(NXOSDriverBase):
                 send_cmd = 'show ip route vrf {vrf} {destination} {longer}'.format(
                     vrf=vrf,
                     destination=destination,
-                    longer=longer_pref)
+                    longer=longer_pref).rstrip()
             else:
                 send_cmd = 'show ip route vrf all {destination} {longer}'.format(
                     destination=destination,
-                    longer=longer_pref)
+                    longer=longer_pref).rstrip()
             out_sh_ip_rou = self._send_command(send_cmd)
             # IP Route Table for VRF "TEST"
             for vrfsec in out_sh_ip_rou.split('IP Route Table for ')[1:]:
@@ -1474,6 +1488,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 vrffound = False
                 preffound = False
                 nh_list = []
+                cur_prefix = ''
                 for line in vrfsec.split('\n'):
                     if not vrffound:
                         vrfstr = re.match(r"VRF \"(\S+)\"", line)
@@ -1495,26 +1510,33 @@ class NXOSSSHDriver(NXOSDriverBase):
                                 preffound = True
                             continue
                         #     *via 10.2.49.60, Vlan3013, [0/0], 1y18w, direct
-                        #      via 10.17.205.132, Po77.3602, [110/20], 1y18w, ospf-1000, type-2, tag 2112
-                        #     *via 10.17.207.42, Eth3/7.212, [110/20], 02:19:36, ospf-1000, type-2, tag 2121
+                        #      via 10.17.205.132, Po77.3602, [110/20], 1y18w, ospf-1000,
+                        #            type-2, tag 2112
+                        #     *via 10.17.207.42, Eth3/7.212, [110/20], 02:19:36, ospf-1000, type-2,
+                        #            tag 2121
                         #     *via 10.17.207.73, [1/0], 1y18w, static
-                        #     *via 10.17.209.132%vrf2, Po87.3606, [20/20], 1y25w, bgp-65000, external, tag 65000
-                        viastr = re.match(r"    ([\*| ])via (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(%(\S+))?, (([\w./:]+), )?\[(\d+)/(\d+)\], ([\d\w:]+), ([\w]+)(-(\d+))?(.*)", line)
+                        #     *via 10.17.209.132%vrf2, Po87.3606, [20/20], 1y25w, bgp-65000,
+                        #            external, tag 65000
+                        viastr = re.match(RE_VIASTR, line)
                         if viastr:
                             if viastr.group(1) == '*':
                                 nh_used = True
                             else:
                                 nh_used = False
                             nh_ip = viastr.group(2)
-                            # when next hop is leaked from other vrf
-                            nh_vrf = viastr.group(4)
+                            # when next hop is leaked from other vrf, for future use
+                            # nh_vrf = viastr.group(4)
                             nh_int = viastr.group(6)
                             nh_metric = viastr.group(8)
                             nh_age = bgp_time_conversion(viastr.group(9))
                             nh_source = viastr.group(10)
-                            rest_of_line = viastr.group(13)
-                            # routing protocol process number
-                            nh_source_proc_nr = viastr.group(12)
+                            # for future use
+                            # rest_of_line = viastr.group(13)
+                            # use only routes from specified protocol
+                            if protocol and protocol != nh_source:
+                                continue
+                            # routing protocol process number, for future use
+                            # nh_source_proc_nr = viastr.group(12)
                             if nh_int:
                                 nh_int_canon = napalm.base.helpers.canonical_interface_name(nh_int)
                             else:
@@ -1532,7 +1554,8 @@ class NXOSSSHDriver(NXOSDriverBase):
                                 "preference": int(nh_metric)
                             }
                             if nh_source == 'bgp':
-                                route_entry['protocol_attributes'] = self._get_bgp_route_attr(cur_prefix, curvrf, nh_ip)
+                                route_entry['protocol_attributes'] = \
+                                    self._get_bgp_route_attr(cur_prefix, curvrf, nh_ip)
                             else:
                                 route_entry['protocol_attributes'] = {}
                             nh_list.append(route_entry)
