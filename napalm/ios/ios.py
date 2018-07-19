@@ -2322,7 +2322,9 @@ class IOSDriver(NetworkDriver):
             first_part = vrf.split('Address family')[0].strip()
 
             # retrieve the name of the VRF and the Route Distinguisher
-            vrf_name, RD = re.match(r'^VRF (\S+)(?:;| \(VRF Id = \d+\)).*RD (.*);', first_part).groups()
+            vrf_name, RD = re.match(
+                    r'^VRF (\S+)(?:;| \(VRF Id = \d+\)).*RD (.*);',
+                    first_part).groups()
             if RD == '<not set>':
                 RD = ''
 
@@ -2339,8 +2341,8 @@ class IOSDriver(NetworkDriver):
             expanded_interfaces = {}
             for item in interfaces:
                 try:
-                    int_type, int_number = re.match(r'^(Gi)(\d.*)',item).groups()
-                    expanded_interfaces[long_name_gig + int_number] = interfaces[item] 
+                    int_type, int_number = re.match(r'^(Gi)(\d.*)', item).groups()
+                    expanded_interfaces[long_name_gig + int_number] = interfaces[item]
                 except AttributeError:
                     expanded_interfaces[item] = interfaces[item]
 
