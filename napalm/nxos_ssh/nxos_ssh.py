@@ -1322,6 +1322,8 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def _get_bgp_route_attr(self, destination, vrf, next_hop, ipv='v4'):
         '''
+        BGP protocol attributes for get_route_tp
+        Only IPv4 supported
         '''
 
         CMD_SHIBNV = 'show ip bgp neighbors vrf {vrf} | include "is {neigh}"'
@@ -1401,7 +1403,8 @@ class NXOSSSHDriver(NXOSDriverBase):
                 bgpnh = search_re_dict['bgpnh']['result']
 
                 # if route is not leaked next hops have to match
-                if (not (search_re_dict['bgpie']['result'] == 'redist')) and (bgpnh != next_hop):
+                if (not (search_re_dict['bgpie']['result'] in ['redist', 'local'])) \
+                        and (bgpnh != next_hop):
                     # this is not the right route
                     continue
                 # find remote AS nr. of this neighbor
@@ -1452,10 +1455,11 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def get_route_to(self, destination='', protocol=''):
         '''
+        Only IPv4 supported, vrf aware, longer_prefixes parameter ready
         '''
-        RE_VIASTR = re.compile(r"    ([\*| ])via ("+IPV4_ADDR_REGEX+r")(%(\S+))?, "
+        RE_VIASTR = re.compile(r"    ([\*| ])via (("+IPV4_ADDR_REGEX+r")(%(\S+))?, )?"
                                r"(([\w./:]+), )?\[(\d+)/(\d+)\], ([\d\w:]+), ([\w]+)(-(\d+))?(.*)")
-        longer_pref = ''    # for future use
+        longer_pref = ''    # longer_prefixes support, for future use
         vrf = ''
         try:
             ipv = ''
@@ -1506,8 +1510,8 @@ class NXOSSSHDriver(NXOSDriverBase):
                                     routes[cur_prefix].append(nh)
                                 nh_list = []
                             else:
-                                cur_prefix = prefstr.group(1)
                                 preffound = True
+                            cur_prefix = prefstr.group(1)
                             continue
                         #     *via 10.2.49.60, Vlan3013, [0/0], 1y18w, direct
                         #      via 10.17.205.132, Po77.3602, [110/20], 1y18w, ospf-1000,
@@ -1517,21 +1521,19 @@ class NXOSSSHDriver(NXOSDriverBase):
                         #     *via 10.17.207.73, [1/0], 1y18w, static
                         #     *via 10.17.209.132%vrf2, Po87.3606, [20/20], 1y25w, bgp-65000,
                         #            external, tag 65000
+                        #     *via Vlan596, [1/0], 1y18w, static
                         viastr = re.match(RE_VIASTR, line)
                         if viastr:
-                            if viastr.group(1) == '*':
-                                nh_used = True
-                            else:
-                                nh_used = False
-                            nh_ip = viastr.group(2)
+                            nh_used = True if viastr.group(1) == '*' else False
+                            nh_ip = viastr.group(3) if viastr.group(3) else ''
                             # when next hop is leaked from other vrf, for future use
-                            # nh_vrf = viastr.group(4)
-                            nh_int = viastr.group(6)
-                            nh_metric = viastr.group(8)
-                            nh_age = bgp_time_conversion(viastr.group(9))
-                            nh_source = viastr.group(10)
+                            # nh_vrf = viastr.group(5)
+                            nh_int = viastr.group(7)
+                            nh_metric = viastr.group(9)
+                            nh_age = bgp_time_conversion(viastr.group(10))
+                            nh_source = viastr.group(11)
                             # for future use
-                            # rest_of_line = viastr.group(13)
+                            # rest_of_line = viastr.group(14)
                             # use only routes from specified protocol
                             if protocol and protocol != nh_source:
                                 continue
