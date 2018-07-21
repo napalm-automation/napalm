@@ -628,9 +628,11 @@ class JunOSDriver(NetworkDriver):
                 if not uptime_table_items:
                     uptime_table_items = _get_uptime_table(instance)
                 for neighbor, uptime in uptime_table_items:
-                    if neighbor not in bgp_neighbor_data[instance_name]['peers']:
-                        bgp_neighbor_data[instance_name]['peers'][neighbor] = {}
-                    bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
+                    normalized_neighbor = napalm.base.helpers.ip(neighbor)
+                    if normalized_neighbor not in bgp_neighbor_data[instance_name]['peers']:
+                        bgp_neighbor_data[instance_name]['peers'][normalized_neighbor] = {}
+                    bgp_neighbor_data[instance_name]['peers'][normalized_neighbor]['uptime'] = \
+                        uptime[0][1]
 
         # Commenting out the following sections, till Junos
         #   will provide a way to identify the routing instance name
