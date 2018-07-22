@@ -2294,6 +2294,32 @@ class IOSDriver(NetworkDriver):
         traceroute_dict['success'] = results
         return traceroute_dict
 
+    @staticmethod
+    def _expand_interface_names(interfaces):
+        ''' Takes a list of short interface names (from show vrf defail as an example)
+            and returns the expaned name'''
+
+        # Short name to long name mappings
+        long_to_short_map = {
+            "GigabitEthernet": r'^(Gi)(\d.*)',
+            "Tunnel": r'^(Tu)(\d.*)',
+            "Loopback": r'^(Lo)(\d.*)'
+        }
+
+        expanded_interfaces = interfaces.copy()
+
+        for short_interface in expanded_interfaces:
+            for long_name, regex in long_to_short_map.items():
+                try:
+                    _, int_number = re.match(regex, short_interface).groups()
+                    expanded_interfaces[long_name + int_number] = expanded_interfaces[short_interface]
+                    expanded_interfaces.pop(short_interface)
+                except AttributeError:
+                    pass
+
+        return expanded_interfaces
+
+
     def get_network_instances(self, name=''):
 
         instances = {}
@@ -2334,30 +2360,21 @@ class IOSDriver(NetworkDriver):
                 interfaces = {}
             else:
                 interfaces = {itf: {} for itf in if_regex.group(1).split()}
-
-            # expand 'Gi' into 'GigabitEthernet'
-            long_name_gig = "GigabitEthernet"
-
-            expanded_interfaces = {}
-            for item in interfaces:
-                try:
-                    int_type, int_number = re.match(r'^(Gi)(\d.*)', item).groups()
-                    expanded_interfaces[long_name_gig + int_number] = interfaces[item]
-                except AttributeError:
-                    expanded_interfaces[item] = interfaces[item]
-
-            instances[vrf_name] = {
-                                   'name': vrf_name,
-                                   'type': 'L3VRF',
-                                   'state': {'route_distinguisher': RD},
-                                   'interfaces': {'interface': expanded_interfaces}
-                                   }
+            
+            expanded_interfaces = IOSDriver._expand_interface_names(interfaces)
 
             # remove interaces in the VRF from the default VRF
             for item in expanded_interfaces:
 
                 del instances['default']['interfaces']['interface'][item]
 
+            instances[vrf_name] = {
+                                    'name': vrf_name,
+                                    'type': 'L3VRF',
+                                    'state': {'route_distinguisher': RD},
+                                    'interfaces': {'interface': expanded_interfaces}
+                                    }
+    
         return instances if not name else instances[name]
 
     def get_config(self, retrieve='all'):
