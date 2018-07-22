@@ -2303,7 +2303,8 @@ class IOSDriver(NetworkDriver):
         long_to_short_map = {
             "GigabitEthernet": r'^(Gi)(\d.*)',
             "Tunnel": r'^(Tu)(\d.*)',
-            "Loopback": r'^(Lo)(\d.*)'
+            "Loopback": r'^(Lo)(\d.*)',
+            "BDI": r'^(BD)(\d.*)'
         }
 
         expanded_interfaces = interfaces.copy()
@@ -2336,11 +2337,13 @@ class IOSDriver(NetworkDriver):
             interface = line.split()[0]
             interface_dict[interface] = {}
 
+        expanded_default = IOSDriver._expand_interface_names(interface_dict)
+
         instances['default'] = {
                                 'name': 'default',
                                 'type': 'DEFAULT_INSTANCE',
                                 'state': {'route_distinguisher': ''},
-                                'interfaces': {'interface': interface_dict}
+                                'interfaces': {'interface': expanded_default}
                                 }
 
         for vrf in show_vrf_detail.split('\n\n'):

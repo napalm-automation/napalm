@@ -1,0 +1,4 @@
+{
+    "python.venvPath": "~/venv/napalm",
+    "python.pythonPath": "/Users/luke/.pyenv/versions/napalm-3.6/bin/python"
+}
