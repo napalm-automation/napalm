@@ -2309,12 +2309,13 @@ class IOSDriver(NetworkDriver):
 
         expanded_interfaces = interfaces.copy()
 
-        for short_interface in expanded_interfaces:
+        for short_interface in list(expanded_interfaces.keys()):
             for long_name, regex in long_to_short_map.items():
                 try:
                     _, int_number = re.match(regex, short_interface).groups()
                     expanded_interfaces[long_name + int_number] = expanded_interfaces[short_interface]
                     expanded_interfaces.pop(short_interface)
+                    break
                 except AttributeError:
                     pass
 
@@ -2377,8 +2378,9 @@ class IOSDriver(NetworkDriver):
                                     'state': {'route_distinguisher': RD},
                                     'interfaces': {'interface': expanded_interfaces}
                                     }
-    
+
         return instances if not name else instances[name]
+
 
     def get_config(self, retrieve='all'):
         """Implementation of get_config for IOS.
