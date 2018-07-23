@@ -2313,14 +2313,14 @@ class IOSDriver(NetworkDriver):
             for long_name, regex in long_to_short_map.items():
                 try:
                     _, int_number = re.match(regex, short_interface).groups()
-                    expanded_interfaces[long_name + int_number] = expanded_interfaces[short_interface]
+                    expanded_interfaces[long_name + int_number] = \
+                        expanded_interfaces[short_interface]
                     expanded_interfaces.pop(short_interface)
                     break
                 except AttributeError:
                     pass
 
         return expanded_interfaces
-
 
     def get_network_instances(self, name=''):
 
@@ -2364,7 +2364,7 @@ class IOSDriver(NetworkDriver):
                 interfaces = {}
             else:
                 interfaces = {itf: {} for itf in if_regex.group(1).split()}
-            
+
             expanded_interfaces = IOSDriver._expand_interface_names(interfaces)
 
             # remove interaces in the VRF from the default VRF
@@ -2380,7 +2380,6 @@ class IOSDriver(NetworkDriver):
                                     }
 
         return instances if not name else instances[name]
-
 
     def get_config(self, retrieve='all'):
         """Implementation of get_config for IOS.
