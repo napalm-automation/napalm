@@ -27,8 +27,7 @@ import hashlib
 import socket
 
 # import third party lib
-from netaddr import IPAddress
-from netaddr import IPNetwork
+from netaddr import IPAddress, IPNetwork
 from netaddr.core import AddrFormatError
 
 # import NAPALM Base
@@ -67,6 +66,12 @@ RE_MAC = re.compile(r"{}".format(MAC_REGEX))
 
 # Period needed for 32-bit AS Numbers
 ASN_REGEX = r"[\d\.]+"
+
+IP_ROUTE_VIA_REGEX = re.compile(r"    (?P<used>[\*| ])via ((?P<ip>"+IPV4_ADDR_REGEX+r")"
+                                r"(%(?P<vrf>\S+))?, )?"
+                                r"((?P<int>[\w./:]+), )?\[(\d+)/(?P<metric>\d+)\]"
+                                r", (?P<age>[\d\w:]+), (?P<source>[\w]+)(-(?P<procnr>\d+))?"
+                                r"(?P<rest>.*)")
 
 
 def parse_intf_section(interface):
@@ -1320,7 +1325,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         return mac_address_table
 
-    def _get_bgp_route_attr(self, destination, vrf, next_hop, ipv='v4'):
+    def _get_bgp_route_attr(self, destination, vrf, next_hop, ipv=4):
         '''
         BGP protocol attributes for get_route_tp
         Only IPv4 supported
@@ -1366,17 +1371,19 @@ class NXOSSSHDriver(NXOSDriverBase):
                 'default': ''
             }
         }
+        matchbgpattr_cmp = re.compile(r"BGP Protocol Tag\s+: (\d+)")
+        matchbgpras_cmp = re.compile(r"remote AS ("+ASN_REGEX+r")")
+        matchcommun_cmp = re.compile(r"[ ]{10}([\S ]+)")
 
         bgp_attr = {}
         # get BGP AS number
         outbgp = \
             self._send_command('show bgp process | include "BGP Protocol Tag"')
-        matchbgpattr = re.search(r"BGP Protocol Tag\s+: (\d+)", outbgp)
-        if matchbgpattr:
-            bgpas = matchbgpattr.group(1)
-        else:
+        matchbgpattr = matchbgpattr_cmp.match(outbgp)
+        if not matchbgpattr:
             return bgp_attr
-        if ipv == 'v4':
+        bgpas = matchbgpattr.group(1)
+        if ipv == 4:
             bgpcmd = 'show ip bgp vrf {vrf} {destination}'.\
                 format(vrf=vrf, destination=destination)
             outbgp = self._send_command(bgpcmd)
@@ -1388,8 +1395,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
             # process all bgp paths
             for bgppath in outbgpsec[1:]:
-                matchbgpattr = re.search(r"is best path", bgppath)
-                if not matchbgpattr:
+                if "is best path" not in bgppath:
                     # only best path is added to protocol attributes
                     continue
                 # find BGP attributes
@@ -1410,18 +1416,18 @@ class NXOSSSHDriver(NXOSDriverBase):
                 # find remote AS nr. of this neighbor
                 bgpcmd = CMD_SHIBNV.format(vrf=vrf, neigh=bgpnh)
                 outbgpnei = self._send_command(bgpcmd)
-                matchbgpattr = \
-                    re.search(r"remote AS ("+ASN_REGEX+r")", outbgpnei)
-                if matchbgpattr:
-                    bgpras = matchbgpattr.group(1)
+                matchbgpras = matchbgpras_cmp.search(outbgpnei)
+                if matchbgpras:
+                    bgpras = matchbgpras.group(1)
                 else:
                     # next-hop is not known in this vrf, route leaked from
                     #  other vrf or from vpnv4 table?
                     # get remote AS nr. from as-path if it is ebgp neighbor
                     # if locally sourced remote AS if undefined
-                    if search_re_dict['bgpie']['result'] == 'external':
-                        bgpras = search_re_dict['aspath']['result'].split(' ')[0].replace('(', '')
-                    elif search_re_dict['bgpie']['result'] == 'internal':
+                    bgpie = search_re_dict['bgpie']['result']
+                    if bgpie == 'external':
+                        bgpras = bgpie.split(' ')[0].replace('(', '')
+                    elif bgpie == 'internal':
                         bgpras = bgpas
                     else:    # redist, local
                         bgpras = ''
@@ -1433,7 +1439,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 if len(commsplit) == 2:
                     for line in commsplit[1].split('\n')[1:]:
                         #          RT:65004:22
-                        matchcommun = re.match(r"[ ]{10}([\S ]+)", line)
+                        matchcommun = matchcommun_cmp.match(line)
                         if matchcommun:
                             extcomm.append(matchcommun.group(1))
                         else:
@@ -1457,23 +1463,18 @@ class NXOSSSHDriver(NXOSDriverBase):
         '''
         Only IPv4 supported, vrf aware, longer_prefixes parameter ready
         '''
-        RE_VIASTR = re.compile(r"    ([\*| ])via (("+IPV4_ADDR_REGEX+r")(%(\S+))?, )?"
-                               r"(([\w./:]+), )?\[(\d+)/(\d+)\], ([\d\w:]+), ([\w]+)(-(\d+))?(.*)")
         longer_pref = ''    # longer_prefixes support, for future use
         vrf = ''
+
+        vrfstr_cmp = re.compile(r"VRF \"(\S+)\"")
+        prefstr_cmp = re.compile(r"("+IPV4_ADDR_REGEX+r"/\d{1,2}), ubest.*")
+
+        ip_version = None
         try:
-            ipv = ''
-            if IPNetwork(destination).version == 6:
-                ipv = 'v6'
+            ip_version = IPNetwork(destination).version
         except AddrFormatError:
             return 'Please specify a valid destination!'
-        try:
-            ipv = ''
-            if IPNetwork(destination).version == 4:
-                ipv = 'v4'
-        except AddrFormatError:
-            return 'Please specify a valid destination!'
-        if ipv == 'v4':           # process IPv4 routing table
+        if ip_version == 4:           # process IPv4 routing table
             routes = {}
             if vrf:
                 send_cmd = 'show ip route vrf {vrf} {destination} {longer}'.format(
@@ -1495,13 +1496,13 @@ class NXOSSSHDriver(NXOSDriverBase):
                 cur_prefix = ''
                 for line in vrfsec.split('\n'):
                     if not vrffound:
-                        vrfstr = re.match(r"VRF \"(\S+)\"", line)
+                        vrfstr = vrfstr_cmp.match(line)
                         if vrfstr:
                             curvrf = vrfstr.group(1)
                             vrffound = True
                     else:
                         # 10.10.56.0/24, ubest/mbest: 2/0
-                        prefstr = re.match(r"("+IPV4_ADDR_REGEX+r"/\d{1,2}), ubest.*", line)
+                        prefstr = prefstr_cmp.match(line)
                         if prefstr:
                             if preffound:   # precess previous prefix
                                 if cur_prefix not in routes:
@@ -1522,23 +1523,23 @@ class NXOSSSHDriver(NXOSDriverBase):
                         #     *via 10.17.209.132%vrf2, Po87.3606, [20/20], 1y25w, bgp-65000,
                         #            external, tag 65000
                         #     *via Vlan596, [1/0], 1y18w, static
-                        viastr = re.match(RE_VIASTR, line)
+                        viastr = IP_ROUTE_VIA_REGEX.match(line)
                         if viastr:
-                            nh_used = True if viastr.group(1) == '*' else False
-                            nh_ip = viastr.group(3) if viastr.group(3) else ''
+                            nh_used = viastr.group('used') == '*'
+                            nh_ip = viastr.group('ip') or ''
                             # when next hop is leaked from other vrf, for future use
-                            # nh_vrf = viastr.group(5)
-                            nh_int = viastr.group(7)
-                            nh_metric = viastr.group(9)
-                            nh_age = bgp_time_conversion(viastr.group(10))
-                            nh_source = viastr.group(11)
+                            # nh_vrf = viastr.group('vrf')
+                            nh_int = viastr.group('int')
+                            nh_metric = viastr.group('metric')
+                            nh_age = bgp_time_conversion(viastr.group('age'))
+                            nh_source = viastr.group('source')
                             # for future use
-                            # rest_of_line = viastr.group(14)
+                            # rest_of_line = viastr.group('rest')
                             # use only routes from specified protocol
                             if protocol and protocol != nh_source:
                                 continue
                             # routing protocol process number, for future use
-                            # nh_source_proc_nr = viastr.group(12)
+                            # nh_source_proc_nr = viastr.group('procnr)
                             if nh_int:
                                 nh_int_canon = napalm.base.helpers.canonical_interface_name(nh_int)
                             else:
