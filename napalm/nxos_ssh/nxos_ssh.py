@@ -72,6 +72,8 @@ IP_ROUTE_VIA_REGEX = re.compile(r"    (?P<used>[\*| ])via ((?P<ip>"+IPV4_ADDR_RE
                                 r"((?P<int>[\w./:]+), )?\[(\d+)/(?P<metric>\d+)\]"
                                 r", (?P<age>[\d\w:]+), (?P<source>[\w]+)(-(?P<procnr>\d+))?"
                                 r"(?P<rest>.*)")
+RT_VRF_NAME = re.compile(r"VRF \"(\S+)\"")
+RT_IPV4_ROUTE_PREF = re.compile(r"("+IPV4_ADDR_REGEX+r"/\d{1,2}), ubest.*")
 
 
 def parse_intf_section(interface):
@@ -1466,9 +1468,6 @@ class NXOSSSHDriver(NXOSDriverBase):
         longer_pref = ''    # longer_prefixes support, for future use
         vrf = ''
 
-        vrfstr_cmp = re.compile(r"VRF \"(\S+)\"")
-        prefstr_cmp = re.compile(r"("+IPV4_ADDR_REGEX+r"/\d{1,2}), ubest.*")
-
         ip_version = None
         try:
             ip_version = IPNetwork(destination).version
@@ -1496,13 +1495,13 @@ class NXOSSSHDriver(NXOSDriverBase):
                 cur_prefix = ''
                 for line in vrfsec.split('\n'):
                     if not vrffound:
-                        vrfstr = vrfstr_cmp.match(line)
+                        vrfstr = RT_VRF_NAME.match(line)
                         if vrfstr:
                             curvrf = vrfstr.group(1)
                             vrffound = True
                     else:
                         # 10.10.56.0/24, ubest/mbest: 2/0
-                        prefstr = prefstr_cmp.match(line)
+                        prefstr = RT_IPV4_ROUTE_PREF.match(line)
                         if prefstr:
                             if preffound:   # precess previous prefix
                                 if cur_prefix not in routes:
