@@ -66,6 +66,9 @@ RE_MAC = re.compile(r"{}".format(MAC_REGEX))
 # Period needed for 32-bit AS Numbers
 ASN_REGEX = r"[\d\.]+"
 
+IP_ROUTE_VIA_REGEX = re.compile(r"[ ]{2}([*| ])[ ](?P<ip>"+IP_ADDR_REGEX+r")"
+                                r"( [\(\)a-z\d\.]+)?(, from "+IP_ADDR_REGEX+r", "
+                                r"(?P<age>[\ddhwy:]+) ago)?(, via (?P<via>\S+))?")
 IOS_COMMANDS = {
    'show_mac_address': ['show mac-address-table', 'show mac address-table'],
 }
@@ -2015,15 +2018,17 @@ class IOSDriver(NetworkDriver):
 
         return probes
 
-    def _get_vrfs(self, ipv=''):
+    def _get_vrfs(self, ipv=None):
         """
-        Returns list of all VRFs (if ipv='') or VRFs which have ipv4 (ipv='v4') or
-        ipv6 (ipv='v6') configured
-        param ipv can contain '','v4' or 'v6'
+        Returns list of all VRFs (if ipv=None) or VRFs which have ipv4 (ipv=4) or
+        ipv6 (ipv=6) configured
+        param ipv can contain None, 4 or 6
         """
         vrfs = []
+        match_vrfsimp_cmp = re.compile(r"[ ]{2}(\S+)")
+        match_vrf_cmp = re.compile(r"[ ]{2}(\S+)[ ]+[<> a-z:\d]+[ ]+([a-z\d,]+)")
 
-        if ipv not in ['', 'v4', 'v6']:
+        if ipv and (ipv not in [4, 6]):
             return(vrfs)
         command = 'show vrf'
         output = self._send_command(command)
@@ -2035,20 +2040,20 @@ class IOSDriver(NetworkDriver):
             output = self._send_command(command)
             out_lines = output.split('\n')
             for line in out_lines[1:]:
-                vrfstr = re.match(r"[ ]{2}(\S+)", line)
+                vrfstr = match_vrfsimp_cmp.match(line)
                 if vrfstr:
                     vrfs.append(vrfstr.group(1))
         else:
             out_lines = output.split('\n')
             for line in out_lines[1:]:
                 #   TEST                             65417:2               ipv4,ipv6
-                vrfstr = re.match(r"[ ]{2}(\S+)[ ]+[<> a-z:\d]+[ ]+([a-z\d,]+)", line)
+                vrfstr = match_vrf_cmp.match(line)
                 if vrfstr:
-                    if ipv == '' or ipv in vrfstr.group(2):
+                    if (ipv is None) or (str(ipv) in vrfstr.group(2)):
                         vrfs.append(vrfstr.group(1))
         return(vrfs)
 
-    def _get_bgp_route_attr(self, destination, vrf, next_hop, ipv='v4'):
+    def _get_bgp_route_attr(self, destination, vrf, next_hop, ipv=4):
         """
         Returns bgp attributes of specific prefix. Result is used as a value
         of 'protocol_attributes' key used in get_route_to function
@@ -2094,6 +2099,9 @@ class IOSDriver(NetworkDriver):
             }
 
         }
+        matchbgpras_cmp = re.compile(r"remote AS ("+ASN_REGEX+r")")
+        matchbgpasl_cmp = re.compile(r"^[ ]{2}([\d\(]([\d\) ]+)|Local)")
+
         bgp_attr = {}
         # find local AS number
         outbgp = \
@@ -2101,7 +2109,7 @@ class IOSDriver(NetworkDriver):
         matchbgpattr = re.search(r"Routing Protocol is \"bgp (\d+)", outbgp)
         if matchbgpattr:
             bgpas = matchbgpattr.group(1)
-        if ipv == 'v4':
+        if ipv == 4:
             if vrf == 'default':
                 bgpcmd = 'show ip bgp {destination}'.\
                     format(destination=destination)
@@ -2114,28 +2122,28 @@ class IOSDriver(NetworkDriver):
             else:   # sections are not separated by 'Refresh Epoch' string
                 outbgpsec = []
                 outbgplines = outbgp.split('\n')
-                sec_bord = ['0']
+                # sec_bord list contains list of line numbers which separate sections
+                sec_bord = [0]
                 process_line = 0
                 for bgpline in outbgplines:
                     # find line with AS-PATH
-                    if re.match(r"^[ ]{2}([\d\(]([\d\) ]+)|Local)", bgpline):
+                    if matchbgpasl_cmp.match(bgpline):
                         sec_bord.append(process_line)
                     process_line += 1
                 nritems = len(sec_bord)
                 for item in range(0, nritems):
                     if item == nritems-1:
-                        block = '\n'.join(outbgplines[int(sec_bord[item]):])
+                        block = '\n'.join(outbgplines[sec_bord[item]:])
                     else:
                         block = \
-                            '\n'.join(outbgplines[int(sec_bord[item]):int(sec_bord[item+1])-1])
+                            '\n'.join(outbgplines[sec_bord[item]:sec_bord[item+1]-1])
                     # hack to have the same format of block as with 'Refresh epoch' split
                     block = '\n' + block
                     outbgpsec.append(block)
 
             # process all bgp paths
             for bgppath in outbgpsec[1:]:
-                matchbgpattr = re.search(r"best", bgppath)
-                if not matchbgpattr:
+                if 'best' not in bgppath:
                     # only best path is added to protocol attributes
                     continue
                 # find BGP attributes
@@ -2153,8 +2161,7 @@ class IOSDriver(NetworkDriver):
                 else:
                     bgpcmd = CMD_SHIBNV.format(vrf=vrf, neigh=bgpnh)
                 outbgpnei = self._send_command(bgpcmd)
-                matchbgpattr = \
-                    re.search(r"remote AS ("+ASN_REGEX+r")", outbgpnei)
+                matchbgpattr = matchbgpras_cmp.search(outbgpnei)
                 if matchbgpattr:
                     bgpras = matchbgpattr.group(1)
                 else:
@@ -2215,32 +2222,21 @@ class IOSDriver(NetworkDriver):
             ]
         }
         """
-
-        #  * 10.105.113.164, from 10.105.113.164, 1w6d ago
-        #  * 10.33.4.10 (default), from 10.33.4.10, 2w2d ago
-        #    19.22.18.4, from 19.22.18.4, 7w0d ago, via GigabitEthernet0/2
-        #  * 10.106.14.157, via Vlan406
-        RE_RDB1 = r"[ ]{2}([*| ])[ ]("+IP_ADDR_REGEX+r")( [\(\)a-z\d\.]+)?(, from " + \
-            IP_ADDR_REGEX + r", ([\ddhwy:]+) ago)?(, via (\S+))?"
+        rp_regex_cmp = re.compile(r'Known via \"([a-z]+)[ \"]')
+        rp_via_cmp = re.compile(r"via (\S+)")
+        rp_metric_cmp = re.compile(r"[ ]+Route metric is (\d+)")
 
         output = []
         # Placeholder for vrf arg
         vrf = ''
+        ip_version = None
         try:
-            ipv = ''
-            if IPNetwork(destination).version == 6:
-                ipv = 'v6'
+            ip_version = IPNetwork(destination).version
         except AddrFormatError:
             return 'Please specify a valid destination!'
-        try:
-            ipv = ''
-            if IPNetwork(destination).version == 4:
-                ipv = 'v4'
-        except AddrFormatError:
-            return 'Please specify a valid destination!'
-        if ipv == 'v4':           # process IPv4 routing table
+        if ip_version == 4:           # process IPv4 routing table
             if vrf == '':
-                vrfs = sorted(self._get_vrfs(ipv))
+                vrfs = sorted(self._get_vrfs(ip_version))
             else:
                 vrfs = [vrf]    # VRFs where IPv4 is enabled
             vrfs.append('default')  # global VRF
@@ -2265,7 +2261,7 @@ class IOSDriver(NetworkDriver):
                 outvrf = self._send_command(cmditem)
                 output.append(outvrf)
             for (outitem, _vrf) in zip(output, vrfs):   # for all VRFs
-                route_proto_regex = re.search(r'Known via \"([a-z]+)[ \"]', outitem)
+                route_proto_regex = rp_regex_cmp.search(outitem)
                 if route_proto_regex:
                     # routing protocol name (bgp, ospf, ...)
                     route_proto = route_proto_regex.group(1)
@@ -2273,21 +2269,25 @@ class IOSDriver(NetworkDriver):
                     nh_line_found = False
                     # go through all routing entry lines related to prefix/mask
                     for rdbline in rdb[1].split('\n'):
-                        matchstr = re.match(RE_RDB1, rdbline)
+                        #  * 10.105.113.164, from 10.105.113.164, 1w6d ago
+                        #  * 10.33.4.10 (default), from 10.33.4.10, 2w2d ago
+                        #    19.22.18.4, from 19.22.18.4, 7w0d ago, via GigabitEthernet0/2
+                        #  * 10.106.14.157, via Vlan406
+                        matchstr = IP_ROUTE_VIA_REGEX.match(rdbline)
                         if matchstr:
-                            nh = matchstr.group(2)
-                            ageraw = matchstr.group(5)
+                            nh = matchstr.group('ip')
+                            ageraw = matchstr.group('age')
                             if not ageraw:
                                 ageraw = ''
                             # line with next hop, age, etc. found
                             nh_line_found = True
-                            viaraw = matchstr.group(7)
+                            viaraw = matchstr.group('via')
                             if not viaraw:
                                 viaraw = ''
                             continue
                         elif route_proto == 'connected':
                             #  * directly connected, via Vlan781
-                            matchstr = re.search(r"via (\S+)", rdbline)
+                            matchstr = rp_via_cmp.search(rdbline)
                             if matchstr:
                                 viaraw = matchstr.group(1)
                                 ageraw = ''
@@ -2295,7 +2295,7 @@ class IOSDriver(NetworkDriver):
                                 # outgoing interface (via) is like next hop in this case ...
                                 nh_line_found = True
                         # process next line
-                        matchstr = re.match(r"[ ]+Route metric is (\d+)", rdbline)
+                        matchstr = rp_metric_cmp.match(rdbline)
                         if matchstr and nh_line_found:
                             rmetric = matchstr.group(1)
                             if ageraw:
@@ -2324,7 +2324,7 @@ class IOSDriver(NetworkDriver):
                             if protocol == '' or protocol == route_entry['protocol']:
                                 if route_proto == 'bgp':
                                     route_entry['protocol_attributes'] = \
-                                        self._get_bgp_route_attr(destination, _vrf, nh, ipv)
+                                        self._get_bgp_route_attr(destination, _vrf, nh, ip_version)
                                 nh_line_found = False  # for next RT entry processing ...
                                 routes[destination].append(route_entry)
         return(routes)
