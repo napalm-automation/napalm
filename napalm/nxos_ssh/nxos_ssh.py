@@ -67,13 +67,17 @@ RE_MAC = re.compile(r"{}".format(MAC_REGEX))
 # Period needed for 32-bit AS Numbers
 ASN_REGEX = r"[\d\.]+"
 
-IP_ROUTE_VIA_REGEX = re.compile(r"    (?P<used>[\*| ])via ((?P<ip>"+IPV4_ADDR_REGEX+r")"
-                                r"(%(?P<vrf>\S+))?, )?"
-                                r"((?P<int>[\w./:]+), )?\[(\d+)/(?P<metric>\d+)\]"
-                                r", (?P<age>[\d\w:]+), (?P<source>[\w]+)(-(?P<procnr>\d+))?"
-                                r"(?P<rest>.*)")
-RT_VRF_NAME = re.compile(r"VRF \"(\S+)\"")
-RT_IPV4_ROUTE_PREF = re.compile(r"("+IPV4_ADDR_REGEX+r"/\d{1,2}), ubest.*")
+RE_IP_ROUTE_VIA_REGEX = re.compile(r"    (?P<used>[\*| ])via ((?P<ip>"+IPV4_ADDR_REGEX+r")"
+                                   r"(%(?P<vrf>\S+))?, )?"
+                                   r"((?P<int>[\w./:]+), )?\[(\d+)/(?P<metric>\d+)\]"
+                                   r", (?P<age>[\d\w:]+), (?P<source>[\w]+)(-(?P<procnr>\d+))?"
+                                   r"(?P<rest>.*)")
+RE_RT_VRF_NAME = re.compile(r"VRF \"(\S+)\"")
+RE_RT_IPV4_ROUTE_PREF = re.compile(r"("+IPV4_ADDR_REGEX+r"/\d{1,2}), ubest.*")
+
+RE_BGP_PROTO_TAG = re.compile(r"BGP Protocol Tag\s+: (\d+)")
+RE_BGP_REMOTE_AS = re.compile(r"remote AS ("+ASN_REGEX+r")")
+RE_BGP_COMMUN = re.compile(r"[ ]{10}([\S ]+)")
 
 
 def parse_intf_section(interface):
@@ -1327,7 +1331,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         return mac_address_table
 
-    def _get_bgp_route_attr(self, destination, vrf, next_hop, ipv=4):
+    def _get_bgp_route_attr(self, destination, vrf, next_hop, ip_version=4):
         '''
         BGP protocol attributes for get_route_tp
         Only IPv4 supported
@@ -1373,19 +1377,16 @@ class NXOSSSHDriver(NXOSDriverBase):
                 'default': ''
             }
         }
-        matchbgpattr_cmp = re.compile(r"BGP Protocol Tag\s+: (\d+)")
-        matchbgpras_cmp = re.compile(r"remote AS ("+ASN_REGEX+r")")
-        matchcommun_cmp = re.compile(r"[ ]{10}([\S ]+)")
 
         bgp_attr = {}
         # get BGP AS number
         outbgp = \
             self._send_command('show bgp process | include "BGP Protocol Tag"')
-        matchbgpattr = matchbgpattr_cmp.match(outbgp)
+        matchbgpattr = RE_BGP_PROTO_TAG.match(outbgp)
         if not matchbgpattr:
             return bgp_attr
         bgpas = matchbgpattr.group(1)
-        if ipv == 4:
+        if ip_version == 4:
             bgpcmd = 'show ip bgp vrf {vrf} {destination}'.\
                 format(vrf=vrf, destination=destination)
             outbgp = self._send_command(bgpcmd)
@@ -1418,7 +1419,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 # find remote AS nr. of this neighbor
                 bgpcmd = CMD_SHIBNV.format(vrf=vrf, neigh=bgpnh)
                 outbgpnei = self._send_command(bgpcmd)
-                matchbgpras = matchbgpras_cmp.search(outbgpnei)
+                matchbgpras = RE_BGP_REMOTE_AS.search(outbgpnei)
                 if matchbgpras:
                     bgpras = matchbgpras.group(1)
                 else:
@@ -1441,7 +1442,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 if len(commsplit) == 2:
                     for line in commsplit[1].split('\n')[1:]:
                         #          RT:65004:22
-                        matchcommun = matchcommun_cmp.match(line)
+                        matchcommun = RE_BGP_COMMUN.match(line)
                         if matchcommun:
                             extcomm.append(matchcommun.group(1))
                         else:
@@ -1495,13 +1496,13 @@ class NXOSSSHDriver(NXOSDriverBase):
                 cur_prefix = ''
                 for line in vrfsec.split('\n'):
                     if not vrffound:
-                        vrfstr = RT_VRF_NAME.match(line)
+                        vrfstr = RE_RT_VRF_NAME.match(line)
                         if vrfstr:
                             curvrf = vrfstr.group(1)
                             vrffound = True
                     else:
                         # 10.10.56.0/24, ubest/mbest: 2/0
-                        prefstr = RT_IPV4_ROUTE_PREF.match(line)
+                        prefstr = RE_RT_IPV4_ROUTE_PREF.match(line)
                         if prefstr:
                             if preffound:   # precess previous prefix
                                 if cur_prefix not in routes:
@@ -1522,7 +1523,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                         #     *via 10.17.209.132%vrf2, Po87.3606, [20/20], 1y25w, bgp-65000,
                         #            external, tag 65000
                         #     *via Vlan596, [1/0], 1y18w, static
-                        viastr = IP_ROUTE_VIA_REGEX.match(line)
+                        viastr = RE_IP_ROUTE_VIA_REGEX.match(line)
                         if viastr:
                             nh_used = viastr.group('used') == '*'
                             nh_ip = viastr.group('ip') or ''
