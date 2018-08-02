@@ -1,0 +1,108 @@
+{
+    "vrfs": {
+        "default": {
+            "routerId": "1.0.4.48",
+            "vrf": "default",
+            "bgpRouteEntries": {
+                "1.0.4.0/24": {
+                    "totalPaths": 2,
+                    "bgpAdvertisedPeerGroups": {
+                        "INTERNAL-TOR": {
+                            "peerList": [
+                                "1.0.4.223"
+                            ]
+                        }
+                    },
+                    "totalAdvertisedPeers": 1,
+                    "maskLength": 16,
+                    "bgpRoutePaths": [
+                        {
+                            "asPathEntry": {
+                                "asPathType": "Confed-External",
+                                "asPath": "(20901 21149)"
+                            },
+                            "med": 175,
+                            "localPreference": 100,
+                            "weight": 0,
+                            "reasonNotBestpath": "noReason",
+                            "timestamp": 1526591713,
+                            "nextHop": "1.0.4.221",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Igp",
+                                "suppressed": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": true,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": true,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Igp",
+                                "peerEntry": {
+                                    "peerRouterId": "1.0.4.1",
+                                    "peerAddr": "1.0.4.221"
+                                },
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "aggregator": " (aggregated by 65001 1.0.4.49)",
+                                "recvdFromRRClient": false,
+                                "labelStack": []
+                            }
+                        },
+                        {
+                            "asPathEntry": {
+                                "asPathType": "Confed-External",
+                                "asPath": "(20902 21149)"
+                            },
+                            "med": 175,
+                            "localPreference": 100,
+                            "weight": 0,
+                            "reasonNotBestpath": "ecmpFast",
+                            "timestamp": 1526591756,
+                            "nextHop": "1.0.4.223",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Igp",
+                                "suppressed": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": false,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Igp",
+                                "peerEntry": {
+                                    "peerRouterId": "1.0.4.2",
+                                    "peerAddr": "1.0.4.223"
+                                },
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "aggregator": " (aggregated by 65501 1.0.4.49)",
+                                "recvdFromRRClient": false,
+                                "labelStack": []
+                            }
+                        }
+                    ],
+                    "address": "1.0.4.0"
+                }
+            },
+            "asn": 20948
+        }
+    }
+}

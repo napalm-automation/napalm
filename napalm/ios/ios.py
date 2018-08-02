@@ -16,26 +16,27 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import functools
-import re
-import os
-import uuid
-import socket
-import tempfile
-import telnetlib
 import copy
+import functools
+import os
+import re
+import socket
+import telnetlib
+import tempfile
+import uuid
+from collections import defaultdict
 
 from netmiko import FileTransfer, InLineTransfer
-from napalm.base.base import NetworkDriver
-from napalm.base.netmiko_helpers import netmiko_args
-from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
-            ConnectionClosedException, CommandErrorException
 
-from napalm.base.utils import py23_compat
 import napalm.base.constants as C
 import napalm.base.helpers
+from napalm.base.base import NetworkDriver
+from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
+    ConnectionClosedException, CommandErrorException
 from napalm.base.helpers import canonical_interface_name
-
+from napalm.base.helpers import textfsm_extractor
+from napalm.base.netmiko_helpers import netmiko_args
+from napalm.base.utils import py23_compat
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
@@ -65,6 +66,20 @@ ASN_REGEX = r"[\d\.]+"
 
 IOS_COMMANDS = {
    'show_mac_address': ['show mac-address-table', 'show mac address-table'],
+}
+
+AFI_COMMAND_MAP = {
+    'IPv4 Unicast': 'ipv4 unicast',
+    'IPv6 Unicast': 'ipv6 unicast',
+    'VPNv4 Unicast': 'vpnv4 all',
+    'VPNv6 Unicast': 'vpnv6 unicast all',
+    'IPv4 Multicast': 'ipv4 multicast',
+    'IPv6 Multicast': 'ipv6 multicast',
+    'L2VPN E-VPN': 'l2vpn evpn',
+    'MVPNv4 Unicast': 'ipv4 mvpn all',
+    'MVPNv6 Unicast': 'ipv6 mvpn all',
+    'VPNv4 Flowspec': 'ipv4 flowspec',
+    'VPNv6 Flowspec': 'ipv6 flowspec',
 }
 
 
@@ -683,202 +698,65 @@ class IOSDriver(NetworkDriver):
         """IOS implementation of get_lldp_neighbors."""
         lldp = {}
         neighbors_detail = self.get_lldp_neighbors_detail()
-        for intf_name, v in neighbors_detail.items():
+        for intf_name, entries in neighbors_detail.items():
             lldp[intf_name] = []
-            for lldp_entry in v:
+            for lldp_entry in entries:
+                hostname = lldp_entry['remote_system_name']
+                # Match IOS behaviour of taking remote chassis ID
+                # When lacking a system name (in show lldp neighbors)
+                if hostname == "N/A":
+                    hostname = lldp_entry['remote_chassis_id']
                 lldp_dict = {
                     'port': lldp_entry['remote_port'],
-                    'hostname': lldp_entry['remote_system_name'],
+                    'hostname': hostname,
                 }
                 lldp[intf_name].append(lldp_dict)
 
         return lldp
 
-    def _get_lldp_neighbors(self, expand_name=True):
-
-        def _device_id_expand(device_id, local_int_brief):
-            """Device id might be abbreviated: try to obtain the full device id."""
-            # _lldp_detail_parser will execute a LLDP command on the device
-            lldp_tmp = self._lldp_detail_parser(local_int_brief)
-            device_id_new = lldp_tmp[3][0]
-            # Verify abbreviated and full name are consistent
-            if device_id_new[:20] == device_id:
-                return device_id_new
-            else:
-                # Else return the original device_id
-                return device_id
-
-        lldp = {}
-        command = 'show lldp neighbors'
-        output = self._send_command(command)
-
-        # Check if router supports the command
-        if '% Invalid input' in output:
-            return {}
-
-        # Process the output to obtain just the LLDP entries
-        try:
-            split_output = re.split(r'^Device ID.*$', output, flags=re.M)[1]
-            split_output = re.split(r'^Total entries displayed.*$', split_output, flags=re.M)[0]
-        except IndexError:
-            return {}
-
-        split_output = split_output.strip()
-
-        for lldp_entry in split_output.splitlines():
-            # Example, twb-sf-hpsw1    Fa4   120   B   17
-            device_id = lldp_entry[:20].strip()
-            remaining_fields = lldp_entry[20:]
-            try:
-                local_int_brief, hold_time, capability, remote_port = remaining_fields.split()
-            except ValueError:
-                if len(remaining_fields.split()) == 3:
-                    # Three fields might be missing capability
-                    capability_missing = True if remaining_fields[26] == ' ' else False
-                    if capability_missing:
-                        local_int_brief, hold_time, remote_port = remaining_fields.split()
-                    else:
-                        raise ValueError("Unable to parse LLDP Info:\n{}".format(lldp_entry))
-
-            # device_id might be abbreviated, try to get full name
-            if len(device_id) == 20:
-                if expand_name:
-                    device_id = _device_id_expand(device_id, local_int_brief)
-            local_port = canonical_interface_name(local_int_brief)
-
-            entry = {'port': remote_port, 'hostname': device_id}
-            lldp.setdefault(local_port, [])
-            lldp[local_port].append(entry)
-
-        return lldp
-
-    def _lldp_detail_parser(self, interface, lldp_entry=None):
-        if lldp_entry is None:
-            command = "show lldp neighbors {} detail".format(interface)
-            output = self._send_command(command)
-        else:
-            output = lldp_entry
-
-        # Check if router supports the command
-        if '% Invalid input' in output:
-            raise ValueError("Command not supported by network device")
-
-        # Cisco generally use : for string divider, but sometimes has ' - '
-        port_id = re.findall(r"Port id\s*?[:-]\s+(.+)", output)
-        port_description = re.findall(r"Port Description\s*?[:-]\s+(.+)", output)
-        chassis_id = re.findall(r"Chassis id\s*?[:-]\s+(.+)", output)
-        system_name = re.findall(r"System Name\s*?[:-]\s+(.+)", output)
-        system_description = re.findall(r"System Description\s*?[:-]\s*(not advertised|\s*\n.+)",
-                                        output)
-        system_description = [x.strip() for x in system_description]
-        system_capabilities = re.findall(r"System Capabilities\s*?[:-]\s+(.+)", output)
-        enabled_capabilities = re.findall(r"Enabled Capabilities\s*?[:-]\s+(.+)", output)
-        remote_address = re.findall(r"Management Addresses\s*[:-]\s*(not advertised|\n.+)", output)
-        # remote address had two possible patterns which required some secondary processing
-        new_remote_address = []
-        for val in remote_address:
-            val = val.strip()
-            pattern = r'(?:IP|Other)(?::\s+?)(.+)'
-            match = re.search(pattern, val)
-            if match:
-                new_remote_address.append(match.group(1))
-            else:
-                new_remote_address.append(val)
-        remote_address = new_remote_address
-        return [port_id, port_description, chassis_id, system_name, system_description,
-                system_capabilities, enabled_capabilities, remote_address]
-
     def get_lldp_neighbors_detail(self, interface=''):
-        """IOS implementation of get_lldp_neighbors_detail."""
         lldp = {}
-        command = 'show lldp neighbors detail'
-        # Filter to specific interface
+        lldp_interfaces = []
+
         if interface:
             command = 'show lldp neighbors {} detail'.format(interface)
+        else:
+            command = 'show lldp neighbors detail'
+        lldp_entries = self._send_command(command)
+        lldp_entries = textfsm_extractor(self, 'show_lldp_neighbors_detail', lldp_entries)
 
-        lldp_detail_output = self._send_command(command)
-        lldp_detail = re.split(r"^------------------.*$", lldp_detail_output, flags=re.M)[1:]
+        if len(lldp_entries) == 0:
+            return {}
 
-        # Newer IOS versions have 'Local Intf' defined in LLDP detail; older IOS doesn't :-(
-        local_intf_detected = True
-        if not re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_detail_output, flags=re.M):
-            # Older IOS local interface is not in LLDP detail output
-            local_intf_detected = False
-
-            # Construct table of reverse mappings (table to try to work out local_intf)
-            lldp_neighbors = self._get_lldp_neighbors(expand_name=False)
-            reverse_neighbors = {}
-            for local_intf, v in lldp_neighbors.items():
-                for entry in v:
-                    key = "{hostname}_{port}".format(**entry)
-                    reverse_neighbors[key] = local_intf
-
-        for lldp_entry in lldp_detail:
-            if local_intf_detected:
-                match = re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_entry, flags=re.M)
-                if match:
-                    local_intf = match.group(1)
+        # Older IOS versions don't have 'Local Intf' defined in LLDP detail.
+        # We need to get them from the non-detailed command
+        # which is in the same sequence as the detailed output
+        if not lldp_entries[0]["local_interface"]:
+            if interface:
+                command = 'show lldp neighbors {}'.format(interface)
             else:
-                system_name_match = re.search(r"^System Name:\s+(\S.*)$", lldp_entry, flags=re.M)
-                # Cisco is inconsistent on whether the domain name appears in LLDP brief output
-                system_name_alt = re.search(r"^System Name:\s+(\S.*?)\.", lldp_entry, flags=re.M)
-                port_id_match = re.search(r"^Port id:\s+(\S+)\s*$", lldp_entry, flags=re.M)
-                # Try to find the local_intf from the reverse_neighbors table
-                if system_name_match and port_id_match:
-                    port_id = port_id_match.group(1)
-                    system_name = system_name_match.group(1)[:20]
-                    system_name = system_name.strip()
-                    key = "{}_{}".format(system_name, port_id)
-                    local_intf = reverse_neighbors.get(key)
-                    if local_intf is None and system_name_alt:
-                        system_name_alt = system_name_alt.group(1)[:20]
-                        system_name_alt = system_name_alt.strip()
-                        alt_key = "{}_{}".format(system_name_alt, port_id)
-                        local_intf = reverse_neighbors.get(alt_key)
+                command = 'show lldp neighbors'
+            lldp_brief = self._send_command(command)
+            lldp_interfaces = textfsm_extractor(self, 'show_lldp_neighbors', lldp_brief)
+            lldp_interfaces = [x['local_interface'] for x in lldp_interfaces]
+            if len(lldp_interfaces) != len(lldp_entries):
+                raise ValueError(
+                    "LLDP neighbor count has changed between commands. "
+                    "Interface: {}\nEntries: {}".format(lldp_interfaces, lldp_entries)
+                )
 
-            if local_intf is not None:
-                lldp_fields = self._lldp_detail_parser(local_intf, lldp_entry=lldp_entry)
-            else:
-                # Couldn't work out the local interface
-                raise ValueError("LLDP details could not determine the value of local interface:"
-                                 "\n{}\n{}".format(lldp_neighbors, lldp_entry))
-
+        for idx, lldp_entry in enumerate(lldp_entries):
+            local_intf = lldp_entry.pop('local_interface') or lldp_interfaces[idx]
             # Convert any 'not advertised' to 'N/A'
-            for field in lldp_fields:
-                for i, value in enumerate(field):
-                    if 'not advertised' in value:
-                        field[i] = 'N/A'
-            number_entries = len(lldp_fields[0])
-
-            # re.findall will return a list. Make sure same number of entries always returned.
-            for test_list in lldp_fields:
-                if len(test_list) != number_entries:
-                    raise ValueError("Failure processing show lldp neighbors detail")
-
-            # Standardize the fields
-            port_id, port_description, chassis_id, system_name, system_description, \
-                system_capabilities, enabled_capabilities, remote_address = lldp_fields
-            standardized_fields = zip(port_id, port_description, chassis_id, system_name,
-                                      system_description, system_capabilities,
-                                      enabled_capabilities, remote_address)
-
-            if local_intf:
-                local_intf = canonical_interface_name(local_intf)
+            for field in lldp_entry:
+                if 'not advertised' in lldp_entry[field]:
+                    lldp_entry[field] = 'N/A'
+            # Add field missing on IOS
+            lldp_entry['parent_interface'] = u'N/A'
+            # Turn the interfaces into their long version
+            local_intf = canonical_interface_name(local_intf)
             lldp.setdefault(local_intf, [])
-            for entry in standardized_fields:
-                remote_port_id, remote_port_description, remote_chassis_id, remote_system_name, \
-                    remote_system_description, remote_system_capab, remote_enabled_capab, \
-                    remote_mgmt_address = entry
-
-                lldp[local_intf].append({
-                    'parent_interface': u'N/A',
-                    'remote_port': remote_port_id,
-                    'remote_port_description': remote_port_description,
-                    'remote_chassis_id': remote_chassis_id,
-                    'remote_system_name': remote_system_name,
-                    'remote_system_description': remote_system_description,
-                    'remote_system_capab': remote_system_capab,
-                    'remote_system_enable_capab': remote_enabled_capab})
+            lldp[local_intf].append(lldp_entry)
 
         return lldp
 
@@ -1478,6 +1356,104 @@ class IOSDriver(NetworkDriver):
                 }
         return bgp_neighbor_data
 
+    def get_bgp_neighbors_detail(self, neighbor_address=''):
+        bgp_detail = defaultdict(lambda: defaultdict(lambda: []))
+
+        raw_bgp_sum = self._send_command('show ip bgp all sum').strip()
+        bgp_sum = napalm.base.helpers.textfsm_extractor(
+            self, 'ip_bgp_all_sum', raw_bgp_sum)
+        for neigh in bgp_sum:
+            if neighbor_address and neighbor_address != neigh['neighbor']:
+                continue
+            raw_bgp_neigh = self._send_command('show ip bgp {} neigh {}'.format(
+                AFI_COMMAND_MAP[neigh['addr_family']], neigh['neighbor']))
+            bgp_neigh = napalm.base.helpers.textfsm_extractor(
+                self, 'ip_bgp_neigh', raw_bgp_neigh)[0]
+            details = {
+                'up': neigh['up'] != 'never',
+                'local_as': napalm.base.helpers.as_number(neigh['local_as']),
+                'remote_as': napalm.base.helpers.as_number(neigh['remote_as']),
+                'router_id': napalm.base.helpers.ip(
+                    bgp_neigh['router_id']) if bgp_neigh['router_id'] else '',
+                'local_address': napalm.base.helpers.ip(
+                    bgp_neigh['local_address']) if bgp_neigh['local_address'] else '',
+                'local_address_configured': False,
+                'local_port': napalm.base.helpers.as_number(
+                    bgp_neigh['local_port']) if bgp_neigh['local_port'] else 0,
+                'routing_table': bgp_neigh['vrf'] if bgp_neigh['vrf'] else 'global',
+                'remote_address': napalm.base.helpers.ip(bgp_neigh['neighbor']),
+                'remote_port': napalm.base.helpers.as_number(
+                    bgp_neigh['remote_port']) if bgp_neigh['remote_port'] else 0,
+                'multihop': False,
+                'multipath': False,
+                'remove_private_as': False,
+                'import_policy': '',
+                'export_policy': '',
+                'input_messages': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_total_in']) if bgp_neigh['msg_total_in'] else 0,
+                'output_messages': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_total_out']) if bgp_neigh['msg_total_out'] else 0,
+                'input_updates': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_update_in']) if bgp_neigh['msg_update_in'] else 0,
+                'output_updates': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_update_out']) if bgp_neigh['msg_update_out'] else 0,
+                'messages_queued_out': napalm.base.helpers.as_number(neigh['out_q']),
+                'connection_state': bgp_neigh['bgp_state'],
+                'previous_connection_state': '',
+                'last_event': '',
+                'suppress_4byte_as': (
+                    bgp_neigh['four_byte_as'] != 'advertised and received' if
+                    bgp_neigh['four_byte_as'] else False),
+                'local_as_prepend': False,
+                'holdtime': napalm.base.helpers.as_number(
+                    bgp_neigh['holdtime']) if bgp_neigh['holdtime'] else 0,
+                'configured_holdtime': 0,
+                'keepalive': napalm.base.helpers.as_number(
+                    bgp_neigh['keepalive']) if bgp_neigh['keepalive'] else 0,
+                'configured_keepalive': 0,
+                'active_prefix_count': 0,
+                'received_prefix_count': 0,
+                'accepted_prefix_count': 0,
+                'suppressed_prefix_count': 0,
+                'advertised_prefix_count': 0,
+                'flap_count': 0,
+            }
+
+            bgp_neigh_afi = napalm.base.helpers.textfsm_extractor(
+                self, 'ip_bgp_neigh_afi', raw_bgp_neigh)
+            if len(bgp_neigh_afi) > 1:
+                bgp_neigh_afi = bgp_neigh_afi[1]
+                details.update({
+                    'local_address_configured': bgp_neigh_afi['local_addr_conf'] != '',
+                    'multipath': bgp_neigh_afi['multipaths'] != '0',
+                    'import_policy': bgp_neigh_afi['policy_in'],
+                    'export_policy': bgp_neigh_afi['policy_out'],
+                    'last_event': (
+                        bgp_neigh_afi['last_event'] if
+                        bgp_neigh_afi['last_event'] != 'never' else ''),
+                    'active_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['bestpaths']),
+                    'received_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['prefix_curr_in']) + napalm.base.helpers.as_number(
+                            bgp_neigh_afi['rejected_prefix_in']),
+                    'accepted_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['prefix_curr_in']),
+                    'suppressed_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['rejected_prefix_in']),
+                    'advertised_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['prefix_curr_out']),
+                    'flap_count': napalm.base.helpers.as_number(bgp_neigh_afi['flap_count'])
+                })
+            else:
+                bgp_neigh_afi = bgp_neigh_afi[0]
+                details.update({
+                    'import_policy': bgp_neigh_afi['policy_in'],
+                    'export_policy': bgp_neigh_afi['policy_out'],
+                })
+            bgp_detail[details['routing_table']][
+                details['remote_as']].append(details)
+        return bgp_detail
+
     def get_interfaces_counters(self):
         """
         Return interface counters and errors.
@@ -1742,6 +1718,12 @@ class IOSDriver(NetworkDriver):
             cli_output[command] = output
 
         return cli_output
+
+    def get_ntp_peers(self):
+        """Implementation of get_ntp_peers for IOS."""
+        ntp_stats = self.get_ntp_stats()
+
+        return {ntp_peer.get('remote'): {} for ntp_peer in ntp_stats if ntp_peer.get('remote')}
 
     def get_ntp_servers(self):
         """Implementation of get_ntp_servers for IOS.
