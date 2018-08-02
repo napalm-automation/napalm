@@ -1,10 +1,12 @@
-coveralls
-ddt
-flake8-import-order
-pytest
-pytest-cov
-pytest-json
-pytest-pythonpath
-pylama
-mock
-tox
+coveralls==1.3.0
+ddt==1.2.0
+flake8-import-order==0.18
+pytest==3.6.4
+pytest-cov==2.5.1
+pytest-json==0.4.0
+pytest-pythonpath==0.7.2
+pylama==7.4.3
+mock==2.0.0
+# For travis-ci and PY34 for some reason. tox > 3.0.0 requires packaging >= 17.1
+# which fails in travis-ci using PY34
+tox==3.0.0
