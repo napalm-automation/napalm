@@ -30,16 +30,14 @@ import socket
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 
-from netmiko import ConnectHandler
-from netmiko.ssh_exception import NetMikoTimeoutException
-
 # import NAPALM Base
 import napalm.base.helpers
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.utils import py23_compat
-from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.base.helpers import canonical_interface_name
 from napalm.nxos import NXOSDriverBase
 import napalm.base.constants as c
 
@@ -91,9 +89,11 @@ def parse_intf_section(interface):
     re_is_enabled_1 = r"^admin state is (?P<is_enabled>\S+)$"
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
-    re_mac = r"^\s+Hardware.*address:\s+(?P<mac_address>\S+) "
-    re_speed = r"^\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
-    re_description = r"^\s+Description:\s+(?P<description>.*)$"
+    re_mac = r"^\s+Hardware:\s+(?P<hardware>.*), address:\s+(?P<mac_address>\S+) "
+    re_speed = r"\s+MTU .*, BW (?P<speed>\S+) (?P<speed_unit>\S+), "
+    re_description_1 = r"^\s+Description:\s+(?P<description>.*)  (?:MTU|Internet)"
+    re_description_2 = r"^\s+Description:\s+(?P<description>.*)$"
+    re_hardware = r"^.* Hardware: (?P<hardware>\S+)$"
 
     # Check for 'protocol is ' lines
     match = re.search(re_protocol, interface, flags=re.M)
@@ -122,7 +122,7 @@ def parse_intf_section(interface):
                 match = re.search(x_pattern, interface, flags=re.M)
                 if match:
                     is_enabled = match.group('is_enabled').strip()
-                    is_enabled = True if is_enabled == 'up' else False
+                    is_enabled = True if re.search("up", is_enabled) else False
                     break
             else:
                 msg = "Error parsing intf, 'admin state' never detected:\n\n{}".format(interface)
@@ -143,19 +143,30 @@ def parse_intf_section(interface):
     else:
         mac_address = ""
 
-    match = re.search(re_speed, interface, flags=re.M)
-    speed = int(match.group('speed'))
-    speed_unit = match.group('speed_unit')
-    # This was alway in Kbit (in the data I saw)
-    if speed_unit != "Kbit":
-        msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface)
-        raise ValueError(msg)
-    speed = int(round(speed / 1000.0))
+    match = re.search(re_hardware, interface, flags=re.M)
+    speed_exist = True
+    if match:
+        if match.group('hardware') == "NVE":
+            speed_exist = False
+
+    if speed_exist:
+        match = re.search(re_speed, interface, flags=re.M)
+        speed = int(match.group('speed'))
+        speed_unit = match.group('speed_unit')
+        # This was alway in Kbit (in the data I saw)
+        if speed_unit != "Kbit":
+            msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(interface)
+            raise ValueError(msg)
+        speed = int(round(speed / 1000.0))
+    else:
+        speed = -1
 
     description = ''
-    match = re.search(re_description, interface, flags=re.M)
-    if match:
-        description = match.group('description')
+    for x_pattern in [re_description_1, re_description_2]:
+        match = re.search(x_pattern, interface, flags=re.M)
+        if match:
+            description = match.group('description')
+            break
 
     return {
              intf_name: {
@@ -299,9 +310,9 @@ def bgp_summary_parser(bgp_summary):
     if len(bgp_summary.strip().splitlines()) <= 1:
         return {}
 
-    allowed_afi = ['ipv4', 'ipv6']
+    allowed_afi = ['ipv4', 'ipv6', 'l2vpn']
     vrf_regex = r"^BGP summary information for VRF\s+(?P<vrf>\S+),"
-    afi_regex = r"^BGP summary information.*address family (?P<afi>\S+ Unicast)"
+    afi_regex = r"^BGP summary information.*address family (?P<afi>\S+ (?:Unicast|EVPN))"
     local_router_regex = (r"^BGP router identifier\s+(?P<router_id>\S+)"
                           r",\s+local AS number\s+(?P<local_as>\S+)")
 
@@ -373,58 +384,28 @@ class NXOSSSHDriver(NXOSDriverBase):
         self.username = username
         self.password = password
         self.timeout = timeout
-        self.up = False
         self.replace = True
         self.loaded = False
-        self.fc = None
         self.changed = False
         self.replace_file = None
         self.merge_candidate = ''
-
-        if optional_args is None:
-            optional_args = {}
-
-        # Netmiko possible arguments
-        netmiko_argument_map = {
-            'port': None,
-            'verbose': False,
-            'timeout': self.timeout,
-            'global_delay_factor': 1,
-            'use_keys': False,
-            'key_file': None,
-            'ssh_strict': False,
-            'system_host_keys': False,
-            'alt_host_keys': False,
-            'alt_key_file': '',
-            'ssh_config_file': None,
-            'allow_agent': False
-        }
-
-        # Build dict of any optional Netmiko args
-        self.netmiko_optional_args = {
-            k: optional_args.get(k, v)
-            for k, v in netmiko_argument_map.items()
-        }
-
-        self.port = optional_args.get('port', 22)
-        self.sudo_pwd = optional_args.get('sudo_pwd', self.password)
+        self.netmiko_optional_args = netmiko_args(optional_args)
+        self.device = None
 
     def open(self):
-        try:
-            self.device = ConnectHandler(device_type='cisco_nxos',
-                                         host=self.hostname,
-                                         username=self.username,
-                                         password=self.password,
-                                         **self.netmiko_optional_args)
-            self.device.enable()
-        except NetMikoTimeoutException:
-            raise ConnectionException('Cannot connect to {}'.format(self.hostname))
+        self.device = self._netmiko_open(
+            device_type='cisco_nxos',
+            netmiko_optional_args=self.netmiko_optional_args,
+        )
 
     def close(self):
         if self.changed:
             self._delete_file(self.backup_file)
-        self.device.disconnect()
-        self.device = None
+        self._netmiko_close()
+
+    def _send_command(self, command):
+        """Wrapper for Netmiko's send_command method."""
+        return self.device.send_command(command)
 
     @staticmethod
     def parse_uptime(uptime_str):
@@ -720,7 +701,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         # default values.
         vendor = u'Cisco'
         uptime = -1
-        serial_number, fqdn, os_version, hostname, domain_name = ('',) * 5
+        serial_number, fqdn, os_version, hostname, domain_name, model = ('',) * 6
 
         # obtain output from device
         show_ver = self.device.send_command('show version')
@@ -738,14 +719,18 @@ class NXOSSSHDriver(NXOSDriverBase):
                 _, serial_number = line.split("Processor Board ID ")
                 serial_number = serial_number.strip()
 
-            if 'system: ' in line:
+            if 'system: ' in line or 'NXOS: ' in line:
                 line = line.strip()
                 os_version = line.split()[2]
                 os_version = os_version.strip()
 
-            if 'cisco' in line and 'Chassis' in line:
-                _, model = line.split()[:2]
-                model = model.strip()
+            if 'cisco' in line and 'hassis' in line:
+                match = re.search(r'.cisco (.*) \(', line)
+                if match:
+                    model = match.group(1).strip()
+                match = re.search(r'.cisco (.* [cC]hassis)', line)
+                if match:
+                    model = match.group(1).strip()
 
         hostname = show_hostname.strip()
 
@@ -757,17 +742,25 @@ class NXOSSSHDriver(NXOSDriverBase):
                 break
         if hostname.count(".") >= 2:
             fqdn = hostname
+            # Remove domain name from hostname
+            if domain_name:
+                hostname = re.sub(re.escape(domain_name) + '$', '', hostname)
+                hostname = hostname.strip('.')
         elif domain_name:
             fqdn = '{}.{}'.format(hostname, domain_name)
 
         # interface_list filter
         interface_list = []
         show_int_status = show_int_status.strip()
+        # Remove the header information
+        show_int_status = re.sub(r'(?:^---------+$|^Port .*$|^ .*$)', '',
+                                 show_int_status, flags=re.M)
         for line in show_int_status.splitlines():
-            if line.startswith(' ') or line.startswith('-') or line.startswith('Port '):
+            if not line:
                 continue
             interface = line.split()[0]
-            interface_list.append(interface)
+            # Return canonical interface name
+            interface_list.append(canonical_interface_name(interface))
 
         return {
             'uptime': int(uptime),
@@ -857,9 +850,8 @@ class NXOSSSHDriver(NXOSDriverBase):
                 if local_iface not in results:
                     results[local_iface] = []
 
-            neighbor_dict = {}
-            neighbor_dict['hostname'] = py23_compat.text_type(neighbor.get('neighbor'))
-            neighbor_dict['port'] = py23_compat.text_type(neighbor.get('neighbor_interface'))
+            neighbor_dict = {'hostname': py23_compat.text_type(neighbor.get('neighbor')),
+                             'port': py23_compat.text_type(neighbor.get('neighbor_interface'))}
 
             results[local_iface].append(neighbor_dict)
         return results
@@ -1054,7 +1046,9 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         arp_entries = arp_list[1].strip()
         for line in arp_entries.splitlines():
-            if len(line.split()) == 4:
+            if len(line.split()) >= 4:
+                # Search for extra characters to strip, currently strip '*', '+', '#', 'D'
+                line = re.sub(r"\s+[\*\+\#D]{1,4}\s*$", "", line, flags=re.M)
                 address, age, mac, interface = line.split()
             else:
                 raise ValueError("Unexpected output from: {}".format(line.split()))
@@ -1278,10 +1272,11 @@ class NXOSSSHDriver(NXOSDriverBase):
         output = re.split(r'^----.*', output, flags=re.M)[1:]
         output = "\n".join(output).strip()
         # Strip any leading characters
-        output = re.sub(r"^[\*\+GO]", "", output, flags=re.M)
+        output = re.sub(r"^[\*\+GOCE]", "", output, flags=re.M)
         output = re.sub(r"^\(R\)", "", output, flags=re.M)
         output = re.sub(r"^\(T\)", "", output, flags=re.M)
         output = re.sub(r"^\(F\)", "", output, flags=re.M)
+        output = re.sub(r"vPC Peer-Link", "vPC-Peer-Link", output, flags=re.M)
 
         for line in output.splitlines():
 

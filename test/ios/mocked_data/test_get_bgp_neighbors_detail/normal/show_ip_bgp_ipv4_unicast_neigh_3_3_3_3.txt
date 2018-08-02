@@ -1,0 +1,64 @@
+BGP neighbor is 3.3.3.3,  remote AS 3, external link
+ Description: Three
+ Administratively shut down
+  BGP version 4, remote router ID 0.0.0.0
+  BGP state = Idle
+  Neighbor sessions:
+    0 active, is not multisession capable (disabled)
+    Stateful switchover support enabled: NO
+  Do log neighbor state changes (via global configuration)
+  Default minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv4 Unicast
+  BGP table version 64572104, neighbor version 1/64572104
+  Output queue size : 0
+  Index 0, Advertise bit 0
+  Inherits from template ebgp-peer
+  Inbound soft reconfiguration allowed
+  My AS number is allowed for 10 number of times
+  NEXT_HOP is always this router for eBGP paths
+  Community attribute sent to this neighbor
+  Extended-community attribute sent to this neighbor
+  Inbound path policy configured
+  Outbound path policy configured
+  Incoming update prefix filter list is bogons-in
+  Outgoing update prefix filter list is BGP_TO_TRANSIT
+  Route map for incoming advertisements is bgp-in
+  Route map for outgoing advertisements is bgp-out
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:               0          0
+    Prefixes Total:                 0          0
+    Implicit Withdraw:              0          0
+    Explicit Withdraw:              0          0
+    Used as bestpath:             n/a          0
+    Used as multipath:            n/a          0
+    Used as secondary:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Total:                                0          0
+  Number of NLRIs in the update sent: max 0, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 1
+  Last Sent Refresh Start-of-rib: never
+  Last Sent Refresh End-of-rib: never
+  Last Received Refresh Start-of-rib: never
+  Last Received Refresh End-of-rib: never
+				       Sent	  Rcvd
+	Refresh activity:	       ----	  ----
+	  Refresh Start-of-RIB          0          0
+	  Refresh End-of-RIB            0          0
+
+  Address tracking is enabled, the RIB does have a route to 3.3.3.3
+  Connections established 0; dropped 0
+  Last reset never
+  External BGP neighbor configured for connected checks (single-hop no-disable-connected-check)
+  Interface associated: (none) (peering address NOT in same link)
+  Transport(tcp) path-mtu-discovery is enabled
+  Graceful-Restart is enabled, restart-time 120 seconds, stalepath-time 360 seconds
+  SSO is disabled
+  No active TCP connection

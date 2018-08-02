@@ -26,8 +26,6 @@ from lxml import etree as ETREE
 from netaddr import IPAddress  # needed for traceroute, to check IP version
 from netaddr.core import AddrFormatError
 
-from netmiko import __version__ as netmiko_version
-
 from pyIOSXR import IOSXR
 from pyIOSXR.exceptions import ConnectError
 from pyIOSXR.exceptions import TimeoutError
@@ -35,6 +33,7 @@ from pyIOSXR.exceptions import InvalidInputError
 
 # import NAPALM base
 import napalm.base.helpers
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.iosxr import constants as C
 from napalm.base.base import NetworkDriver
 from napalm.base.utils import py23_compat
@@ -46,7 +45,6 @@ from napalm.base.utils.py23_compat import text_type
 
 
 class IOSXRDriver(NetworkDriver):
-
     """IOS-XR driver class: inherits NetworkDriver from napalm.base."""
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
@@ -58,35 +56,14 @@ class IOSXRDriver(NetworkDriver):
         self.replace = False
         if optional_args is None:
             optional_args = {}
-        self.port = optional_args.get('port', 22)
         self.lock_on_connect = optional_args.get('config_lock', False)
-        # Netmiko possible arguments
-        netmiko_argument_map = {
-            'keepalive': 30,
-            'verbose': False,
-            'global_delay_factor': 1,
-            'use_keys': False,
-            'key_file': None,
-            'ssh_strict': False,
-            'system_host_keys': False,
-            'alt_host_keys': False,
-            'alt_key_file': '',
-            'ssh_config_file': None
-        }
-        fields = netmiko_version.split('.')
-        fields = [int(x) for x in fields]
-        maj_ver, min_ver, bug_fix = fields
-        if maj_ver >= 2:
-            netmiko_argument_map['allow_agent'] = False
-        elif maj_ver == 1 and min_ver >= 1:
-            netmiko_argument_map['allow_agent'] = False
-        # Build dict of any optional Netmiko args
-        self.netmiko_optional_args = {}
-        for k, v in netmiko_argument_map.items():
-            try:
-                self.netmiko_optional_args[k] = optional_args[k]
-            except KeyError:
-                pass
+
+        self.netmiko_optional_args = netmiko_args(optional_args)
+        try:
+            self.port = self.netmiko_optional_args.pop('port')
+        except KeyError:
+            self.port = 22
+
         self.device = IOSXR(hostname,
                             username,
                             password,
@@ -106,10 +83,10 @@ class IOSXRDriver(NetworkDriver):
 
     def is_alive(self):
         """Returns a flag with the state of the connection."""
-        # Simply returns the flag from Netmiko
-        return {
-            'is_alive': self.device.device.is_alive()
-        }
+        if self.device is None:
+            return {'is_alive': False}
+        # Simply returns the flag from pyIOSXR
+        return {'is_alive': self.device.is_alive()}
 
     def load_replace_candidate(self, filename=None, config=None):
         self.pending_changes = True
@@ -145,11 +122,12 @@ class IOSXRDriver(NetworkDriver):
         else:
             return self.device.compare_config().strip()
 
-    def commit_config(self):
+    def commit_config(self, message=""):
+        commit_args = {'comment': message} if message else {}
         if self.replace:
-            self.device.commit_replace_config()
+            self.device.commit_replace_config(**commit_args)
         else:
-            self.device.commit_config()
+            self.device.commit_config(**commit_args)
         self.pending_changes = False
         if not self.lock_on_connect:
             self.device.unlock()
@@ -1338,23 +1316,32 @@ class IOSXRDriver(NetworkDriver):
             raise TypeError('Wrong destination IP Address!')
 
         if ipv == 6:
-            route_info_rpc_command = '<Get><Operational><IPV6_RIB><VRFTable><VRF><Naming><VRFName>\
-            default</VRFName></Naming><AFTable><AF><Naming><AFName>IPv6</AFName></Naming><SAFTable>\
-            <SAF><Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><IP_RIBRoute><Naming>\
-            <RouteTableName>default</RouteTableName></Naming><RouteTable><Route><Naming><Address>\
-            {network}</Address>{prefix}</Naming></Route></RouteTable></IP_RIBRoute>\
-            </IP_RIBRouteTable></SAF></SAFTable></AF></AFTable></VRF></VRFTable></IPV6_RIB>\
-            </Operational></Get>'.format(network=network, prefix=prefix_tag)
+            route_info_rpc_command = (
+                '<Get><Operational><IPV6_RIB><VRFTable><VRF><Naming><VRFName>'
+                'default</VRFName></Naming><AFTable><AF><Naming><AFName>IPv6</AFName></Naming>'
+                '<SAFTable>'
+                '<SAF><Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><IP_RIBRoute>'
+                '<Naming>'
+                '<RouteTableName>default</RouteTableName></Naming><RouteTable><Route><Naming>'
+                '<Address>'
+                '{network}</Address>{prefix}</Naming></Route></RouteTable></IP_RIBRoute>'
+                '</IP_RIBRouteTable></SAF></SAFTable></AF></AFTable></VRF></VRFTable></IPV6_RIB>'
+                '</Operational></Get>'
+            ).format(network=network, prefix=prefix_tag)
         else:
-            route_info_rpc_command = '<Get><Operational><RIB><VRFTable><VRF><Naming><VRFName>default\
-            </VRFName></Naming><AFTable><AF><Naming><AFName>IPv4</AFName></Naming><SAFTable><SAF>\
-            <Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><IP_RIBRoute><Naming>\
-            <RouteTableName>default</RouteTableName></Naming><RouteTable><Route><Naming><Address>\
-            {network}</Address>{prefix}</Naming></Route></RouteTable></IP_RIBRoute></IP_RIBRouteTable>\
-            </SAF></SAFTable></AF></AFTable></VRF></VRFTable></RIB></Operational></Get>'.format(
-                network=network,
-                prefix=prefix_tag
-            )
+            route_info_rpc_command = (
+                '<Get><Operational><RIB><VRFTable><VRF><Naming><VRFName>'
+                'default'
+                '</VRFName></Naming><AFTable><AF><Naming><AFName>IPv4</AFName></Naming>'
+                '<SAFTable><SAF>'
+                '<Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><IP_RIBRoute>'
+                '<Naming>'
+                '<RouteTableName>default</RouteTableName></Naming><RouteTable><Route><Naming>'
+                '<Address>'
+                '{network}</Address>{prefix}</Naming></Route></RouteTable></IP_RIBRoute>'
+                '</IP_RIBRouteTable>'
+                '</SAF></SAFTable></AF></AFTable></VRF></VRFTable></RIB></Operational></Get>'
+            ).format(network=network, prefix=prefix_tag)
 
         routes_tree = ETREE.fromstring(self.device.make_rpc_call(route_info_rpc_command))
 
