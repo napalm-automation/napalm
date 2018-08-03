@@ -1153,7 +1153,7 @@ class NXOSDriver(NXOSDriverBase):
                 route_details['best'] = item.get('ubest', 'FALSE')
                 route_details['type'] = item.get('type', '')
                 route_details['protocol_attributes'] = {}
-                if re.match("bgp", route_details['protocol']):
+                if re.match(r'bgp', route_details['protocol']):
                     route_details['protocol'] = 'bgp'
                     command = "show bgp ipv4 unicast {destination} vrf {vrf}".\
                         format(destination=destination, vrf=_vrf)
@@ -1181,8 +1181,8 @@ class NXOSDriver(NXOSDriverBase):
                                 get('ROW_extcommunity', {}).\
                                 get('extcommunity', [])
                             if len(extcommunity_line) != 0:
-                                route_details['protocol_attributes']['extcommunity']\
-                                   = re.sub('Extcommunity:|\n\s+', ' ',
+                                route_details['protocol_attributes']['extcommunity'] =\
+                                     re.sub(r'Extcommunity:|\n\s+', ' ',
                                             extcommunity_line).lstrip().split(' ')
                             community_list = my_route.get('TABLE_community', {}).\
                                 get('ROW_community', [])
