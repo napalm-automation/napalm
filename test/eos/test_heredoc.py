@@ -105,3 +105,38 @@ class TestConfigMangling(object):
         ]
 
         self.device.device.run_commands.assert_called_with(expected_result)
+
+    def test_heredoc_with_bangs(self):
+
+        raw_config = dedent("""\
+        hostname vEOS
+        ip name-server 192.0.2.1
+        !
+        banner login
+        !! This is a banner that contains
+        !!!bangs!
+        EOF
+        !
+        management ssh
+          idle-timeout 15
+        !
+        """)
+
+        self.device.device.run_commands = mock.MagicMock()
+
+        self.device._load_config(config=raw_config)
+
+        expected_result = [
+            "configure session {}".format(self.device.config_session),
+            "rollback clean-config",
+            "hostname vEOS",
+            "ip name-server 192.0.2.1",
+            {
+                "cmd": "banner login",
+                "input": "!! This is a banner that contains\n!!!bangs!" #  noqa
+            },
+            "management ssh",
+            "idle-timeout 15"
+        ]
+
+        self.device.device.run_commands.assert_called_with(expected_result)
