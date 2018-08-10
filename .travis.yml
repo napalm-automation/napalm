@@ -6,9 +6,14 @@ python:
   - 3.5
   - 3.6
 
+matrix:
+  include:
+      - python: 3.6
+        env: TOXENV=sphinx
+
 install:
-  - pip install tox-travis
-  - pip install coveralls
+  - pip install tox==3.0.0 tox-travis coveralls
+
 deploy:
   provider: pypi
   user: dbarroso

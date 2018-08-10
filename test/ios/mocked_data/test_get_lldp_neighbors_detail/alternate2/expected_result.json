@@ -1,0 +1,26 @@
+{
+    "FastEthernet0/24": [
+        {
+            "parent_interface": "N/A",
+            "remote_chassis_id": "a40c.c3c1.3980",
+            "remote_port": "Fa0/19",
+            "remote_port_description": "FastEthernet0/19",
+            "remote_system_capab": "B",
+            "remote_system_description": "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 15.0(1)SE2, RELEASE SOFTWARE (fc3)",
+            "remote_system_enable_capab": "B",
+            "remote_system_name": "switch1"
+        }
+    ],
+    "FastEthernet0/17": [
+        {
+            "parent_interface": "N/A",
+            "remote_chassis_id": "480f.cf28.8a1b",
+            "remote_port": "480f.cf28.8a1b",
+            "remote_port_description": "N/A",
+            "remote_system_capab": "N/A",
+            "remote_system_description": "N/A",
+            "remote_system_enable_capab": "N/A",
+            "remote_system_name": "N/A"
+        }
+    ]
+}

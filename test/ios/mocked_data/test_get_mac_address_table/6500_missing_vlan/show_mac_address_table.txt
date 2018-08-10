@@ -1,0 +1,30 @@
+Legend: * - primary entry
+        age - seconds since last seen
+        n/a - not available
+
+     vlan   mac address    type   learn    age                 ports
+----+----+---------------+-------+-----+----------+-----------------------------
+  R  1111 0008.e2ee.ebc7   static   No       -      Router
+  R  1112 0008.e2ee.ebc7   static   No       -      Router
+  R   111 0008.e2ee.ebc7   static   No       -      Router
+  R   112 0008.e2ee.ebc7   static   No       -      Router
+  R  1113 0008.e2ee.ebc7   static   No       -      Router
+  R   113 0008.e2ee.ebc7   static   No       -      Router
+  R  1114 0008.e2ee.ebc7   static   No       -      Router
+  R  N/A  0008.e2ee.ebc7   static   No       -      Router
+  R   115 0008.e2ee.ebc7   static   No       -      Router
+  R  1115 0008.e2ee.ebc7   static   No       -      Router
+  R  1116 0008.e2ee.ebc7   static   No       -      Router
+  R  1117 0008.e2ee.ebc7   static   No       -      Router
+  R  1118 0008.e2ee.ebc7   static   No       -      Router
+*     113 d023.db30.7661  dynamic  Yes       25     Po220
+*    1114 0050.566e.4e41  dynamic  Yes      230     Po220
+*     123 0050.566d.3899  dynamic  Yes      230     Po220
+*    1114 0050.566e.5791  dynamic  Yes        5     Po220
+*     111 0050.566d.e5bd  dynamic  Yes       45     Po220
+*    1111 001c.c4ae.8c1a  dynamic  Yes        5     Po220
+*     111 0050.566d.3de1  dynamic  Yes       50     Po220
+*    1112 0050.56bb.734d  dynamic  Yes      230     Po220
+     1200 0022.64ae.6329  dynamic  Yes      130     Gi111/1/0/3
+     1201 0022.64ae.6328  dynamic  Yes       70     Gi110/1/0/3
+*    1202 0080.9fb1.efdd  dynamic  Yes        5     Te1/3/6

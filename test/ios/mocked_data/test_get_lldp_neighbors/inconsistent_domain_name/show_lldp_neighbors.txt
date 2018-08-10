@@ -1,0 +1,21 @@
+Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+
+Device ID           Local Intf     Hold-time  Capability      Port ID
+foo-vwd-d35a        Te1/6          120        B,R             Te1/3
+foo-vwd-d34a        Te1/5          120        B,R             xe-0/0/2
+foo-vsl-a           Te5/4          120        B,R             Te3/2
+foo-vsd-d32b        Te2/3          120        B,R             Te5/4
+foo-sc-b            Gi9/16         120        B,R             Gi2/1
+foo-sc-a            Gi8/16         120        B,R             Gi2/1
+foo-vdd-d33a        Te1/4          120        B,R             Eth3/1
+foo-vdd-d37b        Te2/8          120        B,R             xe-0/0/2
+foo-vdd-d33b        Te2/4          120        B,R             Eth3/1
+foo-vsd-d17a        Gi8/18         120        R               Gi1/25
+foo-vdd-d37a        Te1/8          120        B,R             xe-0/0/2
+foo-vid-31b         Te2/2          120        B,R             Te5/4
+foo-vwd-d34b        Te2/5          120        B,R             xe-0/0/2
+foo-vwd-d35b        Te2/6          120        B,R             Te1/3
+
+Total entries displayed: 14

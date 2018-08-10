@@ -35,6 +35,8 @@ from jnpr.junos.exception import RpcError
 from jnpr.junos.exception import ConfigLoadError
 from jnpr.junos.exception import RpcTimeoutError
 from jnpr.junos.exception import ConnectTimeoutError
+from jnpr.junos.exception import LockError as JnprLockError
+from jnpr.junos.exception import UnlockError as JnrpUnlockError
 
 # import NAPALM Base
 import napalm.base.helpers
@@ -46,6 +48,8 @@ from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.exceptions import CommandTimeoutException
+from napalm.base.exceptions import LockError
+from napalm.base.exceptions import UnlockError
 
 # import local modules
 from napalm.junos.utils import junos_views
@@ -126,14 +130,20 @@ class JunOSDriver(NetworkDriver):
     def _lock(self):
         """Lock the config DB."""
         if not self.locked:
-            self.device.cu.lock()
-            self.locked = True
+            try:
+                self.device.cu.lock()
+                self.locked = True
+            except JnprLockError as jle:
+                raise LockError(py23_compat.text_type(jle))
 
     def _unlock(self):
         """Unlock the config DB."""
         if self.locked:
-            self.device.cu.unlock()
-            self.locked = False
+            try:
+                self.device.cu.unlock()
+                self.locked = False
+            except JnrpUnlockError as jue:
+                raise UnlockError(jue.messsage)
 
     def _rpc(self, get, child=None, **kwargs):
         """
@@ -180,6 +190,8 @@ class JunOSDriver(NetworkDriver):
             'protect',
             'rename',
             'unprotect',
+            'edit',
+            'top',
         ]
         if config.strip().startswith('<'):
             return 'xml'
@@ -235,9 +247,10 @@ class JunOSDriver(NetworkDriver):
         else:
             return diff.strip()
 
-    def commit_config(self):
+    def commit_config(self, message=""):
         """Commit configuration."""
-        self.device.cu.commit(ignore_warning=self.ignore_warning)
+        commit_args = {'comment': message} if message else {}
+        self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
         if not self.config_lock:
             self._unlock()
 
@@ -617,9 +630,11 @@ class JunOSDriver(NetworkDriver):
                 if not uptime_table_items:
                     uptime_table_items = _get_uptime_table(instance)
                 for neighbor, uptime in uptime_table_items:
-                    if neighbor not in bgp_neighbor_data[instance_name]['peers']:
-                        bgp_neighbor_data[instance_name]['peers'][neighbor] = {}
-                    bgp_neighbor_data[instance_name]['peers'][neighbor]['uptime'] = uptime[0][1]
+                    normalized_neighbor = napalm.base.helpers.ip(neighbor)
+                    if normalized_neighbor not in bgp_neighbor_data[instance_name]['peers']:
+                        bgp_neighbor_data[instance_name]['peers'][normalized_neighbor] = {}
+                    bgp_neighbor_data[instance_name]['peers'][normalized_neighbor]['uptime'] = \
+                        uptime[0][1]
 
         # Commenting out the following sections, till Junos
         #   will provide a way to identify the routing instance name
@@ -670,7 +685,7 @@ class JunOSDriver(NetworkDriver):
             # able to handle logs
             # otherwise, the user just won't see this happening
             log.error('Unable to retrieve the LLDP neighbors information:')
-            log.error(rpcerr.message)
+            log.error(py23_compat.text_type(rpcerr))
             return {}
         result = lldp.items()
 
@@ -694,7 +709,7 @@ class JunOSDriver(NetworkDriver):
             # able to handle logs
             # otherwise, the user just won't see this happening
             log.error('Unable to retrieve the LLDP neighbors information:')
-            log.error(rpcerr.message)
+            log.error(py23_compat.text_type(rpcerr))
             return {}
         interfaces = lldp_table.get().keys()
         rpc_call_without_information = {
@@ -738,6 +753,7 @@ class JunOSDriver(NetworkDriver):
                 'default': rpc_call_with_information,
                 'EX9208': rpc_call_without_information,
                 'EX3400': rpc_call_without_information,
+                'EX4300-48P': rpc_call_without_information,
                 'EX4600-40F': rpc_call_without_information,
                 'QFX5110-48S-4C': rpc_call_without_information,
                 'QFX10002-36Q': rpc_call_without_information,
