@@ -805,18 +805,16 @@ class NXOSSSHDriver(NXOSDriverBase):
         environment.setdefault('cpu', {})
         environment['cpu'][0] = {}
         environment['cpu'][0]['%usage'] = 0.0
-        for line in sys_resources.splitlines():
-            # Load average:   1 minute: 0.14   5 minutes: 0.18   15 minutes: 0.21
-            match = re.search(r'1 minute: [0-9]+(.[0-9]+)?', line)
-            if match is not None:
-                cpu = match.group(0).split(':')[1]
-                cpu = '{0:.2f}'.format(float(cpu))
-                environment['cpu'][0]['%usage'] = float(cpu)
-                break
-        else:
-            raise ValueError("Unexpected output from: {}".format(line))
+        system_resources_cpu = napalm.base.helpers.textfsm_extractor(self, 'system_resources',
+                                                                     sys_resources)
+        from decimal import Decimal
+        for cpu in system_resources_cpu:
+            cpu_dict = {cpu.get('cpu_id'): {'%usage': float(Decimal(100) -
+                        Decimal(cpu.get('cpu_idle')))}}
+            environment['cpu'].update(cpu_dict)
 
         # memory
+        environment.setdefault('memory', {})
         for line in sys_resources.splitlines():
             # Memory usage:   16401224K total,   4798280K used,   11602944K free
             if 'Memory usage:' in line:
@@ -826,7 +824,6 @@ class NXOSSSHDriver(NXOSDriverBase):
                 break
         else:
             raise ValueError("Unexpected output from: {}".format(line))
-        environment.setdefault('memory', {})
         environment['memory']['used_ram'] = int(proc_used_mem)
         environment['memory']['available_ram'] = int(proc_total_mem)
 

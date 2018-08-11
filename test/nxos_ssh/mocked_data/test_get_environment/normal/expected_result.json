@@ -11,10 +11,19 @@
       "status": true
     }
   },
-  "cpu": {
-    "0": {
-      "%usage": 0.05
-    }
+   "cpu": {
+     "0": {
+       "%usage": 1.04
+     },
+     "1": {
+       "%usage": 8.43
+     },
+     "2": {
+       "%usage": 1.05
+     },
+     "3": {
+       "%usage": 1.04
+     }
   },
   "temperature": {
     "Exhaust-1": {
