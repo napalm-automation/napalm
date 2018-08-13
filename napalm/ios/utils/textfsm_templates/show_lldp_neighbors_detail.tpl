@@ -6,6 +6,7 @@ Value REMOTE_SYSTEM_NAME (.*)
 Value REMOTE_SYSTEM_DESCRIPTION (.+)
 Value REMOTE_SYSTEM_CAPAB (.*)
 Value REMOTE_SYSTEM_ENABLE_CAPAB (.*)
+Value REMOTE_MANAGEMENT_IP_ADDRESS (.*)
 
 Start
   # A line of hyphens delimits neighbor records
@@ -21,8 +22,16 @@ Neighbor
   ^System Description: -> Description
   ^System Description\s*-\s*${REMOTE_SYSTEM_DESCRIPTION}
   ^System Capabilities\s*?[:-]\s+${REMOTE_SYSTEM_CAPAB}
-  ^Enabled Capabilities\s*?[:-]\s+${REMOTE_SYSTEM_ENABLE_CAPAB} -> Record
+  ^Enabled Capabilities\s*?[:-]\s+${REMOTE_SYSTEM_ENABLE_CAPAB}
+  # We need to change state to capture the entire next line
+  ^Management\s+Addresses: -> Management
+
 
 Description
   # Capture the entire line and go back to Neighbor state
   ^${REMOTE_SYSTEM_DESCRIPTION} -> Neighbor
+
+
+Management
+  # Capture the entire line and go back to Neighbor state
+  ^\s+IP\s*?[:-]\s+${REMOTE_MANAGEMENT_IP_ADDRESS} -> Neighbor
