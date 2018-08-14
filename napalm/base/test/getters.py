@@ -528,3 +528,12 @@ class BaseTestGetters(object):
             for policy_term in policy_details:
                 assert helpers.test_model(models.firewall_policies, policy_term)
         return get_firewall_policies
+
+    @wrap_test_cases
+    def test_get_vni(self, test_case):
+        """Test get_vni method."""
+        get_vni = self.device.get_vni()
+        assert len(get_vni) > 0
+        for vni, vni_data in get_vni.items():
+            assert helpers.test_model(models.vni, vni_data)
+        return get_vni

@@ -1569,6 +1569,47 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
+    def get_vni(self):
+        """
+        Returns a dictionnary of VNI. Each dictionary entry is a VNI having the following keys:
+            * multicast_group (string)
+            * vrf (string)
+            * flags (list)
+            * is_up (boolean)
+            * interface (string)
+            * vlan (int)
+            * type (string)
+            * mode (string)
+
+        However, please note that not all vendors provide all these details.
+
+        Example::
+
+            {
+                "500220": {
+                    "multicast_group": "239.50.2.20", 
+                    "vrf": "", 
+                    "flags": {}, 
+                    "is_up": true, 
+                    "interface": "nve1", 
+                    "vlan": 220, 
+                    "type": "L2", 
+                    "mode": "CP"
+                },
+                  "890650": {
+                    "multicast_group": "", 
+                    "vrf": "NON_PROD", 
+                    "flags": {}, 
+                    "is_up": true, 
+                    "interface": "nve1", 
+                    "vlan": -1, 
+                    "type": "L3", 
+                    "mode": "CP"
+                }
+            }
+        """
+        raise NotImplementedError
+
     def compliance_report(self, validation_file=None, validation_source=None):
         """
         Return a compliance report.

@@ -1115,7 +1115,7 @@ class NXOSDriver(NXOSDriverBase):
 
 
     def get_vni(self):
-        vni_table = []
+        vni_dict = {}
         command = 'show nve vni'
         re_type = r"^(?P<type>L[23]) \[(?P<name>\S+)\]$"
         vni_table_raw = self._get_command_table(command, 'TABLE_nve_vni', 'ROW_nve_vni')
@@ -1139,9 +1139,8 @@ class NXOSDriver(NXOSDriverBase):
                 vlan = -1
                 vrf = match.group('name')
 
-            flags = vni_entry.get('flags')
-            vni_table.append({
-                'vni': vni,
+            flags = []
+            vni_dict[vni] = {
                 'interface': interface,
                 'multicast_group': mcast_grp,
                 'is_up': is_up,
@@ -1150,5 +1149,5 @@ class NXOSDriver(NXOSDriverBase):
                 'vlan': vlan,
                 'vrf': vrf,
                 'flags': flags
-            })
-        return vni_table
+            }
+        return vni_dict

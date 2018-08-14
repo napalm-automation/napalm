@@ -341,3 +341,14 @@ firewall_policies = {
     'dst_zone': text_type,
     'action': text_type
 }
+
+vni = {
+    'multicast_group': text_type,
+    'vrf': text_type,
+    'flags': list,
+    'is_up': bool,
+    'interface': text_type,
+    'vlan': int,
+    'type': text_type,
+    'mode': text_type
+}
