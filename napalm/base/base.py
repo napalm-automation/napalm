@@ -1589,7 +1589,7 @@ class NetworkDriver(object):
                 "500220": {
                     "multicast_group": "239.50.2.20", 
                     "vrf": "", 
-                    "flags": {}, 
+                    "flags": [], 
                     "is_up": true, 
                     "interface": "nve1", 
                     "vlan": 220, 
@@ -1599,7 +1599,7 @@ class NetworkDriver(object):
                   "890650": {
                     "multicast_group": "", 
                     "vrf": "NON_PROD", 
-                    "flags": {}, 
+                    "flags": [], 
                     "is_up": true, 
                     "interface": "nve1", 
                     "vlan": -1, 

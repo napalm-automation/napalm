@@ -1,0 +1,69 @@
+{
+  "TABLE_nve_vni": {
+        "ROW_nve_vni": [
+          {
+            "if-name": "nve1",
+            "vni": "390002",
+            "mcast": "239.39.0.2",
+            "vni-state": "Up",
+            "mode": "CP",
+            "type": "L2 [2]",
+            "flags": {}
+          },
+          {
+            "if-name": "nve1",
+            "vni": "390003",
+            "mcast": "239.39.0.3",
+            "vni-state": "Up",
+            "mode": "CP",
+            "type": "L2 [3]",
+            "flags": {}
+          },
+          {
+            "if-name": "nve1",
+            "vni": "501230",
+            "mcast": "239.50.12.30",
+            "vni-state": "Up",
+            "mode": "CP",
+            "type": "L2 [1230]",
+            "flags": {}
+          },
+          {
+            "if-name": "nve1",
+            "vni": "501604",
+            "mcast": "239.50.16.4",
+            "vni-state": "Up",
+            "mode": "CP",
+            "type": "L2 [1604]",
+            "flags": {}
+          },
+          {
+            "if-name": "nve1",
+            "vni": "890600",
+            "mcast": "n/a",
+            "vni-state": "Up",
+            "mode": "CP",
+            "type": "L3 [PROD]",
+            "flags": {}
+          },
+          {
+            "if-name": "nve1",
+            "vni": "890650",
+            "mcast": "n/a",
+            "vni-state": "Up",
+            "mode": "CP",
+            "type": "L3 [NON_PROD]",
+            "flags": {}
+          },
+          {
+            "if-name": "nve1",
+            "vni": "910691",
+            "mcast": "n/a",
+            "vni-state": "Up",
+            "mode": "CP",
+            "type": "L3 [INLINE-MGMT]",
+            "flags": {}
+          }
+    ]
+  }
+}

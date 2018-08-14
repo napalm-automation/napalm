@@ -1,0 +1,72 @@
+{
+  "390002": {
+    "multicast_group": "239.39.0.2", 
+    "vrf": "", 
+    "flags": [], 
+    "is_up": true, 
+    "interface": "nve1", 
+    "vlan": 2, 
+    "type": "L2", 
+    "mode": "CP"
+  }, 
+  "390003": {
+    "multicast_group": "239.39.0.3", 
+    "vrf": "", 
+    "flags": [], 
+    "is_up": true, 
+    "interface": "nve1", 
+    "vlan": 3, 
+    "type": "L2", 
+    "mode": "CP"
+  }, 
+  "501230": {
+    "multicast_group": "239.50.12.30", 
+    "vrf": "", 
+    "flags": [], 
+    "is_up": true, 
+    "interface": "nve1", 
+    "vlan": 1230, 
+    "type": "L2", 
+    "mode": "CP"
+  }, 
+  "501604": {
+    "multicast_group": "239.50.16.4", 
+    "vrf": "", 
+    "flags": [], 
+    "is_up": true, 
+    "interface": "nve1", 
+    "vlan": 1604, 
+    "type": "L2", 
+    "mode": "CP"
+  }, 
+  "890600": {
+    "multicast_group": "", 
+    "vrf": "PROD", 
+    "flags": [], 
+    "is_up": true, 
+    "interface": "nve1", 
+    "vlan": -1, 
+    "type": "L3", 
+    "mode": "CP"
+  }, 
+  "890650": {
+    "multicast_group": "", 
+    "vrf": "NON_PROD", 
+    "flags": [], 
+    "is_up": true, 
+    "interface": "nve1", 
+    "vlan": -1, 
+    "type": "L3", 
+    "mode": "CP"
+  }, 
+  "910691": {
+    "multicast_group": "", 
+    "vrf": "INLINE-MGMT", 
+    "flags": [], 
+    "is_up": true, 
+    "interface": "nve1", 
+    "vlan": -1, 
+    "type": "L3", 
+    "mode": "CP"
+  }
+}
