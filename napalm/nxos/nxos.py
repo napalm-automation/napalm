@@ -604,16 +604,16 @@ class NXOSDriver(NXOSDriverBase):
 
                 if isinstance(neighbors_list, dict):
                     neighbors_list = [neighbors_list]
-    
+
                 for neighbor_dict in neighbors_list:
                     neighborid = napalm.base.helpers.ip(neighbor_dict['neighborid'])
                     remoteas = napalm.base.helpers.as_number(neighbor_dict['neighboras'])
                     state = py23_compat.text_type(neighbor_dict['state'])
-    
+
                     bgp_state = bgp_state_dict[state]
                     afid_dict = af_name_dict[int(af_dict['af-id'])]
                     safi_name = afid_dict[int(saf_dict['safi'])]
-    
+
                     result_peer_dict = {
                         'local_as': int(vrf_dict['vrf-local-as']),
                         'remote_as': remoteas,
@@ -623,7 +623,7 @@ class NXOSDriver(NXOSDriverBase):
                         'description': '',
                         'is_up': bgp_state['is_up'],
                         'address_family': {
-                           safi_name : {
+                           safi_name: {
                                 'sent_prefixes': -1,
                                 'accepted_prefixes': -1,
                                 'received_prefixes': int(neighbor_dict['prefixreceived'])
