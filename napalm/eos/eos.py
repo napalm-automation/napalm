@@ -21,6 +21,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 # std libs
+import os
 import re
 import time
 
@@ -1783,3 +1784,8 @@ class EOSDriver(NetworkDriver):
                     })
             ping_dict['success'].update({'results': results_array})
         return ping_dict
+
+    @staticmethod
+    def _driver_path():
+        """Return the path to the current driver."""
+        return os.path.dirname(__file__)

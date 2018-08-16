@@ -102,8 +102,7 @@ def textfsm_extractor(cls, template_name, raw_text):
     :return: table-like list of entries
     """
     textfsm_data = list()
-    cls.__class__.__name__.replace('Driver', '')
-    current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
+    current_dir = cls._driver_path()
     template_dir_path = '{current_dir}/utils/textfsm_templates'.format(
         current_dir=current_dir
     )

@@ -538,3 +538,8 @@ class FakeNetworkDriver(NetworkDriver):
         will return True instead of raising NotImplementedError exception.
         """
         return True
+
+    @staticmethod
+    def _driver_path():
+        """Return the path to the current driver."""
+        return os.path.dirname(__file__)

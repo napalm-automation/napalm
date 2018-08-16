@@ -16,6 +16,7 @@
 from __future__ import unicode_literals
 
 # import stdlib
+import os
 import re
 import time
 import tempfile
@@ -1111,3 +1112,8 @@ class NXOSDriver(NXOSDriverBase):
             _cmd = 'show startup-config'
             config['startup'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
         return config
+
+    @staticmethod
+    def _driver_path():
+        """Return the path to the current driver."""
+        return os.path.dirname(__file__)

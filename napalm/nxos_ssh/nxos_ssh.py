@@ -1516,3 +1516,8 @@ class NXOSSSHDriver(NXOSDriverBase):
             command = 'show startup-config'
             config['startup'] = py23_compat.text_type(self.device.send_command(command))
         return config
+
+    @staticmethod
+    def _driver_path():
+        """Return the path to the current driver."""
+        return os.path.dirname(__file__)
