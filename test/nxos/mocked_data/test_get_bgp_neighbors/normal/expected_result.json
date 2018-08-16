@@ -1,48 +1,265 @@
 {
-    "global": {
-        "router_id": "10.0.0.100",
-        "peers": {}
-    },
-    "management": {
-        "router_id": "10.1.100.20",
-        "peers": {
-            "10.1.100.21": {
-                "is_enabled": true,
-                "uptime": -1,
-                "remote_as": 65535,
-                "description": "",
-                "remote_id": "10.1.100.21",
-                "local_as": 65535,
-                "is_up": true,
-                "address_family": {
-                    "ipv4": {
-                        "sent_prefixes": -1,
-                        "accepted_prefixes": -1,
-                        "received_prefixes": -1
-                    }
-                }
-            }
-        }
-    },
-    "red": {
-        "router_id": "10.1.100.20",
-        "peers": {
-            "10.1.100.21": {
-                "is_enabled": true,
-                "uptime": -1,
-                "remote_as": 4261806180,
-                "description": "",
-                "remote_id": "10.1.100.21",
-                "local_as": 65535,
-                "is_up": true,
-                "address_family": {
-                    "ipv4": {
-                        "sent_prefixes": -1,
-                        "accepted_prefixes": -1,
-                        "received_prefixes": -1
-                    }
-                }
-            }
-        }
+  "RED-PROD": {
+    "router_id": "10.2.3.6", 
+    "peers": {
+      "10.1.1.169": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 4
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.169", 
+        "local_as": 64861, 
+        "is_up": true
+      }, 
+      "10.1.1.171": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 4
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.171", 
+        "local_as": 64861, 
+        "is_up": true
+      }
     }
+  }, 
+  "BLUE": {
+    "router_id": "10.1.1.186", 
+    "peers": {
+      "10.1.1.187": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 0
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.187", 
+        "local_as": 64861, 
+        "is_up": true
+      }, 
+      "10.1.1.185": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 0
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.185", 
+        "local_as": 64861, 
+        "is_up": true
+      }
+    }
+  }, 
+  "MGMT": {
+    "router_id": "10.0.0.188", 
+    "peers": {
+      "10.1.1.227": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 14
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.227", 
+        "local_as": 64861, 
+        "is_up": true
+      }, 
+      "10.1.1.225": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 14
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.225", 
+        "local_as": 64861, 
+        "is_up": true
+      }
+    }
+  }, 
+  "global": {
+    "router_id": "10.3.1.136", 
+    "peers": {
+      "10.1.1.135": {
+        "is_enabled": true, 
+        "address_family": {
+          "l2vpn": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 7237
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64861, 
+        "description": "", 
+        "remote_id": "10.1.1.135", 
+        "local_as": 64861, 
+        "is_up": true
+      }, 
+      "10.1.1.134": {
+        "is_enabled": true, 
+        "address_family": {
+          "l2vpn": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 7237
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64861, 
+        "description": "", 
+        "remote_id": "10.1.1.134", 
+        "local_as": 64861, 
+        "is_up": true
+      }
+    }
+  }, 
+  "RED-PRE-PROD": {
+    "router_id": "10.2.63.60", 
+    "peers": {
+      "10.1.1.179": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 13
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.179", 
+        "local_as": 64861, 
+        "is_up": true
+      }, 
+      "10.1.1.177": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 13
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.177", 
+        "local_as": 64861, 
+        "is_up": true
+      }
+    }
+  }, 
+  "NON_PROD": {
+    "router_id": "10.1.255.188", 
+    "peers": {
+      "10.1.1.161": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 441
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.161", 
+        "local_as": 64861, 
+        "is_up": true
+      }, 
+      "10.1.1.163": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 441
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.163", 
+        "local_as": 64861, 
+        "is_up": true
+      }
+    }
+  }, 
+  "PROD": {
+    "router_id": "10.9.2.60", 
+    "peers": {
+      "10.1.1.153": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 9
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.153", 
+        "local_as": 64861, 
+        "is_up": true
+      }, 
+      "10.1.1.155": {
+        "is_enabled": true, 
+        "address_family": {
+          "ipv4": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 9
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64862, 
+        "description": "", 
+        "remote_id": "10.1.1.155", 
+        "local_as": 64861, 
+        "is_up": true
+      }
+    }
+  }, 
+  "OTV": {
+    "router_id": "10.3.1.228", 
+    "peers": {}
+  }
 }
