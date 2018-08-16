@@ -1,0 +1,582 @@
+{
+      "TABLE_vrf": {
+        "ROW_vrf": [
+          {
+            "vrf-name-out": "RED-PRE-PROD",
+            "vrf-router-id": "10.2.63.60",
+            "vrf-local-as": "64861"
+          },
+          {
+            "vrf-name-out": "RED-PRE-PROD",
+            "vrf-router-id": "10.2.63.60",
+            "vrf-local-as": "64861",
+            "TABLE_af": {
+              "ROW_af": [
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv4 Unicast",
+                      "tableversion": "582",
+                      "configuredpeers": "2",
+                      "capablepeers": "2",
+                      "totalnetworks": "73",
+                      "totalpaths": "152",
+                      "memoryused": "17424",
+                      "numberattrs": "15",
+                      "bytesattrs": "2340",
+                      "numberpaths": "1",
+                      "bytespaths": "6",
+                      "numbercommunities": "0",
+                      "bytescommunities": "0",
+                      "numberclusterlist": "30",
+                      "bytesclusterlist": "120",
+                      "dampening": "Disabled",
+                      "TABLE_neighbor": {
+                        "ROW_neighbor": [
+                          {
+                            "neighborid": "10.1.1.177",
+                            "neighborversion": "4",
+                            "msgrecvd": 192059,
+                            "msgsent": 192199,
+                            "neighbortableversion": "582",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "6w3d",
+                            "state": "Established",
+                            "prefixreceived": "13"
+                          },
+                          {
+                            "neighborid": "10.1.1.179",
+                            "neighborversion": "4",
+                            "msgrecvd": 192103,
+                            "msgsent": 192195,
+                            "neighbortableversion": "582",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "6w3d",
+                            "state": "Established",
+                            "prefixreceived": "13"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv6 Unicast"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "vrf-name-out": "RED-PROD",
+            "vrf-router-id": "10.2.3.6",
+            "vrf-local-as": "64861"
+          },
+          {
+            "vrf-name-out": "RED-PROD",
+            "vrf-router-id": "10.2.3.6",
+            "vrf-local-as": "64861",
+            "TABLE_af": {
+              "ROW_af": [
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv4 Unicast",
+                      "tableversion": "241",
+                      "configuredpeers": "2",
+                      "capablepeers": "2",
+                      "totalnetworks": "12",
+                      "totalpaths": "20",
+                      "memoryused": "2516",
+                      "numberattrs": "10",
+                      "bytesattrs": "1560",
+                      "numberpaths": "1",
+                      "bytespaths": "6",
+                      "numbercommunities": "0",
+                      "bytescommunities": "0",
+                      "numberclusterlist": "30",
+                      "bytesclusterlist": "120",
+                      "dampening": "Disabled",
+                      "TABLE_neighbor": {
+                        "ROW_neighbor": [
+                          {
+                            "neighborid": "10.1.1.169",
+                            "neighborversion": "4",
+                            "msgrecvd": 191995,
+                            "msgsent": 191995,
+                            "neighbortableversion": "241",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "6w3d",
+                            "state": "Established",
+                            "prefixreceived": "4"
+                          },
+                          {
+                            "neighborid": "10.1.1.171",
+                            "neighborversion": "4",
+                            "msgrecvd": 191995,
+                            "msgsent": 191995,
+                            "neighbortableversion": "241",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "6w3d",
+                            "state": "Established",
+                            "prefixreceived": "4"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv6 Unicast"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "vrf-name-out": "MGMT",
+            "vrf-router-id": "10.0.0.188",
+            "vrf-local-as": "64861"
+          },
+          {
+            "vrf-name-out": "MGMT",
+            "vrf-router-id": "10.0.0.188",
+            "vrf-local-as": "64861",
+            "TABLE_af": {
+              "ROW_af": [
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv4 Unicast",
+                      "tableversion": "86",
+                      "configuredpeers": "2",
+                      "capablepeers": "2",
+                      "totalnetworks": "31",
+                      "totalpaths": "63",
+                      "memoryused": "7316",
+                      "numberattrs": "24",
+                      "bytesattrs": "3744",
+                      "numberpaths": "1",
+                      "bytespaths": "6",
+                      "numbercommunities": "0",
+                      "bytescommunities": "0",
+                      "numberclusterlist": "30",
+                      "bytesclusterlist": "120",
+                      "dampening": "Disabled",
+                      "TABLE_neighbor": {
+                        "ROW_neighbor": [
+                          {
+                            "neighborid": "10.1.1.225",
+                            "neighborversion": "4",
+                            "msgrecvd": 112421,
+                            "msgsent": 112434,
+                            "neighbortableversion": "86",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "11w1d",
+                            "state": "Established",
+                            "prefixreceived": "14"
+                          },
+                          {
+                            "neighborid": "10.1.1.227",
+                            "neighborversion": "4",
+                            "msgrecvd": 112420,
+                            "msgsent": 112432,
+                            "neighbortableversion": "86",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "11w1d",
+                            "state": "Established",
+                            "prefixreceived": "14"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv6 Unicast"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "vrf-name-out": "NON_PROD",
+            "vrf-router-id": "10.1.255.188",
+            "vrf-local-as": "64861"
+          },
+          {
+            "vrf-name-out": "NON_PROD",
+            "vrf-router-id": "10.1.255.188",
+            "vrf-local-as": "64861",
+            "TABLE_af": {
+              "ROW_af": [
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv4 Unicast",
+                      "tableversion": "11913",
+                      "configuredpeers": "2",
+                      "capablepeers": "2",
+                      "totalnetworks": "766",
+                      "totalpaths": "2031",
+                      "memoryused": "186252",
+                      "numberattrs": "96",
+                      "bytesattrs": "14976",
+                      "numberpaths": "1",
+                      "bytespaths": "6",
+                      "numbercommunities": "0",
+                      "bytescommunities": "0",
+                      "numberclusterlist": "30",
+                      "bytesclusterlist": "120",
+                      "dampening": "Disabled",
+                      "TABLE_neighbor": {
+                        "ROW_neighbor": [
+                          {
+                            "neighborid": "10.1.1.161",
+                            "neighborversion": "4",
+                            "msgrecvd": 194199,
+                            "msgsent": 194466,
+                            "neighbortableversion": "11913",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "11w3d",
+                            "state": "Established",
+                            "prefixreceived": "441"
+                          },
+                          {
+                            "neighborid": "10.1.1.163",
+                            "neighborversion": "4",
+                            "msgrecvd": 194235,
+                            "msgsent": 194468,
+                            "neighbortableversion": "11913",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "11w3d",
+                            "state": "Established",
+                            "prefixreceived": "441"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv6 Unicast"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "vrf-name-out": "OTV",
+            "vrf-router-id": "10.3.1.228",
+            "vrf-local-as": "64861"
+          },
+          {
+            "vrf-name-out": "OTV",
+            "vrf-router-id": "10.3.1.228",
+            "vrf-local-as": "64861"
+          },
+          {
+            "vrf-name-out": "PROD",
+            "vrf-router-id": "10.9.2.60",
+            "vrf-local-as": "64861"
+          },
+          {
+            "vrf-name-out": "PROD",
+            "vrf-router-id": "10.9.2.60",
+            "vrf-local-as": "64861",
+            "TABLE_af": {
+              "ROW_af": [
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv4 Unicast",
+                      "tableversion": "662",
+                      "configuredpeers": "2",
+                      "capablepeers": "2",
+                      "totalnetworks": "53",
+                      "totalpaths": "98",
+                      "memoryused": "10544",
+                      "numberattrs": "37",
+                      "bytesattrs": "5772",
+                      "numberpaths": "1",
+                      "bytespaths": "6",
+                      "numbercommunities": "0",
+                      "bytescommunities": "0",
+                      "numberclusterlist": "30",
+                      "bytesclusterlist": "120",
+                      "dampening": "Disabled",
+                      "TABLE_neighbor": {
+                        "ROW_neighbor": [
+                          {
+                            "neighborid": "10.1.1.153",
+                            "neighborversion": "4",
+                            "msgrecvd": 192022,
+                            "msgsent": 192080,
+                            "neighbortableversion": "662",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "11w3d",
+                            "state": "Established",
+                            "prefixreceived": "9"
+                          },
+                          {
+                            "neighborid": "10.1.1.155",
+                            "neighborversion": "4",
+                            "msgrecvd": 192023,
+                            "msgsent": 192081,
+                            "neighbortableversion": "662",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "11w3d",
+                            "state": "Established",
+                            "prefixreceived": "9"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv6 Unicast"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "vrf-name-out": "BLUE",
+            "vrf-router-id": "10.1.1.186",
+            "vrf-local-as": "64861"
+          },
+          {
+            "vrf-name-out": "BLUE",
+            "vrf-router-id": "10.1.1.186",
+            "vrf-local-as": "64861",
+            "TABLE_af": {
+              "ROW_af": [
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv4 Unicast",
+                      "tableversion": "2",
+                      "configuredpeers": "2",
+                      "capablepeers": "2",
+                      "totalnetworks": "0",
+                      "totalpaths": "0",
+                      "memoryused": "0",
+                      "numberattrs": "0",
+                      "bytesattrs": "0",
+                      "numberpaths": "0",
+                      "bytespaths": "0",
+                      "numbercommunities": "0",
+                      "bytescommunities": "0",
+                      "numberclusterlist": "30",
+                      "bytesclusterlist": "120",
+                      "dampening": "Disabled",
+                      "TABLE_neighbor": {
+                        "ROW_neighbor": [
+                          {
+                            "neighborid": "10.1.1.185",
+                            "neighborversion": "4",
+                            "msgrecvd": 191934,
+                            "msgsent": 191934,
+                            "neighbortableversion": "2",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "19w0d",
+                            "state": "Established",
+                            "prefixreceived": "0"
+                          },
+                          {
+                            "neighborid": "10.1.1.187",
+                            "neighborversion": "4",
+                            "msgrecvd": 191934,
+                            "msgsent": 191934,
+                            "neighbortableversion": "2",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64862",
+                            "time": "19w0d",
+                            "state": "Established",
+                            "prefixreceived": "0"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv6 Unicast"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "vrf-name-out": "default",
+            "vrf-router-id": "10.3.1.136",
+            "vrf-local-as": "64861"
+          },
+          {
+            "vrf-name-out": "default",
+            "vrf-router-id": "10.3.1.136",
+            "vrf-local-as": "64861",
+            "TABLE_af": {
+              "ROW_af": [
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv4 Unicast"
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 1,
+                      "af-name": "IPv6 Unicast"
+                    }
+                  }
+                },
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 128,
+                      "af-name": "VPNv4 Unicast"
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 128,
+                      "af-name": "VPNv6 Unicast"
+                    }
+                  }
+                },
+                {
+                  "af-id": "25",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": 70,
+                      "af-name": "L2VPN EVPN",
+                      "tableversion": "1915094",
+                      "configuredpeers": "2",
+                      "capablepeers": "2",
+                      "totalnetworks": "13580",
+                      "totalpaths": "24985",
+                      "memoryused": "3437472",
+                      "numberattrs": "1349",
+                      "bytesattrs": "210444",
+                      "numberpaths": "1",
+                      "bytespaths": "6",
+                      "numbercommunities": "0",
+                      "bytescommunities": "0",
+                      "numberclusterlist": "30",
+                      "bytesclusterlist": "120",
+                      "dampening": "Disabled",
+                      "TABLE_neighbor": {
+                        "ROW_neighbor": [
+                          {
+                            "neighborid": "10.1.1.134",
+                            "neighborversion": "4",
+                            "msgrecvd": 557963,
+                            "msgsent": 243551,
+                            "neighbortableversion": "1915094",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64861",
+                            "time": "19w0d",
+                            "state": "Established",
+                            "prefixreceived": "7237"
+                          },
+                          {
+                            "neighborid": "10.1.1.135",
+                            "neighborversion": "4",
+                            "msgrecvd": 558170,
+                            "msgsent": 243551,
+                            "neighbortableversion": "1915094",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64861",
+                            "time": "19w0d",
+                            "state": "Established",
+                            "prefixreceived": "7237"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
