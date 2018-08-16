@@ -44,7 +44,10 @@ import napalm.base.constants as c
 
 class NXOSDriverBase(NetworkDriver):
     """Common code shared between nx-api and nxos_ssh."""
-    def commit_config(self):
+
+    def commit_config(self, message=""):
+        if message:
+            raise NotImplementedError('Commit message not implemented for this platform')
         if self.loaded:
             # Create checkpoint from current running-config
             self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
@@ -98,8 +101,8 @@ class NXOSDriverBase(NetworkDriver):
             pass
 
         command = 'ping{version} {destination}'.format(
-                version=version,
-                destination=destination)
+            version=version,
+            destination=destination)
         command += ' timeout {}'.format(timeout)
         command += ' packet-size {}'.format(size)
         command += ' count {}'.format(count)
@@ -114,13 +117,13 @@ class NXOSDriverBase(NetworkDriver):
             ping_dict['error'] = output
         elif 'PING' in output:
             ping_dict['success'] = {
-                                'probes_sent': 0,
-                                'packet_loss': 0,
-                                'rtt_min': 0.0,
-                                'rtt_max': 0.0,
-                                'rtt_avg': 0.0,
-                                'rtt_stddev': 0.0,
-                                'results': []
+                'probes_sent': 0,
+                'packet_loss': 0,
+                'rtt_min': 0.0,
+                'rtt_max': 0.0,
+                'rtt_avg': 0.0,
+                'rtt_stddev': 0.0,
+                'results': []
             }
             results_array = []
             for line in output.splitlines():
@@ -165,9 +168,9 @@ class NXOSDriverBase(NetworkDriver):
                 elif 'min/avg/max' in line:
                     m = fields[3].split('/')
                     ping_dict['success'].update({
-                                    'rtt_min': float(m[0]),
-                                    'rtt_avg': float(m[1]),
-                                    'rtt_max': float(m[2]),
+                        'rtt_min': float(m[0]),
+                        'rtt_avg': float(m[1]),
+                        'rtt_max': float(m[2]),
                     })
             ping_dict['success'].update({'results': results_array})
         return ping_dict
@@ -376,7 +379,7 @@ class NXOSDriver(NXOSDriverBase):
                 self.device.config_list(commands)
                 self.fc.send()
         except NXOSFileTransferError as fte:
-            raise ReplaceConfigException(fte.message)
+            raise ReplaceConfigException(py23_compat.text_type(fte))
 
     def _create_sot_file(self):
         """Create Source of Truth file to compare."""
@@ -393,7 +396,7 @@ class NXOSDriver(NXOSDriverBase):
         try:
             diff_out = diff_out.split(
                 'Generating Rollback Patch')[1].replace(
-                    'Rollback Patch is Empty', '').strip()
+                'Rollback Patch is Empty', '').strip()
             for line in diff_out.splitlines():
                 if line:
                     if line[0].strip() != '!':
@@ -540,7 +543,7 @@ class NXOSDriver(NXOSDriverBase):
             command = 'show lldp neighbors'
             lldp_raw_output = self.cli([command]).get(command, '')
             lldp_neighbors = napalm.base.helpers.textfsm_extractor(
-                                self, 'lldp_neighbors', lldp_raw_output)
+                self, 'lldp_neighbors', lldp_raw_output)
         except CLIError:
             lldp_neighbors = []
 
@@ -550,9 +553,8 @@ class NXOSDriver(NXOSDriverBase):
                 if local_iface not in results:
                     results[local_iface] = []
 
-            neighbor_dict = {}
-            neighbor_dict['hostname'] = py23_compat.text_type(neighbor.get('neighbor'))
-            neighbor_dict['port'] = py23_compat.text_type(neighbor.get('neighbor_interface'))
+            neighbor_dict = {'hostname': py23_compat.text_type(neighbor.get('neighbor')),
+                             'port': py23_compat.text_type(neighbor.get('neighbor_interface'))}
 
             results[local_iface].append(neighbor_dict)
         return results
@@ -575,9 +577,10 @@ class NXOSDriver(NXOSDriverBase):
             vrf_list = []
 
         for vrf_dict in vrf_list:
-            result_vrf_dict = {}
-            result_vrf_dict['router_id'] = py23_compat.text_type(vrf_dict['router-id'])
-            result_vrf_dict['peers'] = {}
+            result_vrf_dict = {
+                'router_id': py23_compat.text_type(vrf_dict['router-id']),
+                'peers': {}
+            }
             neighbors_list = vrf_dict.get('TABLE_neighbor', {}).get('ROW_neighbor', [])
 
             if isinstance(neighbors_list, dict):
@@ -598,12 +601,12 @@ class NXOSDriver(NXOSDriverBase):
                     'uptime': -1,
                     'description': '',
                     'is_up': bgp_state['is_up'],
-                }
-                result_peer_dict['address_family'] = {
-                    'ipv4': {
-                        'sent_prefixes': -1,
-                        'accepted_prefixes': -1,
-                        'received_prefixes': -1
+                    'address_family': {
+                        'ipv4': {
+                            'sent_prefixes': -1,
+                            'accepted_prefixes': -1,
+                            'received_prefixes': -1
+                        }
                     }
                 }
                 result_vrf_dict['peers'][neighborid] = result_peer_dict
@@ -677,27 +680,27 @@ class NXOSDriver(NXOSDriverBase):
             if port_descr_rgx:
                 lldp_neighbor['remote_port'] = py23_compat.text_type(port_descr_rgx.groups()[1])
                 lldp_neighbor['remote_port_description'] = py23_compat.text_type(
-                                                            port_descr_rgx.groups()[1])
+                    port_descr_rgx.groups()[1])
                 continue
             syst_name_rgx = re.search(SYSTEM_NAME_REGEX, line, re.I)
             if syst_name_rgx:
                 lldp_neighbor['remote_system_name'] = py23_compat.text_type(
-                                                        syst_name_rgx.groups()[1])
+                    syst_name_rgx.groups()[1])
                 continue
             syst_descr_rgx = re.search(SYSTEM_DESCR_REGEX, line, re.I)
             if syst_descr_rgx:
                 lldp_neighbor['remote_system_description'] = py23_compat.text_type(
-                                                                syst_descr_rgx.groups()[1])
+                    syst_descr_rgx.groups()[1])
                 continue
             syst_capab_rgx = re.search(SYST_CAPAB_REEGX, line, re.I)
             if syst_capab_rgx:
                 lldp_neighbor['remote_system_capab'] = py23_compat.text_type(
-                                                        syst_capab_rgx.groups()[1])
+                    syst_capab_rgx.groups()[1])
                 continue
             syst_enabled_rgx = re.search(ENABL_CAPAB_REGEX, line, re.I)
             if syst_enabled_rgx:
                 lldp_neighbor['remote_system_enable_capab'] = py23_compat.text_type(
-                                                                syst_enabled_rgx.groups()[1])
+                    syst_enabled_rgx.groups()[1])
                 continue
             vlan_rgx = re.search(VLAN_ID_REGEX, line, re.I)
             if vlan_rgx:
@@ -839,8 +842,8 @@ class NXOSDriver(NXOSDriverBase):
                             'prefix_length': prefix
                         })
 
-            secondary_addresses = interface.get('TABLE_secondary_address', {})\
-                                           .get('ROW_secondary_address', [])
+            secondary_addresses = interface.get('TABLE_secondary_address', {}) \
+                .get('ROW_secondary_address', [])
             if type(secondary_addresses) is dict:
                 secondary_addresses = [secondary_addresses]
             for secondary_address in secondary_addresses:
@@ -859,37 +862,33 @@ class NXOSDriver(NXOSDriverBase):
 
         for interface in ipv6_interf_table_vrf:
             interface_name = py23_compat.text_type(interface.get('intf-name', ''))
-            addr_str = interface.get('addr', '').split('/')[0]
-            if not addr_str:
-                continue
-            address = napalm.base.helpers.ip(addr_str)
-            prefix = interface.get('prefix', '').split('/')[-1]
-            if prefix:
-                prefix = int(interface.get('prefix', '').split('/')[-1])
-            else:
-                prefix = 128
+
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = {}
             if 'ipv6' not in interfaces_ip[interface_name].keys():
                 interfaces_ip[interface_name]['ipv6'] = {}
-            if address not in interfaces_ip[interface_name].get('ipv6'):
-                interfaces_ip[interface_name]['ipv6'][address] = {}
-            interfaces_ip[interface_name]['ipv6'][address].update({
-                'prefix_length': prefix
-            })
-            secondary_addresses = interface.get('TABLE_sec_addr', {}).get('ROW_sec_addr', [])
-            if type(secondary_addresses) is dict:
-                secondary_addresses = [secondary_addresses]
-            for secondary_address in secondary_addresses:
-                sec_prefix = secondary_address.get('sec-prefix', '').split('/')
-                secondary_address_ip = napalm.base.helpers.ip(sec_prefix[0])
-                secondary_address_prefix = int(sec_prefix[-1])
-                if 'ipv6' not in interfaces_ip[interface_name].keys():
-                    interfaces_ip[interface_name]['ipv6'] = {}
-                if secondary_address_ip not in interfaces_ip[interface_name].get('ipv6'):
-                    interfaces_ip[interface_name]['ipv6'][secondary_address_ip] = {}
-                interfaces_ip[interface_name]['ipv6'][secondary_address_ip].update({
-                    'prefix_length': secondary_address_prefix
+
+            if type(interface.get('addr', '')) is list:
+                for ipv6_address in interface.get('addr', ''):
+                    address = napalm.base.helpers.ip(ipv6_address.split('/')[0])
+                    prefix = int(ipv6_address.split('/')[-1])
+                    if address not in interfaces_ip[interface_name].get('ipv6'):
+                        interfaces_ip[interface_name]['ipv6'][address] = {}
+                    interfaces_ip[interface_name]['ipv6'][address].update({
+                        'prefix_length': prefix
+                    })
+            else:
+                address = napalm.base.helpers.ip(interface.get('addr', '').split('/')[0])
+                prefix = interface.get('prefix', '').split('/')[-1]
+                if prefix:
+                    prefix = int(interface.get('prefix', '').split('/')[-1])
+                else:
+                    prefix = 128
+
+                if address not in interfaces_ip[interface_name].get('ipv6'):
+                    interfaces_ip[interface_name]['ipv6'][address] = {}
+                interfaces_ip[interface_name]['ipv6'][address].update({
+                    'prefix_length': prefix
                 })
         return interfaces_ip
 
@@ -1073,11 +1072,11 @@ class NXOSDriver(NXOSDriverBase):
                 previous_probe_ip_address = '*'
                 traceroute_result['success'][hop_index] = {'probes': {}}
                 for probe_index in range(probes):
-                    host_name = hop_details[3+probe_index*5]
-                    ip_address_raw = hop_details[4+probe_index*5]
+                    host_name = hop_details[3 + probe_index * 5]
+                    ip_address_raw = hop_details[4 + probe_index * 5]
                     ip_address = napalm.base.helpers.convert(
                         napalm.base.helpers.ip, ip_address_raw, ip_address_raw)
-                    rtt = hop_details[5+probe_index*5]
+                    rtt = hop_details[5 + probe_index * 5]
                     if rtt:
                         rtt = float(rtt)
                     else:
@@ -1086,10 +1085,10 @@ class NXOSDriver(NXOSDriverBase):
                         host_name = previous_probe_host_name
                     if not ip_address:
                         ip_address = previous_probe_ip_address
-                    if hop_details[1+probe_index*5] == '*':
+                    if hop_details[1 + probe_index * 5] == '*':
                         host_name = '*'
                         ip_address = '*'
-                    traceroute_result['success'][hop_index]['probes'][probe_index+1] = {
+                    traceroute_result['success'][hop_index]['probes'][probe_index + 1] = {
                         'host_name': py23_compat.text_type(host_name),
                         'ip_address': py23_compat.text_type(ip_address),
                         'rtt': rtt

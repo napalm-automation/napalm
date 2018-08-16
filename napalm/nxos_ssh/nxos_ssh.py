@@ -30,14 +30,10 @@ import socket
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 
-from netmiko import ConnectHandler
-from netmiko.ssh_exception import NetMikoTimeoutException
-
 # import NAPALM Base
 import napalm.base.helpers
 from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.utils import py23_compat
-from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
@@ -397,21 +393,15 @@ class NXOSSSHDriver(NXOSDriverBase):
         self.device = None
 
     def open(self):
-        try:
-            self.device = ConnectHandler(device_type='cisco_nxos',
-                                         host=self.hostname,
-                                         username=self.username,
-                                         password=self.password,
-                                         **self.netmiko_optional_args)
-            self.device.enable()
-        except NetMikoTimeoutException:
-            raise ConnectionException('Cannot connect to {}'.format(self.hostname))
+        self.device = self._netmiko_open(
+            device_type='cisco_nxos',
+            netmiko_optional_args=self.netmiko_optional_args,
+        )
 
     def close(self):
         if self.changed:
             self._delete_file(self.backup_file)
-        self.device.disconnect()
-        self.device = None
+        self._netmiko_close()
 
     def _send_command(self, command):
         """Wrapper for Netmiko's send_command method."""
@@ -860,9 +850,8 @@ class NXOSSSHDriver(NXOSDriverBase):
                 if local_iface not in results:
                     results[local_iface] = []
 
-            neighbor_dict = {}
-            neighbor_dict['hostname'] = py23_compat.text_type(neighbor.get('neighbor'))
-            neighbor_dict['port'] = py23_compat.text_type(neighbor.get('neighbor_interface'))
+            neighbor_dict = {'hostname': py23_compat.text_type(neighbor.get('neighbor')),
+                             'port': py23_compat.text_type(neighbor.get('neighbor_interface'))}
 
             results[local_iface].append(neighbor_dict)
         return results

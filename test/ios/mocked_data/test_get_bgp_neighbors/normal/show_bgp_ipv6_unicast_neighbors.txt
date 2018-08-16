@@ -1,0 +1,781 @@
+BGP neighbor is 2001:DB8::4,  remote AS 65004, external link
+ Description: external-4
+  BGP version 4, remote router ID 192.168.1.4
+  BGP state = Established, up for 26w6d
+  Last read 00:00:08, last write 00:00:06, hold time is 90, keepalive interval is 30 seconds
+  Neighbor sessions:
+    1 active, is not multisession capable (disabled)
+  Neighbor capabilities:
+    Route refresh: advertised and received(new)
+    Four-octets ASN Capability: advertised and received
+    Address family IPv6 Unicast: advertised and received
+    Enhanced Refresh Capability: advertised
+    Multisession Capability:
+    Stateful switchover support enabled: NO for session 1
+  Message statistics:
+    InQ depth is 0
+    OutQ depth is 0
+
+                         Sent       Rcvd
+    Opens:                  1          1
+    Notifications:          0          0
+    Updates:            24920    9358700
+    Keepalives:        587603     542595
+    Route Refresh:          5          0
+    Total:             612529    9901296
+  Default minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv6 Unicast
+  BGP diverse-paths computation is enabled
+  Session: 2001:DB8::4
+  BGP table version 155381886, neighbor version 155381829/155381886
+  Output queue size : 0
+  Index 7, Advertise bit 6
+  7 update-group member
+  Private AS number removed from updates to this neighbor
+  Community attribute sent to this neighbor
+  Inbound path policy configured
+  Outbound path policy configured
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:              29      36387 (Consumes 5239728 bytes)
+    Prefixes Total:             31735   14393964
+    Implicit Withdraw:          31411   12738659
+    Explicit Withdraw:            294    1618918
+    Used as bestpath:             n/a       7345
+    Used as multipath:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    route-map:                            0         43
+    AS_PATH loop:                       n/a       1412
+    Invalid Path:                       123        n/a
+    Other Policies:                60318322        n/a
+    Total:                         60318445       1455
+  Number of NLRIs in the update sent: max 6, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 1
+  Last Sent Refresh Start-of-rib: never
+  Last Sent Refresh End-of-rib: never
+  Last Received Refresh Start-of-rib: never
+  Last Received Refresh End-of-rib: never
+                                       Sent       Rcvd
+        Refresh activity:              ----       ----
+          Refresh Start-of-RIB          0          0
+          Refresh End-of-RIB            0          0
+
+  Address tracking is enabled, the RIB does have a route to 2001:DB8::4
+  Connections established 1; dropped 0
+  Last reset never
+  Transport(tcp) path-mtu-discovery is enabled
+  Graceful-Restart is disabled
+  SSO is disabled
+Connection state is ESTAB, I/O status: 1, unread input bytes: 0
+Connection is ECN Disabled, Mininum incoming TTL 0, Outgoing TTL 1
+Local host: 2001:DB8::FFFF, Local port: 63515
+Foreign host: 2001:DB8::4, Foreign port: 179
+Connection tableid (VRF): 0
+Maximum output segment queue size: 50
+
+Enqueued packets for retransmit: 0, input: 0  mis-ordered: 0 (0 bytes)
+
+Event Timers (current time is 0x3CBC1F1B5):
+Timer          Starts    Wakeups            Next
+Retrans        599358         24             0x0
+TimeWait            0          0             0x0
+AckHold       2318092    1555606             0x0
+SendWnd             0          0             0x0
+KeepAlive           0          0             0x0
+GiveUp              0          0             0x0
+PmtuAger            1          1             0x0
+DeadWait            0          0             0x0
+Linger              0          0             0x0
+ProcessQ            0          0             0x0
+
+iss: 4104572424  snduna: 4118786023  sndnxt: 4118786023
+irs: 2551116579  rcvnxt: 3676792031
+
+sndwnd:  32768  scale:      0  maxrcvwnd:  16384
+rcvwnd:  16136  scale:      0  delrcvwnd:    248
+
+SRTT: 1000 ms, RTTO: 1003 ms, RTV: 3 ms, KRTT: 0 ms
+minRTT: 0 ms, maxRTT: 1000 ms, ACK hold: 200 ms
+uptime: -1 ms, Sent idletime: 8327 ms, Receive idletime: 8326 ms
+Status Flags: active open
+Option Flags: nagle, path mtu capable, md5, win-scale
+IP Precedence value : 6
+
+Datagrams (max data segment is 1024 bytes):
+Rcvd: 3290635 (out of order: 0), with data: 2691895, total data bytes: 1125675451
+Sent: 3229340 (retransmit: 24, fastretransmit: 0, partialack: 0, Second Congestion: 0), with data: 3229340, total data bytes: 272560814
+
+ Packets received in fast path: 0, fast processed: 0, slow path: 0
+ fast lock acquisition failures: 0, slow path: 0
+TCP Semaphore      0x7F563489C528  FREE
+
+BGP neighbor is 2001:DB8::1,  remote AS 65001, external link
+ Description: external-1
+  BGP version 4, remote router ID 192.168.1.1
+  BGP state = Established, up for 5w5d
+  Last read 00:00:46, last write 00:00:41, hold time is 180, keepalive interval is 60 seconds
+  Neighbor sessions:
+    1 active, is not multisession capable (disabled)
+  Neighbor capabilities:
+    Route refresh: advertised and received(new)
+    Four-octets ASN Capability: advertised and received
+    Address family IPv4 Unicast: received
+    Address family IPv6 Unicast: advertised and received
+    Enhanced Refresh Capability: advertised and received
+    Multisession Capability:
+    Stateful switchover support enabled: NO for session 1
+  Message statistics:
+    InQ depth is 0
+    OutQ depth is 0
+
+                         Sent       Rcvd
+    Opens:                  1          1
+    Notifications:          0          0
+    Updates:             8886          1
+    Keepalives:         62175      63807
+    Route Refresh:          0          0
+    Total:              71076      63811
+  Default minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv6 Unicast
+  BGP diverse-paths computation is enabled
+  Session: 2001:DB8::1
+  BGP table version 155383086, neighbor version 155383018/155383086
+  Output queue size : 0
+  Index 11, Advertise bit 7
+  11 update-group member
+  Inbound soft reconfiguration allowed
+  Private AS number removed from updates to this neighbor
+  Community attribute sent to this neighbor
+  Inbound path policy configured
+  Outbound path policy configured
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:              35          0
+    Prefixes Total:             46516          0
+    Implicit Withdraw:          46298          0
+    Explicit Withdraw:            182          0
+    Used as bestpath:             n/a          0
+    Used as multipath:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Invalid Path:                       125        n/a
+    Other Policies:                46771626        n/a
+    Total:                         46771751          0
+  Number of NLRIs in the update sent: max 4, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 2
+  Last Sent Refresh Start-of-rib: 2d14h
+  Last Sent Refresh End-of-rib: 2d14h
+  Refresh-Out took 20 seconds
+  Last Received Refresh Start-of-rib: 5w5d
+  Last Received Refresh End-of-rib: 5w5d
+  Refresh-In took 0 seconds
+                                       Sent       Rcvd
+        Refresh activity:              ----       ----
+          Refresh Start-of-RIB          7          1
+          Refresh End-of-RIB            7          1
+
+  Address tracking is enabled, the RIB does have a route to 2001:DB8::1
+  Connections established 1; dropped 0
+  Last reset never
+  Transport(tcp) path-mtu-discovery is enabled
+  Graceful-Restart is disabled
+  SSO is disabled
+Connection state is ESTAB, I/O status: 1, unread input bytes: 0
+Connection is ECN Disabled, Mininum incoming TTL 0, Outgoing TTL 1
+Local host: 2001:DB8::FFFF, Local port: 179
+Foreign host: 2001:DB8::1, Foreign port: 31164
+Connection tableid (VRF): 0
+Maximum output segment queue size: 50
+
+Enqueued packets for retransmit: 0, input: 0  mis-ordered: 0 (0 bytes)
+
+Event Timers (current time is 0x3CBC46FAF):
+Timer          Starts    Wakeups            Next
+Retrans         65728          0             0x0
+TimeWait            0          0             0x0
+AckHold         63809      62677             0x0
+SendWnd             0          0             0x0
+KeepAlive           0          0             0x0
+GiveUp              0          0             0x0
+PmtuAger            0          0             0x0
+DeadWait            0          0             0x0
+Linger              0          0             0x0
+ProcessQ            0          0             0x0
+
+iss: 2233405174  snduna: 2235753219  sndnxt: 2235753219
+irs:   62051492  rcvnxt:   63263966
+
+sndwnd:  16118  scale:      0  maxrcvwnd:  16384
+rcvwnd:  15434  scale:      0  delrcvwnd:    950
+
+SRTT: 1000 ms, RTTO: 1003 ms, RTV: 3 ms, KRTT: 0 ms
+minRTT: 0 ms, maxRTT: 1000 ms, ACK hold: 200 ms
+uptime: -817389282 ms, Sent idletime: 43466 ms, Receive idletime: 43268 ms
+Status Flags: passive open, gen tcbs
+Option Flags: nagle, path mtu capable
+IP Precedence value : 6
+
+Datagrams (max data segment is 1440 bytes):
+Rcvd: 129369 (out of order: 0), with data: 63810, total data bytes: 1212473
+Sent: 129531 (retransmit: 0, fastretransmit: 0, partialack: 0, Second Congestion: 0), with data: 129531, total data bytes: 7529292
+
+ Packets received in fast path: 0, fast processed: 0, slow path: 0
+ fast lock acquisition failures: 0, slow path: 0
+TCP Semaphore      0x7F55ECDDBFE0  FREE
+
+BGP neighbor is 2001:DB8::2,  remote AS 65002, external link
+ Description: external-2
+  BGP version 4, remote router ID 192.168.1.2
+  BGP state = Established, up for 17w5d
+  Last read 00:00:47, last write 00:00:04, hold time is 180, keepalive interval is 60 seconds
+  Neighbor sessions:
+    1 active, is not multisession capable (disabled)
+  Neighbor capabilities:
+    Route refresh: advertised and received(new)
+    Four-octets ASN Capability: advertised and received
+    Address family IPv6 Unicast: advertised and received
+    Enhanced Refresh Capability: advertised and received
+    Multisession Capability:
+    Stateful switchover support enabled: NO for session 1
+  Message statistics:
+    InQ depth is 0
+    OutQ depth is 0
+
+                         Sent       Rcvd
+    Opens:                  1          1
+    Notifications:          0          0
+    Updates:            19791         38
+    Keepalives:        194425     197930
+    Route Refresh:          0          0
+    Total:             214374     197971
+  Default minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv6 Unicast
+  BGP diverse-paths computation is enabled
+  Session: 2001:DB8::2
+  BGP table version 155384285, neighbor version 155384145/155384285
+  Output queue size : 0
+  Index 10, Advertise bit 5
+  10 update-group member
+  Inbound soft reconfiguration allowed
+  Private AS number removed from updates to this neighbor
+  Community attribute sent to this neighbor
+  Inbound path policy configured
+  Outbound path policy configured
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:              36          1 (Consumes 288 bytes)
+    Prefixes Total:             29444         30
+    Implicit Withdraw:          29227         22
+    Explicit Withdraw:            180          7
+    Used as bestpath:             n/a          1
+    Used as multipath:            n/a          0
+    Saved (soft-reconfig):        n/a          1 (Consumes 144 bytes)
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Invalid Path:                        83        n/a
+    Other Policies:                45301826        n/a
+    Total:                         45301909          0
+  Number of NLRIs in the update sent: max 6, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 2
+  Last Sent Refresh Start-of-rib: 2d14h
+  Last Sent Refresh End-of-rib: 2d14h
+  Refresh-Out took 21 seconds
+  Last Received Refresh Start-of-rib: 17w5d
+  Last Received Refresh End-of-rib: 17w5d
+  Refresh-In took 0 seconds
+                                       Sent       Rcvd
+        Refresh activity:              ----       ----
+          Refresh Start-of-RIB         81          1
+          Refresh End-of-RIB           76          1
+
+  Address tracking is enabled, the RIB does have a route to 2001:DB8::2
+  Connections established 3; dropped 2
+  Last reset 17w5d, due to Active open failed
+  Transport(tcp) path-mtu-discovery is enabled
+  Graceful-Restart is disabled
+  SSO is disabled
+Connection state is ESTAB, I/O status: 1, unread input bytes: 0
+Connection is ECN Disabled, Mininum incoming TTL 0, Outgoing TTL 1
+Local host: 2001:DB8::FFFF, Local port: 52325
+Foreign host: 2001:DB8::2, Foreign port: 179
+Connection tableid (VRF): 0
+Maximum output segment queue size: 50
+
+Enqueued packets for retransmit: 0, input: 0  mis-ordered: 0 (0 bytes)
+
+Event Timers (current time is 0x3CBC754B5):
+Timer          Starts    Wakeups            Next
+Retrans        202476         13             0x0
+TimeWait            0          0             0x0
+AckHold        197961     194062             0x0
+SendWnd             0          0             0x0
+KeepAlive           0          0             0x0
+GiveUp              0          0             0x0
+PmtuAger     10731182   10731181     0x3CBC75565
+DeadWait            0          0             0x0
+Linger              0          0             0x0
+ProcessQ            0          0             0x0
+
+iss: 3950896997  snduna: 3957081312  sndnxt: 3957081312
+irs:  976212743  rcvnxt:  979976918
+
+sndwnd:  15649  scale:      0  maxrcvwnd:  16384
+rcvwnd:  15472  scale:      0  delrcvwnd:    912
+
+SRTT: 1000 ms, RTTO: 1003 ms, RTV: 3 ms, KRTT: 0 ms
+minRTT: 0 ms, maxRTT: 1000 ms, ACK hold: 200 ms
+uptime: -1 ms, Sent idletime: 6413 ms, Receive idletime: 6216 ms
+Status Flags: active open
+Option Flags: nagle, path mtu capable, md5
+IP Precedence value : 6
+
+Datagrams (max data segment is 1440 bytes):
+Rcvd: 400468 (out of order: 0), with data: 197964, total data bytes: 3764174
+Sent: 400556 (retransmit: 13, fastretransmit: 0, partialack: 0, Second Congestion: 0), with data: 400556, total data bytes: 38228810
+
+ Packets received in fast path: 0, fast processed: 0, slow path: 0
+ fast lock acquisition failures: 0, slow path: 0
+TCP Semaphore      0x7F55ECB3D1E0  FREE
+
+BGP neighbor is 2001:DB8::3,  remote AS 65003, external link
+ Description: external-3
+ Administratively shut down
+  BGP version 4, remote router ID 0.0.0.0
+  BGP state = Idle
+  Neighbor sessions:
+    0 active, is not multisession capable (disabled)
+    Stateful switchover support enabled: NO
+  Default minimum time between advertisement runs is 30 seconds
+
+ For address family: IPv6 Unicast
+  BGP diverse-paths computation is enabled
+  BGP table version 155389626, neighbor version 1/155389626
+  Output queue size : 0
+  Index 0, Advertise bit 0
+  Inbound soft reconfiguration allowed
+  Private AS number removed from updates to this neighbor
+  Community attribute sent to this neighbor
+  Inbound path policy configured
+  Outbound path policy configured
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+  Interface associated: (none)
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:               0          0
+    Prefixes Total:                 0          0
+    Implicit Withdraw:              0          0
+    Explicit Withdraw:              0          0
+    Used as bestpath:             n/a          0
+    Used as multipath:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Total:                                0          0
+  Number of NLRIs in the update sent: max 0, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 1
+  Last Sent Refresh Start-of-rib: never
+  Last Sent Refresh End-of-rib: never
+  Last Received Refresh Start-of-rib: never
+  Last Received Refresh End-of-rib: never
+                                       Sent       Rcvd
+        Refresh activity:              ----       ----
+          Refresh Start-of-RIB          0          0
+          Refresh End-of-RIB            0          0
+
+  Address tracking is enabled, the RIB does have a route to 2001:DB8::3
+  Connections established 0; dropped 0
+  Last reset never
+  Transport(tcp) path-mtu-discovery is enabled
+  Graceful-Restart is disabled
+  SSO is disabled
+  No active TCP connection
+
+BGP neighbor is 10.0.0.2,  remote AS 65000, internal link
+ Description: internal-2
+ Inherits from template iBGP for session parameters
+  BGP version 4, remote router ID 10.0.1.2
+  BGP state = Established, up for 8w0d
+  Last read 00:00:08, last write 00:00:01, hold time is 180, keepalive interval is 60 seconds
+  Neighbor sessions:
+    1 active, is not multisession capable (disabled)
+  Neighbor capabilities:
+    Route refresh: advertised and received(new)
+    Four-octets ASN Capability: advertised and received
+    Address family IPv4 Unicast: advertised and received
+    ipv4 MPLS Label capability: advertised and received
+    Address family IPv6 Unicast: advertised and received
+    ipv6 MPLS Label capability: advertised and received
+    Address family VPNv4 Unicast: advertised and received
+    Address family VPNv6 Unicast: advertised and received
+    Enhanced Refresh Capability: advertised and received
+    Multisession Capability:
+    Stateful switchover support enabled: NO for session 1
+  Message statistics:
+    InQ depth is 0
+    OutQ depth is 0
+
+                         Sent       Rcvd
+    Opens:                  1          1
+    Notifications:          0          0
+    Updates:         64397066    1297011
+    Keepalives:            11      39187
+    Route Refresh:          0          0
+    Total:           64397086    1336207
+  Default minimum time between advertisement runs is 0 seconds
+
+ For address family: IPv4 Unicast
+  Additional Paths send capability: advertised and received
+  Additional Paths receive capability: advertised and received
+  BGP diverse-paths computation is enabled
+  Session: 10.0.0.2
+  BGP table version 1011767359, neighbor version 1011767359/0
+  Output queue size : 0
+  Index 2, Advertise bit 1
+  2 update-group member
+  Inherits from template IPv4-iBGP
+  NEXT_HOP is always this router for eBGP paths
+  Community attribute sent to this neighbor
+  Inbound path policy configured
+  Outbound path policy configured
+  Route map for incoming advertisements is IPv4-iBGP-In
+  Route map for outgoing advertisements is IPv4-iBGP-Out
+  Sending Prefix & Label
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+  Interface associated: (none)
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:          637213       3142 (Consumes 377040 bytes)
+    Prefixes Total:         503373284    4280216
+    Implicit Withdraw:      438785370    1563479
+    Explicit Withdraw:       62043863    2713595
+    Used as bestpath:             n/a        554
+    Used as multipath:            n/a          1
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Bestpath from this peer:        4724999        n/a
+    Bestpath from iBGP peer:     1405277470        n/a
+    Invalid Path:                        59        n/a
+    Gateway Metric:                   82957        n/a
+    Total:                       1410085485          0
+  Number of NLRIs in the update sent: max 561, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 2
+  Last Sent Refresh Start-of-rib: 8w0d
+  Last Sent Refresh End-of-rib: 8w0d
+  Refresh-Out took 0 seconds
+  Last Received Refresh Start-of-rib: 8w0d
+  Last Received Refresh End-of-rib: 8w0d
+  Refresh-In took 0 seconds
+                                       Sent       Rcvd
+        Refresh activity:              ----       ----
+          Refresh Start-of-RIB          1          1
+          Refresh End-of-RIB            1          1
+
+ For address family: IPv6 Unicast
+  Additional Paths send capability: advertised and received
+  Additional Paths receive capability: advertised and received
+  BGP diverse-paths computation is enabled
+  Session: 10.0.0.2
+  BGP table version 155372848, neighbor version 155372848/0
+  Output queue size : 0
+  Index 2, Advertise bit 1
+  2 update-group member
+  Inherits from template IPv6-iBGP
+  NEXT_HOP is always this router for eBGP paths
+  Community attribute sent to this neighbor
+  Inbound path policy configured
+  Outbound path policy configured
+  Route map for incoming advertisements is IPv6-iBGP-In
+  Route map for outgoing advertisements is IPv6-iBGP-Out
+  Sending Prefix & Label
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+  Interface associated: (none)
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:           36714        148 (Consumes 21312 bytes)
+    Prefixes Total:          53843814     359361
+    Implicit Withdraw:       46765228     320114
+    Explicit Withdraw:        6992226      39099
+    Used as bestpath:             n/a         56
+    Used as multipath:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Bestpath from this peer:         114918        n/a
+    Bestpath from iBGP peer:      234815725        n/a
+    Invalid Path:                        68        n/a
+    Gateway Metric:                  572534        n/a
+    Total:                        235503245          0
+  Number of NLRIs in the update sent: max 322, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 2
+  Last Sent Refresh Start-of-rib: 8w0d
+  Last Sent Refresh End-of-rib: 8w0d
+  Refresh-Out took 0 seconds
+  Last Received Refresh Start-of-rib: 8w0d
+  Last Received Refresh End-of-rib: 8w0d
+  Refresh-In took 0 seconds
+                                       Sent       Rcvd
+        Refresh activity:              ----       ----
+          Refresh Start-of-RIB          1          1
+          Refresh End-of-RIB            1          1
+
+  Address tracking is enabled, the RIB does have a route to 10.0.0.2
+  Connections established 3; dropped 2
+  Last reset 8w0d, due to Peer closed the session
+  Transport(tcp) path-mtu-discovery is disabled
+  Graceful-Restart is disabled
+  SSO is disabled
+Connection state is ESTAB, I/O status: 1, unread input bytes: 0
+Connection is ECN Disabled, Mininum incoming TTL 0, Outgoing TTL 255
+Local host: 10.0.0.1, Local port: 52893
+Foreign host: 10.0.0.2, Foreign port: 179
+Connection tableid (VRF): 0
+Maximum output segment queue size: 50
+
+Enqueued packets for retransmit: 0, input: 0  mis-ordered: 0 (0 bytes)
+
+Event Timers (current time is 0x3CBB10F9B):
+Timer          Starts    Wakeups            Next
+Retrans      20915366        203             0x0
+TimeWait            0          0             0x0
+AckHold        520221     104211             0x0
+SendWnd          4778        836             0x0
+KeepAlive           0          0             0x0
+GiveUp              0          0             0x0
+PmtuAger            0          0             0x0
+DeadWait            0          0             0x0
+Linger              0          0             0x0
+ProcessQ            0          0             0x0
+
+iss:  896379848  snduna: 1690502812  sndnxt: 1690502812
+irs: 2469707680  rcvnxt: 2649635682
+
+sndwnd:  15974  scale:      0  maxrcvwnd:  16384
+rcvwnd:  16384  scale:      0  delrcvwnd:      0
+
+SRTT: 1000 ms, RTTO: 1003 ms, RTV: 3 ms, KRTT: 0 ms
+minRTT: 0 ms, maxRTT: 1000 ms, ACK hold: 200 ms
+uptime: -1 ms, Sent idletime: 316 ms, Receive idletime: 115 ms
+Status Flags: active open
+Option Flags: nagle, md5, win-scale
+IP Precedence value : 6
+
+Datagrams (max data segment is 536 bytes):
+Rcvd: 29247474 (out of order: 0), with data: 673110, total data bytes: 179928001
+Sent: 34406790 (retransmit: 4981, fastretransmit: 77, partialack: 30, Second Congestion: 10), with data: 33933489, total data bytes: 794134685
+
+ Packets received in fast path: 0, fast processed: 0, slow path: 0
+ fast lock acquisition failures: 0, slow path: 0
+TCP Semaphore      0x7F55EF48E9C8  FREE
+
+BGP neighbor is 10.0.0.3,  remote AS 65000, internal link
+ Description: internal-3
+ Inherits from template iBGP for session parameters
+  BGP version 4, remote router ID 10.0.1.3
+  BGP state = Established, up for 1d13h
+  Last read 00:00:28, last write 00:00:54, hold time is 180, keepalive interval is 60 seconds
+  Neighbor sessions:
+    1 active, is not multisession capable (disabled)
+  Neighbor capabilities:
+    Route refresh: advertised and received(new)
+    Four-octets ASN Capability: advertised and received
+    Address family IPv4 Unicast: advertised and received
+    ipv4 MPLS Label capability: advertised
+    Address family IPv6 Unicast: advertised and received
+    ipv6 MPLS Label capability: advertised and received
+    Address family VPNv4 Unicast: advertised and received
+    Address family VPNv6 Unicast: advertised
+    Enhanced Refresh Capability: advertised and received
+    Multisession Capability:
+    Stateful switchover support enabled: NO for session 1
+  Message statistics:
+    InQ depth is 0
+    OutQ depth is 0
+
+                         Sent       Rcvd
+    Opens:                  1          1
+    Notifications:          0          0
+    Updates:             2092          4
+    Keepalives:          2330       2507
+    Route Refresh:          0          0
+    Total:               4429       2516
+  Default minimum time between advertisement runs is 0 seconds
+
+ For address family: IPv4 Unicast
+  Additional Paths send capability: advertised
+  Additional Paths receive capability: advertised
+  BGP diverse-paths computation is enabled
+  Session: 10.0.0.3
+  BGP table version 1011765330, neighbor version 1011765330/0
+  Output queue size : 0
+  Index 3, Advertise bit 2
+  Route-Reflector Client
+  3 update-group member
+  Inherits from template IPv4-iBGP-RRC-Filtered
+  NEXT_HOP is always this router for eBGP paths
+  Community attribute sent to this neighbor
+  Default information originate, default sent
+  Inbound path policy configured
+  Outbound path policy configured
+  Route map for incoming advertisements is IPv4-iBGP-RRC-In
+  Route map for outgoing advertisements is IPv4-iBGP-RRC-Filtered-Out
+  Sending Prefix & Label
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+  Interface associated: (none)
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:             966          1 (Consumes 120 bytes)
+    Prefixes Total:            913863          1
+    Implicit Withdraw:         890449          0
+    Explicit Withdraw:          22448          0
+    Used as bestpath:             n/a          1
+    Used as multipath:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Other Policies:               920771424        n/a
+    Gateway Metric:                    1184        n/a
+    Total:                        920772608          0
+  Number of NLRIs in the update sent: max 245, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 2
+  Last Sent Refresh Start-of-rib: 1d13h
+  Last Sent Refresh End-of-rib: 1d13h
+  Refresh-Out took 11 seconds
+  Last Received Refresh Start-of-rib: 1d13h
+  Last Received Refresh End-of-rib: 1d13h
+  Refresh-In took 0 seconds
+                                       Sent       Rcvd
+        Refresh activity:              ----       ----
+          Refresh Start-of-RIB          1          1
+          Refresh End-of-RIB            1          1
+
+ For address family: IPv6 Unicast
+  Additional Paths send capability: advertised
+  Additional Paths receive capability: advertised
+  BGP diverse-paths computation is enabled
+  Session: 10.0.0.3
+  BGP table version 155372669, neighbor version 155372669/0
+  Output queue size : 0
+  Index 3, Advertise bit 2
+  Route-Reflector Client
+  3 update-group member
+  Inherits from template IPv6-iBGP-RRC-Filtered
+  NEXT_HOP is always this router for eBGP paths
+  Community attribute sent to this neighbor
+  Default information originate, default sent
+  Inbound path policy configured
+  Outbound path policy configured
+  Route map for incoming advertisements is IPv6-iBGP-RRC-In
+  Route map for outgoing advertisements is IPv6-iBGP-RRC-Filtered-Out
+  Sending Prefix & Label
+  Slow-peer detection is disabled
+  Slow-peer split-update-group dynamic is disabled
+  Interface associated: (none)
+                                 Sent       Rcvd
+  Prefix activity:               ----       ----
+    Prefixes Current:             105          2 (Consumes 288 bytes)
+    Prefixes Total:             38914          2
+    Implicit Withdraw:          38286          0
+    Explicit Withdraw:            521          0
+    Used as bestpath:             n/a          2
+    Used as multipath:            n/a          0
+
+                                   Outbound    Inbound
+  Local Policy Denied Prefixes:    --------    -------
+    Other Policies:               142413667        n/a
+    Gateway Metric:                    2713        n/a
+    Total:                        142416380          0
+  Number of NLRIs in the update sent: max 8, min 0
+  Last detected as dynamic slow peer: never
+  Dynamic slow peer recovered: never
+  Refresh Epoch: 2
+  Last Sent Refresh Start-of-rib: 1d13h
+  Last Sent Refresh End-of-rib: 1d13h
+  Refresh-Out took 1 seconds
+  Last Received Refresh Start-of-rib: 1d13h
+  Last Received Refresh End-of-rib: 1d13h
+  Refresh-In took 0 seconds
+                                       Sent       Rcvd
+        Refresh activity:              ----       ----
+          Refresh Start-of-RIB          1          1
+          Refresh End-of-RIB            1          1
+
+  Address tracking is enabled, the RIB does have a route to 10.0.0.3
+  Connections established 9; dropped 8
+  Last reset 1d14h, due to Active open failed
+  Transport(tcp) path-mtu-discovery is disabled
+  Graceful-Restart is disabled
+  SSO is disabled
+Connection state is ESTAB, I/O status: 1, unread input bytes: 0
+Connection is ECN Disabled, Mininum incoming TTL 0, Outgoing TTL 255
+Local host: 10.0.0.1, Local port: 179
+Foreign host: 10.0.0.3, Foreign port: 60910
+Connection tableid (VRF): 0
+Maximum output segment queue size: 50
+
+Enqueued packets for retransmit: 0, input: 0  mis-ordered: 0 (0 bytes)
+
+Event Timers (current time is 0x3CBB01426):
+Timer          Starts    Wakeups            Next
+Retrans          3470          0             0x0
+TimeWait            0          0             0x0
+AckHold          2511       2409             0x0
+SendWnd             0          0             0x0
+KeepAlive           0          0             0x0
+GiveUp              0          0             0x0
+PmtuAger            0          0             0x0
+DeadWait            0          0             0x0
+Linger              0          0             0x0
+ProcessQ            0          0             0x0
+
+iss: 4285461574  snduna: 4285768570  sndnxt: 4285768570
+irs: 3703487142  rcvnxt: 3703535245
+
+sndwnd:  16308  scale:      0  maxrcvwnd:  16384
+rcvwnd:  16213  scale:      0  delrcvwnd:    171
+
+SRTT: 1000 ms, RTTO: 1003 ms, RTV: 3 ms, KRTT: 0 ms
+minRTT: 142 ms, maxRTT: 1000 ms, ACK hold: 200 ms
+uptime: 136639777 ms, Sent idletime: 30595 ms, Receive idletime: 30797 ms
+Status Flags: passive open, gen tcbs
+Option Flags: nagle, md5, Retrans timeout
+IP Precedence value : 6
+
+Datagrams (max data segment is 536 bytes):
+Rcvd: 6174 (out of order: 0), with data: 2511, total data bytes: 48102
+Sent: 6517 (retransmit: 0, fastretransmit: 0, partialack: 0, Second Congestion: 0), with data: 4019, total data bytes: 306995
+
+ Packets received in fast path: 0, fast processed: 0, slow path: 0
+ fast lock acquisition failures: 0, slow path: 0
+TCP Semaphore      0x7F563489C768  FREE

@@ -18,11 +18,12 @@ from __future__ import unicode_literals
 
 # local modules
 import napalm.base.exceptions
+from napalm.base.exceptions import ConnectionException
 import napalm.base.helpers
-
 from napalm.base import constants as c
-
 from napalm.base import validate
+
+from netmiko import ConnectHandler, NetMikoTimeoutException
 
 
 class NetworkDriver(object):
@@ -68,6 +69,29 @@ class NetworkDriver(object):
                 self.close()
         except Exception:
             pass
+
+    def _netmiko_open(self, device_type, netmiko_optional_args=None):
+        """Standardized method of creating a Netmiko connection using napalm attributes."""
+        if netmiko_optional_args is None:
+            netmiko_optional_args = {}
+        try:
+            self._netmiko_device = ConnectHandler(device_type=device_type,
+                                                  host=self.hostname,
+                                                  username=self.username,
+                                                  password=self.password,
+                                                  **netmiko_optional_args)
+        except NetMikoTimeoutException:
+            raise ConnectionException('Cannot connect to {}'.format(self.hostname))
+
+        # ensure in enable mode
+        self._netmiko_device.enable()
+        return self._netmiko_device
+
+    def _netmiko_close(self):
+        """Standardized method of closing a Netmiko connection."""
+        self.device.disconnect()
+        self._netmiko_device = None
+        self.device = None
 
     def open(self):
         """
@@ -178,7 +202,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def commit_config(self):
+    def commit_config(self, message=""):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
         """
@@ -229,6 +253,7 @@ class NetworkDriver(object):
         Returns a dictionary of dictionaries. The keys for the first dictionary will be the \
         interfaces in the devices. The inner dictionary will containing the following data for \
         each interface:
+
          * is_up (True/False)
          * is_enabled (True/False)
          * description (string)
@@ -349,36 +374,36 @@ class NetworkDriver(object):
             Note, if is_up is False and uptime has a positive value then this indicates the
             uptime of the last active BGP session.
 
-            Example response:
-            {
-              "global": {
-                "router_id": "10.0.1.1",
-                "peers": {
-                  "10.0.0.2": {
-                    "local_as": 65000,
-                    "remote_as": 65000,
-                    "remote_id": "10.0.1.2",
-                    "is_up": True,
-                    "is_enabled": True,
-                    "description": "internal-2",
-                    "uptime": 4838400,
-                    "address_family": {
-                      "ipv4": {
-                        "sent_prefixes": 637213,
-                        "accepted_prefixes": 3142,
-                        "received_prefixes": 3142
-                      },
-                      "ipv6": {
-                        "sent_prefixes": 36714,
-                        "accepted_prefixes": 148,
-                        "received_prefixes": 148
+            Example::
+
+                {
+                  "global": {
+                    "router_id": "10.0.1.1",
+                    "peers": {
+                      "10.0.0.2": {
+                        "local_as": 65000,
+                        "remote_as": 65000,
+                        "remote_id": "10.0.1.2",
+                        "is_up": True,
+                        "is_enabled": True,
+                        "description": "internal-2",
+                        "uptime": 4838400,
+                        "address_family": {
+                          "ipv4": {
+                            "sent_prefixes": 637213,
+                            "accepted_prefixes": 3142,
+                            "received_prefixes": 3142
+                          },
+                          "ipv6": {
+                            "sent_prefixes": 36714,
+                            "accepted_prefixes": 148,
+                            "received_prefixes": 148
+                          }
+                        }
                       }
                     }
                   }
                 }
-              }
-            }
-
         """
         raise NotImplementedError
 
@@ -518,6 +543,7 @@ class NetworkDriver(object):
 
         Main dictionary keys represent the group name and the values represent a dictionary having
         the keys below. Neighbors which aren't members of a group will be stored in a key named "_":
+
             * type (string)
             * description (string)
             * apply_groups (string list)
@@ -531,7 +557,9 @@ class NetworkDriver(object):
             * remove_private_as (True/False)
             * prefix_limit (dictionary)
             * neighbors (dictionary)
+
         Neighbors is a dictionary of dictionaries with the following keys:
+
             * description (string)
             * import_policy (string)
             * export_policy (string)
@@ -542,6 +570,7 @@ class NetworkDriver(object):
             * prefix_limit (dictionary)
             * route_reflector_client (True/False)
             * nhs (True/False)
+
         The inner dictionary prefix_limit has the same structure for both layers::
 
             {
@@ -841,6 +870,7 @@ class NetworkDriver(object):
         'ipv4' and 'ipv6' (one, both or none) which are themselvs dictionaries witht the IP
         addresses as keys.
         Each IP Address dictionary has the following keys:
+
             * prefix_length (int)
 
         Example::
@@ -890,6 +920,7 @@ class NetworkDriver(object):
         """
         Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address
         Table, having the following keys:
+
             * mac (string)
             * interface (string)
             * vlan (int)
@@ -1059,6 +1090,7 @@ class NetworkDriver(object):
         The keys of the main dictionary represent the name of the probes.
         Each probe consists on multiple tests, each test name being a key in the probe dictionary.
         A test has the following keys:
+
             * probe_type (str)
             * target (str)
             * source (str)
@@ -1094,6 +1126,7 @@ class NetworkDriver(object):
         The keys of the main dictionary represent the name of the probes.
         Each probe consists on multiple tests, each test name being a key in the probe dictionary.
         A test has the following keys:
+
             * target (str)
             * source (str)
             * probe_type (str)
@@ -1241,6 +1274,7 @@ class NetworkDriver(object):
 
         In case of success, the keys of the dictionary represent the hop ID, while values are
         dictionaries containing the probes results:
+
             * rtt (float)
             * ip_address (str)
             * host_name (str)
@@ -1336,6 +1370,7 @@ class NetworkDriver(object):
         Returns a dictionary with the configured users.
         The keys of the main dictionary represents the username. The values represent the details
         of the user, represented by the following keys:
+
             * level (int)
             * password (str)
             * sshkeys (list)
@@ -1390,39 +1425,39 @@ class NetworkDriver(object):
                                 * min (float)
                                 * max (float)
 
-        Example:
+        Example::
 
             {
-                    'et1': {
-                        'physical_channels': {
-                            'channel': [
-                                {
-                                    'index': 0,
-                                    'state': {
-                                        'input_power': {
-                                            'instant': 0.0,
-                                            'avg': 0.0,
-                                            'min': 0.0,
-                                            'max': 0.0,
-                                        },
-                                        'output_power': {
-                                            'instant': 0.0,
-                                            'avg': 0.0,
-                                            'min': 0.0,
-                                            'max': 0.0,
-                                        },
-                                        'laser_bias_current': {
-                                            'instant': 0.0,
-                                            'avg': 0.0,
-                                            'min': 0.0,
-                                            'max': 0.0,
-                                        },
-                                    }
+                'et1': {
+                    'physical_channels': {
+                        'channel': [
+                            {
+                                'index': 0,
+                                'state': {
+                                    'input_power': {
+                                        'instant': 0.0,
+                                        'avg': 0.0,
+                                        'min': 0.0,
+                                        'max': 0.0,
+                                    },
+                                    'output_power': {
+                                        'instant': 0.0,
+                                        'avg': 0.0,
+                                        'min': 0.0,
+                                        'max': 0.0,
+                                    },
+                                    'laser_bias_current': {
+                                        'instant': 0.0,
+                                        'avg': 0.0,
+                                        'min': 0.0,
+                                        'max': 0.0,
+                                    },
                                 }
-                            ]
-                        }
+                            }
+                        ]
                     }
                 }
+            }
         """
         raise NotImplementedError
 
@@ -1432,10 +1467,11 @@ class NetworkDriver(object):
 
         Args:
             retrieve(string): Which configuration type you want to populate, default is all of them.
-                The rest will be set to "".
+                              The rest will be set to "".
 
         Returns:
-          The object returned is a dictionary with the following keys:
+          The object returned is a dictionary with a key for each configuration store:
+
             - running(string) - Representation of the native running configuration
             - candidate(string) - Representation of the native candidate configuration. If the
               device doesnt differentiate between running and startup configuration this will an
@@ -1456,44 +1492,45 @@ class NetworkDriver(object):
         Returns:
             A dictionary of network instances in OC format:
             * name (dict)
-              * name (unicode)
-              * type (unicode)
-              * state (dict)
-                * route_distinguisher (unicode)
-              * interfaces (dict)
-                * interface (dict)
-                  * interface name: (dict)
+                * name (unicode)
+                * type (unicode)
+                * state (dict)
+                    * route_distinguisher (unicode)
+                * interfaces (dict)
+                    * interface (dict)
+                        * interface name: (dict)
 
-        Example:
-        {
-            u'MGMT': {
-                u'name': u'MGMT',
-                u'type': u'L3VRF',
-                u'state': {
-                    u'route_distinguisher': u'123:456',
+        Example::
+
+            {
+                u'MGMT': {
+                    u'name': u'MGMT',
+                    u'type': u'L3VRF',
+                    u'state': {
+                        u'route_distinguisher': u'123:456',
+                    },
+                    u'interfaces': {
+                        u'interface': {
+                            u'Management1': {}
+                        }
+                    }
                 },
-                u'interfaces': {
-                    u'interface': {
-                        u'Management1': {}
+                u'default': {
+                    u'name': u'default',
+                    u'type': u'DEFAULT_INSTANCE',
+                    u'state': {
+                        u'route_distinguisher': None,
+                    },
+                    u'interfaces: {
+                        u'interface': {
+                            u'Ethernet1': {}
+                            u'Ethernet2': {}
+                            u'Ethernet3': {}
+                            u'Ethernet4': {}
+                        }
                     }
                 }
             }
-            u'default': {
-                u'name': u'default',
-                u'type': u'DEFAULT_INSTANCE',
-                u'state': {
-                    u'route_distinguisher': None,
-                },
-                u'interfaces: {
-                    u'interface': {
-                        u'Ethernet1': {}
-                        u'Ethernet2': {}
-                        u'Ethernet3': {}
-                        u'Ethernet4': {}
-                    }
-                }
-            }
-        }
         """
         raise NotImplementedError
 
@@ -1518,23 +1555,23 @@ class NetworkDriver(object):
 
         Example::
 
-        {
-            'policy_name': [{
-                'position': 1,
-                'packet_hits': 200,
-                'byte_hits': 83883,
-                'id': '230',
-                'enabled': True,
-                'schedule': 'Always',
-                'log': 'all',
-                'l3_src': 'any',
-                'l3_dst': 'any',
-                'service': 'HTTP',
-                'src_zone': 'port2',
-                'dst_zone': 'port3',
-                'action': 'Permit'
-            }]
-        }
+            {
+                'policy_name': [{
+                    'position': 1,
+                    'packet_hits': 200,
+                    'byte_hits': 83883,
+                    'id': '230',
+                    'enabled': True,
+                    'schedule': 'Always',
+                    'log': 'all',
+                    'l3_src': 'any',
+                    'l3_dst': 'any',
+                    'service': 'HTTP',
+                    'src_zone': 'port2',
+                    'dst_zone': 'port3',
+                    'action': 'Permit'
+                }]
+            }
         """
         raise NotImplementedError
 
@@ -1543,6 +1580,7 @@ class NetworkDriver(object):
         Get IPv6 neighbors table information.
 
         Return a list of dictionaries having the following set of keys:
+
             * interface (string)
             * mac (string)
             * ip (string)
@@ -1550,6 +1588,7 @@ class NetworkDriver(object):
             * state (string)
 
         For example::
+
             [
                 {
                     'interface' : 'MgmtEth0/RSP0/CPU0/0',

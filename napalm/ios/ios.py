@@ -16,26 +16,27 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import functools
-import re
-import os
-import uuid
-import socket
-import tempfile
-import telnetlib
 import copy
+import functools
+import os
+import re
+import socket
+import telnetlib
+import tempfile
+import uuid
+from collections import defaultdict
 
-from netmiko import ConnectHandler, FileTransfer, InLineTransfer
-from napalm.base.base import NetworkDriver
-from napalm.base.netmiko_helpers import netmiko_args
-from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
-            ConnectionClosedException, CommandErrorException
+from netmiko import FileTransfer, InLineTransfer
 
-from napalm.base.utils import py23_compat
 import napalm.base.constants as C
 import napalm.base.helpers
+from napalm.base.base import NetworkDriver
+from napalm.base.exceptions import ReplaceConfigException, MergeConfigException, \
+    ConnectionClosedException, CommandErrorException
 from napalm.base.helpers import canonical_interface_name
-
+from napalm.base.helpers import textfsm_extractor
+from napalm.base.netmiko_helpers import netmiko_args
+from napalm.base.utils import py23_compat
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
@@ -65,6 +66,20 @@ ASN_REGEX = r"[\d\.]+"
 
 IOS_COMMANDS = {
    'show_mac_address': ['show mac-address-table', 'show mac address-table'],
+}
+
+AFI_COMMAND_MAP = {
+    'IPv4 Unicast': 'ipv4 unicast',
+    'IPv6 Unicast': 'ipv6 unicast',
+    'VPNv4 Unicast': 'vpnv4 all',
+    'VPNv6 Unicast': 'vpnv6 unicast all',
+    'IPv4 Multicast': 'ipv4 multicast',
+    'IPv6 Multicast': 'ipv6 multicast',
+    'L2VPN E-VPN': 'l2vpn evpn',
+    'MVPNv4 Unicast': 'ipv4 mvpn all',
+    'MVPNv6 Unicast': 'ipv6 mvpn all',
+    'VPNv4 Flowspec': 'ipv4 flowspec',
+    'VPNv6 Flowspec': 'ipv6 flowspec',
 }
 
 
@@ -118,13 +133,10 @@ class IOSDriver(NetworkDriver):
         device_type = 'cisco_ios'
         if self.transport == 'telnet':
             device_type = 'cisco_ios_telnet'
-        self.device = ConnectHandler(device_type=device_type,
-                                     host=self.hostname,
-                                     username=self.username,
-                                     password=self.password,
-                                     **self.netmiko_optional_args)
-        # ensure in enable mode
-        self.device.enable()
+        self.device = self._netmiko_open(
+            device_type,
+            netmiko_optional_args=self.netmiko_optional_args,
+        )
 
     def _discover_file_system(self):
         try:
@@ -136,7 +148,7 @@ class IOSDriver(NetworkDriver):
 
     def close(self):
         """Close the connection to the device."""
-        self.device.disconnect()
+        self._netmiko_close()
 
     def _send_command(self, command):
         """Wrapper for self.device.send.command().
@@ -400,12 +412,14 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self):
+    def commit_config(self, message=""):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """
+        if message:
+            raise NotImplementedError('Commit message not implemented for this platform')
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
@@ -638,10 +652,9 @@ class IOSDriver(NetworkDriver):
 
             port = canonical_interface_name(int_brief)
 
-            port_detail = {}
-
-            port_detail['physical_channels'] = {}
-            port_detail['physical_channels']['channel'] = []
+            port_detail = {
+                'physical_channels': {'channel': []}
+            }
 
             # If interface is shutdown it returns "N/A" as output power.
             # Converting that to -100.0 float
@@ -685,195 +698,65 @@ class IOSDriver(NetworkDriver):
         """IOS implementation of get_lldp_neighbors."""
         lldp = {}
         neighbors_detail = self.get_lldp_neighbors_detail()
-        for intf_name, v in neighbors_detail.items():
+        for intf_name, entries in neighbors_detail.items():
             lldp[intf_name] = []
-            for lldp_entry in v:
+            for lldp_entry in entries:
+                hostname = lldp_entry['remote_system_name']
+                # Match IOS behaviour of taking remote chassis ID
+                # When lacking a system name (in show lldp neighbors)
+                if hostname == "N/A":
+                    hostname = lldp_entry['remote_chassis_id']
                 lldp_dict = {
                     'port': lldp_entry['remote_port'],
-                    'hostname': lldp_entry['remote_system_name'],
+                    'hostname': hostname,
                 }
                 lldp[intf_name].append(lldp_dict)
 
         return lldp
 
-    def _get_lldp_neighbors(self, expand_name=True):
-
-        def _device_id_expand(device_id, local_int_brief):
-            """Device id might be abbreviated: try to obtain the full device id."""
-            # _lldp_detail_parser will execute a LLDP command on the device
-            lldp_tmp = self._lldp_detail_parser(local_int_brief)
-            device_id_new = lldp_tmp[3][0]
-            # Verify abbreviated and full name are consistent
-            if device_id_new[:20] == device_id:
-                return device_id_new
-            else:
-                # Else return the original device_id
-                return device_id
-
-        lldp = {}
-        command = 'show lldp neighbors'
-        output = self._send_command(command)
-
-        # Check if router supports the command
-        if '% Invalid input' in output:
-            return {}
-
-        # Process the output to obtain just the LLDP entries
-        try:
-            split_output = re.split(r'^Device ID.*$', output, flags=re.M)[1]
-            split_output = re.split(r'^Total entries displayed.*$', split_output, flags=re.M)[0]
-        except IndexError:
-            return {}
-
-        split_output = split_output.strip()
-
-        for lldp_entry in split_output.splitlines():
-            # Example, twb-sf-hpsw1    Fa4   120   B   17
-            device_id = lldp_entry[:20].strip()
-            remaining_fields = lldp_entry[20:]
-            try:
-                local_int_brief, hold_time, capability, remote_port = remaining_fields.split()
-            except ValueError:
-                if len(remaining_fields.split()) == 3:
-                    # Three fields might be missing capability
-                    capability_missing = True if remaining_fields[26] == ' ' else False
-                    if capability_missing:
-                        local_int_brief, hold_time, remote_port = remaining_fields.split()
-                    else:
-                        raise ValueError("Unable to parse LLDP Info:\n{}".format(lldp_entry))
-
-            # device_id might be abbreviated, try to get full name
-            if len(device_id) == 20:
-                if expand_name:
-                    device_id = _device_id_expand(device_id, local_int_brief)
-            local_port = canonical_interface_name(local_int_brief)
-
-            entry = {'port': remote_port, 'hostname': device_id}
-            lldp.setdefault(local_port, [])
-            lldp[local_port].append(entry)
-
-        return lldp
-
-    def _lldp_detail_parser(self, interface, lldp_entry=None):
-        if lldp_entry is None:
-            command = "show lldp neighbors {} detail".format(interface)
-            output = self._send_command(command)
-        else:
-            output = lldp_entry
-
-        # Check if router supports the command
-        if '% Invalid input' in output:
-            raise ValueError("Command not supported by network device")
-
-        # Cisco generally use : for string divider, but sometimes has ' - '
-        port_id = re.findall(r"Port id\s*?[:-]\s+(.+)", output)
-        port_description = re.findall(r"Port Description\s*?[:-]\s+(.+)", output)
-        chassis_id = re.findall(r"Chassis id\s*?[:-]\s+(.+)", output)
-        system_name = re.findall(r"System Name\s*?[:-]\s+(.+)", output)
-        system_description = re.findall(r"System Description\s*?[:-]\s*(not advertised|\s*\n.+)",
-                                        output)
-        system_description = [x.strip() for x in system_description]
-        system_capabilities = re.findall(r"System Capabilities\s*?[:-]\s+(.+)", output)
-        enabled_capabilities = re.findall(r"Enabled Capabilities\s*?[:-]\s+(.+)", output)
-        remote_address = re.findall(r"Management Addresses\s*[:-]\s*(not advertised|\n.+)", output)
-        # remote address had two possible patterns which required some secondary processing
-        new_remote_address = []
-        for val in remote_address:
-            val = val.strip()
-            pattern = r'(?:IP|Other)(?::\s+?)(.+)'
-            match = re.search(pattern, val)
-            if match:
-                new_remote_address.append(match.group(1))
-            else:
-                new_remote_address.append(val)
-        remote_address = new_remote_address
-        return [port_id, port_description, chassis_id, system_name, system_description,
-                system_capabilities, enabled_capabilities, remote_address]
-
     def get_lldp_neighbors_detail(self, interface=''):
-        """IOS implementation of get_lldp_neighbors_detail."""
         lldp = {}
-        command = 'show lldp neighbors detail'
-        # Filter to specific interface
+        lldp_interfaces = []
+
         if interface:
             command = 'show lldp neighbors {} detail'.format(interface)
+        else:
+            command = 'show lldp neighbors detail'
+        lldp_entries = self._send_command(command)
+        lldp_entries = textfsm_extractor(self, 'show_lldp_neighbors_detail', lldp_entries)
 
-        lldp_detail_output = self._send_command(command)
-        lldp_detail = re.split(r"^------------------.*$", lldp_detail_output, flags=re.M)[1:]
+        if len(lldp_entries) == 0:
+            return {}
 
-        # Newer IOS versions have 'Local Intf' defined in LLDP detail; older IOS doesn't :-(
-        local_intf_detected = True
-        if not re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_detail_output, flags=re.M):
-            # Older IOS local interface is not in LLDP detail output
-            local_intf_detected = False
-
-            # Construct table of reverse mappings (table to try to work out local_intf)
-            lldp_neighbors = self._get_lldp_neighbors(expand_name=False)
-            reverse_neighbors = {}
-            for local_intf, v in lldp_neighbors.items():
-                for entry in v:
-                    key = "{hostname}_{port}".format(**entry)
-                    reverse_neighbors[key] = local_intf
-
-        for lldp_entry in lldp_detail:
-            if local_intf_detected:
-                match = re.search(r"^Local Intf:\s+(\S+)\s*$", lldp_entry, flags=re.M)
-                if match:
-                    local_intf = match.group(1)
+        # Older IOS versions don't have 'Local Intf' defined in LLDP detail.
+        # We need to get them from the non-detailed command
+        # which is in the same sequence as the detailed output
+        if not lldp_entries[0]["local_interface"]:
+            if interface:
+                command = 'show lldp neighbors {}'.format(interface)
             else:
-                system_name_match = re.search(r"^System Name:\s+(\S.*)$", lldp_entry, flags=re.M)
-                port_id_match = re.search(r"^Port id:\s+(\S+)\s*$", lldp_entry, flags=re.M)
-                # Try to find the local_intf from the reverse_neighbors table
-                if system_name_match and port_id_match:
-                    port_id = port_id_match.group(1)
-                    system_name = system_name_match.group(1)[:20]
-                    system_name = system_name.strip()
-                    key = "{}_{}".format(system_name, port_id)
-                    local_intf = reverse_neighbors.get(key)
+                command = 'show lldp neighbors'
+            lldp_brief = self._send_command(command)
+            lldp_interfaces = textfsm_extractor(self, 'show_lldp_neighbors', lldp_brief)
+            lldp_interfaces = [x['local_interface'] for x in lldp_interfaces]
+            if len(lldp_interfaces) != len(lldp_entries):
+                raise ValueError(
+                    "LLDP neighbor count has changed between commands. "
+                    "Interface: {}\nEntries: {}".format(lldp_interfaces, lldp_entries)
+                )
 
-            if local_intf is not None:
-                lldp_fields = self._lldp_detail_parser(local_intf, lldp_entry=lldp_entry)
-            else:
-                # Couldn't work out the local interface
-                raise ValueError("LLDP details could not determine the value of local interface:"
-                                 "\n{}\n{}".format(lldp_neighbors, lldp_entry))
-
+        for idx, lldp_entry in enumerate(lldp_entries):
+            local_intf = lldp_entry.pop('local_interface') or lldp_interfaces[idx]
             # Convert any 'not advertised' to 'N/A'
-            for field in lldp_fields:
-                for i, value in enumerate(field):
-                    if 'not advertised' in value:
-                        field[i] = 'N/A'
-            number_entries = len(lldp_fields[0])
-
-            # re.findall will return a list. Make sure same number of entries always returned.
-            for test_list in lldp_fields:
-                if len(test_list) != number_entries:
-                    raise ValueError("Failure processing show lldp neighbors detail")
-
-            # Standardize the fields
-            port_id, port_description, chassis_id, system_name, system_description, \
-                system_capabilities, enabled_capabilities, remote_address = lldp_fields
-            standardized_fields = zip(port_id, port_description, chassis_id, system_name,
-                                      system_description, system_capabilities,
-                                      enabled_capabilities, remote_address)
-
-            if local_intf:
-                local_intf = canonical_interface_name(local_intf)
+            for field in lldp_entry:
+                if 'not advertised' in lldp_entry[field]:
+                    lldp_entry[field] = 'N/A'
+            # Add field missing on IOS
+            lldp_entry['parent_interface'] = u'N/A'
+            # Turn the interfaces into their long version
+            local_intf = canonical_interface_name(local_intf)
             lldp.setdefault(local_intf, [])
-            for entry in standardized_fields:
-                remote_port_id, remote_port_description, remote_chassis_id, remote_system_name, \
-                    remote_system_description, remote_system_capab, remote_enabled_capab, \
-                    remote_mgmt_address = entry
-
-                lldp[local_intf].append({
-                    'parent_interface': u'N/A',
-                    'remote_port': remote_port_id,
-                    'remote_port_description': remote_port_description,
-                    'remote_chassis_id': remote_chassis_id,
-                    'remote_system_name': remote_system_name,
-                    'remote_system_description': remote_system_description,
-                    'remote_system_capab': remote_system_capab,
-                    'remote_system_enable_capab': remote_enabled_capab})
+            lldp[local_intf].append(lldp_entry)
 
         return lldp
 
@@ -1290,6 +1173,9 @@ class IOSDriver(NetworkDriver):
                 {'regexp': re.compile(r'^\s+BGP version \d+, remote router ID '
                                       r'(?P<remote_id>{})'.format(IPV4_ADDR_REGEX)),
                  'record': False},
+                # Capture state
+                {'regexp': re.compile(r'^\s+BGP state = (?P<state>\w+)'),
+                 'record': False},
                 # Capture AFI and SAFI names, e.g.:
                 # For address family: IPv4 Unicast
                 {'regexp': re.compile(r'^\s+For address family: (?P<afi>\S+) '),
@@ -1397,8 +1283,8 @@ class IOSDriver(NetworkDriver):
             # parse uptime value
             uptime = self.bgp_time_conversion(entry['uptime'])
 
-            # Uptime should be -1 if BGP session not up
-            is_up = True if uptime >= 0 else False
+            # BGP is up if state is Established
+            is_up = 'Established' in neighbor_entry['state']
 
             # check whether session is up for address family and get prefix count
             try:
@@ -1422,6 +1308,7 @@ class IOSDriver(NetworkDriver):
             else:
                 received_prefixes = -1
                 sent_prefixes = -1
+                uptime = -1
 
             # get description
             try:
@@ -1468,6 +1355,104 @@ class IOSDriver(NetworkDriver):
                     'sent_prefixes': sent_prefixes
                 }
         return bgp_neighbor_data
+
+    def get_bgp_neighbors_detail(self, neighbor_address=''):
+        bgp_detail = defaultdict(lambda: defaultdict(lambda: []))
+
+        raw_bgp_sum = self._send_command('show ip bgp all sum').strip()
+        bgp_sum = napalm.base.helpers.textfsm_extractor(
+            self, 'ip_bgp_all_sum', raw_bgp_sum)
+        for neigh in bgp_sum:
+            if neighbor_address and neighbor_address != neigh['neighbor']:
+                continue
+            raw_bgp_neigh = self._send_command('show ip bgp {} neigh {}'.format(
+                AFI_COMMAND_MAP[neigh['addr_family']], neigh['neighbor']))
+            bgp_neigh = napalm.base.helpers.textfsm_extractor(
+                self, 'ip_bgp_neigh', raw_bgp_neigh)[0]
+            details = {
+                'up': neigh['up'] != 'never',
+                'local_as': napalm.base.helpers.as_number(neigh['local_as']),
+                'remote_as': napalm.base.helpers.as_number(neigh['remote_as']),
+                'router_id': napalm.base.helpers.ip(
+                    bgp_neigh['router_id']) if bgp_neigh['router_id'] else '',
+                'local_address': napalm.base.helpers.ip(
+                    bgp_neigh['local_address']) if bgp_neigh['local_address'] else '',
+                'local_address_configured': False,
+                'local_port': napalm.base.helpers.as_number(
+                    bgp_neigh['local_port']) if bgp_neigh['local_port'] else 0,
+                'routing_table': bgp_neigh['vrf'] if bgp_neigh['vrf'] else 'global',
+                'remote_address': napalm.base.helpers.ip(bgp_neigh['neighbor']),
+                'remote_port': napalm.base.helpers.as_number(
+                    bgp_neigh['remote_port']) if bgp_neigh['remote_port'] else 0,
+                'multihop': False,
+                'multipath': False,
+                'remove_private_as': False,
+                'import_policy': '',
+                'export_policy': '',
+                'input_messages': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_total_in']) if bgp_neigh['msg_total_in'] else 0,
+                'output_messages': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_total_out']) if bgp_neigh['msg_total_out'] else 0,
+                'input_updates': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_update_in']) if bgp_neigh['msg_update_in'] else 0,
+                'output_updates': napalm.base.helpers.as_number(
+                    bgp_neigh['msg_update_out']) if bgp_neigh['msg_update_out'] else 0,
+                'messages_queued_out': napalm.base.helpers.as_number(neigh['out_q']),
+                'connection_state': bgp_neigh['bgp_state'],
+                'previous_connection_state': '',
+                'last_event': '',
+                'suppress_4byte_as': (
+                    bgp_neigh['four_byte_as'] != 'advertised and received' if
+                    bgp_neigh['four_byte_as'] else False),
+                'local_as_prepend': False,
+                'holdtime': napalm.base.helpers.as_number(
+                    bgp_neigh['holdtime']) if bgp_neigh['holdtime'] else 0,
+                'configured_holdtime': 0,
+                'keepalive': napalm.base.helpers.as_number(
+                    bgp_neigh['keepalive']) if bgp_neigh['keepalive'] else 0,
+                'configured_keepalive': 0,
+                'active_prefix_count': 0,
+                'received_prefix_count': 0,
+                'accepted_prefix_count': 0,
+                'suppressed_prefix_count': 0,
+                'advertised_prefix_count': 0,
+                'flap_count': 0,
+            }
+
+            bgp_neigh_afi = napalm.base.helpers.textfsm_extractor(
+                self, 'ip_bgp_neigh_afi', raw_bgp_neigh)
+            if len(bgp_neigh_afi) > 1:
+                bgp_neigh_afi = bgp_neigh_afi[1]
+                details.update({
+                    'local_address_configured': bgp_neigh_afi['local_addr_conf'] != '',
+                    'multipath': bgp_neigh_afi['multipaths'] != '0',
+                    'import_policy': bgp_neigh_afi['policy_in'],
+                    'export_policy': bgp_neigh_afi['policy_out'],
+                    'last_event': (
+                        bgp_neigh_afi['last_event'] if
+                        bgp_neigh_afi['last_event'] != 'never' else ''),
+                    'active_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['bestpaths']),
+                    'received_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['prefix_curr_in']) + napalm.base.helpers.as_number(
+                            bgp_neigh_afi['rejected_prefix_in']),
+                    'accepted_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['prefix_curr_in']),
+                    'suppressed_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['rejected_prefix_in']),
+                    'advertised_prefix_count': napalm.base.helpers.as_number(
+                        bgp_neigh_afi['prefix_curr_out']),
+                    'flap_count': napalm.base.helpers.as_number(bgp_neigh_afi['flap_count'])
+                })
+            else:
+                bgp_neigh_afi = bgp_neigh_afi[0]
+                details.update({
+                    'import_policy': bgp_neigh_afi['policy_in'],
+                    'export_policy': bgp_neigh_afi['policy_out'],
+                })
+            bgp_detail[details['routing_table']][
+                details['remote_as']].append(details)
+        return bgp_detail
 
     def get_interfaces_counters(self):
         """
@@ -1734,6 +1719,12 @@ class IOSDriver(NetworkDriver):
 
         return cli_output
 
+    def get_ntp_peers(self):
+        """Implementation of get_ntp_peers for IOS."""
+        ntp_stats = self.get_ntp_stats()
+
+        return {ntp_peer.get('remote'): {} for ntp_peer in ntp_stats if ntp_peer.get('remote')}
+
     def get_ntp_servers(self):
         """Implementation of get_ntp_servers for IOS.
 
@@ -1844,6 +1835,8 @@ class IOSDriver(NetworkDriver):
         RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 7 fields
         RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 6 fields
         RE_MACTABLE_6500_3 = r"^\s{51}\S+"                                      # Fill down prior
+        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(VLAN_REGEX, MAC_REGEX)  # Router field
+        RE_MACTABLE_6500_5 = r"^R\s+N/A\s+{}.*Router".format(MAC_REGEX)         # Router skipped
         RE_MACTABLE_4500_1 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)       # 5 fields
         RE_MACTABLE_4500_2 = r"^\s{32,34}\S+"                                   # Fill down prior
         RE_MACTABLE_4500_3 = r"^{}\s+{}\s+".format(INT_REGEX, MAC_REGEX)        # Matches PHY int
@@ -1889,8 +1882,7 @@ class IOSDriver(NetworkDriver):
                 if ',' in interface:
                     interfaces = interface.split(',')
                 else:
-                    interfaces = []
-                    interfaces.append(interface)
+                    interfaces = [interface]
                 for single_interface in interfaces:
                     mac_address_table.append(process_mac_fields(fill_down_vlan, fill_down_mac,
                                                                 fill_down_mac_type,
@@ -1963,6 +1955,18 @@ class IOSDriver(NetworkDriver):
                 vlan, mac, mac_type, interface = line.split()
                 vlan = '-1'
                 mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+            elif re.search(RE_MACTABLE_6500_4, line) and len(line.split()) == 7:
+                line = re.sub(r"^R\s+", "", line)
+                vlan, mac, mac_type, _, _, interface = line.split()
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                continue
+            elif re.search(RE_MACTABLE_6500_5, line):
+                line = re.sub(r"^R\s+", "", line)
+                vlan, mac, mac_type, _, _, interface = line.split()
+                # Convert 'N/A' VLAN to to 0
+                vlan = re.sub(r"N/A", "0", vlan)
+                mac_address_table.append(process_mac_fields(vlan, mac, mac_type, interface))
+                continue
             elif re.search(r"Total Mac Addresses", line):
                 continue
             elif re.search(r"Multicast Entries", line):
@@ -2079,9 +2083,9 @@ class IOSDriver(NetworkDriver):
         lowest access and 15 represents full access to the device.
         """
         username_regex = r"^username\s+(?P<username>\S+)\s+(?:privilege\s+(?P<priv_level>\S+)" \
-            "\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
+            r"\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
         pub_keychain_regex = r"^\s+username\s+(?P<username>\S+)(?P<keys>(?:\n\s+key-hash\s+" \
-            "(?P<hash_type>\S+)\s+(?P<hash>\S+)(?:\s+\S+)?)+)$"
+            r"(?P<hash_type>\S+)\s+(?P<hash>\S+)(?:\s+\S+)?)+)$"
         users = {}
         command = "show run | section username"
         output = self._send_command(command)
@@ -2137,7 +2141,6 @@ class IOSDriver(NetworkDriver):
             ping_dict['error'] = output
         elif 'Sending' in output:
             ping_dict['success'] = {
-                                'probes_sent': 0,
                                 'probes_sent': 0,
                                 'packet_loss': 0,
                                 'rtt_min': 0.0,

@@ -113,7 +113,7 @@ In vim insert, you can also type <ctrl>+V, release only the V, then type C
 
 
 File Operation Prompts
-_____
+______________________
 
 By default IOS will prompt for confirmation on file operations. These prompts need to be disabled before the NAPALM-ios driver performs any such operation on the device.
 This can be controlled using the `auto_file_prompt` optional arguement:
@@ -126,7 +126,7 @@ This can be controlled using the `auto_file_prompt` optional arguement:
   otherwise a `CommandErrorException` will be raised when file operations are attempted.
 
 SCP File Transfers
-_____
+__________________
 
 The NAPALM-ios driver requires SCP to be enabled on the managed device. SCP
 server functionality is disabled in IOS by default, and is configured using
