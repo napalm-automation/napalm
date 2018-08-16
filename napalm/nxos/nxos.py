@@ -878,7 +878,7 @@ class NXOSDriver(NXOSDriverBase):
                     'prefix_length': secondary_address_prefix
                 })
 
-        ipv6_command = 'show ipv6 interface'
+        ipv6_command = 'show ipv6 interface vrf all'
         ipv6_interf_table_vrf = self._get_command_table(ipv6_command, 'TABLE_intf', 'ROW_intf')
 
         for interface in ipv6_interf_table_vrf:
