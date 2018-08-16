@@ -1627,22 +1627,22 @@ class NetworkDriver(object):
             {
                 "500220": {
                     "multicast_group": "239.50.2.20", 
-                    "vrf": "", 
-                    "flags": [], 
-                    "is_up": true, 
-                    "interface": "nve1", 
-                    "vlan": 220, 
-                    "type": "L2", 
+                    "vrf": "",
+                    "flags": [],
+                    "is_up": true,
+                    "interface": "nve1",
+                    "vlan": 220,
+                    "type": "L2",
                     "mode": "CP"
                 },
                   "890650": {
-                    "multicast_group": "", 
-                    "vrf": "NON_PROD", 
-                    "flags": [], 
-                    "is_up": true, 
-                    "interface": "nve1", 
-                    "vlan": -1, 
-                    "type": "L3", 
+                    "multicast_group": "",
+                    "vrf": "NON_PROD",
+                    "flags": [],
+                    "is_up": true,
+                    "interface": "nve1",
+                    "vlan": -1,
+                    "type": "L3",
                     "mode": "CP"
                 }
             }

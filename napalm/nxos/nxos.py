@@ -1112,7 +1112,6 @@ class NXOSDriver(NXOSDriverBase):
             config['startup'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
         return config
 
-
     def get_vni(self):
         vni_dict = {}
         command = 'show nve vni'
