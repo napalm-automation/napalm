@@ -1626,7 +1626,7 @@ class NetworkDriver(object):
 
             {
                 "500220": {
-                    "multicast_group": "239.50.2.20", 
+                    "multicast_group": "239.50.2.20",
                     "vrf": "",
                     "flags": [],
                     "is_up": true,
