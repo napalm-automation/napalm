@@ -807,10 +807,9 @@ class NXOSSSHDriver(NXOSDriverBase):
         environment['cpu'][0]['%usage'] = 0.0
         system_resources_cpu = napalm.base.helpers.textfsm_extractor(self, 'system_resources',
                                                                      sys_resources)
-        from decimal import Decimal
         for cpu in system_resources_cpu:
-            cpu_dict = {cpu.get('cpu_id'): {'%usage': float(Decimal(100) -
-                        Decimal(cpu.get('cpu_idle')))}}
+            cpu_dict = {cpu.get('cpu_id'): {
+                        '%usage': round(100 - float(cpu.get('cpu_idle')), 2)}}
             environment['cpu'].update(cpu_dict)
 
         # memory
