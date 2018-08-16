@@ -591,3 +591,15 @@ class TestGettersNetworkDriver(object):
             result = result and self._test_model(models.ipv6_neighbor, entry)
 
         self.assertTrue(result)
+
+    def test_get_vni(self):
+        try:
+            get_vni = self.device.get_vni()
+        except NotImplementedError:
+            raise SkipTest()
+        result = len(get_vni) > 0
+
+        for vni, vni_data in get_vni.items():
+            result = result and self._test_model(models.vni, vni_data)
+
+        self.assertTrue(result)

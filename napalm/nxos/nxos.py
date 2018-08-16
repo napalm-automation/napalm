@@ -1111,3 +1111,41 @@ class NXOSDriver(NXOSDriverBase):
             _cmd = 'show startup-config'
             config['startup'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
         return config
+
+    def get_vni(self):
+        vni_dict = {}
+        command = 'show nve vni'
+        re_type = r"^(?P<type>L[23]) \[(?P<name>\S+)\]$"
+        vni_table_raw = self._get_command_table(command, 'TABLE_nve_vni', 'ROW_nve_vni')
+
+        for vni_entry in vni_table_raw:
+            vni = int(vni_entry.get('vni'))
+            interface = py23_compat.text_type(vni_entry.get('if-name'))
+            if vni_entry.get('mcast') == 'n/a':
+                mcast_grp = ''
+            else:
+                mcast_grp = napalm.base.helpers.ip(vni_entry.get('mcast'))
+            is_up = True if vni_entry.get('vni-state') == 'Up' else False
+            mode = vni_entry.get('mode')
+            match = re.search(re_type, vni_entry.get('type'), flags=re.M)
+            if match and match.group('type') == 'L2':
+                type = 'L2'
+                vlan = int(match.group('name'))
+                vrf = ''
+            else:
+                type = 'L3'
+                vlan = -1
+                vrf = match.group('name')
+
+            flags = []
+            vni_dict[vni] = {
+                'interface': interface,
+                'multicast_group': mcast_grp,
+                'is_up': is_up,
+                'mode': mode,
+                'type': type,
+                'vlan': vlan,
+                'vrf': vrf,
+                'flags': flags
+            }
+        return vni_dict
