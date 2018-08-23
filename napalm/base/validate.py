@@ -211,7 +211,6 @@ def compliance_report(cls, validation_file=None, validation_source=None):
                         actual_results = getters[getter]["actual_results"]
                     else:
                         actual_results = getters[getter][key]["actual_results"]
-                    
                     report[key] = compare(expected_results, actual_results)
                 except NotImplementedError:
                     report[key] = {"skipped": True, "reason": "NotImplemented"}
@@ -220,4 +219,3 @@ def compliance_report(cls, validation_file=None, validation_source=None):
     report["skipped"] = [k for k, v in report.items() if v.get("skipped", False)]
     report["complies"] = complies
     return report
-
