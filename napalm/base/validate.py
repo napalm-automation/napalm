@@ -180,6 +180,23 @@ def compliance_report(cls, validation_file=None, validation_source=None):
     if validation_file:
         validation_source = _get_validation_file(validation_file)
 
+    # collecting all data once per getter
+    getters = {}
+    for validation_check in validation_source:
+        for getter, expected_results in validation_check.items():
+            if getter != "get_config":
+                key = expected_results.pop("_name", "") or getter
+                kwargs = expected_results.pop('_kwargs', {})
+                if not getters.get(getter):
+                    getters[getter] = {}
+                if getter not in ["ping", "is_alive", "traceroute", "get_route_to"]:
+                    if not getters[getter].get('actual_results'):
+                        getters[getter]["actual_results"] = getattr(cls, getter)(**kwargs)
+                else:
+                    getters[getter][key] = {}
+                    getters[getter][key]["actual_results"] = getattr(cls, getter)(**kwargs)
+    
+    # creating reports per compliance check from validation file
     for validation_check in validation_source:
         for getter, expected_results in validation_check.items():
             if getter == "get_config":
@@ -190,7 +207,11 @@ def compliance_report(cls, validation_file=None, validation_source=None):
 
                 try:
                     kwargs = expected_results.pop('_kwargs', {})
-                    actual_results = getattr(cls, getter)(**kwargs)
+                    if getter not in ["ping", "is_alive", "traceroute", "get_route_to"]:
+                        actual_results = getters[getter]["actual_results"]
+                    else:
+                        actual_results = getters[getter][key]["actual_results"]
+                    
                     report[key] = compare(expected_results, actual_results)
                 except NotImplementedError:
                     report[key] = {"skipped": True, "reason": "NotImplemented"}
@@ -199,3 +220,4 @@ def compliance_report(cls, validation_file=None, validation_source=None):
     report["skipped"] = [k for k, v in report.items() if v.get("skipped", False)]
     report["complies"] = complies
     return report
+
