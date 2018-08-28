@@ -1629,3 +1629,8 @@ class NetworkDriver(object):
             return napalm.base.helpers.canonical_interface_name(interface, addl_name_map=None)
         else:
             return interface
+
+    @staticmethod
+    def _driver_path():
+        """Return the path to the current driver."""
+        raise NotImplementedError

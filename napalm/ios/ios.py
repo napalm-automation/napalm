@@ -2424,3 +2424,8 @@ class IOSDriver(NetworkDriver):
         if self.device and self._dest_file_system is None:
             self._dest_file_system = self._discover_file_system()
         return self._dest_file_system
+
+    @staticmethod
+    def _driver_path():
+        """Return the path to the current driver."""
+        return os.path.dirname(__file__)
