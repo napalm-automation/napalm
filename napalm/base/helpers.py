@@ -102,30 +102,37 @@ def textfsm_extractor(cls, template_name, raw_text):
     :return: table-like list of entries
     """
     textfsm_data = list()
-    cls.__class__.__name__.replace('Driver', '')
-    current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
-    template_dir_path = '{current_dir}/utils/textfsm_templates'.format(
-        current_dir=current_dir
-    )
-    template_path = '{template_dir_path}/{template_name}.tpl'.format(
-        template_dir_path=template_dir_path,
-        template_name=template_name
-    )
+    fsm_handler = None
+    for c in cls.__class__.mro():
+        if c is object:
+            continue
+        current_dir = os.path.dirname(os.path.abspath(sys.modules[c.__module__].__file__))
+        template_dir_path = '{current_dir}/utils/textfsm_templates'.format(
+            current_dir=current_dir
+        )
+        template_path = '{template_dir_path}/{template_name}.tpl'.format(
+            template_dir_path=template_dir_path,
+            template_name=template_name
+        )
 
-    try:
-        fsm_handler = textfsm.TextFSM(open(template_path))
-    except IOError:
+        try:
+            fsm_handler = textfsm.TextFSM(open(template_path))
+        except IOError:  # Template not present in this class
+            continue  # Continue up the MRO
+        except textfsm.TextFSMTemplateError as tfte:
+            raise napalm.base.exceptions.TemplateRenderException(
+                "Wrong format of TextFSM template {template_name}: {error}".format(
+                    template_name=template_name,
+                    error=py23_compat.text_type(tfte)
+                )
+            )
+
+        break  # Template found
+    if not fsm_handler:
         raise napalm.base.exceptions.TemplateNotImplemented(
             "TextFSM template {template_name}.tpl is not defined under {path}".format(
                 template_name=template_name,
                 path=template_dir_path
-            )
-        )
-    except textfsm.TextFSMTemplateError as tfte:
-        raise napalm.base.exceptions.TemplateRenderException(
-            "Wrong format of TextFSM template {template_name}: {error}".format(
-                template_name=template_name,
-                error=py23_compat.text_type(tfte)
             )
         )
 
