@@ -300,7 +300,12 @@ class JunOSDriver(NetworkDriver):
             for iface in interfaces.keys():
                 result[iface] = {
                     'is_up': interfaces[iface]['is_up'],
-                    'is_enabled': interfaces[iface]['is_enabled'],
+                    # For physical interfaces <admin-status> will always be there, so just
+                    # return the value interfaces[iface]['is_enabled']
+                    # For logical interfaces if <iff-down> is present interface is disabled,
+                    # otherwise interface is enabled
+                    'is_enabled': (True if interfaces[iface]['is_enabled'] is None
+                                   else interfaces[iface]['is_enabled']),
                     'description': (interfaces[iface]['description'] or u''),
                     'last_flapped': float((interfaces[iface]['last_flapped'] or -1)),
                     'mac_address': napalm.base.helpers.convert(

@@ -30,7 +30,8 @@ junos_logical_iface_table:
 junos_logical_iface_view:
   fields:
     is_up: { ../oper-status: True=up }
-    is_enabled: { if-config-flags/iff-up: flag }
+    # Return False if iff-down flag is present. If not is_enabled == True
+    is_enabled: { if-config-flags/iff-down: False=regex(iff-down) }
     description: { description: unicode }
     last_flapped: { ../interface-flapped/@seconds: int }
     speed: ../speed
