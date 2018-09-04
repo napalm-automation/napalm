@@ -762,10 +762,13 @@ class JunOSDriver(NetworkDriver):
                 'EX4600-40F': rpc_call_without_information,
                 'QFX5110-48S-4C': rpc_call_without_information,
                 'QFX10002-36Q': rpc_call_without_information,
-                'QFX10008': rpc_call_without_information
+                'QFX10008': rpc_call_without_information,
+                'EX2300-24P': rpc_call_without_information,
+                'EX2300-C-12P': rpc_call_without_information
             },
             'SRX_BRANCH': {
-                'default': rpc_call_with_information
+                'default': rpc_call_with_information,
+                'SRX300': rpc_call_without_information
             },
             'SRX_HIGHEND': {
                 'default': rpc_call_without_information
