@@ -1616,7 +1616,7 @@ class JunOSDriver(NetworkDriver):
             d = {}
             # next_hop = route[0]
             d = {elem[0]: elem[1] for elem in route[1]}
-            destination = napalm.base.helpers.ip(d.pop('destination', ''))
+            destination = d.pop('destination', '')
             prefix_length = d.pop('prefix_length', 32)
             destination = '{d}/{p}'.format(
                 d=destination,
