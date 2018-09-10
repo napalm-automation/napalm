@@ -116,7 +116,16 @@ def textfsm_extractor(cls, template_name, raw_text):
         )
 
         try:
-            fsm_handler = textfsm.TextFSM(open(template_path))
+            with open(template_path) as f:
+                fsm_handler = textfsm.TextFSM(f)
+
+                for obj in fsm_handler.ParseText(raw_text):
+                    entry = {}
+                    for index, entry_value in enumerate(obj):
+                        entry[fsm_handler.header[index].lower()] = entry_value
+                    textfsm_data.append(entry)
+
+                return textfsm_data
         except IOError:  # Template not present in this class
             continue  # Continue up the MRO
         except textfsm.TextFSMTemplateError as tfte:
@@ -127,26 +136,12 @@ def textfsm_extractor(cls, template_name, raw_text):
                 )
             )
 
-        break  # Template found
-    if not fsm_handler:
-        raise napalm.base.exceptions.TemplateNotImplemented(
-            "TextFSM template {template_name}.tpl is not defined under {path}".format(
-                template_name=template_name,
-                path=template_dir_path
-            )
+    raise napalm.base.exceptions.TemplateNotImplemented(
+        "TextFSM template {template_name}.tpl is not defined under {path}".format(
+            template_name=template_name,
+            path=template_dir_path
         )
-
-    objects = fsm_handler.ParseText(raw_text)
-
-    for obj in objects:
-        index = 0
-        entry = {}
-        for entry_value in obj:
-            entry[fsm_handler.header[index].lower()] = entry_value
-            index += 1
-        textfsm_data.append(entry)
-
-    return textfsm_data
+    )
 
 
 def find_txt(xml_tree, path, default=''):
