@@ -11,6 +11,7 @@
 # the License.
 from __future__ import unicode_literals
 import inspect
+import sys
 from netmiko import BaseConnection
 
 
@@ -20,13 +21,18 @@ def netmiko_args(optional_args):
     Return a dictionary of these optional args  that will be passed into the Netmiko
     ConnectHandler call.
     """
-    netmiko_args, _, _, netmiko_defaults = inspect.getargspec(BaseConnection.__init__)
+    if sys.version_info < (3,):
+        # (args, varargs, keywords, defaults)
+        args, _, _, defaults = inspect.getargspec(BaseConnection.__init__)
+    else:
+        # (args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations)
+        args, _, _, defaults, _, _, _ = inspect.getfullargspec(BaseConnection.__init__)
 
-    check_self = netmiko_args.pop(0)
+    check_self = args.pop(0)
     if check_self != 'self':
         raise ValueError("Error processing Netmiko arguments")
 
-    netmiko_argument_map = dict(zip(netmiko_args, netmiko_defaults))
+    netmiko_argument_map = dict(zip(args, defaults))
 
     # Netmiko arguments that are integrated into NAPALM already
     netmiko_filter = ['ip', 'host', 'username', 'password', 'device_type', 'timeout']
