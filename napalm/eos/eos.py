@@ -542,9 +542,9 @@ class EOSDriver(NetworkDriver):
         if not is_veos:
             for psu, data in power_output['powerSupplies'].items():
                 environment_counters['power'][psu] = {
-                    'status': data['state'] == 'ok',
-                    'capacity': data['capacity'],
-                    'output': data['outputPower']
+                    'status': data.get('state', 'ok') == 'ok',
+                    'capacity': data.get('capacity', -1.0),
+                    'output': data.get('outputPower', -1.0),
                 }
         cpu_lines = cpu_output.splitlines()
         # Matches either of
