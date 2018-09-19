@@ -1036,7 +1036,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         """
         arp_table = []
 
-        command = 'show ip arp vrf default | exc INCOMPLETE'
+        command = 'show ip arp vrf all | exc INCOMPLETE'
         output = self.device.send_command(command)
 
         separator = r"^Address\s+Age.*Interface.*$"
@@ -1140,8 +1140,8 @@ class NXOSSSHDriver(NXOSDriverBase):
         }
         """
         interfaces_ip = {}
-        ipv4_command = 'show ip interface vrf default'
-        ipv6_command = 'show ipv6 interface vrf default'
+        ipv4_command = 'show ip interface vrf all'
+        ipv6_command = 'show ipv6 interface vrf all'
         output_v4 = self.device.send_command(ipv4_command)
         output_v6 = self.device.send_command(ipv6_command)
 
@@ -1154,11 +1154,14 @@ class NXOSSSHDriver(NXOSDriverBase):
                 interface = line.split(',')[0]
                 continue
             if 'IP address' in line:
-                ip_address = line.split(',')[0].split()[2]
                 try:
-                    prefix_len = int(line.split()[5].split('/')[1])
-                except ValueError:
-                    prefix_len = 'N/A'
+                    ip_address = line.split(',')[0].split()[2]
+                    try:
+                        prefix_len = int(line.split()[5].split('/')[1])
+                    except ValueError:
+                        prefix_len = 'N/A'
+                except IndexError:
+                    continue
                 val = {'prefix_length': prefix_len}
                 v4_interfaces.setdefault(interface, {})[ip_address] = val
 
