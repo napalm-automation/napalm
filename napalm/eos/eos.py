@@ -1067,12 +1067,9 @@ class EOSDriver(NetworkDriver):
         if protocol.lower() == 'direct':
             protocol = 'connected'
 
-        try:
-            ipv = ''
-            if IPNetwork(destination).version == 6:
-                ipv = 'v6'
-        except AddrFormatError:
-            return 'Please specify a valid destination!'
+        ipv = ''
+        if IPNetwork(destination).version == 6:
+            ipv = 'v6'
 
         commands = []
         for _vrf in vrfs:
