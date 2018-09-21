@@ -17,7 +17,7 @@ def _preprocess_yml(path):
 
 def _loadyaml_bypass(yaml_str):
     """Bypass Juniper's loadyaml and directly call FactoryLoader"""
-    return FactoryLoader().load(yaml.load(yaml_str))
+    return FactoryLoader().load(yaml.safe_load(yaml_str))
 
 
 _YAML_ = splitext(__file__)[0] + '.yml'
