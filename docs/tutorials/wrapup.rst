@@ -9,7 +9,7 @@ You've now tried the main pieces of NAPALM:
 Shutting down
 -------------
 
-Shut down the Vagrant virtual boxes.  You can recreate them later using ``vagrant up`` if needed.
+Shut down the Vagrant virtual boxes.  You can recreate them later using ``vagrant up`` if needed.::
 
     $ vagrant destroy -f
 

@@ -1,3 +1,5 @@
+.. _supported-devices:
+
 Supported Devices
 =================
 
@@ -6,21 +8,20 @@ General support matrix
 
 
 
-  =====================   ==========  =============   ============ ============  ============
-  _                       EOS         JunOS           IOS-XR       NXOS          IOS
-  =====================   ==========  =============   ============ ============  ============
-  **Module Name**         napalm-eos  napalm-junos    napalm-iosxr napalm-nxos   napalm-ios
-  **Driver Name**         eos         junos           iosxr        nxos          ios
-  **Structured data**     Yes         Yes             No           Yes           No
-  **Minimum version**     4.15.0F     12.1            5.1.0        6.1 [#g1]_    12.4(20)T
-  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pycsco`_     `netmiko`_
-  **Caveats**             :doc:`eos`                               :doc:`nxos`   :doc:`ios`
-  =====================   ==========  =============   ============ ============  ============
+  =====================   ==========  =============   ============ ============  ============ ============
+  _                       EOS         Junos           IOS-XR       NX-OS         NX-OS SSH    IOS
+  =====================   ==========  =============   ============ ============  ============ ============
+  **Driver Name**         eos         junos           iosxr        nxos          nxos_ssh     ios
+  **Structured data**     Yes         Yes             No           Yes           No           No
+  **Minimum version**     4.15.0F     12.1            5.1.0        6.1 [#g1]_                 12.4(20)T
+  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pynxos`_     `netmiko`_   `netmiko`_
+  **Caveats**             :doc:`eos`                               :doc:`nxos`   :doc:`nxos`  :doc:`ios`
+  =====================   ==========  =============   ============ ============  ============ ============
 
 .. _pyeapi: https://github.com/arista-eosplus/pyeapi
 .. _junos-eznc: https://github.com/Juniper/py-junos-eznc
 .. _pyIOSXR: https://github.com/fooelisa/pyiosxr
-.. _pycsco: https://github.com/jedelman8/pycsco
+.. _pynxos: https://github.com/networktocode/pynxos
 .. _netmiko: https://github.com/ktbyers/netmiko
 
 .. [#g1] NX-API support on the Nexus 5k, 6k and 7k families was introduced in version 7.2
@@ -32,18 +33,18 @@ Configuration support matrix
 ----------------------------
 
 =====================   ==========  =====   ==========  ==============  ==============
-_                       EOS         JunOS   IOS-XR      NXOS            IOS
+_                       EOS         Junos   IOS-XR      NX-OS           IOS
 =====================   ==========  =====   ==========  ==============  ==============
 **Config. replace**     Yes         Yes     Yes         Yes             Yes
 **Config. merge**       Yes         Yes     Yes         Yes             Yes
 **Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c4]_      Yes
-**Atomic Changes**      Yes         Yes     Yes         Yes/No [#c5]_   Yes
+**Atomic Changes**      Yes         Yes     Yes         Yes/No [#c5]_   Yes/No [#c5]_
 **Rollback**            Yes [#c2]_  Yes     Yes         Yes/No [#c5]_   Yes
 =====================   ==========  =====   ==========  ==============  ==============
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
-.. [#c4] For merges, the diff is simply the merge config itself. See caveats.
+.. [#c4] For merges, the diff is very simplistic. See caveats.
 .. [#c5] No for merges. See caveats.
 
 .. warning:: Before building a workflow to deploy configuration it is important you understand what the table above means;
@@ -65,10 +66,10 @@ Other methods
 .. |no|    unicode:: U+0274C .. No
 
 ============================== =====  =====   ======  ======  =====
-_                               EOS   JunOS   IOS-XR  NXOS    IOS
+_                              EOS    Junos   IOS-XR  NX-OS   IOS
 ============================== =====  =====   ======  ======  =====
 **load_template**              |yes|  |yes|   |yes|   |yes|   |yes|
-**ping**                       |yes|  |yes|   |no|    |no|    |yes|
+**ping**                       |yes|  |yes|   |no|    |yes|   |yes|
 **traceroute**                 |yes|  |yes|   |yes|   |yes|   |yes|
 ============================== =====  =====   ======  ======  =====
 

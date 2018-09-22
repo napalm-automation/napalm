@@ -1,0 +1,56 @@
+For address family: IPv4 Unicast
+BGP router identifier 1.1.1.1, local AS number 1
+BGP table version is 64501120, main routing table version 1
+679365 network entries using 168611728 bytes of memory
+679365 path entries using 168611728 bytes of memory
+245318/104673 BGP path/bestpath attribute entries using 66726496 bytes of memory
+209172 BGP AS-PATH entries using 9889312 bytes of memory
+1 BGP ATTR_SET entries using 40 bytes of memory
+631 BGP community entries using 23128 bytes of memory
+4 BGP extended community entries using 96 bytes of memory
+531 BGP route-map cache entries using 33984 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 461950560 total bytes of memory
+110578 received paths for inbound soft reconfiguration
+BGP activity 3436532/2710503 prefixes, 19215241/17575537 paths, scan interval 60 secs
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+2.2.2.2         4            2 25389124  271112 64501075    0    0 12w2d      679365
+3.3.3.3         4            3       0       0        1    0    0 never    Idle (Admin)
+
+For address family: IPv6 Unicast
+BGP router identifier 1.1.1.1, local AS number 1
+BGP table version is 1, main routing table version 1
+45646 network entries using 12415712 bytes of memory
+45648 path entries using 6938496 bytes of memory
+37600/18773 BGP path/bestpath attribute entries using 10227200 bytes of memory
+209172 BGP AS-PATH entries using 9889312 bytes of memory
+1 BGP ATTR_SET entries using 40 bytes of memory
+631 BGP community entries using 23128 bytes of memory
+4 BGP extended community entries using 96 bytes of memory
+531 BGP route-map cache entries using 33984 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 39527928 total bytes of memory
+BGP activity 3436532/2710503 prefixes, 19215241/17575537 paths, scan interval 60 secs
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+2001:559::1     4         7922 6944479  138054 116434201    0    0 12w2d       45646
+
+For address family: VPNv4 Unicast
+BGP router identifier 1.1.1.1, local AS number 1
+BGP table version is 6668, main routing table version 6668
+440 network entries using 120320 bytes of memory
+926 path entries using 125936 bytes of memory
+49/24 BGP path/bestpath attribute entries using 14112 bytes of memory
+209172 BGP AS-PATH entries using 9889312 bytes of memory
+1 BGP ATTR_SET entries using 40 bytes of memory
+631 BGP community entries using 23128 bytes of memory
+4 BGP extended community entries using 96 bytes of memory
+531 BGP route-map cache entries using 33984 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 10206888 total bytes of memory
+466 received paths for inbound soft reconfiguration
+BGP activity 3436532/2710503 prefixes, 19215241/17575537 paths, scan interval 60 secs
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+169.255.22.1    4            1  101841  100528     6668    0    0 9w0d          440

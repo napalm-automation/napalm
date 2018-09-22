@@ -19,7 +19,7 @@ except ImportError:
     HAS_JINJA = False
 
 try:
-    import jtextfsm as textfsm  # noqa
+    import textfsm  # noqa
     HAS_TEXTFSM = True
 except ImportError:
     HAS_TEXTFSM = False
@@ -38,6 +38,7 @@ except ImportError:
 
 # NAPALM base
 import napalm.base.helpers
+from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.exceptions
 from napalm.base.base import NetworkDriver
 from napalm.base.utils.string_parsers import convert_uptime_string_seconds
@@ -124,6 +125,18 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertTrue(napalm.base.helpers.load_template(self.network_driver,
                                                           '_this_still_needs_a_name',
                                                           template_source=template_source,
+                                                          **_TEMPLATE_VARS))
+
+        def __foo_to_bar(s):
+            if s == "foo":
+                return "bar"
+            return s
+
+        jinja_filters = {'foo_to_bar': __foo_to_bar}
+
+        self.assertTrue(napalm.base.helpers.load_template(self.network_driver,
+                                                          '__custom_jinja_filter_template__',
+                                                          jinja_filters=jinja_filters,
                                                           **_TEMPLATE_VARS))
         # MIGRATION mircea
         #  self.assertRaisesRegexp(napalm.base.exceptions.TemplateNotImplemented,
@@ -427,6 +440,89 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertEqual(napalm.base.helpers.abbreviated_interface_name('loop10',
                          addl_name_map={"loop": "Loopback"},
                          addl_reverse_map={"Loopback": "lo"}), "lo10")
+
+    def test_netmiko_arguments(self):
+        """Test the netmiko argument processing."""
+        self.assertEqual(netmiko_args(optional_args={}), {})
+
+        test_case = {'secret': 'whatever'}
+        self.assertEqual(netmiko_args(test_case), test_case)
+
+        test_case = {
+            'secret': 'whatever',
+            'use_keys': True,
+        }
+        self.assertEqual(netmiko_args(test_case), test_case)
+
+        test_case = {
+            'secret': 'whatever',
+            'use_keys': True,
+            'ssh_config_file': '~/.ssh/config',
+        }
+        self.assertEqual(netmiko_args(test_case), test_case)
+
+        test_case = {
+            'secret': 'whatever',
+            'transport': 'telnet',
+        }
+        self.assertEqual(netmiko_args(test_case), {'secret': 'whatever'})
+
+        test_case = {
+            'secret': 'whatever',
+            'transport': 'telnet',
+            'port': 8022,
+        }
+        self.assertEqual(netmiko_args(test_case), {'secret': 'whatever', 'port': 8022})
+
+        test_case = {
+            'secret': '',
+            'port': None,
+            'verbose': False,
+            'global_delay_factor': 1,
+            'use_keys': False,
+            'key_file': None,
+            'allow_agent': False,
+            'ssh_strict': False,
+            'system_host_keys': False,
+            'alt_host_keys': False,
+            'alt_key_file': '',
+            'ssh_config_file': None,
+            'session_timeout': 60,
+            'blocking_timeout': 8,
+            'keepalive': 0,
+            'default_enter': None,
+            'response_return': None,
+            'serial_settings': None
+        }
+        self.assertEqual(netmiko_args(test_case), test_case)
+
+        test_case = {
+            'inline_transfer': True,
+            'transport': 'ssh',
+            'secret': '',
+            'port': None,
+            'verbose': False,
+            'global_delay_factor': 1,
+            'use_keys': False,
+            'key_file': None,
+            'allow_agent': False,
+            'ssh_strict': False,
+            'system_host_keys': False,
+            'alt_host_keys': False,
+            'alt_key_file': '',
+            'ssh_config_file': None,
+            'session_timeout': 60,
+            'blocking_timeout': 8,
+            'keepalive': 0,
+            'default_enter': None,
+            'response_return': None,
+            'serial_settings': None
+        }
+        result_dict = {}
+        result_dict.update(test_case)
+        result_dict.pop('inline_transfer')
+        result_dict.pop('transport')
+        self.assertEqual(netmiko_args(test_case), result_dict)
 
 
 class FakeNetworkDriver(NetworkDriver):

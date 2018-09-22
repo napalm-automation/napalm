@@ -1,0 +1,7 @@
+username user2 privilege 15 secret 5 $1$xxxx$xxxxxxxxxxxXXXXXXXXXX.
+username user3 secret 5 $1$yyyy$yyyyyyyyyyyYYYYYYYYYY.
+  username user1
+   key-hash ssh-rsa 303CF59996FEA22B46DCC52324AACE7A
+  username user2
+   key-hash ssh-rsa C792BBED783F3A3CB199BBDC6EACE6BC user2@macbook.local
+   key-hash ssh-rsa 46DD97448BF3EDBFE8E289E3F9ABFC53

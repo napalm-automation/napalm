@@ -57,14 +57,15 @@ class EOSDriver(NetworkDriver):
     HEREDOC_COMMANDS = [
         ("banner login", 1),
         ("banner motd", 1),
+        ("comment", 1),
         ("protocol https certificate", 2)
     ]
 
-    _RE_BGP_INFO = re.compile('BGP neighbor is (?P<neighbor>.*?), remote AS (?P<as>.*?), .*') # noqa
-    _RE_BGP_RID_INFO = re.compile('.*BGP version 4, remote router ID (?P<rid>.*?), VRF (?P<vrf>.*?)$') # noqa
-    _RE_BGP_DESC = re.compile('\s+Description: (?P<description>.*?)')
-    _RE_BGP_LOCAL = re.compile('Local AS is (?P<as>.*?),.*')
-    _RE_BGP_PREFIX = re.compile('(\s*?)(?P<af>IPv[46]) Unicast:\s*(?P<sent>\d+)\s*(?P<received>\d+)') # noqa
+    _RE_BGP_INFO = re.compile(r'BGP neighbor is (?P<neighbor>.*?), remote AS (?P<as>.*?), .*') # noqa
+    _RE_BGP_RID_INFO = re.compile(r'.*BGP version 4, remote router ID (?P<rid>.*?), VRF (?P<vrf>.*?)$') # noqa
+    _RE_BGP_DESC = re.compile(r'\s+Description: (?P<description>.*?)')
+    _RE_BGP_LOCAL = re.compile(r'Local AS is (?P<as>.*?),.*')
+    _RE_BGP_PREFIX = re.compile(r'(\s*?)(?P<af>IPv[46]) Unicast:\s*(?P<sent>\d+)\s*(?P<received>\d+)') # noqa
     _RE_SNMP_COMM = re.compile(r"""^snmp-server\s+community\s+(?P<community>\S+)
                                 (\s+view\s+(?P<view>\S+))?(\s+(?P<access>ro|rw)?)
                                 (\s+ipv6\s+(?P<v6_acl>\S+))?(\s+(?P<v4_acl>\S+))?$""", re.VERBOSE)
@@ -123,7 +124,7 @@ class EOSDriver(NetworkDriver):
             # and this is raised either if device not avaiable
             # either if HTTP(S) agent is not enabled
             # show management api http-commands
-            raise ConnectionException(ce.message)
+            raise ConnectionException(py23_compat.text_type(ce))
 
     def close(self):
         """Implementation of NAPALM method close."""
@@ -158,6 +159,41 @@ class EOSDriver(NetworkDriver):
 
         return ret
 
+    @staticmethod
+    def _mode_comment_convert(commands):
+        """
+        EOS has the concept of multi-line mode comments, shown in the running-config
+        as being inside a config stanza (router bgp, ACL definition, etc) and beginning
+        with the normal level of spaces and '!!', followed by comments.
+
+        Unfortunately, pyeapi does not accept mode comments in this format, and have to be
+        converted to a specific type of pyeapi call that accepts multi-line input
+
+        Copy the config list into a new return list, converting consecutive lines starting with
+        "!!" into a single multiline comment command
+
+        :param commands: List of commands to be sent to pyeapi
+        :return: Converted list of commands to be sent to pyeapi
+        """
+
+        ret = []
+        comment_count = 0
+        for idx, element in enumerate(commands):
+            # Check first for stringiness, as we may have dicts in the command list already
+            if isinstance(element, py23_compat.string_types) and element.startswith('!!'):
+                comment_count += 1
+                continue
+            else:
+                if comment_count > 0:
+                    # append the previous comment
+                    ret.append({"cmd": "comment",
+                                "input": "\n".join(map(lambda s: s.lstrip("! "),
+                                                       commands[idx - comment_count:idx]))})
+                    comment_count = 0
+                ret.append(element)
+
+        return ret
+
     def _load_config(self, filename=None, config=None, replace=True):
         commands = []
 
@@ -179,12 +215,14 @@ class EOSDriver(NetworkDriver):
             line = line.strip()
             if line == '':
                 continue
-            if line.startswith('!'):
+            if line.startswith('!') and not line.startswith('!!'):
                 continue
             commands.append(line)
 
         for start, depth in [(s, d) for (s, d) in self.HEREDOC_COMMANDS if s in commands]:
             commands = self._multiline_convert(commands, start=start, depth=depth)
+
+        commands = self._mode_comment_convert(commands)
 
         try:
             if self.eos_autoComplete is not None:
@@ -193,10 +231,11 @@ class EOSDriver(NetworkDriver):
                 self.device.run_commands(commands)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
+            msg = py23_compat.text_type(e)
             if replace:
-                raise ReplaceConfigException(e.message)
+                raise ReplaceConfigException(msg)
             else:
-                raise MergeConfigException(e.message)
+                raise MergeConfigException(msg)
 
     def load_replace_candidate(self, filename=None, config=None):
         """Implementation of NAPALM method load_replace_candidate."""
@@ -218,13 +257,16 @@ class EOSDriver(NetworkDriver):
 
             return result.strip()
 
-    def commit_config(self):
+    def commit_config(self, message=""):
         """Implementation of NAPALM method commit_config."""
-        commands = []
-        commands.append('copy startup-config flash:rollback-0')
-        commands.append('configure session {}'.format(self.config_session))
-        commands.append('commit')
-        commands.append('write memory')
+        if message:
+            raise NotImplementedError('Commit message not implemented for this platform')
+        commands = [
+            'copy startup-config flash:rollback-0',
+            'configure session {}'.format(self.config_session),
+            'commit',
+            'write memory'
+        ]
 
         self.device.run_commands(commands)
         self.config_session = None
@@ -232,25 +274,18 @@ class EOSDriver(NetworkDriver):
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
-            commands = []
-            commands.append('configure session {}'.format(self.config_session))
-            commands.append('abort')
+            commands = ['configure session {}'.format(self.config_session), 'abort']
             self.device.run_commands(commands)
             self.config_session = None
 
     def rollback(self):
         """Implementation of NAPALM method rollback."""
-        commands = []
-        commands.append('configure replace flash:rollback-0')
-        commands.append('write memory')
+        commands = ['configure replace flash:rollback-0', 'write memory']
         self.device.run_commands(commands)
 
     def get_facts(self):
         """Implementation of NAPALM method get_facts."""
-        commands = []
-        commands.append('show version')
-        commands.append('show hostname')
-        commands.append('show interfaces')
+        commands = ['show version', 'show hostname', 'show interfaces']
 
         result = self.device.run_commands(commands)
 
@@ -275,8 +310,7 @@ class EOSDriver(NetworkDriver):
         }
 
     def get_interfaces(self):
-        commands = []
-        commands.append('show interfaces')
+        commands = ['show interfaces']
         output = self.device.run_commands(commands)[0]
 
         interfaces = {}
@@ -305,8 +339,7 @@ class EOSDriver(NetworkDriver):
         return interfaces
 
     def get_lldp_neighbors(self):
-        commands = []
-        commands.append('show lldp neighbors')
+        commands = ['show lldp neighbors']
         output = self.device.run_commands(commands)[0]['lldpNeighbors']
 
         lldp = {}
@@ -509,9 +542,9 @@ class EOSDriver(NetworkDriver):
         if not is_veos:
             for psu, data in power_output['powerSupplies'].items():
                 environment_counters['power'][psu] = {
-                    'status': data['state'] == 'ok',
-                    'capacity': data['capacity'],
-                    'output': data['outputPower']
+                    'status': data.get('state', 'ok') == 'ok',
+                    'capacity': data.get('capacity', -1.0),
+                    'output': data.get('outputPower', -1.0),
                 }
         cpu_lines = cpu_output.splitlines()
         # Matches either of
@@ -524,10 +557,12 @@ class EOSDriver(NetworkDriver):
         # Matches either of
         # Mem:   3844356k total,  3763184k used,    81172k free,    16732k buffers ( 4.16 > )
         # KiB Mem:  32472080 total,  5697604 used, 26774476 free,   372052 buffers ( 4.16 < )
-        mem_regex = '.*total,\s+(?P<used>\d+)[k\s]+used,\s+(?P<free>\d+)[k\s]+free,.*'
+        mem_regex = (r'[^\d]*(?P<total>\d+)[k\s]+total,'
+                     r'\s+(?P<used>\d+)[k\s]+used,'
+                     r'\s+(?P<free>\d+)[k\s]+free,.*')
         m = re.match(mem_regex, cpu_lines[3])
         environment_counters['memory'] = {
-            'available_ram': int(m.group('free')),
+            'available_ram': int(m.group('total')),
             'used_ram': int(m.group('used'))
         }
         return environment_counters
@@ -540,12 +575,9 @@ class EOSDriver(NetworkDriver):
         if interface:
             filters.append(interface)
 
-        commands = []
-        commands.append(
-            'show lldp neighbors {filters} detail'.format(
-                filters=' '.join(filters)
-            )
-        )
+        commands = [
+            'show lldp neighbors {filters} detail'.format(filters=' '.join(filters))
+        ]
 
         lldp_neighbors_in = {}
         lldp_neighbors_in = self.device.run_commands(commands)[0].get('lldpNeighbors', {})
@@ -635,7 +667,6 @@ class EOSDriver(NetworkDriver):
             'local-as': 'local_as',
             'next-hop-self': 'nhs',
             'route-reflector-client': 'route_reflector_client',
-            'description': 'description',
             'import-policy': 'import_policy',
             'export-policy': 'export_policy',
             'passwd': 'authentication_key'
@@ -745,8 +776,7 @@ class EOSDriver(NetworkDriver):
 
         bgp_config = {}
 
-        commands = []
-        commands.append('show running-config | section router bgp')
+        commands = ['show running-config | section router bgp']
         bgp_conf = self.device.run_commands(commands, encoding='text')[0].get('output', '\n\n')
         bgp_conf_lines = bgp_conf.splitlines()
 
@@ -867,15 +897,14 @@ class EOSDriver(NetworkDriver):
         ntp_stats = []
 
         REGEX = (
-            '^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
-            '\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
-            '\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
-            '\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
-            '\s+([0-9\.]+)\s?$'
+            r'^\s?(\+|\*|x|-)?([a-zA-Z0-9\.+-:]+)'
+            r'\s+([a-zA-Z0-9\.]+)\s+([0-9]{1,2})'
+            r'\s+(-|u)\s+([0-9h-]+)\s+([0-9]+)'
+            r'\s+([0-9]+)\s+([0-9\.]+)\s+([0-9\.-]+)'
+            r'\s+([0-9\.]+)\s?$'
         )
 
-        commands = []
-        commands.append('show ntp associations')
+        commands = ['show ntp associations']
 
         # output = self.device.run_commands(commands)
         # pyeapi.eapilib.CommandError: CLI command 2 of 2 'show ntp associations'
@@ -917,7 +946,8 @@ class EOSDriver(NetworkDriver):
         try:
             interfaces_ipv6_out = self.device.run_commands(['show ipv6 interface'])[0]['interfaces']
         except pyeapi.eapilib.CommandError as e:
-            if 'No IPv6 configured interfaces' in e.message:
+            msg = py23_compat.text_type(e)
+            if 'No IPv6 configured interfaces' in msg:
                 interfaces_ipv6_out = {}
             else:
                 raise
@@ -1040,12 +1070,9 @@ class EOSDriver(NetworkDriver):
         if protocol.lower() == 'direct':
             protocol = 'connected'
 
-        try:
-            ipv = ''
-            if IPNetwork(destination).version == 6:
-                ipv = 'v6'
-        except AddrFormatError:
-            return 'Please specify a valid destination!'
+        ipv = ''
+        if IPNetwork(destination).version == 6:
+            ipv = 'v6'
 
         commands = []
         for _vrf in vrfs:
@@ -1102,7 +1129,7 @@ class EOSDriver(NetworkDriver):
                     for bgp_route_details in bgp_routes:
                         bgp_route = route.copy()
                         as_path = bgp_route_details.get('asPathEntry', {}).get('asPath', u'')
-                        remote_as = int(as_path.split()[-1])
+                        remote_as = int(as_path.strip("()").split()[-1])
                         remote_address = napalm.base.helpers.ip(bgp_route_details.get(
                             'routeDetail', {}).get('peerEntry', {}).get('peerAddr', ''))
                         local_preference = bgp_route_details.get('localPreference')
@@ -1236,24 +1263,24 @@ class EOSDriver(NetworkDriver):
                    vrf=c.TRACEROUTE_VRF):
 
         _HOP_ENTRY_PROBE = [
-            '\s+',
-            '(',  # beginning of host_name (ip_address) RTT group
-            '(',  # beginning of host_name (ip_address) group only
-            '([a-zA-Z0-9\.:-]*)',  # hostname
-            '\s+',
-            '\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
-            ')?',  # end of host_name (ip_address) group only
+            r'\s+',
+            r'(',  # beginning of host_name (ip_address) RTT group
+            r'(',  # beginning of host_name (ip_address) group only
+            r'([a-zA-Z0-9\.:-]*)',  # hostname
+            r'\s+',
+            r'\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
+            r')?',  # end of host_name (ip_address) group only
             # also hostname/ip are optional -- they can or cannot be specified
             # if not specified, means the current probe followed the same path as the previous
-            '\s+',
-            '(\d+\.\d+)\s+ms',  # RTT
-            '|\*',  # OR *, when non responsive hop
-            ')'  # end of host_name (ip_address) RTT group
+            r'\s+',
+            r'(\d+\.\d+)\s+ms',  # RTT
+            r'|\*',  # OR *, when non responsive hop
+            r')'  # end of host_name (ip_address) RTT group
         ]
 
         _HOP_ENTRY = [
-            '\s?',  # space before hop index?
-            '(\d+)',  # hop index
+            r'\s?',  # space before hop index?
+            r'(\d+)',  # hop index
         ]
 
         traceroute_result = {}
@@ -1509,10 +1536,9 @@ class EOSDriver(NetworkDriver):
         optics_detail = {}
 
         for port, port_values in output.items():
-            port_detail = {}
-
-            port_detail['physical_channels'] = {}
-            port_detail['physical_channels']['channel'] = []
+            port_detail = {
+                'physical_channels': {'channel': []}
+            }
 
             # Defaulting avg, min, max values to 0.0 since device does not
             # return these values
