@@ -861,17 +861,23 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_interfaces_ip(self):
-
+    def get_interfaces_ip(self, vrf=""):
         """
         Returns all configured IP addresses on all interfaces as a dictionary of dictionaries.
         Keys of the main dictionary represent the name of the interface.
+
         Values of the main dictionary represent are dictionaries that may consist of two keys
         'ipv4' and 'ipv6' (one, both or none) which are themselvs dictionaries witht the IP
         addresses as keys.
+
         Each IP Address dictionary has the following keys:
 
             * prefix_length (int)
+
+        'vrf' of null-string will default to the global or default VRF. 'vrf' of 'all' will
+        return the interface IPs for all VRFs. 'vrf' referring to a specific VRF will return
+        the interface IPs of that specific VRF. In all cases the same data structure is returned
+        and no reference to the VRF that was used is included in the output.
 
         Example::
 

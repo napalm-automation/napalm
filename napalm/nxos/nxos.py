@@ -805,7 +805,12 @@ class NXOSDriver(NXOSDriverBase):
             })
         return ntp_stats
 
-    def get_interfaces_ip(self):
+    def get_interfaces_ip(self, vrf=""):
+
+        if vrf:
+            msg = 'VRF support has not been added for this getter on this platform.'
+            raise NotImplementedError(msg)
+
         interfaces_ip = {}
         ipv4_command = 'show ip interface'
         ipv4_interf_table_vrf = self._get_command_table(ipv4_command, 'TABLE_intf', 'ROW_intf')

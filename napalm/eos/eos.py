@@ -935,7 +935,11 @@ class EOSDriver(NetworkDriver):
 
         return ntp_stats
 
-    def get_interfaces_ip(self):
+    def get_interfaces_ip(self, vrf=""):
+
+        if vrf:
+            msg = 'VRF support has not been added for this getter on this platform.'
+            raise NotImplementedError(msg)
 
         interfaces_ip = {}
 

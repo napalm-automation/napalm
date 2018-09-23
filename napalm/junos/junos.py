@@ -1448,8 +1448,12 @@ class JunOSDriver(NetworkDriver):
 
         return ntp_stats
 
-    def get_interfaces_ip(self):
+    def get_interfaces_ip(self, vrf=""):
         """Return the configured IP addresses."""
+        if vrf:
+            msg = 'VRF support has not been added for this getter on this platform.'
+            raise NotImplementedError(msg)
+
         interfaces_ip = {}
 
         interface_table = junos_views.junos_ip_interfaces_table(self.device)
