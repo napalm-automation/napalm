@@ -956,7 +956,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         output = self._send_command(command)  # noqa
         return ntp_stats
 
-    def get_interfaces_ip(self):
+    def get_interfaces_ip(self, vrf=""):
         """
         Get interface IP details. Returns a dictionary of dictionaries.
 
@@ -986,6 +986,10 @@ class NXOSSSHDriver(NXOSDriverBase):
             }
         }
         """
+        if vrf:
+            msg = 'VRF support has not been added for this getter on this platform.'
+            raise NotImplementedError(msg)
+
         interfaces_ip = {}
         ipv4_command = "show ip interface vrf default"
         ipv6_command = "show ipv6 interface vrf default"
