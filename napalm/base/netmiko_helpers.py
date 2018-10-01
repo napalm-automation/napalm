@@ -10,8 +10,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 from __future__ import unicode_literals
-import inspect
-import sys
+from napalm.base.utils import py23_compat
 from netmiko import BaseConnection
 
 
@@ -21,12 +20,9 @@ def netmiko_args(optional_args):
     Return a dictionary of these optional args  that will be passed into the Netmiko
     ConnectHandler call.
     """
-    if sys.version_info < (3,):
-        # (args, varargs, keywords, defaults)
-        args, _, _, defaults = inspect.getargspec(BaseConnection.__init__)
-    else:
-        # (args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations)
-        args, _, _, defaults, _, _, _ = inspect.getfullargspec(BaseConnection.__init__)
+    fields = py23_compat.argspec(BaseConnection.__init__)
+    args = fields[0]
+    defaults = fields[3]
 
     check_self = args.pop(0)
     if check_self != 'self':
