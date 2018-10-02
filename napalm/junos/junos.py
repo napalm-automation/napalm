@@ -300,7 +300,12 @@ class JunOSDriver(NetworkDriver):
             for iface in interfaces.keys():
                 result[iface] = {
                     'is_up': interfaces[iface]['is_up'],
-                    'is_enabled': interfaces[iface]['is_enabled'],
+                    # For physical interfaces <admin-status> will always be there, so just
+                    # return the value interfaces[iface]['is_enabled']
+                    # For logical interfaces if <iff-down> is present interface is disabled,
+                    # otherwise interface is enabled
+                    'is_enabled': (True if interfaces[iface]['is_enabled'] is None
+                                   else interfaces[iface]['is_enabled']),
                     'description': (interfaces[iface]['description'] or u''),
                     'last_flapped': float((interfaces[iface]['last_flapped'] or -1)),
                     'mac_address': napalm.base.helpers.convert(
@@ -755,12 +760,16 @@ class JunOSDriver(NetworkDriver):
                 'EX3400': rpc_call_without_information,
                 'EX4300-48P': rpc_call_without_information,
                 'EX4600-40F': rpc_call_without_information,
+                'QFX5100-48S-6Q': rpc_call_without_information,
                 'QFX5110-48S-4C': rpc_call_without_information,
                 'QFX10002-36Q': rpc_call_without_information,
-                'QFX10008': rpc_call_without_information
+                'QFX10008': rpc_call_without_information,
+                'EX2300-24P': rpc_call_without_information,
+                'EX2300-C-12P': rpc_call_without_information
             },
             'SRX_BRANCH': {
-                'default': rpc_call_with_information
+                'default': rpc_call_with_information,
+                'SRX300': rpc_call_without_information
             },
             'SRX_HIGHEND': {
                 'default': rpc_call_without_information
@@ -1611,7 +1620,7 @@ class JunOSDriver(NetworkDriver):
             d = {}
             # next_hop = route[0]
             d = {elem[0]: elem[1] for elem in route[1]}
-            destination = napalm.base.helpers.ip(d.pop('destination', ''))
+            destination = d.pop('destination', '')
             prefix_length = d.pop('prefix_length', 32)
             destination = '{d}/{p}'.format(
                 d=destination,

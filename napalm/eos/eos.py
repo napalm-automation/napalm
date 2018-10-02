@@ -219,10 +219,10 @@ class EOSDriver(NetworkDriver):
                 continue
             commands.append(line)
 
-        commands = self._mode_comment_convert(commands)
-
         for start, depth in [(s, d) for (s, d) in self.HEREDOC_COMMANDS if s in commands]:
             commands = self._multiline_convert(commands, start=start, depth=depth)
+
+        commands = self._mode_comment_convert(commands)
 
         try:
             if self.eos_autoComplete is not None:
@@ -542,9 +542,9 @@ class EOSDriver(NetworkDriver):
         if not is_veos:
             for psu, data in power_output['powerSupplies'].items():
                 environment_counters['power'][psu] = {
-                    'status': data['state'] == 'ok',
-                    'capacity': data['capacity'],
-                    'output': data['outputPower']
+                    'status': data.get('state', 'ok') == 'ok',
+                    'capacity': data.get('capacity', -1.0),
+                    'output': data.get('outputPower', -1.0),
                 }
         cpu_lines = cpu_output.splitlines()
         # Matches either of
@@ -1067,12 +1067,9 @@ class EOSDriver(NetworkDriver):
         if protocol.lower() == 'direct':
             protocol = 'connected'
 
-        try:
-            ipv = ''
-            if IPNetwork(destination).version == 6:
-                ipv = 'v6'
-        except AddrFormatError:
-            return 'Please specify a valid destination!'
+        ipv = ''
+        if IPNetwork(destination).version == 6:
+            ipv = 'v6'
 
         commands = []
         for _vrf in vrfs:
