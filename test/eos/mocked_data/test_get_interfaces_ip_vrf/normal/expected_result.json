@@ -1,0 +1,1 @@
+{"Ethernet36": {"ipv4": {"172.17.17.66": {"prefix_length": 25}}, "ipv6": {"fe80::2": {"prefix_length": 64}, "2001:db8:85a3:8d3:1319:8a2e:370:7349": {"prefix_length": 64}}}}
