@@ -292,6 +292,7 @@ EXCLUDE_IN_REPORT = ('test_method_signatures')
 
 METHOD_ALIASES = {
     'get_config_filtered': 'get_config',
+    'get_interfaces_ip_vrf': 'get_interfaces_ip',
 }
 
 
