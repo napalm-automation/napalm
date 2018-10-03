@@ -15,13 +15,22 @@ install:
   - pip install tox==3.0.0 tox-travis coveralls
 
 deploy:
-  provider: pypi
-  user: dbarroso
-  password:
-    secure: kt2RgomUtrf5zXo3CyF8B7SkolvKgALAO0s72WuMd0wTGmgOvoBlt10Vfc+G+wuVAYvW/JKdsYRceancAFyWLFgjLtNxbV4cJF2RXN956sYFSJ2VrtUiB19WuKZjX6024gMs780hC/3bdK1SDg/NAAHSR7u2cma3QgRcW6O+UG4=
-  on:
-    tags: true
-    branch: master
+  - provider: pypi
+    user: dbarroso
+    password:
+      secure: kt2RgomUtrf5zXo3CyF8B7SkolvKgALAO0s72WuMd0wTGmgOvoBlt10Vfc+G+wuVAYvW/JKdsYRceancAFyWLFgjLtNxbV4cJF2RXN956sYFSJ2VrtUiB19WuKZjX6024gMs780hC/3bdK1SDg/NAAHSR7u2cma3QgRcW6O+UG4=
+    on:
+      tags: true
+      branch: master
+  - provider: script
+    script: docker_release.sh $TRAVIS_TAG
+    on:
+      tags: true
+      branch: master
+  - provider: script
+    script: docker_develop.sh
+    on:
+      branch: develop
 
 script:
   - tox
