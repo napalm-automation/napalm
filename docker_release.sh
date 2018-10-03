@@ -1,0 +1,1 @@
+curl -H "Content-Type: application/json" --data "{\"source_type\": \"Tag\", \"source_name\": \"$1\"}" -X POST https://registry.hub.docker.com/u/napalmautomation/napalm/trigger/7cc49f31-75da-4365-9e7b-ec5526deb9b4/
