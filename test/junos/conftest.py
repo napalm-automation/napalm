@@ -86,7 +86,7 @@ class FakeJunOSDevice(BaseTestDouble):
             self._facts = self.default_facts
             return self._facts
         with open(alt_facts_filepath, 'r') as alt_facts:
-            self._facts.update(yaml.load(alt_facts))
+            self._facts.update(yaml.safe_load(alt_facts))
         return self._facts
 
     @property

@@ -2151,24 +2151,21 @@ class IOSDriver(NetworkDriver):
             }
 
             for line in output.splitlines():
-                fields = line.split()
-                if 'Success rate is 0' in line:
-                    sent_and_received = re.search(r'\((\d*)/(\d*)\)', fields[5])
-                    probes_sent = int(sent_and_received.groups()[0])
-                    probes_received = int(sent_and_received.groups()[1])
+                if 'Success rate is' in line:
+                    sent_and_received = re.search(r'\((\d*)/(\d*)\)', line)
+                    probes_sent = int(sent_and_received.group(2))
+                    probes_received = int(sent_and_received.group(1))
                     ping_dict['success']['probes_sent'] = probes_sent
                     ping_dict['success']['packet_loss'] = probes_sent - probes_received
-                elif 'Success rate is' in line:
-                    sent_and_received = re.search(r'\((\d*)/(\d*)\)', fields[5])
-                    probes_sent = int(sent_and_received.groups()[0])
-                    probes_received = int(sent_and_received.groups()[1])
-                    min_avg_max = re.search(r'(\d*)/(\d*)/(\d*)', fields[9])
-                    ping_dict['success']['probes_sent'] = probes_sent
-                    ping_dict['success']['packet_loss'] = probes_sent - probes_received
+                    # If there were zero valid response packets, we are done
+                    if 'Success rate is 0 ' in line:
+                        break
+
+                    min_avg_max = re.search(r'(\d*)/(\d*)/(\d*)', line)
                     ping_dict['success'].update({
-                                    'rtt_min': float(min_avg_max.groups()[0]),
-                                    'rtt_avg': float(min_avg_max.groups()[1]),
-                                    'rtt_max': float(min_avg_max.groups()[2]),
+                                    'rtt_min': float(min_avg_max.group(1)),
+                                    'rtt_avg': float(min_avg_max.group(2)),
+                                    'rtt_max': float(min_avg_max.group(3)),
                     })
                     results_array = []
                     for i in range(probes_received):
