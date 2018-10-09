@@ -1,0 +1,15 @@
+{
+  "uptime": 5860361.78,
+  "modelName": "DCS-7010T-48-R",
+  "internalVersion": "4.20.7M-8944203.4207M",
+  "systemMacAddress": "28:99:3a:23:92:09",
+  "serialNumber": "SSJ12345678",
+  "memTotal": 3886752,
+  "bootupTimestamp": 1531344080.0,
+  "memFree": 2582420,
+  "version": "4.20.7M",
+  "architecture": "i386",
+  "isIntlVersion": false,
+  "internalBuildId": "c673df71-201a-43a3-8d66-9f28c0ac92fc",
+  "hardwareRevision": "12.00"
+}

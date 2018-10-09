@@ -1,0 +1,73 @@
+{
+  "fans": {
+    "1": {
+      "status": true
+    },
+    "2": {
+      "status": true
+    }
+  },
+  "temperature": {
+    "TempSensor1": {
+      "temperature": 37.751111950905496,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "TempSensor2": {
+      "temperature": 36.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "TempSensor3": {
+      "temperature": 35.875,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "TempSensor4": {
+      "temperature": 27.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "TempSensor5": {
+      "temperature": 22.75,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "TempSensor6": {
+      "temperature": 51.473600000000005,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "TempSensor7": {
+      "temperature": 52.016000000000005,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "TempSensor8": {
+      "temperature": 50.3888,
+      "is_alert": false,
+      "is_critical": false
+    }
+  },
+  "power": {
+    "1": {
+      "status": true,
+      "capacity": 65.0,
+      "output": -1.0
+    },
+    "2": {
+      "status": false,
+      "capacity": 65.0,
+      "output": -1.0
+    }
+  },
+  "cpu": {
+    "0": {
+      "%usage": 10.3
+    }
+  },
+  "memory": {
+    "available_ram": 3886752,
+    "used_ram": 3780968
+  }
+}

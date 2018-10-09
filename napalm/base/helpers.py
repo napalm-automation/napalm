@@ -11,7 +11,7 @@ import itertools
 
 # third party libs
 import jinja2
-import jtextfsm as textfsm
+import textfsm
 from netaddr import EUI
 from netaddr import mac_unix
 from netaddr import IPAddress
@@ -83,7 +83,7 @@ def load_template(cls, template_name, template_source=None, template_path=None,
         raise napalm.base.exceptions.TemplateRenderException(
             "Unable to render the Jinja config template {template_name}: {error}".format(
                 template_name=template_name,
-                error=jinjaerr.message
+                error=py23_compat.text_type(jinjaerr),
             )
         )
     return cls.load_merge_candidate(config=configuration)
@@ -102,44 +102,46 @@ def textfsm_extractor(cls, template_name, raw_text):
     :return: table-like list of entries
     """
     textfsm_data = list()
-    cls.__class__.__name__.replace('Driver', '')
-    current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
-    template_dir_path = '{current_dir}/utils/textfsm_templates'.format(
-        current_dir=current_dir
-    )
-    template_path = '{template_dir_path}/{template_name}.tpl'.format(
-        template_dir_path=template_dir_path,
-        template_name=template_name
-    )
-
-    try:
-        fsm_handler = textfsm.TextFSM(open(template_path))
-    except IOError:
-        raise napalm.base.exceptions.TemplateNotImplemented(
-            "TextFSM template {template_name}.tpl is not defined under {path}".format(
-                template_name=template_name,
-                path=template_dir_path
-            )
+    fsm_handler = None
+    for c in cls.__class__.mro():
+        if c is object:
+            continue
+        current_dir = os.path.dirname(os.path.abspath(sys.modules[c.__module__].__file__))
+        template_dir_path = '{current_dir}/utils/textfsm_templates'.format(
+            current_dir=current_dir
         )
-    except textfsm.TextFSMTemplateError as tfte:
-        raise napalm.base.exceptions.TemplateRenderException(
-            "Wrong format of TextFSM template {template_name}: {error}".format(
-                template_name=template_name,
-                error=py23_compat.text_type(tfte)
-            )
+        template_path = '{template_dir_path}/{template_name}.tpl'.format(
+            template_dir_path=template_dir_path,
+            template_name=template_name
         )
 
-    objects = fsm_handler.ParseText(raw_text)
+        try:
+            with open(template_path) as f:
+                fsm_handler = textfsm.TextFSM(f)
 
-    for obj in objects:
-        index = 0
-        entry = {}
-        for entry_value in obj:
-            entry[fsm_handler.header[index].lower()] = entry_value
-            index += 1
-        textfsm_data.append(entry)
+                for obj in fsm_handler.ParseText(raw_text):
+                    entry = {}
+                    for index, entry_value in enumerate(obj):
+                        entry[fsm_handler.header[index].lower()] = entry_value
+                    textfsm_data.append(entry)
 
-    return textfsm_data
+                return textfsm_data
+        except IOError:  # Template not present in this class
+            continue  # Continue up the MRO
+        except textfsm.TextFSMTemplateError as tfte:
+            raise napalm.base.exceptions.TemplateRenderException(
+                "Wrong format of TextFSM template {template_name}: {error}".format(
+                    template_name=template_name,
+                    error=py23_compat.text_type(tfte)
+                )
+            )
+
+    raise napalm.base.exceptions.TemplateNotImplemented(
+        "TextFSM template {template_name}.tpl is not defined under {path}".format(
+            template_name=template_name,
+            path=template_dir_path
+        )
+    )
 
 
 def find_txt(xml_tree, path, default=''):

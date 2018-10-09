@@ -10,7 +10,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 from __future__ import unicode_literals
-import inspect
+from napalm.base.utils import py23_compat
 from netmiko import BaseConnection
 
 
@@ -20,13 +20,15 @@ def netmiko_args(optional_args):
     Return a dictionary of these optional args  that will be passed into the Netmiko
     ConnectHandler call.
     """
-    netmiko_args, _, _, netmiko_defaults = inspect.getargspec(BaseConnection.__init__)
+    fields = py23_compat.argspec(BaseConnection.__init__)
+    args = fields[0]
+    defaults = fields[3]
 
-    check_self = netmiko_args.pop(0)
+    check_self = args.pop(0)
     if check_self != 'self':
         raise ValueError("Error processing Netmiko arguments")
 
-    netmiko_argument_map = dict(zip(netmiko_args, netmiko_defaults))
+    netmiko_argument_map = dict(zip(args, defaults))
 
     # Netmiko arguments that are integrated into NAPALM already
     netmiko_filter = ['ip', 'host', 'username', 'password', 'device_type', 'timeout']

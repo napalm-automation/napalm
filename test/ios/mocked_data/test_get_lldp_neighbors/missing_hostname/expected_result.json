@@ -1,0 +1,14 @@
+{
+    "FastEthernet0/24": [
+        {
+            "port": "Fa0/19",
+            "hostname": "switch1"
+        }
+    ],
+    "FastEthernet0/17": [
+        {
+            "port": "480f.cf28.8a1b",
+            "hostname": "480f.cf28.8a1b"
+        }
+    ]
+}
