@@ -16,19 +16,19 @@
 from __future__ import unicode_literals
 
 # import stdlib
+from builtins import super
+import os
 import re
 import time
 import tempfile
-from datetime import datetime
-from requests.exceptions import ConnectionError
+import uuid
 
 # import third party lib
+from requests.exceptions import ConnectionError
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
-
+from netmiko import file_transfer
 from pynxos.device import Device as NXOSDevice
-from pynxos.features.file_copy import FileTransferError as NXOSFileTransferError
-from pynxos.features.file_copy import FileCopy
 from pynxos.errors import CLIError
 
 # import NAPALM Base
@@ -39,25 +39,77 @@ from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.constants as c
 
 
 class NXOSDriverBase(NetworkDriver):
     """Common code shared between nx-api and nxos_ssh."""
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        if optional_args is None:
+            optional_args = {}
+        self.hostname = hostname
+        self.username = username
+        self.password = password
+        self.timeout = timeout
+        self.replace = True
+        self.loaded = False
+        self.changed = False
+        self.replace_file = None
+        self.merge_candidate = ''
+        self.candidate_cfg = 'candidate_config.txt'
+        self.merge_cfg = 'merge_config.txt'
+        self.rollback_cfg = 'rollback_config.txt'
+        self._dest_file_system = optional_args.pop('dest_file_system', "bootflash:")
+        self.netmiko_optional_args = netmiko_args(optional_args)
+        self.device = None
+
+    def load_replace_candidate(self, filename=None, config=None):
+
+        if not filename and not config:
+            raise ReplaceConfigException('filename or config parameter must be provided.')
+
+        if not filename:
+            tmp_file = self._create_tmp_file(config)
+            filename = tmp_file
+        else:
+            if not os.path.isfile(filename):
+                raise ReplaceConfigException("File {} not found".format(filename))
+
+        self.replace_file = filename
+
+        try:
+            transfer_result = file_transfer(
+                self.device,
+                source_file=self.replace_file,
+                dest_file=self.candidate_cfg,
+                file_system=self._dest_file_system,
+                direction="put",
+                overwrite_file=True,
+            )
+            if not transfer_result['file_exists']:
+                raise ValueError()
+        except Exception:
+            msg = ('Could not transfer file. There was an error '
+                   'during transfer. Please make sure remote '
+                   'permissions are set.')
+            raise ReplaceConfigException(msg)
+
+        self.replace = True
+        self.loaded = True
+        if config and os.path.isfile(tmp_file):
+            os.remove(tmp_file)
 
     def commit_config(self, message=""):
         if message:
             raise NotImplementedError('Commit message not implemented for this platform')
         if self.loaded:
             # Create checkpoint from current running-config
-            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            self._save_to_checkpoint(self.backup_file)
+            self._save_to_checkpoint(self.rollback_cfg)
 
             if self.replace:
-                # Replace operation
                 self._load_cfg_from_checkpoint()
             else:
-                # Merge operation
                 self._commit_merge()
 
             self._copy_run_start()
@@ -175,22 +227,19 @@ class NXOSDriverBase(NetworkDriver):
             ping_dict['success'].update({'results': results_array})
         return ping_dict
 
+    @staticmethod
+    def _create_tmp_file(config):
+        tmp_dir = tempfile.gettempdir()
+        rand_fname = py23_compat.text_type(uuid.uuid4())
+        filename = os.path.join(tmp_dir, rand_fname)
+        with open(filename, 'wt') as fobj:
+            fobj.write(config)
+        return filename
+
 
 class NXOSDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
-        if optional_args is None:
-            optional_args = {}
-        self.hostname = hostname
-        self.username = username
-        self.password = password
-        self.timeout = timeout
-        self.up = False
-        self.replace = True
-        self.loaded = False
-        self.fc = None
-        self.changed = False
-        self.replace_file = None
-        self.merge_candidate = ''
+        super().__init__(hostname, username, password, timeout=timeout, optional_args=optional_args)
 
         # nxos_protocol is there for backwards compatibility, transport is the preferred method
         self.transport = optional_args.get('transport', optional_args.get('nxos_protocol', 'https'))
@@ -198,6 +247,10 @@ class NXOSDriver(NXOSDriverBase):
             self.port = optional_args.get('port', 443)
         elif self.transport == 'http':
             self.port = optional_args.get('port', 80)
+
+        # For file copy
+        self.fc = None
+        self.up = False
 
     def open(self):
         try:
@@ -303,16 +356,6 @@ class NXOSDriver(NXOSDriverBase):
             _table_rows = [_table_rows]
         return _table_rows
 
-    @staticmethod
-    def fix_checkpoint_string(string, filename):
-        # used to generate checkpoint-like files
-        pattern = '''!Command: Checkpoint cmd vdc 1'''
-
-        if '!Command' in string:
-            return re.sub('!Command.*', pattern.format(filename), string)
-        else:
-            return "{0}\n{1}".format(pattern.format(filename), string)
-
     def _get_reply_table(self, result, table_name, row_name):
         return self._get_table_rows(result, table_name, row_name)
 
@@ -325,34 +368,6 @@ class NXOSDriver(NXOSDriverBase):
             return {'is_alive': True}
         else:
             return {'is_alive': False}
-
-    def load_replace_candidate(self, filename=None, config=None):
-        self.replace = True
-        self.loaded = True
-
-        if not filename and not config:
-            raise ReplaceConfigException('filename or config param must be provided.')
-
-        if filename is None:
-            temp_file = tempfile.NamedTemporaryFile()
-            temp_file.write(config)
-            temp_file.flush()
-            cfg_filename = temp_file.name
-        else:
-            cfg_filename = filename
-
-        self.replace_file = cfg_filename
-
-        with open(self.replace_file, 'r') as f:
-            file_content = f.read()
-
-        file_content = self.fix_checkpoint_string(file_content, self.replace_file)
-        temp_file = tempfile.NamedTemporaryFile()
-        temp_file.write(file_content.encode())
-        temp_file.flush()
-        self.replace_file = cfg_filename
-
-        self._send_file(temp_file.name, cfg_filename)
 
     def load_merge_candidate(self, filename=None, config=None):
         self.replace = False
@@ -367,19 +382,6 @@ class NXOSDriver(NXOSDriverBase):
                 self.merge_candidate += f.read()
         else:
             self.merge_candidate += config
-
-    def _send_file(self, filename, dest):
-        self.fc = FileCopy(self.device, filename, dst=dest.split('/')[-1])
-        try:
-            if not self.fc.remote_file_exists():
-                self.fc.send()
-            elif not self.fc.file_already_exists():
-                commands = ['terminal dont-ask',
-                            'delete {0}'.format(self.fc.dst)]
-                self.device.config_list(commands)
-                self.fc.send()
-        except NXOSFileTransferError as fte:
-            raise ReplaceConfigException(py23_compat.text_type(fte))
 
     def _create_sot_file(self):
         """Create Source of Truth file to compare."""

@@ -16,21 +16,15 @@
 from __future__ import unicode_literals
 
 # import stdlib
-from builtins import super
 import re
-import os
-import uuid
-import tempfile
 import socket
 
 # import third party lib
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
-from netmiko import file_transfer
 
 # import NAPALM Base
 import napalm.base.helpers
-from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
@@ -375,9 +369,6 @@ def bgp_summary_parser(bgp_summary):
 
 
 class NXOSSSHDriver(NXOSDriverBase):
-    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
-        super().__init__(hostname, username, password, timeout=timeout, optional_args=optional_args)
-        self.netmiko_optional_args = netmiko_args(optional_args)
 
     def open(self):
         self.device = self._netmiko_open(
@@ -438,42 +429,6 @@ class NXOSSSHDriver(NXOSDriverBase):
             'is_alive': self.device.remote_conn.transport.is_active()
         }
 
-    def load_replace_candidate(self, filename=None, config=None):
-
-        if not filename and not config:
-            raise ReplaceConfigException('filename or config parameter must be provided.')
-
-        if not filename:
-            tmp_file = self._create_tmp_file(config)
-            filename = tmp_file
-        else:
-            if not os.path.isfile(filename):
-                raise ReplaceConfigException("File {} not found".format(filename))
-
-        self.replace_file = filename
-
-        try:
-            transfer_result = file_transfer(
-                self.device,
-                source_file=self.replace_file,
-                dest_file=self.candidate_cfg,
-                file_system=self._dest_file_system,
-                direction="put",
-                overwrite_file=True,
-            )
-            if not transfer_result['file_exists']:
-                raise ValueError()
-        except Exception:
-            msg = ('Could not transfer file. There was an error '
-                   'during transfer. Please make sure remote '
-                   'permissions are set.')
-            raise ReplaceConfigException(msg)
-
-        self.replace = True
-        self.loaded = True
-        if config and os.path.isfile(tmp_file):
-            os.remove(tmp_file)
-
     def load_merge_candidate(self, filename=None, config=None):
         self.replace = False
         self.loaded = True
@@ -487,15 +442,6 @@ class NXOSSSHDriver(NXOSDriverBase):
                 self.merge_candidate += f.read()
         else:
             self.merge_candidate += config
-
-    @staticmethod
-    def _create_tmp_file(config):
-        tmp_dir = tempfile.gettempdir()
-        rand_fname = py23_compat.text_type(uuid.uuid4())
-        filename = os.path.join(tmp_dir, rand_fname)
-        with open(filename, 'wt') as fobj:
-            fobj.write(config)
-        return filename
 
     def _create_sot_file(self):
         """Create Source of Truth file to compare."""
