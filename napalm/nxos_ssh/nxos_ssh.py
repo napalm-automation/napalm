@@ -16,19 +16,17 @@
 from __future__ import unicode_literals
 
 # import stdlib
+from builtins import super
 import re
 import os
-import time
 import uuid
 import tempfile
-from scp import SCPClient
-import paramiko
-import hashlib
 import socket
 
 # import third party lib
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
+from netmiko import file_transfer
 
 # import NAPALM Base
 import napalm.base.helpers
@@ -378,19 +376,8 @@ def bgp_summary_parser(bgp_summary):
 
 class NXOSSSHDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
-        if optional_args is None:
-            optional_args = {}
-        self.hostname = hostname
-        self.username = username
-        self.password = password
-        self.timeout = timeout
-        self.replace = True
-        self.loaded = False
-        self.changed = False
-        self.replace_file = None
-        self.merge_candidate = ''
+        super().__init__(hostname, username, password, timeout=timeout, optional_args=optional_args)
         self.netmiko_optional_args = netmiko_args(optional_args)
-        self.device = None
 
     def open(self):
         self.device = self._netmiko_open(
@@ -399,8 +386,6 @@ class NXOSSSHDriver(NXOSDriverBase):
         )
 
     def close(self):
-        if self.changed:
-            self._delete_file(self.backup_file)
         self._netmiko_close()
 
     def _send_command(self, command):
@@ -454,95 +439,40 @@ class NXOSSSHDriver(NXOSDriverBase):
         }
 
     def load_replace_candidate(self, filename=None, config=None):
-        self._replace_candidate(filename, config)
-        self.replace = True
-        self.loaded = True
 
-    def _get_flash_size(self):
-        command = 'dir {}'.format('bootflash:')
-        output = self.device.send_command(command)
+        if not filename and not config:
+            raise ReplaceConfigException('filename or config parameter must be provided.')
 
-        match = re.search(r'(\d+) bytes free', output)
-        bytes_free = match.group(1)
-
-        return int(bytes_free)
-
-    def _enough_space(self, filename):
-        flash_size = self._get_flash_size()
-        file_size = os.path.getsize(filename)
-        if file_size > flash_size:
-            return False
-        return True
-
-    def _verify_remote_file_exists(self, dst, file_system='bootflash:'):
-        command = 'dir {0}/{1}'.format(file_system, dst)
-        output = self.device.send_command(command)
-        if 'No such file' in output:
-            raise ReplaceConfigException('Could not transfer file.')
-
-    def _replace_candidate(self, filename, config):
         if not filename:
-            filename = self._create_tmp_file(config)
+            tmp_file = self._create_tmp_file(config)
+            filename = tmp_file
         else:
             if not os.path.isfile(filename):
                 raise ReplaceConfigException("File {} not found".format(filename))
 
         self.replace_file = filename
-        if not self._enough_space(self.replace_file):
-            msg = 'Could not transfer file. Not enough space on device.'
+
+        try:
+            transfer_result = file_transfer(
+                self.device,
+                source_file=self.replace_file,
+                dest_file=self.candidate_cfg,
+                file_system=self._dest_file_system,
+                direction="put",
+                overwrite_file=True,
+            )
+            if not transfer_result['file_exists']:
+                raise ValueError()
+        except Exception:
+            msg = ('Could not transfer file. There was an error '
+                   'during transfer. Please make sure remote '
+                   'permissions are set.')
             raise ReplaceConfigException(msg)
 
-        self._check_file_exists(self.replace_file)
-        dest = os.path.basename(self.replace_file)
-        full_remote_path = 'bootflash:{}'.format(dest)
-        with paramiko.SSHClient() as ssh:
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(hostname=self.hostname, username=self.username, password=self.password)
-
-            try:
-                with SCPClient(ssh.get_transport()) as scp_client:
-                    scp_client.put(self.replace_file, full_remote_path)
-            except Exception:
-                time.sleep(10)
-                file_size = os.path.getsize(filename)
-                temp_size = self._verify_remote_file_exists(dest)
-                if int(temp_size) != int(file_size):
-                    msg = ('Could not transfer file. There was an error '
-                           'during transfer. Please make sure remote '
-                           'permissions are set.')
-                raise ReplaceConfigException(msg)
-        self.config_replace = True
-        if config and os.path.isfile(self.replace_file):
-            os.remove(self.replace_file)
-
-    def _file_already_exists(self, dst):
-        dst_hash = self._get_remote_md5(dst)
-        src_hash = self._get_local_md5(dst)
-        if src_hash == dst_hash:
-            return True
-        return False
-
-    def _check_file_exists(self, cfg_file):
-        command = 'dir {}'.format(cfg_file)
-        output = self.device.send_command(command)
-        if 'No such file' in output:
-            return False
-        else:
-            return self._file_already_exists(cfg_file)
-
-    def _get_remote_md5(self, dst):
-        command = 'show file {0} md5sum'.format(dst)
-        return self.device.send_command(command).strip()
-
-    def _get_local_md5(self, dst, blocksize=2**20):
-        md5 = hashlib.md5()
-        local_file = open(dst, 'rb')
-        buf = local_file.read(blocksize)
-        while buf:
-            md5.update(buf)
-            buf = local_file.read(blocksize)
-        local_file.close()
-        return md5.hexdigest()
+        self.replace = True
+        self.loaded = True
+        if config and os.path.isfile(tmp_file):
+            os.remove(tmp_file)
 
     def load_merge_candidate(self, filename=None, config=None):
         self.replace = False
@@ -630,7 +560,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def _commit_merge(self):
         try:
-            commands = [command for command in self.merge_candidate.splitlines() if command]
+            commands = (command for command in self.merge_candidate.splitlines() if command)
             output = self.device.send_config_set(commands)
         except Exception as e:
             raise MergeConfigException(str(e))
@@ -641,8 +571,13 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def _save_to_checkpoint(self, filename):
         """Save the current running config to the given file."""
-        command = 'checkpoint file {}'.format(filename)
-        self.device.send_command(command)
+        commands = [
+            "terminal dont-ask",
+            'checkpoint file {}'.format(filename),
+            'no terminal dont-ask',
+        ]
+        for command in commands:
+            self.device.send_command(command)
 
     def _disable_confirmation(self):
         self._send_config_commands(['terminal dont-ask'])
