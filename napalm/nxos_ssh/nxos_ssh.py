@@ -16,12 +16,12 @@
 from __future__ import unicode_literals
 
 # import stdlib
+from builtins import super
 import re
 import socket
 
 # import third party lib
 from netaddr import IPAddress
-from netaddr.core import AddrFormatError
 
 # import NAPALM Base
 import napalm.base.helpers
@@ -31,7 +31,6 @@ from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.helpers import canonical_interface_name
 from napalm.nxos import NXOSDriverBase
-import napalm.base.constants as c
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
@@ -370,6 +369,10 @@ def bgp_summary_parser(bgp_summary):
 
 class NXOSSSHDriver(NXOSDriverBase):
 
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        super().__init__(hostname, username, password, timeout=timeout, optional_args=optional_args)
+        self.profile = ['nxos_ssh']
+
     def open(self):
         self.device = self._netmiko_open(
             device_type='cisco_nxos',
@@ -382,7 +385,7 @@ class NXOSSSHDriver(NXOSDriverBase):
     def _send_command(self, command, raw_text=False):
         """
         Wrapper for Netmiko's send_command method.
-    
+
         raw_text argument is not used and is for code sharing with NX-API.
         """
         return self.device.send_command(command)
@@ -439,7 +442,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         }
 
     def _copy_run_start(self, filename='startup-config'):
-        
+
         command = 'copy run {}'.format(filename)
         output = self._send_command(command)
         if 'complete' in output.lower():

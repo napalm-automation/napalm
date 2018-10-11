@@ -64,6 +64,7 @@ class NXOSDriverBase(NetworkDriver):
         self.netmiko_optional_args = netmiko_args(optional_args)
         self.device = None
 
+    @ensure_netmiko_conn
     def load_replace_candidate(self, filename=None, config=None):
 
         if not filename and not config:
@@ -80,7 +81,7 @@ class NXOSDriverBase(NetworkDriver):
 
         try:
             transfer_result = file_transfer(
-                self.device,
+                self._netmiko_device,
                 source_file=self.replace_file,
                 dest_file=self.candidate_cfg,
                 file_system=self._dest_file_system,
@@ -426,6 +427,8 @@ class NXOSDriverBase(NetworkDriver):
 class NXOSDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         super().__init__(hostname, username, password, timeout=timeout, optional_args=optional_args)
+        if optional_args is None:
+            optional_args = {}
 
         # nxos_protocol is there for backwards compatibility, transport is the preferred method
         self.transport = optional_args.get('transport', optional_args.get('nxos_protocol', 'https'))
@@ -437,6 +440,7 @@ class NXOSDriver(NXOSDriverBase):
         # For file copy
         self.fc = None
         self.up = False
+        self.profile = ['nxos']
 
     def open(self):
         try:
