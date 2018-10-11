@@ -43,6 +43,23 @@ from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.constants as c
 
 
+def ensure_netmiko_conn(func):
+    """Decorator that ensures Netmiko connection exists."""
+    def wrap_function(self, *args, **kwargs):
+        try:
+            netmiko_object = self._netmiko_device
+            if netmiko_object is None:
+                raise AttributeError()
+        except AttributeError:
+            device_type = c.NETMIKO_MAP(self.profile[0])
+            self._netmiko_open(
+                device_type=device_type,
+                netmiko_optional_args=self.netmiko_optional_args,
+            )
+            func(self, *args, **kwargs)
+        return wrap_function
+
+
 class NXOSDriverBase(NetworkDriver):
     """Common code shared between nx-api and nxos_ssh."""
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
