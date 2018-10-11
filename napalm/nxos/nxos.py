@@ -132,6 +132,27 @@ class NXOSDriverBase(NetworkDriver):
         # but the merge_candidate will remain unchanged
         # previously: self.merge_candidate = '\n'.join(diff)
 
+    def _get_diff(self, cp_file):
+        """Get a diff between running config and a proposed file."""
+        diff = []
+        self._create_sot_file()
+        diff_out = self._send_command(
+            'show diff rollback-patch file {} file {}'.format(
+                'sot_file', self.replace_file.split('/')[-1]), raw_text=True)
+        try:
+            diff_out = diff_out.split(
+                'Generating Rollback Patch')[1].replace(
+                'Rollback Patch is Empty', '').strip()
+            for line in diff_out.splitlines():
+                if line:
+                    if line[0].strip() != '!' and line[0].strip() != '.':
+                        diff.append(line.rstrip(' '))
+        except (AttributeError, KeyError):
+            raise ReplaceConfigException(
+                "Could not calculate diff. It's possible the given file doesn't exist."
+            )
+        return '\n'.join(diff)
+
     def compare_config(self):
         if self.loaded:
             if not self.replace:
@@ -208,7 +229,7 @@ class NXOSDriverBase(NetworkDriver):
 
         if vrf != '':
             command += ' vrf {}'.format(vrf)
-        output = self._send_command(command)
+        output = self._send_command(command, raw_text=True)
 
         if 'connect:' in output:
             ping_dict['error'] = output
@@ -272,6 +293,111 @@ class NXOSDriverBase(NetworkDriver):
             ping_dict['success'].update({'results': results_array})
         return ping_dict
 
+    def traceroute(self,
+                   destination,
+                   source=c.TRACEROUTE_SOURCE,
+                   ttl=c.TRACEROUTE_TTL,
+                   timeout=c.TRACEROUTE_TIMEOUT,
+                   vrf=c.TRACEROUTE_VRF):
+
+        _HOP_ENTRY_PROBE = [
+            r'\s+',
+            r'(',  # beginning of host_name (ip_address) RTT group
+            r'(',  # beginning of host_name (ip_address) group only
+            r'([a-zA-Z0-9\.:-]*)',  # hostname
+            r'\s+',
+            r'\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
+            r')?',  # end of host_name (ip_address) group only
+            # also hostname/ip are optional -- they can or cannot be specified
+            # if not specified, means the current probe followed the same path as the previous
+            r'\s+',
+            r'(\d+\.\d+)\s+ms',  # RTT
+            r'|\*',  # OR *, when non responsive hop
+            r')'  # end of host_name (ip_address) RTT group
+        ]
+
+        _HOP_ENTRY = [
+            r'\s?',  # space before hop index?
+            r'(\d+)',  # hop index
+        ]
+
+        traceroute_result = {}
+        timeout = 5  # seconds
+        probes = 3  # 3 probes/jop and this cannot be changed on NXOS!
+
+        version = ''
+        try:
+            version = '6' if IPAddress(destination).version == 6 else ''
+        except AddrFormatError:
+            # Allow use of DNS names
+            pass
+
+        if source:
+            source_opt = 'source {source}'.format(source=source)
+            command = 'traceroute{version} {destination} {source_opt}'.format(
+                version=version,
+                destination=destination,
+                source_opt=source_opt)
+        else:
+            command = 'traceroute{version} {destination}'.format(
+                version=version,
+                destination=destination)
+
+        try:
+            traceroute_raw_output = self._send_command(command, raw_text=True)
+        except CommandErrorException:
+            return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
+
+        hop_regex = ''.join(_HOP_ENTRY + _HOP_ENTRY_PROBE * probes)
+        traceroute_result['success'] = {}
+        if traceroute_raw_output:
+            for line in traceroute_raw_output.splitlines():
+                hop_search = re.search(hop_regex, line)
+                if not hop_search:
+                    continue
+                hop_details = hop_search.groups()
+                hop_index = int(hop_details[0])
+                previous_probe_host_name = '*'
+                previous_probe_ip_address = '*'
+                traceroute_result['success'][hop_index] = {'probes': {}}
+                for probe_index in range(probes):
+                    host_name = hop_details[3 + probe_index * 5]
+                    ip_address_raw = hop_details[4 + probe_index * 5]
+                    ip_address = napalm.base.helpers.convert(
+                        napalm.base.helpers.ip, ip_address_raw, ip_address_raw)
+                    rtt = hop_details[5 + probe_index * 5]
+                    if rtt:
+                        rtt = float(rtt)
+                    else:
+                        rtt = timeout * 1000.0
+                    if not host_name:
+                        host_name = previous_probe_host_name
+                    if not ip_address:
+                        ip_address = previous_probe_ip_address
+                    if hop_details[1 + probe_index * 5] == '*':
+                        host_name = '*'
+                        ip_address = '*'
+                    traceroute_result['success'][hop_index]['probes'][probe_index + 1] = {
+                        'host_name': py23_compat.text_type(host_name),
+                        'ip_address': py23_compat.text_type(ip_address),
+                        'rtt': rtt
+                    }
+                    previous_probe_host_name = host_name
+                    previous_probe_ip_address = ip_address
+        return traceroute_result
+
+    def _get_checkpoint_file(self):
+        filename = 'temp_cp_file_from_napalm'
+        self._set_checkpoint(filename)
+        command = 'show file {}'.format(filename)
+        output = self._send_command(command, raw_text=True)
+        self._delete_file(filename)
+        return output
+
+    def _set_checkpoint(self, filename):
+        commands = ['terminal dont-ask', 'checkpoint file {}'.format(filename)]
+        self._send_command_list(commands)
+
     @staticmethod
     def _create_tmp_file(config):
         tmp_dir = tempfile.gettempdir()
@@ -280,6 +406,21 @@ class NXOSDriverBase(NetworkDriver):
         with open(filename, 'wt') as fobj:
             fobj.write(config)
         return filename
+
+    def get_config(self, retrieve='all'):
+        config = {
+            'startup': '',
+            'running': '',
+            'candidate': ''
+        }  # default values
+
+        if retrieve.lower() in ('running', 'all'):
+            command = 'show running-config'
+            config['running'] = py23_compat.text_type(self._send_command(command, raw_text=True))
+        if retrieve.lower() in ('startup', 'all'):
+            command = 'show startup-config'
+            config['startup'] = py23_compat.text_type(self._send_command(command, raw_text=True))
+        return config
 
 
 class NXOSDriver(NXOSDriverBase):
@@ -316,12 +457,16 @@ class NXOSDriver(NXOSDriverBase):
             self._delete_file(self.backup_file)
         self.device = None
 
-    def _send_command(self, command):
-        """Wrapper for CLI method in NX-API.
+    def _send_command(self, command, raw_text=False):
+        """
+        Wrapper for NX-API show method.
 
         Allows more code sharing between NX-API and SSH.
         """
-        return self.cli([command]).get(command)
+        return self.device.show(command, raw_text=raw_text)
+
+    def _send_command_list(self, commands):
+        self.device.config_list(commands)
 
     @staticmethod
     def _compute_timestamp(stupid_cisco_output):
@@ -408,34 +553,11 @@ class NXOSDriver(NXOSDriverBase):
         json_output = self.device.show(command)
         return self._get_reply_table(json_output, table_name, row_name)
 
-    def _send_command_list(self, commands):
-        self.device.config_list(commands)
-
     def is_alive(self):
         if self.device:
             return {'is_alive': True}
         else:
             return {'is_alive': False}
-
-    def _get_diff(self, cp_file):
-        """Get a diff between running config and a proposed file."""
-        diff = []
-        self._create_sot_file()
-        diff_out = self.device.show(
-            'show diff rollback-patch file {0} file {1}'.format(
-                'sot_file', self.replace_file.split('/')[-1]), raw_text=True)
-        try:
-            diff_out = diff_out.split(
-                'Generating Rollback Patch')[1].replace(
-                'Rollback Patch is Empty', '').strip()
-            for line in diff_out.splitlines():
-                if line:
-                    if line[0].strip() != '!':
-                        diff.append(line.rstrip(' '))
-        except (AttributeError, KeyError):
-            raise ReplaceConfigException(
-                'Could not calculate diff. It\'s possible the given file doesn\'t exist.')
-        return '\n'.join(diff)
 
     def _copy_run_start(self, filename='startup-config'):
         results = self.device.save(filename=filename)
@@ -620,17 +742,6 @@ class NXOSDriver(NXOSDriverBase):
                 vrf_name = 'global'
             results[vrf_name] = result_vrf_dict
         return results
-
-    def _set_checkpoint(self, filename):
-        commands = ['terminal dont-ask', 'checkpoint file {0}'.format(filename)]
-        self.device.config_list(commands)
-
-    def _get_checkpoint_file(self):
-        filename = 'temp_cp_file_from_napalm'
-        self._set_checkpoint(filename)
-        cp_out = self.device.show('show file {0}'.format(filename), raw_text=True)
-        self._delete_file(filename)
-        return cp_out
 
     def get_lldp_neighbors_detail(self, interface=''):
         lldp_neighbors = {}
@@ -1009,109 +1120,3 @@ class NXOSDriver(NXOSDriverBase):
                     continue
                 users[username]['sshkeys'].append(py23_compat.text_type(sshkeyvalue))
         return users
-
-    def traceroute(self,
-                   destination,
-                   source=c.TRACEROUTE_SOURCE,
-                   ttl=c.TRACEROUTE_TTL,
-                   timeout=c.TRACEROUTE_TIMEOUT,
-                   vrf=c.TRACEROUTE_VRF):
-        _HOP_ENTRY_PROBE = [
-            r'\s+',
-            r'(',  # beginning of host_name (ip_address) RTT group
-            r'(',  # beginning of host_name (ip_address) group only
-            r'([a-zA-Z0-9\.:-]*)',  # hostname
-            r'\s+',
-            r'\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
-            r')?',  # end of host_name (ip_address) group only
-            # also hostname/ip are optional -- they can or cannot be specified
-            # if not specified, means the current probe followed the same path as the previous
-            r'\s+',
-            r'(\d+\.\d+)\s+ms',  # RTT
-            r'|\*',  # OR *, when non responsive hop
-            r')'  # end of host_name (ip_address) RTT group
-        ]
-
-        _HOP_ENTRY = [
-            r'\s?',  # space before hop index?
-            r'(\d+)',  # hop index
-        ]
-
-        traceroute_result = {}
-        timeout = 5  # seconds
-        probes = 3  # 3 probes/jop and this cannot be changed on NXOS!
-
-        version = ''
-        try:
-            version = '6' if IPAddress(destination).version == 6 else ''
-        except AddrFormatError:
-            return {'error': 'Destination doest not look like a valid IP Address: {}'.format(
-                destination)}
-
-        source_opt = ''
-        if source:
-            source_opt = 'source {source}'.format(source=source)
-
-        command = 'traceroute{version} {destination} {source_opt}'.format(
-            version=version,
-            destination=destination,
-            source_opt=source_opt
-        )
-
-        try:
-            traceroute_raw_output = self.cli([command]).get(command)
-        except CommandErrorException:
-            return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
-
-        hop_regex = ''.join(_HOP_ENTRY + _HOP_ENTRY_PROBE * probes)
-        traceroute_result['success'] = {}
-        if traceroute_raw_output:
-            for line in traceroute_raw_output.splitlines():
-                hop_search = re.search(hop_regex, line)
-                if not hop_search:
-                    continue
-                hop_details = hop_search.groups()
-                hop_index = int(hop_details[0])
-                previous_probe_host_name = '*'
-                previous_probe_ip_address = '*'
-                traceroute_result['success'][hop_index] = {'probes': {}}
-                for probe_index in range(probes):
-                    host_name = hop_details[3 + probe_index * 5]
-                    ip_address_raw = hop_details[4 + probe_index * 5]
-                    ip_address = napalm.base.helpers.convert(
-                        napalm.base.helpers.ip, ip_address_raw, ip_address_raw)
-                    rtt = hop_details[5 + probe_index * 5]
-                    if rtt:
-                        rtt = float(rtt)
-                    else:
-                        rtt = timeout * 1000.0
-                    if not host_name:
-                        host_name = previous_probe_host_name
-                    if not ip_address:
-                        ip_address = previous_probe_ip_address
-                    if hop_details[1 + probe_index * 5] == '*':
-                        host_name = '*'
-                        ip_address = '*'
-                    traceroute_result['success'][hop_index]['probes'][probe_index + 1] = {
-                        'host_name': py23_compat.text_type(host_name),
-                        'ip_address': py23_compat.text_type(ip_address),
-                        'rtt': rtt
-                    }
-                    previous_probe_host_name = host_name
-                    previous_probe_ip_address = ip_address
-        return traceroute_result
-
-    def get_config(self, retrieve='all'):
-        config = {
-            'startup': '',
-            'running': '',
-            'candidate': ''
-        }  # default values
-
-        if retrieve.lower() in ('running', 'all'):
-            _cmd = 'show running-config'
-            config['running'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
-        if retrieve.lower() in ('startup', 'all'):
-            _cmd = 'show startup-config'
-            config['startup'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
-        return config
