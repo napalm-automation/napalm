@@ -379,9 +379,18 @@ class NXOSSSHDriver(NXOSDriverBase):
     def close(self):
         self._netmiko_close()
 
-    def _send_command(self, command):
-        """Wrapper for Netmiko's send_command method."""
+    def _send_command(self, command, raw_text=False):
+        """
+        Wrapper for Netmiko's send_command method.
+    
+        raw_text argument is not used and is for code sharing with NX-API.
+        """
         return self.device.send_command(command)
+
+    def _send_command_list(self, commands):
+        """Wrapper for Netmiko's send_command method (for list of commands."""
+        for command in commands:
+            self._send_command(command)
 
     @staticmethod
     def parse_uptime(uptime_str):
@@ -420,7 +429,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 return {'is_alive': False}
             else:
                 # Try sending ASCII null byte to maintain the connection alive
-                self.device.send_command(null)
+                self._send_command(null)
         except (socket.error, EOFError):
             # If unable to send, we can tell for sure that the connection is unusable,
             # hence return False.
@@ -429,75 +438,10 @@ class NXOSSSHDriver(NXOSDriverBase):
             'is_alive': self.device.remote_conn.transport.is_active()
         }
 
-    def load_merge_candidate(self, filename=None, config=None):
-        self.replace = False
-        self.loaded = True
-
-        if not filename and not config:
-            raise MergeConfigException('filename or config param must be provided.')
-
-        self.merge_candidate += '\n'  # insert one extra line
-        if filename is not None:
-            with open(filename, "r") as f:
-                self.merge_candidate += f.read()
-        else:
-            self.merge_candidate += config
-
-    def _create_sot_file(self):
-        """Create Source of Truth file to compare."""
-        commands = ['terminal dont-ask', 'checkpoint file sot_file']
-        self._send_config_commands(commands)
-
-    def _get_diff(self):
-        """Get a diff between running config and a proposed file."""
-        diff = []
-        self._create_sot_file()
-        command = ('show diff rollback-patch file {0} file {1}'.format(
-                   'sot_file', self.replace_file.split('/')[-1]))
-        diff_out = self.device.send_command(command)
-        try:
-            diff_out = diff_out.split(
-                'Generating Rollback Patch')[1].replace(
-                    'Rollback Patch is Empty', '').strip()
-            for line in diff_out.splitlines():
-                if line:
-                    if line[0].strip() != '!' and line[0].strip() != '.':
-                        diff.append(line.rstrip(' '))
-        except (AttributeError, KeyError):
-            raise ReplaceConfigException(
-                'Could not calculate diff. It\'s possible the given file doesn\'t exist.')
-        return '\n'.join(diff)
-
-    def _get_merge_diff(self):
-        diff = []
-        running_config = self.get_config(retrieve='running')['running']
-        running_lines = running_config.splitlines()
-        for line in self.merge_candidate.splitlines():
-            if line not in running_lines and line:
-                if line[0].strip() != '!':
-                    diff.append(line)
-        return '\n'.join(diff)
-        # the merge diff is not necessarily what needs to be loaded
-        # for example under NTP, as the `ntp commit` command might be
-        # alread configured, it is mandatory to be sent
-        # otherwise it won't take the new configuration - see #59
-        # https://github.com/napalm-automation/napalm-nxos/issues/59
-        # therefore this method will return the real diff
-        # but the merge_candidate will remain unchanged
-        # previously: self.merge_candidate = '\n'.join(diff)
-
-    def compare_config(self):
-        if self.loaded:
-            if not self.replace:
-                return self._get_merge_diff()
-                # return self.merge_candidate
-            diff = self._get_diff()
-            return diff
-        return ''
-
     def _copy_run_start(self, filename='startup-config'):
+        
         command = 'copy run {}'.format(filename)
-        output = self.device.send_command(command)
+        output = self._send_command(command)
         if 'complete' in output.lower():
             return True
         else:
@@ -522,16 +466,15 @@ class NXOSSSHDriver(NXOSDriverBase):
             'checkpoint file {}'.format(filename),
             'no terminal dont-ask',
         ]
-        for command in commands:
-            self.device.send_command(command)
+        self._send_command_list(commands)
 
     def _disable_confirmation(self):
-        self._send_config_commands(['terminal dont-ask'])
+        self._send_command_list(['terminal dont-ask'])
 
     def _load_cfg_from_checkpoint(self):
-        command = 'rollback running file {0}'.format(self.replace_file.split('/')[-1])
+        command = 'rollback running file {}'.format(self.replace_file.split('/')[-1])
         self._disable_confirmation()
-        rollback_result = self.device.send_command(command)
+        rollback_result = self._send_command(command)
         if 'Rollback failed.' in rollback_result or 'ERROR' in rollback_result:
             raise ReplaceConfigException(rollback_result)
         elif rollback_result == []:
@@ -543,8 +486,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             'delete {}'.format(filename),
             'no terminal dont-ask'
         ]
-        for command in commands:
-            self.device.send_command(command)
+        self._send_command_list(commands)
 
     def discard_config(self):
         if self.loaded:
@@ -556,7 +498,7 @@ class NXOSSSHDriver(NXOSDriverBase):
     def rollback(self):
         if self.changed:
             command = 'rollback running-config file {}'.format(self.backup_file)
-            result = self.device.send_command(command)
+            result = self._send_command(command)
             if 'completed' not in result.lower():
                 raise ReplaceConfigException(result)
             self._copy_run_start()
@@ -585,10 +527,10 @@ class NXOSSSHDriver(NXOSDriverBase):
         serial_number, fqdn, os_version, hostname, domain_name, model = ('',) * 6
 
         # obtain output from device
-        show_ver = self.device.send_command('show version')
-        show_hosts = self.device.send_command('show hosts')
-        show_int_status = self.device.send_command('show interface status')
-        show_hostname = self.device.send_command('show hostname')
+        show_ver = self._send_command('show version')
+        show_hosts = self._send_command('show hosts')
+        show_int_status = self._send_command('show interface status')
+        show_hostname = self._send_command('show hostname')
 
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
@@ -683,7 +625,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         """
         interfaces = {}
         command = 'show interface'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
         if not output:
             return {}
 
@@ -721,7 +663,7 @@ class NXOSSSHDriver(NXOSDriverBase):
     def get_lldp_neighbors(self):
         results = {}
         command = 'show lldp neighbors'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
         lldp_neighbors = napalm.base.helpers.textfsm_extractor(
                             self, 'lldp_neighbors', output)
 
@@ -769,7 +711,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         # get summary output from device
         cmd_bgp_all_sum = 'show bgp all summary vrf all'
-        bgp_summary_output = self.device.send_command(cmd_bgp_all_sum).strip()
+        bgp_summary_output = self._send_command(cmd_bgp_all_sum).strip()
 
         section_separator = r"BGP summary information for "
         bgp_summary_sections = re.split(section_separator, bgp_summary_output)
@@ -784,22 +726,6 @@ class NXOSSSHDriver(NXOSDriverBase):
         # FIX -- need to merge IPv6 and IPv4 AFI for same neighbor
         return bgp_dict
 
-    def _send_config_commands(self, commands):
-        for command in commands:
-            self.device.send_command(command)
-
-    def _set_checkpoint(self, filename):
-        commands = ['terminal dont-ask', 'checkpoint file {0}'.format(filename)]
-        self._send_config_commands(commands)
-
-    def _get_checkpoint_file(self):
-        filename = 'temp_cp_file_from_napalm'
-        self._set_checkpoint(filename)
-        command = 'show file {0}'.format(filename)
-        output = self.device.send_command(command)
-        self._delete_file(filename)
-        return output
-
     def get_lldp_neighbors_detail(self, interface=''):
         lldp_neighbors = {}
         filter = ''
@@ -809,7 +735,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         command = 'show lldp neighbors {filter}detail'.format(filter=filter)
         # seems that some old devices may not return JSON output...
 
-        output = self.device.send_command(command)
+        output = self._send_command(command)
         # thus we need to take the raw text output
         lldp_neighbors_list = output.splitlines()
 
@@ -885,7 +811,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             raise TypeError('Please enter a valid list of commands!')
 
         for command in commands:
-            output = self.device.send_command(command)
+            output = self._send_command(command)
             cli_output[py23_compat.text_type(command)] = output
         return cli_output
 
@@ -918,7 +844,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         arp_table = []
 
         command = 'show ip arp vrf default | exc INCOMPLETE'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
 
         separator = r"^Address\s+Age.*Interface.*$"
         arp_list = re.split(separator, output, flags=re.M)
@@ -964,7 +890,7 @@ class NXOSSSHDriver(NXOSDriverBase):
     def _get_ntp_entity(self, peer_type):
         ntp_entities = {}
         command = 'show ntp peers'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
 
         for line in output.splitlines():
             # Skip first two lines and last line of command output
@@ -987,7 +913,7 @@ class NXOSSSHDriver(NXOSDriverBase):
     def __get_ntp_stats(self):
         ntp_stats = []
         command = 'show ntp peer-status'
-        output = self.device.send_command(command) # noqa
+        output = self._send_command(command) # noqa
         return ntp_stats
 
     def get_interfaces_ip(self):
@@ -1023,8 +949,8 @@ class NXOSSSHDriver(NXOSDriverBase):
         interfaces_ip = {}
         ipv4_command = 'show ip interface vrf default'
         ipv6_command = 'show ipv6 interface vrf default'
-        output_v4 = self.device.send_command(ipv4_command)
-        output_v6 = self.device.send_command(ipv6_command)
+        output_v4 = self._send_command(ipv4_command)
+        output_v6 = self._send_command(ipv6_command)
 
         v4_interfaces = {}
         for line in output_v4.splitlines():
@@ -1117,7 +1043,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         mac_address_table = []
         command = 'show mac address-table'
-        output = self.device.send_command(command) # noqa
+        output = self._send_command(command) # noqa
 
         def remove_prefix(s, prefix):
             return s[len(prefix):] if s.startswith(prefix) else s
@@ -1203,7 +1129,7 @@ class NXOSSSHDriver(NXOSDriverBase):
     def get_snmp_information(self):
         snmp_information = {}
         command = 'show running-config'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
         snmp_config = napalm.base.helpers.textfsm_extractor(self, 'snmp_config', output)
 
         if not snmp_config:
@@ -1256,7 +1182,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         users = {}
         command = 'show running-config'
-        output = self.device.send_command(command)
+        output = self._send_command(command)
         section_username_tabled_output = napalm.base.helpers.textfsm_extractor(
             self, 'users', output)
 
@@ -1341,7 +1267,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 destination=destination)
 
         try:
-            traceroute_raw_output = self.device.send_command(command)
+            traceroute_raw_output = self._send_command(command)
         except CommandErrorException:
             return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
 
@@ -1392,8 +1318,8 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         if retrieve.lower() in ('running', 'all'):
             command = 'show running-config'
-            config['running'] = py23_compat.text_type(self.device.send_command(command))
+            config['running'] = py23_compat.text_type(self._send_command(command))
         if retrieve.lower() in ('startup', 'all'):
             command = 'show startup-config'
-            config['startup'] = py23_compat.text_type(self.device.send_command(command))
+            config['startup'] = py23_compat.text_type(self._send_command(command))
         return config

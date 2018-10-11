@@ -100,6 +100,46 @@ class NXOSDriverBase(NetworkDriver):
         if config and os.path.isfile(tmp_file):
             os.remove(tmp_file)
 
+    def load_merge_candidate(self, filename=None, config=None):
+        self.replace = False
+        self.loaded = True
+
+        if not filename and not config:
+            raise MergeConfigException('filename or config param must be provided.')
+
+        self.merge_candidate += '\n'  # insert one extra line
+        if filename is not None:
+            with open(filename, "r") as f:
+                self.merge_candidate += f.read()
+        else:
+            self.merge_candidate += config
+
+    def _get_merge_diff(self):
+        diff = []
+        running_config = self.get_config(retrieve='running')['running']
+        running_lines = running_config.splitlines()
+        for line in self.merge_candidate.splitlines():
+            if line not in running_lines and line:
+                if line[0].strip() != '!':
+                    diff.append(line)
+        return '\n'.join(diff)
+        # the merge diff is not necessarily what needs to be loaded
+        # for example under NTP, as the `ntp commit` command might be
+        # alread configured, it is mandatory to be sent
+        # otherwise it won't take the new configuration - see #59
+        # https://github.com/napalm-automation/napalm-nxos/issues/59
+        # therefore this method will return the real diff
+        # but the merge_candidate will remain unchanged
+        # previously: self.merge_candidate = '\n'.join(diff)
+
+    def compare_config(self):
+        if self.loaded:
+            if not self.replace:
+                return self._get_merge_diff()
+            diff = self._get_diff()
+            return diff
+        return ''
+
     def commit_config(self, message=""):
         if message:
             raise NotImplementedError('Commit message not implemented for this platform')
@@ -117,6 +157,11 @@ class NXOSDriverBase(NetworkDriver):
             self.loaded = False
         else:
             raise ReplaceConfigException('No config loaded.')
+
+    def _create_sot_file(self):
+        """Create Source of Truth file to compare."""
+        commands = ['terminal dont-ask', 'checkpoint file sot_file']
+        self._send_command_list(commands)
 
     def ping(self,
              destination,
@@ -363,30 +408,14 @@ class NXOSDriver(NXOSDriverBase):
         json_output = self.device.show(command)
         return self._get_reply_table(json_output, table_name, row_name)
 
+    def _send_command_list(self, commands):
+        self.device.config_list(commands)
+
     def is_alive(self):
         if self.device:
             return {'is_alive': True}
         else:
             return {'is_alive': False}
-
-    def load_merge_candidate(self, filename=None, config=None):
-        self.replace = False
-        self.loaded = True
-
-        if not filename and not config:
-            raise MergeConfigException('filename or config param must be provided.')
-
-        self.merge_candidate += '\n'  # insert one extra line
-        if filename is not None:
-            with open(filename, "r") as f:
-                self.merge_candidate += f.read()
-        else:
-            self.merge_candidate += config
-
-    def _create_sot_file(self):
-        """Create Source of Truth file to compare."""
-        commands = ['terminal dont-ask', 'checkpoint file sot_file']
-        self.device.config_list(commands)
 
     def _get_diff(self, cp_file):
         """Get a diff between running config and a proposed file."""
@@ -407,33 +436,6 @@ class NXOSDriver(NXOSDriverBase):
             raise ReplaceConfigException(
                 'Could not calculate diff. It\'s possible the given file doesn\'t exist.')
         return '\n'.join(diff)
-
-    def _get_merge_diff(self):
-        diff = []
-        running_config = self.get_config(retrieve='running')['running']
-        running_lines = running_config.splitlines()
-        for line in self.merge_candidate.splitlines():
-            if line not in running_lines and line:
-                if line[0].strip() != '!':
-                    diff.append(line)
-        return '\n'.join(diff)
-        # the merge diff is not necessarily what needs to be loaded
-        # for example under NTP, as the `ntp commit` command might be
-        # alread configured, it is mandatory to be sent
-        # otherwise it won't take the new configuration - see #59
-        # https://github.com/napalm-automation/napalm-nxos/issues/59
-        # therefore this method will return the real diff
-        # but the merge_candidate will remain unchanged
-        # previously: self.merge_candidate = '\n'.join(diff)
-
-    def compare_config(self):
-        if self.loaded:
-            if not self.replace:
-                return self._get_merge_diff()
-                # return self.merge_candidate
-            diff = self._get_diff(self.fc.dst)
-            return diff
-        return ''
 
     def _copy_run_start(self, filename='startup-config'):
         results = self.device.save(filename=filename)
