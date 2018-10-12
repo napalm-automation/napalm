@@ -128,6 +128,7 @@ ____________________________________
 * :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`use_keys` (ios, iosxr, nxos_ssh) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
 * :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
+* :code:`verify` (nxos) - Requests argument, enable the SSL certificates verification. See requests ssl-cert-verification for valide values (default: ``None`` equivalent to ``False``).
 
 The transport argument
 ______________________
