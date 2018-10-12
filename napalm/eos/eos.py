@@ -93,7 +93,8 @@ class EOSDriver(NetworkDriver):
 
         self.enablepwd = optional_args.get('enable_password', '')
 
-        self.profile = ["eos"]
+        self.platform = "eos"
+        self.profile = [self.platform]
 
         self.eos_autoComplete = optional_args.get('eos_autoComplete', None)
 

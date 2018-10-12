@@ -51,13 +51,16 @@ def ensure_netmiko_conn(func):
             if netmiko_object is None:
                 raise AttributeError()
         except AttributeError:
-            device_type = c.NETMIKO_MAP(self.profile[0])
+            device_type = c.NETMIKO_MAP[self.platform]
+            netmiko_optional_args=self.netmiko_optional_args
+            if 'port' in netmiko_optional_args:
+                netmiko_optional_args['port'] = 22
             self._netmiko_open(
                 device_type=device_type,
-                netmiko_optional_args=self.netmiko_optional_args,
+                netmiko_optional_args=netmiko_optional_args,
             )
             func(self, *args, **kwargs)
-        return wrap_function
+    return wrap_function
 
 
 class NXOSDriverBase(NetworkDriver):
@@ -413,7 +416,20 @@ class NXOSDriverBase(NetworkDriver):
         return output
 
     def _set_checkpoint(self, filename):
-        commands = ['terminal dont-ask', 'checkpoint file {}'.format(filename)]
+        commands = [
+            'terminal dont-ask', 
+            'checkpoint file {}'.format(filename),
+            'no terminal dont-ask',
+        ]
+        self._send_command_list(commands)
+
+    def _save_to_checkpoint(self, filename):
+        """Save the current running config to the given file."""
+        commands = [
+            "terminal dont-ask",
+            'checkpoint file {}'.format(filename),
+            'no terminal dont-ask',
+        ]
         self._send_command_list(commands)
 
     @staticmethod
@@ -457,7 +473,7 @@ class NXOSDriver(NXOSDriverBase):
         # For file copy
         self.fc = None
         self.up = False
-        self.profile = ['nxos']
+        self.platform = 'nxos'
 
     def open(self):
         try:
@@ -594,11 +610,6 @@ class NXOSDriver(NXOSDriverBase):
             raise MergeConfigException(str(e))
         # clear the merge buffer
         self.merge_candidate = ''
-
-    def _save_to_checkpoint(self, filename):
-        """Save the current running config to the given file."""
-        command = 'checkpoint file {}'.format(filename)
-        self.device.show(command, raw_text=True)
 
     def _disable_confirmation(self):
         self.device.config('terminal dont-ask')

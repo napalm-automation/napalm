@@ -371,7 +371,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         super().__init__(hostname, username, password, timeout=timeout, optional_args=optional_args)
-        self.profile = ['nxos_ssh']
+        self.platform = 'nxos_ssh'
 
     def open(self):
         self.device = self._netmiko_open(
@@ -461,15 +461,6 @@ class NXOSSSHDriver(NXOSDriverBase):
             raise MergeConfigException('Error while applying config!')
         # clear the merge buffer
         self.merge_candidate = ''
-
-    def _save_to_checkpoint(self, filename):
-        """Save the current running config to the given file."""
-        commands = [
-            "terminal dont-ask",
-            'checkpoint file {}'.format(filename),
-            'no terminal dont-ask',
-        ]
-        self._send_command_list(commands)
 
     def _disable_confirmation(self):
         self._send_command_list(['terminal dont-ask'])
