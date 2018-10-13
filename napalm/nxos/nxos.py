@@ -141,6 +141,16 @@ class NXOSDriverBase(NetworkDriver):
         else:
             self.merge_candidate += config
 
+    def _commit_merge(self):
+        try:
+            output = self._send_config(self.merge_candidate)
+        except Exception as e:
+            raise MergeConfigException(str(e))
+        if output and 'Invalid command' in output:
+            raise MergeConfigException('Error while applying config!')
+        # clear the merge buffer
+        self.merge_candidate = ''
+
     def _get_merge_diff(self):
         diff = []
         running_config = self.get_config(retrieve='running')['running']
@@ -192,7 +202,7 @@ class NXOSDriverBase(NetworkDriver):
         """
         Pattern (replace)
         Make a backup into self.rollback_cfg
-        Load new configuration from self.candidate_config
+        Load new configuration from self.candidate_cfg
         Save the config
         Set self.changed and unset self.loaded
         """
@@ -454,6 +464,9 @@ class NXOSDriverBase(NetworkDriver):
             fobj.write(config)
         return filename
 
+    def _disable_confirmation(self):
+        self._send_command_list(['terminal dont-ask'])
+
     def get_config(self, retrieve='all'):
         config = {
             'startup': '',
@@ -483,9 +496,6 @@ class NXOSDriver(NXOSDriverBase):
         elif self.transport == 'http':
             self.port = optional_args.get('port', 80)
 
-        # For file copy
-        self.fc = None
-        self.up = False
         self.platform = 'nxos'
 
     def open(self):
@@ -497,7 +507,6 @@ class NXOSDriver(NXOSDriverBase):
                                      port=self.port,
                                      transport=self.transport)
             self.device.show('show hostname')
-            self.up = True
         except (CLIError, ValueError):
             # unable to open connection
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
@@ -514,6 +523,12 @@ class NXOSDriver(NXOSDriverBase):
         return self.device.show(command, raw_text=raw_text)
 
     def _send_command_list(self, commands):
+        return self.device.config_list(commands)
+
+    def _send_config(self, commands):
+        if isinstance(commands, py23_compat.string_types):
+            # Has to be a list generator and not generator expression (not JSON serializable)
+            commands = [command for command in commands.splitlines() if command]
         self.device.config_list(commands)
 
     @staticmethod
@@ -607,34 +622,32 @@ class NXOSDriver(NXOSDriverBase):
         else:
             return {'is_alive': False}
 
-    def _copy_run_start(self, filename='startup-config'):
-        results = self.device.save(filename=filename)
+    def _copy_run_start(self):
+        results = self.device.save(filename='startup-config')
         if not results:
             msg = 'Unable to save running-config to {}!'.format(filename)
             raise CommandErrorException(msg)
 
-    def _commit_merge(self):
-        try:
-            commands = [command for command in self.merge_candidate.splitlines() if command]
-            self.device.config_list(commands)
-        except Exception as e:
-            raise MergeConfigException(str(e))
-        # clear the merge buffer
-        self.merge_candidate = ''
-
-    def _disable_confirmation(self):
-        self.device.config('terminal dont-ask')
-
     def _load_cfg_from_checkpoint(self):
-        cmd = 'rollback running-config file {}'.format(self.candidate_cfg)
-        self._disable_confirmation()
-        try:
-            rollback_result = self.device.config(cmd)
-        except ConnectionError:
-            # requests will raise an error with verbose warning output (don't fail on this).
-            return
-        if 'Rollback failed.' in rollback_result['msg'] or 'ERROR' in rollback_result:
-            raise ReplaceConfigException(rollback_result['msg'])
+         commands = ['terminal dont-ask',
+                     'rollback running-config file {}'.format(self.candidate_cfg),
+                     'no terminal dont-ask',]
+         try:
+             rollback_result = self._send_command_list(commands)
+         except ConnectionError:
+             # requests will raise an error with verbose warning output (don't fail on this).
+             return
+
+         # For nx-api a list is returned so extract the result associated with the
+         # 'rollback' command.
+         rollback_result = rollback_result[1]
+         msg = rollback_result.get('msg') if rollback_result.get('msg') else rollback_result
+         error_msg = True if rollback_result.get('error') else False
+
+         if 'Rollback failed.' in msg or error_msg:
+             raise ReplaceConfigException(msg)
+         elif rollback_result == []:
+             raise ReplaceConfigException
 
     def _delete_file(self, filename):
         commands = ['terminal dont-ask',
@@ -647,7 +660,7 @@ class NXOSDriver(NXOSDriverBase):
             self.merge_candidate = ''  # clear the buffer
         if self.loaded and self.replace:
             try:
-                self._delete_file(self.candidate_config)
+                self._delete_file(self.candidate_cfg)
             except CLIError:
                 pass
         self.loaded = False

@@ -392,8 +392,15 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def _send_command_list(self, commands):
         """Wrapper for Netmiko's send_command method (for list of commands."""
+        output = ''
         for command in commands:
-            self._send_command(command)
+            output += self.device.send_command(command, strip_prompt=False, strip_command=False)
+        return output
+
+    def _send_config(self, commands):
+        if isinstance(commands, py23_compat.string_types):
+            commands = (command for command in commands.splitlines() if command)
+        self.device.send_config_set(commands)
 
     @staticmethod
     def parse_uptime(uptime_str):
@@ -441,38 +448,23 @@ class NXOSSSHDriver(NXOSDriverBase):
             'is_alive': self.device.remote_conn.transport.is_active()
         }
 
-    def _copy_run_start(self, filename='startup-config'):
+    def _copy_run_start(self):
 
-        command = 'copy run {}'.format(filename)
-        output = self._send_command(command)
+        output = self.device.save_config()
         if 'complete' in output.lower():
             return True
         else:
             msg = 'Unable to save running-config to {}!'.format(filename)
             raise CommandErrorException(msg)
 
-    def _commit_merge(self):
-        try:
-            commands = (command for command in self.merge_candidate.splitlines() if command)
-            output = self.device.send_config_set(commands)
-        except Exception as e:
-            raise MergeConfigException(str(e))
-        if 'Invalid command' in output:
-            raise MergeConfigException('Error while applying config!')
-        # clear the merge buffer
-        self.merge_candidate = ''
-
-    def _disable_confirmation(self):
-        self._send_command_list(['terminal dont-ask'])
-
     def _load_cfg_from_checkpoint(self):
-        command = 'rollback running file {}'.format(self.candidate_cfg)
-        self._disable_confirmation()
-        rollback_result = self._send_command(command)
-        if 'Rollback failed.' in rollback_result or 'ERROR' in rollback_result:
-            raise ReplaceConfigException(rollback_result)
-        elif rollback_result == []:
-            raise ReplaceConfigException
+         commands = ['terminal dont-ask',
+                     'rollback running-config file {}'.format(self.candidate_cfg),
+                     'no terminal dont-ask',]
+         rollback_result = self._send_command_list(commands)
+         msg = rollback_result
+         if 'Rollback failed.' in msg:
+             raise ReplaceConfigException(msg)
 
     def _delete_file(self, filename):
         commands = [
@@ -486,7 +478,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         if self.loaded:
             self.merge_candidate = ''  # clear the buffer
         if self.loaded and self.replace:
-            self._delete_file(self.replace_file)
+            self._delete_file(self.candidate_cfg)
         self.loaded = False
 
     def rollback(self):
