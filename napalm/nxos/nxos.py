@@ -227,7 +227,7 @@ class NXOSDriverBase(NetworkDriver):
         # (over 12 minutes); so just delete the sot_file
         try:
             self._delete_file(filename="sot_file")
-        except Expection:
+        except Exception:
             pass
         commands = ['terminal dont-ask', 'checkpoint file sot_file', 'no terminal dont-ask']
         self._send_command_list(commands)
