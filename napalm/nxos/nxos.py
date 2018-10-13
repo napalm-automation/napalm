@@ -85,15 +85,6 @@ class NXOSDriverBase(NetworkDriver):
 
     @ensure_netmiko_conn
     def load_replace_candidate(self, filename=None, config=None):
-        """
-        Pattern
-
-        Transfer source file (filename or if config, filename is created as tmp file
-        Dest file is self.candidate_cfg
-        self.replace set to True
-        self.loaded set to True
-        Deletes tmp_file
-        """
 
         if not filename and not config:
             raise ReplaceConfigException('filename or config parameter must be provided.')
@@ -199,13 +190,6 @@ class NXOSDriverBase(NetworkDriver):
         return ''
 
     def commit_config(self, message=""):
-        """
-        Pattern (replace)
-        Make a backup into self.rollback_cfg
-        Load new configuration from self.candidate_cfg
-        Save the config
-        Set self.changed and unset self.loaded
-        """
         if message:
             raise NotImplementedError('Commit message not implemented for this platform')
         if self.loaded:
