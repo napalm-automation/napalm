@@ -534,7 +534,7 @@ class NXOSDriver(NXOSDriverBase):
         if isinstance(commands, py23_compat.string_types):
             # Has to be a list generator and not generator expression (not JSON serializable)
             commands = [command for command in commands.splitlines() if command]
-        self.device.config_list(commands)
+        return self.device.config_list(commands)
 
     @staticmethod
     def _compute_timestamp(stupid_cisco_output):

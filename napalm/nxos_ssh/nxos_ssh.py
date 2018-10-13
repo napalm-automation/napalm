@@ -399,7 +399,7 @@ class NXOSSSHDriver(NXOSDriverBase):
     def _send_config(self, commands):
         if isinstance(commands, py23_compat.string_types):
             commands = (command for command in commands.splitlines() if command)
-        self.device.send_config_set(commands)
+        return self.device.send_config_set(commands)
 
     @staticmethod
     def parse_uptime(uptime_str):
