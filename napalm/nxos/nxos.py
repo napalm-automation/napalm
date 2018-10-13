@@ -159,13 +159,13 @@ class NXOSDriverBase(NetworkDriver):
         # but the merge_candidate will remain unchanged
         # previously: self.merge_candidate = '\n'.join(diff)
 
-    def _get_diff(self, cp_file):
+    def _get_diff(self):
         """Get a diff between running config and a proposed file."""
         diff = []
         self._create_sot_file()
         diff_out = self._send_command(
             'show diff rollback-patch file {} file {}'.format(
-                'sot_file', self.candidate_cfg))
+                'sot_file', self.candidate_cfg), raw_text=True)
         try:
             diff_out = diff_out.split(
                 'Generating Rollback Patch')[1].replace(
