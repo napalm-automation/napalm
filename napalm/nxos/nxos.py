@@ -45,7 +45,7 @@ import napalm.base.constants as c
 
 def ensure_netmiko_conn(func):
     """Decorator that ensures Netmiko connection exists."""
-    def wrap_function(self, *args, **kwargs):
+    def wrap_function(self, filename=None, config=None):
         try:
             netmiko_object = self._netmiko_device
             if netmiko_object is None:
@@ -59,7 +59,7 @@ def ensure_netmiko_conn(func):
                 device_type=device_type,
                 netmiko_optional_args=netmiko_optional_args,
             )
-        func(self, *args, **kwargs)
+        func(self, filename=filename, config=config)
     return wrap_function
 
 
