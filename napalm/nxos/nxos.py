@@ -222,7 +222,14 @@ class NXOSDriverBase(NetworkDriver):
 
     def _create_sot_file(self):
         """Create Source of Truth file to compare."""
-        commands = ['terminal dont-ask', 'checkpoint file sot_file']
+
+        # Bug on on NX-OS 6.2.16 where overwriting sot_file would take exceptionally long time
+        # (over 12 minutes); so just delete the sot_file
+        try:
+            self._delete_file(filename="sot_file")
+        except Expection:
+            pass
+        commands = ['terminal dont-ask', 'checkpoint file sot_file', 'no terminal dont-ask']
         self._send_command_list(commands)
 
     def ping(self,
