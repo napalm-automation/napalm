@@ -223,6 +223,17 @@ class NXOSDriverBase(NetworkDriver):
         else:
             raise ReplaceConfigException('No config loaded.')
 
+    def discard_config(self):
+        if self.loaded:
+            # clear the buffer
+            self.merge_candidate = ''
+        if self.loaded and self.replace:
+            try:
+                self._delete_file(self.candidate_cfg)
+            except CLIError:
+                pass
+        self.loaded = False
+
     def _create_sot_file(self):
         """Create Source of Truth file to compare."""
         commands = ['terminal dont-ask', 'checkpoint file sot_file']
@@ -455,6 +466,14 @@ class NXOSDriverBase(NetworkDriver):
         ]
         self._send_command_list(commands)
 
+    def _delete_file(self, filename):
+        commands = [
+            'terminal dont-ask',
+            'delete {}'.format(filename),
+            'no terminal dont-ask'
+        ]
+        self._send_command_list(commands)
+
     @staticmethod
     def _create_tmp_file(config):
         tmp_dir = tempfile.gettempdir()
@@ -625,45 +644,29 @@ class NXOSDriver(NXOSDriverBase):
     def _copy_run_start(self):
         results = self.device.save(filename='startup-config')
         if not results:
-            msg = 'Unable to save running-config to {}!'.format(filename)
+            msg = 'Unable to save running-config to startup-config!'
             raise CommandErrorException(msg)
 
     def _load_cfg_from_checkpoint(self):
-         commands = ['terminal dont-ask',
-                     'rollback running-config file {}'.format(self.candidate_cfg),
-                     'no terminal dont-ask',]
-         try:
-             rollback_result = self._send_command_list(commands)
-         except ConnectionError:
-             # requests will raise an error with verbose warning output (don't fail on this).
-             return
-
-         # For nx-api a list is returned so extract the result associated with the
-         # 'rollback' command.
-         rollback_result = rollback_result[1]
-         msg = rollback_result.get('msg') if rollback_result.get('msg') else rollback_result
-         error_msg = True if rollback_result.get('error') else False
-
-         if 'Rollback failed.' in msg or error_msg:
-             raise ReplaceConfigException(msg)
-         elif rollback_result == []:
-             raise ReplaceConfigException
-
-    def _delete_file(self, filename):
         commands = ['terminal dont-ask',
-                    'delete {}'.format(filename),
+                    'rollback running-config file {}'.format(self.candidate_cfg),
                     'no terminal dont-ask']
-        self.device.show_list(commands, raw_text=True)
+        try:
+            rollback_result = self._send_command_list(commands)
+        except ConnectionError:
+            # requests will raise an error with verbose warning output (don't fail on this).
+            return
 
-    def discard_config(self):
-        if self.loaded:
-            self.merge_candidate = ''  # clear the buffer
-        if self.loaded and self.replace:
-            try:
-                self._delete_file(self.candidate_cfg)
-            except CLIError:
-                pass
-        self.loaded = False
+        # For nx-api a list is returned so extract the result associated with the
+        # 'rollback' command.
+        rollback_result = rollback_result[1]
+        msg = rollback_result.get('msg') if rollback_result.get('msg') else rollback_result
+        error_msg = True if rollback_result.get('error') else False
+
+        if 'Rollback failed.' in msg or error_msg:
+            raise ReplaceConfigException(msg)
+        elif rollback_result == []:
+            raise ReplaceConfigException
 
     def rollback(self):
         if self.changed:

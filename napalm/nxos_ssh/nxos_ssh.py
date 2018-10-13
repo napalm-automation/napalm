@@ -26,7 +26,6 @@ from netaddr import IPAddress
 # import NAPALM Base
 import napalm.base.helpers
 from napalm.base.utils import py23_compat
-from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.helpers import canonical_interface_name
@@ -454,32 +453,17 @@ class NXOSSSHDriver(NXOSDriverBase):
         if 'complete' in output.lower():
             return True
         else:
-            msg = 'Unable to save running-config to {}!'.format(filename)
+            msg = 'Unable to save running-config to startup-config!'
             raise CommandErrorException(msg)
 
     def _load_cfg_from_checkpoint(self):
-         commands = ['terminal dont-ask',
-                     'rollback running-config file {}'.format(self.candidate_cfg),
-                     'no terminal dont-ask',]
-         rollback_result = self._send_command_list(commands)
-         msg = rollback_result
-         if 'Rollback failed.' in msg:
-             raise ReplaceConfigException(msg)
-
-    def _delete_file(self, filename):
-        commands = [
-            'terminal dont-ask',
-            'delete {}'.format(filename),
-            'no terminal dont-ask'
-        ]
-        self._send_command_list(commands)
-
-    def discard_config(self):
-        if self.loaded:
-            self.merge_candidate = ''  # clear the buffer
-        if self.loaded and self.replace:
-            self._delete_file(self.candidate_cfg)
-        self.loaded = False
+        commands = ['terminal dont-ask',
+                    'rollback running-config file {}'.format(self.candidate_cfg),
+                    'no terminal dont-ask']
+        rollback_result = self._send_command_list(commands)
+        msg = rollback_result
+        if 'Rollback failed.' in msg:
+            raise ReplaceConfigException(msg)
 
     def rollback(self):
         if self.changed:
