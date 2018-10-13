@@ -466,7 +466,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         self._send_command_list(['terminal dont-ask'])
 
     def _load_cfg_from_checkpoint(self):
-        command = 'rollback running file {}'.format(self.replace_file.split('/')[-1])
+        command = 'rollback running file {}'.format(self.candidate_cfg)
         self._disable_confirmation()
         rollback_result = self._send_command(command)
         if 'Rollback failed.' in rollback_result or 'ERROR' in rollback_result:
@@ -491,7 +491,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def rollback(self):
         if self.changed:
-            command = 'rollback running-config file {}'.format(self.backup_file)
+            command = 'rollback running-config file {}'.format(self.rollback_cfg)
             result = self._send_command(command)
             if 'completed' not in result.lower():
                 raise ReplaceConfigException(result)

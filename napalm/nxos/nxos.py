@@ -59,7 +59,7 @@ def ensure_netmiko_conn(func):
                 device_type=device_type,
                 netmiko_optional_args=netmiko_optional_args,
             )
-            func(self, *args, **kwargs)
+        func(self, *args, **kwargs)
     return wrap_function
 
 
@@ -75,7 +75,6 @@ class NXOSDriverBase(NetworkDriver):
         self.replace = True
         self.loaded = False
         self.changed = False
-        self.replace_file = None
         self.merge_candidate = ''
         self.candidate_cfg = 'candidate_config.txt'
         self.merge_cfg = 'merge_config.txt'
@@ -97,12 +96,10 @@ class NXOSDriverBase(NetworkDriver):
             if not os.path.isfile(filename):
                 raise ReplaceConfigException("File {} not found".format(filename))
 
-        self.replace_file = filename
-
         try:
             transfer_result = file_transfer(
                 self._netmiko_device,
-                source_file=self.replace_file,
+                source_file=filename,
                 dest_file=self.candidate_cfg,
                 file_system=self._dest_file_system,
                 direction="put",
@@ -159,7 +156,7 @@ class NXOSDriverBase(NetworkDriver):
         self._create_sot_file()
         diff_out = self._send_command(
             'show diff rollback-patch file {} file {}'.format(
-                'sot_file', self.replace_file.split('/')[-1]), raw_text=True)
+                'sot_file', self.candidate_cfg))
         try:
             diff_out = diff_out.split(
                 'Generating Rollback Patch')[1].replace(
@@ -490,8 +487,6 @@ class NXOSDriver(NXOSDriverBase):
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
 
     def close(self):
-        if self.changed:
-            self._delete_file(self.backup_file)
         self.device = None
 
     def _send_command(self, command, raw_text=False):
@@ -615,7 +610,7 @@ class NXOSDriver(NXOSDriverBase):
         self.device.config('terminal dont-ask')
 
     def _load_cfg_from_checkpoint(self):
-        cmd = 'rollback running file {0}'.format(self.replace_file.split('/')[-1])
+        cmd = 'rollback running file {}'.format(self.candidate_cfg)
         self._disable_confirmation()
         try:
             rollback_result = self.device.config(cmd)
@@ -636,14 +631,14 @@ class NXOSDriver(NXOSDriverBase):
             self.merge_candidate = ''  # clear the buffer
         if self.loaded and self.replace:
             try:
-                self._delete_file(self.fc.dst)
+                self._delete_file(self.candidate_config)
             except CLIError:
                 pass
         self.loaded = False
 
     def rollback(self):
         if self.changed:
-            self.device.rollback(self.backup_file)
+            self.device.rollback(self.rollback_cfg)
             self._copy_run_start()
             self.changed = False
 
