@@ -199,7 +199,7 @@ class NXOSDriver(NXOSDriverBase):
         elif self.transport == 'http':
             self.port = optional_args.get('port', 80)
 
-        self.verify = optional_args.get('verify', False)
+        self.ssl_verify = optional_args.get('verify', False)
 
     def open(self):
         try:
@@ -209,7 +209,7 @@ class NXOSDriver(NXOSDriverBase):
                                      timeout=self.timeout,
                                      port=self.port,
                                      transport=self.transport,
-                                     verify=self.verify)
+                                     verify=self.ssl_verify)
             self.device.show('show hostname')
             self.up = True
         except (CLIError, ValueError):
