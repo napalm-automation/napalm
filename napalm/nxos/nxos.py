@@ -52,7 +52,7 @@ def ensure_netmiko_conn(func):
                 raise AttributeError()
         except AttributeError:
             device_type = c.NETMIKO_MAP[self.platform]
-            netmiko_optional_args=self.netmiko_optional_args
+            netmiko_optional_args = self.netmiko_optional_args
             if 'port' in netmiko_optional_args:
                 netmiko_optional_args['port'] = 22
             self._netmiko_open(
@@ -85,6 +85,15 @@ class NXOSDriverBase(NetworkDriver):
 
     @ensure_netmiko_conn
     def load_replace_candidate(self, filename=None, config=None):
+        """
+        Pattern
+
+        Transfer source file (filename or if config, filename is created as tmp file
+        Dest file is self.candidate_cfg
+        self.replace set to True
+        self.loaded set to True
+        Deletes tmp_file
+        """
 
         if not filename and not config:
             raise ReplaceConfigException('filename or config parameter must be provided.')
@@ -180,6 +189,13 @@ class NXOSDriverBase(NetworkDriver):
         return ''
 
     def commit_config(self, message=""):
+        """
+        Pattern (replace)
+        Make a backup into self.rollback_cfg
+        Load new configuration from self.candidate_config
+        Save the config
+        Set self.changed and unset self.loaded
+        """
         if message:
             raise NotImplementedError('Commit message not implemented for this platform')
         if self.loaded:
@@ -414,7 +430,7 @@ class NXOSDriverBase(NetworkDriver):
 
     def _set_checkpoint(self, filename):
         commands = [
-            'terminal dont-ask', 
+            'terminal dont-ask',
             'checkpoint file {}'.format(filename),
             'no terminal dont-ask',
         ]
@@ -610,7 +626,7 @@ class NXOSDriver(NXOSDriverBase):
         self.device.config('terminal dont-ask')
 
     def _load_cfg_from_checkpoint(self):
-        cmd = 'rollback running file {}'.format(self.candidate_cfg)
+        cmd = 'rollback running-config file {}'.format(self.candidate_cfg)
         self._disable_confirmation()
         try:
             rollback_result = self.device.config(cmd)
