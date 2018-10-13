@@ -77,7 +77,6 @@ class NXOSDriverBase(NetworkDriver):
         self.changed = False
         self.merge_candidate = ''
         self.candidate_cfg = 'candidate_config.txt'
-        self.merge_cfg = 'merge_config.txt'
         self.rollback_cfg = 'rollback_config.txt'
         self._dest_file_system = optional_args.pop('dest_file_system', "bootflash:")
         self.netmiko_optional_args = netmiko_args(optional_args)
@@ -135,10 +134,14 @@ class NXOSDriverBase(NetworkDriver):
     def _commit_merge(self):
         try:
             output = self._send_config(self.merge_candidate)
+            if output and 'Invalid command' in output:
+                raise MergeConfigException('Error while applying config!')
         except Exception as e:
+            self.changed = True
+            self.rollback()
             raise MergeConfigException(str(e))
-        if output and 'Invalid command' in output:
-            raise MergeConfigException('Error while applying config!')
+
+        self.changed = True
         # clear the merge buffer
         self.merge_candidate = ''
 
@@ -202,7 +205,6 @@ class NXOSDriverBase(NetworkDriver):
                 self._commit_merge()
 
             self._copy_run_start()
-            self.changed = True
             self.loaded = False
         else:
             raise ReplaceConfigException('No config loaded.')
@@ -640,6 +642,8 @@ class NXOSDriver(NXOSDriverBase):
         except ConnectionError:
             # requests will raise an error with verbose warning output (don't fail on this).
             return
+        finally:
+            self.changed = True
 
         # For nx-api a list is returned so extract the result associated with the
         # 'rollback' command.
