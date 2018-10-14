@@ -22,7 +22,7 @@ def _get_validation_file(validation_file):
     try:
         with open(validation_file, 'r') as stream:
             try:
-                validation_source = yaml.load(stream)
+                validation_source = yaml.safe_load(stream)
             except yaml.YAMLError as exc:
                 raise ValidationException(exc)
     except IOError:
