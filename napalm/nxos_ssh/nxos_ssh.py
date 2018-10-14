@@ -460,7 +460,10 @@ class NXOSSSHDriver(NXOSDriverBase):
         commands = ['terminal dont-ask',
                     'rollback running-config file {}'.format(self.candidate_cfg),
                     'no terminal dont-ask']
-        rollback_result = self._send_command_list(commands)
+        try:
+            rollback_result = self._send_command_list(commands)
+        finally:
+            self.changed = True
         msg = rollback_result
         if 'Rollback failed.' in msg:
             raise ReplaceConfigException(msg)
