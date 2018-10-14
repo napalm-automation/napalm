@@ -199,7 +199,7 @@ class NXOSDriver(NXOSDriverBase):
         elif self.transport == 'http':
             self.port = optional_args.get('port', 80)
 
-        self.ssl_verify = optional_args.get('verify', False)
+        self.ssl_verify = optional_args.get('ssl_verify', False)
 
     def open(self):
         try:
