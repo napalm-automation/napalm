@@ -404,7 +404,7 @@ class IOSDriver(NetworkDriver):
     def _commit_handler(self, cmd):
         """
         Special handler for hostname change on commit operation. Also handles username removal
-        which prompts for confirmation.
+        which prompts for confirmation (username removal prompts for each user...)
         """
         current_prompt = self.device.find_prompt().strip()
         terminating_char = current_prompt[-1]
@@ -414,13 +414,19 @@ class IOSDriver(NetworkDriver):
         pattern2 = r".*all username.*confirm"
         patterns = r"(?:{}|{})".format(pattern1, pattern2)
         output = self.device.send_command_expect(cmd, expect_string=patterns)
-        if re.search(output, pattern2):
-            # Send confirmation if username removal
-            output += self.device.send_command_timing(
-                "y",
-                strip_prompt=False,
-                strip_command=False
-            )
+        loop_count = 50
+        new_output = output
+        for i in range(loop_count):
+            if re.search(new_output, pattern2):
+                # Send confirmation if username removal
+                new_output = self.device.send_command_timing(
+                    "y",
+                    strip_prompt=False,
+                    strip_command=False,
+                )
+                output += new_output
+            else:
+                break
         # Reset base prompt in case hostname changed
         self.device.set_base_prompt()
         return output
