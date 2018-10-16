@@ -508,6 +508,7 @@ class NXOSDriver(NXOSDriverBase):
         elif self.transport == 'http':
             self.port = optional_args.get('port', 80)
 
+        self.ssl_verify = optional_args.get('ssl_verify', False)
         self.platform = 'nxos'
 
     def open(self):
@@ -517,7 +518,8 @@ class NXOSDriver(NXOSDriverBase):
                                      self.password,
                                      timeout=self.timeout,
                                      port=self.port,
-                                     transport=self.transport)
+                                     transport=self.transport,
+                                     verify=self.ssl_verify)
             self.device.show('show hostname')
         except (CLIError, ValueError):
             # unable to open connection

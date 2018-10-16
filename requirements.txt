@@ -9,5 +9,5 @@ pyeapi
 netmiko>=2.1.1
 pyIOSXR>=0.53
 junos-eznc>=2.1.5
-pynxos==0.0.3
+pynxos>=0.0.4
 scp
