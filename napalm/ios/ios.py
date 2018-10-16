@@ -417,10 +417,10 @@ class IOSDriver(NetworkDriver):
         loop_count = 50
         new_output = output
         for i in range(loop_count):
-            if re.search(new_output, pattern2):
+            if re.search(pattern2, new_output):
                 # Send confirmation if username removal
                 new_output = self.device.send_command_timing(
-                    "y",
+                    "\n",
                     strip_prompt=False,
                     strip_command=False,
                 )
