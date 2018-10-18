@@ -93,13 +93,13 @@ Cisco IOS is very particular about the self-signed certificate and will reject r
 Banner
 ______
 
-IOS requires that the banner use the EXT character (ASCII 3). This looks like a cntl-C in the file, but as a single character. It is NOT a separate '^' + 'C' character, but an ASCII3 character::
+IOS requires that the banner use the ETX character (ASCII 3). This looks like a cntl-C in the file, but as a single character. It is NOT a separate '^' + 'C' character, but an ASCII3 character::
 
     banner motd ^C
         my banner test
     ^C
 
-    >>> ext_char = chr(3)
+    >>> etx_char = chr(3)
     >>> with open("my_config.conf", "a") as f:
     ...   f.write("banner motd {}\n".format(ext_char))
     ...   f.write("my banner test\n")
