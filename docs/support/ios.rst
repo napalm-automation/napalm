@@ -101,9 +101,9 @@ IOS requires that the banner use the ETX character (ASCII 3). This looks like a 
 
     >>> etx_char = chr(3)
     >>> with open("my_config.conf", "a") as f:
-    ...   f.write("banner motd {}\n".format(ext_char))
+    ...   f.write("banner motd {}\n".format(etx_char))
     ...   f.write("my banner test\n")
-    ...   f.write("{}\n".format(ext_char))
+    ...   f.write("{}\n".format(etx_char))
     ...
     >>> quit()
 
