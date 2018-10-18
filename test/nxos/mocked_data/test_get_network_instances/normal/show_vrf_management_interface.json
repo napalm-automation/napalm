@@ -1,0 +1,10 @@
+{
+  "TABLE_if": {
+    "ROW_if": {
+      "if_name": "mgmt0",
+      "vrf_name": "management",
+      "vrf_id": 2,
+      "soo": "--"
+    }
+  }
+}
