@@ -677,15 +677,15 @@ class NXOSDriver(NXOSDriverBase):
         facts['vendor'] = "Cisco"
 
         show_version = self.device._send_command("show version")
-        facts['model'] = show_version.get("model", "")
+        facts['model'] = show_version.get("chassis_id", "")
         facts['hostname'] = show_version.get("host_name", "")
         facts['serial_number'] = show_version.get("proc_board_id", "")
         facts['os_version'] = show_version.get("sys_ver_str", "")
 
-        uptime_days = show_version.get("kern_uptm_day", 0)
+        uptime_days = show_version.get("kern_uptm_days", 0)
         uptime_hours = show_version.get("kern_uptm_hrs", 0)
         uptime_mins = show_version.get("kern_uptm_mins", 0)
-        uptime_secs = show_version.get("kern_uptm_sec", 0)
+        uptime_secs = show_version.get("kern_uptm_secs", 0)
 
         uptime = 0
         uptime += uptime_days * 24 * 60 * 60
@@ -694,7 +694,7 @@ class NXOSDriver(NXOSDriverBase):
         uptime += uptime_secs
 
         facts['uptime'] = uptime
-        facts['interface_list'] = ""
+        facts['interface_list'] = list(self.get_interfaces().keys())
 
         hostname_cmd = 'show hostname'
         hostname = self._send_command(hostname_cmd).get('hostname')
