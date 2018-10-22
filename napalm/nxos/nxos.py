@@ -1116,58 +1116,6 @@ class NXOSDriver(NXOSDriverBase):
             config['startup'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
         return config
 
-    # METHOD GET_NETWORK_INSTANCES FROM EOS.PY
-    # def get_network_instances(self, name=''):
-    #     """get_network_instances implementation for EOS."""
-    #
-    #     output = self._show_vrf()
-    #     vrfs = {}
-    #     all_vrf_interfaces = {}
-    #     for vrf in output:
-    #         if (vrf.get('route_distinguisher', '') == "<not set>" or
-    #                 vrf.get('route_distinguisher', '') == 'None'):
-    #             vrf['route_distinguisher'] = u''
-    #         else:
-    #             vrf['route_distinguisher'] = py23_compat.text_type(vrf['route_distinguisher'])
-    #         interfaces = {}
-    #         for interface_raw in vrf.get('interfaces', []):
-    #             interface = interface_raw.split(',')
-    #             for line in interface:
-    #                 if line.strip() != '':
-    #                     interfaces[py23_compat.text_type(line.strip())] = {}
-    #                     all_vrf_interfaces[py23_compat.text_type(line.strip())] = {}
-    #
-    #         vrfs[py23_compat.text_type(vrf['name'])] = {
-    #                       u'name': py23_compat.text_type(vrf['name']),
-    #                       u'type': u'L3VRF',
-    #                       u'state': {
-    #                           u'route_distinguisher': vrf['route_distinguisher'],
-    #                       },
-    #                       u'interfaces': {
-    #                           u'interface': interfaces,
-    #                       },
-    #         }
-    #     all_interfaces = self.get_interfaces_ip().keys()
-    #     vrfs[u'default'] = {
-    #         u'name': u'default',
-    #         u'type': u'DEFAULT_INSTANCE',
-    #         u'state': {
-    #             u'route_distinguisher': u'',
-    #         },
-    #         u'interfaces': {
-    #             u'interface': {
-    #                 k: {} for k in all_interfaces if k not in all_vrf_interfaces.keys()
-    #             },
-    #         },
-    #     }
-    #
-    #     if name:
-    #         if name in vrfs:
-    #             return {py23_compat.text_type(name): vrfs[name]}
-    #         return {}
-    #     else:
-    #         return vrfs
-
     def get_network_instances(self, name=''):
         """ get_network_instances implementation for NX-OS """
 
@@ -1214,4 +1162,3 @@ class NXOSDriver(NXOSDriverBase):
         # else return results for all VRFs
         else:
             return vrfs
-
