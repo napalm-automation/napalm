@@ -29,7 +29,7 @@ from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from netmiko import file_transfer
 from nxapi_plumbing import Device as NXOSDevice
-from nxapi_plumbing import NXAPIAuthError, NXAPIConnectionError
+from nxapi_plumbing import NXAPIAuthError, NXAPIConnectionError, NXAPICommandError
 
 # import NAPALM Base
 import napalm.base.helpers
@@ -214,10 +214,7 @@ class NXOSDriverBase(NetworkDriver):
             # clear the buffer
             self.merge_candidate = ''
         if self.loaded and self.replace:
-            try:
-                self._delete_file(self.candidate_cfg)
-            except CLIError:
-                pass
+            self._delete_file(self.candidate_cfg)
         self.loaded = False
 
     def _create_sot_file(self):
@@ -739,7 +736,7 @@ class NXOSDriver(NXOSDriverBase):
             lldp_raw_output = self.cli([command]).get(command, '')
             lldp_neighbors = napalm.base.helpers.textfsm_extractor(
                 self, 'lldp_neighbors', lldp_raw_output)
-        except CLIError:
+        except NXAPICommandError:
             lldp_neighbors = []
 
         for neighbor in lldp_neighbors:
@@ -768,7 +765,7 @@ class NXOSDriver(NXOSDriverBase):
         try:
             cmd = 'show bgp sessions vrf all'
             vrf_list = self._get_command_table(cmd, 'TABLE_vrf', 'ROW_vrf')
-        except CLIError:
+        except NXAPICommandError:
             vrf_list = []
 
         for vrf_dict in vrf_list:
@@ -825,7 +822,7 @@ class NXOSDriver(NXOSDriverBase):
             lldp_neighbors_table_str = self.cli([command]).get(command)
             # thus we need to take the raw text output
             lldp_neighbors_list = lldp_neighbors_table_str.splitlines()
-        except CLIError:
+        except NXAPICommandError:
             lldp_neighbors_list = []
 
         if not lldp_neighbors_list:
