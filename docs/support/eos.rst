@@ -4,7 +4,7 @@ EOS
 Minimum Version
 ~~~~~~~~~~~~~~~
 
-To be able to support the ``compare_config`` method you will require to run at least EOS version `4.15.0F`.
+To be able to support the ``compare_config``, ``load_merge_candidate`` or ``load_replace_candidate`` methods you will require to run at least EOS version `4.15.0F`.
 
 Multi-line/HEREDOC
 ~~~~~~~~~~~~~~~~~~
