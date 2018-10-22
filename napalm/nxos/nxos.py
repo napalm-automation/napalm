@@ -28,8 +28,8 @@ from requests.exceptions import ConnectionError
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from netmiko import file_transfer
-from pynxos.device import Device as NXOSDevice
-from pynxos.errors import CLIError
+from nxapi_plumbing import Device as NXOSDevice
+from nxapi_plumbing import NXAPIAuthError, NXAPIConnectionError
 
 # import NAPALM Base
 import napalm.base.helpers
@@ -513,15 +513,16 @@ class NXOSDriver(NXOSDriverBase):
 
     def open(self):
         try:
-            self.device = NXOSDevice(self.hostname,
-                                     self.username,
-                                     self.password,
+            self.device = NXOSDevice(host=self.hostname,
+                                     username=self.username,
+                                     password=self.password,
                                      timeout=self.timeout,
                                      port=self.port,
                                      transport=self.transport,
-                                     verify=self.ssl_verify)
-            self.device.show('show hostname')
-        except (CLIError, ValueError):
+                                     verify=self.ssl_verify,
+                                     api_format="jsonrpc")
+            self._send_command('show hostname')
+        except (NXAPIConnectionError, NXAPIAuthError):
             # unable to open connection
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
 
@@ -627,7 +628,7 @@ class NXOSDriver(NXOSDriverBase):
         return self._get_table_rows(result, table_name, row_name)
 
     def _get_command_table(self, command, table_name, row_name):
-        json_output = self.device.show(command)
+        json_output = self._send_command(command)
         return self._get_reply_table(json_output, table_name, row_name)
 
     def is_alive(self):
@@ -672,28 +673,40 @@ class NXOSDriver(NXOSDriverBase):
             self.changed = False
 
     def get_facts(self):
-        pynxos_facts = self.device.facts
-        final_facts = {key: value for key, value in pynxos_facts.items() if
-                       key not in ['interfaces', 'uptime_string', 'vlans']}
+        facts = {}
+        facts['vendor'] = "Cisco"
 
-        if pynxos_facts['interfaces']:
-            final_facts['interface_list'] = pynxos_facts['interfaces']
-        else:
-            final_facts['interface_list'] = self.get_interfaces().keys()
+        show_version = self.device._send_command("show version")
+        facts['model'] = show_version.get("model", "")
+        facts['hostname'] = show_version.get("host_name", "")
+        facts['serial_number'] = show_version.get("proc_board_id", "")
+        facts['os_version'] = show_version.get("sys_ver_str", "")
 
-        final_facts['vendor'] = 'Cisco'
+        uptime_days = show_version.get("kern_uptm_day", 0)
+        uptime_hours = show_version.get("kern_uptm_hrs", 0)
+        uptime_mins = show_version.get("kern_uptm_mins", 0)
+        uptime_secs = show_version.get("kern_uptm_sec", 0)
+
+        uptime = 0
+        uptime += uptime_days * 24 * 60 * 60
+        uptime += uptime_hours * 60 * 60
+        uptime += uptime_mins * 60
+        uptime += uptime_secs
+
+        facts['uptime'] = uptime
+        facts['interface_list'] = ""
 
         hostname_cmd = 'show hostname'
-        hostname = self.device.show(hostname_cmd).get('hostname')
+        hostname = self._send_command(hostname_cmd).get('hostname')
         if hostname:
-            final_facts['fqdn'] = hostname
+            facts['fqdn'] = hostname
 
-        return final_facts
+        return facts
 
     def get_interfaces(self):
         interfaces = {}
         iface_cmd = 'show interface'
-        interfaces_out = self.device.show(iface_cmd)
+        interfaces_out = self._send_command(iface_cmd)
         interfaces_body = interfaces_out['TABLE_interface']['ROW_interface']
 
         for interface_details in interfaces_body:
@@ -887,7 +900,7 @@ class NXOSDriver(NXOSDriverBase):
             raise TypeError('Please enter a valid list of commands!')
 
         for command in commands:
-            command_output = self.device.show(command, raw_text=True)
+            command_output = self._send_command(command, raw_text=True)
             cli_output[py23_compat.text_type(command)] = command_output
         return cli_output
 

@@ -5,9 +5,9 @@ textfsm
 jinja2
 netaddr
 pyYAML
-pyeapi
-netmiko>=2.1.1
+pyeapi>=0.8.2
+netmiko>=2.3.0
 pyIOSXR>=0.53
-junos-eznc>=2.1.5
-pynxos>=0.0.4
+junos-eznc>=2.2.0
+#-e git+https://github.com/ktbyers/nxapi-plumbing@d7ce36caa8eb33b7facebabcaa579d28384ab62b#egg=nxapi_plumbing
 scp
