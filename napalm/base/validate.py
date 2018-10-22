@@ -129,6 +129,9 @@ def compare(src, dst):
         if src.startswith('<') or src.startswith('>'):
             cmp_result = _compare_numeric(src, dst)
             return cmp_result
+        elif not src.startswith('-') and '-' in src:
+            cmp_result = _compare_range(src, dst)
+            return cmp_result
         else:
             m = re.search(src, py23_compat.text_type(dst))
             if m:
@@ -166,6 +169,20 @@ def _compare_numeric(src_num, dst_num):
     }
     return getattr(dst_num, operand[match.group(1)])(float(match.group(2)))
 
+
+def _compare_range(src_num, dst_num):
+    """Compare value against a range of values. You can use '%d-%d'."""
+    dst_num = float(dst_num)
+
+    match = src_num.split('-')
+    if len(match) != 2:
+        error = "Failed range comparison. Collected: {}. Expected: {}".format(dst_num, src_num)
+        raise ValueError(error)
+
+    if float(match[0]) <= dst_num <= float(match[1]):
+        return True
+    else:
+        return False
 
 def empty_tree(input_list):
     """Recursively iterate through values in nested lists."""
