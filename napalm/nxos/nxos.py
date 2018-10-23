@@ -1153,7 +1153,8 @@ class NXOSDriver(NXOSDriverBase):
             vrfs[vrf_name][u'interfaces'] = {}
             vrfs[vrf_name][u'interfaces'][u'interface'] = dict.fromkeys(vrf_intfs[vrf_name], {})
 
-        # if name of a specific VRF was passed as an argument only return results for this particular VRF
+        # if name of a specific VRF was passed as an argument
+        # only return results for this particular VRF
         if name:
             if name in vrfs.keys():
                 return {py23_compat.text_type(name): vrfs[name]}
