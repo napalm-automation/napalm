@@ -30,6 +30,7 @@ ROUTE_COMMON_PROTOCOL_FIELDS = [
     'inactive_reason',
     'routing_table'
 ]  # identifies the list of fileds common for all protocols
+
 ROUTE_PROTOCOL_SPECIFIC_FIELDS = {
     'bgp': [
         'local_as',
@@ -66,3 +67,12 @@ PING_TIMEOUT = 2
 PING_SIZE = 100
 PING_COUNT = 5
 PING_VRF = ''
+
+NETMIKO_MAP = {
+    'ios': 'cisco_ios',
+    'nxos': 'cisco_nxos',
+    'nxos_ssh': 'cisco_nxos',
+    'iosxr': 'cisco_iosxr',
+    'eos': 'arista_eos',
+    'junos': 'juniper_eos',
+}
