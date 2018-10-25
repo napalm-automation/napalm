@@ -143,6 +143,17 @@ class TestValidate:
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
+    def test_immutable_validation_source(self):
+        """Test validation_source is not modified."""
+        mocked_data = os.path.join(BASEPATH, "mocked_data", "strict_pass_skip")
+
+        device = FakeDriver(mocked_data)
+        source = _read_yaml(os.path.join(mocked_data, "validate.yml"))
+        witness = _read_yaml(os.path.join(mocked_data, "validate.yml"))
+        device.compliance_report(validation_source=source)
+
+        assert source == witness, yaml.safe_dump(source)
+
 
 class FakeDriver(NetworkDriver):
     """This is a fake NetworkDriver."""
