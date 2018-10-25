@@ -25,7 +25,7 @@ To replace the configuration do the following::
 
 Note that the changes have not been applied yet. Before applying the configuration you can check the changes::
 
-    >>> print device.compare_config()
+    >>> print(device.compare_config())
     + hostname pyeos-unittest-changed
     - hostname pyeos-unittest
     router bgp 65000
@@ -57,7 +57,7 @@ Merging Configuration
 Merging configuration is similar, but you need to load the configuration with the merge method::
 
     >>> device.load_merge_candidate(config='hostname test\ninterface Ethernet2\ndescription bla')
-    >>> print device.compare_config()
+    >>> print(device.compare_config())
     configure
     hostname test
     interface Ethernet2
