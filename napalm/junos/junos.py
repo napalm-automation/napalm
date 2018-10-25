@@ -103,7 +103,8 @@ class JunOSDriver(NetworkDriver):
                                  port=self.port,
                                  ssh_config=self.ssh_config_file)
 
-        self.profile = ["junos"]
+        self.platform = "junos"
+        self.profile = [self.platform]
 
     def open(self):
         """Open the connection with the device."""
@@ -887,7 +888,7 @@ class JunOSDriver(NetworkDriver):
             Process CLI output from Juniper device that
             doesn't allow piping the output.
             '''
-            if txt is not None:
+            if txt is None:
                 return txt
             _OF_MAP = OrderedDict()
             _OF_MAP['except'] = _except

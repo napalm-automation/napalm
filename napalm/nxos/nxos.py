@@ -16,19 +16,19 @@
 from __future__ import unicode_literals
 
 # import stdlib
+from builtins import super
+import os
 import re
 import time
 import tempfile
-from datetime import datetime
-from requests.exceptions import ConnectionError
+import uuid
 
 # import third party lib
+from requests.exceptions import ConnectionError
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
-
+from netmiko import file_transfer
 from pynxos.device import Device as NXOSDevice
-from pynxos.features.file_copy import FileTransferError as NXOSFileTransferError
-from pynxos.features.file_copy import FileCopy
 from pynxos.errors import CLIError
 
 # import NAPALM Base
@@ -39,32 +39,198 @@ from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.constants as c
+
+
+def ensure_netmiko_conn(func):
+    """Decorator that ensures Netmiko connection exists."""
+    def wrap_function(self, filename=None, config=None):
+        try:
+            netmiko_object = self._netmiko_device
+            if netmiko_object is None:
+                raise AttributeError()
+        except AttributeError:
+            device_type = c.NETMIKO_MAP[self.platform]
+            netmiko_optional_args = self.netmiko_optional_args
+            if 'port' in netmiko_optional_args:
+                netmiko_optional_args['port'] = 22
+            self._netmiko_open(
+                device_type=device_type,
+                netmiko_optional_args=netmiko_optional_args,
+            )
+        func(self, filename=filename, config=config)
+    return wrap_function
 
 
 class NXOSDriverBase(NetworkDriver):
     """Common code shared between nx-api and nxos_ssh."""
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        if optional_args is None:
+            optional_args = {}
+        self.hostname = hostname
+        self.username = username
+        self.password = password
+        self.timeout = timeout
+        self.replace = True
+        self.loaded = False
+        self.changed = False
+        self.merge_candidate = ''
+        self.candidate_cfg = 'candidate_config.txt'
+        self.rollback_cfg = 'rollback_config.txt'
+        self._dest_file_system = optional_args.pop('dest_file_system', "bootflash:")
+        self.netmiko_optional_args = netmiko_args(optional_args)
+        self.device = None
+
+    @ensure_netmiko_conn
+    def load_replace_candidate(self, filename=None, config=None):
+
+        if not filename and not config:
+            raise ReplaceConfigException('filename or config parameter must be provided.')
+
+        if not filename:
+            tmp_file = self._create_tmp_file(config)
+            filename = tmp_file
+        else:
+            if not os.path.isfile(filename):
+                raise ReplaceConfigException("File {} not found".format(filename))
+
+        try:
+            transfer_result = file_transfer(
+                self._netmiko_device,
+                source_file=filename,
+                dest_file=self.candidate_cfg,
+                file_system=self._dest_file_system,
+                direction="put",
+                overwrite_file=True,
+            )
+            if not transfer_result['file_exists']:
+                raise ValueError()
+        except Exception:
+            msg = ('Could not transfer file. There was an error '
+                   'during transfer. Please make sure remote '
+                   'permissions are set.')
+            raise ReplaceConfigException(msg)
+
+        self.replace = True
+        self.loaded = True
+        if config and os.path.isfile(tmp_file):
+            os.remove(tmp_file)
+
+    def load_merge_candidate(self, filename=None, config=None):
+        self.replace = False
+        self.loaded = True
+
+        if not filename and not config:
+            raise MergeConfigException('filename or config param must be provided.')
+
+        self.merge_candidate += '\n'  # insert one extra line
+        if filename is not None:
+            with open(filename, "r") as f:
+                self.merge_candidate += f.read()
+        else:
+            self.merge_candidate += config
+
+    def _commit_merge(self):
+        try:
+            output = self._send_config(self.merge_candidate)
+            if output and 'Invalid command' in output:
+                raise MergeConfigException('Error while applying config!')
+        except Exception as e:
+            self.changed = True
+            self.rollback()
+            raise MergeConfigException(str(e))
+
+        self.changed = True
+        # clear the merge buffer
+        self.merge_candidate = ''
+
+    def _get_merge_diff(self):
+        diff = []
+        running_config = self.get_config(retrieve='running')['running']
+        running_lines = running_config.splitlines()
+        for line in self.merge_candidate.splitlines():
+            if line not in running_lines and line:
+                if line[0].strip() != '!':
+                    diff.append(line)
+        return '\n'.join(diff)
+        # the merge diff is not necessarily what needs to be loaded
+        # for example under NTP, as the `ntp commit` command might be
+        # alread configured, it is mandatory to be sent
+        # otherwise it won't take the new configuration - see #59
+        # https://github.com/napalm-automation/napalm-nxos/issues/59
+        # therefore this method will return the real diff
+        # but the merge_candidate will remain unchanged
+        # previously: self.merge_candidate = '\n'.join(diff)
+
+    def _get_diff(self):
+        """Get a diff between running config and a proposed file."""
+        diff = []
+        self._create_sot_file()
+        diff_out = self._send_command(
+            'show diff rollback-patch file {} file {}'.format(
+                'sot_file', self.candidate_cfg), raw_text=True)
+        try:
+            diff_out = diff_out.split(
+                'Generating Rollback Patch')[1].replace(
+                'Rollback Patch is Empty', '').strip()
+            for line in diff_out.splitlines():
+                if line:
+                    if line[0].strip() != '!' and line[0].strip() != '.':
+                        diff.append(line.rstrip(' '))
+        except (AttributeError, KeyError):
+            raise ReplaceConfigException(
+                "Could not calculate diff. It's possible the given file doesn't exist."
+            )
+        return '\n'.join(diff)
+
+    def compare_config(self):
+        if self.loaded:
+            if not self.replace:
+                return self._get_merge_diff()
+            diff = self._get_diff()
+            return diff
+        return ''
 
     def commit_config(self, message=""):
         if message:
             raise NotImplementedError('Commit message not implemented for this platform')
         if self.loaded:
             # Create checkpoint from current running-config
-            self.backup_file = 'config_' + str(datetime.now()).replace(' ', '_')
-            self._save_to_checkpoint(self.backup_file)
+            self._save_to_checkpoint(self.rollback_cfg)
 
             if self.replace:
-                # Replace operation
                 self._load_cfg_from_checkpoint()
             else:
-                # Merge operation
                 self._commit_merge()
 
             self._copy_run_start()
-            self.changed = True
             self.loaded = False
         else:
             raise ReplaceConfigException('No config loaded.')
+
+    def discard_config(self):
+        if self.loaded:
+            # clear the buffer
+            self.merge_candidate = ''
+        if self.loaded and self.replace:
+            try:
+                self._delete_file(self.candidate_cfg)
+            except CLIError:
+                pass
+        self.loaded = False
+
+    def _create_sot_file(self):
+        """Create Source of Truth file to compare."""
+
+        # Bug on on NX-OS 6.2.16 where overwriting sot_file would take exceptionally long time
+        # (over 12 minutes); so just delete the sot_file
+        try:
+            self._delete_file(filename="sot_file")
+        except Exception:
+            pass
+        commands = ['terminal dont-ask', 'checkpoint file sot_file', 'no terminal dont-ask']
+        self._send_command_list(commands)
 
     def ping(self,
              destination,
@@ -111,7 +277,7 @@ class NXOSDriverBase(NetworkDriver):
 
         if vrf != '':
             command += ' vrf {}'.format(vrf)
-        output = self._send_command(command)
+        output = self._send_command(command, raw_text=True)
 
         if 'connect:' in output:
             ping_dict['error'] = output
@@ -175,22 +341,165 @@ class NXOSDriverBase(NetworkDriver):
             ping_dict['success'].update({'results': results_array})
         return ping_dict
 
+    def traceroute(self,
+                   destination,
+                   source=c.TRACEROUTE_SOURCE,
+                   ttl=c.TRACEROUTE_TTL,
+                   timeout=c.TRACEROUTE_TIMEOUT,
+                   vrf=c.TRACEROUTE_VRF):
+
+        _HOP_ENTRY_PROBE = [
+            r'\s+',
+            r'(',  # beginning of host_name (ip_address) RTT group
+            r'(',  # beginning of host_name (ip_address) group only
+            r'([a-zA-Z0-9\.:-]*)',  # hostname
+            r'\s+',
+            r'\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
+            r')?',  # end of host_name (ip_address) group only
+            # also hostname/ip are optional -- they can or cannot be specified
+            # if not specified, means the current probe followed the same path as the previous
+            r'\s+',
+            r'(\d+\.\d+)\s+ms',  # RTT
+            r'|\*',  # OR *, when non responsive hop
+            r')'  # end of host_name (ip_address) RTT group
+        ]
+
+        _HOP_ENTRY = [
+            r'\s?',  # space before hop index?
+            r'(\d+)',  # hop index
+        ]
+
+        traceroute_result = {}
+        timeout = 5  # seconds
+        probes = 3  # 3 probes/jop and this cannot be changed on NXOS!
+
+        version = ''
+        try:
+            version = '6' if IPAddress(destination).version == 6 else ''
+        except AddrFormatError:
+            # Allow use of DNS names
+            pass
+
+        if source:
+            source_opt = 'source {source}'.format(source=source)
+            command = 'traceroute{version} {destination} {source_opt}'.format(
+                version=version,
+                destination=destination,
+                source_opt=source_opt)
+        else:
+            command = 'traceroute{version} {destination}'.format(
+                version=version,
+                destination=destination)
+
+        try:
+            traceroute_raw_output = self._send_command(command, raw_text=True)
+        except CommandErrorException:
+            return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
+
+        hop_regex = ''.join(_HOP_ENTRY + _HOP_ENTRY_PROBE * probes)
+        traceroute_result['success'] = {}
+        if traceroute_raw_output:
+            for line in traceroute_raw_output.splitlines():
+                hop_search = re.search(hop_regex, line)
+                if not hop_search:
+                    continue
+                hop_details = hop_search.groups()
+                hop_index = int(hop_details[0])
+                previous_probe_host_name = '*'
+                previous_probe_ip_address = '*'
+                traceroute_result['success'][hop_index] = {'probes': {}}
+                for probe_index in range(probes):
+                    host_name = hop_details[3 + probe_index * 5]
+                    ip_address_raw = hop_details[4 + probe_index * 5]
+                    ip_address = napalm.base.helpers.convert(
+                        napalm.base.helpers.ip, ip_address_raw, ip_address_raw)
+                    rtt = hop_details[5 + probe_index * 5]
+                    if rtt:
+                        rtt = float(rtt)
+                    else:
+                        rtt = timeout * 1000.0
+                    if not host_name:
+                        host_name = previous_probe_host_name
+                    if not ip_address:
+                        ip_address = previous_probe_ip_address
+                    if hop_details[1 + probe_index * 5] == '*':
+                        host_name = '*'
+                        ip_address = '*'
+                    traceroute_result['success'][hop_index]['probes'][probe_index + 1] = {
+                        'host_name': py23_compat.text_type(host_name),
+                        'ip_address': py23_compat.text_type(ip_address),
+                        'rtt': rtt
+                    }
+                    previous_probe_host_name = host_name
+                    previous_probe_ip_address = ip_address
+        return traceroute_result
+
+    def _get_checkpoint_file(self):
+        filename = 'temp_cp_file_from_napalm'
+        self._set_checkpoint(filename)
+        command = 'show file {}'.format(filename)
+        output = self._send_command(command, raw_text=True)
+        self._delete_file(filename)
+        return output
+
+    def _set_checkpoint(self, filename):
+        commands = [
+            'terminal dont-ask',
+            'checkpoint file {}'.format(filename),
+            'no terminal dont-ask',
+        ]
+        self._send_command_list(commands)
+
+    def _save_to_checkpoint(self, filename):
+        """Save the current running config to the given file."""
+        commands = [
+            "terminal dont-ask",
+            'checkpoint file {}'.format(filename),
+            'no terminal dont-ask',
+        ]
+        self._send_command_list(commands)
+
+    def _delete_file(self, filename):
+        commands = [
+            'terminal dont-ask',
+            'delete {}'.format(filename),
+            'no terminal dont-ask'
+        ]
+        self._send_command_list(commands)
+
+    @staticmethod
+    def _create_tmp_file(config):
+        tmp_dir = tempfile.gettempdir()
+        rand_fname = py23_compat.text_type(uuid.uuid4())
+        filename = os.path.join(tmp_dir, rand_fname)
+        with open(filename, 'wt') as fobj:
+            fobj.write(config)
+        return filename
+
+    def _disable_confirmation(self):
+        self._send_command_list(['terminal dont-ask'])
+
+    def get_config(self, retrieve='all'):
+        config = {
+            'startup': '',
+            'running': '',
+            'candidate': ''
+        }  # default values
+
+        if retrieve.lower() in ('running', 'all'):
+            command = 'show running-config'
+            config['running'] = py23_compat.text_type(self._send_command(command, raw_text=True))
+        if retrieve.lower() in ('startup', 'all'):
+            command = 'show startup-config'
+            config['startup'] = py23_compat.text_type(self._send_command(command, raw_text=True))
+        return config
+
 
 class NXOSDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        super().__init__(hostname, username, password, timeout=timeout, optional_args=optional_args)
         if optional_args is None:
             optional_args = {}
-        self.hostname = hostname
-        self.username = username
-        self.password = password
-        self.timeout = timeout
-        self.up = False
-        self.replace = True
-        self.loaded = False
-        self.fc = None
-        self.changed = False
-        self.replace_file = None
-        self.merge_candidate = ''
 
         # nxos_protocol is there for backwards compatibility, transport is the preferred method
         self.transport = optional_args.get('transport', optional_args.get('nxos_protocol', 'https'))
@@ -200,6 +509,7 @@ class NXOSDriver(NXOSDriverBase):
             self.port = optional_args.get('port', 80)
 
         self.ssl_verify = optional_args.get('ssl_verify', False)
+        self.platform = 'nxos'
 
     def open(self):
         try:
@@ -211,22 +521,29 @@ class NXOSDriver(NXOSDriverBase):
                                      transport=self.transport,
                                      verify=self.ssl_verify)
             self.device.show('show hostname')
-            self.up = True
         except (CLIError, ValueError):
             # unable to open connection
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
 
     def close(self):
-        if self.changed:
-            self._delete_file(self.backup_file)
         self.device = None
 
-    def _send_command(self, command):
-        """Wrapper for CLI method in NX-API.
+    def _send_command(self, command, raw_text=False):
+        """
+        Wrapper for NX-API show method.
 
         Allows more code sharing between NX-API and SSH.
         """
-        return self.cli([command]).get(command)
+        return self.device.show(command, raw_text=raw_text)
+
+    def _send_command_list(self, commands):
+        return self.device.config_list(commands)
+
+    def _send_config(self, commands):
+        if isinstance(commands, py23_compat.string_types):
+            # Has to be a list generator and not generator expression (not JSON serializable)
+            commands = [command for command in commands.splitlines() if command]
+        return self.device.config_list(commands)
 
     @staticmethod
     def _compute_timestamp(stupid_cisco_output):
@@ -306,16 +623,6 @@ class NXOSDriver(NXOSDriverBase):
             _table_rows = [_table_rows]
         return _table_rows
 
-    @staticmethod
-    def fix_checkpoint_string(string, filename):
-        # used to generate checkpoint-like files
-        pattern = '''!Command: Checkpoint cmd vdc 1'''
-
-        if '!Command' in string:
-            return re.sub('!Command.*', pattern.format(filename), string)
-        else:
-            return "{0}\n{1}".format(pattern.format(filename), string)
-
     def _get_reply_table(self, result, table_name, row_name):
         return self._get_table_rows(result, table_name, row_name)
 
@@ -329,166 +636,38 @@ class NXOSDriver(NXOSDriverBase):
         else:
             return {'is_alive': False}
 
-    def load_replace_candidate(self, filename=None, config=None):
-        self.replace = True
-        self.loaded = True
-
-        if not filename and not config:
-            raise ReplaceConfigException('filename or config param must be provided.')
-
-        if filename is None:
-            temp_file = tempfile.NamedTemporaryFile()
-            temp_file.write(config)
-            temp_file.flush()
-            cfg_filename = temp_file.name
-        else:
-            cfg_filename = filename
-
-        self.replace_file = cfg_filename
-
-        with open(self.replace_file, 'r') as f:
-            file_content = f.read()
-
-        file_content = self.fix_checkpoint_string(file_content, self.replace_file)
-        temp_file = tempfile.NamedTemporaryFile()
-        temp_file.write(file_content.encode())
-        temp_file.flush()
-        self.replace_file = cfg_filename
-
-        self._send_file(temp_file.name, cfg_filename)
-
-    def load_merge_candidate(self, filename=None, config=None):
-        self.replace = False
-        self.loaded = True
-
-        if not filename and not config:
-            raise MergeConfigException('filename or config param must be provided.')
-
-        self.merge_candidate += '\n'  # insert one extra line
-        if filename is not None:
-            with open(filename, "r") as f:
-                self.merge_candidate += f.read()
-        else:
-            self.merge_candidate += config
-
-    def _send_file(self, filename, dest):
-        self.fc = FileCopy(self.device, filename, dst=dest.split('/')[-1])
-        try:
-            if not self.fc.remote_file_exists():
-                self.fc.send()
-            elif not self.fc.file_already_exists():
-                commands = ['terminal dont-ask',
-                            'delete {0}'.format(self.fc.dst)]
-                self.device.config_list(commands)
-                self.fc.send()
-        except NXOSFileTransferError as fte:
-            raise ReplaceConfigException(py23_compat.text_type(fte))
-
-    def _create_sot_file(self):
-        """Create Source of Truth file to compare."""
-        commands = ['terminal dont-ask', 'checkpoint file sot_file']
-        self.device.config_list(commands)
-
-    def _get_diff(self, cp_file):
-        """Get a diff between running config and a proposed file."""
-        diff = []
-        self._create_sot_file()
-        diff_out = self.device.show(
-            'show diff rollback-patch file {0} file {1}'.format(
-                'sot_file', self.replace_file.split('/')[-1]), raw_text=True)
-        try:
-            diff_out = diff_out.split(
-                'Generating Rollback Patch')[1].replace(
-                'Rollback Patch is Empty', '').strip()
-            for line in diff_out.splitlines():
-                if line:
-                    if line[0].strip() != '!':
-                        diff.append(line.rstrip(' '))
-        except (AttributeError, KeyError):
-            raise ReplaceConfigException(
-                'Could not calculate diff. It\'s possible the given file doesn\'t exist.')
-        return '\n'.join(diff)
-
-    def _get_merge_diff(self):
-        diff = []
-        running_config = self.get_config(retrieve='running')['running']
-        running_lines = running_config.splitlines()
-        for line in self.merge_candidate.splitlines():
-            if line not in running_lines and line:
-                if line[0].strip() != '!':
-                    diff.append(line)
-        return '\n'.join(diff)
-        # the merge diff is not necessarily what needs to be loaded
-        # for example under NTP, as the `ntp commit` command might be
-        # alread configured, it is mandatory to be sent
-        # otherwise it won't take the new configuration - see #59
-        # https://github.com/napalm-automation/napalm-nxos/issues/59
-        # therefore this method will return the real diff
-        # but the merge_candidate will remain unchanged
-        # previously: self.merge_candidate = '\n'.join(diff)
-
-    def compare_config(self):
-        if self.loaded:
-            if not self.replace:
-                return self._get_merge_diff()
-                # return self.merge_candidate
-            diff = self._get_diff(self.fc.dst)
-            return diff
-        return ''
-
-    def _copy_run_start(self, filename='startup-config'):
-        results = self.device.save(filename=filename)
+    def _copy_run_start(self):
+        results = self.device.save(filename='startup-config')
         if not results:
-            msg = 'Unable to save running-config to {}!'.format(filename)
+            msg = 'Unable to save running-config to startup-config!'
             raise CommandErrorException(msg)
 
-    def _commit_merge(self):
-        try:
-            commands = [command for command in self.merge_candidate.splitlines() if command]
-            self.device.config_list(commands)
-        except Exception as e:
-            raise MergeConfigException(str(e))
-        # clear the merge buffer
-        self.merge_candidate = ''
-
-    def _save_to_checkpoint(self, filename):
-        """Save the current running config to the given file."""
-        command = 'checkpoint file {}'.format(filename)
-        self.device.show(command, raw_text=True)
-
-    def _disable_confirmation(self):
-        self.device.config('terminal dont-ask')
-
     def _load_cfg_from_checkpoint(self):
-        cmd = 'rollback running file {0}'.format(self.replace_file.split('/')[-1])
-        self._disable_confirmation()
+        commands = ['terminal dont-ask',
+                    'rollback running-config file {}'.format(self.candidate_cfg),
+                    'no terminal dont-ask']
         try:
-            rollback_result = self.device.config(cmd)
+            rollback_result = self._send_command_list(commands)
         except ConnectionError:
             # requests will raise an error with verbose warning output (don't fail on this).
             return
-        if 'Rollback failed.' in rollback_result['msg'] or 'ERROR' in rollback_result:
-            raise ReplaceConfigException(rollback_result['msg'])
+        finally:
+            self.changed = True
 
-    def _delete_file(self, filename):
-        commands = ['terminal dont-ask',
-                    'delete {}'.format(filename),
-                    'no terminal dont-ask']
-        self.device.show_list(commands, raw_text=True)
+        # For nx-api a list is returned so extract the result associated with the
+        # 'rollback' command.
+        rollback_result = rollback_result[1]
+        msg = rollback_result.get('msg') if rollback_result.get('msg') else rollback_result
+        error_msg = True if rollback_result.get('error') else False
 
-    def discard_config(self):
-        if self.loaded:
-            self.merge_candidate = ''  # clear the buffer
-        if self.loaded and self.replace:
-            try:
-                self._delete_file(self.fc.dst)
-            except CLIError:
-                pass
-        self.loaded = False
+        if 'Rollback failed.' in msg or error_msg:
+            raise ReplaceConfigException(msg)
+        elif rollback_result == []:
+            raise ReplaceConfigException
 
     def rollback(self):
         if self.changed:
-            self.device.rollback(self.backup_file)
+            self.device.rollback(self.rollback_cfg)
             self._copy_run_start()
             self.changed = False
 
@@ -619,17 +798,6 @@ class NXOSDriver(NXOSDriverBase):
                 vrf_name = 'global'
             results[vrf_name] = result_vrf_dict
         return results
-
-    def _set_checkpoint(self, filename):
-        commands = ['terminal dont-ask', 'checkpoint file {0}'.format(filename)]
-        self.device.config_list(commands)
-
-    def _get_checkpoint_file(self):
-        filename = 'temp_cp_file_from_napalm'
-        self._set_checkpoint(filename)
-        cp_out = self.device.show('show file {0}'.format(filename), raw_text=True)
-        self._delete_file(filename)
-        return cp_out
 
     def get_lldp_neighbors_detail(self, interface=''):
         lldp_neighbors = {}
@@ -1008,109 +1176,3 @@ class NXOSDriver(NXOSDriverBase):
                     continue
                 users[username]['sshkeys'].append(py23_compat.text_type(sshkeyvalue))
         return users
-
-    def traceroute(self,
-                   destination,
-                   source=c.TRACEROUTE_SOURCE,
-                   ttl=c.TRACEROUTE_TTL,
-                   timeout=c.TRACEROUTE_TIMEOUT,
-                   vrf=c.TRACEROUTE_VRF):
-        _HOP_ENTRY_PROBE = [
-            r'\s+',
-            r'(',  # beginning of host_name (ip_address) RTT group
-            r'(',  # beginning of host_name (ip_address) group only
-            r'([a-zA-Z0-9\.:-]*)',  # hostname
-            r'\s+',
-            r'\(?([a-fA-F0-9\.:][^\)]*)\)?'  # IP Address between brackets
-            r')?',  # end of host_name (ip_address) group only
-            # also hostname/ip are optional -- they can or cannot be specified
-            # if not specified, means the current probe followed the same path as the previous
-            r'\s+',
-            r'(\d+\.\d+)\s+ms',  # RTT
-            r'|\*',  # OR *, when non responsive hop
-            r')'  # end of host_name (ip_address) RTT group
-        ]
-
-        _HOP_ENTRY = [
-            r'\s?',  # space before hop index?
-            r'(\d+)',  # hop index
-        ]
-
-        traceroute_result = {}
-        timeout = 5  # seconds
-        probes = 3  # 3 probes/jop and this cannot be changed on NXOS!
-
-        version = ''
-        try:
-            version = '6' if IPAddress(destination).version == 6 else ''
-        except AddrFormatError:
-            return {'error': 'Destination doest not look like a valid IP Address: {}'.format(
-                destination)}
-
-        source_opt = ''
-        if source:
-            source_opt = 'source {source}'.format(source=source)
-
-        command = 'traceroute{version} {destination} {source_opt}'.format(
-            version=version,
-            destination=destination,
-            source_opt=source_opt
-        )
-
-        try:
-            traceroute_raw_output = self.cli([command]).get(command)
-        except CommandErrorException:
-            return {'error': 'Cannot execute traceroute on the device: {}'.format(command)}
-
-        hop_regex = ''.join(_HOP_ENTRY + _HOP_ENTRY_PROBE * probes)
-        traceroute_result['success'] = {}
-        if traceroute_raw_output:
-            for line in traceroute_raw_output.splitlines():
-                hop_search = re.search(hop_regex, line)
-                if not hop_search:
-                    continue
-                hop_details = hop_search.groups()
-                hop_index = int(hop_details[0])
-                previous_probe_host_name = '*'
-                previous_probe_ip_address = '*'
-                traceroute_result['success'][hop_index] = {'probes': {}}
-                for probe_index in range(probes):
-                    host_name = hop_details[3 + probe_index * 5]
-                    ip_address_raw = hop_details[4 + probe_index * 5]
-                    ip_address = napalm.base.helpers.convert(
-                        napalm.base.helpers.ip, ip_address_raw, ip_address_raw)
-                    rtt = hop_details[5 + probe_index * 5]
-                    if rtt:
-                        rtt = float(rtt)
-                    else:
-                        rtt = timeout * 1000.0
-                    if not host_name:
-                        host_name = previous_probe_host_name
-                    if not ip_address:
-                        ip_address = previous_probe_ip_address
-                    if hop_details[1 + probe_index * 5] == '*':
-                        host_name = '*'
-                        ip_address = '*'
-                    traceroute_result['success'][hop_index]['probes'][probe_index + 1] = {
-                        'host_name': py23_compat.text_type(host_name),
-                        'ip_address': py23_compat.text_type(ip_address),
-                        'rtt': rtt
-                    }
-                    previous_probe_host_name = host_name
-                    previous_probe_ip_address = ip_address
-        return traceroute_result
-
-    def get_config(self, retrieve='all'):
-        config = {
-            'startup': '',
-            'running': '',
-            'candidate': ''
-        }  # default values
-
-        if retrieve.lower() in ('running', 'all'):
-            _cmd = 'show running-config'
-            config['running'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
-        if retrieve.lower() in ('startup', 'all'):
-            _cmd = 'show startup-config'
-            config['startup'] = py23_compat.text_type(self.cli([_cmd]).get(_cmd))
-        return config
