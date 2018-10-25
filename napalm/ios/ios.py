@@ -125,7 +125,8 @@ class IOSDriver(NetworkDriver):
         self.device = None
         self.config_replace = False
 
-        self.profile = ["ios"]
+        self.platform = "ios"
+        self.profile = [self.platform]
         self.use_canonical_interface = optional_args.get('canonical_int', False)
 
     def open(self):
