@@ -1213,7 +1213,7 @@ class NXOSDriver(NXOSDriverBase):
                 vrfs[vrf_name][u'type'] = u'L3VRF'
 
             vrfs[vrf_name][u'state'] = {u'route_distinguisher':
-                                            py23_compat.text_type(vrf.get('rd'))}
+                                        py23_compat.text_type(vrf.get('rd'))}
 
             # convert list of interfaces (vrf_intfs[vrf_name]) to expected format
             # format = dict with key = interface name and empty values
