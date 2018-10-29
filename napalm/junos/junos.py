@@ -103,7 +103,8 @@ class JunOSDriver(NetworkDriver):
                                  port=self.port,
                                  ssh_config=self.ssh_config_file)
 
-        self.profile = ["junos"]
+        self.platform = "junos"
+        self.profile = [self.platform]
 
     def open(self):
         """Open the connection with the device."""
