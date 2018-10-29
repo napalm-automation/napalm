@@ -22,7 +22,6 @@ import re
 import time
 import tempfile
 import uuid
-from requests.exceptions import ConnectionError
 from collections import defaultdict
 
 # import third party lib
