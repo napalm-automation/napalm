@@ -47,6 +47,7 @@ import napalm.base.constants as c
 
 def ensure_netmiko_conn(func):
     """Decorator that ensures Netmiko connection exists."""
+
     def wrap_function(self, filename=None, config=None):
         try:
             netmiko_object = self._netmiko_device
@@ -62,11 +63,13 @@ def ensure_netmiko_conn(func):
                 netmiko_optional_args=netmiko_optional_args,
             )
         func(self, filename=filename, config=config)
+
     return wrap_function
 
 
 class NXOSDriverBase(NetworkDriver):
     """Common code shared between nx-api and nxos_ssh."""
+
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -1179,7 +1182,6 @@ class NXOSDriver(NXOSDriverBase):
                 users[username]['sshkeys'].append(py23_compat.text_type(sshkeyvalue))
         return users
 
-      
     def get_network_instances(self, name=''):
         """ get_network_instances implementation for NX-OS """
 
@@ -1211,7 +1213,7 @@ class NXOSDriver(NXOSDriverBase):
                 vrfs[vrf_name][u'type'] = u'L3VRF'
 
             vrfs[vrf_name][u'state'] = {u'route_distinguisher':
-                                        py23_compat.text_type(vrf.get('rd'))}
+                                            py23_compat.text_type(vrf.get('rd'))}
 
             # convert list of interfaces (vrf_intfs[vrf_name]) to expected format
             # format = dict with key = interface name and empty values
