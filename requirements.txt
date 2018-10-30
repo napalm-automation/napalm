@@ -1,5 +1,6 @@
 setuptools>=38.4.0
 cffi>=1.11.3
+paramiko>=2.4.2
 future
 textfsm
 jinja2
