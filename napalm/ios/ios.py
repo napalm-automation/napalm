@@ -1697,7 +1697,7 @@ class IOSDriver(NetworkDriver):
             arp_table.append(entry)
         return arp_table
 
-    def cli(self, commands):
+    def cli(self, commands, ignore_invalid_input=False):
         """
         Execute a list of commands and return the output in a dictionary format using the command
         as the key.
@@ -1716,7 +1716,7 @@ class IOSDriver(NetworkDriver):
 
         for command in commands:
             output = self._send_command(command)
-            if 'Invalid input detected' in output:
+            if not ignore_invalid_input and 'Invalid input detected' in output:
                 raise ValueError('Unable to execute command "{}"'.format(command))
             cli_output.setdefault(command, {})
             cli_output[command] = output
