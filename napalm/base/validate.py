@@ -180,6 +180,9 @@ def compliance_report(cls, validation_file=None, validation_source=None):
     if validation_file:
         validation_source = _get_validation_file(validation_file)
 
+    # Otherwise we are going to modify a "live" object
+    validation_source = copy.deepcopy(validation_source)
+
     for validation_check in validation_source:
         for getter, expected_results in validation_check.items():
             if getter == "get_config":

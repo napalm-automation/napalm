@@ -63,7 +63,7 @@ class EOSDriver(NetworkDriver):
 
     _RE_BGP_INFO = re.compile(r'BGP neighbor is (?P<neighbor>.*?), remote AS (?P<as>.*?), .*') # noqa
     _RE_BGP_RID_INFO = re.compile(r'.*BGP version 4, remote router ID (?P<rid>.*?), VRF (?P<vrf>.*?)$') # noqa
-    _RE_BGP_DESC = re.compile(r'\s+Description: (?P<description>.*?)')
+    _RE_BGP_DESC = re.compile(r'\s+Description: (?P<description>.*?)$')
     _RE_BGP_LOCAL = re.compile(r'Local AS is (?P<as>.*?),.*')
     _RE_BGP_PREFIX = re.compile(r'(\s*?)(?P<af>IPv[46]) Unicast:\s*(?P<sent>\d+)\s*(?P<received>\d+)') # noqa
     _RE_SNMP_COMM = re.compile(r"""^snmp-server\s+community\s+(?P<community>\S+)
@@ -93,7 +93,8 @@ class EOSDriver(NetworkDriver):
 
         self.enablepwd = optional_args.get('enable_password', '')
 
-        self.profile = ["eos"]
+        self.platform = "eos"
+        self.profile = [self.platform]
 
         self.eos_autoComplete = optional_args.get('eos_autoComplete', None)
 

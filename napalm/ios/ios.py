@@ -125,7 +125,8 @@ class IOSDriver(NetworkDriver):
         self.device = None
         self.config_replace = False
 
-        self.profile = ["ios"]
+        self.platform = "ios"
+        self.profile = [self.platform]
         self.use_canonical_interface = optional_args.get('canonical_int', False)
 
     def open(self):
@@ -1267,7 +1268,10 @@ class IOSDriver(NetworkDriver):
                         napalm.base.helpers.ip(neighbor['remote_addr']) == remote_addr):
                     neighbor_entry = neighbor
                     break
-            if not isinstance(neighbor_entry, dict):
+            # check for proper session data for the afi
+            if neighbor_entry is None:
+                continue
+            elif not isinstance(neighbor_entry, dict):
                 raise ValueError(msg="Couldn't find neighbor data for %s in afi %s" %
                                      (remote_addr, afi))
 
