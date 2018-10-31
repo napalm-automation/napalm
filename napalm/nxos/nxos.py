@@ -22,6 +22,7 @@ import re
 import time
 import tempfile
 import uuid
+from collections import defaultdict
 
 # import third party lib
 from requests.exceptions import ConnectionError
@@ -45,6 +46,7 @@ import napalm.base.constants as c
 
 def ensure_netmiko_conn(func):
     """Decorator that ensures Netmiko connection exists."""
+
     def wrap_function(self, filename=None, config=None):
         try:
             netmiko_object = self._netmiko_device
@@ -60,11 +62,13 @@ def ensure_netmiko_conn(func):
                 netmiko_optional_args=netmiko_optional_args,
             )
         func(self, filename=filename, config=config)
+
     return wrap_function
 
 
 class NXOSDriverBase(NetworkDriver):
     """Common code shared between nx-api and nxos_ssh."""
+
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -1176,3 +1180,52 @@ class NXOSDriver(NXOSDriverBase):
                     continue
                 users[username]['sshkeys'].append(py23_compat.text_type(sshkeyvalue))
         return users
+
+    def get_network_instances(self, name=''):
+        """ get_network_instances implementation for NX-OS """
+
+        # command 'show vrf detail' returns all VRFs with detailed information
+        # format: list of dictionaries with keys such as 'vrf_name' and 'rd'
+        command = u'show vrf detail'
+        vrf_table_raw = self._get_command_table(command, u'TABLE_vrf', u'ROW_vrf')
+
+        # command 'show vrf interface' returns all interfaces including their assigned VRF
+        # format: list of dictionaries with keys 'if_name', 'vrf_name', 'vrf_id' and 'soo'
+        command = u'show vrf interface'
+        intf_table_raw = self._get_command_table(command, u'TABLE_if', u'ROW_if')
+
+        # create a dictionary with key = 'vrf_name' and value = list of interfaces
+        vrf_intfs = defaultdict(list)
+        for intf in intf_table_raw:
+            vrf_intfs[intf[u'vrf_name']].append(py23_compat.text_type(intf['if_name']))
+
+        vrfs = {}
+        for vrf in vrf_table_raw:
+            vrf_name = py23_compat.text_type(vrf.get('vrf_name'))
+            vrfs[vrf_name] = {}
+            vrfs[vrf_name][u'name'] = vrf_name
+
+            # differentiate between VRF type 'DEFAULT_INSTANCE' and 'L3VRF'
+            if vrf_name == u'default':
+                vrfs[vrf_name][u'type'] = u'DEFAULT_INSTANCE'
+            else:
+                vrfs[vrf_name][u'type'] = u'L3VRF'
+
+            vrfs[vrf_name][u'state'] = {u'route_distinguisher':
+                                        py23_compat.text_type(vrf.get('rd'))}
+
+            # convert list of interfaces (vrf_intfs[vrf_name]) to expected format
+            # format = dict with key = interface name and empty values
+            vrfs[vrf_name][u'interfaces'] = {}
+            vrfs[vrf_name][u'interfaces'][u'interface'] = dict.fromkeys(vrf_intfs[vrf_name], {})
+
+        # if name of a specific VRF was passed as an argument
+        # only return results for this particular VRF
+        if name:
+            if name in vrfs.keys():
+                return {py23_compat.text_type(name): vrfs[name]}
+            else:
+                return {}
+        # else return results for all VRFs
+        else:
+            return vrfs
