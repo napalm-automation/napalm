@@ -1,0 +1,66 @@
+{
+    "interfaces": {
+        "Management1": {
+            "directedBroadcastEnabled": false,
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "virtualSecondaryIps": {},
+                "dhcp": true,
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 23,
+                    "address": "10.192.104.32"
+                },
+                "virtualSecondaryIpsOrderedList": [],
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Management1",
+            "urpf": "disable",
+            "interfaceStatus": "connected",
+            "enabled": true,
+            "mtu": 1500,
+            "addresslessForwarding": "isInvalid",
+            "vrf": "ABC",
+            "localProxyArp": false,
+            "injectHosts": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "up",
+            "description": ""
+        },
+        "Ethernet1": {
+            "directedBroadcastEnabled": false,
+            "interfaceAddress": {
+                "secondaryIpsOrderedList": [],
+                "broadcastAddress": "255.255.255.255",
+                "virtualSecondaryIps": {},
+                "dhcp": false,
+                "secondaryIps": {},
+                "primaryIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                },
+                "virtualSecondaryIpsOrderedList": [],
+                "virtualIp": {
+                    "maskLen": 0,
+                    "address": "0.0.0.0"
+                }
+            },
+            "name": "Ethernet1",
+            "urpf": "disable",
+            "interfaceStatus": "connected",
+            "enabled": true,
+            "mtu": 1500,
+            "addresslessForwarding": "isInvalid",
+            "vrf": "DEF",
+            "localProxyArp": false,
+            "injectHosts": false,
+            "proxyArp": false,
+            "lineProtocolStatus": "up",
+            "description": ""
+        }
+    }
+}

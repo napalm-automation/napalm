@@ -64,6 +64,7 @@ class IOSXRDriver(NetworkDriver):
         except KeyError:
             self.port = 22
 
+        self.platform = 'iosxr'
         self.device = IOSXR(hostname,
                             username,
                             password,
