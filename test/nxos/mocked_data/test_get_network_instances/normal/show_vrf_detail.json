@@ -1,0 +1,58 @@
+{
+  "TABLE_vrf": {
+    "ROW_vrf": [
+      {
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "vrf_state": "Up",
+        "vpnid": "unknown",
+        "rd": "0:0",
+        "vni": 0,
+        "max_routes": 0,
+        "mid_threshold": 0,
+        "TABLE_tib": {
+          "ROW_tib": [
+            {
+              "tib_id": 80000001,
+              "tib_af": "IPv6",
+              "tib_nonce": 80000001,
+              "tib_state": "Up"
+            },
+            {
+              "tib_id": 1,
+              "tib_af": "IPv4",
+              "tib_nonce": 1,
+              "tib_state": "Up"
+            }
+          ]
+        }
+      },
+      {
+        "vrf_name": "management",
+        "vrf_id": 2,
+        "vrf_state": "Up",
+        "vpnid": "unknown",
+        "rd": "0:0",
+        "vni": 0,
+        "max_routes": 0,
+        "mid_threshold": 0,
+        "TABLE_tib": {
+          "ROW_tib": [
+            {
+              "tib_id": 80000002,
+              "tib_af": "IPv6",
+              "tib_nonce": 80000002,
+              "tib_state": "Up"
+            },
+            {
+              "tib_id": 2,
+              "tib_af": "IPv4",
+              "tib_nonce": 2,
+              "tib_state": "Up"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
