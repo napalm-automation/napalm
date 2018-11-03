@@ -146,6 +146,15 @@ class NXOSDriverBase(NetworkDriver):
         self.merge_candidate = ''
 
     def _get_merge_diff(self):
+        """
+        The merge diff is not necessarily what needs to be loaded
+        for example under NTP, even though the 'ntp commit' command might be
+        alread configured, it is mandatory to be sent
+        otherwise it won't take the new configuration - see:
+        https://github.com/napalm-automation/napalm-nxos/issues/59
+        therefore this method will return the real diff (but not necessarily what is
+        being sent by the merge_load_config()
+        """
         diff = []
         running_config = self.get_config(retrieve='running')['running']
         running_lines = running_config.splitlines()
@@ -154,14 +163,6 @@ class NXOSDriverBase(NetworkDriver):
                 if line[0].strip() != '!':
                     diff.append(line)
         return '\n'.join(diff)
-        # the merge diff is not necessarily what needs to be loaded
-        # for example under NTP, as the `ntp commit` command might be
-        # alread configured, it is mandatory to be sent
-        # otherwise it won't take the new configuration - see #59
-        # https://github.com/napalm-automation/napalm-nxos/issues/59
-        # therefore this method will return the real diff
-        # but the merge_candidate will remain unchanged
-        # previously: self.merge_candidate = '\n'.join(diff)
 
     def _get_diff(self):
         """Get a diff between running config and a proposed file."""
@@ -673,7 +674,7 @@ class NXOSDriver(NXOSDriverBase):
         facts = {}
         facts['vendor'] = "Cisco"
 
-        show_version = self.device._send_command("show version")
+        show_version = self._send_command("show version")
         facts['model'] = show_version.get("chassis_id", "")
         facts['hostname'] = show_version.get("host_name", "")
         facts['serial_number'] = show_version.get("proc_board_id", "")
