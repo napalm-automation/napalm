@@ -118,9 +118,6 @@ class NXOSDriverBase(NetworkDriver):
             os.remove(tmp_file)
 
     def load_merge_candidate(self, filename=None, config=None):
-        self.replace = False
-        self.loaded = True
-
         if not filename and not config:
             raise MergeConfigException('filename or config param must be provided.')
 
@@ -130,6 +127,8 @@ class NXOSDriverBase(NetworkDriver):
                 self.merge_candidate += f.read()
         else:
             self.merge_candidate += config
+        self.replace = False
+        self.loaded = True
 
     def _commit_merge(self):
         try:
