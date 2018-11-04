@@ -885,13 +885,12 @@ class JunOSDriver(NetworkDriver):
             return "Count: {count} lines".format(count=count)
 
         def _trim(txt, length):
-            """
-            Trim specified number of columns from start of line.
-            """
+            """Trim specified number of columns from start of line."""
+            length = int(length)
             try:
                 newlines = []
                 for line in txt.splitlines():
-                    newlines.append(line[int(length) :])
+                    newlines.append(line[length:])
                 return "\n".join(newlines)
             except ValueError:
                 return txt
@@ -907,11 +906,10 @@ class JunOSDriver(NetworkDriver):
             return "\n".join(unmatched)
 
         def _last(txt, length):
-            """
-            Display end of output only.
-            """
+            """Display end of output only."""
+            backwards_count = -1 * int(length)
             try:
-                return "\n".join(txt.splitlines()[(-1) * int(length) :])
+                return "\n".join(txt.splitlines()[backwards_count:])
             except ValueError:
                 return txt
 

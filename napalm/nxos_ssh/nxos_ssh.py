@@ -1087,7 +1087,8 @@ class NXOSSSHDriver(NXOSDriverBase):
         output = self._send_command(command)  # noqa
 
         def remove_prefix(s, prefix):
-            return s[len(prefix) :] if s.startswith(prefix) else s
+            prefix_len = len(prefix)
+            return s[prefix_len:] if s.startswith(prefix) else s
 
         def process_mac_fields(vlan, mac, mac_type, interface):
             """Return proper data for mac address fields."""
