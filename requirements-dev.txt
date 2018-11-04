@@ -10,4 +10,3 @@ mock==2.0.0
 # For travis-ci and PY34 for some reason. tox > 3.0.0 requires packaging >= 17.1
 # which fails in travis-ci using PY34
 tox==3.0.0
-black==18.9b0
