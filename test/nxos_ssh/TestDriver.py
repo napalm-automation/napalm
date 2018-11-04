@@ -19,16 +19,15 @@ from napalm.base.test.base import TestConfigNetworkDriver
 
 
 class TestConfigNXOSDriver(unittest.TestCase, TestConfigNetworkDriver):
-
     @classmethod
     def setUpClass(cls):
-        hostname = '127.0.0.1'
-        username = 'vagrant'
-        password = 'vagrant'
-        cls.vendor = 'nxos'
+        hostname = "127.0.0.1"
+        username = "vagrant"
+        password = "vagrant"
+        cls.vendor = "nxos"
 
         cls.device = nxos.NXOSDriver(hostname, username, password)
         cls.device.open()
 
-        cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
+        cls.device.load_replace_candidate(filename="%s/initial.conf" % cls.vendor)
         cls.device.commit_config()
