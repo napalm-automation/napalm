@@ -595,22 +595,15 @@ class NXOSDriver(NXOSDriverBase):
         return time.time() - delta
 
     @staticmethod
-    def _get_reply_body(result):
-        # useful for debugging
-        ret = result.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
-        # Original 'body' entry may have been an empty string, don't return that.
-        if not isinstance(ret, dict):
-            return {}
-        return ret
-
-    @staticmethod
     def _get_table_rows(parent_table, table_name, row_name):
-        # because if an inconsistent piece of shit.
-        # {'TABLE_intf': [{'ROW_intf': {
-        # vs
-        # {'TABLE_mac_address': {'ROW_mac_address': [{
-        # vs
-        # {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
+        """
+        Inconsistent behavior:
+        {'TABLE_intf': [{'ROW_intf': {
+        vs
+        {'TABLE_mac_address': {'ROW_mac_address': [{
+        vs
+        {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
+        """
         _table = parent_table.get(table_name)
         _table_rows = []
         if isinstance(_table, list):
