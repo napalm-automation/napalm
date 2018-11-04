@@ -10,6 +10,8 @@ matrix:
   include:
       - python: 3.6
         env: TOXENV=sphinx
+      - python: 3.6
+        env: TOXENV=black
 
 install:
   - pip install tox==3.0.0 tox-travis coveralls
