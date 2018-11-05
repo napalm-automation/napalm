@@ -1356,4 +1356,3 @@ class NXOSDriver(NXOSDriverBase):
         # else return results for all VRFs
         else:
             return vrfs
->>>>>>> origin/develop
