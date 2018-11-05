@@ -22,6 +22,7 @@ import re
 import time
 import tempfile
 import uuid
+from collections import defaultdict
 
 # import third party lib
 from requests.exceptions import ConnectionError
@@ -45,6 +46,7 @@ import napalm.base.constants as c
 
 def ensure_netmiko_conn(func):
     """Decorator that ensures Netmiko connection exists."""
+
     def wrap_function(self, filename=None, config=None):
         try:
             netmiko_object = self._netmiko_device
@@ -60,11 +62,13 @@ def ensure_netmiko_conn(func):
                 netmiko_optional_args=netmiko_optional_args,
             )
         func(self, filename=filename, config=config)
+
     return wrap_function
 
 
 class NXOSDriverBase(NetworkDriver):
     """Common code shared between nx-api and nxos_ssh."""
+
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -751,47 +755,68 @@ class NXOSDriver(NXOSDriverBase):
             'Closing': {'is_up': True, 'is_enabled': True},
             'Shutdown': {'is_up': False, 'is_enabled': False},
         }
+        """
+        af_name_dict = {
+            'af-id': {'safi': "af-name"},
+            'af-id': {'safi': "af-name"},
+            'af-id': {'safi': "af-name"}
+        }
+        """
+        af_name_dict = {
+            1: {1: 'ipv4', 128: 'vpnv4'},
+            2: {1: 'ipv6', 128: 'vpnv6'},
+            25: {70: 'l2vpn'}
+        }
 
         try:
-            cmd = 'show bgp sessions vrf all'
+            cmd = 'show bgp all summary vrf all'
             vrf_list = self._get_command_table(cmd, 'TABLE_vrf', 'ROW_vrf')
         except CLIError:
             vrf_list = []
 
         for vrf_dict in vrf_list:
             result_vrf_dict = {
-                'router_id': py23_compat.text_type(vrf_dict['router-id']),
+                'router_id': py23_compat.text_type(vrf_dict['vrf-router-id']),
                 'peers': {}
             }
-            neighbors_list = vrf_dict.get('TABLE_neighbor', {}).get('ROW_neighbor', [])
 
-            if isinstance(neighbors_list, dict):
-                neighbors_list = [neighbors_list]
+            af_list = vrf_dict.get('TABLE_af', {}).get('ROW_af', [])
+            if isinstance(af_list, dict):
+                af_list = [af_list]
 
-            for neighbor_dict in neighbors_list:
-                neighborid = napalm.base.helpers.ip(neighbor_dict['neighbor-id'])
-                remoteas = napalm.base.helpers.as_number(neighbor_dict['remoteas'])
-                state = py23_compat.text_type(neighbor_dict['state'])
+            for af_dict in af_list:
+                saf_dict = af_dict.get('TABLE_saf', {}).get('ROW_saf', {})
+                neighbors_list = saf_dict.get('TABLE_neighbor', {}).get('ROW_neighbor', [])
 
-                bgp_state = bgp_state_dict[state]
+                if isinstance(neighbors_list, dict):
+                    neighbors_list = [neighbors_list]
 
-                result_peer_dict = {
-                    'local_as': int(vrf_dict['local-as']),
-                    'remote_as': remoteas,
-                    'remote_id': neighborid,
-                    'is_enabled': bgp_state['is_enabled'],
-                    'uptime': -1,
-                    'description': '',
-                    'is_up': bgp_state['is_up'],
-                    'address_family': {
-                        'ipv4': {
-                            'sent_prefixes': -1,
-                            'accepted_prefixes': -1,
-                            'received_prefixes': -1
+                for neighbor_dict in neighbors_list:
+                    neighborid = napalm.base.helpers.ip(neighbor_dict['neighborid'])
+                    remoteas = napalm.base.helpers.as_number(neighbor_dict['neighboras'])
+                    state = py23_compat.text_type(neighbor_dict['state'])
+
+                    bgp_state = bgp_state_dict[state]
+                    afid_dict = af_name_dict[int(af_dict['af-id'])]
+                    safi_name = afid_dict[int(saf_dict['safi'])]
+
+                    result_peer_dict = {
+                        'local_as': int(vrf_dict['vrf-local-as']),
+                        'remote_as': remoteas,
+                        'remote_id': neighborid,
+                        'is_enabled': bgp_state['is_enabled'],
+                        'uptime': -1,
+                        'description': '',
+                        'is_up': bgp_state['is_up'],
+                        'address_family': {
+                           safi_name: {
+                                'sent_prefixes': -1,
+                                'accepted_prefixes': -1,
+                                'received_prefixes': int(neighbor_dict['prefixreceived'])
+                            }
                         }
                     }
-                }
-                result_vrf_dict['peers'][neighborid] = result_peer_dict
+                    result_vrf_dict['peers'][neighborid] = result_peer_dict
 
             vrf_name = vrf_dict['vrf-name-out']
             if vrf_name == 'default':
@@ -1176,3 +1201,52 @@ class NXOSDriver(NXOSDriverBase):
                     continue
                 users[username]['sshkeys'].append(py23_compat.text_type(sshkeyvalue))
         return users
+
+    def get_network_instances(self, name=''):
+        """ get_network_instances implementation for NX-OS """
+
+        # command 'show vrf detail' returns all VRFs with detailed information
+        # format: list of dictionaries with keys such as 'vrf_name' and 'rd'
+        command = u'show vrf detail'
+        vrf_table_raw = self._get_command_table(command, u'TABLE_vrf', u'ROW_vrf')
+
+        # command 'show vrf interface' returns all interfaces including their assigned VRF
+        # format: list of dictionaries with keys 'if_name', 'vrf_name', 'vrf_id' and 'soo'
+        command = u'show vrf interface'
+        intf_table_raw = self._get_command_table(command, u'TABLE_if', u'ROW_if')
+
+        # create a dictionary with key = 'vrf_name' and value = list of interfaces
+        vrf_intfs = defaultdict(list)
+        for intf in intf_table_raw:
+            vrf_intfs[intf[u'vrf_name']].append(py23_compat.text_type(intf['if_name']))
+
+        vrfs = {}
+        for vrf in vrf_table_raw:
+            vrf_name = py23_compat.text_type(vrf.get('vrf_name'))
+            vrfs[vrf_name] = {}
+            vrfs[vrf_name][u'name'] = vrf_name
+
+            # differentiate between VRF type 'DEFAULT_INSTANCE' and 'L3VRF'
+            if vrf_name == u'default':
+                vrfs[vrf_name][u'type'] = u'DEFAULT_INSTANCE'
+            else:
+                vrfs[vrf_name][u'type'] = u'L3VRF'
+
+            vrfs[vrf_name][u'state'] = {u'route_distinguisher':
+                                        py23_compat.text_type(vrf.get('rd'))}
+
+            # convert list of interfaces (vrf_intfs[vrf_name]) to expected format
+            # format = dict with key = interface name and empty values
+            vrfs[vrf_name][u'interfaces'] = {}
+            vrfs[vrf_name][u'interfaces'][u'interface'] = dict.fromkeys(vrf_intfs[vrf_name], {})
+
+        # if name of a specific VRF was passed as an argument
+        # only return results for this particular VRF
+        if name:
+            if name in vrfs.keys():
+                return {py23_compat.text_type(name): vrfs[name]}
+            else:
+                return {}
+        # else return results for all VRFs
+        else:
+            return vrfs

@@ -1,0 +1,186 @@
+{
+      "TABLE_vrf": {
+        "ROW_vrf": [
+          {
+            "vrf-name-out": "MGMT",
+            "vrf-router-id": "10.55.1.1",
+            "vrf-local-as": "64861",
+            "TABLE_af": {
+              "ROW_af": [
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": "1",
+                      "af-name": "IPv4 Unicast"
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": "1",
+                      "af-name": "IPv6 Unicast"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "vrf-name-out": "NON_PROD",
+            "vrf-router-id": "10.55.2.1",
+            "vrf-local-as": "64861",
+            "TABLE_af": {
+              "ROW_af": [
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": "1",
+                      "af-name": "IPv4 Unicast"
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": "1",
+                      "af-name": "IPv6 Unicast"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "vrf-name-out": "PROD",
+            "vrf-router-id": "10.55.2.2",
+            "vrf-local-as": "64861",
+            "TABLE_af": {
+              "ROW_af": [
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": "1",
+                      "af-name": "IPv4 Unicast"
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": "1",
+                      "af-name": "IPv6 Unicast"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "vrf-name-out": "default",
+            "vrf-router-id": "10.55.8.1",
+            "vrf-local-as": "64861",
+            "TABLE_af": {
+              "ROW_af": [
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": "1",
+                      "af-name": "IPv4 Unicast"
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": "1",
+                      "af-name": "IPv6 Unicast"
+                    }
+                  }
+                },
+                {
+                  "af-id": "1",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": "128",
+                      "af-name": "VPNv4 Unicast"
+                    }
+                  }
+                },
+                {
+                  "af-id": "2",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": "128",
+                      "af-name": "VPNv6 Unicast"
+                    }
+                  }
+                },
+                {
+                  "af-id": "25",
+                  "TABLE_saf": {
+                    "ROW_saf": {
+                      "safi": "70",
+                      "af-name": "L2VPN EVPN",
+                      "tableversion": "2331106",
+                      "configuredpeers": "2",
+                      "capablepeers": "2",
+                      "totalnetworks": "14878",
+                      "totalpaths": "29327",
+                      "memoryused": "4110488",
+                      "numberattrs": "1365",
+                      "bytesattrs": "218400",
+                      "numberpaths": "1",
+                      "bytespaths": "6",
+                      "numbercommunities": "0",
+                      "bytescommunities": "0",
+                      "numberclusterlist": "30",
+                      "bytesclusterlist": "120",
+                      "dampening": "Disabled",
+                      "TABLE_neighbor": {
+                        "ROW_neighbor": [
+                          {
+                            "neighborid": "10.55.8.134",
+                            "neighborversion": "4",
+                            "msgrecvd": "760478",
+                            "msgsent": "230886",
+                            "neighbortableversion": "2331106",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64861",
+                            "time": "22w4d",
+                            "state": "Established",
+                            "prefixreceived": "9497"
+                          },
+                          {
+                            "neighborid": "10.55.8.135",
+                            "neighborversion": "4",
+                            "msgrecvd": "760644",
+                            "msgsent": "230886",
+                            "neighbortableversion": "2331106",
+                            "inq": "0",
+                            "outq": "0",
+                            "neighboras": "64861",
+                            "time": "22w4d",
+                            "state": "Established",
+                            "prefixreceived": "9497"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
