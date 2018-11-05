@@ -1,5 +1,6 @@
 setuptools>=38.4.0
 cffi>=1.11.3
+paramiko>=2.4.2
 future
 textfsm
 jinja2
@@ -9,5 +10,5 @@ pyeapi
 netmiko>=2.1.1
 pyIOSXR>=0.53
 junos-eznc>=2.1.5
-pynxos==0.0.3
+pynxos>=0.0.4
 scp
