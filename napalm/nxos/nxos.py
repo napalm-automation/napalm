@@ -685,7 +685,12 @@ class NXOSDriver(NXOSDriverBase):
         uptime += uptime_secs
 
         facts['uptime'] = uptime
-        facts['interface_list'] = list(self.get_interfaces().keys())
+
+        iface_cmd = 'show interface'
+        interfaces_out = self._send_command(iface_cmd)
+        interfaces_body = interfaces_out['TABLE_interface']['ROW_interface']
+        interface_list = [intf_data['interface'] for intf_data in interfaces_body]
+        facts['interface_list'] = interface_list
 
         hostname_cmd = 'show hostname'
         hostname = self._send_command(hostname_cmd).get('hostname')
