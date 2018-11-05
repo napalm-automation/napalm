@@ -13,3 +13,4 @@ Tutorials
    extend_driver
    wrapup
    ansible-napalm
+   mock_driver
