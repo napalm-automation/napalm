@@ -1,0 +1,45 @@
+{
+    "TABLE_vrf": {
+        "ROW_vrf": {
+            "vrf-name-out": "default"
+        }
+    },
+    "TABLE_intf": {
+        "ROW_intf": {
+            "intf-name": "Ethernet1/7",
+            "proto-state": "down",
+            "link-state": "down",
+            "admin-state": "up",
+            "addr": "fe80::5287:89ff:fea1:de75",
+            "linklocal-addr": "fe80::5287:89ff:fea1:de75",
+            "linklocal-configured": "FALSE",
+            "mrouting-enabled": "disabled",
+            "mgroup-locally-joined": "TRUE",
+            "TABLE_maddr": {
+                "ROW_maddr": [{
+                    "m-addr": "ff02::2"
+                }, {
+                    "m-addr": "ff02::1"
+                }, {
+                    "m-addr": "ff02::1:ffa1:de75"
+                }]
+            },
+            "mtu": "1500",
+            "urpf-mode": "none",
+            "ipv6-lstype": "none",
+            "stats-last-reset": "never",
+            "upkt-fwd": "0",
+            "upkt-orig": "0",
+            "upkt-consumed": "0",
+            "ubyte-fwd": "0",
+            "ubyte-orig": "0",
+            "ubyte-consumed": "0",
+            "mpkt-fwd": "0",
+            "mpkt-orig": "0",
+            "mpkt-consumed": "0",
+            "mbyte-fwd": "0",
+            "mbyte-orig": "0",
+            "mbyte-consumed": "0"
+        }
+    }
+}
