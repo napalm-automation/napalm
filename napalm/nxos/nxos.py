@@ -22,6 +22,7 @@ import re
 import time
 import tempfile
 import uuid
+from collections import defaultdict
 
 # import third party lib
 from requests.exceptions import ConnectionError
@@ -162,6 +163,133 @@ class NXOSDriverBase(NetworkDriver):
                 if line[0].strip() != '!':
                     diff.append(line)
         return '\n'.join(diff)
+
+    def _get_diff(self):
+        """Get a diff between running config and a proposed file."""
+        diff = []
+        self._create_sot_file()
+        diff_out = self._send_command(
+            'show diff rollback-patch file {} file {}'.format(
+                'sot_file', self.candidate_cfg), raw_text=True)
+        try:
+            diff_out = diff_out.split(
+                'Generating Rollback Patch')[1].replace(
+                'Rollback Patch is Empty', '').strip()
+            for line in diff_out.splitlines():
+                if line:
+                    if line[0].strip() != '!' and line[0].strip() != '.':
+                        diff.append(line.rstrip(' '))
+        except (AttributeError, KeyError):
+            raise ReplaceConfigException(
+                "Could not calculate diff. It's possible the given file doesn't exist."
+            )
+        return '\n'.join(diff)
+
+    def compare_config(self):
+        if self.loaded:
+            if not self.replace:
+                return self._get_merge_diff()
+            diff = self._get_diff()
+            return diff
+        return ''
+
+    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+        if optional_args is None:
+            optional_args = {}
+        self.hostname = hostname
+        self.username = username
+        self.password = password
+        self.timeout = timeout
+        self.replace = True
+        self.loaded = False
+        self.changed = False
+        self.merge_candidate = ''
+        self.candidate_cfg = 'candidate_config.txt'
+        self.rollback_cfg = 'rollback_config.txt'
+        self._dest_file_system = optional_args.pop('dest_file_system', "bootflash:")
+        self.netmiko_optional_args = netmiko_args(optional_args)
+        self.device = None
+
+    @ensure_netmiko_conn
+    def load_replace_candidate(self, filename=None, config=None):
+
+        if not filename and not config:
+            raise ReplaceConfigException('filename or config parameter must be provided.')
+
+        if not filename:
+            tmp_file = self._create_tmp_file(config)
+            filename = tmp_file
+        else:
+            if not os.path.isfile(filename):
+                raise ReplaceConfigException("File {} not found".format(filename))
+
+        try:
+            transfer_result = file_transfer(
+                self._netmiko_device,
+                source_file=filename,
+                dest_file=self.candidate_cfg,
+                file_system=self._dest_file_system,
+                direction="put",
+                overwrite_file=True,
+            )
+            if not transfer_result['file_exists']:
+                raise ValueError()
+        except Exception:
+            msg = ('Could not transfer file. There was an error '
+                   'during transfer. Please make sure remote '
+                   'permissions are set.')
+            raise ReplaceConfigException(msg)
+
+        self.replace = True
+        self.loaded = True
+        if config and os.path.isfile(tmp_file):
+            os.remove(tmp_file)
+
+    def load_merge_candidate(self, filename=None, config=None):
+        self.replace = False
+        self.loaded = True
+
+        if not filename and not config:
+            raise MergeConfigException('filename or config param must be provided.')
+
+        self.merge_candidate += '\n'  # insert one extra line
+        if filename is not None:
+            with open(filename, "r") as f:
+                self.merge_candidate += f.read()
+        else:
+            self.merge_candidate += config
+
+    def _commit_merge(self):
+        try:
+            output = self._send_config(self.merge_candidate)
+            if output and 'Invalid command' in output:
+                raise MergeConfigException('Error while applying config!')
+        except Exception as e:
+            self.changed = True
+            self.rollback()
+            raise MergeConfigException(str(e))
+
+        self.changed = True
+        # clear the merge buffer
+        self.merge_candidate = ''
+
+    def _get_merge_diff(self):
+        diff = []
+        running_config = self.get_config(retrieve='running')['running']
+        running_lines = running_config.splitlines()
+        for line in self.merge_candidate.splitlines():
+            if line not in running_lines and line:
+                if line[0].strip() != '!':
+                    diff.append(line)
+        return '\n'.join(diff)
+        # the merge diff is not necessarily what needs to be loaded
+        # for example under NTP, as the `ntp commit` command might be
+        # alread configured, it is mandatory to be sent
+        # otherwise it won't take the new configuration - see #59
+        # https://github.com/napalm-automation/napalm-nxos/issues/59
+        # therefore this method will return the real diff
+        # but the merge_candidate will remain unchanged
+        # previously: self.merge_candidate = '\n'.join(diff)
 
     def _get_diff(self):
         """Get a diff between running config and a proposed file."""
@@ -1179,3 +1307,53 @@ class NXOSDriver(NXOSDriverBase):
                     continue
                 users[username]['sshkeys'].append(py23_compat.text_type(sshkeyvalue))
         return users
+
+    def get_network_instances(self, name=''):
+        """ get_network_instances implementation for NX-OS """
+
+        # command 'show vrf detail' returns all VRFs with detailed information
+        # format: list of dictionaries with keys such as 'vrf_name' and 'rd'
+        command = u'show vrf detail'
+        vrf_table_raw = self._get_command_table(command, u'TABLE_vrf', u'ROW_vrf')
+
+        # command 'show vrf interface' returns all interfaces including their assigned VRF
+        # format: list of dictionaries with keys 'if_name', 'vrf_name', 'vrf_id' and 'soo'
+        command = u'show vrf interface'
+        intf_table_raw = self._get_command_table(command, u'TABLE_if', u'ROW_if')
+
+        # create a dictionary with key = 'vrf_name' and value = list of interfaces
+        vrf_intfs = defaultdict(list)
+        for intf in intf_table_raw:
+            vrf_intfs[intf[u'vrf_name']].append(py23_compat.text_type(intf['if_name']))
+
+        vrfs = {}
+        for vrf in vrf_table_raw:
+            vrf_name = py23_compat.text_type(vrf.get('vrf_name'))
+            vrfs[vrf_name] = {}
+            vrfs[vrf_name][u'name'] = vrf_name
+
+            # differentiate between VRF type 'DEFAULT_INSTANCE' and 'L3VRF'
+            if vrf_name == u'default':
+                vrfs[vrf_name][u'type'] = u'DEFAULT_INSTANCE'
+            else:
+                vrfs[vrf_name][u'type'] = u'L3VRF'
+
+            vrfs[vrf_name][u'state'] = {u'route_distinguisher':
+                                        py23_compat.text_type(vrf.get('rd'))}
+
+            # convert list of interfaces (vrf_intfs[vrf_name]) to expected format
+            # format = dict with key = interface name and empty values
+            vrfs[vrf_name][u'interfaces'] = {}
+            vrfs[vrf_name][u'interfaces'][u'interface'] = dict.fromkeys(vrf_intfs[vrf_name], {})
+
+        # if name of a specific VRF was passed as an argument
+        # only return results for this particular VRF
+        if name:
+            if name in vrfs.keys():
+                return {py23_compat.text_type(name): vrfs[name]}
+            else:
+                return {}
+        # else return results for all VRFs
+        else:
+            return vrfs
+>>>>>>> origin/develop

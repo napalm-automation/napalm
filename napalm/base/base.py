@@ -79,6 +79,7 @@ class NetworkDriver(object):
                                                   host=self.hostname,
                                                   username=self.username,
                                                   password=self.password,
+                                                  timeout=self.timeout,
                                                   **netmiko_optional_args)
         except NetMikoTimeoutException:
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
