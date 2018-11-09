@@ -90,6 +90,17 @@ AFI_COMMAND_MAP = {
     "VPNv6 Flowspec": "ipv6 flowspec",
 }
 
+LLDP_CAPAB_TRANFORM_TABLE = {
+    'O': 'other',
+    'P': 'repeater',
+    'B': 'bridge',
+    'W': 'wlan-access-point',
+    'R': 'router',
+    'T': 'telephone',
+    'C': 'docsis-cable-device',
+    'S': 'station',
+}
+
 
 class IOSDriver(NetworkDriver):
     """NAPALM Cisco IOS Handler."""
@@ -797,7 +808,7 @@ class IOSDriver(NetworkDriver):
                 hostname = lldp_entry["remote_system_name"]
                 # Match IOS behaviour of taking remote chassis ID
                 # When lacking a system name (in show lldp neighbors)
-                if hostname == "N/A":
+                if not hostname:
                     hostname = lldp_entry["remote_chassis_id"]
                 lldp_dict = {"port": lldp_entry["remote_port"], "hostname": hostname}
                 lldp[intf_name].append(lldp_dict)
@@ -839,18 +850,32 @@ class IOSDriver(NetworkDriver):
 
         for idx, lldp_entry in enumerate(lldp_entries):
             local_intf = lldp_entry.pop("local_interface") or lldp_interfaces[idx]
-            # Convert any 'not advertised' to 'N/A'
+            # Convert any 'not advertised' to an empty string
             for field in lldp_entry:
                 if "not advertised" in lldp_entry[field]:
-                    lldp_entry[field] = "N/A"
+                    lldp_entry[field] = ""
             # Add field missing on IOS
-            lldp_entry["parent_interface"] = "N/A"
+            lldp_entry["parent_interface"] = ""
+            # Translate the capability fields
+            lldp_entry["remote_system_capab"] = self._transform_lldp_capab(
+                lldp_entry["remote_system_capab"]
+            )
+            lldp_entry["remote_system_enable_capab"] = self._transform_lldp_capab(
+                lldp_entry["remote_system_enable_capab"]
+            )
             # Turn the interfaces into their long version
             local_intf = canonical_interface_name(local_intf)
             lldp.setdefault(local_intf, [])
             lldp[local_intf].append(lldp_entry)
 
         return lldp
+
+    def _transform_lldp_capab(self, capabilities):
+        if capabilities and isinstance(capabilities, py23_compat.string_types):
+            capabilities = capabilities.strip().split(',')
+            return [LLDP_CAPAB_TRANFORM_TABLE[c.strip()] for c in capabilities]
+        else:
+            return []
 
     @staticmethod
     def parse_uptime(uptime_str):
