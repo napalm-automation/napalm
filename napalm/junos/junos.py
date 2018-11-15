@@ -57,6 +57,7 @@ from napalm.junos.utils import junos_views
 log = logging.getLogger(__file__)
 NO_LOCK, CONNECTION_LOCK, LOAD_LOCK = ("NO_LOCK", "CONNECTION_LOCK", "LOAD_LOCK")
 
+
 class JunOSDriver(NetworkDriver):
     """JunOSDriver class - inherits NetworkDriver from napalm.base."""
 
@@ -66,8 +67,9 @@ class JunOSDriver(NetworkDriver):
 
         Optional args:
             * config_lock (True/False): lock configuration DB after the connection is established.
-            * lock_disable (True/False): master configuration DB lock flag, overrides other lock setting (config_lock).
-                                         user is expected to manage locking externally if using the option.
+            * lock_disable (True/False): master lock flag.
+                                         overrides other lock setting(e.g. config_lock).
+                                         (if True, user is expected to manage locking externally)
             * port (int): custom port
             * key_file (string): SSH key file path
             * keepalive (int): Keepalive interval
