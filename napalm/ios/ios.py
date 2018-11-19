@@ -402,13 +402,32 @@ class IOSDriver(NetworkDriver):
         return wrapper
 
     @_file_prompt_quiet
-    def _commit_hostname_handler(self, cmd):
-        """Special handler for hostname change on commit operation."""
+    def _commit_handler(self, cmd):
+        """
+        Special handler for hostname change on commit operation. Also handles username removal
+        which prompts for confirmation (username removal prompts for each user...)
+        """
         current_prompt = self.device.find_prompt().strip()
         terminating_char = current_prompt[-1]
-        pattern = r"[>#{}]\s*$".format(terminating_char)
-        # Look exclusively for trailing pattern that includes '#' and '>'
-        output = self.device.send_command_expect(cmd, expect_string=pattern)
+        # Look for trailing pattern that includes '#' and '>'
+        pattern1 = r"[>#{}]\s*$".format(terminating_char)
+        # Handle special username removal pattern
+        pattern2 = r".*all username.*confirm"
+        patterns = r"(?:{}|{})".format(pattern1, pattern2)
+        output = self.device.send_command_expect(cmd, expect_string=patterns)
+        loop_count = 50
+        new_output = output
+        for i in range(loop_count):
+            if re.search(pattern2, new_output):
+                # Send confirmation if username removal
+                new_output = self.device.send_command_timing(
+                    "\n",
+                    strip_prompt=False,
+                    strip_command=False,
+                )
+                output += new_output
+            else:
+                break
         # Reset base prompt in case hostname changed
         self.device.set_base_prompt()
         return output
@@ -434,7 +453,7 @@ class IOSDriver(NetworkDriver):
                 cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
             else:
                 cmd = 'configure replace {} force'.format(cfg_file)
-            output = self._commit_hostname_handler(cmd)
+            output = self._commit_handler(cmd)
             if ('original configuration has been successfully restored' in output) or \
                ('error' in output.lower()) or \
                ('not a valid config file' in output.lower()) or \
@@ -451,7 +470,7 @@ class IOSDriver(NetworkDriver):
             if not self._check_file_exists(cfg_file):
                 raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
-            output = self._commit_hostname_handler(cmd)
+            output = self._commit_handler(cmd)
             if 'Invalid input detected' in output:
                 self.rollback()
                 err_header = "Configuration merge failed; automatic rollback attempted"
