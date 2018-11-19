@@ -1735,8 +1735,6 @@ class IOSDriver(NetworkDriver):
 
         for command in commands:
             output = self._send_command(command)
-            if 'Invalid input detected' in output:
-                raise ValueError('Unable to execute command "{}"'.format(command))
             cli_output.setdefault(command, {})
             cli_output[command] = output
 

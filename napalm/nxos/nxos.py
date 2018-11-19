@@ -755,47 +755,68 @@ class NXOSDriver(NXOSDriverBase):
             'Closing': {'is_up': True, 'is_enabled': True},
             'Shutdown': {'is_up': False, 'is_enabled': False},
         }
+        """
+        af_name_dict = {
+            'af-id': {'safi': "af-name"},
+            'af-id': {'safi': "af-name"},
+            'af-id': {'safi': "af-name"}
+        }
+        """
+        af_name_dict = {
+            1: {1: 'ipv4', 128: 'vpnv4'},
+            2: {1: 'ipv6', 128: 'vpnv6'},
+            25: {70: 'l2vpn'}
+        }
 
         try:
-            cmd = 'show bgp sessions vrf all'
+            cmd = 'show bgp all summary vrf all'
             vrf_list = self._get_command_table(cmd, 'TABLE_vrf', 'ROW_vrf')
         except CLIError:
             vrf_list = []
 
         for vrf_dict in vrf_list:
             result_vrf_dict = {
-                'router_id': py23_compat.text_type(vrf_dict['router-id']),
+                'router_id': py23_compat.text_type(vrf_dict['vrf-router-id']),
                 'peers': {}
             }
-            neighbors_list = vrf_dict.get('TABLE_neighbor', {}).get('ROW_neighbor', [])
 
-            if isinstance(neighbors_list, dict):
-                neighbors_list = [neighbors_list]
+            af_list = vrf_dict.get('TABLE_af', {}).get('ROW_af', [])
+            if isinstance(af_list, dict):
+                af_list = [af_list]
 
-            for neighbor_dict in neighbors_list:
-                neighborid = napalm.base.helpers.ip(neighbor_dict['neighbor-id'])
-                remoteas = napalm.base.helpers.as_number(neighbor_dict['remoteas'])
-                state = py23_compat.text_type(neighbor_dict['state'])
+            for af_dict in af_list:
+                saf_dict = af_dict.get('TABLE_saf', {}).get('ROW_saf', {})
+                neighbors_list = saf_dict.get('TABLE_neighbor', {}).get('ROW_neighbor', [])
 
-                bgp_state = bgp_state_dict[state]
+                if isinstance(neighbors_list, dict):
+                    neighbors_list = [neighbors_list]
 
-                result_peer_dict = {
-                    'local_as': int(vrf_dict['local-as']),
-                    'remote_as': remoteas,
-                    'remote_id': neighborid,
-                    'is_enabled': bgp_state['is_enabled'],
-                    'uptime': -1,
-                    'description': '',
-                    'is_up': bgp_state['is_up'],
-                    'address_family': {
-                        'ipv4': {
-                            'sent_prefixes': -1,
-                            'accepted_prefixes': -1,
-                            'received_prefixes': -1
+                for neighbor_dict in neighbors_list:
+                    neighborid = napalm.base.helpers.ip(neighbor_dict['neighborid'])
+                    remoteas = napalm.base.helpers.as_number(neighbor_dict['neighboras'])
+                    state = py23_compat.text_type(neighbor_dict['state'])
+
+                    bgp_state = bgp_state_dict[state]
+                    afid_dict = af_name_dict[int(af_dict['af-id'])]
+                    safi_name = afid_dict[int(saf_dict['safi'])]
+
+                    result_peer_dict = {
+                        'local_as': int(vrf_dict['vrf-local-as']),
+                        'remote_as': remoteas,
+                        'remote_id': neighborid,
+                        'is_enabled': bgp_state['is_enabled'],
+                        'uptime': -1,
+                        'description': '',
+                        'is_up': bgp_state['is_up'],
+                        'address_family': {
+                           safi_name: {
+                                'sent_prefixes': -1,
+                                'accepted_prefixes': -1,
+                                'received_prefixes': int(neighbor_dict['prefixreceived'])
+                            }
                         }
                     }
-                }
-                result_vrf_dict['peers'][neighborid] = result_peer_dict
+                    result_vrf_dict['peers'][neighborid] = result_peer_dict
 
             vrf_name = vrf_dict['vrf-name-out']
             if vrf_name == 'default':
