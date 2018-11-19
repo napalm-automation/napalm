@@ -22,7 +22,7 @@ def _get_validation_file(validation_file):
     try:
         with open(validation_file, 'r') as stream:
             try:
-                validation_source = yaml.load(stream)
+                validation_source = yaml.safe_load(stream)
             except yaml.YAMLError as exc:
                 raise ValidationException(exc)
     except IOError:
@@ -179,6 +179,9 @@ def compliance_report(cls, validation_file=None, validation_source=None):
     report = {}
     if validation_file:
         validation_source = _get_validation_file(validation_file)
+
+    # Otherwise we are going to modify a "live" object
+    validation_source = copy.deepcopy(validation_source)
 
     for validation_check in validation_source:
         for getter, expected_results in validation_check.items():

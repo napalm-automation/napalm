@@ -9,7 +9,7 @@ __author__ = 'David Barroso <dbarrosop@dravetech.com>'
 
 setup(
     name="napalm",
-    version='2.3.1',
+    version='2.3.3',
     packages=find_packages(exclude=("test*", )),
     test_suite='test_base',
     author="David Barroso, Kirk Byers, Mircea Ulinic",

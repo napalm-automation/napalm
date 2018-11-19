@@ -1,0 +1,9 @@
+Maximum number of vrfs allowed: 14
+   Vrf       RD        Protocols       State             Interfaces
+--------- --------- --------------- -------------------- -----------
+   ABC       1:0       ipv4,ipv6       v4:no routing,    Management1
+                                       v6:no routing
+
+   DEF       2:0       ipv4,ipv6       v4:no routing,    Ethernet1
+                                       v6:no routing
+

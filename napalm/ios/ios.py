@@ -125,7 +125,8 @@ class IOSDriver(NetworkDriver):
         self.device = None
         self.config_replace = False
 
-        self.profile = ["ios"]
+        self.platform = "ios"
+        self.profile = [self.platform]
         self.use_canonical_interface = optional_args.get('canonical_int', False)
 
     def open(self):
@@ -401,13 +402,32 @@ class IOSDriver(NetworkDriver):
         return wrapper
 
     @_file_prompt_quiet
-    def _commit_hostname_handler(self, cmd):
-        """Special handler for hostname change on commit operation."""
+    def _commit_handler(self, cmd):
+        """
+        Special handler for hostname change on commit operation. Also handles username removal
+        which prompts for confirmation (username removal prompts for each user...)
+        """
         current_prompt = self.device.find_prompt().strip()
         terminating_char = current_prompt[-1]
-        pattern = r"[>#{}]\s*$".format(terminating_char)
-        # Look exclusively for trailing pattern that includes '#' and '>'
-        output = self.device.send_command_expect(cmd, expect_string=pattern)
+        # Look for trailing pattern that includes '#' and '>'
+        pattern1 = r"[>#{}]\s*$".format(terminating_char)
+        # Handle special username removal pattern
+        pattern2 = r".*all username.*confirm"
+        patterns = r"(?:{}|{})".format(pattern1, pattern2)
+        output = self.device.send_command_expect(cmd, expect_string=patterns)
+        loop_count = 50
+        new_output = output
+        for i in range(loop_count):
+            if re.search(pattern2, new_output):
+                # Send confirmation if username removal
+                new_output = self.device.send_command_timing(
+                    "\n",
+                    strip_prompt=False,
+                    strip_command=False,
+                )
+                output += new_output
+            else:
+                break
         # Reset base prompt in case hostname changed
         self.device.set_base_prompt()
         return output
@@ -433,7 +453,7 @@ class IOSDriver(NetworkDriver):
                 cmd = 'configure replace {} force revert trigger error'.format(cfg_file)
             else:
                 cmd = 'configure replace {} force'.format(cfg_file)
-            output = self._commit_hostname_handler(cmd)
+            output = self._commit_handler(cmd)
             if ('original configuration has been successfully restored' in output) or \
                ('error' in output.lower()) or \
                ('not a valid config file' in output.lower()) or \
@@ -450,7 +470,7 @@ class IOSDriver(NetworkDriver):
             if not self._check_file_exists(cfg_file):
                 raise MergeConfigException("Merge source config file does not exist")
             cmd = 'copy {} running-config'.format(cfg_file)
-            output = self._commit_hostname_handler(cmd)
+            output = self._commit_handler(cmd)
             if 'Invalid input detected' in output:
                 self.rollback()
                 err_header = "Configuration merge failed; automatic rollback attempted"
@@ -1267,7 +1287,10 @@ class IOSDriver(NetworkDriver):
                         napalm.base.helpers.ip(neighbor['remote_addr']) == remote_addr):
                     neighbor_entry = neighbor
                     break
-            if not isinstance(neighbor_entry, dict):
+            # check for proper session data for the afi
+            if neighbor_entry is None:
+                continue
+            elif not isinstance(neighbor_entry, dict):
                 raise ValueError(msg="Couldn't find neighbor data for %s in afi %s" %
                                      (remote_addr, afi))
 
@@ -1712,8 +1735,6 @@ class IOSDriver(NetworkDriver):
 
         for command in commands:
             output = self._send_command(command)
-            if 'Invalid input detected' in output:
-                raise ValueError('Unable to execute command "{}"'.format(command))
             cli_output.setdefault(command, {})
             cli_output[command] = output
 
@@ -2151,24 +2172,21 @@ class IOSDriver(NetworkDriver):
             }
 
             for line in output.splitlines():
-                fields = line.split()
-                if 'Success rate is 0' in line:
-                    sent_and_received = re.search(r'\((\d*)/(\d*)\)', fields[5])
-                    probes_sent = int(sent_and_received.groups()[0])
-                    probes_received = int(sent_and_received.groups()[1])
+                if 'Success rate is' in line:
+                    sent_and_received = re.search(r'\((\d*)/(\d*)\)', line)
+                    probes_sent = int(sent_and_received.group(2))
+                    probes_received = int(sent_and_received.group(1))
                     ping_dict['success']['probes_sent'] = probes_sent
                     ping_dict['success']['packet_loss'] = probes_sent - probes_received
-                elif 'Success rate is' in line:
-                    sent_and_received = re.search(r'\((\d*)/(\d*)\)', fields[5])
-                    probes_sent = int(sent_and_received.groups()[0])
-                    probes_received = int(sent_and_received.groups()[1])
-                    min_avg_max = re.search(r'(\d*)/(\d*)/(\d*)', fields[9])
-                    ping_dict['success']['probes_sent'] = probes_sent
-                    ping_dict['success']['packet_loss'] = probes_sent - probes_received
+                    # If there were zero valid response packets, we are done
+                    if 'Success rate is 0 ' in line:
+                        break
+
+                    min_avg_max = re.search(r'(\d*)/(\d*)/(\d*)', line)
                     ping_dict['success'].update({
-                                    'rtt_min': float(min_avg_max.groups()[0]),
-                                    'rtt_avg': float(min_avg_max.groups()[1]),
-                                    'rtt_max': float(min_avg_max.groups()[2]),
+                                    'rtt_min': float(min_avg_max.group(1)),
+                                    'rtt_avg': float(min_avg_max.group(2)),
+                                    'rtt_max': float(min_avg_max.group(3)),
                     })
                     results_array = []
                     for i in range(probes_received):
