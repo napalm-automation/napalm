@@ -1947,6 +1947,7 @@ class JunOSDriver(NetworkDriver):
                 key: py23_compat.text_type(user_details[key])
                 for key in user_details.keys()
             }
+            user_details['level'] = int(user_details['level'])
             user_details['sshkeys'] = [
                 user_details.pop(key)
                 for key in ['ssh_rsa', 'ssh_dsa', 'ssh_ecdsa']
