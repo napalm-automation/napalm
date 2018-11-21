@@ -38,7 +38,7 @@ And instantiate it with any host and credentials::
 
 Like other drivers, ``mock`` takes optional arguments:
 
-- ``path`` - Required. Directory where results files are located
+- ``path`` - Optional directory where results files are located (defaults to the current directory).
 
 Open the driver::
 
