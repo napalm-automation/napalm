@@ -105,7 +105,7 @@ class MockDriver(NetworkDriver):
         self.hostname = hostname
         self.username = username
         self.password = password
-        self.path = optional_args["path"]
+        self.path = optional_args.get("path", "")
         self.profile = optional_args.get("profile", [])
         self.fail_on_open = optional_args.get("fail_on_open", False)
 

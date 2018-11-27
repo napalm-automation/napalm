@@ -1926,6 +1926,36 @@ class JunOSDriver(NetworkDriver):
 
         return ping_dict
 
+    def _get_root(self):
+        """get root user password."""
+        _DEFAULT_USER_DETAILS = {
+            'level': 20,
+            'password': '',
+            'sshkeys': []
+        }
+        root = {}
+        root_table = junos_views.junos_root_table(self.device)
+        root_table.get()
+        root_items = root_table.items()
+        for user_entry in root_items:
+            username = 'root'
+            user_details = _DEFAULT_USER_DETAILS.copy()
+            user_details.update({
+                d[0]: d[1] for d in user_entry[1] if d[1]
+            })
+            user_details = {
+                key: py23_compat.text_type(user_details[key])
+                for key in user_details.keys()
+            }
+            user_details['level'] = int(user_details['level'])
+            user_details['sshkeys'] = [
+                user_details.pop(key)
+                for key in ['ssh_rsa', 'ssh_dsa', 'ssh_ecdsa']
+                if user_details.get(key, '')
+            ]
+            root[username] = user_details
+        return root
+
     def get_users(self):
         """Return the configuration of the users."""
         users = {}
@@ -1947,6 +1977,7 @@ class JunOSDriver(NetworkDriver):
         users_table = junos_views.junos_users_table(self.device)
         users_table.get()
         users_items = users_table.items()
+        root_user = self._get_root()
 
         for user_entry in users_items:
             username = user_entry[0]
@@ -1969,7 +2000,7 @@ class JunOSDriver(NetworkDriver):
                 if user_details.get(key, '')
             ]
             users[username] = user_details
-
+        users.update(root_user)
         return users
 
     def get_optics(self):
