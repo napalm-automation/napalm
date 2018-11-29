@@ -29,8 +29,8 @@ from requests.exceptions import ConnectionError
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from netmiko import file_transfer
-from pynxos.device import Device as NXOSDevice
-from pynxos.errors import CLIError
+from nxapi_plumbing import Device as NXOSDevice
+from nxapi_plumbing import NXAPIAuthError, NXAPIConnectionError, NXAPICommandError
 
 # import NAPALM Base
 import napalm.base.helpers
@@ -46,7 +46,6 @@ import napalm.base.constants as c
 
 def ensure_netmiko_conn(func):
     """Decorator that ensures Netmiko connection exists."""
-
     def wrap_function(self, filename=None, config=None):
         try:
             netmiko_object = self._netmiko_device
@@ -62,13 +61,11 @@ def ensure_netmiko_conn(func):
                 netmiko_optional_args=netmiko_optional_args,
             )
         func(self, filename=filename, config=config)
-
     return wrap_function
 
 
 class NXOSDriverBase(NetworkDriver):
     """Common code shared between nx-api and nxos_ssh."""
-
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         if optional_args is None:
             optional_args = {}
@@ -122,9 +119,6 @@ class NXOSDriverBase(NetworkDriver):
             os.remove(tmp_file)
 
     def load_merge_candidate(self, filename=None, config=None):
-        self.replace = False
-        self.loaded = True
-
         if not filename and not config:
             raise MergeConfigException('filename or config param must be provided.')
 
@@ -134,6 +128,8 @@ class NXOSDriverBase(NetworkDriver):
                 self.merge_candidate += f.read()
         else:
             self.merge_candidate += config
+        self.replace = False
+        self.loaded = True
 
     def _commit_merge(self):
         try:
@@ -150,6 +146,15 @@ class NXOSDriverBase(NetworkDriver):
         self.merge_candidate = ''
 
     def _get_merge_diff(self):
+        """
+        The merge diff is not necessarily what needs to be loaded
+        for example under NTP, even though the 'ntp commit' command might be
+        alread configured, it is mandatory to be sent
+        otherwise it won't take the new configuration - see:
+        https://github.com/napalm-automation/napalm-nxos/issues/59
+        therefore this method will return the real diff (but not necessarily what is
+        being sent by the merge_load_config()
+        """
         diff = []
         running_config = self.get_config(retrieve='running')['running']
         running_lines = running_config.splitlines()
@@ -158,14 +163,6 @@ class NXOSDriverBase(NetworkDriver):
                 if line[0].strip() != '!':
                     diff.append(line)
         return '\n'.join(diff)
-        # the merge diff is not necessarily what needs to be loaded
-        # for example under NTP, as the `ntp commit` command might be
-        # alread configured, it is mandatory to be sent
-        # otherwise it won't take the new configuration - see #59
-        # https://github.com/napalm-automation/napalm-nxos/issues/59
-        # therefore this method will return the real diff
-        # but the merge_candidate will remain unchanged
-        # previously: self.merge_candidate = '\n'.join(diff)
 
     def _get_diff(self):
         """Get a diff between running config and a proposed file."""
@@ -218,10 +215,7 @@ class NXOSDriverBase(NetworkDriver):
             # clear the buffer
             self.merge_candidate = ''
         if self.loaded and self.replace:
-            try:
-                self._delete_file(self.candidate_cfg)
-            except CLIError:
-                pass
+            self._delete_file(self.candidate_cfg)
         self.loaded = False
 
     def _create_sot_file(self):
@@ -517,15 +511,16 @@ class NXOSDriver(NXOSDriverBase):
 
     def open(self):
         try:
-            self.device = NXOSDevice(self.hostname,
-                                     self.username,
-                                     self.password,
+            self.device = NXOSDevice(host=self.hostname,
+                                     username=self.username,
+                                     password=self.password,
                                      timeout=self.timeout,
                                      port=self.port,
                                      transport=self.transport,
-                                     verify=self.ssl_verify)
-            self.device.show('show hostname')
-        except (CLIError, ValueError):
+                                     verify=self.ssl_verify,
+                                     api_format="jsonrpc")
+            self._send_command('show hostname')
+        except (NXAPIConnectionError, NXAPIAuthError):
             # unable to open connection
             raise ConnectionException('Cannot connect to {}'.format(self.hostname))
 
@@ -601,22 +596,15 @@ class NXOSDriver(NXOSDriverBase):
         return time.time() - delta
 
     @staticmethod
-    def _get_reply_body(result):
-        # useful for debugging
-        ret = result.get('ins_api', {}).get('outputs', {}).get('output', {}).get('body', {})
-        # Original 'body' entry may have been an empty string, don't return that.
-        if not isinstance(ret, dict):
-            return {}
-        return ret
-
-    @staticmethod
     def _get_table_rows(parent_table, table_name, row_name):
-        # because if an inconsistent piece of shit.
-        # {'TABLE_intf': [{'ROW_intf': {
-        # vs
-        # {'TABLE_mac_address': {'ROW_mac_address': [{
-        # vs
-        # {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
+        """
+        Inconsistent behavior:
+        {'TABLE_intf': [{'ROW_intf': {
+        vs
+        {'TABLE_mac_address': {'ROW_mac_address': [{
+        vs
+        {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
+        """
         _table = parent_table.get(table_name)
         _table_rows = []
         if isinstance(_table, list):
@@ -631,7 +619,7 @@ class NXOSDriver(NXOSDriverBase):
         return self._get_table_rows(result, table_name, row_name)
 
     def _get_command_table(self, command, table_name, row_name):
-        json_output = self.device.show(command)
+        json_output = self._send_command(command)
         return self._get_reply_table(json_output, table_name, row_name)
 
     def is_alive(self):
@@ -676,28 +664,45 @@ class NXOSDriver(NXOSDriverBase):
             self.changed = False
 
     def get_facts(self):
-        pynxos_facts = self.device.facts
-        final_facts = {key: value for key, value in pynxos_facts.items() if
-                       key not in ['interfaces', 'uptime_string', 'vlans']}
+        facts = {}
+        facts['vendor'] = "Cisco"
 
-        if pynxos_facts['interfaces']:
-            final_facts['interface_list'] = pynxos_facts['interfaces']
-        else:
-            final_facts['interface_list'] = self.get_interfaces().keys()
+        show_version = self._send_command("show version")
+        facts['model'] = show_version.get("chassis_id", "")
+        facts['hostname'] = show_version.get("host_name", "")
+        facts['serial_number'] = show_version.get("proc_board_id", "")
+        facts['os_version'] = show_version.get("sys_ver_str", "")
 
-        final_facts['vendor'] = 'Cisco'
+        uptime_days = show_version.get("kern_uptm_days", 0)
+        uptime_hours = show_version.get("kern_uptm_hrs", 0)
+        uptime_mins = show_version.get("kern_uptm_mins", 0)
+        uptime_secs = show_version.get("kern_uptm_secs", 0)
+
+        uptime = 0
+        uptime += uptime_days * 24 * 60 * 60
+        uptime += uptime_hours * 60 * 60
+        uptime += uptime_mins * 60
+        uptime += uptime_secs
+
+        facts['uptime'] = uptime
+
+        iface_cmd = 'show interface'
+        interfaces_out = self._send_command(iface_cmd)
+        interfaces_body = interfaces_out['TABLE_interface']['ROW_interface']
+        interface_list = [intf_data['interface'] for intf_data in interfaces_body]
+        facts['interface_list'] = interface_list
 
         hostname_cmd = 'show hostname'
-        hostname = self.device.show(hostname_cmd).get('hostname')
+        hostname = self._send_command(hostname_cmd).get('hostname')
         if hostname:
-            final_facts['fqdn'] = hostname
+            facts['fqdn'] = hostname
 
-        return final_facts
+        return facts
 
     def get_interfaces(self):
         interfaces = {}
         iface_cmd = 'show interface'
-        interfaces_out = self.device.show(iface_cmd)
+        interfaces_out = self._send_command(iface_cmd)
         interfaces_body = interfaces_out['TABLE_interface']['ROW_interface']
 
         for interface_details in interfaces_body:
@@ -730,7 +735,7 @@ class NXOSDriver(NXOSDriverBase):
             lldp_raw_output = self.cli([command]).get(command, '')
             lldp_neighbors = napalm.base.helpers.textfsm_extractor(
                 self, 'lldp_neighbors', lldp_raw_output)
-        except CLIError:
+        except NXAPICommandError:
             lldp_neighbors = []
 
         for neighbor in lldp_neighbors:
@@ -771,7 +776,7 @@ class NXOSDriver(NXOSDriverBase):
         try:
             cmd = 'show bgp all summary vrf all'
             vrf_list = self._get_command_table(cmd, 'TABLE_vrf', 'ROW_vrf')
-        except CLIError:
+        except NXAPICommandError:
             vrf_list = []
 
         for vrf_dict in vrf_list:
@@ -837,7 +842,7 @@ class NXOSDriver(NXOSDriverBase):
             lldp_neighbors_table_str = self.cli([command]).get(command)
             # thus we need to take the raw text output
             lldp_neighbors_list = lldp_neighbors_table_str.splitlines()
-        except CLIError:
+        except NXAPICommandError:
             lldp_neighbors_list = []
 
         if not lldp_neighbors_list:
@@ -912,7 +917,7 @@ class NXOSDriver(NXOSDriverBase):
             raise TypeError('Please enter a valid list of commands!')
 
         for command in commands:
-            command_output = self.device.show(command, raw_text=True)
+            command_output = self._send_command(command, raw_text=True)
             cli_output[py23_compat.text_type(command)] = command_output
         return cli_output
 
