@@ -452,7 +452,7 @@ class BaseTestGetters(object):
 
         for user, user_details in get_users.items():
             assert helpers.test_model(models.users, user_details)
-            assert (0 <= user_details.get('level') <= 15)
+            assert (0 <= user_details.get('level') <= 15) or (user_details.get('level') == 20)
 
         return get_users
 
