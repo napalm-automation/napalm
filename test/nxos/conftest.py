@@ -52,8 +52,17 @@ class FakeNXOSDevice(BaseTestDouble):
     """NXOS device test double."""
     def __init__(self):
         super().__init__()
-        full_path = self.find_file('test_get_facts/normal/facts.json')
-        self.facts = self.read_json_file(full_path)
+
+    def _send_command(self, command, raw_text=False):
+        """
+        Wrapper for NX-API show method.
+
+        Allows more code sharing between NX-API and SSH.
+        """
+        return self.show(command, raw_text=raw_text)
+
+    def _send_command_list(self, commands):
+        return self.config_list(commands)
 
     def show(self, command, raw_text=False):
         """Fake show."""
