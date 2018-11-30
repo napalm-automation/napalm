@@ -1,10 +1,12 @@
 {
-    "Eth2/2": [
+    "Ethernet2/2": [
         {"hostname": "nxos2.madeupdomain.com", "port": "Eth2/2"}], 
-    "Eth2/3": [
+    "Ethernet2/3": [
         {"hostname": "nxos2.madeupdomain.com", "port": "Eth2/3"}], 
-    "Eth2/1": [
+    "Ethernet2/1": [
         {"hostname": "nxos2.madeupdomain.com", "port": "Eth2/1"}], 
-    "Eth2/4": [
-        {"hostname": "nxos2.madeupdomain.com", "port": "Eth2/4"}]
+    "Ethernet2/4": [
+        {"hostname": "nxos2.madeupdomain.com", "port": "Eth2/4"}],
+    "Ethernet1/6": [
+        {"hostname": "bigip.example.com", "port": "1/2.1"}]
 }
