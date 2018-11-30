@@ -23,11 +23,9 @@ import socket
 from netaddr import IPAddress
 
 # import NAPALM Base
-import napalm.base.helpers
+from napalm.base import helpers
+from napalm.base.exceptions import CommandErrorException, ReplaceConfigException
 from napalm.base.utils import py23_compat
-from napalm.base.exceptions import CommandErrorException
-from napalm.base.exceptions import ReplaceConfigException
-from napalm.base.helpers import canonical_interface_name
 from napalm.nxos import NXOSDriverBase
 
 # Easier to store these as constants
@@ -128,7 +126,7 @@ def parse_intf_section(interface):
     match = re.search(re_mac, interface, flags=re.M)
     if match:
         mac_address = match.group('mac_address')
-        mac_address = napalm.base.helpers.mac(mac_address)
+        mac_address = helpers.mac(mac_address)
     else:
         mac_address = ""
 
@@ -283,7 +281,7 @@ def bgp_table_parser(bgp_table):
             peer_ip: {
                 "is_enabled": is_enabled,
                 "uptime": uptime,
-                "remote_as": napalm.base.helpers.as_number(remote_as),
+                "remote_as": helpers.as_number(remote_as),
                 "is_up": is_up,
                 "description": "",
                 "received_prefixes": received_prefixes,
@@ -322,7 +320,7 @@ def bgp_summary_parser(bgp_summary):
     bgp_summary_dict['afi'] = afi
 
     local_as = bgp_summary_dict['local_as']
-    local_as = napalm.base.helpers.as_number(local_as)
+    local_as = helpers.as_number(local_as)
 
     match = re.search(IPV4_ADDR_REGEX, bgp_summary_dict['router_id'])
     if not match:
@@ -561,7 +559,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 continue
             interface = line.split()[0]
             # Return canonical interface name
-            interface_list.append(canonical_interface_name(interface))
+            interface_list.append(helpers.canonical_interface_name(interface))
 
         return {
             'uptime': int(uptime),
@@ -858,7 +856,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 raise ValueError("Invalid MAC Address detected: {}".format(mac))
             entry = {
                 'interface': interface,
-                'mac': napalm.base.helpers.mac(mac),
+                'mac': helpers.mac(mac),
                 'ip': address,
                 'age': age
             }
@@ -1044,7 +1042,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             else:
                 active = False
             return {
-                'mac': napalm.base.helpers.mac(mac),
+                'mac': helpers.mac(mac),
                 'interface': interface,
                 'vlan': int(vlan),
                 'static': static,
@@ -1108,7 +1106,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         snmp_information = {}
         command = 'show running-config'
         output = self._send_command(command)
-        snmp_config = napalm.base.helpers.textfsm_extractor(self, 'snmp_config', output)
+        snmp_config = helpers.textfsm_extractor(self, 'snmp_config', output)
 
         if not snmp_config:
             return snmp_information
@@ -1161,7 +1159,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         users = {}
         command = 'show running-config'
         output = self._send_command(command)
-        section_username_tabled_output = napalm.base.helpers.textfsm_extractor(
+        section_username_tabled_output = helpers.textfsm_extractor(
             self, 'users', output)
 
         for user in section_username_tabled_output:
