@@ -58,5 +58,29 @@
             "remote_system_capab": "B, R",
             "remote_system_name": "bigip.example.com"
         }
+    ],
+    "Ethernet1/1": [
+        {
+            "remote_chassis_id": "0c0c.88f4.e708",
+            "remote_port": "Ethernet1/1",
+            "remote_port_description": "uplink to spine",
+            "remote_system_name": "leaf01",
+            "remote_system_description": "Cisco Nexus Operating System (NX-OS) Software 7.0(3)I6(1)",
+            "remote_system_capab": "B, R",
+            "remote_system_enable_capab": "B, R",
+            "parent_interface": "N/A"
+        }
+    ],
+    "Ethernet1/2": [
+        {
+            "remote_chassis_id": "0c0c.88b0.f508",
+            "remote_port": "Ethernet1/1",
+            "remote_port_description": "Ethernet1/1",
+            "remote_system_name": "leaf02",
+            "remote_system_description": "Cisco Nexus Operating System (NX-OS) Software 7.0(3)I6(1)",
+            "remote_system_capab": "B, R",
+            "remote_system_enable_capab": "B, R",
+            "parent_interface": "N/A"
+        }
     ]
 }
