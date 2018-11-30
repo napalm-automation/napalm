@@ -16,7 +16,6 @@
 from __future__ import unicode_literals
 
 # import stdlib
-from builtins import super
 import os
 import re
 import time
@@ -495,7 +494,13 @@ class NXOSDriverBase(NetworkDriver):
 
 class NXOSDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
-        super().__init__(hostname, username, password, timeout=timeout, optional_args=optional_args)
+        super(NXOSDriver, self).__init__(
+            hostname,
+            username,
+            password,
+            timeout=timeout,
+            optional_args=optional_args
+        )
         if optional_args is None:
             optional_args = {}
 
