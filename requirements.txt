@@ -12,3 +12,4 @@ pyIOSXR>=0.53
 junos-eznc>=2.2.0
 nxapi-plumbing>=0.5.2
 scp
+lxml

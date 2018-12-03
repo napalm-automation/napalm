@@ -29,7 +29,7 @@ from napalm.base.utils import py23_compat
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.helpers import canonical_interface_name
-from napalm.nxos import NXOSDriverBase
+from napalm.nxos_api.nxos_api import NXOSDriverBase
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
@@ -410,6 +410,9 @@ class NXOSSSHDriver(NXOSDriverBase):
         super().__init__(
             hostname, username, password, timeout=timeout, optional_args=optional_args
         )
+        if optional_args is None:
+            optional_args = {}
+        self.encoding = optional_args.get("encoding", "cli")
         self.platform = "nxos_ssh"
 
     def open(self):
