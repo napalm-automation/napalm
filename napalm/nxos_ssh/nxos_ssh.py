@@ -881,13 +881,9 @@ class NXOSSSHDriver(NXOSDriverBase):
                 }
             ]
         """
-        if vrf:
-            msg = 'VRF support has not been added for this getter on this platform.'
-            raise NotImplementedError(msg)
-
         arp_table = []
 
-        command = "show ip arp vrf default | exc INCOMPLETE"
+        command = "show ip arp vrf {} | exc INCOMPLETE".format(vrf or "default")
         output = self._send_command(command)
 
         separator = r"^Address\s+Age.*Interface.*$"
