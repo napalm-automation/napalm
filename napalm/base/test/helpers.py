@@ -23,8 +23,8 @@ def test_model(model, data):
         if py23_compat.PY2 and isinstance(data[key], long):  # noqa
             # Properly handle PY2 long
             correct_class = (
-                isinstance(data[key], long)
-                and isinstance(1, instance_class)  # noqa
+                isinstance(data[key], long)        # noqa
+                and isinstance(1, instance_class)
                 and correct_class
             )
         else:

@@ -890,8 +890,9 @@ class JunOSDriver(NetworkDriver):
             """
             try:
                 newlines = []
+                length = int(length)
                 for line in txt.splitlines():
-                    newlines.append(line[int(length) :])
+                    newlines.append(line[length:])
                 return "\n".join(newlines)
             except ValueError:
                 return txt
