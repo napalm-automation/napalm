@@ -855,7 +855,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             cli_output[py23_compat.text_type(command)] = output
         return cli_output
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=""):
         """
         Get arp table information.
 
@@ -881,6 +881,10 @@ class NXOSSSHDriver(NXOSDriverBase):
                 }
             ]
         """
+        if vrf:
+            msg = 'VRF support has not been added for this getter on this platform.'
+            raise NotImplementedError(msg)
+
         arp_table = []
 
         command = "show ip arp vrf default | exc INCOMPLETE"
