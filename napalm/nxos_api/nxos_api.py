@@ -42,7 +42,7 @@ from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.netmiko_helpers import netmiko_args
-from napalm.nxos import nxos_parser
+from napalm.nxos_api import nxos_parser
 import napalm.base.constants as c
 
 
@@ -799,53 +799,6 @@ NX-OSv is a demo version of the Nexus Operating System
                                             mins=uptime_mins, secs=uptime_secs)
 
         print(etree.tostring(show_version).decode())
-        #       <chassis_id>NX-OSv Chassis</chassis_id>
-        #    print(x.tag)
-        # facts["model"] = xxxx
-
-        # """
-        # <output>
-        #       <body>
-        #       <header_str>Cisco Nexus Operating System (NX-OS) Software
-        # TAC support: http://www.cisco.com/tac
-        # Documents: http://www.cisco.com/en/US/products/tsd_products_support_series_home.html
-        # Copyright (c) 2002-2016, Cisco Systems, Inc. All rights reserved.
-        # The copyrights to certain works contained herein are owned by
-        # other third parties and are used and distributed under license.
-        # Some parts of this software are covered under the GNU Public
-        # License. A copy of the license is available at
-        # http://www.gnu.org/licenses/gpl.html.
-        #
-        # NX-OSv is a demo version of the Nexus Operating System
-        # </header_str>
-        #       <loader_ver_str>N/A</loader_ver_str>
-        #       <kickstart_ver_str>7.3(1)D1(1) [build 7.3(1)D1(0.10)]</kickstart_ver_str>
-        #       <sys_ver_str>7.3(1)D1(1) [build 7.3(1)D1(0.10)]</sys_ver_str>
-        #       <kick_file_name>bootflash:///titanium-d1-kickstart.7.3.1.D1.0.10.bin</kick_file_name>
-        #       <kick_cmpl_time> 1/11/2016 16:00:00</kick_cmpl_time>
-        #       <kick_tmstmp>02/22/2016 23:39:33</kick_tmstmp>
-        #       <isan_file_name>bootflash:///titanium-d1.7.3.1.D1.0.10.bin</isan_file_name>
-        #       <isan_cmpl_time> 1/11/2016 16:00:00</isan_cmpl_time>
-        #       <isan_tmstmp>02/23/2016 01:43:36</isan_tmstmp>
-        #       <chassis_id>NX-OSv Chassis</chassis_id>
-        #       <module_id>NX-OSv Supervisor Module</module_id>
-        #       <cpu_name>Intel(R) Xeon(R) CPU E5-2670</cpu_name>
-        #       <memory>4002196</memory>
-        #       <mem_type>kB</mem_type>
-        #       <proc_board_id>TM6012EC74B</proc_board_id>
-        #       <host_name>nxos1</host_name>
-        #       <bootflash_size>1582402</bootflash_size>
-        #       <kern_uptm_days>69</kern_uptm_days>
-        #       <kern_uptm_hrs>1</kern_uptm_hrs>
-        #       <kern_uptm_mins>49</kern_uptm_mins>
-        #       <kern_uptm_secs>13</kern_uptm_secs>
-        #       <manufacturer>Cisco Systems, Inc.</manufacturer>
-        #      </body>
-        #       <input>show version</input>
-        #       <msg>Success</msg>
-        #       <code>200</code>
-        #     </output>
-        # """
 
     @staticmethod
     def _uptime_calc(days=0, hours=0, mins=0, secs=0):

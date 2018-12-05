@@ -29,6 +29,7 @@ from napalm.base.utils import py23_compat
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.helpers import canonical_interface_name
+from napalm.nxos_api import nxos_parser
 from napalm.nxos_api.nxos_api import NXOSDriverBase
 
 # Easier to store these as constants
@@ -544,12 +545,29 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def get_facts(self):
         """Return a set of facts from the devices."""
-        # default values.
+        namespaces = {
+            None: 'http://www.cisco.com/nxos:1.0:sysmgrcli',
+            'nf': 'urn:ietf:params:xml:ns:netconf:base:1.0'
+        }
+
+        cmd = "show version"
+        cmd_xml = "{} | xml".format(cmd)
+        show_version_xml = self._send_command(cmd_xml)
+        if '% Invalid command' in show_version_xml:
+            return self._get_facts_cli()
+
+        show_version = nxos_parser.xml_pipe_normalization(show_version_xml)
+        import ipdb
+        ipdb.set_trace()
+        facts_dict = nxos_parser.xml_parse_show_version(show_version, namespaces=namespaces)
+
+    def _get_facts_cli(self):
+        """Pipe XML failed fall-back to legacy screen-scraping."""
         vendor = "Cisco"
         uptime = -1
         serial_number, fqdn, os_version, hostname, domain_name, model = ("",) * 6
 
-        # obtain output from device
+        show_ver = self._send_command("show version")
         show_ver = self._send_command("show version")
         show_hosts = self._send_command("show hosts")
         show_int_status = self._send_command("show interface status")

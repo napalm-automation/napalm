@@ -48,4 +48,4 @@ def xml_parse_show_version(xml_output, namespaces=None):
 
     from pprint import pprint
     pprint(facts)
-
+    return facts
