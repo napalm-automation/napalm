@@ -42,6 +42,7 @@ from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.netmiko_helpers import netmiko_args
+from napalm.nxos import nxos_parser
 import napalm.base.constants as c
 
 
@@ -708,10 +709,100 @@ class NXOSAPIDriver(NXOSDriverBase):
             self.changed = False
 
     def _get_facts_xml(self):
+        import ipdb
+        ipdb.set_trace()
         facts = {}
         facts["vendor"] = "Cisco"
         show_version = self._send_command("show version")
+        namespaces = {
+            None: 'http://www.cisco.com/nxos:1.0:sysmgrcli', 
+            'nf': 'urn:ietf:params:xml:ns:netconf:base:1.0'
+        }
+
+        show_version1 = """
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<nf:rpc-reply xmlns:nf="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns="http://www.cisco.com/nxos:1.0:sysmgrcli">
+ <nf:data>
+  <show>
+   <version>
+    <__XML__OPT_Cmd_sysmgr_show_version___readonly__>
+     <__readonly__>
+      <header_str>Cisco Nexus Operating System (NX-OS) Software
+TAC support: http://www.cisco.com/tac
+Documents: http://www.cisco.com/en/US/products/ps9372/tsd_products_support_series_home.html
+Copyright (c) 2002-2016, Cisco Systems, Inc. All rights reserved.
+The copyrights to certain works contained herein are owned by
+other third parties and are used and distributed under license.
+Some parts of this software are covered under the GNU Public
+License. A copy of the license is available at
+http://www.gnu.org/licenses/gpl.html.
+
+NX-OSv is a demo version of the Nexus Operating System
+</header_str>
+      <loader_ver_str>N/A</loader_ver_str>
+      <kickstart_ver_str>7.3(1)D1(1) [build 7.3(1)D1(0.10)]</kickstart_ver_str>
+      <sys_ver_str>7.3(1)D1(1) [build 7.3(1)D1(0.10)]</sys_ver_str>
+      <kick_file_name>bootflash:///titanium-d1-kickstart.7.3.1.D1.0.10.bin</kick_file_name>
+      <kick_cmpl_time> 1/11/2016 16:00:00</kick_cmpl_time>
+      <kick_tmstmp>02/22/2016 23:39:33</kick_tmstmp>
+      <isan_file_name>bootflash:///titanium-d1.7.3.1.D1.0.10.bin</isan_file_name>
+      <isan_cmpl_time> 1/11/2016 16:00:00</isan_cmpl_time>
+      <isan_tmstmp>02/23/2016 01:43:36</isan_tmstmp>
+      <chassis_id>NX-OSv Chassis</chassis_id>
+      <module_id>NX-OSv Supervisor Module</module_id>
+      <cpu_name>Intel(R) Xeon(R) CPU E5-2670</cpu_name>
+      <memory>4002196</memory>
+      <mem_type>kB</mem_type>
+      <proc_board_id>TM6012EC74B</proc_board_id>
+      <host_name>nxos1</host_name>
+      <bootflash_size>1582402</bootflash_size>
+      <kern_uptm_days>90</kern_uptm_days>
+      <kern_uptm_hrs>1</kern_uptm_hrs>
+      <kern_uptm_mins>13</kern_uptm_mins>
+      <kern_uptm_secs>55</kern_uptm_secs>
+      <manufacturer>Cisco Systems, Inc.</manufacturer>
+     </__readonly__>
+    </__XML__OPT_Cmd_sysmgr_show_version___readonly__>
+   </version>
+  </show>
+ </nf:data>
+</nf:rpc-reply>
+"""
+        foo = """]]>]]>"""
+
+        show_version1 = nxos_parser.xml_pipe_normalization(show_version1)
+        nxos_parser.xml_parse_show_version(show_version1)
+        nxos_parser.xml_parse_show_version(show_version)
+        test1 = show_version1.find(".//chassis_id", namespaces=namespaces)
+        facts["model"] = show_version.find("./body/chassis_id").text
+        facts["hostname"] = show_version.find("./body/host_name").text
+        facts["serial_number"] = show_version.find("./body/proc_board_id").text
+        facts["os_version"] = show_version.find("./body/sys_ver_str").text
+
+        uptime_days = show_version.find("./body/kern_uptm_days").text
+        uptime_hours = show_version.find("./body/kern_uptm_hrs").text
+        uptime_mins = show_version.find("./body/kern_uptm_mins").text
+        uptime_secs = show_version.find("./body/kern_uptm_secs").text
+
+        uptime_list = []
+        ipdb.set_trace()
+        for element in (uptime_days, uptime_hours, uptime_mins, uptime_secs):
+            try:
+                element = int(element)
+            except ValueError:
+                element = 0
+            finally:
+                uptime_list.append(element)
+        uptime_days, uptime_hours, uptime_mins, uptime_secs = uptime_list
+
+        facts["uptime"] = self._uptime_calc(days=uptime_days, hours=uptime_hours, 
+                                            mins=uptime_mins, secs=uptime_secs)
+
         print(etree.tostring(show_version).decode())
+        #       <chassis_id>NX-OSv Chassis</chassis_id>
+        #    print(x.tag)
+        # facts["model"] = xxxx
+
         # """
         # <output>
         #       <body>
@@ -756,6 +847,15 @@ class NXOSAPIDriver(NXOSDriverBase):
         #     </output>
         # """
 
+    @staticmethod
+    def _uptime_calc(days=0, hours=0, mins=0, secs=0):
+        uptime = 0
+        uptime += days * 24 * 60 * 60
+        uptime += hours * 60 * 60
+        uptime += mins * 60
+        uptime += secs
+        return uptime
+
     def _get_facts_jsonrpc(self):
         facts = {}
         facts["vendor"] = "Cisco"
@@ -771,13 +871,8 @@ class NXOSAPIDriver(NXOSDriverBase):
         uptime_mins = show_version.get("kern_uptm_mins", 0)
         uptime_secs = show_version.get("kern_uptm_secs", 0)
 
-        uptime = 0
-        uptime += uptime_days * 24 * 60 * 60
-        uptime += uptime_hours * 60 * 60
-        uptime += uptime_mins * 60
-        uptime += uptime_secs
-
-        facts["uptime"] = uptime
+        facts["uptime"] = self._uptime_calc(days=uptime_days, hours=uptime_hours, 
+                                       mins=uptime_mins, secs=uptime_secs)
 
         iface_cmd = "show interface"
         interfaces_out = self._send_command(iface_cmd)
