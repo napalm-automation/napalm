@@ -771,9 +771,9 @@ NX-OSv is a demo version of the Nexus Operating System
         foo = """]]>]]>"""
 
         show_version1 = nxos_parser.xml_pipe_normalization(show_version1)
-        nxos_parser.xml_parse_show_version(show_version1)
-        nxos_parser.xml_parse_show_version(show_version)
-        test1 = show_version1.find(".//chassis_id", namespaces=namespaces)
+        facts_dict1 = nxos_parser.xml_parse_show_version(show_version1, namespaces=namespaces)
+        facts_dict2 = nxos_parser.xml_parse_show_version(show_version)
+
         facts["model"] = show_version.find("./body/chassis_id").text
         facts["hostname"] = show_version.find("./body/host_name").text
         facts["serial_number"] = show_version.find("./body/proc_board_id").text

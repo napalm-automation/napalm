@@ -24,12 +24,20 @@ def xml_parse_show_version(xml_output, namespaces=None):
     hostname = xml_output.find(".//host_name", namespaces=namespaces)
     serial_number = xml_output.find(".//proc_board_id", namespaces=namespaces)
     os_version = xml_output.find(".//sys_ver_str", namespaces=namespaces)
+    uptime_days = xml_output.find(".//kern_uptm_days", namespaces=namespaces)
+    uptime_hours = xml_output.find(".//kern_uptm_hrs", namespaces=namespaces)
+    uptime_mins = xml_output.find(".//kern_uptm_mins", namespaces=namespaces)
+    uptime_secs = xml_output.find(".//kern_uptm_secs", namespaces=namespaces)
 
     facts = {
         "model": model,
         "hostname": hostname,
-        "serial_number", serial_number,
+        "serial_number": serial_number,
         "os_version": os_version,
+        "uptime_days": uptime_days,
+        "uptime_hours": uptime_hours,
+        "uptime_mins": uptime_mins,
+        "uptime_secs": uptime_secs,
     }
 
     for k, v in facts.items():
@@ -41,7 +49,3 @@ def xml_parse_show_version(xml_output, namespaces=None):
     from pprint import pprint
     pprint(facts)
 
-    # uptime_days = xml_output.find("./body/kern_uptm_days").text
-    # uptime_hours = xml_output.find("./body/kern_uptm_hrs").text
-    # uptime_mins = xml_output.find("./body/kern_uptm_mins").text
-    # uptime_secs = xml_output.find("./body/kern_uptm_secs").text
