@@ -760,11 +760,13 @@ class JunOSDriver(NetworkDriver):
                 'EX9208': rpc_call_without_information,
                 'EX3400': rpc_call_without_information,
                 'EX4300-48P': rpc_call_without_information,
+                'EX4300-32F': rpc_call_without_information,
                 'EX4600-40F': rpc_call_without_information,
                 'QFX5100-48S-6Q': rpc_call_without_information,
                 'QFX5110-48S-4C': rpc_call_without_information,
                 'QFX10002-36Q': rpc_call_without_information,
                 'QFX10008': rpc_call_without_information,
+                'EX2300-48T': rpc_call_without_information,
                 'EX2300-24P': rpc_call_without_information,
                 'EX2300-C-12P': rpc_call_without_information
             },
