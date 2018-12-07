@@ -1477,14 +1477,14 @@ class JunOSDriver(NetworkDriver):
 
     def get_interfaces_ip(self, vrf=""):
         """Return the configured IP addresses."""
-        if vrf:
-            msg = 'VRF support has not been added for this getter on this platform.'
-            raise NotImplementedError(msg)
-
         interfaces_ip = {}
 
+        vrf_args = {}
+        if vrf and vrf != "all":
+            vrf_args["routing-instance"] = vrf
+
         interface_table = junos_views.junos_ip_interfaces_table(self.device)
-        interface_table.get()
+        interface_table.get(**vrf_args)
         interface_table_items = interface_table.items()
 
         _FAMILY_VMAP_ = {
