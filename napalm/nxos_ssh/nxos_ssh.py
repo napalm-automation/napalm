@@ -986,13 +986,9 @@ class NXOSSSHDriver(NXOSDriverBase):
             }
         }
         """
-        if vrf:
-            msg = 'VRF support has not been added for this getter on this platform.'
-            raise NotImplementedError(msg)
-
         interfaces_ip = {}
-        ipv4_command = "show ip interface vrf default"
-        ipv6_command = "show ipv6 interface vrf default"
+        ipv4_command = "show ip interface vrf {}".format(vrf or "default")
+        ipv6_command = "show ipv6 interface vrf {}".format(vrf or "default")
         output_v4 = self._send_command(ipv4_command)
         output_v6 = self._send_command(ipv6_command)
 
