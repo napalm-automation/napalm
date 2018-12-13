@@ -92,7 +92,7 @@ class JunOSDriver(NetworkDriver):
 
         # Define locking method
         self.lock_disable = optional_args.get('lock_disable', False)
-        self.connection_lock = optional_args.get('config_lock', False)
+        self.session_config_lock = optional_args.get('config_lock', False)
 
         if self.key_file:
             self.device = Device(hostname,
@@ -124,12 +124,12 @@ class JunOSDriver(NetworkDriver):
             # ValueError: requested attribute name cu already exists
             del self.device.cu
         self.device.bind(cu=Config)
-        if not self.lock_disable and self.connection_lock:
+        if not self.lock_disable and self.session_config_lock:
             self._lock()
 
     def close(self):
         """Close the connection."""
-        if not self.lock_disable and self.connection_lock:
+        if not self.lock_disable and self.session_config_lock:
             self._unlock()
         self.device.close()
 
@@ -214,7 +214,7 @@ class JunOSDriver(NetworkDriver):
             with open(filename) as f:
                 configuration = f.read()
 
-        if not self.lock_disable and not self.locked:
+        if not self.lock_disable and not self.session_config_lock:
             # if not locked during connection time, will try to lock
             self._lock()
 
@@ -255,13 +255,13 @@ class JunOSDriver(NetworkDriver):
         """Commit configuration."""
         commit_args = {'comment': message} if message else {}
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
-        if not self.lock_disable and self.locked:
+        if not self.lock_disable and not self.session_config_lock:
             self._unlock()
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
         self.device.cu.rollback(rb_id=0)
-        if not self.lock_disable and self.locked:
+        if not self.lock_disable and not self.session_config_lock:
             self._unlock()
 
     def rollback(self):
