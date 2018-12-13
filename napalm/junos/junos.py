@@ -55,7 +55,6 @@ from napalm.base.exceptions import UnlockError
 from napalm.junos.utils import junos_views
 
 log = logging.getLogger(__file__)
-NO_LOCK, CONNECTION_LOCK, LOAD_LOCK = ("NO_LOCK", "CONNECTION_LOCK", "LOAD_LOCK")
 
 
 class JunOSDriver(NetworkDriver):
@@ -67,9 +66,8 @@ class JunOSDriver(NetworkDriver):
 
         Optional args:
             * config_lock (True/False): lock configuration DB after the connection is established.
-            * lock_disable (True/False): master lock flag.
-                                         overrides other lock setting(e.g. config_lock).
-                                         (if True, user is expected to manage locking externally)
+            * lock_disable (True/False): force lock config lock to be disabled (for external lock
+                management).
             * port (int): custom port
             * key_file (string): SSH key file path
             * keepalive (int): Keepalive interval
@@ -93,15 +91,8 @@ class JunOSDriver(NetworkDriver):
         self.ignore_warning = optional_args.get('ignore_warning', False)
 
         # Define locking method
-        lock_disable = optional_args.get('lock_disable', False)
-        connection_lock = optional_args.get('config_lock', False)
-
-        if lock_disable:
-            self.lock_method = NO_LOCK
-        elif connection_lock:
-            self.lock_method = CONNECTION_LOCK
-        else:
-            self.lock_method = LOAD_LOCK
+        self.lock_disable = optional_args.get('lock_disable', False)
+        self.connection_lock = optional_args.get('config_lock', False)
 
         if self.key_file:
             self.device = Device(hostname,
@@ -117,7 +108,8 @@ class JunOSDriver(NetworkDriver):
                                  port=self.port,
                                  ssh_config=self.ssh_config_file)
 
-        self.profile = ["junos"]
+        self.platform = "junos"
+        self.profile = [self.platform]
 
     def open(self):
         """Open the connection with the device."""
@@ -132,12 +124,12 @@ class JunOSDriver(NetworkDriver):
             # ValueError: requested attribute name cu already exists
             del self.device.cu
         self.device.bind(cu=Config)
-        if self.lock_method == CONNECTION_LOCK:
+        if not self.lock_disable and self.connection_lock:
             self._lock()
 
     def close(self):
         """Close the connection."""
-        if self.lock_method == CONNECTION_LOCK:
+        if not self.lock_disable and self.connection_lock:
             self._unlock()
         self.device.close()
 
@@ -222,11 +214,9 @@ class JunOSDriver(NetworkDriver):
             with open(filename) as f:
                 configuration = f.read()
 
-        if self.lock_method == LOAD_LOCK:
-            # if not locked during connection time
-            # will try to lock it if not already aquired
+        if not self.lock_disable and not self.locked:
+            # if not locked during connection time, will try to lock
             self._lock()
-            # and the device will be locked till first commit/rollback
 
         try:
             fmt = self._detect_config_format(configuration)
@@ -265,13 +255,13 @@ class JunOSDriver(NetworkDriver):
         """Commit configuration."""
         commit_args = {'comment': message} if message else {}
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
-        if self.lock_method == LOAD_LOCK:
+        if not self.lock_disable and self.locked:
             self._unlock()
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
         self.device.cu.rollback(rb_id=0)
-        if self.lock_method == LOAD_LOCK:
+        if not self.lock_disable and self.locked:
             self._unlock()
 
     def rollback(self):
@@ -850,7 +840,7 @@ class JunOSDriver(NetworkDriver):
             Process CLI output from Juniper device that
             doesn't allow piping the output.
             '''
-            if txt is not None:
+            if txt is None:
                 return txt
             _OF_MAP = OrderedDict()
             _OF_MAP['except'] = _except
