@@ -66,7 +66,7 @@ class JunOSDriver(NetworkDriver):
 
         Optional args:
             * config_lock (True/False): lock configuration DB after the connection is established.
-            * lock_disable (True/False): force lock config lock to be disabled (for external lock
+            * lock_disable (True/False): force configuration lock to be disabled (for external lock
                 management).
             * port (int): custom port
             * key_file (string): SSH key file path
