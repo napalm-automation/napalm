@@ -478,7 +478,7 @@ class IOSDriver(NetworkDriver):
                 raise MergeConfigException(merge_error)
 
         # Save config to startup (both replace and merge)
-        output += self.device.send_command_expect("write mem", delay_factor=2)
+        output += self.device.save_config()
 
     def discard_config(self):
         """Discard loaded candidate configurations."""
@@ -502,7 +502,7 @@ class IOSDriver(NetworkDriver):
         self.device.send_command_expect(cmd)
 
         # Save config to startup
-        self.device.send_command_expect("write mem", delay_factor=2)
+        self.device.save_config()
 
     def _inline_tcl_xfer(self, source_file=None, source_config=None, dest_file=None,
                          file_system=None):
