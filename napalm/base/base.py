@@ -510,6 +510,8 @@ class NetworkDriver(object):
         Returns a detailed view of the LLDP neighbors as a dictionary
         containing lists of dictionaries for each interface.
 
+        Empty entries are returned as an empty string (e.g. '') or list where applicable.
+
         Inner dictionaries contain fields:
 
             * parent_interface (string)
