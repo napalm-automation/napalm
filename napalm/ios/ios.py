@@ -90,17 +90,6 @@ AFI_COMMAND_MAP = {
     "VPNv6 Flowspec": "ipv6 flowspec",
 }
 
-LLDP_CAPAB_TRANFORM_TABLE = {
-    'O': 'other',
-    'P': 'repeater',
-    'B': 'bridge',
-    'W': 'wlan-access-point',
-    'R': 'router',
-    'T': 'telephone',
-    'C': 'docsis-cable-device',
-    'S': 'station',
-}
-
 
 class IOSDriver(NetworkDriver):
     """NAPALM Cisco IOS Handler."""
@@ -873,7 +862,7 @@ class IOSDriver(NetworkDriver):
     def _transform_lldp_capab(self, capabilities):
         if capabilities and isinstance(capabilities, py23_compat.string_types):
             capabilities = capabilities.strip().split(',')
-            return [LLDP_CAPAB_TRANFORM_TABLE[c.strip()] for c in capabilities]
+            return [C.LLDP_CAPAB_TRANFORM_TABLE[c.strip()] for c in capabilities]
         else:
             return []
 
