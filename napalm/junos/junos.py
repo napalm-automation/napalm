@@ -771,17 +771,20 @@ class JunOSDriver(NetworkDriver):
         """Detailed view of the LLDP neighbors."""
         lldp_neighbors = {}
 
-        lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
-        try:
-            lldp_table.get()
-        except RpcError as rpcerr:
-            # this assumes the library runs in an environment
-            # able to handle logs
-            # otherwise, the user just won't see this happening
-            log.error("Unable to retrieve the LLDP neighbors information:")
-            log.error(py23_compat.text_type(rpcerr))
-            return {}
-        interfaces = lldp_table.get().keys()
+        if not interface:
+            lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
+            try:
+                lldp_table.get()
+            except RpcError as rpcerr:
+                # this assumes the library runs in an environment
+                # able to handle logs
+                # otherwise, the user just won't see this happening
+                log.error("Unable to retrieve the LLDP neighbors information:")
+                log.error(py23_compat.text_type(rpcerr))
+                return {}
+            interfaces = lldp_table.get().keys()
+        else:
+            interfaces = [interface]
 
         if self.device.facts.get("switch_style") == "VLAN":
             lldp_table.GET_RPC = "get-lldp-interface-neighbors-information"
