@@ -757,6 +757,16 @@ class JunOSDriver(NetworkDriver):
 
         return neighbors
 
+    def _transform_lldp_capab(self, capabilities):
+        if capabilities and isinstance(capabilities, py23_compat.string_types):
+            return [
+                translation
+                for entry, translation in C.LLDP_CAPAB_TRANFORM_TABLE.items()
+                if entry in capabilities
+            ]
+        else:
+            return []
+
     def get_lldp_neighbors_detail(self, interface=""):
         """Detailed view of the LLDP neighbors."""
         lldp_neighbors = {}
@@ -815,8 +825,10 @@ class JunOSDriver(NetworkDriver):
                         ),
                         "remote_system_name": item.remote_system_name,
                         "remote_system_description": item.remote_system_description,
-                        "remote_system_capab": item.remote_system_capab,
-                        "remote_system_enable_capab": item.remote_system_enable_capab,
+                        "remote_system_capab": self._transform_lldp_capab(item.remote_system_capab),
+                        "remote_system_enable_capab": self._transform_lldp_capab(
+                            item.remote_system_enable_capab,
+                        )
                     }
                 )
 

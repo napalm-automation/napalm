@@ -18,3 +18,14 @@ OC_NETWORK_INSTANCE_TYPE_MAP = {
 # reading on some versions of JUNOS
 # https://github.com/napalm-automation/napalm/issues/491
 OPTICS_NULL_LEVEL_SPC = "- Inf"
+
+LLDP_CAPAB_TRANFORM_TABLE = {
+    "Other": "other",
+    "Repeater": "repeater",
+    "Bridge": "bridge",
+    "WLAN Access Point": "wlan-access-point",
+    "Router": "router",
+    "Telephone": "telephone",
+    "DOCSIS Cable Device": "docsis-cable-device",
+    "Station Only": "station",
+}
