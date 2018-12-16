@@ -712,20 +712,20 @@ class NXOSAPIDriver(NXOSDriverBase):
         show_version = self._send_command("show version")
 
         namespaces = {
-            None: 'http://www.cisco.com/nxos:1.0:sysmgrcli', 
-            'nf': 'urn:ietf:params:xml:ns:netconf:base:1.0'
+            None: "http://www.cisco.com/nxos:1.0:sysmgrcli",
+            "nf": "urn:ietf:params:xml:ns:netconf:base:1.0",
         }
 
         facts = nxos_parser.xml_show_version(show_version)
-        facts['vendor'] = "Cisco"
+        facts["vendor"] = "Cisco"
 
         show_hostname = self._send_command("show hostname")
         fqdn = nxos_parser.xml_show_hostname(show_hostname)
-        facts['fqdn'] = fqdn
+        facts["fqdn"] = fqdn
 
         show_int = self._send_command("show interface")
         intf_list = nxos_parser.xml_show_interface(show_int)
-        facts['interface_list'] = intf_list
+        facts["interface_list"] = intf_list
         return facts
 
     def _get_facts_jsonrpc(self):
@@ -743,8 +743,9 @@ class NXOSAPIDriver(NXOSDriverBase):
         uptime_mins = show_version.get("kern_uptm_mins", 0)
         uptime_secs = show_version.get("kern_uptm_secs", 0)
 
-        facts["uptime"] = nxos_parser.uptime_calc(days=uptime_days, hours=uptime_hours,
-                                                  mins=uptime_mins, secs=uptime_secs)
+        facts["uptime"] = nxos_parser.uptime_calc(
+            days=uptime_days, hours=uptime_hours, mins=uptime_mins, secs=uptime_secs
+        )
 
         iface_cmd = "show interface"
         interfaces_out = self._send_command(iface_cmd)

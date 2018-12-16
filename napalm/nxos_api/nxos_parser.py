@@ -3,18 +3,18 @@ from lxml import etree
 
 
 def uptime_calc(days=0, hours=0, mins=0, secs=0):
-     uptime = 0
-     uptime += days * 24 * 60 * 60
-     uptime += hours * 60 * 60
-     uptime += mins * 60
-     uptime += secs
-     return uptime
+    uptime = 0
+    uptime += days * 24 * 60 * 60
+    uptime += hours * 60 * 60
+    uptime += mins * 60
+    uptime += secs
+    return uptime
 
 
 def xml_pipe_normalization(xml_output):
     """Convert string output from '| xml' to lxml etree."""
     # NX-OS appends ]]>]]> to some of the '| xml' output (remove this)
-    pipe_xml_trailer  = r"]]>]]>"
+    pipe_xml_trailer = r"]]>]]>"
     xml_output = re.sub(pipe_xml_trailer, "", xml_output)
     xml_output = xml_output.strip()
 
@@ -22,12 +22,14 @@ def xml_pipe_normalization(xml_output):
     xml_output = xml_output.encode()
     return etree.fromstring(xml_output)
 
+
 def xml_show_hostname(xml_output, namespaces=None):
     """Unified XML Parser for 'hostname' output from NX-API or '| xml'."""
     if namespaces is None:
         namespaces = {}
     hostname = xml_output.find(".//hostname", namespaces=namespaces)
     return hostname.text if hostname is not None else ""
+
 
 def xml_show_interface(xml_output, namespaces=None):
     """Unified XML Parser for 'show interface brief' output from NX-API or '| xml'."""
@@ -39,6 +41,7 @@ def xml_show_interface(xml_output, namespaces=None):
         return [intf.text for intf in intf_list]
     else:
         return []
+
 
 def xml_show_version(xml_output, namespaces=None):
     """Unified XML Parser for 'show version' output from NX-API or '| xml'."""
@@ -67,9 +70,9 @@ def xml_show_version(xml_output, namespaces=None):
 
     for k, v in facts.items():
         if v is None:
-           raise ValueError("XML Parsing Error")
+            raise ValueError("XML Parsing Error")
         else:
-            if 'uptime' in k:
+            if "uptime" in k:
                 facts[k] = int(v.text)
             else:
                 facts[k] = v.text
@@ -81,6 +84,7 @@ def xml_show_version(xml_output, namespaces=None):
     uptime = uptime_calc(days=days, hours=hours, mins=mins, secs=secs)
     facts["uptime"] = uptime
     from pprint import pprint
+
     pprint(facts)
     return facts
 
@@ -138,15 +142,16 @@ if __name__ == "__main__":
     """
 
     import ipdb
+
     ipdb.set_trace()
     namespace_map = {
-        None: 'http://www.cisco.com/nxos:1.0:sysmgrcli',
-        'nf': 'urn:ietf:params:xml:ns:netconf:base:1.0'
+        None: "http://www.cisco.com/nxos:1.0:sysmgrcli",
+        "nf": "urn:ietf:params:xml:ns:netconf:base:1.0",
     }
 
     xml_output = xml_pipe_normalization(xml_out_from_cli)
     output = xml_parse_show_version(xml_output, namespaces=namespace_map)
- 
+
     xml_out_from_api = """
     <?xml version="1.0"?>
     <ins_api>
@@ -198,4 +203,3 @@ if __name__ == "__main__":
       </outputs>
     </ins_api>
     """
-    

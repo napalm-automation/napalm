@@ -546,20 +546,23 @@ class NXOSSSHDriver(NXOSDriverBase):
     def get_facts(self):
         """Return a set of facts from the devices."""
         namespaces = {
-            None: 'http://www.cisco.com/nxos:1.0:sysmgrcli',
-            'nf': 'urn:ietf:params:xml:ns:netconf:base:1.0'
+            None: "http://www.cisco.com/nxos:1.0:sysmgrcli",
+            "nf": "urn:ietf:params:xml:ns:netconf:base:1.0",
         }
 
         cmd = "show version"
         cmd_xml = "{} | xml".format(cmd)
         show_version_xml = self._send_command(cmd_xml)
-        if '% Invalid command' in show_version_xml:
+        if "% Invalid command" in show_version_xml:
             return self._get_facts_cli()
 
         show_version = nxos_parser.xml_pipe_normalization(show_version_xml)
         import ipdb
+
         ipdb.set_trace()
-        facts_dict = nxos_parser.xml_parse_show_version(show_version, namespaces=namespaces)
+        facts_dict = nxos_parser.xml_parse_show_version(
+            show_version, namespaces=namespaces
+        )
 
     def _get_facts_cli(self):
         """Pipe XML failed fall-back to legacy screen-scraping."""
