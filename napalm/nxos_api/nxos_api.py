@@ -42,7 +42,7 @@ from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.netmiko_helpers import netmiko_args
-from napalm.nxos_api import nxos_parser
+from napalm.nxos_api import nxos_parser, uptime_calc
 import napalm.base.constants as c
 
 
@@ -795,19 +795,11 @@ NX-OSv is a demo version of the Nexus Operating System
                 uptime_list.append(element)
         uptime_days, uptime_hours, uptime_mins, uptime_secs = uptime_list
 
-        facts["uptime"] = self._uptime_calc(days=uptime_days, hours=uptime_hours, 
-                                            mins=uptime_mins, secs=uptime_secs)
+        facts["uptime"] = uptime_calc(days=uptime_days, hours=uptime_hours, 
+                                      mins=uptime_mins, secs=uptime_secs)
 
         print(etree.tostring(show_version).decode())
 
-    @staticmethod
-    def _uptime_calc(days=0, hours=0, mins=0, secs=0):
-        uptime = 0
-        uptime += days * 24 * 60 * 60
-        uptime += hours * 60 * 60
-        uptime += mins * 60
-        uptime += secs
-        return uptime
 
     def _get_facts_jsonrpc(self):
         facts = {}
