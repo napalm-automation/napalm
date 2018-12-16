@@ -9,7 +9,7 @@
                 "router"
             ],
             "remote_port": "Eth2/2",
-            "parent_interface": "N/A",
+            "parent_interface": "",
             "remote_system_capab": [
                 "bridge",
                 "router"
@@ -27,7 +27,7 @@
                 "router"
             ],
             "remote_port": "Eth2/3",
-            "parent_interface": "N/A",
+            "parent_interface": "",
             "remote_system_capab": [
                 "bridge",
                 "router"
@@ -45,7 +45,7 @@
                 "router"
             ],
             "remote_port": "Eth2/1",
-            "parent_interface": "N/A",
+            "parent_interface": "",
             "remote_system_capab": [
                 "bridge",
                 "router"
@@ -63,7 +63,7 @@
                 "router"
             ],
             "remote_port": "Eth2/4",
-            "parent_interface": "N/A",
+            "parent_interface": "",
             "remote_system_capab": [
                 "bridge",
                 "router"
@@ -81,7 +81,7 @@
                 "router"
             ],
             "remote_port": "1/2.1",
-            "parent_interface": "N/A",
+            "parent_interface": "",
             "remote_system_capab": [
                 "bridge",
                 "router"
@@ -104,7 +104,7 @@
                 "bridge",
                 "router"
             ],
-            "parent_interface": "N/A"
+            "parent_interface": ""
         }
     ],
     "Ethernet1/2": [
@@ -122,7 +122,7 @@
                 "bridge",
                 "router"
             ],
-            "parent_interface": "N/A"
+            "parent_interface": ""
         }
     ]
 }
