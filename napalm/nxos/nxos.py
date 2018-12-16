@@ -562,6 +562,7 @@ class NXOSDriverBase(NetworkDriver):
         else:
             command = 'show lldp neighbors detail'
         lldp_entries = self._send_command(command, raw_text=True)
+        lldp_entries = py23_compat.text_type(lldp_entries)
         lldp_entries = napalm.base.helpers.textfsm_extractor(
             self, 'show_lldp_neighbors_detail', lldp_entries
         )
