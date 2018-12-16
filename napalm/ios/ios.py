@@ -37,8 +37,7 @@ from napalm.base.exceptions import (
     ConnectionClosedException,
     CommandErrorException,
 )
-from napalm.base.helpers import canonical_interface_name
-from napalm.base.helpers import textfsm_extractor
+from napalm.base.helpers import canonical_interface_name, transform_lldp_capab, textfsm_extractor
 from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.utils import py23_compat
 
@@ -846,10 +845,10 @@ class IOSDriver(NetworkDriver):
             # Add field missing on IOS
             lldp_entry["parent_interface"] = ""
             # Translate the capability fields
-            lldp_entry["remote_system_capab"] = self._transform_lldp_capab(
+            lldp_entry["remote_system_capab"] = transform_lldp_capab(
                 lldp_entry["remote_system_capab"]
             )
-            lldp_entry["remote_system_enable_capab"] = self._transform_lldp_capab(
+            lldp_entry["remote_system_enable_capab"] = transform_lldp_capab(
                 lldp_entry["remote_system_enable_capab"]
             )
             # Turn the interfaces into their long version
@@ -858,13 +857,6 @@ class IOSDriver(NetworkDriver):
             lldp[local_intf].append(lldp_entry)
 
         return lldp
-
-    def _transform_lldp_capab(self, capabilities):
-        if capabilities and isinstance(capabilities, py23_compat.string_types):
-            capabilities = capabilities.strip().split(',')
-            return [C.LLDP_CAPAB_TRANFORM_TABLE[c.strip()] for c in capabilities]
-        else:
-            return []
 
     @staticmethod
     def parse_uptime(uptime_str):
