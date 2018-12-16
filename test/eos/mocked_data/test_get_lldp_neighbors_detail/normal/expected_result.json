@@ -1,1 +1,660 @@
-{"Ethernet8": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:30:DE", "remote_system_enable_capab": "", "remote_port": "000f.532e.ced1", "parent_interface": "Ethernet8", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m3"}], "Ethernet9": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2E:D2", "remote_system_enable_capab": "", "remote_port": "000f.532e.f290", "parent_interface": "Ethernet9", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m4"}], "Ethernet2": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:30:34", "remote_system_enable_capab": "", "remote_port": "000f.532e.f181", "parent_interface": "Ethernet2", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m1"}], "Ethernet3": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.14.18-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:66", "remote_system_enable_capab": "", "remote_port": "000f.532e.f1c0", "parent_interface": "Ethernet3", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "ord78"}], "Ethernet1": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:30:34", "remote_system_enable_capab": "", "remote_port": "000f.532e.f180", "parent_interface": "Ethernet1", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m1"}], "Ethernet6": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:30:0C", "remote_system_enable_capab": "", "remote_port": "000f.532e.cc71", "parent_interface": "Ethernet6", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m2"}], "Ethernet7": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:30:DE", "remote_system_enable_capab": "", "remote_port": "000f.532e.ced0", "parent_interface": "Ethernet7", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m3"}], "Ethernet4": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.14.18-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:66", "remote_system_enable_capab": "", "remote_port": "000f.532e.f1c1", "parent_interface": "Ethernet4", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "ord78"}], "Ethernet5": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:30:0C", "remote_system_enable_capab": "", "remote_port": "000f.532e.cc70", "parent_interface": "Ethernet5", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m2"}], "Ethernet38": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:30:DA", "remote_system_enable_capab": "", "remote_port": "000f.532e.f641", "parent_interface": "Ethernet38", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m15"}], "Ethernet39": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:BC:0E:7D", "remote_system_enable_capab": "", "remote_port": "000f.5330.fed0", "parent_interface": "Ethernet39", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m16"}], "Ethernet18": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2D:72", "remote_system_enable_capab": "", "remote_port": "000f.532e.cbd1", "parent_interface": "Ethernet18", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m7"}], "Ethernet19": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:30:16", "remote_system_enable_capab": "", "remote_port": "000f.532e.f130", "parent_interface": "Ethernet19", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m8"}], "Ethernet14": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2E:6E", "remote_system_enable_capab": "", "remote_port": "000f.532e.cce1", "parent_interface": "Ethernet14", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m5"}], "Ethernet33": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:5E", "remote_system_enable_capab": "", "remote_port": "000f.532e.cf10", "parent_interface": "Ethernet33", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m14"}], "Ethernet16": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2D:6E", "remote_system_enable_capab": "", "remote_port": "000f.532e.cc61", "parent_interface": "Ethernet16", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m6"}], "Ethernet31": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:3E", "remote_system_enable_capab": "", "remote_port": "000f.532e.cb70", "parent_interface": "Ethernet31", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m13"}], "Ethernet10": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2E:D2", "remote_system_enable_capab": "", "remote_port": "000f.532e.f291", "parent_interface": "Ethernet10", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m4"}], "Ethernet37": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:30:DA", "remote_system_enable_capab": "", "remote_port": "000f.532e.f640", "parent_interface": "Ethernet37", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m15"}], "Ethernet34": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:5E", "remote_system_enable_capab": "", "remote_port": "000f.532e.cf11", "parent_interface": "Ethernet34", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m14"}], "Ethernet13": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2E:6E", "remote_system_enable_capab": "", "remote_port": "000f.532e.cce0", "parent_interface": "Ethernet13", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m5"}], "Ethernet32": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:3E", "remote_system_enable_capab": "", "remote_port": "000f.532e.cb71", "parent_interface": "Ethernet32", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m13"}], "Ethernet15": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2D:6E", "remote_system_enable_capab": "", "remote_port": "000f.532e.cc60", "parent_interface": "Ethernet15", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m6"}], "Ethernet30": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:BC", "remote_system_enable_capab": "", "remote_port": "000f.532e.f091", "parent_interface": "Ethernet30", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m12"}], "Ethernet17": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2D:72", "remote_system_enable_capab": "", "remote_port": "000f.532e.cbd0", "parent_interface": "Ethernet17", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m7"}], "Ethernet47": [{"remote_port_description": "To switch", "remote_system_description": "Juniper Networks, Inc. ex2200-48t-4g , version 12.3R6.6 Build date: 2014-03-13 07:02:54 UTC ", "remote_chassis_id": "5C:45:27:B4:90:00", "remote_system_enable_capab": "bridge, router", "remote_port": "\"597\"", "parent_interface": "Ethernet47", "remote_system_capab": "bridge, router", "remote_system_name": "ms01.bru01"}], "Ethernet46": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:BC:0D:D1", "remote_system_enable_capab": "", "remote_port": "000f.532b.cfe1", "parent_interface": "Ethernet46", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m19"}], "Ethernet45": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:BC:0D:D1", "remote_system_enable_capab": "", "remote_port": "000f.532b.cfe0", "parent_interface": "Ethernet45", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m19"}], "Ethernet44": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:BC:0C:9F", "remote_system_enable_capab": "", "remote_port": "000f.5327.0c21", "parent_interface": "Ethernet44", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m18"}], "Ethernet43": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:BC:0C:9F", "remote_system_enable_capab": "", "remote_port": "000f.5327.0c20", "parent_interface": "Ethernet43", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m18"}], "Ethernet42": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:BC:0C:B7", "remote_system_enable_capab": "", "remote_port": "000f.5331.abc1", "parent_interface": "Ethernet42", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m17"}], "Ethernet41": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:BC:0C:B7", "remote_system_enable_capab": "", "remote_port": "000f.5331.abc0", "parent_interface": "Ethernet41", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m17"}], "Ethernet40": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:BC:0E:7D", "remote_system_enable_capab": "", "remote_port": "000f.5330.fed1", "parent_interface": "Ethernet40", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m16"}], "Ethernet29": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:BC", "remote_system_enable_capab": "", "remote_port": "000f.532e.f090", "parent_interface": "Ethernet29", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m12"}], "Ethernet28": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:A2", "remote_system_enable_capab": "", "remote_port": "000f.532e.cb81", "parent_interface": "Ethernet28", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m11"}], "Ethernet21": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:C4", "remote_system_enable_capab": "", "remote_port": "000f.532e.e160", "parent_interface": "Ethernet21", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m9"}], "Ethernet20": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:30:16", "remote_system_enable_capab": "", "remote_port": "000f.532e.f131", "parent_interface": "Ethernet20", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m8"}], "Ethernet22": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:C4", "remote_system_enable_capab": "", "remote_port": "000f.532e.e161", "parent_interface": "Ethernet22", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m9"}], "Ethernet25": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:D0", "remote_system_enable_capab": "", "remote_port": "000f.532e.ccc0", "parent_interface": "Ethernet25", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m10"}], "Ethernet27": [{"remote_port_description": "eth2", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:A2", "remote_system_enable_capab": "", "remote_port": "000f.532e.cb80", "parent_interface": "Ethernet27", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m11"}], "Ethernet26": [{"remote_port_description": "eth3", "remote_system_description": "Linux 3.18.22-cloudflare x86_64", "remote_chassis_id": "2C:60:0C:AD:2F:D0", "remote_system_enable_capab": "", "remote_port": "000f.532e.ccc1", "parent_interface": "Ethernet26", "remote_system_capab": "bridge, router, wlanAccessPoint", "remote_system_name": "78m10"}]}
+{
+  "Ethernet8": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:30:DE",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.ced1",
+      "parent_interface": "Ethernet8",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m3"
+    }
+  ],
+  "Ethernet9": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2E:D2",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f290",
+      "parent_interface": "Ethernet9",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m4"
+    }
+  ],
+  "Ethernet2": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:30:34",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f181",
+      "parent_interface": "Ethernet2",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m1"
+    }
+  ],
+  "Ethernet3": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.14.18-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:66",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f1c0",
+      "parent_interface": "Ethernet3",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "ord78"
+    }
+  ],
+  "Ethernet1": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:30:34",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f180",
+      "parent_interface": "Ethernet1",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m1"
+    }
+  ],
+  "Ethernet6": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:30:0C",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cc71",
+      "parent_interface": "Ethernet6",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m2"
+    }
+  ],
+  "Ethernet7": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:30:DE",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.ced0",
+      "parent_interface": "Ethernet7",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m3"
+    }
+  ],
+  "Ethernet4": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.14.18-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:66",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f1c1",
+      "parent_interface": "Ethernet4",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "ord78"
+    }
+  ],
+  "Ethernet5": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:30:0C",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cc70",
+      "parent_interface": "Ethernet5",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m2"
+    }
+  ],
+  "Ethernet38": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:30:DA",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f641",
+      "parent_interface": "Ethernet38",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m15"
+    }
+  ],
+  "Ethernet39": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:BC:0E:7D",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.5330.fed0",
+      "parent_interface": "Ethernet39",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m16"
+    }
+  ],
+  "Ethernet18": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2D:72",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cbd1",
+      "parent_interface": "Ethernet18",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m7"
+    }
+  ],
+  "Ethernet19": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:30:16",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f130",
+      "parent_interface": "Ethernet19",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m8"
+    }
+  ],
+  "Ethernet14": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2E:6E",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cce1",
+      "parent_interface": "Ethernet14",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m5"
+    }
+  ],
+  "Ethernet33": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:5E",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cf10",
+      "parent_interface": "Ethernet33",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m14"
+    }
+  ],
+  "Ethernet16": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2D:6E",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cc61",
+      "parent_interface": "Ethernet16",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m6"
+    }
+  ],
+  "Ethernet31": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:3E",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cb70",
+      "parent_interface": "Ethernet31",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m13"
+    }
+  ],
+  "Ethernet10": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2E:D2",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f291",
+      "parent_interface": "Ethernet10",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m4"
+    }
+  ],
+  "Ethernet37": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:30:DA",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f640",
+      "parent_interface": "Ethernet37",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m15"
+    }
+  ],
+  "Ethernet34": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:5E",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cf11",
+      "parent_interface": "Ethernet34",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m14"
+    }
+  ],
+  "Ethernet13": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2E:6E",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cce0",
+      "parent_interface": "Ethernet13",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m5"
+    }
+  ],
+  "Ethernet32": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:3E",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cb71",
+      "parent_interface": "Ethernet32",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m13"
+    }
+  ],
+  "Ethernet15": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2D:6E",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cc60",
+      "parent_interface": "Ethernet15",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m6"
+    }
+  ],
+  "Ethernet30": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:BC",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f091",
+      "parent_interface": "Ethernet30",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m12"
+    }
+  ],
+  "Ethernet17": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2D:72",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cbd0",
+      "parent_interface": "Ethernet17",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m7"
+    }
+  ],
+  "Ethernet47": [
+    {
+      "remote_port_description": "To switch",
+      "remote_system_description": "Juniper Networks, Inc. ex2200-48t-4g , version 12.3R6.6 Build date: 2014-03-13 07:02:54 UTC ",
+      "remote_chassis_id": "5C:45:27:B4:90:00",
+      "remote_system_enable_capab": [
+        "bridge",
+        "router"
+      ],
+      "remote_port": "\"597\"",
+      "parent_interface": "Ethernet47",
+      "remote_system_capab": [
+        "bridge",
+        "router"
+      ],
+      "remote_system_name": "ms01.bru01"
+    }
+  ],
+  "Ethernet46": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:BC:0D:D1",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532b.cfe1",
+      "parent_interface": "Ethernet46",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m19"
+    }
+  ],
+  "Ethernet45": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:BC:0D:D1",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532b.cfe0",
+      "parent_interface": "Ethernet45",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m19"
+    }
+  ],
+  "Ethernet44": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:BC:0C:9F",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.5327.0c21",
+      "parent_interface": "Ethernet44",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m18"
+    }
+  ],
+  "Ethernet43": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:BC:0C:9F",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.5327.0c20",
+      "parent_interface": "Ethernet43",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m18"
+    }
+  ],
+  "Ethernet42": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:BC:0C:B7",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.5331.abc1",
+      "parent_interface": "Ethernet42",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m17"
+    }
+  ],
+  "Ethernet41": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:BC:0C:B7",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.5331.abc0",
+      "parent_interface": "Ethernet41",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m17"
+    }
+  ],
+  "Ethernet40": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:BC:0E:7D",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.5330.fed1",
+      "parent_interface": "Ethernet40",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m16"
+    }
+  ],
+  "Ethernet29": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:BC",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f090",
+      "parent_interface": "Ethernet29",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m12"
+    }
+  ],
+  "Ethernet28": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:A2",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cb81",
+      "parent_interface": "Ethernet28",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m11"
+    }
+  ],
+  "Ethernet21": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:C4",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.e160",
+      "parent_interface": "Ethernet21",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m9"
+    }
+  ],
+  "Ethernet20": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:30:16",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.f131",
+      "parent_interface": "Ethernet20",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m8"
+    }
+  ],
+  "Ethernet22": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:C4",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.e161",
+      "parent_interface": "Ethernet22",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m9"
+    }
+  ],
+  "Ethernet25": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:D0",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.ccc0",
+      "parent_interface": "Ethernet25",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m10"
+    }
+  ],
+  "Ethernet27": [
+    {
+      "remote_port_description": "eth2",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:A2",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.cb80",
+      "parent_interface": "Ethernet27",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m11"
+    }
+  ],
+  "Ethernet26": [
+    {
+      "remote_port_description": "eth3",
+      "remote_system_description": "Linux 3.18.22-cloudflare x86_64",
+      "remote_chassis_id": "2C:60:0C:AD:2F:D0",
+      "remote_system_enable_capab": [],
+      "remote_port": "000f.532e.ccc1",
+      "parent_interface": "Ethernet26",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "wlan-access-point"
+      ],
+      "remote_system_name": "78m10"
+    }
+  ]
+}
