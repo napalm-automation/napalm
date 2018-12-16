@@ -1,0 +1,787 @@
+<output>
+      <body>
+      <TABLE_interface>
+       <ROW_interface>
+        <interface>mgmt0</interface>
+        <state>up</state>
+        <admin_state>up</admin_state>
+        <eth_hw_desc>Ethernet</eth_hw_desc>
+        <eth_hw_addr>2cc2.6012.ec74</eth_hw_addr>
+        <eth_bia_addr>2cc2.6012.ec74</eth_bia_addr>
+        <eth_ip_addr>10.0.0.71</eth_ip_addr>
+        <eth_ip_mask>24</eth_ip_mask>
+        <eth_ip_prefix>10.0.0.0</eth_ip_prefix>
+        <eth_mtu>1500</eth_mtu>
+        <eth_bw>1000000</eth_bw>
+        <eth_dly>10</eth_dly>
+        <eth_reliability>242</eth_reliability>
+        <eth_txload>1</eth_txload>
+        <eth_rxload>1</eth_rxload>
+        <medium>broadcast</medium>
+        <eth_mode>routed</eth_mode>
+        <eth_duplex>full</eth_duplex>
+        <eth_speed>1000 Mb/s</eth_speed>
+        <eth_autoneg>on</eth_autoneg>
+        <eth_mdix>off</eth_mdix>
+        <eth_ethertype>0x0000</eth_ethertype>
+        <vdc_lvl_in_avg_bytes>104</vdc_lvl_in_avg_bytes>
+        <vdc_lvl_in_avg_pkts>0</vdc_lvl_in_avg_pkts>
+        <vdc_lvl_out_avg_bytes>128</vdc_lvl_out_avg_bytes>
+        <vdc_lvl_out_avg_pkts>0</vdc_lvl_out_avg_pkts>
+        <vdc_lvl_in_pkts>5575947</vdc_lvl_in_pkts>
+        <vdc_lvl_in_ucast>5428900</vdc_lvl_in_ucast>
+        <vdc_lvl_in_mcast>147042</vdc_lvl_in_mcast>
+        <vdc_lvl_in_bcast>5</vdc_lvl_in_bcast>
+        <vdc_lvl_in_bytes>573385866</vdc_lvl_in_bytes>
+        <vdc_lvl_out_pkts>8611256</vdc_lvl_out_pkts>
+        <vdc_lvl_out_ucast>8464215</vdc_lvl_out_ucast>
+        <vdc_lvl_out_mcast>147038</vdc_lvl_out_mcast>
+        <vdc_lvl_out_bcast>3</vdc_lvl_out_bcast>
+        <vdc_lvl_out_bytes>1354560227</vdc_lvl_out_bytes>
+       </ROW_interface>
+       <ROW_interface>
+        <interface>Ethernet2/1</interface>
+        <state>up</state>
+        <admin_state>up</admin_state>
+        <share_state>Dedicated</share_state>
+        <eth_hw_desc> Ethernet</eth_hw_desc>
+        <eth_hw_addr>000c.29d1.d56b</eth_hw_addr>
+        <eth_bia_addr>2cc2.605e.5dba</eth_bia_addr>
+        <eth_mtu>1500</eth_mtu>
+        <eth_bw>1000000</eth_bw>
+        <eth_dly>10</eth_dly>
+        <eth_reliability>255</eth_reliability>
+        <eth_txload>1</eth_txload>
+        <eth_rxload>1</eth_rxload>
+        <medium>broadcast</medium>
+        <eth_mode>routed</eth_mode>
+        <eth_duplex>full</eth_duplex>
+        <eth_speed>1000 Mb/s</eth_speed>
+        <eth_beacon>off</eth_beacon>
+        <eth_autoneg>off</eth_autoneg>
+        <eth_in_flowctrl>off</eth_in_flowctrl>
+        <eth_out_flowctrl>off</eth_out_flowctrl>
+        <eth_mdix>off</eth_mdix>
+        <eth_swt_monitor>off</eth_swt_monitor>
+        <eth_ethertype>0x8100</eth_ethertype>
+        <eth_eee_state>n/a</eth_eee_state>
+        <eth_link_flapped>14week(s) 4day(s)</eth_link_flapped>
+        <eth_clear_counters>never</eth_clear_counters>
+        <eth_reset_cntr>1</eth_reset_cntr>
+        <eth_load_interval1_rx>0</eth_load_interval1_rx>
+        <eth_inrate1_bits>0</eth_inrate1_bits>
+        <eth_inrate1_pkts>0</eth_inrate1_pkts>
+        <eth_load_interval1_tx>0</eth_load_interval1_tx>
+        <eth_outrate1_bits>0</eth_outrate1_bits>
+        <eth_outrate1_pkts>0</eth_outrate1_pkts>
+        <eth_inrate1_summary_bits>0 bps</eth_inrate1_summary_bits>
+        <eth_inrate1_summary_pkts>0 pps</eth_inrate1_summary_pkts>
+        <eth_outrate1_summary_bits>0 bps</eth_outrate1_summary_bits>
+        <eth_outrate1_summary_pkts>0 pps</eth_outrate1_summary_pkts>
+        <eth_load_interval2_rx>0</eth_load_interval2_rx>
+        <eth_inrate2_bits>0</eth_inrate2_bits>
+        <eth_inrate2_pkts>0</eth_inrate2_pkts>
+        <eth_load_interval2_tx>0</eth_load_interval2_tx>
+        <eth_outrate2_bits>0</eth_outrate2_bits>
+        <eth_outrate2_pkts>0</eth_outrate2_pkts>
+        <eth_inrate2_summary_bits>0 bps</eth_inrate2_summary_bits>
+        <eth_inrate2_summary_pkts>0 pps</eth_inrate2_summary_pkts>
+        <eth_outrate2_summary_bits>0 bps</eth_outrate2_summary_bits>
+        <eth_outrate2_summary_pkts>0 pps</eth_outrate2_summary_pkts>
+        <eth_inucast>0</eth_inucast>
+        <eth_inmcast>0</eth_inmcast>
+        <eth_inbcast>0</eth_inbcast>
+        <eth_inpkts>0</eth_inpkts>
+        <eth_inbytes>0</eth_inbytes>
+        <eth_jumbo_inpkts>0</eth_jumbo_inpkts>
+        <eth_storm_supp>0</eth_storm_supp>
+        <eth_runts>0</eth_runts>
+        <eth_giants>0</eth_giants>
+        <eth_crc>0</eth_crc>
+        <eth_nobuf>0</eth_nobuf>
+        <eth_inerr>0</eth_inerr>
+        <eth_frame>0</eth_frame>
+        <eth_overrun>0</eth_overrun>
+        <eth_underrun>0</eth_underrun>
+        <eth_ignored>0</eth_ignored>
+        <eth_watchdog>0</eth_watchdog>
+        <eth_bad_eth>0</eth_bad_eth>
+        <eth_bad_proto>0</eth_bad_proto>
+        <eth_in_ifdown_drops>0</eth_in_ifdown_drops>
+        <eth_dribble>0</eth_dribble>
+        <eth_indiscard>0</eth_indiscard>
+        <eth_inpause>0</eth_inpause>
+        <eth_outucast>0</eth_outucast>
+        <eth_outmcast>0</eth_outmcast>
+        <eth_outbcast>0</eth_outbcast>
+        <eth_outpkts>0</eth_outpkts>
+        <eth_outbytes>0</eth_outbytes>
+        <eth_jumbo_outpkts>0</eth_jumbo_outpkts>
+        <eth_outerr>0</eth_outerr>
+        <eth_coll>0</eth_coll>
+        <eth_deferred>0</eth_deferred>
+        <eth_latecoll>0</eth_latecoll>
+        <eth_lostcarrier>0</eth_lostcarrier>
+        <eth_nocarrier>0</eth_nocarrier>
+        <eth_babbles>0</eth_babbles>
+        <eth_outdiscard>0</eth_outdiscard>
+        <eth_outpause>0</eth_outpause>
+       </ROW_interface>
+       <ROW_interface>
+        <interface>Ethernet2/2</interface>
+        <state>up</state>
+        <admin_state>up</admin_state>
+        <share_state>Dedicated</share_state>
+        <eth_hw_desc> Ethernet</eth_hw_desc>
+        <eth_hw_addr>000c.29d1.d56b</eth_hw_addr>
+        <eth_bia_addr>2cc2.602f.90f4</eth_bia_addr>
+        <eth_mtu>1500</eth_mtu>
+        <eth_bw>1000000</eth_bw>
+        <eth_dly>10</eth_dly>
+        <eth_reliability>255</eth_reliability>
+        <eth_txload>1</eth_txload>
+        <eth_rxload>1</eth_rxload>
+        <medium>broadcast</medium>
+        <eth_mode>routed</eth_mode>
+        <eth_duplex>full</eth_duplex>
+        <eth_speed>1000 Mb/s</eth_speed>
+        <eth_beacon>off</eth_beacon>
+        <eth_autoneg>off</eth_autoneg>
+        <eth_in_flowctrl>off</eth_in_flowctrl>
+        <eth_out_flowctrl>off</eth_out_flowctrl>
+        <eth_mdix>off</eth_mdix>
+        <eth_swt_monitor>off</eth_swt_monitor>
+        <eth_ethertype>0x8100</eth_ethertype>
+        <eth_eee_state>n/a</eth_eee_state>
+        <eth_link_flapped>14week(s) 4day(s)</eth_link_flapped>
+        <eth_clear_counters>never</eth_clear_counters>
+        <eth_reset_cntr>1</eth_reset_cntr>
+        <eth_load_interval1_rx>0</eth_load_interval1_rx>
+        <eth_inrate1_bits>0</eth_inrate1_bits>
+        <eth_inrate1_pkts>0</eth_inrate1_pkts>
+        <eth_load_interval1_tx>0</eth_load_interval1_tx>
+        <eth_outrate1_bits>0</eth_outrate1_bits>
+        <eth_outrate1_pkts>0</eth_outrate1_pkts>
+        <eth_inrate1_summary_bits>0 bps</eth_inrate1_summary_bits>
+        <eth_inrate1_summary_pkts>0 pps</eth_inrate1_summary_pkts>
+        <eth_outrate1_summary_bits>0 bps</eth_outrate1_summary_bits>
+        <eth_outrate1_summary_pkts>0 pps</eth_outrate1_summary_pkts>
+        <eth_load_interval2_rx>0</eth_load_interval2_rx>
+        <eth_inrate2_bits>0</eth_inrate2_bits>
+        <eth_inrate2_pkts>0</eth_inrate2_pkts>
+        <eth_load_interval2_tx>0</eth_load_interval2_tx>
+        <eth_outrate2_bits>0</eth_outrate2_bits>
+        <eth_outrate2_pkts>0</eth_outrate2_pkts>
+        <eth_inrate2_summary_bits>0 bps</eth_inrate2_summary_bits>
+        <eth_inrate2_summary_pkts>0 pps</eth_inrate2_summary_pkts>
+        <eth_outrate2_summary_bits>0 bps</eth_outrate2_summary_bits>
+        <eth_outrate2_summary_pkts>0 pps</eth_outrate2_summary_pkts>
+        <eth_inucast>0</eth_inucast>
+        <eth_inmcast>0</eth_inmcast>
+        <eth_inbcast>0</eth_inbcast>
+        <eth_inpkts>0</eth_inpkts>
+        <eth_inbytes>0</eth_inbytes>
+        <eth_jumbo_inpkts>0</eth_jumbo_inpkts>
+        <eth_storm_supp>0</eth_storm_supp>
+        <eth_runts>0</eth_runts>
+        <eth_giants>0</eth_giants>
+        <eth_crc>0</eth_crc>
+        <eth_nobuf>0</eth_nobuf>
+        <eth_inerr>0</eth_inerr>
+        <eth_frame>0</eth_frame>
+        <eth_overrun>0</eth_overrun>
+        <eth_underrun>0</eth_underrun>
+        <eth_ignored>0</eth_ignored>
+        <eth_watchdog>0</eth_watchdog>
+        <eth_bad_eth>0</eth_bad_eth>
+        <eth_bad_proto>0</eth_bad_proto>
+        <eth_in_ifdown_drops>0</eth_in_ifdown_drops>
+        <eth_dribble>0</eth_dribble>
+        <eth_indiscard>0</eth_indiscard>
+        <eth_inpause>0</eth_inpause>
+        <eth_outucast>0</eth_outucast>
+        <eth_outmcast>0</eth_outmcast>
+        <eth_outbcast>0</eth_outbcast>
+        <eth_outpkts>0</eth_outpkts>
+        <eth_outbytes>0</eth_outbytes>
+        <eth_jumbo_outpkts>0</eth_jumbo_outpkts>
+        <eth_outerr>0</eth_outerr>
+        <eth_coll>0</eth_coll>
+        <eth_deferred>0</eth_deferred>
+        <eth_latecoll>0</eth_latecoll>
+        <eth_lostcarrier>0</eth_lostcarrier>
+        <eth_nocarrier>0</eth_nocarrier>
+        <eth_babbles>0</eth_babbles>
+        <eth_outdiscard>0</eth_outdiscard>
+        <eth_outpause>0</eth_outpause>
+       </ROW_interface>
+       <ROW_interface>
+        <interface>Ethernet2/3</interface>
+        <state>up</state>
+        <admin_state>up</admin_state>
+        <share_state>Dedicated</share_state>
+        <eth_hw_desc> Ethernet</eth_hw_desc>
+        <eth_hw_addr>000c.29d1.d56b</eth_hw_addr>
+        <eth_bia_addr>2cc2.600f.a8a1</eth_bia_addr>
+        <eth_mtu>1500</eth_mtu>
+        <eth_bw>1000000</eth_bw>
+        <eth_dly>10</eth_dly>
+        <eth_reliability>255</eth_reliability>
+        <eth_txload>1</eth_txload>
+        <eth_rxload>1</eth_rxload>
+        <medium>broadcast</medium>
+        <eth_mode>routed</eth_mode>
+        <eth_duplex>full</eth_duplex>
+        <eth_speed>1000 Mb/s</eth_speed>
+        <eth_beacon>off</eth_beacon>
+        <eth_autoneg>off</eth_autoneg>
+        <eth_in_flowctrl>off</eth_in_flowctrl>
+        <eth_out_flowctrl>off</eth_out_flowctrl>
+        <eth_mdix>off</eth_mdix>
+        <eth_swt_monitor>off</eth_swt_monitor>
+        <eth_ethertype>0x8100</eth_ethertype>
+        <eth_eee_state>n/a</eth_eee_state>
+        <eth_link_flapped>14week(s) 4day(s)</eth_link_flapped>
+        <eth_clear_counters>never</eth_clear_counters>
+        <eth_reset_cntr>1</eth_reset_cntr>
+        <eth_load_interval1_rx>0</eth_load_interval1_rx>
+        <eth_inrate1_bits>0</eth_inrate1_bits>
+        <eth_inrate1_pkts>0</eth_inrate1_pkts>
+        <eth_load_interval1_tx>0</eth_load_interval1_tx>
+        <eth_outrate1_bits>0</eth_outrate1_bits>
+        <eth_outrate1_pkts>0</eth_outrate1_pkts>
+        <eth_inrate1_summary_bits>0 bps</eth_inrate1_summary_bits>
+        <eth_inrate1_summary_pkts>0 pps</eth_inrate1_summary_pkts>
+        <eth_outrate1_summary_bits>0 bps</eth_outrate1_summary_bits>
+        <eth_outrate1_summary_pkts>0 pps</eth_outrate1_summary_pkts>
+        <eth_load_interval2_rx>0</eth_load_interval2_rx>
+        <eth_inrate2_bits>0</eth_inrate2_bits>
+        <eth_inrate2_pkts>0</eth_inrate2_pkts>
+        <eth_load_interval2_tx>0</eth_load_interval2_tx>
+        <eth_outrate2_bits>0</eth_outrate2_bits>
+        <eth_outrate2_pkts>0</eth_outrate2_pkts>
+        <eth_inrate2_summary_bits>0 bps</eth_inrate2_summary_bits>
+        <eth_inrate2_summary_pkts>0 pps</eth_inrate2_summary_pkts>
+        <eth_outrate2_summary_bits>0 bps</eth_outrate2_summary_bits>
+        <eth_outrate2_summary_pkts>0 pps</eth_outrate2_summary_pkts>
+        <eth_inucast>0</eth_inucast>
+        <eth_inmcast>0</eth_inmcast>
+        <eth_inbcast>0</eth_inbcast>
+        <eth_inpkts>0</eth_inpkts>
+        <eth_inbytes>0</eth_inbytes>
+        <eth_jumbo_inpkts>0</eth_jumbo_inpkts>
+        <eth_storm_supp>0</eth_storm_supp>
+        <eth_runts>0</eth_runts>
+        <eth_giants>0</eth_giants>
+        <eth_crc>0</eth_crc>
+        <eth_nobuf>0</eth_nobuf>
+        <eth_inerr>0</eth_inerr>
+        <eth_frame>0</eth_frame>
+        <eth_overrun>0</eth_overrun>
+        <eth_underrun>0</eth_underrun>
+        <eth_ignored>0</eth_ignored>
+        <eth_watchdog>0</eth_watchdog>
+        <eth_bad_eth>0</eth_bad_eth>
+        <eth_bad_proto>0</eth_bad_proto>
+        <eth_in_ifdown_drops>0</eth_in_ifdown_drops>
+        <eth_dribble>0</eth_dribble>
+        <eth_indiscard>0</eth_indiscard>
+        <eth_inpause>0</eth_inpause>
+        <eth_outucast>0</eth_outucast>
+        <eth_outmcast>0</eth_outmcast>
+        <eth_outbcast>0</eth_outbcast>
+        <eth_outpkts>0</eth_outpkts>
+        <eth_outbytes>0</eth_outbytes>
+        <eth_jumbo_outpkts>0</eth_jumbo_outpkts>
+        <eth_outerr>0</eth_outerr>
+        <eth_coll>0</eth_coll>
+        <eth_deferred>0</eth_deferred>
+        <eth_latecoll>0</eth_latecoll>
+        <eth_lostcarrier>0</eth_lostcarrier>
+        <eth_nocarrier>0</eth_nocarrier>
+        <eth_babbles>0</eth_babbles>
+        <eth_outdiscard>0</eth_outdiscard>
+        <eth_outpause>0</eth_outpause>
+       </ROW_interface>
+       <ROW_interface>
+        <interface>Ethernet2/4</interface>
+        <state>up</state>
+        <admin_state>up</admin_state>
+        <share_state>Dedicated</share_state>
+        <eth_hw_desc> Ethernet</eth_hw_desc>
+        <eth_hw_addr>000c.29d1.d56b</eth_hw_addr>
+        <eth_bia_addr>2cc2.6068.4c89</eth_bia_addr>
+        <eth_mtu>1500</eth_mtu>
+        <eth_bw>1000000</eth_bw>
+        <eth_dly>10</eth_dly>
+        <eth_reliability>255</eth_reliability>
+        <eth_txload>1</eth_txload>
+        <eth_rxload>1</eth_rxload>
+        <medium>broadcast</medium>
+        <eth_mode>routed</eth_mode>
+        <eth_duplex>full</eth_duplex>
+        <eth_speed>1000 Mb/s</eth_speed>
+        <eth_beacon>off</eth_beacon>
+        <eth_autoneg>off</eth_autoneg>
+        <eth_in_flowctrl>off</eth_in_flowctrl>
+        <eth_out_flowctrl>off</eth_out_flowctrl>
+        <eth_mdix>off</eth_mdix>
+        <eth_swt_monitor>off</eth_swt_monitor>
+        <eth_ethertype>0x8100</eth_ethertype>
+        <eth_eee_state>n/a</eth_eee_state>
+        <eth_link_flapped>3week(s) 2day(s)</eth_link_flapped>
+        <eth_clear_counters>never</eth_clear_counters>
+        <eth_reset_cntr>2</eth_reset_cntr>
+        <eth_load_interval1_rx>0</eth_load_interval1_rx>
+        <eth_inrate1_bits>0</eth_inrate1_bits>
+        <eth_inrate1_pkts>0</eth_inrate1_pkts>
+        <eth_load_interval1_tx>0</eth_load_interval1_tx>
+        <eth_outrate1_bits>0</eth_outrate1_bits>
+        <eth_outrate1_pkts>0</eth_outrate1_pkts>
+        <eth_inrate1_summary_bits>0 bps</eth_inrate1_summary_bits>
+        <eth_inrate1_summary_pkts>0 pps</eth_inrate1_summary_pkts>
+        <eth_outrate1_summary_bits>0 bps</eth_outrate1_summary_bits>
+        <eth_outrate1_summary_pkts>0 pps</eth_outrate1_summary_pkts>
+        <eth_load_interval2_rx>0</eth_load_interval2_rx>
+        <eth_inrate2_bits>0</eth_inrate2_bits>
+        <eth_inrate2_pkts>0</eth_inrate2_pkts>
+        <eth_load_interval2_tx>0</eth_load_interval2_tx>
+        <eth_outrate2_bits>0</eth_outrate2_bits>
+        <eth_outrate2_pkts>0</eth_outrate2_pkts>
+        <eth_inrate2_summary_bits>0 bps</eth_inrate2_summary_bits>
+        <eth_inrate2_summary_pkts>0 pps</eth_inrate2_summary_pkts>
+        <eth_outrate2_summary_bits>0 bps</eth_outrate2_summary_bits>
+        <eth_outrate2_summary_pkts>0 pps</eth_outrate2_summary_pkts>
+        <eth_inucast>0</eth_inucast>
+        <eth_inmcast>0</eth_inmcast>
+        <eth_inbcast>0</eth_inbcast>
+        <eth_inpkts>0</eth_inpkts>
+        <eth_inbytes>0</eth_inbytes>
+        <eth_jumbo_inpkts>0</eth_jumbo_inpkts>
+        <eth_storm_supp>0</eth_storm_supp>
+        <eth_runts>0</eth_runts>
+        <eth_giants>0</eth_giants>
+        <eth_crc>0</eth_crc>
+        <eth_nobuf>0</eth_nobuf>
+        <eth_inerr>0</eth_inerr>
+        <eth_frame>0</eth_frame>
+        <eth_overrun>0</eth_overrun>
+        <eth_underrun>0</eth_underrun>
+        <eth_ignored>0</eth_ignored>
+        <eth_watchdog>0</eth_watchdog>
+        <eth_bad_eth>0</eth_bad_eth>
+        <eth_bad_proto>0</eth_bad_proto>
+        <eth_in_ifdown_drops>0</eth_in_ifdown_drops>
+        <eth_dribble>0</eth_dribble>
+        <eth_indiscard>0</eth_indiscard>
+        <eth_inpause>0</eth_inpause>
+        <eth_outucast>0</eth_outucast>
+        <eth_outmcast>0</eth_outmcast>
+        <eth_outbcast>0</eth_outbcast>
+        <eth_outpkts>0</eth_outpkts>
+        <eth_outbytes>0</eth_outbytes>
+        <eth_jumbo_outpkts>0</eth_jumbo_outpkts>
+        <eth_outerr>0</eth_outerr>
+        <eth_coll>0</eth_coll>
+        <eth_deferred>0</eth_deferred>
+        <eth_latecoll>0</eth_latecoll>
+        <eth_lostcarrier>0</eth_lostcarrier>
+        <eth_nocarrier>0</eth_nocarrier>
+        <eth_babbles>0</eth_babbles>
+        <eth_outdiscard>0</eth_outdiscard>
+        <eth_outpause>0</eth_outpause>
+       </ROW_interface>
+       <ROW_interface>
+        <interface>Ethernet2/5</interface>
+        <state>up</state>
+        <admin_state>up</admin_state>
+        <share_state>Dedicated</share_state>
+        <eth_hw_desc> Ethernet</eth_hw_desc>
+        <eth_hw_addr>000c.29d1.d56b</eth_hw_addr>
+        <eth_bia_addr>2cc2.602c.547a</eth_bia_addr>
+        <eth_mtu>1500</eth_mtu>
+        <eth_bw>1000000</eth_bw>
+        <eth_dly>10</eth_dly>
+        <eth_reliability>255</eth_reliability>
+        <eth_txload>1</eth_txload>
+        <eth_rxload>1</eth_rxload>
+        <medium>broadcast</medium>
+        <eth_mode>routed</eth_mode>
+        <eth_duplex>full</eth_duplex>
+        <eth_speed>1000 Mb/s</eth_speed>
+        <eth_beacon>off</eth_beacon>
+        <eth_autoneg>off</eth_autoneg>
+        <eth_in_flowctrl>off</eth_in_flowctrl>
+        <eth_out_flowctrl>off</eth_out_flowctrl>
+        <eth_mdix>off</eth_mdix>
+        <eth_swt_monitor>off</eth_swt_monitor>
+        <eth_ethertype>0x8100</eth_ethertype>
+        <eth_eee_state>n/a</eth_eee_state>
+        <eth_link_flapped>14week(s) 4day(s)</eth_link_flapped>
+        <eth_clear_counters>never</eth_clear_counters>
+        <eth_reset_cntr>1</eth_reset_cntr>
+        <eth_load_interval1_rx>0</eth_load_interval1_rx>
+        <eth_inrate1_bits>0</eth_inrate1_bits>
+        <eth_inrate1_pkts>0</eth_inrate1_pkts>
+        <eth_load_interval1_tx>0</eth_load_interval1_tx>
+        <eth_outrate1_bits>0</eth_outrate1_bits>
+        <eth_outrate1_pkts>0</eth_outrate1_pkts>
+        <eth_inrate1_summary_bits>0 bps</eth_inrate1_summary_bits>
+        <eth_inrate1_summary_pkts>0 pps</eth_inrate1_summary_pkts>
+        <eth_outrate1_summary_bits>0 bps</eth_outrate1_summary_bits>
+        <eth_outrate1_summary_pkts>0 pps</eth_outrate1_summary_pkts>
+        <eth_load_interval2_rx>0</eth_load_interval2_rx>
+        <eth_inrate2_bits>0</eth_inrate2_bits>
+        <eth_inrate2_pkts>0</eth_inrate2_pkts>
+        <eth_load_interval2_tx>0</eth_load_interval2_tx>
+        <eth_outrate2_bits>0</eth_outrate2_bits>
+        <eth_outrate2_pkts>0</eth_outrate2_pkts>
+        <eth_inrate2_summary_bits>0 bps</eth_inrate2_summary_bits>
+        <eth_inrate2_summary_pkts>0 pps</eth_inrate2_summary_pkts>
+        <eth_outrate2_summary_bits>0 bps</eth_outrate2_summary_bits>
+        <eth_outrate2_summary_pkts>0 pps</eth_outrate2_summary_pkts>
+        <eth_inucast>0</eth_inucast>
+        <eth_inmcast>0</eth_inmcast>
+        <eth_inbcast>0</eth_inbcast>
+        <eth_inpkts>0</eth_inpkts>
+        <eth_inbytes>0</eth_inbytes>
+        <eth_jumbo_inpkts>0</eth_jumbo_inpkts>
+        <eth_storm_supp>0</eth_storm_supp>
+        <eth_runts>0</eth_runts>
+        <eth_giants>0</eth_giants>
+        <eth_crc>0</eth_crc>
+        <eth_nobuf>0</eth_nobuf>
+        <eth_inerr>0</eth_inerr>
+        <eth_frame>0</eth_frame>
+        <eth_overrun>0</eth_overrun>
+        <eth_underrun>0</eth_underrun>
+        <eth_ignored>0</eth_ignored>
+        <eth_watchdog>0</eth_watchdog>
+        <eth_bad_eth>0</eth_bad_eth>
+        <eth_bad_proto>0</eth_bad_proto>
+        <eth_in_ifdown_drops>0</eth_in_ifdown_drops>
+        <eth_dribble>0</eth_dribble>
+        <eth_indiscard>0</eth_indiscard>
+        <eth_inpause>0</eth_inpause>
+        <eth_outucast>0</eth_outucast>
+        <eth_outmcast>0</eth_outmcast>
+        <eth_outbcast>0</eth_outbcast>
+        <eth_outpkts>0</eth_outpkts>
+        <eth_outbytes>0</eth_outbytes>
+        <eth_jumbo_outpkts>0</eth_jumbo_outpkts>
+        <eth_outerr>0</eth_outerr>
+        <eth_coll>0</eth_coll>
+        <eth_deferred>0</eth_deferred>
+        <eth_latecoll>0</eth_latecoll>
+        <eth_lostcarrier>0</eth_lostcarrier>
+        <eth_nocarrier>0</eth_nocarrier>
+        <eth_babbles>0</eth_babbles>
+        <eth_outdiscard>0</eth_outdiscard>
+        <eth_outpause>0</eth_outpause>
+       </ROW_interface>
+       <ROW_interface>
+        <interface>Ethernet2/6</interface>
+        <state>up</state>
+        <admin_state>up</admin_state>
+        <share_state>Dedicated</share_state>
+        <eth_hw_desc> Ethernet</eth_hw_desc>
+        <eth_hw_addr>000c.29d1.d56b</eth_hw_addr>
+        <eth_bia_addr>2cc2.6070.20b1</eth_bia_addr>
+        <eth_mtu>1500</eth_mtu>
+        <eth_bw>1000000</eth_bw>
+        <eth_dly>10</eth_dly>
+        <eth_reliability>255</eth_reliability>
+        <eth_txload>1</eth_txload>
+        <eth_rxload>1</eth_rxload>
+        <medium>broadcast</medium>
+        <eth_mode>routed</eth_mode>
+        <eth_duplex>full</eth_duplex>
+        <eth_speed>1000 Mb/s</eth_speed>
+        <eth_beacon>off</eth_beacon>
+        <eth_autoneg>off</eth_autoneg>
+        <eth_in_flowctrl>off</eth_in_flowctrl>
+        <eth_out_flowctrl>off</eth_out_flowctrl>
+        <eth_mdix>off</eth_mdix>
+        <eth_swt_monitor>off</eth_swt_monitor>
+        <eth_ethertype>0x8100</eth_ethertype>
+        <eth_eee_state>n/a</eth_eee_state>
+        <eth_link_flapped>14week(s) 4day(s)</eth_link_flapped>
+        <eth_clear_counters>never</eth_clear_counters>
+        <eth_reset_cntr>1</eth_reset_cntr>
+        <eth_load_interval1_rx>0</eth_load_interval1_rx>
+        <eth_inrate1_bits>0</eth_inrate1_bits>
+        <eth_inrate1_pkts>0</eth_inrate1_pkts>
+        <eth_load_interval1_tx>0</eth_load_interval1_tx>
+        <eth_outrate1_bits>0</eth_outrate1_bits>
+        <eth_outrate1_pkts>0</eth_outrate1_pkts>
+        <eth_inrate1_summary_bits>0 bps</eth_inrate1_summary_bits>
+        <eth_inrate1_summary_pkts>0 pps</eth_inrate1_summary_pkts>
+        <eth_outrate1_summary_bits>0 bps</eth_outrate1_summary_bits>
+        <eth_outrate1_summary_pkts>0 pps</eth_outrate1_summary_pkts>
+        <eth_load_interval2_rx>0</eth_load_interval2_rx>
+        <eth_inrate2_bits>0</eth_inrate2_bits>
+        <eth_inrate2_pkts>0</eth_inrate2_pkts>
+        <eth_load_interval2_tx>0</eth_load_interval2_tx>
+        <eth_outrate2_bits>0</eth_outrate2_bits>
+        <eth_outrate2_pkts>0</eth_outrate2_pkts>
+        <eth_inrate2_summary_bits>0 bps</eth_inrate2_summary_bits>
+        <eth_inrate2_summary_pkts>0 pps</eth_inrate2_summary_pkts>
+        <eth_outrate2_summary_bits>0 bps</eth_outrate2_summary_bits>
+        <eth_outrate2_summary_pkts>0 pps</eth_outrate2_summary_pkts>
+        <eth_inucast>0</eth_inucast>
+        <eth_inmcast>0</eth_inmcast>
+        <eth_inbcast>0</eth_inbcast>
+        <eth_inpkts>0</eth_inpkts>
+        <eth_inbytes>0</eth_inbytes>
+        <eth_jumbo_inpkts>0</eth_jumbo_inpkts>
+        <eth_storm_supp>0</eth_storm_supp>
+        <eth_runts>0</eth_runts>
+        <eth_giants>0</eth_giants>
+        <eth_crc>0</eth_crc>
+        <eth_nobuf>0</eth_nobuf>
+        <eth_inerr>0</eth_inerr>
+        <eth_frame>0</eth_frame>
+        <eth_overrun>0</eth_overrun>
+        <eth_underrun>0</eth_underrun>
+        <eth_ignored>0</eth_ignored>
+        <eth_watchdog>0</eth_watchdog>
+        <eth_bad_eth>0</eth_bad_eth>
+        <eth_bad_proto>0</eth_bad_proto>
+        <eth_in_ifdown_drops>0</eth_in_ifdown_drops>
+        <eth_dribble>0</eth_dribble>
+        <eth_indiscard>0</eth_indiscard>
+        <eth_inpause>0</eth_inpause>
+        <eth_outucast>0</eth_outucast>
+        <eth_outmcast>0</eth_outmcast>
+        <eth_outbcast>0</eth_outbcast>
+        <eth_outpkts>0</eth_outpkts>
+        <eth_outbytes>0</eth_outbytes>
+        <eth_jumbo_outpkts>0</eth_jumbo_outpkts>
+        <eth_outerr>0</eth_outerr>
+        <eth_coll>0</eth_coll>
+        <eth_deferred>0</eth_deferred>
+        <eth_latecoll>0</eth_latecoll>
+        <eth_lostcarrier>0</eth_lostcarrier>
+        <eth_nocarrier>0</eth_nocarrier>
+        <eth_babbles>0</eth_babbles>
+        <eth_outdiscard>0</eth_outdiscard>
+        <eth_outpause>0</eth_outpause>
+       </ROW_interface>
+       <ROW_interface>
+        <interface>Ethernet2/7</interface>
+        <state>down</state>
+        <state_rsn_desc>Administratively down</state_rsn_desc>
+        <admin_state>down</admin_state>
+        <share_state>Dedicated</share_state>
+        <eth_hw_desc> Ethernet</eth_hw_desc>
+        <eth_hw_addr>000c.29d1.d56b</eth_hw_addr>
+        <eth_bia_addr>2cc2.605d.2dc0</eth_bia_addr>
+        <eth_mtu>1500</eth_mtu>
+        <eth_bw>1000000</eth_bw>
+        <eth_dly>10</eth_dly>
+        <eth_reliability>255</eth_reliability>
+        <eth_txload>1</eth_txload>
+        <eth_rxload>1</eth_rxload>
+        <medium>broadcast</medium>
+        <eth_mode>routed</eth_mode>
+        <eth_duplex>auto</eth_duplex>
+        <eth_speed>auto-speed</eth_speed>
+        <eth_beacon>off</eth_beacon>
+        <eth_autoneg>off</eth_autoneg>
+        <eth_in_flowctrl>off</eth_in_flowctrl>
+        <eth_out_flowctrl>off</eth_out_flowctrl>
+        <eth_mdix>off</eth_mdix>
+        <eth_swt_monitor>off</eth_swt_monitor>
+        <eth_ethertype>0x8100</eth_ethertype>
+        <eth_eee_state>n/a</eth_eee_state>
+        <eth_link_flapped>never</eth_link_flapped>
+        <eth_clear_counters>never</eth_clear_counters>
+        <eth_reset_cntr>0</eth_reset_cntr>
+        <eth_load_interval1_rx>0</eth_load_interval1_rx>
+        <eth_inrate1_bits>0</eth_inrate1_bits>
+        <eth_inrate1_pkts>0</eth_inrate1_pkts>
+        <eth_load_interval1_tx>0</eth_load_interval1_tx>
+        <eth_outrate1_bits>0</eth_outrate1_bits>
+        <eth_outrate1_pkts>0</eth_outrate1_pkts>
+        <eth_inrate1_summary_bits>0 bps</eth_inrate1_summary_bits>
+        <eth_inrate1_summary_pkts>0 pps</eth_inrate1_summary_pkts>
+        <eth_outrate1_summary_bits>0 bps</eth_outrate1_summary_bits>
+        <eth_outrate1_summary_pkts>0 pps</eth_outrate1_summary_pkts>
+        <eth_load_interval2_rx>0</eth_load_interval2_rx>
+        <eth_inrate2_bits>0</eth_inrate2_bits>
+        <eth_inrate2_pkts>0</eth_inrate2_pkts>
+        <eth_load_interval2_tx>0</eth_load_interval2_tx>
+        <eth_outrate2_bits>0</eth_outrate2_bits>
+        <eth_outrate2_pkts>0</eth_outrate2_pkts>
+        <eth_inrate2_summary_bits>0 bps</eth_inrate2_summary_bits>
+        <eth_inrate2_summary_pkts>0 pps</eth_inrate2_summary_pkts>
+        <eth_outrate2_summary_bits>0 bps</eth_outrate2_summary_bits>
+        <eth_outrate2_summary_pkts>0 pps</eth_outrate2_summary_pkts>
+        <eth_inucast>0</eth_inucast>
+        <eth_inmcast>0</eth_inmcast>
+        <eth_inbcast>0</eth_inbcast>
+        <eth_inpkts>0</eth_inpkts>
+        <eth_inbytes>0</eth_inbytes>
+        <eth_jumbo_inpkts>0</eth_jumbo_inpkts>
+        <eth_storm_supp>0</eth_storm_supp>
+        <eth_runts>0</eth_runts>
+        <eth_giants>0</eth_giants>
+        <eth_crc>0</eth_crc>
+        <eth_nobuf>0</eth_nobuf>
+        <eth_inerr>0</eth_inerr>
+        <eth_frame>0</eth_frame>
+        <eth_overrun>0</eth_overrun>
+        <eth_underrun>0</eth_underrun>
+        <eth_ignored>0</eth_ignored>
+        <eth_watchdog>0</eth_watchdog>
+        <eth_bad_eth>0</eth_bad_eth>
+        <eth_bad_proto>0</eth_bad_proto>
+        <eth_in_ifdown_drops>0</eth_in_ifdown_drops>
+        <eth_dribble>0</eth_dribble>
+        <eth_indiscard>0</eth_indiscard>
+        <eth_inpause>0</eth_inpause>
+        <eth_outucast>0</eth_outucast>
+        <eth_outmcast>0</eth_outmcast>
+        <eth_outbcast>0</eth_outbcast>
+        <eth_outpkts>0</eth_outpkts>
+        <eth_outbytes>0</eth_outbytes>
+        <eth_jumbo_outpkts>0</eth_jumbo_outpkts>
+        <eth_outerr>0</eth_outerr>
+        <eth_coll>0</eth_coll>
+        <eth_deferred>0</eth_deferred>
+        <eth_latecoll>0</eth_latecoll>
+        <eth_lostcarrier>0</eth_lostcarrier>
+        <eth_nocarrier>0</eth_nocarrier>
+        <eth_babbles>0</eth_babbles>
+        <eth_outdiscard>0</eth_outdiscard>
+        <eth_outpause>0</eth_outpause>
+       </ROW_interface>
+       <ROW_interface>
+        <interface>Ethernet2/8</interface>
+        <state>down</state>
+        <state_rsn_desc>Administratively down</state_rsn_desc>
+        <admin_state>down</admin_state>
+        <share_state>Dedicated</share_state>
+        <eth_hw_desc> Ethernet</eth_hw_desc>
+        <eth_hw_addr>000c.29d1.d56b</eth_hw_addr>
+        <eth_bia_addr>2cc2.601f.9ef7</eth_bia_addr>
+        <eth_mtu>1500</eth_mtu>
+        <eth_bw>1000000</eth_bw>
+        <eth_dly>10</eth_dly>
+        <eth_reliability>255</eth_reliability>
+        <eth_txload>1</eth_txload>
+        <eth_rxload>1</eth_rxload>
+        <medium>broadcast</medium>
+        <eth_mode>routed</eth_mode>
+        <eth_duplex>auto</eth_duplex>
+        <eth_speed>auto-speed</eth_speed>
+        <eth_beacon>off</eth_beacon>
+        <eth_autoneg>off</eth_autoneg>
+        <eth_in_flowctrl>off</eth_in_flowctrl>
+        <eth_out_flowctrl>off</eth_out_flowctrl>
+        <eth_mdix>off</eth_mdix>
+        <eth_swt_monitor>off</eth_swt_monitor>
+        <eth_ethertype>0x8100</eth_ethertype>
+        <eth_eee_state>n/a</eth_eee_state>
+        <eth_link_flapped>never</eth_link_flapped>
+        <eth_clear_counters>never</eth_clear_counters>
+        <eth_reset_cntr>0</eth_reset_cntr>
+        <eth_load_interval1_rx>0</eth_load_interval1_rx>
+        <eth_inrate1_bits>0</eth_inrate1_bits>
+        <eth_inrate1_pkts>0</eth_inrate1_pkts>
+        <eth_load_interval1_tx>0</eth_load_interval1_tx>
+        <eth_outrate1_bits>0</eth_outrate1_bits>
+        <eth_outrate1_pkts>0</eth_outrate1_pkts>
+        <eth_inrate1_summary_bits>0 bps</eth_inrate1_summary_bits>
+        <eth_inrate1_summary_pkts>0 pps</eth_inrate1_summary_pkts>
+        <eth_outrate1_summary_bits>0 bps</eth_outrate1_summary_bits>
+        <eth_outrate1_summary_pkts>0 pps</eth_outrate1_summary_pkts>
+        <eth_load_interval2_rx>0</eth_load_interval2_rx>
+        <eth_inrate2_bits>0</eth_inrate2_bits>
+        <eth_inrate2_pkts>0</eth_inrate2_pkts>
+        <eth_load_interval2_tx>0</eth_load_interval2_tx>
+        <eth_outrate2_bits>0</eth_outrate2_bits>
+        <eth_outrate2_pkts>0</eth_outrate2_pkts>
+        <eth_inrate2_summary_bits>0 bps</eth_inrate2_summary_bits>
+        <eth_inrate2_summary_pkts>0 pps</eth_inrate2_summary_pkts>
+        <eth_outrate2_summary_bits>0 bps</eth_outrate2_summary_bits>
+        <eth_outrate2_summary_pkts>0 pps</eth_outrate2_summary_pkts>
+        <eth_inucast>0</eth_inucast>
+        <eth_inmcast>0</eth_inmcast>
+        <eth_inbcast>0</eth_inbcast>
+        <eth_inpkts>0</eth_inpkts>
+        <eth_inbytes>0</eth_inbytes>
+        <eth_jumbo_inpkts>0</eth_jumbo_inpkts>
+        <eth_storm_supp>0</eth_storm_supp>
+        <eth_runts>0</eth_runts>
+        <eth_giants>0</eth_giants>
+        <eth_crc>0</eth_crc>
+        <eth_nobuf>0</eth_nobuf>
+        <eth_inerr>0</eth_inerr>
+        <eth_frame>0</eth_frame>
+        <eth_overrun>0</eth_overrun>
+        <eth_underrun>0</eth_underrun>
+        <eth_ignored>0</eth_ignored>
+        <eth_watchdog>0</eth_watchdog>
+        <eth_bad_eth>0</eth_bad_eth>
+        <eth_bad_proto>0</eth_bad_proto>
+        <eth_in_ifdown_drops>0</eth_in_ifdown_drops>
+        <eth_dribble>0</eth_dribble>
+        <eth_indiscard>0</eth_indiscard>
+        <eth_inpause>0</eth_inpause>
+        <eth_outucast>0</eth_outucast>
+        <eth_outmcast>0</eth_outmcast>
+        <eth_outbcast>0</eth_outbcast>
+        <eth_outpkts>0</eth_outpkts>
+        <eth_outbytes>0</eth_outbytes>
+        <eth_jumbo_outpkts>0</eth_jumbo_outpkts>
+        <eth_outerr>0</eth_outerr>
+        <eth_coll>0</eth_coll>
+        <eth_deferred>0</eth_deferred>
+        <eth_latecoll>0</eth_latecoll>
+        <eth_lostcarrier>0</eth_lostcarrier>
+        <eth_nocarrier>0</eth_nocarrier>
+        <eth_babbles>0</eth_babbles>
+        <eth_outdiscard>0</eth_outdiscard>
+        <eth_outpause>0</eth_outpause>
+       </ROW_interface>
+       <ROW_interface>
+        <interface>Vlan1</interface>
+        <svi_admin_state>down</svi_admin_state>
+        <svi_rsn_desc>Administratively down</svi_rsn_desc>
+        <svi_line_proto>down</svi_line_proto>
+        <svi_mac> 2cc2.605e.5de8</svi_mac>
+        <svi_mtu>1500</svi_mtu>
+        <svi_bw>1000000</svi_bw>
+        <svi_delay>10</svi_delay>
+        <vlan_id>1</vlan_id>
+        <type>svi</type>
+        <svi_tx_load>1</svi_tx_load>
+        <svi_rx_load>1</svi_rx_load>
+        <svi_arp_type>ARPA</svi_arp_type>
+        <svi_time_last_cleared>never</svi_time_last_cleared>
+        <eth_load_interval1_rx>60</eth_load_interval1_rx>
+        <eth_inrate1_bits>0</eth_inrate1_bits>
+        <eth_inrate1_pkts>0</eth_inrate1_pkts>
+        <eth_load_interval1_tx>60</eth_load_interval1_tx>
+        <eth_outrate1_bits>0</eth_outrate1_bits>
+        <eth_outrate1_pkts>0</eth_outrate1_pkts>
+        <svi_routed_pkts_in>0</svi_routed_pkts_in>
+        <svi_routed_bytes_in>0</svi_routed_bytes_in>
+        <svi_routed_pkts_out>0</svi_routed_pkts_out>
+        <svi_routed_bytes_out>0</svi_routed_bytes_out>
+        <svi_ucast_pkts_in>0</svi_ucast_pkts_in>
+        <svi_ucast_bytes_in>0</svi_ucast_bytes_in>
+        <svi_mcast_pkts_in>0</svi_mcast_pkts_in>
+        <svi_mcast_bytes_in>0</svi_mcast_bytes_in>
+        <svi_ucast_pkts_out>0</svi_ucast_pkts_out>
+        <svi_ucast_bytes_out>0</svi_ucast_bytes_out>
+        <svi_mcast_pkts_out>0</svi_mcast_pkts_out>
+        <svi_mcast_bytes_out>0</svi_mcast_bytes_out>
+       </ROW_interface>
+      </TABLE_interface>
+     </body>
+      <input>show interface</input>
+      <msg>Success</msg>
+      <code>200</code>
+</output>

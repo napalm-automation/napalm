@@ -1,0 +1,8 @@
+<output>
+  <body>
+    <hostname>nxos1.domain.com</hostname>
+  </body>
+  <input>show hostname</input>
+  <msg>Success</msg>
+  <code>200</code>
+</output>

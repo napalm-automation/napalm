@@ -22,6 +22,23 @@ def xml_pipe_normalization(xml_output):
     xml_output = xml_output.encode()
     return etree.fromstring(xml_output)
 
+def xml_show_hostname(xml_output, namespaces=None):
+    """Unified XML Parser for 'hostname' output from NX-API or '| xml'."""
+    if namespaces is None:
+        namespaces = {}
+    hostname = xml_output.find(".//hostname", namespaces=namespaces)
+    return hostname.text if hostname is not None else ""
+
+def xml_show_interface(xml_output, namespaces=None):
+    """Unified XML Parser for 'show interface brief' output from NX-API or '| xml'."""
+    if namespaces is None:
+        namespaces = {}
+
+    intf_list = xml_output.findall(".//interface", namespaces=namespaces)
+    if intf_list is not None:
+        return [intf.text for intf in intf_list]
+    else:
+        return []
 
 def xml_show_version(xml_output, namespaces=None):
     """Unified XML Parser for 'show version' output from NX-API or '| xml'."""

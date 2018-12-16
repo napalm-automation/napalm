@@ -716,15 +716,17 @@ class NXOSAPIDriver(NXOSDriverBase):
             'nf': 'urn:ietf:params:xml:ns:netconf:base:1.0'
         }
 
-        # show_version1 = nxos_parser.xml_pipe_normalization(show_version1)
         facts = nxos_parser.xml_show_version(show_version)
         facts['vendor'] = "Cisco"
-        # facts_dict1 = nxos_parser.xml_parse_show_version(show_version1, namespaces=namespaces)
-        # facts_dict2 = nxos_parser.xml_parse_show_version(show_version)
 
-        from pprint import pprint
-        pprint(facts)
-        pprint(facts)
+        show_hostname = self._send_command("show hostname")
+        fqdn = nxos_parser.xml_show_hostname(show_hostname)
+        facts['fqdn'] = fqdn
+
+        show_int = self._send_command("show interface")
+        intf_list = nxos_parser.xml_show_interface(show_int)
+        facts['interface_list'] = intf_list
+        return facts
 
     def _get_facts_jsonrpc(self):
         facts = {}
