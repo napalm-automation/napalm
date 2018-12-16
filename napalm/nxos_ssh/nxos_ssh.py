@@ -773,6 +773,13 @@ class NXOSSSHDriver(NXOSDriverBase):
                     lldp_entry[field] = 'N/A'
             # Add field missing on IOS
             lldp_entry['parent_interface'] = u'N/A'
+            # Translate the capability fields
+            lldp_entry['remote_system_capab'] = helpers.transform_lldp_capab(
+                lldp_entry['remote_system_capab']
+            )
+            lldp_entry['remote_system_enable_capab'] = helpers.transform_lldp_capab(
+                lldp_entry['remote_system_enable_capab']
+            )
             # Turn the interfaces into their long version
             local_intf = helpers.canonical_interface_name(local_intf)
             lldp.setdefault(local_intf, [])
