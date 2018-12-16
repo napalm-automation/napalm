@@ -23,13 +23,13 @@ def xml_pipe_normalization(xml_output):
     return etree.fromstring(xml_output)
 
 
-def xml_parse_show_version(xml_output, namespaces=None):
+def xml_show_version(xml_output, namespaces=None):
     """Unified XML Parser for 'show version' output from NX-API or '| xml'."""
     if namespaces is None:
         namespaces = {}
 
     model = xml_output.find(".//chassis_id", namespaces=namespaces)
-    hostname = xml_output.find(".//{*}host_name", namespaces=namespaces)
+    hostname = xml_output.find(".//host_name", namespaces=namespaces)
     serial_number = xml_output.find(".//proc_board_id", namespaces=namespaces)
     os_version = xml_output.find(".//sys_ver_str", namespaces=namespaces)
     uptime_days = xml_output.find(".//kern_uptm_days", namespaces=namespaces)

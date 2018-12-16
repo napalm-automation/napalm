@@ -161,6 +161,8 @@ class BaseTestGetters(object):
     def test_get_facts(self, test_case):
         """Test get_facts method."""
         facts = self.device.get_facts()
+        import ipdb
+        ipdb.set_trace()
         assert helpers.test_model(models.facts, facts)
         return facts
 
