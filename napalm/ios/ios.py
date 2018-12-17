@@ -37,7 +37,11 @@ from napalm.base.exceptions import (
     ConnectionClosedException,
     CommandErrorException,
 )
-from napalm.base.helpers import canonical_interface_name, transform_lldp_capab, textfsm_extractor
+from napalm.base.helpers import (
+    canonical_interface_name,
+    transform_lldp_capab,
+    textfsm_extractor,
+)
 from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.utils import py23_compat
 

@@ -362,7 +362,7 @@ def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=N
 
 def transform_lldp_capab(capabilities):
     if capabilities and isinstance(capabilities, py23_compat.string_types):
-        capabilities = capabilities.strip().split(',')
+        capabilities = capabilities.strip().split(",")
         return [constants.LLDP_CAPAB_TRANFORM_TABLE[c.strip()] for c in capabilities]
     else:
         return []

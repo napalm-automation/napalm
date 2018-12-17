@@ -719,7 +719,7 @@ class JunOSDriver(NetworkDriver):
                 uptime_table_items=uptime_table_items,
             )
         # If the OS provides the `peer_fwd_rti` or any way to identify the
-        #   rotuing instance name (see above), the performances of this getter
+        #   routing instance name (see above), the performances of this getter
         #   can be significantly improved, as we won't execute one request
         #   for each an every RT.
         # However, this improvement would only be beneficial for multi-VRF envs.
@@ -828,10 +828,12 @@ class JunOSDriver(NetworkDriver):
                         ),
                         "remote_system_name": item.remote_system_name,
                         "remote_system_description": item.remote_system_description,
-                        "remote_system_capab": self._transform_lldp_capab(item.remote_system_capab),
+                        "remote_system_capab": self._transform_lldp_capab(
+                            item.remote_system_capab
+                        ),
                         "remote_system_enable_capab": self._transform_lldp_capab(
-                            item.remote_system_enable_capab,
-                        )
+                            item.remote_system_enable_capab
+                        ),
                     }
                 )
 

@@ -51,9 +51,11 @@ def dict_diff(prv, nxt):
                     result[k] = diff
             else:
                 # If only one is a dict they are clearly different
-                result[k] = {"result": a, 'expected': b}
+                result[k] = {"result": a, "expected": b}
         elif isinstance(a, list) and isinstance(b, list):
-            if any(isinstance(item, dict) for item in a) or any(isinstance(item, dict) for item in b):
+            if any(isinstance(item, dict) for item in a) or any(
+                isinstance(item, dict) for item in b
+            ):
                 # Compare the lists of dictionaries
                 diff = list_dicts_diff(a, b)
                 if diff:
@@ -63,7 +65,7 @@ def dict_diff(prv, nxt):
                 # We sort them before comparing,
                 # otherwise lists in a different order won't match
                 if sorted(a) != sorted(b):
-                    result[k] = {'result': a, "expected": b}
+                    result[k] = {"result": a, "expected": b}
         else:
             # Ellipsis is a wildcard.
             if a != b and b != "...":

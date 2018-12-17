@@ -647,11 +647,9 @@ class EOSDriver(NetworkDriver):
                     lldp_neighbors_out[interface] = []
                 capabilities = neighbor.get("systemCapabilities", {})
                 available_capabilities = self._transform_lldp_capab(capabilities.keys())
-                enabled_capabilities = self._transform_lldp_capab([
-                    capab
-                    for capab, enabled in capabilities.items()
-                    if enabled
-                ])
+                enabled_capabilities = self._transform_lldp_capab(
+                    [capab for capab, enabled in capabilities.items() if enabled]
+                )
                 remote_chassis_id = neighbor.get("chassisId", "")
                 if neighbor.get("chassisIdType", "") == "macAddress":
                     remote_chassis_id = napalm.base.helpers.mac(remote_chassis_id)
@@ -669,7 +667,7 @@ class EOSDriver(NetworkDriver):
                         ),
                         "remote_chassis_id": remote_chassis_id,
                         "remote_system_capab": available_capabilities,
-                        "remote_system_enable_capab": enabled_capabilities
+                        "remote_system_enable_capab": enabled_capabilities,
                     }
                 )
         return lldp_neighbors_out

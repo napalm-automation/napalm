@@ -540,50 +540,51 @@ class NXOSDriverBase(NetworkDriver):
         for intf_name, entries in neighbors_detail.items():
             lldp[intf_name] = []
             for lldp_entry in entries:
-                hostname = lldp_entry['remote_system_name']
+                hostname = lldp_entry["remote_system_name"]
                 # Match IOS behaviour of taking remote chassis ID
                 # When lacking a system name (in show lldp neighbors)
                 if hostname == "N/A":
-                    hostname = lldp_entry['remote_chassis_id']
-                lldp_dict = {
-                    'port': lldp_entry['remote_port'],
-                    'hostname': hostname,
-                }
+                    hostname = lldp_entry["remote_chassis_id"]
+                lldp_dict = {"port": lldp_entry["remote_port"], "hostname": hostname}
                 lldp[intf_name].append(lldp_dict)
 
         return lldp
 
-    def get_lldp_neighbors_detail(self, interface=''):
+    def get_lldp_neighbors_detail(self, interface=""):
         lldp = {}
         lldp_interfaces = []
 
         if interface:
-            command = 'show lldp neighbors interface {} detail'.format(interface)
+            command = "show lldp neighbors interface {} detail".format(interface)
         else:
-            command = 'show lldp neighbors detail'
+            command = "show lldp neighbors detail"
         lldp_entries = self._send_command(command, raw_text=True)
         lldp_entries = py23_compat.text_type(lldp_entries)
         lldp_entries = napalm.base.helpers.textfsm_extractor(
-            self, 'show_lldp_neighbors_detail', lldp_entries
+            self, "show_lldp_neighbors_detail", lldp_entries
         )
 
         if len(lldp_entries) == 0:
             return {}
 
         for idx, lldp_entry in enumerate(lldp_entries):
-            local_intf = lldp_entry.pop('local_interface') or lldp_interfaces[idx]
+            local_intf = lldp_entry.pop("local_interface") or lldp_interfaces[idx]
             # Convert any 'not advertised' to an empty string
             for field in lldp_entry:
-                if 'not advertised' in lldp_entry[field]:
-                    lldp_entry[field] = ''
+                if "not advertised" in lldp_entry[field]:
+                    lldp_entry[field] = ""
             # Add field missing on IOS
-            lldp_entry['parent_interface'] = ''
+            lldp_entry["parent_interface"] = ""
             # Translate the capability fields
-            lldp_entry['remote_system_capab'] = napalm.base.helpers.transform_lldp_capab(
-                lldp_entry['remote_system_capab']
+            lldp_entry[
+                "remote_system_capab"
+            ] = napalm.base.helpers.transform_lldp_capab(
+                lldp_entry["remote_system_capab"]
             )
-            lldp_entry['remote_system_enable_capab'] = napalm.base.helpers.transform_lldp_capab(
-                lldp_entry['remote_system_enable_capab']
+            lldp_entry[
+                "remote_system_enable_capab"
+            ] = napalm.base.helpers.transform_lldp_capab(
+                lldp_entry["remote_system_enable_capab"]
             )
             # Turn the interfaces into their long version
             local_intf = napalm.base.helpers.canonical_interface_name(local_intf)
