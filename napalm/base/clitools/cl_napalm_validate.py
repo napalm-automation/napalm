@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 NAPALM CLI Tools: validate
 ===========================
 
 Validating deployments from the shell.
-'''
+"""
 
 # Python3 support
 from __future__ import print_function
@@ -22,7 +22,7 @@ import sys
 import json
 import logging
 
-logger = logging.getLogger('cl_napalm_validate.py')
+logger = logging.getLogger("cl_napalm_validate.py")
 
 
 def main():
@@ -34,15 +34,20 @@ def main():
     driver = get_network_driver(args.vendor)
 
     optional_args = parse_optional_args(args.optional_args)
-    logger.debug('Connecting to device "{}" with user "{}" and optional_args={}'.format(
-                 args.hostname, args.user, optional_args))
+    logger.debug(
+        'Connecting to device "{}" with user "{}" and optional_args={}'.format(
+            args.hostname, args.user, optional_args
+        )
+    )
 
-    with driver(args.hostname, args.user, args.password, optional_args=optional_args) as device:
-        logger.debug('Generating compliance report')
+    with driver(
+        args.hostname, args.user, args.password, optional_args=optional_args
+    ) as device:
+        logger.debug("Generating compliance report")
         print(json.dumps(device.compliance_report(args.validation_file), indent=4))
-        logger.debug('Closing session')
+        logger.debug("Closing session")
     sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
