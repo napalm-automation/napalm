@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<nf:rpc-reply xmlns:nf="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns="http://www.cisco.com/nxos:1.0:vdc_mgr">
+ <nf:data>
+  <show>
+   <__XML__BLK_Cmd_SHOW_HOSTNAME_hostname>
+    <__XML__OPT_Cmd_SHOW_HOSTNAME___readonly__>
+     <__readonly__>
+      <hostname>nxos1.domain.com</hostname>
+     </__readonly__>
+    </__XML__OPT_Cmd_SHOW_HOSTNAME___readonly__>
+   </__XML__BLK_Cmd_SHOW_HOSTNAME_hostname>
+  </show>
+ </nf:data>
+</nf:rpc-reply>
+]]>]]>

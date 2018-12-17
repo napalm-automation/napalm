@@ -1,0 +1,21 @@
+{
+    "vendor": "Cisco",
+    "hostname": "nxos1",
+    "model": "NX-OSv Chassis",
+    "os_version": "7.3(1)D1(1) [build 7.3(1)D1(0.10)]",
+    "serial_number": "TM6012EC74B",
+    "uptime": 8875579,
+    "fqdn": "nxos1.domain.com", 
+    "interface_list": [
+        "mgmt0", 
+        "Ethernet2/1", 
+        "Ethernet2/2", 
+        "Ethernet2/3", 
+        "Ethernet2/4", 
+        "Ethernet2/5", 
+        "Ethernet2/6", 
+        "Ethernet2/7", 
+        "Ethernet2/8", 
+        "Ethernet2/9"
+    ]
+}

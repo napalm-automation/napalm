@@ -550,19 +550,29 @@ class NXOSSSHDriver(NXOSDriverBase):
             "nf": "urn:ietf:params:xml:ns:netconf:base:1.0",
         }
 
-        cmd = "show version"
-        cmd_xml = "{} | xml".format(cmd)
+        cmd_xml = "show version | xml"
         show_version_xml = self._send_command(cmd_xml)
         if "% Invalid command" in show_version_xml:
             return self._get_facts_cli()
 
         show_version = nxos_parser.xml_pipe_normalization(show_version_xml)
-        import ipdb
 
-        ipdb.set_trace()
-        facts_dict = nxos_parser.xml_parse_show_version(
+        facts = nxos_parser.xml_show_version(
             show_version, namespaces=namespaces
         )
+
+        facts["vendor"] = "Cisco"
+
+        show_hostname_xml = self._send_command("show hostname | xml")
+        show_hostname = nxos_parser.xml_pipe_normalization(show_hostname_xml)
+        fqdn = nxos_parser.xml_show_hostname(show_hostname, namespaces=namespaces)
+        facts["fqdn"] = fqdn
+
+        show_int_xml = self._send_command("show interface | xml")
+        show_int = nxos_parser.xml_pipe_normalization(show_int_xml)
+        intf_list = nxos_parser.xml_show_interface(show_int, namespaces=namespaces)
+        facts["interface_list"] = intf_list
+        return facts
 
     def _get_facts_cli(self):
         """Pipe XML failed fall-back to legacy screen-scraping."""
