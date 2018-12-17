@@ -1,0 +1,31 @@
+# http://editorconfig.org
+#
+# This file contains directions for an editor (if it supports it)
+# about how to manage indents, new lines, etc
+# It aids in having consistency amongst developers
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+end_of_line = lf
+charset = utf-8
+
+[*.py]
+max_line_length = 100
+
+[*.json]
+indent_size = 2
+
+[*.{yml,yaml}]
+indent_size = 2
+
+# Makefiles always use tabs for indentation
+[Makefile]
+indent_style = tab
+
+[*.txt]
+insert_final_newline = false
