@@ -1061,7 +1061,7 @@ class IOSDriver(NetworkDriver):
 
         return interface_dict
 
-    def get_interfaces_ip(self, vrf=''):
+    def get_interfaces_ip(self, vrf=""):
         """
         Get interface ip details.
 
@@ -1083,7 +1083,7 @@ class IOSDriver(NetworkDriver):
             u'Vlan200': {   'ipv4': {   u'10.63.176.57': {   'prefix_length': 29}}}}
         """
         if vrf:
-            msg = 'VRF support has not been added for this getter on this platform.'
+            msg = "VRF support has not been added for this getter on this platform."
             raise NotImplementedError(msg)
 
         interfaces = {}
