@@ -918,7 +918,7 @@ class EOSDriver(NetworkDriver):
 
     def get_arp_table(self, vrf=""):
         if vrf:
-            msg = 'VRF support has not been added for this getter on this platform.'
+            msg = "VRF support has not been added for this getter on this platform."
             raise NotImplementedError(msg)
 
         arp_table = []
