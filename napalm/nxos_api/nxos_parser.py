@@ -36,7 +36,9 @@ def xml_show_interface(xml_output, namespaces=None):
     if namespaces is None:
         namespaces = {}
 
-    intf_list = xml_output.findall(".//{*}ROW_interface/{*}interface", namespaces=namespaces)
+    intf_list = xml_output.findall(
+        ".//{*}ROW_interface/{*}interface", namespaces=namespaces
+    )
     if intf_list is not None:
         return [intf.text for intf in intf_list]
     else:

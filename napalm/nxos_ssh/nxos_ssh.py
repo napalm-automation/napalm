@@ -557,9 +557,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         show_version = nxos_parser.xml_pipe_normalization(show_version_xml)
 
-        facts = nxos_parser.xml_show_version(
-            show_version, namespaces=namespaces
-        )
+        facts = nxos_parser.xml_show_version(show_version, namespaces=namespaces)
 
         facts["vendor"] = "Cisco"
 
