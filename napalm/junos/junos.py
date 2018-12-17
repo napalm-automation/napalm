@@ -1477,6 +1477,10 @@ class JunOSDriver(NetworkDriver):
 
     def get_interfaces_ip(self, vrf=""):
         """Return the configured IP addresses."""
+        if vrf:
+            msg = 'VRF support has not been added for this getter on this platform.'
+            raise NotImplementedError(msg)
+
         interfaces_ip = {}
 
         vrf_args = {}
