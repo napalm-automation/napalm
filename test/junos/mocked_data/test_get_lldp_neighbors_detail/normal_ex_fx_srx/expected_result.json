@@ -8,10 +8,11 @@
       "remote_system_name": "core05.tpe01",
       "parent_interface": "ae0.0",
       "remote_system_capab": [
-          "bridge",
-          "wlan-access-point",
-          "router",
-          "station"      ],
+        "bridge",
+        "router",
+        "station",
+        "wlan-access-point"
+      ],
       "remote_system_enable_capab": [
         "bridge"
       ]
@@ -26,10 +27,11 @@
       "remote_system_name": "core05.tpe01",
       "parent_interface": "ae0.0",
       "remote_system_capab": [
-          "bridge",
-          "wlan-access-point",
-          "router",
-          "station"      ],
+        "bridge",
+        "router",
+        "station",
+        "wlan-access-point"
+      ],
       "remote_system_enable_capab": [
         "bridge"
       ]
@@ -44,10 +46,10 @@
       "remote_system_name": "core05.tpe01",
       "parent_interface": "ae0.0",
       "remote_system_capab": [
-          "bridge",
-          "wlan-access-point",
-          "router",
-          "station"
+        "bridge",
+        "router",
+        "station",
+        "wlan-access-point"
       ],
       "remote_system_enable_capab": [
         "bridge"
@@ -63,10 +65,10 @@
       "remote_system_name": "core05.tpe01",
       "parent_interface": "ae0.0",
       "remote_system_capab": [
-          "bridge",
-          "wlan-access-point",
-          "router",
-          "station"
+        "bridge",
+        "router",
+        "station",
+        "wlan-access-point"
       ],
       "remote_system_enable_capab": [
         "bridge"

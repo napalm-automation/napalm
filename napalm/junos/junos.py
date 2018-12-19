@@ -760,11 +760,13 @@ class JunOSDriver(NetworkDriver):
     def _transform_lldp_capab(self, capabilities):
         if capabilities and isinstance(capabilities, py23_compat.string_types):
             capabilities = capabilities.lower()
-            return [
-                translation
-                for entry, translation in C.LLDP_CAPAB_TRANFORM_TABLE.items()
-                if entry in capabilities
-            ]
+            return sorted(
+                [
+                    translation
+                    for entry, translation in C.LLDP_CAPAB_TRANFORM_TABLE.items()
+                    if entry in capabilities
+                ]
+            )
         else:
             return []
 

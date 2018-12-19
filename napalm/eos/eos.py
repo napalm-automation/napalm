@@ -615,7 +615,7 @@ class EOSDriver(NetworkDriver):
         return environment_counters
 
     def _transform_lldp_capab(self, capabilities):
-        return [LLDP_CAPAB_TRANFORM_TABLE[c.lower()] for c in capabilities]
+        return sorted([LLDP_CAPAB_TRANFORM_TABLE[c.lower()] for c in capabilities])
 
     def get_lldp_neighbors_detail(self, interface=""):
 
