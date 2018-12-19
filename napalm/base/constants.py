@@ -69,12 +69,12 @@ NETMIKO_MAP = {
     "junos": "juniper_eos",
 }
 LLDP_CAPAB_TRANFORM_TABLE = {
-    "O": "other",
-    "P": "repeater",
-    "B": "bridge",
-    "W": "wlan-access-point",
-    "R": "router",
-    "T": "telephone",
-    "C": "docsis-cable-device",
-    "S": "station",
+    "o": "other",
+    "p": "repeater",
+    "b": "bridge",
+    "w": "wlan-access-point",
+    "r": "router",
+    "t": "telephone",
+    "c": "docsis-cable-device",
+    "s": "station",
 }

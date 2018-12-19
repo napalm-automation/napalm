@@ -4,7 +4,7 @@ LLDP_CAPAB_TRANFORM_TABLE = {
     "other": "other",
     "repeater": "repeater",
     "bridge": "bridge",
-    "wlanAccessPoint": "wlan-access-point",
+    "wlanaccesspoint": "wlan-access-point",
     "router": "router",
     "telephone": "telephone",
     "docsis": "docsis-cable-device",

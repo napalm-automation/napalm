@@ -20,12 +20,12 @@ OC_NETWORK_INSTANCE_TYPE_MAP = {
 OPTICS_NULL_LEVEL_SPC = "- Inf"
 
 LLDP_CAPAB_TRANFORM_TABLE = {
-    "Other": "other",
-    "Repeater": "repeater",
-    "Bridge": "bridge",
-    "WLAN Access Point": "wlan-access-point",
-    "Router": "router",
-    "Telephone": "telephone",
-    "DOCSIS Cable Device": "docsis-cable-device",
-    "Station Only": "station",
+    "other": "other",
+    "repeater": "repeater",
+    "bridge": "bridge",
+    "wlan access point": "wlan-access-point",
+    "router": "router",
+    "telephone": "telephone",
+    "docsis cable device": "docsis-cable-device",
+    "station only": "station",
 }
