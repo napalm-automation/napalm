@@ -84,15 +84,15 @@ class JunOSDriver(NetworkDriver):
         if optional_args is None:
             optional_args = {}
 
-        self.port = optional_args.get('port', 22)
-        self.key_file = optional_args.get('key_file', None)
-        self.keepalive = optional_args.get('keepalive', 30)
-        self.ssh_config_file = optional_args.get('ssh_config_file', None)
-        self.ignore_warning = optional_args.get('ignore_warning', False)
+        self.port = optional_args.get("port", 22)
+        self.key_file = optional_args.get("key_file", None)
+        self.keepalive = optional_args.get("keepalive", 30)
+        self.ssh_config_file = optional_args.get("ssh_config_file", None)
+        self.ignore_warning = optional_args.get("ignore_warning", False)
 
         # Define locking method
-        self.lock_disable = optional_args.get('lock_disable', False)
-        self.session_config_lock = optional_args.get('config_lock', False)
+        self.lock_disable = optional_args.get("lock_disable", False)
+        self.session_config_lock = optional_args.get("config_lock", False)
 
         if self.key_file:
             self.device = Device(
