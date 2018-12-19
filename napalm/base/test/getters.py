@@ -40,36 +40,19 @@ def dict_diff(prv, nxt):
     result = {}
 
     for k in keys:
-        a = prv.get(k)
-        b = nxt.get(k)
-
-        if isinstance(a, dict):
-            if isinstance(b, dict):
-                # If both are dicts we do a recursive call.
-                diff = dict_diff(a, b)
+        if isinstance(prv.get(k), dict):
+            if isinstance(nxt.get(k), dict):
+                "If both are dicts we do a recursive call."
+                diff = dict_diff(prv.get(k), nxt.get(k))
                 if diff:
                     result[k] = diff
             else:
-                # If only one is a dict they are clearly different
-                result[k] = {"result": a, "expected": b}
-        elif isinstance(a, list) and isinstance(b, list):
-            if any(isinstance(item, dict) for item in a) or any(
-                isinstance(item, dict) for item in b
-            ):
-                # Compare the lists of dictionaries
-                diff = list_dicts_diff(a, b)
-                if diff:
-                    result[k] = diff
-            else:
-                # Compare the lists values
-                # We sort them before comparing,
-                # otherwise lists in a different order won't match
-                if sorted(a) != sorted(b):
-                    result[k] = {"result": a, "expected": b}
+                "If only one is a dict they are clearly different"
+                result[k] = {"result": prv.get(k), "expected": nxt.get(k)}
         else:
-            # Ellipsis is a wildcard.
-            if a != b and b != "...":
-                result[k] = {"result": a, "expected": b}
+            "Ellipsis is a wildcard." ""
+            if prv.get(k) != nxt.get(k) and nxt.get(k) != "...":
+                result[k] = {"result": prv.get(k), "expected": nxt.get(k)}
     return result
 
 
