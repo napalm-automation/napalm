@@ -74,15 +74,15 @@ class TestMockDriver(object):
 
         with pytest.raises(NotImplementedError) as excinfo:
             d.get_route_to()
-        expected = "You can provide mocked data in {}/get_route_to.1".format(
-            optional_args["path"]
+        expected = "You can provide mocked data in {}".format(
+            os.path.join(optional_args["path"], "get_route_to.1")
         )
         assert expected in py23_compat.text_type(excinfo.value)
 
         with pytest.raises(NotImplementedError) as excinfo:
             d.get_route_to()
-        expected = "You can provide mocked data in {}/get_route_to.2".format(
-            optional_args["path"]
+        expected = "You can provide mocked data in {}".format(
+            os.path.join(optional_args["path"], "get_route_to.2")
         )
         assert expected in py23_compat.text_type(excinfo.value)
 
