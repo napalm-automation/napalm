@@ -20,35 +20,31 @@ from napalm.base.test.base import TestConfigNetworkDriver, TestGettersNetworkDri
 
 
 class TestConfigIOSXRDriver(unittest.TestCase, TestConfigNetworkDriver):
-
     @classmethod
     def setUpClass(cls):
-        hostname = '127.0.0.1'
-        username = 'vagrant'
-        password = 'vagrant'
-        cls.vendor = 'iosxr'
+        hostname = "127.0.0.1"
+        username = "vagrant"
+        password = "vagrant"
+        cls.vendor = "iosxr"
 
-        optional_args = {'port': 12202}
-        cls.device = IOSXRDriver(hostname,
-                                 username,
-                                 password,
-                                 timeout=60,
-                                 optional_args=optional_args)
+        optional_args = {"port": 12202}
+        cls.device = IOSXRDriver(
+            hostname, username, password, timeout=60, optional_args=optional_args
+        )
         cls.device.open()
-        cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
+        cls.device.load_replace_candidate(filename="%s/initial.conf" % cls.vendor)
         cls.device.commit_config()
 
 
 class TestGetterIOSXRDriver(unittest.TestCase, TestGettersNetworkDriver):
-
     @classmethod
     def setUpClass(cls):
         cls.mock = True
 
-        hostname = '192.168.56.202'
-        username = 'vagrant'
-        password = 'vagrant'
-        cls.vendor = 'iosxr'
+        hostname = "192.168.56.202"
+        username = "vagrant"
+        password = "vagrant"
+        cls.vendor = "iosxr"
 
         cls.device = IOSXRDriver(hostname, username, password, timeout=60)
 
@@ -59,7 +55,6 @@ class TestGetterIOSXRDriver(unittest.TestCase, TestGettersNetworkDriver):
 
 
 class FakeIOSXRDevice:
-
     @staticmethod
     def read_txt_file(filename):
         curr_dir = os.path.dirname(os.path.abspath(__file__))
@@ -68,27 +63,29 @@ class FakeIOSXRDevice:
             return data_file.read()
 
     def _execute_config_show(self, show_command):
-        rpc_request = '<CLI><Configuration>{show_command}</Configuration></CLI>'.format(
+        rpc_request = "<CLI><Configuration>{show_command}</Configuration></CLI>".format(
             show_command=show_command
         )
         return self.make_rpc_call(rpc_request)
 
     def show_version(self):
-        return self.read_txt_file('iosxr/mock_data/show_version.txt')
+        return self.read_txt_file("iosxr/mock_data/show_version.txt")
 
     def show_interfaces(self):
-        return self.read_txt_file('iosxr/mock_data/show_interfaces.txt')
+        return self.read_txt_file("iosxr/mock_data/show_interfaces.txt")
 
     def show_interface_description(self):
-        return self.read_txt_file('iosxr/mock_data/show_interface_description.txt')
+        return self.read_txt_file("iosxr/mock_data/show_interface_description.txt")
 
     def show_lldp_neighbors(self):
-        return self.read_txt_file('iosxr/mock_data/show_lldp_neighbors.txt')
+        return self.read_txt_file("iosxr/mock_data/show_lldp_neighbors.txt")
 
     def make_rpc_call(self, rpc_call):
-        rpc_call = rpc_call.replace('<', '_')\
-                           .replace('>', '_')\
-                           .replace('/', '_')\
-                           .replace('\n', '')\
-                           .replace(' ', '')
-        return self.read_txt_file('iosxr/mock_data/{}.rpc'.format(rpc_call[0:150]))
+        rpc_call = (
+            rpc_call.replace("<", "_")
+            .replace(">", "_")
+            .replace("/", "_")
+            .replace("\n", "")
+            .replace(" ", "")
+        )
+        return self.read_txt_file("iosxr/mock_data/{}.rpc".format(rpc_call[0:150]))

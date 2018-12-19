@@ -23,8 +23,8 @@ from napalm.nxos_ssh.nxos_ssh import NXOSSSHDriver
 
 
 try:
-    __version__ = pkg_resources.get_distribution('napalm-nxos-ssh').version
+    __version__ = pkg_resources.get_distribution("napalm-nxos-ssh").version
 except pkg_resources.DistributionNotFound:
     __version__ = "Not installed"
 
-__all__ = ('NXOSSSHDriver',)
+__all__ = ("NXOSSSHDriver",)

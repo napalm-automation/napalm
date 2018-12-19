@@ -37,26 +37,28 @@ class TestMockDriver(object):
 
     def test_basic(self):
         d = driver("blah", "bleh", "blih", optional_args=optional_args)
-        assert d.is_alive() == {u'is_alive': False}
+        assert d.is_alive() == {"is_alive": False}
         d.open()
-        assert d.is_alive() == {u'is_alive': True}
+        assert d.is_alive() == {"is_alive": True}
         d.close()
-        assert d.is_alive() == {u'is_alive': False}
+        assert d.is_alive() == {"is_alive": False}
 
         with pytest.raises(napalm.base.exceptions.ConnectionClosedException) as excinfo:
             d.get_facts()
         assert "connection closed" in py23_compat.text_type(excinfo.value)
 
     def test_context_manager(self):
-        with pytest.raises(napalm.base.exceptions.ConnectionException) as e, \
-                driver("blah", "bleh", "blih", optional_args=fail_args) as d:
+        with pytest.raises(napalm.base.exceptions.ConnectionException) as e, driver(
+            "blah", "bleh", "blih", optional_args=fail_args
+        ) as d:
             pass
         assert "You told me to do this" in py23_compat.text_type(e.value)
-        with pytest.raises(AttributeError) as e, \
-                driver("blah", "bleh", "blih", optional_args=optional_args) as d:
-            assert d.is_alive() == {u'is_alive': True}
+        with pytest.raises(AttributeError) as e, driver(
+            "blah", "bleh", "blih", optional_args=optional_args
+        ) as d:
+            assert d.is_alive() == {"is_alive": True}
             d.__fake_call()
-        assert d.is_alive() == {u'is_alive': False}
+        assert d.is_alive() == {"is_alive": False}
         assert "object has no attribute" in py23_compat.text_type(e.value)
 
     def test_mocking_getters(self):
@@ -72,12 +74,16 @@ class TestMockDriver(object):
 
         with pytest.raises(NotImplementedError) as excinfo:
             d.get_route_to()
-        expected = "You can provide mocked data in {}/get_route_to.1".format(optional_args["path"])
+        expected = "You can provide mocked data in {}".format(
+            os.path.join(optional_args["path"], "get_route_to.1")
+        )
         assert expected in py23_compat.text_type(excinfo.value)
 
         with pytest.raises(NotImplementedError) as excinfo:
             d.get_route_to()
-        expected = "You can provide mocked data in {}/get_route_to.2".format(optional_args["path"])
+        expected = "You can provide mocked data in {}".format(
+            os.path.join(optional_args["path"], "get_route_to.2")
+        )
         assert expected in py23_compat.text_type(excinfo.value)
 
         d.close()
@@ -88,18 +94,24 @@ class TestMockDriver(object):
 
         with pytest.raises(TypeError) as excinfo:
             d.get_route_to(1, 2, 3)
-        assert "get_route_to: expected at most 3 arguments, got 4" in py23_compat.text_type(
-                excinfo.value)
+        assert (
+            "get_route_to: expected at most 3 arguments, got 4"
+            in py23_compat.text_type(excinfo.value)
+        )
 
         with pytest.raises(TypeError) as excinfo:
             d.get_route_to(1, 1, protocol=2)
-        assert "get_route_to: expected at most 3 arguments, got 3" in py23_compat.text_type(
-                excinfo.value)
+        assert (
+            "get_route_to: expected at most 3 arguments, got 3"
+            in py23_compat.text_type(excinfo.value)
+        )
 
         with pytest.raises(TypeError) as excinfo:
             d.get_route_to(proto=2)
-        assert "get_route_to got an unexpected keyword argument 'proto'" in py23_compat.text_type(
-                excinfo.value)
+        assert (
+            "get_route_to got an unexpected keyword argument 'proto'"
+            in py23_compat.text_type(excinfo.value)
+        )
 
         d.close()
 
@@ -117,8 +129,10 @@ class TestMockDriver(object):
 
         with pytest.raises(TypeError) as excinfo:
             d.get_bgp_neighbors()
-            assert "Couldn't resolve exception NoIdeaException" in py23_compat.text_type(
-                    excinfo.value)
+            assert (
+                "Couldn't resolve exception NoIdeaException"
+                in py23_compat.text_type(excinfo.value)
+            )
 
         d.close()
 
@@ -126,7 +140,10 @@ class TestMockDriver(object):
         d = driver("blah", "bleh", "blih", optional_args=optional_args)
         d.open()
         result = d.cli(["a_command", "b_command"])
-        assert result == {'a_command': 'result command a\n', 'b_command': 'result command b\n'}
+        assert result == {
+            "a_command": "result command a\n",
+            "b_command": "result command b\n",
+        }
         d.close()
 
     def test_configuration_merge(self):

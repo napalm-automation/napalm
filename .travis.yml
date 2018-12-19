@@ -2,17 +2,20 @@ language: python
 
 python:
   - 2.7
-  - 3.4
   - 3.5
   - 3.6
 
 matrix:
   include:
-      - python: 3.6
-        env: TOXENV=sphinx
+  - python: 3.6
+    env: TOXENV=pylama
+  - python: 3.6
+    env: TOXENV=black
+  - python: 3.6
+    env: TOXENV=sphinx
 
 install:
-  - pip install tox==3.0.0 tox-travis coveralls
+  - pip install tox==3.5.3 tox-travis coveralls
 
 deploy:
   provider: pypi
