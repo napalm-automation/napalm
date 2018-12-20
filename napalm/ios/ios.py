@@ -160,7 +160,7 @@ class IOSDriver(NetworkDriver):
         """Close the connection to the device."""
         self._netmiko_close()
 
-    def _send_command(self, command):
+    def _send_command(self, command, expect_string=None):
         """Wrapper for self.device.send.command().
 
         If command is a list will iterate through commands until valid command.
@@ -168,11 +168,11 @@ class IOSDriver(NetworkDriver):
         try:
             if isinstance(command, list):
                 for cmd in command:
-                    output = self.device.send_command(cmd)
+                    output = self.device.send_command(cmd, expect_string)
                     if "% Invalid" not in output:
                         break
             else:
-                output = self.device.send_command(command)
+                output = self.device.send_command(command, expect_string)
             return self._send_command_postprocess(output)
         except (socket.error, EOFError) as e:
             raise ConnectionClosedException(str(e))
@@ -1944,7 +1944,7 @@ class IOSDriver(NetworkDriver):
             arp_table.append(entry)
         return arp_table
 
-    def cli(self, commands):
+    def cli(self, commands, expect_string=None):
         """
         Execute a list of commands and return the output in a dictionary format using the command
         as the key.
@@ -1962,7 +1962,7 @@ class IOSDriver(NetworkDriver):
             raise TypeError("Please enter a valid list of commands!")
 
         for command in commands:
-            output = self._send_command(command)
+            output = self._send_command(command, expect_string)
             cli_output.setdefault(command, {})
             cli_output[command] = output
 
