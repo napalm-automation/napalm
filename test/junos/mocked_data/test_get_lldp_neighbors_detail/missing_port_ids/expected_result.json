@@ -7,8 +7,12 @@
       "remote_chassis_id": "0C:8D:DB:63:62:00",
       "remote_system_name": "Meraki MX64",
       "parent_interface": "-",
-      "remote_system_capab": "Router",
-      "remote_system_enable_capab": "Router"
+      "remote_system_capab": [
+        "router"
+      ],
+      "remote_system_enable_capab": [
+        "router"
+      ]
     }
   ]
 }
