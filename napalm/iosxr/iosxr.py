@@ -841,8 +841,12 @@ class IOSXRDriver(NetworkDriver):
                     "remote_port_description": port_descr,
                     "remote_system_name": system_name,
                     "remote_system_description": system_descr,
-                    "remote_system_capab": system_capabilities,
-                    "remote_system_enable_capab": enabled_capabilities,
+                    "remote_system_capab": napalm.base.helpers.transform_lldp_capab(
+                        system_capabilities
+                    ),
+                    "remote_system_enable_capab": napalm.base.helpers.transform_lldp_capab(
+                        enabled_capabilities
+                    ),
                 }
             )
 

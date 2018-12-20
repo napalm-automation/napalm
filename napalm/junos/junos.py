@@ -722,7 +722,7 @@ class JunOSDriver(NetworkDriver):
                 uptime_table_items=uptime_table_items,
             )
         # If the OS provides the `peer_fwd_rti` or any way to identify the
-        #   rotuing instance name (see above), the performances of this getter
+        #   routing instance name (see above), the performances of this getter
         #   can be significantly improved, as we won't execute one request
         #   for each an every RT.
         # However, this improvement would only be beneficial for multi-VRF envs.
@@ -760,21 +760,37 @@ class JunOSDriver(NetworkDriver):
 
         return neighbors
 
+    def _transform_lldp_capab(self, capabilities):
+        if capabilities and isinstance(capabilities, py23_compat.string_types):
+            capabilities = capabilities.lower()
+            return sorted(
+                [
+                    translation
+                    for entry, translation in C.LLDP_CAPAB_TRANFORM_TABLE.items()
+                    if entry in capabilities
+                ]
+            )
+        else:
+            return []
+
     def get_lldp_neighbors_detail(self, interface=""):
         """Detailed view of the LLDP neighbors."""
         lldp_neighbors = {}
 
-        lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
-        try:
-            lldp_table.get()
-        except RpcError as rpcerr:
-            # this assumes the library runs in an environment
-            # able to handle logs
-            # otherwise, the user just won't see this happening
-            log.error("Unable to retrieve the LLDP neighbors information:")
-            log.error(py23_compat.text_type(rpcerr))
-            return {}
-        interfaces = lldp_table.get().keys()
+        if not interface:
+            lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
+            try:
+                lldp_table.get()
+            except RpcError as rpcerr:
+                # this assumes the library runs in an environment
+                # able to handle logs
+                # otherwise, the user just won't see this happening
+                log.error("Unable to retrieve the LLDP neighbors information:")
+                log.error(py23_compat.text_type(rpcerr))
+                return {}
+            interfaces = lldp_table.get().keys()
+        else:
+            interfaces = [interface]
 
         if self.device.facts.get("switch_style") == "VLAN":
             lldp_table.GET_RPC = "get-lldp-interface-neighbors-information"
@@ -818,8 +834,12 @@ class JunOSDriver(NetworkDriver):
                         ),
                         "remote_system_name": item.remote_system_name,
                         "remote_system_description": item.remote_system_description,
-                        "remote_system_capab": item.remote_system_capab,
-                        "remote_system_enable_capab": item.remote_system_enable_capab,
+                        "remote_system_capab": self._transform_lldp_capab(
+                            item.remote_system_capab
+                        ),
+                        "remote_system_enable_capab": self._transform_lldp_capab(
+                            item.remote_system_enable_capab
+                        ),
                     }
                 )
 

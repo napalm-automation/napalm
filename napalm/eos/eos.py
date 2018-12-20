@@ -47,7 +47,7 @@ from napalm.base.exceptions import (
     SessionLockedException,
     CommandErrorException,
 )
-
+from napalm.eos.constants import LLDP_CAPAB_TRANFORM_TABLE
 import napalm.base.constants as c
 
 # local modules
@@ -614,6 +614,9 @@ class EOSDriver(NetworkDriver):
         }
         return environment_counters
 
+    def _transform_lldp_capab(self, capabilities):
+        return sorted([LLDP_CAPAB_TRANFORM_TABLE[c.lower()] for c in capabilities])
+
     def get_lldp_neighbors_detail(self, interface=""):
 
         lldp_neighbors_out = {}
@@ -626,7 +629,6 @@ class EOSDriver(NetworkDriver):
             "show lldp neighbors {filters} detail".format(filters=" ".join(filters))
         ]
 
-        lldp_neighbors_in = {}
         lldp_neighbors_in = self.device.run_commands(commands)[0].get(
             "lldpNeighbors", {}
         )
@@ -644,8 +646,10 @@ class EOSDriver(NetworkDriver):
                 if interface not in lldp_neighbors_out.keys():
                     lldp_neighbors_out[interface] = []
                 capabilities = neighbor.get("systemCapabilities", {})
-                capabilities_list = list(capabilities.keys())
-                capabilities_list.sort()
+                available_capabilities = self._transform_lldp_capab(capabilities.keys())
+                enabled_capabilities = self._transform_lldp_capab(
+                    [capab for capab, enabled in capabilities.items() if enabled]
+                )
                 remote_chassis_id = neighbor.get("chassisId", "")
                 if neighbor.get("chassisIdType", "") == "macAddress":
                     remote_chassis_id = napalm.base.helpers.mac(remote_chassis_id)
@@ -662,18 +666,8 @@ class EOSDriver(NetworkDriver):
                             "systemDescription", ""
                         ),
                         "remote_chassis_id": remote_chassis_id,
-                        "remote_system_capab": py23_compat.text_type(
-                            ", ".join(capabilities_list)
-                        ),
-                        "remote_system_enable_capab": py23_compat.text_type(
-                            ", ".join(
-                                [
-                                    capability
-                                    for capability in capabilities_list
-                                    if capabilities[capability]
-                                ]
-                            )
-                        ),
+                        "remote_system_capab": available_capabilities,
+                        "remote_system_enable_capab": enabled_capabilities,
                     }
                 )
         return lldp_neighbors_out
