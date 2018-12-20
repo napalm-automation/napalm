@@ -17,7 +17,7 @@
         <lldp-system-description>
             <lldp-remote-system-description>Arista Networks EOS version 4.14.8M running on an Arista Networks DCS-7504</lldp-remote-system-description>
         </lldp-system-description>
-        <lldp-remote-system-capabilities-supported>Bridge Router </lldp-remote-system-capabilities-supported>
+        <lldp-remote-system-capabilities-supported>Bridge WLAN Access Point Router Station Only </lldp-remote-system-capabilities-supported>
         <lldp-remote-system-capabilities-enabled>Bridge </lldp-remote-system-capabilities-enabled>
         <lldp-remote-management-address-type>IPv4</lldp-remote-management-address-type>
         <lldp-remote-management-address>199.27.130.35</lldp-remote-management-address>

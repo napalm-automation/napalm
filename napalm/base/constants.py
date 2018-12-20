@@ -68,3 +68,13 @@ NETMIKO_MAP = {
     "eos": "arista_eos",
     "junos": "juniper_eos",
 }
+LLDP_CAPAB_TRANFORM_TABLE = {
+    "o": "other",
+    "p": "repeater",
+    "b": "bridge",
+    "w": "wlan-access-point",
+    "r": "router",
+    "t": "telephone",
+    "c": "docsis-cable-device",
+    "s": "station",
+}
