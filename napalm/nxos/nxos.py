@@ -1187,9 +1187,9 @@ class NXOSDriver(NXOSDriverBase):
             raw_mac = mac_entry.get("disp_mac_addr")
             interface = py23_compat.text_type(mac_entry.get("disp_port"))
             try:
-                vlan = int(mac_entry.get('disp_vlan'))
+                vlan = int(mac_entry.get("disp_vlan"))
             except ValueError:
-                vlan = '-'
+                vlan = 0
             active = True
             static = mac_entry.get("disp_is_static") != "0"
             moves = 0
