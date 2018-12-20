@@ -66,6 +66,8 @@ class JunOSDriver(NetworkDriver):
 
         Optional args:
             * config_lock (True/False): lock configuration DB after the connection is established.
+            * lock_disable (True/False): force configuration lock to be disabled (for external lock
+                management).
             * port (int): custom port
             * key_file (string): SSH key file path
             * keepalive (int): Keepalive interval
@@ -82,12 +84,15 @@ class JunOSDriver(NetworkDriver):
         if optional_args is None:
             optional_args = {}
 
-        self.config_lock = optional_args.get("config_lock", False)
         self.port = optional_args.get("port", 22)
         self.key_file = optional_args.get("key_file", None)
         self.keepalive = optional_args.get("keepalive", 30)
         self.ssh_config_file = optional_args.get("ssh_config_file", None)
         self.ignore_warning = optional_args.get("ignore_warning", False)
+
+        # Define locking method
+        self.lock_disable = optional_args.get("lock_disable", False)
+        self.session_config_lock = optional_args.get("config_lock", False)
 
         if self.key_file:
             self.device = Device(
@@ -123,12 +128,12 @@ class JunOSDriver(NetworkDriver):
             # ValueError: requested attribute name cu already exists
             del self.device.cu
         self.device.bind(cu=Config)
-        if self.config_lock:
+        if not self.lock_disable and self.session_config_lock:
             self._lock()
 
     def close(self):
         """Close the connection."""
-        if self.config_lock:
+        if not self.lock_disable and self.session_config_lock:
             self._unlock()
         self.device.close()
 
@@ -214,11 +219,9 @@ class JunOSDriver(NetworkDriver):
             with open(filename) as f:
                 configuration = f.read()
 
-        if not self.config_lock:
-            # if not locked during connection time
-            # will try to lock it if not already aquired
+        if not self.lock_disable and not self.session_config_lock:
+            # if not locked during connection time, will try to lock
             self._lock()
-            # and the device will be locked till first commit/rollback
 
         try:
             fmt = self._detect_config_format(configuration)
@@ -261,13 +264,13 @@ class JunOSDriver(NetworkDriver):
         """Commit configuration."""
         commit_args = {"comment": message} if message else {}
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
-        if not self.config_lock:
+        if not self.lock_disable and not self.session_config_lock:
             self._unlock()
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
         self.device.cu.rollback(rb_id=0)
-        if not self.config_lock:
+        if not self.lock_disable and not self.session_config_lock:
             self._unlock()
 
     def rollback(self):
@@ -719,7 +722,7 @@ class JunOSDriver(NetworkDriver):
                 uptime_table_items=uptime_table_items,
             )
         # If the OS provides the `peer_fwd_rti` or any way to identify the
-        #   rotuing instance name (see above), the performances of this getter
+        #   routing instance name (see above), the performances of this getter
         #   can be significantly improved, as we won't execute one request
         #   for each an every RT.
         # However, this improvement would only be beneficial for multi-VRF envs.
@@ -757,21 +760,37 @@ class JunOSDriver(NetworkDriver):
 
         return neighbors
 
+    def _transform_lldp_capab(self, capabilities):
+        if capabilities and isinstance(capabilities, py23_compat.string_types):
+            capabilities = capabilities.lower()
+            return sorted(
+                [
+                    translation
+                    for entry, translation in C.LLDP_CAPAB_TRANFORM_TABLE.items()
+                    if entry in capabilities
+                ]
+            )
+        else:
+            return []
+
     def get_lldp_neighbors_detail(self, interface=""):
         """Detailed view of the LLDP neighbors."""
         lldp_neighbors = {}
 
-        lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
-        try:
-            lldp_table.get()
-        except RpcError as rpcerr:
-            # this assumes the library runs in an environment
-            # able to handle logs
-            # otherwise, the user just won't see this happening
-            log.error("Unable to retrieve the LLDP neighbors information:")
-            log.error(py23_compat.text_type(rpcerr))
-            return {}
-        interfaces = lldp_table.get().keys()
+        if not interface:
+            lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
+            try:
+                lldp_table.get()
+            except RpcError as rpcerr:
+                # this assumes the library runs in an environment
+                # able to handle logs
+                # otherwise, the user just won't see this happening
+                log.error("Unable to retrieve the LLDP neighbors information:")
+                log.error(py23_compat.text_type(rpcerr))
+                return {}
+            interfaces = lldp_table.get().keys()
+        else:
+            interfaces = [interface]
 
         if self.device.facts.get("switch_style") == "VLAN":
             lldp_table.GET_RPC = "get-lldp-interface-neighbors-information"
@@ -815,8 +834,12 @@ class JunOSDriver(NetworkDriver):
                         ),
                         "remote_system_name": item.remote_system_name,
                         "remote_system_description": item.remote_system_description,
-                        "remote_system_capab": item.remote_system_capab,
-                        "remote_system_enable_capab": item.remote_system_enable_capab,
+                        "remote_system_capab": self._transform_lldp_capab(
+                            item.remote_system_capab
+                        ),
+                        "remote_system_enable_capab": self._transform_lldp_capab(
+                            item.remote_system_enable_capab
+                        ),
                     }
                 )
 

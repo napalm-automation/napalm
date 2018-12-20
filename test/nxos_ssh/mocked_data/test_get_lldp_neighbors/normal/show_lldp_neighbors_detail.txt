@@ -67,35 +67,4 @@ Enabled Capabilities: B, R
 Management Address: not advertised
 Vlan ID: 0
 
-
-Chassis id: 0c0c.88f4.e708
-Port id: Ethernet1/1
-Local Port id: Eth1/1
-Port Description: uplink to spine
-System Name: leaf01
-System Description: Cisco Nexus Operating System (NX-OS) Software 7.0(3)I6(1)
-TAC support: http://www.cisco.com/tac
-Copyright (c) 2002-2017, Cisco Systems, Inc. All rights reserved.
-Time remaining: 7 seconds
-System Capabilities: B, R
-Enabled Capabilities: B, R
-Management Address: 192.168.122.207
-Management Address IPV6: 0c0c.88f4.e708
-Vlan ID: 1
-
-
-Chassis id: 0c0c.88b0.f508
-Port id: Ethernet1/1
-Local Port id: Eth1/2
-Port Description: Ethernet1/1
-System Name: leaf02
-System Description: Cisco Nexus Operating System (NX-OS) Software 7.0(3)I6(1)
-TAC support: http://www.cisco.com/tac
-Copyright (c) 2002-2017, Cisco Systems, Inc. All rights reserved.
-Time remaining: 9 seconds
-System Capabilities: B, R
-Enabled Capabilities: B, R
-Management Address: 192.168.122.213
-Management Address IPV6: 0c0c.88b0.f508
-
 Total entries displayed: 4

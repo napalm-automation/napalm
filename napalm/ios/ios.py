@@ -37,8 +37,11 @@ from napalm.base.exceptions import (
     ConnectionClosedException,
     CommandErrorException,
 )
-from napalm.base.helpers import canonical_interface_name
-from napalm.base.helpers import textfsm_extractor
+from napalm.base.helpers import (
+    canonical_interface_name,
+    transform_lldp_capab,
+    textfsm_extractor,
+)
 from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.utils import py23_compat
 
@@ -797,7 +800,7 @@ class IOSDriver(NetworkDriver):
                 hostname = lldp_entry["remote_system_name"]
                 # Match IOS behaviour of taking remote chassis ID
                 # When lacking a system name (in show lldp neighbors)
-                if hostname == "N/A":
+                if not hostname:
                     hostname = lldp_entry["remote_chassis_id"]
                 lldp_dict = {"port": lldp_entry["remote_port"], "hostname": hostname}
                 lldp[intf_name].append(lldp_dict)
@@ -839,12 +842,19 @@ class IOSDriver(NetworkDriver):
 
         for idx, lldp_entry in enumerate(lldp_entries):
             local_intf = lldp_entry.pop("local_interface") or lldp_interfaces[idx]
-            # Convert any 'not advertised' to 'N/A'
+            # Convert any 'not advertised' to an empty string
             for field in lldp_entry:
                 if "not advertised" in lldp_entry[field]:
-                    lldp_entry[field] = "N/A"
+                    lldp_entry[field] = ""
             # Add field missing on IOS
-            lldp_entry["parent_interface"] = "N/A"
+            lldp_entry["parent_interface"] = ""
+            # Translate the capability fields
+            lldp_entry["remote_system_capab"] = transform_lldp_capab(
+                lldp_entry["remote_system_capab"]
+            )
+            lldp_entry["remote_system_enable_capab"] = transform_lldp_capab(
+                lldp_entry["remote_system_enable_capab"]
+            )
             # Turn the interfaces into their long version
             local_intf = canonical_interface_name(local_intf)
             lldp.setdefault(local_intf, [])

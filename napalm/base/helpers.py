@@ -18,6 +18,7 @@ from netaddr import IPAddress
 
 # local modules
 import napalm.base.exceptions
+from napalm.base import constants
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
 from napalm.base.utils import py23_compat
 from napalm.base.canonical_map import base_interfaces, reverse_mapping
@@ -357,3 +358,13 @@ def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=N
 
     # If abbreviated name lookup fails, return original name
     return interface
+
+
+def transform_lldp_capab(capabilities):
+    if capabilities and isinstance(capabilities, py23_compat.string_types):
+        capabilities = capabilities.strip().lower().split(",")
+        return sorted(
+            [constants.LLDP_CAPAB_TRANFORM_TABLE[c.strip()] for c in capabilities]
+        )
+    else:
+        return []

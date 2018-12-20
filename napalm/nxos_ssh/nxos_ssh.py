@@ -24,11 +24,9 @@ import socket
 from netaddr import IPAddress
 
 # import NAPALM Base
-import napalm.base.helpers
+from napalm.base import helpers
+from napalm.base.exceptions import CommandErrorException, ReplaceConfigException
 from napalm.base.utils import py23_compat
-from napalm.base.exceptions import CommandErrorException
-from napalm.base.exceptions import ReplaceConfigException
-from napalm.base.helpers import canonical_interface_name
 from napalm.nxos import NXOSDriverBase
 
 # Easier to store these as constants
@@ -137,7 +135,7 @@ def parse_intf_section(interface):
     match = re.search(re_mac, interface, flags=re.M)
     if match:
         mac_address = match.group("mac_address")
-        mac_address = napalm.base.helpers.mac(mac_address)
+        mac_address = helpers.mac(mac_address)
     else:
         mac_address = ""
 
@@ -319,7 +317,7 @@ def bgp_table_parser(bgp_table):
             peer_ip: {
                 "is_enabled": is_enabled,
                 "uptime": uptime,
-                "remote_as": napalm.base.helpers.as_number(remote_as),
+                "remote_as": helpers.as_number(remote_as),
                 "is_up": is_up,
                 "description": "",
                 "received_prefixes": received_prefixes,
@@ -362,7 +360,7 @@ def bgp_summary_parser(bgp_summary):
     bgp_summary_dict["afi"] = afi
 
     local_as = bgp_summary_dict["local_as"]
-    local_as = napalm.base.helpers.as_number(local_as)
+    local_as = helpers.as_number(local_as)
 
     match = re.search(IPV4_ADDR_REGEX, bgp_summary_dict["router_id"])
     if not match:
@@ -605,7 +603,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 continue
             interface = line.split()[0]
             # Return canonical interface name
-            interface_list.append(canonical_interface_name(interface))
+            interface_list.append(helpers.canonical_interface_name(interface))
 
         return {
             "uptime": int(uptime),
@@ -686,28 +684,6 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         return interfaces
 
-    def get_lldp_neighbors(self):
-        results = {}
-        command = "show lldp neighbors"
-        output = self._send_command(command)
-        lldp_neighbors = napalm.base.helpers.textfsm_extractor(
-            self, "lldp_neighbors", output
-        )
-
-        for neighbor in lldp_neighbors:
-            local_iface = neighbor.get("local_interface")
-            if neighbor.get(local_iface) is None:
-                if local_iface not in results:
-                    results[local_iface] = []
-
-            neighbor_dict = {
-                "hostname": py23_compat.text_type(neighbor.get("neighbor")),
-                "port": py23_compat.text_type(neighbor.get("neighbor_interface")),
-            }
-
-            results[local_iface].append(neighbor_dict)
-        return results
-
     def get_bgp_neighbors(self):
         """BGP neighbor information.
 
@@ -754,96 +730,6 @@ class NXOSSSHDriver(NXOSDriverBase):
         # FIX -- look up logical or behavior we did in Cisco IOS bgp parser (make consistent here)
         # FIX -- need to merge IPv6 and IPv4 AFI for same neighbor
         return bgp_dict
-
-    def get_lldp_neighbors_detail(self, interface=""):
-        lldp_neighbors = {}
-        filter = ""
-        if interface:
-            filter = "interface {name} ".format(name=interface)
-
-        command = "show lldp neighbors {filter}detail".format(filter=filter)
-        # seems that some old devices may not return JSON output...
-
-        output = self._send_command(command)
-        # thus we need to take the raw text output
-        lldp_neighbors_list = output.splitlines()
-
-        if not lldp_neighbors_list:
-            return lldp_neighbors  # empty dict
-
-        CHASSIS_REGEX = r"^(Chassis id:)\s+([a-z0-9\.]+)$"
-        PORT_REGEX = r"^(Port id:)\s+([0-9]+)$"
-        LOCAL_PORT_ID_REGEX = r"^(Local Port id:)\s+(.*)$"
-        PORT_DESCR_REGEX = r"^(Port Description:)\s+(.*)$"
-        SYSTEM_NAME_REGEX = r"^(System Name:)\s+(.*)$"
-        SYSTEM_DESCR_REGEX = r"^(System Description:)\s+(.*)$"
-        SYST_CAPAB_REEGX = r"^(System Capabilities:)\s+(.*)$"
-        ENABL_CAPAB_REGEX = r"^(Enabled Capabilities:)\s+(.*)$"
-        VLAN_ID_REGEX = r"^(Vlan ID:)\s+(.*)$"
-
-        lldp_neighbor = {}
-        interface_name = None
-
-        for line in lldp_neighbors_list:
-            chassis_rgx = re.search(CHASSIS_REGEX, line, re.I)
-            if chassis_rgx:
-                lldp_neighbor = {
-                    "remote_chassis_id": napalm.base.helpers.mac(
-                        chassis_rgx.groups()[1]
-                    )
-                }
-                continue
-            lldp_neighbor["parent_interface"] = ""
-            port_rgx = re.search(PORT_REGEX, line, re.I)
-            if port_rgx:
-                lldp_neighbor["parent_interface"] = py23_compat.text_type(
-                    port_rgx.groups()[1]
-                )
-                continue
-            local_port_rgx = re.search(LOCAL_PORT_ID_REGEX, line, re.I)
-            if local_port_rgx:
-                interface_name = local_port_rgx.groups()[1]
-                continue
-            port_descr_rgx = re.search(PORT_DESCR_REGEX, line, re.I)
-            if port_descr_rgx:
-                lldp_neighbor["remote_port"] = py23_compat.text_type(
-                    port_descr_rgx.groups()[1]
-                )
-                lldp_neighbor["remote_port_description"] = py23_compat.text_type(
-                    port_descr_rgx.groups()[1]
-                )
-                continue
-            syst_name_rgx = re.search(SYSTEM_NAME_REGEX, line, re.I)
-            if syst_name_rgx:
-                lldp_neighbor["remote_system_name"] = py23_compat.text_type(
-                    syst_name_rgx.groups()[1]
-                )
-                continue
-            syst_descr_rgx = re.search(SYSTEM_DESCR_REGEX, line, re.I)
-            if syst_descr_rgx:
-                lldp_neighbor["remote_system_description"] = py23_compat.text_type(
-                    syst_descr_rgx.groups()[1]
-                )
-                continue
-            syst_capab_rgx = re.search(SYST_CAPAB_REEGX, line, re.I)
-            if syst_capab_rgx:
-                lldp_neighbor["remote_system_capab"] = py23_compat.text_type(
-                    syst_capab_rgx.groups()[1]
-                )
-                continue
-            syst_enabled_rgx = re.search(ENABL_CAPAB_REGEX, line, re.I)
-            if syst_enabled_rgx:
-                lldp_neighbor["remote_system_enable_capab"] = py23_compat.text_type(
-                    syst_enabled_rgx.groups()[1]
-                )
-                continue
-            vlan_rgx = re.search(VLAN_ID_REGEX, line, re.I)
-            if vlan_rgx:
-                # at the end of the loop
-                if interface_name not in lldp_neighbors.keys():
-                    lldp_neighbors[interface_name] = []
-                lldp_neighbors[interface_name].append(lldp_neighbor)
-        return lldp_neighbors
 
     def cli(self, commands):
         cli_output = {}
@@ -920,7 +806,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 raise ValueError("Invalid MAC Address detected: {}".format(mac))
             entry = {
                 "interface": interface,
-                "mac": napalm.base.helpers.mac(mac),
+                "mac": helpers.mac(mac),
                 "ip": address,
                 "age": age,
             }
@@ -1111,7 +997,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             else:
                 active = False
             return {
-                "mac": napalm.base.helpers.mac(mac),
+                "mac": helpers.mac(mac),
                 "interface": interface,
                 "vlan": int(vlan),
                 "static": static,
@@ -1182,7 +1068,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         snmp_information = {}
         command = "show running-config"
         output = self._send_command(command)
-        snmp_config = napalm.base.helpers.textfsm_extractor(self, "snmp_config", output)
+        snmp_config = helpers.textfsm_extractor(self, "snmp_config", output)
 
         if not snmp_config:
             return snmp_information
@@ -1228,7 +1114,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         users = {}
         command = "show running-config"
         output = self._send_command(command)
-        section_username_tabled_output = napalm.base.helpers.textfsm_extractor(
+        section_username_tabled_output = helpers.textfsm_extractor(
             self, "users", output
         )
 
