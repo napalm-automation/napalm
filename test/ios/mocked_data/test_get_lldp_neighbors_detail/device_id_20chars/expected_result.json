@@ -1,84 +1,84 @@
 {
     "GigabitEthernet1": [
         {
-            "parent_interface": "N/A", 
+            "parent_interface": "",
             "remote_chassis_id": "0102.e2ff.fdb0", 
             "remote_port": "Te2/1/14", 
             "remote_port_description": "ABCD-U1AC04-SW1", 
-            "remote_system_capab": "B,R", 
+            "remote_system_capab": ["bridge", "router"],
             "remote_system_description": "Cisco IOS Software, IOS-XE Software, Catalyst 4500 L3 Switch  Software (cat4500e-UNIVERSALK9-M), Version 03.06.05.E RELEASE SOFTWARE (fc2)", 
-            "remote_system_enable_capab": "B", 
+            "remote_system_enable_capab": ["bridge"],
             "remote_system_name": "ABCD-U-DSW1.wan.acme.com"
         }, 
         {
-            "parent_interface": "N/A", 
+            "parent_interface": "",
             "remote_chassis_id": "0102.e2ff.fdb0", 
             "remote_port": "Te1/1/14", 
             "remote_port_description": "ABCD-U1AC04-SW1", 
-            "remote_system_capab": "B,R", 
+            "remote_system_capab": ["bridge", "router"],
             "remote_system_description": "Cisco IOS Software, IOS-XE Software, Catalyst 4500 L3 Switch  Software (cat4500e-UNIVERSALK9-M), Version 03.06.05.E RELEASE SOFTWARE (fc2)", 
-            "remote_system_enable_capab": "B", 
+            "remote_system_enable_capab": ["bridge"],
             "remote_system_name": "ABCD-U-DSW1.wan.acme.com"
         }, 
         {
-            "parent_interface": "N/A", 
+            "parent_interface": "",
             "remote_chassis_id": "hmbbkku-la", 
             "remote_port": "port-001", 
-            "remote_port_description": "N/A", 
-            "remote_system_capab": "S", 
+            "remote_port_description": "",
+            "remote_system_capab": ["station"],
             "remote_system_description": "Hewlett-Packard HP ProBook 650 G1,A3112DD10303,5CG4543H13 + engineering", 
-            "remote_system_enable_capab": "S", 
+            "remote_system_enable_capab": ["station"],
             "remote_system_name": "HMBBKKU-LA"
         }, 
         {
-            "parent_interface": "N/A", 
+            "parent_interface": "",
             "remote_chassis_id": "jniceel-la", 
             "remote_port": "port-001", 
-            "remote_port_description": "N/A", 
-            "remote_system_capab": "S", 
+            "remote_port_description": "",
+            "remote_system_capab": ["station"],
             "remote_system_description": "HP HP ProBook 650 G2,,5CG64565JFL + engineering", 
-            "remote_system_enable_capab": "S", 
+            "remote_system_enable_capab": ["station"],
             "remote_system_name": "JNICEEL-LA"
         }, 
         {
-            "parent_interface": "N/A", 
+            "parent_interface": "",
             "remote_chassis_id": "swaaaer-lta", 
             "remote_port": "port-001", 
-            "remote_port_description": "N/A", 
-            "remote_system_capab": "S", 
+            "remote_port_description": "",
+            "remote_system_capab": ["station"],
             "remote_system_description": "Hewlett-Packard HP ProBook 6570b,A10112D102,5CB40117ZP + engineering", 
-            "remote_system_enable_capab": "S", 
+            "remote_system_enable_capab": ["station"],
             "remote_system_name": "SWAAAER-LTA"
         }, 
         {
-            "parent_interface": "N/A", 
+            "parent_interface": "",
             "remote_chassis_id": "rberrrann-lta", 
             "remote_port": "port-001", 
-            "remote_port_description": "N/A", 
-            "remote_system_capab": "S", 
+            "remote_port_description": "",
+            "remote_system_capab": ["station"],
             "remote_system_description": "Hewlett-Packard HP ProBook 650 G1,A3112DD11203,CNU444BMZ0 + engineering", 
-            "remote_system_enable_capab": "S", 
+            "remote_system_enable_capab": ["station"],
             "remote_system_name": "RBERRRANN-LTA"
         }, 
         {
-            "parent_interface": "N/A", 
+            "parent_interface": "",
             "remote_chassis_id": "cr-443-2", 
             "remote_port": "port-001", 
             "remote_port_description": "Siemens, SIMATIC NET, CP 343-1, 6GK7 443-1EX50-0XE0 , HW: 7, FW: V3.0.23, Ethernet Port, X1 P1", 
-            "remote_system_capab": "S", 
+            "remote_system_capab": ["station"],
             "remote_system_description": "Siemens, SIMATIC NET, CP 443-1, 6GK7 443-1EX50-0XE0, HW: Version 7, FW: Version V3.0.23, VPH6201262", 
-            "remote_system_enable_capab": "S", 
-            "remote_system_name": "N/A"
+            "remote_system_enable_capab": ["station"],
+            "remote_system_name": ""
         },
         {
-            "parent_interface": "N/A",
+            "parent_interface": "",
             "remote_port": "30e4.db01.2345",
             "remote_port_description": "Port 1",
             "remote_chassis_id": "192.168.2.44",
             "remote_system_name": "Cisco IP Phone SPA504G",
-            "remote_system_description": "N/A",
-            "remote_system_capab": "B,T",
-            "remote_system_enable_capab": "B,T"
+            "remote_system_description": "",
+            "remote_system_capab": ["bridge", "telephone"],
+            "remote_system_enable_capab": ["bridge", "telephone"]
         }
     ]
 }

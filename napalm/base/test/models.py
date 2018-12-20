@@ -70,8 +70,8 @@ lldp_neighbors_detail = {
     "remote_port_description": text_type,
     "remote_system_name": text_type,
     "remote_system_description": text_type,
-    "remote_system_capab": text_type,
-    "remote_system_enable_capab": text_type,
+    "remote_system_capab": list,
+    "remote_system_enable_capab": list,
 }
 
 bgp_config_group = {

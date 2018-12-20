@@ -510,15 +510,26 @@ class NetworkDriver(object):
         Returns a detailed view of the LLDP neighbors as a dictionary
         containing lists of dictionaries for each interface.
 
+        Empty entries are returned as an empty string (e.g. '') or list where applicable.
+
         Inner dictionaries contain fields:
+
             * parent_interface (string)
             * remote_port (string)
             * remote_port_description (string)
             * remote_chassis_id (string)
             * remote_system_name (string)
             * remote_system_description (string)
-            * remote_system_capab (string)
-            * remote_system_enabled_capab (string)
+            * remote_system_capab (list) with any of these values
+                * other
+                * repeater
+                * bridge
+                * wlan-access-point
+                * router
+                * telephone
+                * docsis-cable-device
+                * station
+            * remote_system_enabled_capab (list)
 
         Example::
 
@@ -534,8 +545,8 @@ class NetworkDriver(object):
                               Software 7.1(0)N1(1a)
                               TAC support: http://www.cisco.com/tac
                               Copyright (c) 2002-2015, Cisco Systems, Inc. All rights reserved.''',
-                        'remote_system_capab': u'B, R',
-                        'remote_system_enable_capab': u'B'
+                        'remote_system_capab': ['bridge', 'repeater'],
+                        'remote_system_enable_capab': ['bridge']
                     }
                 ]
             }
