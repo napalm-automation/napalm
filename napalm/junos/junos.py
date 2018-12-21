@@ -823,7 +823,7 @@ class JunOSDriver(NetworkDriver):
                 lldp_neighbors[interface].append(
                     {
                         "parent_interface": item.parent_interface,
-                        "remote_port": item.remote_port,
+                        "remote_port": item.remote_port or "",
                         "remote_chassis_id": napalm.base.helpers.convert(
                             napalm.base.helpers.mac,
                             item.remote_chassis_id,

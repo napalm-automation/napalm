@@ -1,0 +1,18 @@
+{
+  "fe-0/0/2.0": [
+    {
+      "remote_port_description": "lan port 0",
+      "remote_port": "",
+      "remote_system_description": "Meraki MX64 Cloud Managed Router",
+      "remote_chassis_id": "0C:8D:DB:63:62:00",
+      "remote_system_name": "Meraki MX64",
+      "parent_interface": "-",
+      "remote_system_capab": [
+        "router"
+      ],
+      "remote_system_enable_capab": [
+        "router"
+      ]
+    }
+  ]
+}
