@@ -1555,7 +1555,16 @@ class JunOSDriver(NetworkDriver):
         else:  # switch_style == "VLAN"
             mac_table = junos_views.junos_mac_address_table_switch(self.device)
 
-        mac_table.get()
+        try:
+            mac_table.get()
+        except RpcError as e:
+            # Device hasn't got it's l2 subsystem running
+            # Don't error but just return an empty result
+            if "l2-learning subsystem" in e.message:
+                return []
+            else:
+                raise
+
         mac_table_items = mac_table.items()
 
         default_values = {
