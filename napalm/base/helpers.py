@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 # std libs
 import os
+import re
 import sys
 import itertools
 
