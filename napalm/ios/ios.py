@@ -1199,10 +1199,10 @@ class IOSDriver(NetworkDriver):
     def get_bgp_config(self, group='', neighbor=''):
         """
         Parse BGP config params into a dict
-            :param group='': 
+            :param group='':
             :param neighbor='':
         """   
-        
+
         bgp_config = {}
 
         def build_prefix_limit(af_table, limit, prefix_percent, prefix_timeout):
@@ -1234,14 +1234,14 @@ class IOSDriver(NetworkDriver):
                     }
                 }
             return prefix_limit
-        
+
         # Get BGP config using ciscoconfparse because some old devices dont support "| sec bgp"
         cfg = self.get_config(retrieve='startup')
         cfg = cfg['startup'].splitlines()
         bgp_config_text = napalm.base.helpers.cisco_conf_parse_objects('router bgp', cfg)
         bgp_asn = napalm.base.helpers.regex_find_text(r'router bgp (\d+)',
                                                       bgp_config_text, group=0)
-        
+
         # Get a list of all neighbors and groups in the config
         all_neighbors = set()
         all_groups = set()
@@ -1405,7 +1405,6 @@ class IOSDriver(NetworkDriver):
             }
 
         return bgp_config
-
 
     def get_bgp_neighbors(self):
         """BGP neighbor information.
