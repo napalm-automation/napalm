@@ -1,0 +1,20 @@
+[
+  {
+    "interface": "ge-0/0/0.0",
+    "moves": 0,
+    "vlan": 1,
+    "mac": "EC:13:DB:2D:35:DA",
+    "static": false,
+    "last_move": 0,
+    "active": true
+  },
+  {
+    "interface": "ge-0/0/0.0",
+    "moves": 0,
+    "vlan": 9,
+    "mac": "88:5B:DD:3F:3F:80",
+    "static": false,
+    "last_move": 0,
+    "active": true
+  }
+]
