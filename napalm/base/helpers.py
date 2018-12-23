@@ -15,6 +15,7 @@ import textfsm
 from netaddr import EUI
 from netaddr import mac_unix
 from netaddr import IPAddress
+from ciscoconfparse import CiscoConfParse
 
 # local modules
 import napalm.base.exceptions
@@ -107,6 +108,45 @@ def load_template(
         )
     return cls.load_merge_candidate(config=configuration)
 
+def cisco_conf_parse_parents(parent, child, config):
+    """ Use CiscoConfParse to find parents with a child string """
+    if type(config) == str:
+        config = config.splitlines()
+    parse = CiscoConfParse(config)
+    cfg_obj = parse.find_parents_w_child(parent, child)
+    return cfg_obj
+
+def cisco_conf_parse_objects(cfg_section, config):
+    """ Use CiscoConfParse to find objects in running config."""
+    return_config = []
+    if type(config) is str:
+        config = config.splitlines()
+    parse = CiscoConfParse(config)
+    cfg_obj = parse.find_objects(cfg_section)
+    for parent in cfg_obj:
+        return_config.append(parent.text)
+        for child in parent.all_children:
+            return_config.append(child.text)
+    return return_config
+
+def regex_find_text(pattern, text, group=0):
+    """
+    Regex search on a string and if a match is found, split the line and return a list of matches.
+    Uses re.findall().  Set "group" as an index to return or all for a list of all matches.
+    This is to parse IOS config like below:
+    text = "neighbor 10.0.0.1 remote-as 65000"
+    pattern = "remote-as (\d+)"
+    RETURN: ["65001"]
+    I'm sure there's a better way to do this...
+    """
+    text = str(text)
+    result = re.findall(pattern, text)
+    if result:
+        if type(group) == int:
+            result = result[group]
+    else:
+        result = ''
+    return result
 
 def textfsm_extractor(cls, template_name, raw_text):
     """
