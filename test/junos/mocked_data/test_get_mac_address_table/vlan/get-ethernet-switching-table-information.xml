@@ -1,0 +1,47 @@
+<ethernet-switching-table-information style="extensive">
+    <ethernet-switching-table style="extensive">
+        <mac-table-count>18</mac-table-count>
+        <mac-table-learned>15</mac-table-learned>
+        <mac-table-persistent>0</mac-table-persistent>
+        <mac-table-entry style="extensive">
+            <mac-vlan>default</mac-vlan>
+            <mac-vlan-tag>1</mac-vlan-tag>
+            <mac-address>*</mac-address>
+            <mac-interface>All-members</mac-interface>
+            <mac-interfaces-list style="flood-list">
+                <mac-interfaces>ge-0/0/0.0</mac-interfaces>
+            </mac-interfaces-list>
+            <mac-type>Flood</mac-type>
+            <mac-action>Forward</mac-action>
+            <mac-nexthop>1355</mac-nexthop>
+        </mac-table-entry>
+        <mac-table-entry style="extensive">
+            <mac-vlan>default</mac-vlan>
+            <mac-vlan-tag>1</mac-vlan-tag>
+            <mac-address>ec:13:db:2d:35:da</mac-address>
+            <mac-interface>ge-0/0/0.0</mac-interface>
+            <mac-interfaces-list>
+                <mac-interfaces>ge-0/0/0.0</mac-interfaces>
+            </mac-interfaces-list>
+            <mac-type>Learn</mac-type>
+            <mac-age seconds="0">0</mac-age>
+            <mac-learned-time seconds="902535">1w3d 10:42:15</mac-learned-time>
+            <mac-action>Forward</mac-action>
+            <mac-nexthop>1354</mac-nexthop>
+        </mac-table-entry>
+        <mac-table-entry style="extensive">
+            <mac-vlan>vlan9</mac-vlan>
+            <mac-vlan-tag>9</mac-vlan-tag>
+            <mac-address>88:5b:dd:3f:3f:80</mac-address>
+            <mac-interface>ge-0/0/0.0</mac-interface>
+            <mac-interfaces-list>
+                <mac-interfaces>ge-0/0/0.0</mac-interfaces>
+            </mac-interfaces-list>
+            <mac-type>Learn</mac-type>
+            <mac-age seconds="0">0</mac-age>
+            <mac-learned-time seconds="902533">1w3d 10:42:13</mac-learned-time>
+            <mac-action>Forward</mac-action>
+            <mac-nexthop>1354</mac-nexthop>
+        </mac-table-entry>
+    </ethernet-switching-table>
+</ethernet-switching-table-information>
