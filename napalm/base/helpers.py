@@ -149,7 +149,7 @@ def regex_find_text(pattern, text, group=0):
         if type(group) == int:
             result = result[group]
     else:
-        result = ''
+        result = ""
     return result
 
 
