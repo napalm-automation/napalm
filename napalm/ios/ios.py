@@ -1283,25 +1283,25 @@ class IOSDriver(NetworkDriver):
             )
             # Start finding attributes for the neighbor config
             description = napalm.base.helpers.regex_find_txt(
-                    r" description ([^\']+)\'", neighbor_config
+                r" description ([^\']+)\'", neighbor_config
             )
             peer_as = napalm.base.helpers.regex_find_txt(
-                    r" remote-as (\d+)", neighbor_config, default=0
+                r" remote-as (\d+)", neighbor_config, default=0
             )
             prefix_limit = napalm.base.helpers.regex_find_txt(
                 r"maximum-prefix (\d+) \d+ \w+ \d+", neighbor_config, default=0
             )
             prefix_percent = napalm.base.helpers.regex_find_txt(
-                    r"maximum-prefix \d+ (\d+) \w+ \d+", neighbor_config, default=0
+                r"maximum-prefix \d+ (\d+) \w+ \d+", neighbor_config, default=0
             )
             prefix_timeout = napalm.base.helpers.regex_find_txt(
-                    r"maximum-prefix \d+ \d+ \w+ (\d+)", neighbor_config, default=0
+                r"maximum-prefix \d+ \d+ \w+ (\d+)", neighbor_config, default=0
             )
             export_policy = napalm.base.helpers.regex_find_txt(
-                    r"route-map ([^\s]+) out", neighbor_config
+                r"route-map ([^\s]+) out", neighbor_config
             )
             import_policy = napalm.base.helpers.regex_find_txt(
-                    r"route-map ([^\s]+) in", neighbor_config
+                r"route-map ([^\s]+) in", neighbor_config
             )
             local_address = napalm.base.helpers.regex_find_txt(
                 r" update-source (\w+)", neighbor_config
@@ -1313,12 +1313,12 @@ class IOSDriver(NetworkDriver):
                 r"password (?:[0-9] )?([^\']+\')", neighbor_config
             )
             nhs = bool(
-                napalm.base.helpers.regex_find_txt(
-                    r" next-hop-self", neighbor_config)
+                napalm.base.helpers.regex_find_txt(r" next-hop-self", neighbor_config)
             )
             route_reflector_client = bool(
                 napalm.base.helpers.regex_find_txt(
-                    r"route-reflector-client", neighbor_config)
+                    r"route-reflector-client", neighbor_config
+                )
             )
 
             # Add the group name to bgp_group_neighbors if its not there already
@@ -1377,9 +1377,7 @@ class IOSDriver(NetworkDriver):
                     afi, bgp_config_text
                 )
                 multipath = bool(
-                    napalm.base.helpers.regex_find_txt(
-                        r" multipath", str(afi_config)
-                    )
+                    napalm.base.helpers.regex_find_txt(r" multipath", str(afi_config))
                 )
                 if multipath:
                     break
@@ -1406,7 +1404,8 @@ class IOSDriver(NetworkDriver):
             )
             remove_private_as = bool(
                 napalm.base.helpers.regex_find_txt(
-                    r"remove-private-as", neighbor_config)
+                    r"remove-private-as", neighbor_config
+                )
             )
             prefix_limit = napalm.base.helpers.regex_find_txt(
                 r"maximum-prefix (\d+) \d+ \w+ \d+", neighbor_config, default=0
