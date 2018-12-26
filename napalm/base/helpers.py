@@ -133,7 +133,7 @@ def cisco_conf_parse_objects(cfg_section, config):
     return return_config
 
 
-def regex_find_txt(pattern, text, group=0):
+def regex_find_txt(pattern, text, default=""):
     """
     Regex search on a string and if a match is found, split the line and return a list of matches.
     Uses re.findall().  Set "group" as an index to return or all for a list of all matches.
@@ -143,11 +143,17 @@ def regex_find_txt(pattern, text, group=0):
     RETURN: ["65001"]
     """
     text = str(text)
-    result = re.findall(pattern, text)
-    if result:
-        if isinstance(group, int):
-            result = result[group]
-    return result
+    value = re.findall(pattern, text)
+    try:
+        if not value:
+            raise Exception
+        if not isinstance(value, type(default)):
+            if isinstance(value, list) and len(value) == 1:
+                value = value[0]
+            value = type(default)(value)
+    except Exception:  # in case of any exception, returns default
+        value = default
+    return value
 
 
 def textfsm_extractor(cls, template_name, raw_text):

@@ -10,11 +10,11 @@
     "multipath": false,
     "neighbors": {
       "10.0.0.3": {
-        "authentication_key": [],
-        "description": [],
-        "export_policy": [],
-        "import_policy": [],
-        "local_address": [],
+        "authentication_key": "",
+        "description": "",
+        "export_policy": "",
+        "import_policy": "",
+        "local_address": "",
         "local_as": 0,
         "nhs": false,
         "prefix_limit": {
@@ -32,11 +32,11 @@
         "route_reflector_client": false
       },
       "10.0.0.5": {
-        "authentication_key": [],
-        "description": [],
-        "export_policy": [],
-        "import_policy": [],
-        "local_address": [],
+        "authentication_key": "",
+        "description": "",
+        "export_policy": "",
+        "import_policy": "",
+        "local_address": "",
         "local_as": 0,
         "nhs": false,
         "prefix_limit": {
@@ -67,7 +67,7 @@
     },
     "remote_as": 65001,
     "remove_private_as": false,
-    "type": "external"
+    "type": "internal"
   },
   "_": {
     "apply_groups": [],
@@ -80,11 +80,11 @@
     "multipath": false,
     "neighbors": {
       "10.0.0.1": {
-        "authentication_key": [],
+        "authentication_key": "",
         "description": "external Peer",
         "export_policy": "PASS-OUT",
         "import_policy": "PASS-IN",
-        "local_address": [],
+        "local_address": "",
         "local_as": 65005,
         "nhs": false,
         "prefix_limit": {

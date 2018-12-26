@@ -1242,7 +1242,7 @@ class IOSDriver(NetworkDriver):
             "router bgp", cfg
         )
         bgp_asn = napalm.base.helpers.regex_find_txt(
-            r"router bgp (\d+)", bgp_config_text, group=0
+            r"router bgp (\d+)", bgp_config_text, default=0
         )
         # Get a list of all neighbors and groups in the config
         all_neighbors = set()
@@ -1279,54 +1279,46 @@ class IOSDriver(NetworkDriver):
                 )
             # For group_name- use peer-group name, else VRF name, else "_" for no group
             group_name = napalm.base.helpers.regex_find_txt(
-                " peer-group ([^']+)", neighbor_config, group=0
+                " peer-group ([^']+)", neighbor_config, default="_"
             )
-            if not group_name:
-                group_name = "_"
             # Start finding attributes for the neighbor config
             description = napalm.base.helpers.regex_find_txt(
-                r" description ([^\']+)\'", neighbor_config, group=0
+                    r" description ([^\']+)\'", neighbor_config
             )
-            peer_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.regex_find_txt(
-                r" remote-as (\d+)", neighbor_config, group=0), 0
+            peer_as = napalm.base.helpers.regex_find_txt(
+                    r" remote-as (\d+)", neighbor_config, default=0
             )
             prefix_limit = napalm.base.helpers.regex_find_txt(
-                r"maximum-prefix (\d+) \d+ \w+ \d+", neighbor_config, group=0
+                r"maximum-prefix (\d+) \d+ \w+ \d+", neighbor_config, default=0
             )
-            prefix_percent = napalm.base.helpers.convert(
-                int, napalm.base.helpers.regex_find_txt(
-                r"maximum-prefix \d+ (\d+) \w+ \d+", neighbor_config, group=0), 0
+            prefix_percent = napalm.base.helpers.regex_find_txt(
+                    r"maximum-prefix \d+ (\d+) \w+ \d+", neighbor_config, default=0
             )
-            prefix_timeout = napalm.base.helpers.convert(
-                int, napalm.base.helpers.regex_find_txt(
-                r"maximum-prefix \d+ \d+ \w+ (\d+)", neighbor_config, group=0), 0
+            prefix_timeout = napalm.base.helpers.regex_find_txt(
+                    r"maximum-prefix \d+ \d+ \w+ (\d+)", neighbor_config, default=0
             )
             export_policy = napalm.base.helpers.regex_find_txt(
-                r"route-map ([^\s]+) out", neighbor_config, group=0
+                    r"route-map ([^\s]+) out", neighbor_config
             )
             import_policy = napalm.base.helpers.regex_find_txt(
-                r"route-map ([^\s]+) in", neighbor_config, group=0
+                    r"route-map ([^\s]+) in", neighbor_config
             )
             local_address = napalm.base.helpers.regex_find_txt(
-                r" update-source (\w+)", neighbor_config, group=0
+                r" update-source (\w+)", neighbor_config
             )
-            local_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.regex_find_txt(
-                r"local-as (\d+)", neighbor_config, group=0), 0
+            local_as = napalm.base.helpers.regex_find_txt(
+                r"local-as (\d+)", neighbor_config, default=0
             )
             password = napalm.base.helpers.regex_find_txt(
-                r"password (?:[0-9] )?([^\']+\')", neighbor_config, group=0
+                r"password (?:[0-9] )?([^\']+\')", neighbor_config
             )
             nhs = bool(
                 napalm.base.helpers.regex_find_txt(
-                    r" next-hop-self", neighbor_config, group=0
-                )
+                    r" next-hop-self", neighbor_config)
             )
             route_reflector_client = bool(
                 napalm.base.helpers.regex_find_txt(
-                    r"route-reflector-client", neighbor_config, group=0
-                )
+                    r"route-reflector-client", neighbor_config)
             )
 
             # Add the group name to bgp_group_neighbors if its not there already
@@ -1355,6 +1347,7 @@ class IOSDriver(NetworkDriver):
             if group:
                 if group_name != group:
                     continue
+            # Default no group
             if group_name == "_":
                 bgp_config["_"] = {
                     "apply_groups": [],
@@ -1385,51 +1378,44 @@ class IOSDriver(NetworkDriver):
                 )
                 multipath = bool(
                     napalm.base.helpers.regex_find_txt(
-                        r" multipath", str(afi_config), group=0
+                        r" multipath", str(afi_config)
                     )
                 )
                 if multipath:
                     break
             description = napalm.base.helpers.regex_find_txt(
-                r" description ([^\']+)\'", neighbor_config, group=0
+                r" description ([^\']+)\'", neighbor_config
             )
-            local_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.regex_find_txt(
-                r"local-as (\d+)", neighbor_config, group=0), 0
+            local_as = napalm.base.helpers.regex_find_txt(
+                r"local-as (\d+)", neighbor_config, default=0
             )
             import_policy = napalm.base.helpers.regex_find_txt(
-                r"route-map ([^\s]+) in", neighbor_config, group=0
+                r"route-map ([^\s]+) in", neighbor_config
             )
             export_policy = napalm.base.helpers.regex_find_txt(
-                r"route-map ([^\s]+) out", neighbor_config, group=0
+                r"route-map ([^\s]+) out", neighbor_config
             )
             local_address = napalm.base.helpers.regex_find_txt(
-                r" update-source (\w+)", neighbor_config, group=0
+                r" update-source (\w+)", neighbor_config
             )
-            multihop_ttl = napalm.base.helpers.convert(
-                int, napalm.base.helpers.regex_find_txt(
-                r"ebgp-multihop {\d+}", neighbor_config, group=0), 0
+            multihop_ttl = napalm.base.helpers.regex_find_txt(
+                r"ebgp-multihop {\d+}", neighbor_config, default=0
             )
-            peer_as = napalm.base.helpers.convert(
-                int, napalm.base.helpers.regex_find_txt(
-                r" remote-as (\d+)", neighbor_config, group=0), 0
+            peer_as = napalm.base.helpers.regex_find_txt(
+                r" remote-as (\d+)", neighbor_config, default=0
             )
             remove_private_as = bool(
                 napalm.base.helpers.regex_find_txt(
-                    r"remove-private-as", neighbor_config, group=0
-                )
+                    r"remove-private-as", neighbor_config)
             )
-            prefix_limit = napalm.base.helpers.convert(
-                int, napalm.base.helpers.regex_find_txt(
-                r"maximum-prefix (\d+) \d+ \w+ \d+", neighbor_config, group=0), 0
+            prefix_limit = napalm.base.helpers.regex_find_txt(
+                r"maximum-prefix (\d+) \d+ \w+ \d+", neighbor_config, default=0
             )
-            prefix_percent = napalm.base.helpers.convert(
-                int, napalm.base.helpers.regex_find_txt(
-                r"maximum-prefix \d+ (\d+) \w+ \d+", neighbor_config, group=0), 0
+            prefix_percent = napalm.base.helpers.regex_find_txt(
+                r"maximum-prefix \d+ (\d+) \w+ \d+", neighbor_config, default=0
             )
-            prefix_timeout = napalm.base.helpers.convert(
-                int, napalm.base.helpers.regex_find_txt(
-                r"maximum-prefix \d+ \d+ \w+ (\d+)", neighbor_config, group=0), 0
+            prefix_timeout = napalm.base.helpers.regex_find_txt(
+                r"maximum-prefix \d+ \d+ \w+ (\d+)", neighbor_config, default=0
             )
             bgp_type = "external"
             if local_as:
@@ -1455,7 +1441,6 @@ class IOSDriver(NetworkDriver):
                 ),
                 "neighbors": bgp_group_neighbors.get(group_name, {}),
             }
-
         return bgp_config
 
     def get_bgp_neighbors(self):
