@@ -1241,10 +1241,9 @@ class IOSDriver(NetworkDriver):
         bgp_config_text = napalm.base.helpers.cisco_conf_parse_objects(
             "router bgp", cfg
         )
-        bgp_asn = napalm.base.helpers.regex_find_text(
+        bgp_asn = napalm.base.helpers.regex_find_txt(
             r"router bgp (\d+)", bgp_config_text, group=0
         )
-
         # Get a list of all neighbors and groups in the config
         all_neighbors = set()
         all_groups = set()
@@ -1271,7 +1270,7 @@ class IOSDriver(NetworkDriver):
                 r"\s+address-family.*", bgp_neighbor, bgp_config_text
             )
             afi = afi_list[0]
-            # Gets neighbor config specific to a VRF to avoid neighbor IP conflicts
+            # Skipping neighbors in VRFs for now
             if "vrf" in str(afi_list):
                 continue
             else:
@@ -1279,49 +1278,53 @@ class IOSDriver(NetworkDriver):
                     bgp_neighbor, bgp_config_text
                 )
             # For group_name- use peer-group name, else VRF name, else "_" for no group
-            group_name = napalm.base.helpers.regex_find_text(
+            group_name = napalm.base.helpers.regex_find_txt(
                 " peer-group ([^']+)", neighbor_config, group=0
             )
             if not group_name:
                 group_name = "_"
             # Start finding attributes for the neighbor config
-            description = napalm.base.helpers.regex_find_text(
+            description = napalm.base.helpers.regex_find_txt(
                 r" description ([^\']+)\'", neighbor_config, group=0
             )
-            peer_as = napalm.base.helpers.regex_find_text(
-                r" remote-as (\d+)", neighbor_config, group=0
+            peer_as = napalm.base.helpers.convert(
+                int, napalm.base.helpers.regex_find_txt(
+                r" remote-as (\d+)", neighbor_config, group=0), 0
             )
-            prefix_limit = napalm.base.helpers.regex_find_text(
+            prefix_limit = napalm.base.helpers.regex_find_txt(
                 r"maximum-prefix (\d+) \d+ \w+ \d+", neighbor_config, group=0
             )
-            prefix_percent = napalm.base.helpers.regex_find_text(
-                r"maximum-prefix \d+ (\d+) \w+ \d+", neighbor_config, group=0
+            prefix_percent = napalm.base.helpers.convert(
+                int, napalm.base.helpers.regex_find_txt(
+                r"maximum-prefix \d+ (\d+) \w+ \d+", neighbor_config, group=0), 0
             )
-            prefix_timeout = napalm.base.helpers.regex_find_text(
-                r"maximum-prefix \d+ \d+ \w+ (\d+)", neighbor_config, group=0
+            prefix_timeout = napalm.base.helpers.convert(
+                int, napalm.base.helpers.regex_find_txt(
+                r"maximum-prefix \d+ \d+ \w+ (\d+)", neighbor_config, group=0), 0
             )
-            export_policy = napalm.base.helpers.regex_find_text(
+            export_policy = napalm.base.helpers.regex_find_txt(
                 r"route-map ([^\s]+) out", neighbor_config, group=0
             )
-            import_policy = napalm.base.helpers.regex_find_text(
+            import_policy = napalm.base.helpers.regex_find_txt(
                 r"route-map ([^\s]+) in", neighbor_config, group=0
             )
-            local_address = napalm.base.helpers.regex_find_text(
+            local_address = napalm.base.helpers.regex_find_txt(
                 r" update-source (\w+)", neighbor_config, group=0
             )
-            local_as = napalm.base.helpers.regex_find_text(
-                r"local-as (\d+)", neighbor_config, group=0
+            local_as = napalm.base.helpers.convert(
+                int, napalm.base.helpers.regex_find_txt(
+                r"local-as (\d+)", neighbor_config, group=0), 0
             )
-            password = napalm.base.helpers.regex_find_text(
+            password = napalm.base.helpers.regex_find_txt(
                 r"password (?:[0-9] )?([^\']+\')", neighbor_config, group=0
             )
             nhs = bool(
-                napalm.base.helpers.regex_find_text(
+                napalm.base.helpers.regex_find_txt(
                     r" next-hop-self", neighbor_config, group=0
                 )
             )
             route_reflector_client = bool(
-                napalm.base.helpers.regex_find_text(
+                napalm.base.helpers.regex_find_txt(
                     r"route-reflector-client", neighbor_config, group=0
                 )
             )
@@ -1381,46 +1384,52 @@ class IOSDriver(NetworkDriver):
                     afi, bgp_config_text
                 )
                 multipath = bool(
-                    napalm.base.helpers.regex_find_text(
+                    napalm.base.helpers.regex_find_txt(
                         r" multipath", str(afi_config), group=0
                     )
                 )
                 if multipath:
                     break
-            description = napalm.base.helpers.regex_find_text(
+            description = napalm.base.helpers.regex_find_txt(
                 r" description ([^\']+)\'", neighbor_config, group=0
             )
-            local_as = napalm.base.helpers.regex_find_text(
-                r"local-as (\d+)", neighbor_config, group=0
+            local_as = napalm.base.helpers.convert(
+                int, napalm.base.helpers.regex_find_txt(
+                r"local-as (\d+)", neighbor_config, group=0), 0
             )
-            import_policy = napalm.base.helpers.regex_find_text(
+            import_policy = napalm.base.helpers.regex_find_txt(
                 r"route-map ([^\s]+) in", neighbor_config, group=0
             )
-            export_policy = napalm.base.helpers.regex_find_text(
+            export_policy = napalm.base.helpers.regex_find_txt(
                 r"route-map ([^\s]+) out", neighbor_config, group=0
             )
-            local_address = napalm.base.helpers.regex_find_text(
+            local_address = napalm.base.helpers.regex_find_txt(
                 r" update-source (\w+)", neighbor_config, group=0
             )
-            multihop_ttl = napalm.base.helpers.regex_find_text(
-                r"ebgp-multihop {\d+}", neighbor_config, group=0
+            multihop_ttl = napalm.base.helpers.convert(
+                int, napalm.base.helpers.regex_find_txt(
+                r"ebgp-multihop {\d+}", neighbor_config, group=0), 0
             )
-            peer_as = napalm.base.helpers.regex_find_text(
-                r" remote-as (\d+)", neighbor_config, group=0
+            peer_as = napalm.base.helpers.convert(
+                int, napalm.base.helpers.regex_find_txt(
+                r" remote-as (\d+)", neighbor_config, group=0), 0
             )
             remove_private_as = bool(
-                napalm.base.helpers.regex_find_text(
+                napalm.base.helpers.regex_find_txt(
                     r"remove-private-as", neighbor_config, group=0
                 )
             )
-            prefix_limit = napalm.base.helpers.regex_find_text(
-                r"maximum-prefix (\d+) \d+ \w+ \d+", neighbor_config, group=0
+            prefix_limit = napalm.base.helpers.convert(
+                int, napalm.base.helpers.regex_find_txt(
+                r"maximum-prefix (\d+) \d+ \w+ \d+", neighbor_config, group=0), 0
             )
-            prefix_percent = napalm.base.helpers.regex_find_text(
-                r"maximum-prefix \d+ (\d+) \w+ \d+", neighbor_config, group=0
+            prefix_percent = napalm.base.helpers.convert(
+                int, napalm.base.helpers.regex_find_txt(
+                r"maximum-prefix \d+ (\d+) \w+ \d+", neighbor_config, group=0), 0
             )
-            prefix_timeout = napalm.base.helpers.regex_find_text(
-                r"maximum-prefix \d+ \d+ \w+ (\d+)", neighbor_config, group=0
+            prefix_timeout = napalm.base.helpers.convert(
+                int, napalm.base.helpers.regex_find_txt(
+                r"maximum-prefix \d+ \d+ \w+ (\d+)", neighbor_config, group=0), 0
             )
             bgp_type = "external"
             if local_as:

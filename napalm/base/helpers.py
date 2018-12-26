@@ -133,23 +133,20 @@ def cisco_conf_parse_objects(cfg_section, config):
     return return_config
 
 
-def regex_find_text(pattern, text, group=0):
+def regex_find_txt(pattern, text, group=0):
     """
     Regex search on a string and if a match is found, split the line and return a list of matches.
     Uses re.findall().  Set "group" as an index to return or all for a list of all matches.
     This is to parse IOS config like below:
     text = "neighbor 10.0.0.1 remote-as 65000"
-    pattern = r"remote-as (\d+)"
+    pattern = r"remote-as (65000)"
     RETURN: ["65001"]
-    I'm sure there's a better way to do this...
     """
     text = str(text)
     result = re.findall(pattern, text)
     if result:
-        if type(group) == int:
+        if isinstance(group, int):
             result = result[group]
-    else:
-        result = ""
     return result
 
 
