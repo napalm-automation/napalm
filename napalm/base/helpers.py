@@ -111,7 +111,13 @@ def load_template(
 
 
 def cisco_conf_parse_parents(parent, child, config):
-    """ Use CiscoConfParse to find parents with a child string """
+    """
+    Use CiscoConfParse to find parent lines that contain a specific child line.
+    
+    :param parent: The parent line to search for
+    :param child:  The child line required under the given parent
+    :param config: The device running/startup config
+    """
     if type(config) == str:
         config = config.splitlines()
     parse = CiscoConfParse(config)
@@ -120,7 +126,13 @@ def cisco_conf_parse_parents(parent, child, config):
 
 
 def cisco_conf_parse_objects(cfg_section, config):
-    """ Use CiscoConfParse to find objects in running config."""
+    """
+    Use CiscoConfParse to find and return a section of Cisco IOS config.
+    Similar to "show run | section <cfg_section>"
+    
+    :param cfg_section: The section of the config to return eg. "router bgp"
+    :param config: The running/startup config of the device to parse
+    """
     return_config = []
     if type(config) is str:
         config = config.splitlines()
@@ -134,13 +146,16 @@ def cisco_conf_parse_objects(cfg_section, config):
 
 
 def regex_find_txt(pattern, text, default=""):
-    """
-    Regex search on a string and if a match is found, split the line and return a list of matches.
-    Uses re.findall().  Set "group" as an index to return or all for a list of all matches.
+    """""
+    RegEx search for pattern in text. Will try to match the data type of the "default" value
+    or return the default value if no match is found.
     This is to parse IOS config like below:
-    text = "neighbor 10.0.0.1 remote-as 65000"
-    pattern = r"remote-as (65000)"
-    RETURN: ["65001"]
+    regex_find_txt(r"remote-as (65000)", "neighbor 10.0.0.1 remote-as 65000", default=0)
+    RETURNS: 65001
+
+    :param pattern: RegEx pattern to match on
+    :param text: String of text ot search for "pattern" in
+    :param default="": Default value and type to return on error
     """
     text = str(text)
     value = re.findall(pattern, text)
