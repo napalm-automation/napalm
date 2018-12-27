@@ -113,7 +113,7 @@ def load_template(
 def cisco_conf_parse_parents(parent, child, config):
     """
     Use CiscoConfParse to find parent lines that contain a specific child line.
-    
+
     :param parent: The parent line to search for
     :param child:  The child line required under the given parent
     :param config: The device running/startup config
@@ -129,7 +129,7 @@ def cisco_conf_parse_objects(cfg_section, config):
     """
     Use CiscoConfParse to find and return a section of Cisco IOS config.
     Similar to "show run | section <cfg_section>"
-    
+
     :param cfg_section: The section of the config to return eg. "router bgp"
     :param config: The running/startup config of the device to parse
     """
