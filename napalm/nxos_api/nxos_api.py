@@ -26,7 +26,6 @@ from collections import defaultdict
 
 # import third party lib
 from requests.exceptions import ConnectionError
-from lxml import etree
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from netmiko import file_transfer
@@ -710,11 +709,6 @@ class NXOSAPIDriver(NXOSDriverBase):
 
     def _get_facts_xml(self):
         show_version = self._send_command("show version")
-
-        namespaces = {
-            None: "http://www.cisco.com/nxos:1.0:sysmgrcli",
-            "nf": "urn:ietf:params:xml:ns:netconf:base:1.0",
-        }
 
         facts = nxos_parser.xml_show_version(show_version)
         facts["vendor"] = "Cisco"
