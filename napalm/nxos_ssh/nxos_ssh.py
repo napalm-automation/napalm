@@ -722,8 +722,13 @@ class NXOSSSHDriver(NXOSDriverBase):
         return getattr(self, "_get_lldp_neighbors_{}".format(self.encoding))()
 
     def _get_lldp_neighbors_xml(self):
-        print("FOO")
-        raise ValueError()
+        cmd_xml = "show lldp neighbors | xml"
+        xml_output = self._send_command(cmd_xml)
+        if "% Invalid command" in xml_output:
+            raise ValueError("Pipe XML not supported on this device.")
+
+        xml_output = nxos_parser.xml_pipe_normalization(xml_output)
+        return nxos_parser.xml_show_lldp_neighbors(xml_output)
 
     def _get_lldp_neighbors_cli(self):
         results = {}

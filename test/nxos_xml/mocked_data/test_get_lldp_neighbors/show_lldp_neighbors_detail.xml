@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<ins_api>
+  <type>cli_show</type>
+  <version>1.2</version>
+  <sid>eoc</sid>
+  <outputs>
+    <output>
+      <body>
+        <neigh_hdr>neigh_hdr</neigh_hdr>
+        <TABLE_nbor_detail>
+         <ROW_nbor_detail>
+          <chassis_type>4</chassis_type>
+          <chassis_id>2cc2.605e.5dba</chassis_id>
+          <port_type>7</port_type>
+          <port_id>Eth2/1</port_id>
+          <l_port_id>Eth2/1</l_port_id>
+          <port_desc>Ethernet2/1</port_desc>
+          <sys_name>nxos1.twb-tech.com</sys_name>
+          <sys_desc>Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00</sys_desc>
+          <ttl>94</ttl>
+          <capability>1310740</capability>
+          <mgmt_addr_type>1</mgmt_addr_type>
+          <mgmt_addr>10.0.0.71</mgmt_addr>
+          <vlan_id>65535</vlan_id>
+         </ROW_nbor_detail>
+         <ROW_nbor_detail>
+          <chassis_type>4</chassis_type>
+          <chassis_id>2cc2.602f.90f4</chassis_id>
+          <port_type>7</port_type>
+          <port_id>Eth2/2</port_id>
+          <l_port_id>Eth2/2</l_port_id>
+          <port_desc>Ethernet2/2</port_desc>
+          <sys_name>nxos1.twb-tech.com</sys_name>
+          <sys_desc>Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00</sys_desc>
+          <ttl>103</ttl>
+          <capability>1310740</capability>
+          <mgmt_addr_type>1</mgmt_addr_type>
+          <mgmt_addr>10.0.0.71</mgmt_addr>
+          <vlan_id>65535</vlan_id>
+         </ROW_nbor_detail>
+         <ROW_nbor_detail>
+          <chassis_type>4</chassis_type>
+          <chassis_id>2cc2.600f.a8a1</chassis_id>
+          <port_type>7</port_type>
+          <port_id>Eth2/3</port_id>
+          <l_port_id>Eth2/3</l_port_id>
+          <port_desc>Ethernet2/3</port_desc>
+          <sys_name>nxos1.twb-tech.com</sys_name>
+          <sys_desc>Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00</sys_desc>
+          <ttl>116</ttl>
+          <capability>1310740</capability>
+          <mgmt_addr_type>1</mgmt_addr_type>
+          <mgmt_addr>10.0.0.71</mgmt_addr>
+          <vlan_id>65535</vlan_id>
+         </ROW_nbor_detail>
+         <ROW_nbor_detail>
+          <chassis_type>4</chassis_type>
+          <chassis_id>2cc2.6068.4c89</chassis_id>
+          <port_type>7</port_type>
+          <port_id>Eth2/4</port_id>
+          <l_port_id>Eth2/4</l_port_id>
+          <port_desc>Ethernet2/4</port_desc>
+          <sys_name>nxos1.twb-tech.com</sys_name>
+          <sys_desc>Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00</sys_desc>
+          <ttl>116</ttl>
+          <capability>1310740</capability>
+          <mgmt_addr_type>1</mgmt_addr_type>
+          <mgmt_addr>10.0.0.71</mgmt_addr>
+          <vlan_id>65535</vlan_id>
+         </ROW_nbor_detail>
+        </TABLE_nbor_detail>
+        <neigh_count>4</neigh_count>
+       </body>
+      <input>show lldp neighbors detail</input>
+      <msg>Success</msg>
+      <code>200</code>
+    </output>
+  </outputs>
+</ins_api>
