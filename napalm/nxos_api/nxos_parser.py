@@ -86,3 +86,29 @@ def xml_show_version(xml_output, namespaces=None):
     uptime = uptime_calc(days=days, hours=hours, mins=mins, secs=secs)
     facts["uptime"] = uptime
     return facts
+
+
+def xml_show_lldp_neighbors(xml_output, namespaces=None):
+    """Unified XML Parser for 'show lldp neighbors' output from NX-API or '| xml'."""
+    if namespaces is None:
+        namespaces = {}
+
+    remote_systems = xml_output.findall(".//{*}chassis_id", namespaces=namespaces)
+    remote_systems = [x.text for x in remote_systems]
+    local_ports = xml_output.findall(".//{*}l_port_id", namespaces=namespaces)
+    local_ports = [x.text for x in local_ports]
+    remote_ports = xml_output.findall(".//{*}port_id", namespaces=namespaces)
+    remote_ports = [x.text for x in remote_ports]
+
+    if len(local_ports) != len(remote_ports) != len(remote_systems):
+        raise ValueError("XML parsing failure in show lldp neighbors")
+
+    lldp_dict = {}
+    for local_intf, remote_host, remote_port in zip(local_ports, remote_systems, remote_ports):
+        lldp_dict.setdefault(local_intf, [])
+        lldp_dict[local_intf].append({
+            "hostname": remote_host,
+            "port": remote_port,
+        })
+
+    return lldp_dict

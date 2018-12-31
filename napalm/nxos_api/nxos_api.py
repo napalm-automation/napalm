@@ -791,6 +791,13 @@ class NXOSAPIDriver(NXOSDriverBase):
         return interfaces
 
     def get_lldp_neighbors(self):
+        return getattr(self, "_get_lldp_neighbors_{}".format(self.encoding))()
+
+    def _get_lldp_neighbors_xml(self):
+        show_lldp = self._send_command("show lldp neighbors")
+        return nxos_parser.xml_show_lldp_neighbors(show_lldp)
+
+    def _get_lldp_neighbors_jsonrpc(self):
         results = {}
         try:
             command = "show lldp neighbors"

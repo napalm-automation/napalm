@@ -1,0 +1,26 @@
+{
+    "Eth2/1": [
+        {
+            "hostname": "nxos1.twb-tech.com",
+            "port": "Eth2/1"
+        }
+    ],
+    "Eth2/2": [
+        {
+            "hostname": "nxos1.twb-tech.com",
+            "port": "Eth2/2"
+        }
+    ],
+    "Eth2/3": [
+        {
+            "hostname": "nxos1.twb-tech.com",
+            "port": "Eth2/3"
+        }
+    ],
+    "Eth2/4": [
+        {
+            "hostname": "nxos1.twb-tech.com",
+            "port": "Eth2/4"
+        }
+    ]
+}
