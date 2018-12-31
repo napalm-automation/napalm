@@ -908,6 +908,13 @@ class NXOSAPIDriver(NXOSDriverBase):
         return results
 
     def get_lldp_neighbors_detail(self, interface=""):
+        return getattr(self, "_get_lldp_neighbors_detail_{}".format(self.encoding))(interface=interface)
+
+    def _get_lldp_neighbors_detail_xml(self, interface=""):
+        show_lldp = self._send_command("show lldp neighbors detail")
+        return nxos_parser.xml_show_lldp_neighbors_detail(show_lldp)
+
+    def _get_lldp_neighbors_detail_jsonrpc(self, interface=""):
         lldp_neighbors = {}
         filter = ""
         if interface:

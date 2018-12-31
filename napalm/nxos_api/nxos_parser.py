@@ -104,11 +104,76 @@ def xml_show_lldp_neighbors(xml_output, namespaces=None):
         raise ValueError("XML parsing failure in show lldp neighbors")
 
     lldp_dict = {}
-    for local_intf, remote_host, remote_port in zip(local_ports, remote_systems, remote_ports):
+    for local_intf, remote_host, remote_port in zip(
+        local_ports, remote_systems, remote_ports
+    ):
         lldp_dict.setdefault(local_intf, [])
-        lldp_dict[local_intf].append({
-            "hostname": remote_host,
-            "port": remote_port,
-        })
+        lldp_dict[local_intf].append({"hostname": remote_host, "port": remote_port})
 
+    return lldp_dict
+
+
+def xml_show_lldp_neighbors_detail(xml_output, namespaces=None):
+    """Unified XML Parser for 'show lldp neighbors detail' output from NX-API or '| xml'."""
+    if namespaces is None:
+        namespaces = {}
+
+    import ipdb
+
+    ipdb.set_trace()
+
+    print(etree.tostring(xml_output).decode())
+
+    def xml_text_attribute(xml_output, element_pattern, namespaces):
+        """Findall search for XML element_pattern; return text."""
+        fields = xml_output.findall(element_pattern, namespaces=namespaces)
+        return [x.text for x in fields]
+
+    remote_descr = xml_text_attribute(xml_output, ".//{*}sys_desc", namespaces)
+    remote_port_name = xml_text_attribute(xml_output, ".//{*}port_id", namespaces)
+    remote_port_descr = xml_text_attribute(xml_output, ".//{*}port_desc", namespaces)
+    chassis_id = xml_text_attribute(xml_output, ".//{*}chassis_id", namespaces)
+    capabilities = xml_text_attribute(xml_output, ".//{*}capability", namespaces)
+    remote_name = xml_text_attribute(xml_output, ".//{*}sys_name", namespaces)
+    local_ports = xml_text_attribute(xml_output, ".//{*}l_port_id", namespaces)
+
+    local_port_count = len(local_ports)
+    for test_list in (
+        remote_descr,
+        remote_port_name,
+        remote_port_descr,
+        chassis_id,
+        capabilities,
+        remote_name,
+    ):
+        if len(test_list) != len(local_ports):
+            raise ValueError("XML parsing failure in show lldp neighbors detail")
+
+    lldp_dict = {}
+    for lldp_entry in zip(
+        local_ports,
+        remote_descr,
+        remote_port_name,
+        remote_port_descr,
+        chassis_id,
+        capabilities,
+        remote_name,
+    ):
+        entry_local_intf, entry_remote_descr, entry_remote_port, entry_remote_port_descr, entry_chassis_id, entry_capabilities, entry_remote_name = (
+            lldp_entry
+        )
+        lldp_dict.setdefault(local_intf, [])
+        print(lldp_entry)
+        lldp_dict[local_intf].append(
+            {
+                "remote_port_description": entry_remote_port_descr,
+                "remote_port": entry_remote_port,
+                "remote_system_description": entry_remote_descr,
+                "remote_chassis_id": entry_chassis_id,
+                "remote_system_enable_capab": entry_capabilities,
+                "parent_interface": "",
+                "remote_system_capab": entry_capabilities,
+                "remote_system_name": entry_remote_name,
+            }
+        )
     return lldp_dict
