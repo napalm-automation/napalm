@@ -544,6 +544,9 @@ class NXOSSSHDriver(NXOSDriverBase):
         return seconds
 
     def get_facts(self):
+        return getattr(self, "_get_facts_{}".format(self.encoding))()
+
+    def _get_facts_xml(self):
         """Return a set of facts from the devices."""
         namespaces = {
             None: "http://www.cisco.com/nxos:1.0:sysmgrcli",
@@ -553,12 +556,10 @@ class NXOSSSHDriver(NXOSDriverBase):
         cmd_xml = "show version | xml"
         show_version_xml = self._send_command(cmd_xml)
         if "% Invalid command" in show_version_xml:
-            return self._get_facts_cli()
+            raise ValueError("Pipe XML not supported on this device.")
 
         show_version = nxos_parser.xml_pipe_normalization(show_version_xml)
-
         facts = nxos_parser.xml_show_version(show_version, namespaces=namespaces)
-
         facts["vendor"] = "Cisco"
 
         show_hostname_xml = self._send_command("show hostname | xml")
@@ -718,6 +719,13 @@ class NXOSSSHDriver(NXOSDriverBase):
         return interfaces
 
     def get_lldp_neighbors(self):
+        return getattr(self, "_get_lldp_neighbors_{}".format(self.encoding))()
+
+    def _get_lldp_neighbors_xml(self):
+        print("FOO")
+        raise ValueError()
+
+    def _get_lldp_neighbors_cli(self):
         results = {}
         command = "show lldp neighbors"
         output = self._send_command(command)
