@@ -164,6 +164,11 @@ def xml_show_lldp_neighbors_detail(xml_output, namespaces=None):
         )
         lldp_dict.setdefault(local_intf, [])
         print(lldp_entry)
+        # FIX
+        # 1. Capabilities is a bitwise field
+        # 2. Not sure if capabilities is enabled capabibilities and available capabilities or something else
+        # 3. Default for parent interface
+        # 4. Need to integrate with new LLDP solution
         lldp_dict[local_intf].append(
             {
                 "remote_port_description": entry_remote_port_descr,
