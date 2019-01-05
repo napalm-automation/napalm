@@ -784,10 +784,11 @@ class NetworkDriver(object):
             * ip (string)
             * age (float)
 
-        'vrf' of null-string will default to the global or default VRF. 'vrf' of 'all' will
-        return the interface IPs for all VRFs. 'vrf' referring to a specific VRF will return
-        the interface IPs of that specific VRF. In all cases the same data structure is returned
-        and no reference to the VRF that was used is included in the output.
+        'vrf' of null-string will default to all VRFs. Specific 'vrf' will return the ARP table
+        entries for that VRFs (including potentially 'default' or 'global').
+
+        In all cases the same data structure is returned and no reference to the VRF that was used
+        is included in the output.
 
         Example::
 
