@@ -775,7 +775,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=""):
 
         """
         Returns a list of dictionaries having the following set of keys:
@@ -783,6 +783,11 @@ class NetworkDriver(object):
             * mac (string)
             * ip (string)
             * age (float)
+
+        'vrf' of null-string will default to the global or default VRF. 'vrf' of 'all' will
+        return the interface IPs for all VRFs. 'vrf' referring to a specific VRF will return
+        the interface IPs of that specific VRF. In all cases the same data structure is returned
+        and no reference to the VRF that was used is included in the output.
 
         Example::
 

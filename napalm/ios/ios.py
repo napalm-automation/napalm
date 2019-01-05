@@ -1875,7 +1875,7 @@ class IOSDriver(NetworkDriver):
 
         return environment
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=""):
         """
         Get arp table information.
 
@@ -1901,6 +1901,10 @@ class IOSDriver(NetworkDriver):
                 }
             ]
         """
+        if vrf:
+            msg = "VRF support has not been added for this getter on this platform."
+            raise NotImplementedError(msg)
+
         arp_table = []
 
         command = "show arp | exclude Incomplete"
