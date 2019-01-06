@@ -741,7 +741,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             cli_output[py23_compat.text_type(command)] = output
         return cli_output
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=""):
         """
         Get arp table information.
 
@@ -769,7 +769,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         """
         arp_table = []
 
-        command = "show ip arp vrf all | exc INCOMPLETE"
+        command = "show ip arp vrf {} | exc INCOMPLETE".format(vrf or "all")
         output = self._send_command(command)
 
         separator = r"^Address\s+Age.*Interface.*$"
