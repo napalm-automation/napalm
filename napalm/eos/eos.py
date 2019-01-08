@@ -95,44 +95,44 @@ class EOSDriver(NetworkDriver):
         self.config_session = None
         self.locked = False
 
-        if optional_args is None:
-            optional_args = {}
-
-        # eos_transport is there for backwards compatibility, transport is the preferred method
-        self.transport = optional_args.get(
-            "transport", optional_args.get("eos_transport", "https")
-        )
-
-        if self.transport == "https":
-            self.port = optional_args.get("port", 443)
-        elif self.transport == "http":
-            self.port = optional_args.get("port", 80)
-
-        self.enablepwd = optional_args.get("enable_password", "")
-
         self.platform = "eos"
         self.profile = [self.platform]
 
-        self.eos_autoComplete = optional_args.get("eos_autoComplete", None)
+        self._process_optional_args(optional_args or {})
+
+    def _process_optional_args(self, optional_args):
+        self.enablepwd = optional_args.pop("enable_password", "")
+        self.eos_autoComplete = optional_args.pop("eos_autoComplete", None)
+        # eos_transport is there for backwards compatibility, transport is the preferred method
+        transport = optional_args.get(
+            "transport", optional_args.get("eos_transport", "https")
+        )
+        try:
+            self.transport_class = pyeapi.client.TRANSPORTS[transport]
+        except KeyError:
+            raise ConnectionException("Unknown transport: {}".format(self.transport))
+        init_args = py23_compat.argspec(self.transport_class.__init__)[0]
+        init_args.pop(0)  # Remove "self"
+        init_args.append("enforce_verification")  # Not an arg for unknown reason
+
+        filter_args = ["host", "username", "password", "timeout"]
+
+        self.eapi_kwargs = {
+            k: v
+            for k, v in optional_args.items()
+            if k in init_args and k not in filter_args
+        }
 
     def open(self):
         """Implementation of NAPALM method open."""
         try:
-            if self.transport in ("http", "https"):
-                connection = pyeapi.client.connect(
-                    transport=self.transport,
-                    host=self.hostname,
-                    username=self.username,
-                    password=self.password,
-                    port=self.port,
-                    timeout=self.timeout,
-                )
-            elif self.transport == "socket":
-                connection = pyeapi.client.connect(transport=self.transport)
-            else:
-                raise ConnectionException(
-                    "Unknown transport: {}".format(self.transport)
-                )
+            connection = self.transport_class(
+                host=self.hostname,
+                username=self.username,
+                password=self.password,
+                timeout=self.timeout,
+                **self.eapi_kwargs
+            )
 
             if self.device is None:
                 self.device = pyeapi.client.Node(connection, enablepwd=self.enablepwd)
