@@ -1,0 +1,21 @@
+{
+  "Ethernet22": [
+    {
+      "parent_interface": "Ethernet22",
+      "remote_port": "000c.297b.d2a8",
+      "remote_port_description": "eth0",
+      "remote_system_name": "linux",
+      "remote_system_description": "CentOS Linux 7 (Core) Linux 4.9.46 #1 SMP PREEMPT Wed Aug 30 15:24:09 UTC 2017 x86_64",
+      "remote_chassis_id": "00:0C:29:7B:D2:A8",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "station",
+        "wlan-access-point"
+      ],
+      "remote_system_enable_capab": [
+        "station"
+      ]
+    }
+  ]
+}
