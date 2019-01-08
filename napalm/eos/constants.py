@@ -9,4 +9,5 @@ LLDP_CAPAB_TRANFORM_TABLE = {
     "telephone": "telephone",
     "docsis": "docsis-cable-device",
     "station": "station",
+    "stationonly": "station",
 }
