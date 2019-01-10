@@ -1,0 +1,52 @@
+{
+  "lldpNeighbors": {
+    "Ethernet22": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "wlanAccessPoint": false,
+            "router": false,
+            "stationOnly": true
+          },
+          "lastChangeTime": 1544636077.4653718,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000c.297b.d2a8",
+            "interfaceDescription": "eth0",
+            "autoNegCapability": "capableAndEnabled",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-LR",
+            "vlanNames": {},
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1544636077.4653718,
+          "lastContactTime": 1546981809.8182333,
+          "chassisId": "00c.297b.d2a8",
+          "systemName": "linux",
+          "systemDescription": "CentOS Linux 7 (Core) Linux 4.9.46 #1 SMP PREEMPT Wed Aug 30 15:24:09 UTC 2017 x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 2,
+              "address": "10.199.1.22",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    }
+  }
+}

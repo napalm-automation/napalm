@@ -310,30 +310,33 @@ class JunOSDriver(NetworkDriver):
 
         # convert all the tuples to our pre-defined dict structure
         def _convert_to_dict(interfaces):
-            for iface in interfaces.keys():
+            # calling .items() here wont work.
+            # The dictionary values will end up being tuples instead of dictionaries
+            interfaces = dict(interfaces)
+            for iface, iface_data in interfaces.items():
                 result[iface] = {
-                    "is_up": interfaces[iface]["is_up"],
+                    "is_up": iface_data["is_up"],
                     # For physical interfaces <admin-status> will always be there, so just
                     # return the value interfaces[iface]['is_enabled']
                     # For logical interfaces if <iff-down> is present interface is disabled,
                     # otherwise interface is enabled
                     "is_enabled": (
                         True
-                        if interfaces[iface]["is_enabled"] is None
-                        else interfaces[iface]["is_enabled"]
+                        if iface_data["is_enabled"] is None
+                        else iface_data["is_enabled"]
                     ),
-                    "description": (interfaces[iface]["description"] or ""),
-                    "last_flapped": float((interfaces[iface]["last_flapped"] or -1)),
+                    "description": (iface_data["description"] or ""),
+                    "last_flapped": float((iface_data["last_flapped"] or -1)),
                     "mac_address": napalm.base.helpers.convert(
                         napalm.base.helpers.mac,
-                        interfaces[iface]["mac_address"],
-                        py23_compat.text_type(interfaces[iface]["mac_address"]),
+                        iface_data["mac_address"],
+                        py23_compat.text_type(iface_data["mac_address"]),
                     ),
                     "speed": -1,
                 }
                 # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
 
-                match = re.search(r"(\d+)(\w*)", interfaces[iface]["speed"] or "")
+                match = re.search(r"(\d+)(\w*)", iface_data["speed"] or "")
                 if match is None:
                     continue
                 speed_value = napalm.base.helpers.convert(int, match.group(1), -1)
@@ -1388,7 +1391,7 @@ class JunOSDriver(NetworkDriver):
         #     _bgp_iter_core(neighbor_data)
         return bgp_neighbors
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=""):
         """Return the ARP table."""
         # could use ArpTable
         # from jnpr.junos.op.phyport import ArpTable
@@ -1398,6 +1401,9 @@ class JunOSDriver(NetworkDriver):
         #   - filters
         #   - group by VLAN ID
         #   - hostname & TTE fields as well
+        if vrf:
+            msg = "VRF support has not been added for this getter on this platform."
+            raise NotImplementedError(msg)
 
         arp_table = []
 
