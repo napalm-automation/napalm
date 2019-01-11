@@ -998,7 +998,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 active = False
             return {
                 "mac": helpers.mac(mac),
-                "interface": interface,
+                "interface": helpers.canonical_interface_name(interface),
                 "vlan": int(vlan),
                 "static": static,
                 "active": active,
