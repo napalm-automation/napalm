@@ -266,7 +266,7 @@ class NetworkDriver(object):
          * is_up (True/False)
          * is_enabled (True/False)
          * description (string)
-         * last_flapped (int in seconds)
+         * last_flapped (float in seconds)
          * speed (int in Mbit)
          * mac_address (string)
 
