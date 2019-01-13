@@ -367,7 +367,7 @@ class EOSDriver(NetworkDriver):
             interfaces[interface]["description"] = values["description"]
 
             interfaces[interface]["last_flapped"] = values.pop(
-                "lastStatusChangeTimestamp", None
+                "lastStatusChangeTimestamp", -1.0
             )
 
             interfaces[interface]["speed"] = int(values["bandwidth"] * 1e-6)
