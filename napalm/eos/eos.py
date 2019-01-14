@@ -918,15 +918,15 @@ class EOSDriver(NetworkDriver):
 
         arp_table = []
 
-        ipv4_neighbors = []
-        for vrf in vrfs:
-            try:
-                commands = ["show arp vrf {}".format(vrf)]
-                ipv4_neighbors.extend(
-                    self.device.run_commands(commands)[0].get("ipV4Neighbors", [])
-                )
-            except pyeapi.eapilib.CommandError:
-                return []
+        try:
+            commands = ["show arp vrf {}".format(v) for v in vrfs]
+            ipv4_neighbors = [
+                neighbor
+                for command in self.device.run_commands(commands)
+                for neighbor in command.get("ipV4Neighbors", [])
+            ]
+        except pyeapi.eapilib.CommandError:
+            return []
 
         for neighbor in ipv4_neighbors:
             interface = py23_compat.text_type(neighbor.get("interface"))
