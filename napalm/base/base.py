@@ -266,7 +266,7 @@ class NetworkDriver(object):
          * is_up (True/False)
          * is_enabled (True/False)
          * description (string)
-         * last_flapped (int in seconds)
+         * last_flapped (float in seconds)
          * speed (int in Mbit)
          * mac_address (string)
 
@@ -278,7 +278,7 @@ class NetworkDriver(object):
                 'is_up': False,
                 'is_enabled': False,
                 'description': '',
-                'last_flapped': -1,
+                'last_flapped': -1.0,
                 'speed': 1000,
                 'mac_address': 'FA:16:3E:57:33:61',
                 },
@@ -305,7 +305,7 @@ class NetworkDriver(object):
                 'is_up': False,
                 'is_enabled': True,
                 'description': 'bar',
-                'last_flapped': -1,
+                'last_flapped': -1.0,
                 'speed': 1000,
                 'mac_address': 'FA:16:3E:57:33:64',
                 }
