@@ -121,12 +121,15 @@ class IOSDriver(NetworkDriver):
         self._dest_file_system = optional_args.get("dest_file_system", None)
         self.auto_rollback_on_error = optional_args.get("auto_rollback_on_error", True)
 
-        # Control automatic toggling of 'file prompt quiet' for file operations
+        # Control automatic execution of 'file prompt quiet' for file operations
         self.auto_file_prompt = optional_args.get("auto_file_prompt", True)
 
-        # Define if 'file prompt quiet' has been enabled, either by NAPALM or by the user
-        self.file_prompt_quiet_napalm_enabled = False
-        self.file_prompt_quiet_user_enabled = False
+        # Track whether 'file prompt quiet' is enabled.
+        if self.auto_file_prompt:
+            self.prompting_disabled = False
+        else:
+            # If auto_file_prompt is disabled, then prompting must be enabled in the config
+            self.prompting_disabled = True
 
         self.netmiko_optional_args = netmiko_args(optional_args)
 
@@ -163,14 +166,10 @@ class IOSDriver(NetworkDriver):
     def close(self):
         """Close the connection to the device and do the necessary cleanup."""
 
-        # We need to clean-up after ourselves by disabling 'file prompt quiet' if enabled by us
-        if self.file_prompt_quiet_napalm_enabled:
-
+        # Return file prompt quiet to the original state
+        if self.auto_file_prompt and self.prompting_disabled:
             self.device.send_config_set(["no file prompt quiet"])
-            self.file_prompt_quiet_napalm_enabled = False
-
-        # Otherwise, the user has enabled the feature by himself, we just need to clear the flag
-        self.file_prompt_quiet_user_enabled = False
+            self.prompting_disabled = False
         self._netmiko_close()
 
     def _send_command(self, command):
@@ -305,6 +304,23 @@ class IOSDriver(NetworkDriver):
         if not return_status:
             raise MergeConfigException(msg)
 
+    def _file_prompt_quiet(f):
+        """Decorator to toggle 'file prompt quiet' for methods that perform file operations."""
+
+        @functools.wraps(f)
+        def wrapper(self, *args, **kwargs):
+            # Only execute config change if allowed and not already done
+            if self.auto_file_prompt and not self.prompting_disabled:
+                # disable file operation prompts
+                self.device.send_config_set(["file prompt quiet"])
+                self.prompting_disabled = True
+                # call wrapped function
+                retval = f(self, *args, **kwargs)
+            return retval
+
+        return wrapper
+
+    @_file_prompt_quiet
     def _normalize_compare_config(self, diff):
         """Filter out strings that should not show up in the diff."""
         ignore_strings = [
@@ -312,8 +328,6 @@ class IOSDriver(NetworkDriver):
             "No changes were found",
             "ntp clock-period",
         ]
-        if self.auto_file_prompt:
-            ignore_strings.append("file prompt quiet")
 
         new_list = []
         for line in diff.splitlines():
@@ -423,45 +437,6 @@ class IOSDriver(NetworkDriver):
                 diff = self._normalize_merge_diff(diff)
 
         return diff.strip()
-
-    def _file_prompt_quiet(f):
-        """Decorator to toggle 'file prompt quiet' around methods that perform file operations."""
-
-        @functools.wraps(f)
-        def wrapper(self, *args, **kwargs):
-            # only toggle config if 'auto_file_prompt' is true and we didn't enable it ever before
-            if self.auto_file_prompt:
-                if not self.file_prompt_quiet_napalm_enabled:
-                    # disable file operation prompts
-                    self.device.send_config_set(["file prompt quiet"])
-                    # toggle 'file prompt quiet' enabled by NAPALM flag
-                    self.file_prompt_quiet_napalm_enabled = True
-                # call wrapped function
-                retval = f(self, *args, **kwargs)
-            else:
-                if not self.file_prompt_quiet_user_enabled:
-                    # check if the command is already in the running-config
-                    cmd = "file prompt quiet"
-                    show_cmd = "show running-config | inc {}".format(cmd)
-                    output = self.device.send_command_expect(show_cmd)
-                    if cmd in output:
-                        # toggle 'file prompt quiet' enabled by user flag
-                        self.file_prompt_quiet_user_enabled = True
-                        # call wrapped function
-                        retval = f(self, *args, **kwargs)
-                    else:
-                        msg = (
-                            "on-device file operations require prompts to be disabled. "
-                            "Configure 'file prompt quiet' or set 'auto_file_prompt=True'"
-                        )
-                        raise CommandErrorException(msg)
-                else:
-                    # call wrapped function
-                    retval = f(self, *args, **kwargs)
-
-            return retval
-
-        return wrapper
 
     @_file_prompt_quiet
     def _commit_handler(self, cmd):
