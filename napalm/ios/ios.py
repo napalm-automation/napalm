@@ -169,7 +169,7 @@ class IOSDriver(NetworkDriver):
         # Return file prompt quiet to the original state
         if self.auto_file_prompt and self.auto_prompt_changed is True:
             self.device.send_config_set(["no file prompt quiet"])
-            self.prompting_disabled = False
+            self.auto_prompt_changed = False
         self._netmiko_close()
 
     def _send_command(self, command):
@@ -432,7 +432,7 @@ class IOSDriver(NetworkDriver):
             if self.auto_file_prompt and self.auto_prompt_changed is False:
                 # disable file operation prompts
                 self.device.send_config_set(["file prompt quiet"])
-                self.prompting_disabled = True
+                self.auto_prompt_changed = True
                 # call wrapped function
                 retval = f(self, *args, **kwargs)
             return retval
