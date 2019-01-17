@@ -903,13 +903,21 @@ class NXOSSSHDriver(NXOSDriverBase):
             #   2001:cc11:22bb:0:2ec2:60ff:fe4f:feb2/64 [VALID]
             # IPv6 subnet:  2001::/24
             # IPv6 link-local address: fe80::2ec2:60ff:fe4f:feb2 (default) [VALID]
+            # IPv6 address: fe80::a293:51ff:fe5f:5ce9 [VALID]
             if "Interface status" in line:
                 interface = line.split(",")[0]
                 continue
             if "VALID" in line:
                 line = line.strip()
                 if "link-local address" in line:
+                    # match the following format:
+                    # IPv6 link-local address: fe80::2ec2:60ff:fe4f:feb2 (default) [VALID]
                     ip_address = line.split()[3]
+                    prefix_len = "64"
+                elif "IPv6 address" in line:
+                    # match the following format:
+                    # IPv6 address: fe80::a293:51ff:fe5f:5ce9 [VALID]
+                    ip_address = line.split()[2]
                     prefix_len = "64"
                 else:
                     ip_address, prefix_len = line.split()[0].split("/")
