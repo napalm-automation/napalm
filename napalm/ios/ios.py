@@ -124,7 +124,7 @@ class IOSDriver(NetworkDriver):
         # Control automatic execution of 'file prompt quiet' for file operations
         self.auto_file_prompt = optional_args.get("auto_file_prompt", True)
 
-        # Track whether 'file prompt quiet' is enabled.
+        # Track whether 'file prompt quiet' has been changed by NAPALM.
         if self.auto_file_prompt:
             self.auto_prompt_changed = False
         else:
