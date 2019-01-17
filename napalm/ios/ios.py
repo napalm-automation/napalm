@@ -304,23 +304,6 @@ class IOSDriver(NetworkDriver):
         if not return_status:
             raise MergeConfigException(msg)
 
-    def _file_prompt_quiet(f):
-        """Decorator to toggle 'file prompt quiet' for methods that perform file operations."""
-
-        @functools.wraps(f)
-        def wrapper(self, *args, **kwargs):
-            # Only execute config change if allowed and not already done
-            if self.auto_file_prompt and not self.prompting_disabled:
-                # disable file operation prompts
-                self.device.send_config_set(["file prompt quiet"])
-                self.prompting_disabled = True
-                # call wrapped function
-                retval = f(self, *args, **kwargs)
-            return retval
-
-        return wrapper
-
-    @_file_prompt_quiet
     def _normalize_compare_config(self, diff):
         """Filter out strings that should not show up in the diff."""
         ignore_strings = [
@@ -328,6 +311,8 @@ class IOSDriver(NetworkDriver):
             "No changes were found",
             "ntp clock-period",
         ]
+        if self.auto_file_prompt:
+            ignore_strings.append("file prompt quiet")
 
         new_list = []
         for line in diff.splitlines():
@@ -437,6 +422,22 @@ class IOSDriver(NetworkDriver):
                 diff = self._normalize_merge_diff(diff)
 
         return diff.strip()
+
+    def _file_prompt_quiet(f):
+        """Decorator to toggle 'file prompt quiet' for methods that perform file operations."""
+
+        @functools.wraps(f)
+        def wrapper(self, *args, **kwargs):
+            # Only execute config change if allowed and not already done
+            if self.auto_file_prompt and not self.prompting_disabled:
+                # disable file operation prompts
+                self.device.send_config_set(["file prompt quiet"])
+                self.prompting_disabled = True
+                # call wrapped function
+                retval = f(self, *args, **kwargs)
+            return retval
+
+        return wrapper
 
     @_file_prompt_quiet
     def _commit_handler(self, cmd):
