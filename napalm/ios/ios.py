@@ -125,11 +125,9 @@ class IOSDriver(NetworkDriver):
         self.auto_file_prompt = optional_args.get("auto_file_prompt", True)
 
         # Track whether 'file prompt quiet' has been changed by NAPALM.
-        if self.auto_file_prompt:
-            self.prompt_quiet_changed = False
-        else:
-            # If auto_file_prompt is disabled, then prompting must be disabled in the config
-            self.prompt_quiet_changed = None
+        self.prompt_quiet_changed = False
+        # Track whether 'file prompt quiet' is known to be configured
+        self.prompt_quiet_configured = None
 
         self.netmiko_optional_args = netmiko_args(optional_args)
 
@@ -170,6 +168,7 @@ class IOSDriver(NetworkDriver):
         if self.auto_file_prompt and self.prompt_quiet_changed is True:
             self.device.send_config_set(["no file prompt quiet"])
             self.prompt_quiet_changed = False
+            self.prompt_quiet_configured = False
         self._netmiko_close()
 
     def _send_command(self, command):
@@ -433,9 +432,23 @@ class IOSDriver(NetworkDriver):
                 # disable file operation prompts
                 self.device.send_config_set(["file prompt quiet"])
                 self.prompt_quiet_changed = True
-                # call wrapped function
-                retval = f(self, *args, **kwargs)
-            return retval
+                self.prompt_quiet_configured = True
+            if not self.auto_file_prompt and not self.prompt_quiet_configured:
+                # check if the command is already in the running-config
+                cmd = "file prompt quiet"
+                show_cmd = "show running-config | inc {}".format(cmd)
+                output = self.device.send_command_expect(show_cmd)
+                if cmd in output:
+                    self.prompt_quiet_configured = True
+                else:
+                    msg = (
+                        "on-device file operations require prompts to be disabled. "
+                        "Configure 'file prompt quiet' or set 'auto_file_prompt=True'"
+                    )
+                    raise CommandErrorException(msg)
+
+            # call wrapped function
+            return f(self, *args, **kwargs)
 
         return wrapper
 
