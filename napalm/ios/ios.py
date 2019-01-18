@@ -128,7 +128,7 @@ class IOSDriver(NetworkDriver):
         if self.auto_file_prompt:
             self.auto_prompt_changed = False
         else:
-            # If auto_file_prompt is disabled, then prompting must be enabled in the config
+            # If auto_file_prompt is disabled, then prompting must be disabled in the config
             self.auto_prompt_changed = None
 
         self.netmiko_optional_args = netmiko_args(optional_args)
