@@ -126,10 +126,10 @@ class IOSDriver(NetworkDriver):
 
         # Track whether 'file prompt quiet' has been changed by NAPALM.
         if self.auto_file_prompt:
-            self.auto_prompt_changed = False
+            self.prompt_quiet_changed = False
         else:
             # If auto_file_prompt is disabled, then prompting must be disabled in the config
-            self.auto_prompt_changed = None
+            self.prompt_quiet_changed = None
 
         self.netmiko_optional_args = netmiko_args(optional_args)
 
@@ -167,9 +167,9 @@ class IOSDriver(NetworkDriver):
         """Close the connection to the device and do the necessary cleanup."""
 
         # Return file prompt quiet to the original state
-        if self.auto_file_prompt and self.auto_prompt_changed is True:
+        if self.auto_file_prompt and self.prompt_quiet_changed is True:
             self.device.send_config_set(["no file prompt quiet"])
-            self.auto_prompt_changed = False
+            self.prompt_quiet_changed = False
         self._netmiko_close()
 
     def _send_command(self, command):
@@ -429,10 +429,10 @@ class IOSDriver(NetworkDriver):
         @functools.wraps(f)
         def wrapper(self, *args, **kwargs):
             # Only execute config change if allowed and not already done
-            if self.auto_file_prompt and self.auto_prompt_changed is False:
+            if self.auto_file_prompt and self.prompt_quiet_changed is False:
                 # disable file operation prompts
                 self.device.send_config_set(["file prompt quiet"])
-                self.auto_prompt_changed = True
+                self.prompt_quiet_changed = True
                 # call wrapped function
                 retval = f(self, *args, **kwargs)
             return retval
