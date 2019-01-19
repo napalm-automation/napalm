@@ -427,25 +427,25 @@ class IOSDriver(NetworkDriver):
 
         @functools.wraps(f)
         def wrapper(self, *args, **kwargs):
-            # Only execute config change if allowed and not already done
-            if self.auto_file_prompt and self.prompt_quiet_changed is False:
-                # disable file operation prompts
-                self.device.send_config_set(["file prompt quiet"])
-                self.prompt_quiet_changed = True
-                self.prompt_quiet_configured = True
-            if not self.auto_file_prompt and not self.prompt_quiet_configured:
-                # check if the command is already in the running-config
-                cmd = "file prompt quiet"
-                show_cmd = "show running-config | inc {}".format(cmd)
-                output = self.device.send_command_expect(show_cmd)
-                if cmd in output:
+            if not self.prompt_quiet_configured:
+                if self.auto_file_prompt:
+                    # disable file operation prompts
+                    self.device.send_config_set(["file prompt quiet"])
+                    self.prompt_quiet_changed = True
                     self.prompt_quiet_configured = True
                 else:
-                    msg = (
-                        "on-device file operations require prompts to be disabled. "
-                        "Configure 'file prompt quiet' or set 'auto_file_prompt=True'"
-                    )
-                    raise CommandErrorException(msg)
+                    # check if the command is already in the running-config
+                    cmd = "file prompt quiet"
+                    show_cmd = "show running-config | inc {}".format(cmd)
+                    output = self.device.send_command_expect(show_cmd)
+                    if cmd in output:
+                        self.prompt_quiet_configured = True
+                    else:
+                        msg = (
+                            "on-device file operations require prompts to be disabled. "
+                            "Configure 'file prompt quiet' or set 'auto_file_prompt=True'"
+                        )
+                        raise CommandErrorException(msg)
 
             # call wrapped function
             return f(self, *args, **kwargs)
