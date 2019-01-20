@@ -1,50 +1,128 @@
 {
-    "Eth2/2": [
+    "Ethernet2/2": [
         {
             "remote_port_description": "Ethernet2/2", 
             "remote_system_description": "Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00", 
-            "remote_chassis_id": "2C:C2:60:64:E1:5F", 
-            "remote_system_enable_capab": "B, R", 
-            "remote_port": "Ethernet2/2", 
-            "parent_interface": "", 
-            "remote_system_capab": "B, R", 
+            "remote_chassis_id": "2cc2.6064.e15f",
+            "remote_system_enable_capab": [
+                "bridge",
+                "router"
+            ],
+            "remote_port": "Eth2/2",
+            "parent_interface": "",
+            "remote_system_capab": [
+                "bridge",
+                "router"
+            ],
             "remote_system_name": "nxos2.madeupdomain.com"
         }
     ], 
-    "Eth2/3": [
+    "Ethernet2/3": [
         {
             "remote_port_description": "Ethernet2/3", 
             "remote_system_description": "Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00", 
-            "remote_chassis_id": "2C:C2:60:72:61:7B", 
-            "remote_system_enable_capab": "B, R", 
-            "remote_port": "Ethernet2/3", 
-            "parent_interface": "", 
-            "remote_system_capab": "B, R", 
+            "remote_chassis_id": "2cc2.6072.617b",
+            "remote_system_enable_capab": [
+                "bridge",
+                "router"
+            ],
+            "remote_port": "Eth2/3",
+            "parent_interface": "",
+            "remote_system_capab": [
+                "bridge",
+                "router"
+            ],
             "remote_system_name": "nxos2.madeupdomain.com"
         }
     ], 
-    "Eth2/1": [
+    "Ethernet2/1": [
         {
             "remote_port_description": "Ethernet2/1", 
             "remote_system_description": "Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00", 
-            "remote_chassis_id": "2C:C2:60:54:DC:2C", 
-            "remote_system_enable_capab": "B, R", 
-            "remote_port": "Ethernet2/1", 
-            "parent_interface": "", 
-            "remote_system_capab": "B, R", 
+            "remote_chassis_id": "2cc2.6054.dc2c",
+            "remote_system_enable_capab": [
+                "bridge",
+                "router"
+            ],
+            "remote_port": "Eth2/1",
+            "parent_interface": "",
+            "remote_system_capab": [
+                "bridge",
+                "router"
+            ],
             "remote_system_name": "nxos2.madeupdomain.com"
         }
     ], 
-    "Eth2/4": [
+    "Ethernet2/4": [
         {
             "remote_port_description": "Ethernet2/4", 
             "remote_system_description": "Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00", 
-            "remote_chassis_id": "2C:C2:60:70:69:DA", 
-            "remote_system_enable_capab": "B, R", 
-            "remote_port": "Ethernet2/4", 
-            "parent_interface": "", 
-            "remote_system_capab": "B, R", 
+            "remote_chassis_id": "2cc2.6070.69da",
+            "remote_system_enable_capab": [
+                "bridge",
+                "router"
+            ],
+            "remote_port": "Eth2/4",
+            "parent_interface": "",
+            "remote_system_capab": [
+                "bridge",
+                "router"
+            ],
             "remote_system_name": "nxos2.madeupdomain.com"
+        }
+    ],
+    "Ethernet1/6": [
+        {
+            "remote_port_description": "Linux bigip.example.com 3.4.0-5.6.77.el10.x86_64 #1 SMP Tue Mar 27 06:47:55 PDT 2018 x86_64",
+            "remote_system_description": "Linux bigip.example.com 3.4.0-5.6.77.el10.x86_64 #1 SMP Tue Mar 27 06:47:55 PDT 2018 x86_64",
+            "remote_chassis_id": "chs123456s",
+            "remote_system_enable_capab": [
+                "bridge",
+                "router"
+            ],
+            "remote_port": "1/2.1",
+            "parent_interface": "",
+            "remote_system_capab": [
+                "bridge",
+                "router"
+            ],
+            "remote_system_name": "bigip.example.com"
+        }
+    ],
+    "Ethernet1/1": [
+        {
+            "remote_chassis_id": "0c0c.88f4.e708",
+            "remote_port": "Ethernet1/1",
+            "remote_port_description": "uplink to spine",
+            "remote_system_name": "leaf01",
+            "remote_system_description": "Cisco Nexus Operating System (NX-OS) Software 7.0(3)I6(1)",
+            "remote_system_capab": [
+                "bridge",
+                "router"
+            ],
+            "remote_system_enable_capab": [
+                "bridge",
+                "router"
+            ],
+            "parent_interface": ""
+        }
+    ],
+    "Ethernet1/2": [
+        {
+            "remote_chassis_id": "0c0c.88b0.f508",
+            "remote_port": "Ethernet1/1",
+            "remote_port_description": "Ethernet1/1",
+            "remote_system_name": "leaf02",
+            "remote_system_description": "Cisco Nexus Operating System (NX-OS) Software 7.0(3)I6(1)",
+            "remote_system_capab": [
+                "bridge",
+                "router"
+            ],
+            "remote_system_enable_capab": [
+                "bridge",
+                "router"
+            ],
+            "parent_interface": ""
         }
     ]
 }

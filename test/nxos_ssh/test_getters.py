@@ -15,7 +15,8 @@ def mock_time():
 @pytest.mark.usefixtures("set_device_parameters")
 class TestGetter(BaseTestGetters):
     """Test get_* methods."""
-    @patch('time.time', mock_time)
+
+    @patch("time.time", mock_time)
     @wrap_test_cases
     def test_get_interfaces(self, test_case):
         """Test get_interfaces."""

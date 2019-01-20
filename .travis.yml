@@ -2,23 +2,27 @@ language: python
 
 python:
   - 2.7
-  - 3.4
   - 3.5
   - 3.6
 
 matrix:
   include:
-      - python: 3.6
-        env: TOXENV=sphinx
+  - python: 3.6
+    env: TOXENV=pylama
+  - python: 3.6
+    env: TOXENV=black
+  - python: 3.6
+    env: TOXENV=sphinx
 
 install:
-  - pip install tox tox-travis coveralls
+  - pip install tox==3.5.3 tox-travis coveralls
 
 deploy:
   provider: pypi
   user: dbarroso
   password:
     secure: kt2RgomUtrf5zXo3CyF8B7SkolvKgALAO0s72WuMd0wTGmgOvoBlt10Vfc+G+wuVAYvW/JKdsYRceancAFyWLFgjLtNxbV4cJF2RXN956sYFSJ2VrtUiB19WuKZjX6024gMs780hC/3bdK1SDg/NAAHSR7u2cma3QgRcW6O+UG4=
+  distributions: "sdist bdist_wheel"
   on:
     tags: true
     branch: master

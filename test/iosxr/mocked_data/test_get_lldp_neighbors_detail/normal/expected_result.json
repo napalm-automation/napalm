@@ -6,8 +6,12 @@
 		"remote_chassis_id": "8C:60:4F:69:E9:6C",
 		"remote_system_name": "core04.yyz01.as13335.net",
 		"parent_interface": "Bundle-Ether8",
-		"remote_system_capab": "B",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}],
 	"TenGigE0/0/0/4": [{
 		"remote_port_description": "Ethernet2/1/1",
@@ -16,8 +20,12 @@
 		"remote_chassis_id": "8C:60:4F:35:61:58",
 		"remote_system_name": "core03.yyz01.as13335.com",
 		"parent_interface": "Bundle-Ether3",
-		"remote_system_capab": "B",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}],
 	"TenGigE0/0/0/5": [{
 		"remote_port_description": "xe-0/1/1.0",
@@ -26,8 +34,14 @@
 		"remote_chassis_id": "78:FE:3D:EC:92:80",
 		"remote_system_name": "core01.yyz01",
 		"parent_interface": "Bundle-Ether1",
-		"remote_system_capab": "B,R",
-		"remote_system_enable_capab": "B,R"
+		"remote_system_capab": [
+          "bridge",
+          "router"
+        ],
+		"remote_system_enable_capab": [
+          "bridge",
+          "router"
+        ]
 	}],
 	"TenGigE0/0/0/2": [{
 		"remote_port_description": "PN Switch Port(9)",
@@ -36,8 +50,13 @@
 		"remote_chassis_id": "0a000196",
 		"remote_system_name": "core02.yyz01",
 		"parent_interface": "Bundle-Ether2",
-		"remote_system_capab": "B,R",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge",
+          "router"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}],
 	"TenGigE0/0/0/3": [{
 		"remote_port_description": "xe-0/1/0.0",
@@ -46,8 +65,14 @@
 		"remote_chassis_id": "78:FE:3D:EC:92:80",
 		"remote_system_name": "core01.yyz01",
 		"parent_interface": "Bundle-Ether1",
-		"remote_system_capab": "B,R",
-		"remote_system_enable_capab": "B,R"
+		"remote_system_capab": [
+          "bridge",
+          "router"
+        ],
+		"remote_system_enable_capab": [
+          "bridge",
+          "router"
+        ]
 	}],
 	"TenGigE0/0/0/16": [{
 		"remote_port_description": "Ethernet2/1/2",
@@ -56,8 +81,12 @@
 		"remote_chassis_id": "8C:60:4F:35:61:59",
 		"remote_system_name": "core03.yyz01.as13335.com",
 		"parent_interface": "Bundle-Ether3",
-		"remote_system_capab": "B",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}],
 	"TenGigE0/0/0/17": [{
 		"remote_port_description": "PN Switch Port(64)",
@@ -66,8 +95,13 @@
 		"remote_chassis_id": "0a000196",
 		"remote_system_name": "core02.yyz01",
 		"parent_interface": "Bundle-Ether2",
-		"remote_system_capab": "B,R",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge",
+          "router"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}],
 	"TenGigE0/0/0/14": [{
 		"remote_port_description": "PN Switch Port(63)",
@@ -76,8 +110,13 @@
 		"remote_chassis_id": "0a000196",
 		"remote_system_name": "core02.yyz01",
 		"parent_interface": "Bundle-Ether2",
-		"remote_system_capab": "B,R",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge",
+          "router"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}],
 	"TenGigE0/0/0/15": [{
 		"remote_port_description": "xe-1/1/0.0",
@@ -86,8 +125,14 @@
 		"remote_chassis_id": "78:FE:3D:EC:92:80",
 		"remote_system_name": "core01.yyz01",
 		"parent_interface": "Bundle-Ether1",
-		"remote_system_capab": "B,R",
-		"remote_system_enable_capab": "B,R"
+		"remote_system_capab": [
+          "bridge",
+          "router"
+        ],
+		"remote_system_enable_capab": [
+          "bridge",
+          "router"
+        ]
 	}],
 	"TenGigE0/0/0/28": [{
 		"remote_port_description": "Ethernet2/1/4",
@@ -96,8 +141,12 @@
 		"remote_chassis_id": "8C:60:4F:35:61:5B",
 		"remote_system_name": "core03.yyz01.as13335.com",
 		"parent_interface": "Bundle-Ether3",
-		"remote_system_capab": "B",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}],
 	"TenGigE0/0/0/27": [{
 		"remote_port_description": "Ethernet2/1/3",
@@ -106,8 +155,12 @@
 		"remote_chassis_id": "8C:60:4F:35:61:5A",
 		"remote_system_name": "core03.yyz01.as13335.com",
 		"parent_interface": "Bundle-Ether3",
-		"remote_system_capab": "B",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}],
 	"TenGigE0/0/0/25": [{
 		"remote_port_description": "PN Switch Port(10)",
@@ -116,8 +169,13 @@
 		"remote_chassis_id": "0a000196",
 		"remote_system_name": "core02.yyz01",
 		"parent_interface": "Bundle-Ether2",
-		"remote_system_capab": "B,R",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge",
+          "router"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}],
 	"TenGigE0/0/0/30": [{
 		"remote_port_description": "Ethernet2/2/3",
@@ -126,8 +184,12 @@
 		"remote_chassis_id": "8C:60:4F:69:E9:6E",
 		"remote_system_name": "core04.yyz01.as13335.net",
 		"parent_interface": "Bundle-Ether8",
-		"remote_system_capab": "B",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}],
 	"TenGigE0/0/0/32": [{
 		"remote_port_description": "Ethernet2/2/4",
@@ -136,8 +198,12 @@
 		"remote_chassis_id": "8C:60:4F:69:E9:6F",
 		"remote_system_name": "core04.yyz01.as13335.net",
 		"parent_interface": "Bundle-Ether8",
-		"remote_system_capab": "B",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}],
 	"TenGigE0/0/0/19": [{
 		"remote_port_description": "Ethernet2/2/2",
@@ -146,7 +212,11 @@
 		"remote_chassis_id": "8C:60:4F:69:E9:6D",
 		"remote_system_name": "core04.yyz01.as13335.net",
 		"parent_interface": "Bundle-Ether8",
-		"remote_system_capab": "B",
-		"remote_system_enable_capab": "B"
+		"remote_system_capab": [
+          "bridge"
+        ],
+		"remote_system_enable_capab": [
+          "bridge"
+        ]
 	}]
 }

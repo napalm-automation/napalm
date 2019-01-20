@@ -1,2 +1,3 @@
 model: QFX5110-48S-4C
 personality: SWITCH
+switch_style: VLAN_L2NG

@@ -1,0 +1,11 @@
+{
+	"success": {
+		"results": [],
+		"rtt_avg": 0.0,
+		"packet_loss": 5,
+		"rtt_min": 0.0,
+		"rtt_max": 0.0,
+		"rtt_stddev": 0.0,
+		"probes_sent": 5
+	}
+}

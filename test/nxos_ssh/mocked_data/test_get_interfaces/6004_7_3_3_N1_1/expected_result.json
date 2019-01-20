@@ -1,0 +1,10 @@
+{
+  "Ethernet1/1": {
+    "description": "xxxxxxxxxxxxxxxx",
+    "is_enabled": true,
+    "is_up": true,
+    "last_flapped": -1.0,
+    "mac_address": "2C:C2:60:12:EC:74",
+    "speed": 40000
+  }
+}

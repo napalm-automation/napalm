@@ -1,0 +1,21 @@
+{
+  "powerSupplies": {
+    "1": {
+      "uptime": 1531344080.347931,
+      "modelName": "PWR-00194-01",
+      "capacity": 65.0,
+      "fans": {},
+      "tempSensors": {},
+      "managed": false,
+      "state": "ok"
+    },
+    "2": {
+      "fans": {},
+      "modelName": "PWR-00194-01",
+      "capacity": 65.0,
+      "tempSensors": {},
+      "managed": false,
+      "state": "powerLoss"
+    }
+  }
+}
