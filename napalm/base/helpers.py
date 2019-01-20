@@ -18,6 +18,7 @@ from netaddr import IPAddress
 
 # local modules
 import napalm.base.exceptions
+from napalm.base import constants
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
 from napalm.base.utils import py23_compat
 from napalm.base.canonical_map import base_interfaces, reverse_mapping
@@ -30,60 +31,78 @@ class _MACFormat(mac_unix):
     pass
 
 
-_MACFormat.word_fmt = '%.2X'
+_MACFormat.word_fmt = "%.2X"
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 # callable helpers
 # ----------------------------------------------------------------------------------------------------------------------
-def load_template(cls, template_name, template_source=None, template_path=None,
-                  openconfig=False, jinja_filters={}, **template_vars):
+def load_template(
+    cls,
+    template_name,
+    template_source=None,
+    template_path=None,
+    openconfig=False,
+    jinja_filters={},
+    **template_vars
+):
     try:
         search_path = []
         if isinstance(template_source, py23_compat.string_types):
             template = jinja2.Template(template_source)
         else:
             if template_path is not None:
-                if (isinstance(template_path, py23_compat.string_types) and
-                        os.path.isdir(template_path) and os.path.isabs(template_path)):
+                if (
+                    isinstance(template_path, py23_compat.string_types)
+                    and os.path.isdir(template_path)
+                    and os.path.isabs(template_path)
+                ):
                     # append driver name at the end of the custom path
-                    search_path.append(os.path.join(template_path, cls.__module__.split('.')[-1]))
+                    search_path.append(
+                        os.path.join(template_path, cls.__module__.split(".")[-1])
+                    )
                 else:
-                    raise IOError("Template path does not exist: {}".format(template_path))
+                    raise IOError(
+                        "Template path does not exist: {}".format(template_path)
+                    )
             else:
                 # Search modules for template paths
-                search_path = [os.path.dirname(os.path.abspath(sys.modules[c.__module__].__file__))
-                               for c in cls.__class__.mro() if c is not object]
+                search_path = [
+                    os.path.dirname(os.path.abspath(sys.modules[c.__module__].__file__))
+                    for c in cls.__class__.mro()
+                    if c is not object
+                ]
 
             if openconfig:
-                search_path = ['{}/oc_templates'.format(s) for s in search_path]
+                search_path = ["{}/oc_templates".format(s) for s in search_path]
             else:
-                search_path = ['{}/templates'.format(s) for s in search_path]
+                search_path = ["{}/templates".format(s) for s in search_path]
 
             loader = jinja2.FileSystemLoader(search_path)
             environment = jinja2.Environment(loader=loader)
 
             for filter_name, filter_function in itertools.chain(
-                    CustomJinjaFilters.filters().items(),
-                    jinja_filters.items()):
+                CustomJinjaFilters.filters().items(), jinja_filters.items()
+            ):
                 environment.filters[filter_name] = filter_function
 
-            template = environment.get_template('{template_name}.j2'.format(
-                template_name=template_name
-            ))
+            template = environment.get_template(
+                "{template_name}.j2".format(template_name=template_name)
+            )
         configuration = template.render(**template_vars)
     except jinja2.exceptions.TemplateNotFound:
         raise napalm.base.exceptions.TemplateNotImplemented(
             "Config template {template_name}.j2 not found in search path: {sp}".format(
-                template_name=template_name,
-                sp=search_path
+                template_name=template_name, sp=search_path
             )
         )
-    except (jinja2.exceptions.UndefinedError, jinja2.exceptions.TemplateSyntaxError) as jinjaerr:
+    except (
+        jinja2.exceptions.UndefinedError,
+        jinja2.exceptions.TemplateSyntaxError,
+    ) as jinjaerr:
         raise napalm.base.exceptions.TemplateRenderException(
             "Unable to render the Jinja config template {template_name}: {error}".format(
-                template_name=template_name,
-                error=py23_compat.text_type(jinjaerr),
+                template_name=template_name, error=py23_compat.text_type(jinjaerr)
             )
         )
     return cls.load_merge_candidate(config=configuration)
@@ -102,47 +121,48 @@ def textfsm_extractor(cls, template_name, raw_text):
     :return: table-like list of entries
     """
     textfsm_data = list()
-    cls.__class__.__name__.replace('Driver', '')
-    current_dir = os.path.dirname(os.path.abspath(sys.modules[cls.__module__].__file__))
-    template_dir_path = '{current_dir}/utils/textfsm_templates'.format(
-        current_dir=current_dir
-    )
-    template_path = '{template_dir_path}/{template_name}.tpl'.format(
-        template_dir_path=template_dir_path,
-        template_name=template_name
-    )
-
-    try:
-        fsm_handler = textfsm.TextFSM(open(template_path))
-    except IOError:
-        raise napalm.base.exceptions.TemplateNotImplemented(
-            "TextFSM template {template_name}.tpl is not defined under {path}".format(
-                template_name=template_name,
-                path=template_dir_path
-            )
+    fsm_handler = None
+    for c in cls.__class__.mro():
+        if c is object:
+            continue
+        current_dir = os.path.dirname(
+            os.path.abspath(sys.modules[c.__module__].__file__)
         )
-    except textfsm.TextFSMTemplateError as tfte:
-        raise napalm.base.exceptions.TemplateRenderException(
-            "Wrong format of TextFSM template {template_name}: {error}".format(
-                template_name=template_name,
-                error=py23_compat.text_type(tfte)
-            )
+        template_dir_path = "{current_dir}/utils/textfsm_templates".format(
+            current_dir=current_dir
+        )
+        template_path = "{template_dir_path}/{template_name}.tpl".format(
+            template_dir_path=template_dir_path, template_name=template_name
         )
 
-    objects = fsm_handler.ParseText(raw_text)
+        try:
+            with open(template_path) as f:
+                fsm_handler = textfsm.TextFSM(f)
 
-    for obj in objects:
-        index = 0
-        entry = {}
-        for entry_value in obj:
-            entry[fsm_handler.header[index].lower()] = entry_value
-            index += 1
-        textfsm_data.append(entry)
+                for obj in fsm_handler.ParseText(raw_text):
+                    entry = {}
+                    for index, entry_value in enumerate(obj):
+                        entry[fsm_handler.header[index].lower()] = entry_value
+                    textfsm_data.append(entry)
 
-    return textfsm_data
+                return textfsm_data
+        except IOError:  # Template not present in this class
+            continue  # Continue up the MRO
+        except textfsm.TextFSMTemplateError as tfte:
+            raise napalm.base.exceptions.TemplateRenderException(
+                "Wrong format of TextFSM template {template_name}: {error}".format(
+                    template_name=template_name, error=py23_compat.text_type(tfte)
+                )
+            )
+
+    raise napalm.base.exceptions.TemplateNotImplemented(
+        "TextFSM template {template_name}.tpl is not defined under {path}".format(
+            template_name=template_name, path=template_dir_path
+        )
+    )
 
 
-def find_txt(xml_tree, path, default=''):
+def find_txt(xml_tree, path, default=""):
     """
     Extracts the text value from an XML tree, using XPath.
     In case of error, will return a default value.
@@ -152,7 +172,7 @@ def find_txt(xml_tree, path, default=''):
     :param default:  Value to be returned in case of error.
     :return: a str value.
     """
-    value = ''
+    value = ""
     try:
         xpath_applied = xml_tree.xpath(path)  # will consider the first match only
         if len(xpath_applied) and xpath_applied[0] is not None:
@@ -166,7 +186,7 @@ def find_txt(xml_tree, path, default=''):
     return py23_compat.text_type(value)
 
 
-def convert(to, who, default=u''):
+def convert(to, who, default=""):
     """
     Converts data to a specific datatype.
     In case of error, will return a default value.
@@ -213,11 +233,10 @@ def mac(raw):
     >>> mac('23.4567.89ab')
     u'00:23:45:67:89:AB'
     """
-    if raw.endswith(':'):
-        flat_raw = raw.replace(':', '')
-        raw = '{flat_raw}{zeros_stuffed}'.format(
-            flat_raw=flat_raw,
-            zeros_stuffed='0'*(12-len(flat_raw))
+    if raw.endswith(":"):
+        flat_raw = raw.replace(":", "")
+        raw = "{flat_raw}{zeros_stuffed}".format(
+            flat_raw=flat_raw, zeros_stuffed="0" * (12 - len(flat_raw))
         )
     return py23_compat.text_type(EUI(raw, dialect=_MACFormat))
 
@@ -254,8 +273,8 @@ def ip(addr, version=None):
 def as_number(as_number_val):
     """Convert AS Number to standardized asplain notation as an integer."""
     as_number_str = py23_compat.text_type(as_number_val)
-    if '.' in as_number_str:
-        big, little = as_number_str.split('.')
+    if "." in as_number_str:
+        big, little = as_number_str.split(".")
         return (int(big) << 16) + int(little)
     else:
         return int(as_number_str)
@@ -263,8 +282,8 @@ def as_number(as_number_val):
 
 def split_interface(intf_name):
     """Split an interface name based on first digit, slash, or space match."""
-    head = intf_name.rstrip(r'/\0123456789. ')
-    tail = intf_name[len(head):].lstrip()
+    head = intf_name.rstrip(r"/\0123456789. ")
+    tail = intf_name[len(head) :].lstrip()
     return (head, tail)
 
 
@@ -330,10 +349,22 @@ def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=N
         canonical_type = interface_type
 
     try:
-        abbreviated_name = rev_name_map[canonical_type] + py23_compat.text_type(interface_number)
+        abbreviated_name = rev_name_map[canonical_type] + py23_compat.text_type(
+            interface_number
+        )
         return abbreviated_name
     except KeyError:
         pass
 
     # If abbreviated name lookup fails, return original name
     return interface
+
+
+def transform_lldp_capab(capabilities):
+    if capabilities and isinstance(capabilities, py23_compat.string_types):
+        capabilities = capabilities.strip().lower().split(",")
+        return sorted(
+            [constants.LLDP_CAPAB_TRANFORM_TABLE[c.strip()] for c in capabilities]
+        )
+    else:
+        return []

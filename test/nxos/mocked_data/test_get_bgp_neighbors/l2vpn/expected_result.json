@@ -1,0 +1,51 @@
+{
+  "MGMT": {
+    "router_id": "10.55.1.1", 
+    "peers": {}
+  }, 
+  "global": {
+    "router_id": "10.55.8.1", 
+    "peers": {
+      "10.55.8.135": {
+        "is_enabled": true, 
+        "address_family": {
+          "l2vpn": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 9497
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64861, 
+        "description": "", 
+        "remote_id": "10.55.8.135", 
+        "local_as": 64861, 
+        "is_up": true
+      }, 
+      "10.55.8.134": {
+        "is_enabled": true, 
+        "address_family": {
+          "l2vpn": {
+            "sent_prefixes": -1, 
+            "accepted_prefixes": -1, 
+            "received_prefixes": 9497
+          }
+        }, 
+        "uptime": -1, 
+        "remote_as": 64861, 
+        "description": "", 
+        "remote_id": "10.55.8.134", 
+        "local_as": 64861, 
+        "is_up": true
+      }
+    }
+  }, 
+  "NON_PROD": {
+    "router_id": "10.55.2.1", 
+    "peers": {}
+  }, 
+  "PROD": {
+    "router_id": "10.55.2.2", 
+    "peers": {}
+  }
+}

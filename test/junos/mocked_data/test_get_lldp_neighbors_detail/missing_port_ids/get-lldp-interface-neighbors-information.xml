@@ -1,0 +1,22 @@
+<lldp-neighbors-information style="detail">
+    <lldp-neighbor-information>
+        <lldp-index>2</lldp-index>
+        <lldp-ttl>120</lldp-ttl>
+        <lldp-timemark>Wed Dec 19 15:31:28 2018</lldp-timemark>
+        <lldp-age>31</lldp-age>
+        <lldp-local-interface>fe-0/0/2.0</lldp-local-interface>
+        <lldp-local-parent-interface-name>-</lldp-local-parent-interface-name>
+        <lldp-local-port-id>521</lldp-local-port-id>
+        <lldp-local-port-ageout-count>0</lldp-local-port-ageout-count>
+        <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
+        <lldp-remote-chassis-id>0c:8d:db:63:62:00</lldp-remote-chassis-id>
+        <lldp-remote-port-id-subtype>Interface alias</lldp-remote-port-id-subtype>
+        <lldp-remote-port-description>lan port 0</lldp-remote-port-description>
+        <lldp-remote-system-name>Meraki MX64</lldp-remote-system-name>
+        <lldp-system-description>
+            <lldp-remote-system-description>Meraki MX64 Cloud Managed Router</lldp-remote-system-description>
+        </lldp-system-description>
+        <lldp-remote-system-capabilities-supported>Router </lldp-remote-system-capabilities-supported>
+        <lldp-remote-system-capabilities-enabled>Router </lldp-remote-system-capabilities-enabled>
+    </lldp-neighbor-information>
+</lldp-neighbors-information>

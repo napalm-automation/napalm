@@ -49,17 +49,19 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
     @classmethod
     def setUpClass(cls):
         """Executed when the class is instantiated."""
-        ip_addr = '127.0.0.1'
-        username = 'vagrant'
-        password = 'vagrant'
-        cls.vendor = 'ios'
-        optional_args = {'port': 12204, 'dest_file_system': 'bootflash:'}
+        ip_addr = "127.0.0.1"
+        username = "vagrant"
+        password = "vagrant"
+        cls.vendor = "ios"
+        optional_args = {"port": 12204, "dest_file_system": "bootflash:"}
 
-        cls.device = ios.IOSDriver(ip_addr, username, password, optional_args=optional_args)
+        cls.device = ios.IOSDriver(
+            ip_addr, username, password, optional_args=optional_args
+        )
         cls.device.open()
 
         # Setup initial state
-        cls.device.load_replace_candidate(filename='%s/initial.conf' % cls.vendor)
+        cls.device.load_replace_candidate(filename="%s/initial.conf" % cls.vendor)
         cls.device.commit_config()
 
     def test_ios_only_confirm(self):
@@ -69,48 +71,52 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
         _enable_confirm() reenables this
         """
         # Set initial device configuration
-        self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
+        self.device.load_replace_candidate(filename="%s/initial.conf" % self.vendor)
         self.device.commit_config()
 
         # Verify initial state
-        output = self.device.device.send_command('show run | inc file prompt')
+        output = self.device.device.send_command("show run | inc file prompt")
         output = output.strip()
-        self.assertEqual(output, '')
+        self.assertEqual(output, "")
 
         # Disable confirmation
         self.device._disable_confirm()
-        output = self.device.device.send_command('show run | inc file prompt')
+        output = self.device.device.send_command("show run | inc file prompt")
         output = output.strip()
-        self.assertEqual(output, 'file prompt quiet')
+        self.assertEqual(output, "file prompt quiet")
 
         # Reenable confirmation
         self.device._enable_confirm()
-        output = self.device.device.send_command('show run | inc file prompt')
+        output = self.device.device.send_command("show run | inc file prompt")
         output = output.strip()
-        self.assertEqual(output, '')
+        self.assertEqual(output, "")
 
     def test_ios_only_gen_full_path(self):
         """Test gen_full_path() method."""
         output = self.device._gen_full_path(self.device.candidate_cfg)
-        self.assertEqual(output, self.device.dest_file_system + '/candidate_config.txt')
+        self.assertEqual(output, self.device.dest_file_system + "/candidate_config.txt")
 
         output = self.device._gen_full_path(self.device.rollback_cfg)
-        self.assertEqual(output, self.device.dest_file_system + '/rollback_config.txt')
+        self.assertEqual(output, self.device.dest_file_system + "/rollback_config.txt")
 
         output = self.device._gen_full_path(self.device.merge_cfg)
-        self.assertEqual(output, self.device.dest_file_system + '/merge_config.txt')
+        self.assertEqual(output, self.device.dest_file_system + "/merge_config.txt")
 
-        output = self.device._gen_full_path(filename='running-config', file_system='system:')
-        self.assertEqual(output, 'system:/running-config')
+        output = self.device._gen_full_path(
+            filename="running-config", file_system="system:"
+        )
+        self.assertEqual(output, "system:/running-config")
 
     def test_ios_only_check_file_exists(self):
         """Test _check_file_exists() method."""
-        self.device.load_replace_candidate(filename='%s/initial.conf' % self.vendor)
-        valid_file = self.device._check_file_exists(self.device.dest_file_system +
-                                                    '/candidate_config.txt')
+        self.device.load_replace_candidate(filename="%s/initial.conf" % self.vendor)
+        valid_file = self.device._check_file_exists(
+            self.device.dest_file_system + "/candidate_config.txt"
+        )
         self.assertTrue(valid_file)
-        invalid_file = self.device._check_file_exists(self.device.dest_file_system +
-                                                      '/bogus_999.txt')
+        invalid_file = self.device._check_file_exists(
+            self.device.dest_file_system + "/bogus_999.txt"
+        )
         self.assertFalse(invalid_file)
 
 
@@ -130,14 +136,16 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
         """Executed when the class is instantiated."""
         cls.mock = True
 
-        username = 'vagrant'
-        ip_addr = '192.168.0.234'
-        password = 'vagrant'
-        cls.vendor = 'ios'
+        username = "vagrant"
+        ip_addr = "192.168.0.234"
+        password = "vagrant"
+        cls.vendor = "ios"
         optional_args = {}
-        optional_args['dest_file_system'] = 'flash:'
+        optional_args["dest_file_system"] = "flash:"
 
-        cls.device = ios.IOSDriver(ip_addr, username, password, optional_args=optional_args)
+        cls.device = ios.IOSDriver(
+            ip_addr, username, password, optional_args=optional_args
+        )
 
         if cls.mock:
             cls.device.device = FakeIOSDevice()
@@ -175,8 +183,8 @@ class FakeIOSDevice:
 
     def send_command_expect(self, command, **kwargs):
         """Fake execute a command in the device by just returning the content of a file."""
-        cmd = re.sub(r'[\[\]\*\^\+\s\|]', '_', command)
-        output = self.read_txt_file('ios/mock_data/{}.txt'.format(cmd))
+        cmd = re.sub(r"[\[\]\*\^\+\s\|]", "_", command)
+        output = self.read_txt_file("ios/mock_data/{}.txt".format(cmd))
         return py23_compat.text_type(output)
 
     def send_command(self, command, **kwargs):

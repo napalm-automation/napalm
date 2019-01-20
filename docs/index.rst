@@ -22,9 +22,7 @@ Supported Network Operating Systems:
 extras
 ______
 
-In addition to the core drivers napalm also supports community driven drivers. You can find more information about them here:
-
-TBD Link to extras/core drivers' documentation
+In addition to the core drivers napalm also supports community driven drivers. You can find more information about them here: :ref:`contributing-drivers`
 
 Selecting the right driver
 --------------------------

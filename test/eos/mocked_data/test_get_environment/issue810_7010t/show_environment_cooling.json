@@ -1,0 +1,45 @@
+{
+  "overrideFanSpeed": 0,
+  "coolingMode": "automatic",
+  "powerSupplySlots": [],
+  "fanTraySlots": [
+    {
+      "status": "ok",
+      "fans": [
+        {
+          "status": "ok",
+          "uptime": 1531344413.6203134,
+          "maxSpeed": 12500,
+          "lastSpeedStableChangeTime": 1531344461.821326,
+          "configuredSpeed": 40,
+          "actualSpeed": 40,
+          "speedStable": true,
+          "label": "1/1"
+        }
+      ],
+      "speed": 40,
+      "label": "1"
+    },
+    {
+      "status": "ok",
+      "fans": [
+        {
+          "status": "ok",
+          "uptime": 1531344413.620448,
+          "maxSpeed": 12500,
+          "lastSpeedStableChangeTime": 1531344461.8213885,
+          "configuredSpeed": 40,
+          "actualSpeed": 40,
+          "speedStable": true,
+          "label": "2/1"
+        }
+      ],
+      "speed": 40,
+      "label": "2"
+    }
+  ],
+  "shutdownOnInsufficientFans": true,
+  "ambientTemperature": 22.75,
+  "systemStatus": "coolingOk",
+  "airflowDirection": "backToFrontAirflow"
+}

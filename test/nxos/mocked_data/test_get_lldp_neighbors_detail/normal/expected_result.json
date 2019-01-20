@@ -1,37 +1,55 @@
 {
-    "Eth1/1": [
+    "Ethernet1/1": [
         {
             "remote_port_description": "Ethernet1/1", 
             "remote_port": "Ethernet1/1", 
             "remote_system_description": "Cisco Nexus Operating System (NX-OS) Software 7.0(3)I4(1)", 
-            "remote_chassis_id": "50:87:89:A1:D8:D6", 
-            "remote_system_enable_capab": "B, R", 
+            "remote_chassis_id": "5087.89a1.d8d6",
+            "remote_system_enable_capab": [
+                "bridge",
+                "router"
+            ],
             "parent_interface": "", 
-            "remote_system_capab": "B, R", 
+            "remote_system_capab": [
+                "bridge",
+                "router"
+            ],
             "remote_system_name": "n9k2.ntc.com"
         }
     ], 
     "mgmt0": [
         {
             "remote_port_description": "FastEthernet1/0/9", 
-            "remote_port": "FastEthernet1/0/9", 
+            "remote_port": "Fa1/0/9",
             "remote_system_description": "Cisco IOS Software, C3750 Software (C3750-IPBASEK9-M), Version 12.2(44)SE2, RELEASE SOFTWARE (fc2)", 
-            "remote_chassis_id": "00:14:1C:57:A4:8B", 
-            "remote_system_enable_capab": "B, R", 
+            "remote_chassis_id": "0014.1c57.a48b",
+            "remote_system_enable_capab": [
+                "bridge",
+                "router"
+            ],
             "parent_interface": "", 
-            "remote_system_capab": "B, R", 
+            "remote_system_capab": [
+                "bridge",
+                "router"
+            ],
             "remote_system_name": "PERIMETER.cisco.com"
         }
     ], 
-    "Eth1/2": [
+    "Ethernet1/2": [
         {
             "remote_port_description": "Ethernet1/2", 
             "remote_port": "Ethernet1/2", 
             "remote_system_description": "Cisco Nexus Operating System (NX-OS) Software 7.0(3)I4(1)", 
-            "remote_chassis_id": "50:87:89:A1:D8:D7", 
-            "remote_system_enable_capab": "B, R", 
+            "remote_chassis_id": "5087.89a1.d8d7",
+            "remote_system_enable_capab": [
+                "bridge",
+                "router"
+            ],
             "parent_interface": "", 
-            "remote_system_capab": "B, R", 
+            "remote_system_capab": [
+                "bridge",
+                "router"
+            ],
             "remote_system_name": "n9k2.ntc.com"
         }
     ]

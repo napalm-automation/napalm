@@ -17,19 +17,15 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from napalm.base.base import NetworkDriver
+from napalm.base.utils import py23_compat
 import napalm.base.exceptions
 
-import inspect
 import json
 import os
 import re
 
 
 from pydoc import locate
-
-
-# inspect.getargspec deprecated in Python 3.5, use getfullargspec if available
-inspect_getargspec = getattr(inspect, "getfullargspec", inspect.getargspec)
 
 
 def raise_exception(result):
@@ -49,21 +45,24 @@ def is_mocked_method(method):
 
 def mocked_method(path, name, count):
     parent_method = getattr(NetworkDriver, name)
-    parent_method_args = inspect_getargspec(parent_method)
-    modifier = 0 if 'self' not in parent_method_args.args else 1
+    parent_method_args = py23_compat.argspec(parent_method)
+    modifier = 0 if "self" not in parent_method_args.args else 1
 
     def _mocked_method(*args, **kwargs):
         # Check len(args)
         if len(args) + len(kwargs) + modifier > len(parent_method_args.args):
             raise TypeError(
                 "{}: expected at most {} arguments, got {}".format(
-                    name, len(parent_method_args.args), len(args) + modifier))
+                    name, len(parent_method_args.args), len(args) + modifier
+                )
+            )
 
         # Check kwargs
         unexpected = [x for x in kwargs if x not in parent_method_args.args]
         if unexpected:
-            raise TypeError("{} got an unexpected keyword argument '{}'".format(name,
-                                                                                unexpected[0]))
+            raise TypeError(
+                "{} got an unexpected keyword argument '{}'".format(name, unexpected[0])
+            )
         return mocked_data(path, name, count)
 
     return _mocked_method
@@ -84,7 +83,6 @@ def mocked_data(path, name, count):
 
 
 class MockDevice(object):
-
     def __init__(self, parent, profile):
         self.parent = parent
         self.profile = profile
@@ -99,7 +97,6 @@ class MockDevice(object):
 
 
 class MockDriver(NetworkDriver):
-
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         """
         Supported optional_args:
@@ -109,7 +106,7 @@ class MockDriver(NetworkDriver):
         self.hostname = hostname
         self.username = username
         self.password = password
-        self.path = optional_args["path"]
+        self.path = optional_args.get("path", "")
         self.profile = optional_args.get("profile", [])
         self.fail_on_open = optional_args.get("fail_on_open", False)
 
@@ -145,12 +142,12 @@ class MockDriver(NetworkDriver):
     def cli(self, commands):
         count = self._count_calls("cli")
         result = {}
-        regexp = re.compile('[^a-zA-Z0-9]+')
+        regexp = re.compile("[^a-zA-Z0-9]+")
         for i, c in enumerate(commands):
-            sanitized = re.sub(regexp, '_', c)
+            sanitized = re.sub(regexp, "_", c)
             name = "cli.{}.{}".format(count, sanitized)
             filename = "{}.{}".format(os.path.join(self.path, name), i)
-            with open(filename, 'r') as f:
+            with open(filename, "r") as f:
                 result[c] = f.read()
         return result
 
