@@ -60,16 +60,18 @@ RE_MAC = re.compile(r"{}".format(MAC_REGEX))
 # Period needed for 32-bit AS Numbers
 ASN_REGEX = r"[\d\.]+"
 
-RE_IP_ROUTE_VIA_REGEX = re.compile(r"    (?P<used>[\*| ])via ((?P<ip>"+IPV4_ADDR_REGEX+r")"
-                                   r"(%(?P<vrf>\S+))?, )?"
-                                   r"((?P<int>[\w./:]+), )?\[(\d+)/(?P<metric>\d+)\]"
-                                   r", (?P<age>[\d\w:]+), (?P<source>[\w]+)(-(?P<procnr>\d+))?"
-                                   r"(?P<rest>.*)")
+RE_IP_ROUTE_VIA_REGEX = re.compile(
+    r"    (?P<used>[\*| ])via ((?P<ip>" + IPV4_ADDR_REGEX + r")"
+    r"(%(?P<vrf>\S+))?, )?"
+    r"((?P<int>[\w./:]+), )?\[(\d+)/(?P<metric>\d+)\]"
+    r", (?P<age>[\d\w:]+), (?P<source>[\w]+)(-(?P<procnr>\d+))?"
+    r"(?P<rest>.*)"
+)
 RE_RT_VRF_NAME = re.compile(r"VRF \"(\S+)\"")
-RE_RT_IPV4_ROUTE_PREF = re.compile(r"("+IPV4_ADDR_REGEX+r"/\d{1,2}), ubest.*")
+RE_RT_IPV4_ROUTE_PREF = re.compile(r"(" + IPV4_ADDR_REGEX + r"/\d{1,2}), ubest.*")
 
 RE_BGP_PROTO_TAG = re.compile(r"BGP Protocol Tag\s+: (\d+)")
-RE_BGP_REMOTE_AS = re.compile(r"remote AS ("+ASN_REGEX+r")")
+RE_BGP_REMOTE_AS = re.compile(r"remote AS (" + ASN_REGEX + r")")
 RE_BGP_COMMUN = re.compile(r"[ ]{10}([\S ]+)")
 
 
@@ -1080,65 +1082,57 @@ class NXOSSSHDriver(NXOSDriverBase):
         return mac_address_table
 
     def _get_bgp_route_attr(self, destination, vrf, next_hop, ip_version=4):
-        '''
+        """
         BGP protocol attributes for get_route_tp
         Only IPv4 supported
-        '''
+        """
 
         CMD_SHIBNV = 'show ip bgp neighbors vrf {vrf} | include "is {neigh}"'
 
         search_re_dict = {
-            'aspath': {
-                're': r"AS-Path: ([\d\(\)]([\d\(\) ])*)",
-                'group': 1,
-                'default': ''
+            "aspath": {
+                "re": r"AS-Path: ([\d\(\)]([\d\(\) ])*)",
+                "group": 1,
+                "default": "",
             },
-            'bgpnh': {
-                're': r"[^|\\n][ ]{4}("+IP_ADDR_REGEX+r")",
-                'group': 1,
-                'default': ''
+            "bgpnh": {
+                "re": r"[^|\\n][ ]{4}(" + IP_ADDR_REGEX + r")",
+                "group": 1,
+                "default": "",
             },
-            'bgpfrom': {
-                're': r"from ("+IP_ADDR_REGEX+r")",
-                'group': 1,
-                'default': ''
+            "bgpfrom": {
+                "re": r"from (" + IP_ADDR_REGEX + r")",
+                "group": 1,
+                "default": "",
             },
-            'bgpcomm': {
-                're': r"  Community: ([\w\d\-\: ]+)",
-                'group': 1,
-                'default': ''
+            "bgpcomm": {
+                "re": r"  Community: ([\w\d\-\: ]+)",
+                "group": 1,
+                "default": "",
             },
-            'bgplp': {
-                're': r"localpref (\d+)",
-                'group': 1,
-                'default': ''
-            },
+            "bgplp": {"re": r"localpref (\d+)", "group": 1, "default": ""},
             # external, internal, redist
-            'bgpie': {
-                're': r"^: (\w+),",
-                'group': 1,
-                'default': ''
+            "bgpie": {"re": r"^: (\w+),", "group": 1, "default": ""},
+            "vrfimp": {
+                "re": r"Imported from [\S]+ \(VRF (\S+)\)",
+                "group": 1,
+                "default": "",
             },
-            'vrfimp': {
-                're': r"Imported from [\S]+ \(VRF (\S+)\)",
-                'group': 1,
-                'default': ''
-            }
         }
 
         bgp_attr = {}
         # get BGP AS number
-        outbgp = \
-            self._send_command('show bgp process | include "BGP Protocol Tag"')
+        outbgp = self._send_command('show bgp process | include "BGP Protocol Tag"')
         matchbgpattr = RE_BGP_PROTO_TAG.match(outbgp)
         if not matchbgpattr:
             return bgp_attr
         bgpas = matchbgpattr.group(1)
         if ip_version == 4:
-            bgpcmd = 'show ip bgp vrf {vrf} {destination}'.\
-                format(vrf=vrf, destination=destination)
+            bgpcmd = "show ip bgp vrf {vrf} {destination}".format(
+                vrf=vrf, destination=destination
+            )
             outbgp = self._send_command(bgpcmd)
-            outbgpsec = outbgp.split('Path type')
+            outbgpsec = outbgp.split("Path type")
 
             # this should not happen (zero BGP paths)...
             if len(outbgpsec) == 1:
@@ -1151,17 +1145,18 @@ class NXOSSSHDriver(NXOSDriverBase):
                     continue
                 # find BGP attributes
                 for key in search_re_dict:
-                    matchre = re.search(search_re_dict[key]['re'], bgppath)
+                    matchre = re.search(search_re_dict[key]["re"], bgppath)
                     if matchre:
-                        groupnr = int(search_re_dict[key]['group'])
-                        search_re_dict[key]['result'] = matchre.group(groupnr)
+                        groupnr = int(search_re_dict[key]["group"])
+                        search_re_dict[key]["result"] = matchre.group(groupnr)
                     else:
-                        search_re_dict[key]['result'] = search_re_dict[key]['default']
-                bgpnh = search_re_dict['bgpnh']['result']
+                        search_re_dict[key]["result"] = search_re_dict[key]["default"]
+                bgpnh = search_re_dict["bgpnh"]["result"]
 
                 # if route is not leaked next hops have to match
-                if (not (search_re_dict['bgpie']['result'] in ['redist', 'local'])) \
-                        and (bgpnh != next_hop):
+                if (
+                    not (search_re_dict["bgpie"]["result"] in ["redist", "local"])
+                ) and (bgpnh != next_hop):
                     # this is not the right route
                     continue
                 # find remote AS nr. of this neighbor
@@ -1175,20 +1170,20 @@ class NXOSSSHDriver(NXOSDriverBase):
                     #  other vrf or from vpnv4 table?
                     # get remote AS nr. from as-path if it is ebgp neighbor
                     # if locally sourced remote AS if undefined
-                    bgpie = search_re_dict['bgpie']['result']
-                    if bgpie == 'external':
-                        bgpras = bgpie.split(' ')[0].replace('(', '')
-                    elif bgpie == 'internal':
+                    bgpie = search_re_dict["bgpie"]["result"]
+                    if bgpie == "external":
+                        bgpras = bgpie.split(" ")[0].replace("(", "")
+                    elif bgpie == "internal":
                         bgpras = bgpas
-                    else:    # redist, local
-                        bgpras = ''
+                    else:  # redist, local
+                        bgpras = ""
                 # community
                 bothcomm = []
                 extcomm = []
-                stdcomm = search_re_dict['bgpcomm']['result'].split()
+                stdcomm = search_re_dict["bgpcomm"]["result"].split()
                 commsplit = bgppath.split("Extcommunity:")
                 if len(commsplit) == 2:
-                    for line in commsplit[1].split('\n')[1:]:
+                    for line in commsplit[1].split("\n")[1:]:
                         #          RT:65004:22
                         matchcommun = RE_BGP_COMMUN.match(line)
                         if matchcommun:
@@ -1198,51 +1193,50 @@ class NXOSSSHDriver(NXOSDriverBase):
                             break
                 bothcomm = stdcomm + extcomm
                 bgp_attr = {
-                    "as_path": search_re_dict['aspath']['result'].strip(),
-                    "remote_address": search_re_dict['bgpfrom']['result'],
-                    "local_preference": int(search_re_dict['bgplp']['result']),
+                    "as_path": search_re_dict["aspath"]["result"].strip(),
+                    "remote_address": search_re_dict["bgpfrom"]["result"],
+                    "local_preference": int(search_re_dict["bgplp"]["result"]),
                     "communities": bothcomm,
-                    "local_as": helpers.as_number(bgpas)
+                    "local_as": helpers.as_number(bgpas),
                 }
                 if bgpras:
-                    bgp_attr['remote_as'] = helpers.as_number(bgpras)
+                    bgp_attr["remote_as"] = helpers.as_number(bgpras)
                 else:
-                    bgp_attr['remote_as'] = 0  # 0? , locally sourced
+                    bgp_attr["remote_as"] = 0  # 0? , locally sourced
         return bgp_attr
 
-    def get_route_to(self, destination='', protocol=''):
-        '''
+    def get_route_to(self, destination="", protocol=""):
+        """
         Only IPv4 supported, vrf aware, longer_prefixes parameter ready
-        '''
-        longer_pref = ''    # longer_prefixes support, for future use
-        vrf = ''
+        """
+        longer_pref = ""  # longer_prefixes support, for future use
+        vrf = ""
 
         ip_version = None
         try:
             ip_version = IPNetwork(destination).version
         except AddrFormatError:
-            return 'Please specify a valid destination!'
-        if ip_version == 4:           # process IPv4 routing table
+            return "Please specify a valid destination!"
+        if ip_version == 4:  # process IPv4 routing table
             routes = {}
             if vrf:
-                send_cmd = 'show ip route vrf {vrf} {destination} {longer}'.format(
-                    vrf=vrf,
-                    destination=destination,
-                    longer=longer_pref).rstrip()
+                send_cmd = "show ip route vrf {vrf} {destination} {longer}".format(
+                    vrf=vrf, destination=destination, longer=longer_pref
+                ).rstrip()
             else:
-                send_cmd = 'show ip route vrf all {destination} {longer}'.format(
-                    destination=destination,
-                    longer=longer_pref).rstrip()
+                send_cmd = "show ip route vrf all {destination} {longer}".format(
+                    destination=destination, longer=longer_pref
+                ).rstrip()
             out_sh_ip_rou = self._send_command(send_cmd)
             # IP Route Table for VRF "TEST"
-            for vrfsec in out_sh_ip_rou.split('IP Route Table for ')[1:]:
-                if 'Route not found' in vrfsec:
+            for vrfsec in out_sh_ip_rou.split("IP Route Table for ")[1:]:
+                if "Route not found" in vrfsec:
                     continue
                 vrffound = False
                 preffound = False
                 nh_list = []
-                cur_prefix = ''
-                for line in vrfsec.split('\n'):
+                cur_prefix = ""
+                for line in vrfsec.split("\n"):
                     if not vrffound:
                         vrfstr = RE_RT_VRF_NAME.match(line)
                         if vrfstr:
@@ -1252,7 +1246,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                         # 10.10.56.0/24, ubest/mbest: 2/0
                         prefstr = RE_RT_IPV4_ROUTE_PREF.match(line)
                         if prefstr:
-                            if preffound:   # precess previous prefix
+                            if preffound:  # precess previous prefix
                                 if cur_prefix not in routes:
                                     routes[cur_prefix] = []
                                 for nh in nh_list:
@@ -1273,14 +1267,14 @@ class NXOSSSHDriver(NXOSDriverBase):
                         #     *via Vlan596, [1/0], 1y18w, static
                         viastr = RE_IP_ROUTE_VIA_REGEX.match(line)
                         if viastr:
-                            nh_used = viastr.group('used') == '*'
-                            nh_ip = viastr.group('ip') or ''
+                            nh_used = viastr.group("used") == "*"
+                            nh_ip = viastr.group("ip") or ""
                             # when next hop is leaked from other vrf, for future use
                             # nh_vrf = viastr.group('vrf')
-                            nh_int = viastr.group('int')
-                            nh_metric = viastr.group('metric')
-                            nh_age = bgp_time_conversion(viastr.group('age'))
-                            nh_source = viastr.group('source')
+                            nh_int = viastr.group("int")
+                            nh_metric = viastr.group("metric")
+                            nh_age = bgp_time_conversion(viastr.group("age"))
+                            nh_source = viastr.group("source")
                             # for future use
                             # rest_of_line = viastr.group('rest')
                             # use only routes from specified protocol
@@ -1291,7 +1285,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                             if nh_int:
                                 nh_int_canon = helpers.canonical_interface_name(nh_int)
                             else:
-                                nh_int_canon = ''
+                                nh_int_canon = ""
                             route_entry = {
                                 "protocol": nh_source,
                                 "outgoing_interface": nh_int_canon,
@@ -1302,13 +1296,14 @@ class NXOSSSHDriver(NXOSDriverBase):
                                 "next_hop": nh_ip,
                                 "selected_next_hop": nh_used,
                                 "inactive_reason": "",
-                                "preference": int(nh_metric)
+                                "preference": int(nh_metric),
                             }
-                            if nh_source == 'bgp':
-                                route_entry['protocol_attributes'] = \
-                                    self._get_bgp_route_attr(cur_prefix, curvrf, nh_ip)
+                            if nh_source == "bgp":
+                                route_entry[
+                                    "protocol_attributes"
+                                ] = self._get_bgp_route_attr(cur_prefix, curvrf, nh_ip)
                             else:
-                                route_entry['protocol_attributes'] = {}
+                                route_entry["protocol_attributes"] = {}
                             nh_list.append(route_entry)
                 # process last next hop entries
                 if preffound:
@@ -1316,7 +1311,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                         routes[cur_prefix] = []
                     for nh in nh_list:
                         routes[cur_prefix].append(nh)
-        return(routes)
+        return routes
 
     def get_snmp_information(self):
         snmp_information = {}
