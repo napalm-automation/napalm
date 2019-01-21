@@ -1202,10 +1202,10 @@ class NXOSSSHDriver(NXOSDriverBase):
                     "remote_address": search_re_dict['bgpfrom']['result'],
                     "local_preference": int(search_re_dict['bgplp']['result']),
                     "communities": bothcomm,
-                    "local_as": napalm.base.helpers.as_number(bgpas)
+                    "local_as": helpers.as_number(bgpas)
                 }
                 if bgpras:
-                    bgp_attr['remote_as'] = napalm.base.helpers.as_number(bgpras)
+                    bgp_attr['remote_as'] = helpers.as_number(bgpras)
                 else:
                     bgp_attr['remote_as'] = 0  # 0? , locally sourced
         return bgp_attr
@@ -1289,7 +1289,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                             # routing protocol process number, for future use
                             # nh_source_proc_nr = viastr.group('procnr)
                             if nh_int:
-                                nh_int_canon = napalm.base.helpers.canonical_interface_name(nh_int)
+                                nh_int_canon = helpers.canonical_interface_name(nh_int)
                             else:
                                 nh_int_canon = ''
                             route_entry = {
