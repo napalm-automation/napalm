@@ -849,12 +849,6 @@ class NXOSSSHDriver(NXOSDriverBase):
     def get_ntp_servers(self):
         return self._get_ntp_entity("Server")
 
-    def __get_ntp_stats(self):
-        ntp_stats = []
-        command = "show ntp peer-status"
-        output = self._send_command(command)
-        return ntp_stats
-
     def get_interfaces_ip(self):
         """
         Get interface IP details. Returns a dictionary of dictionaries.
