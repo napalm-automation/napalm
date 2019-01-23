@@ -364,6 +364,18 @@ class TestGettersNetworkDriver(object):
 
         self.assertTrue(result)
 
+    def test_get_arp_table_with_vrf(self):
+        try:
+            get_arp_table = self.device.get_arp_table(vrf="TEST")
+        except NotImplementedError:
+            raise SkipTest()
+        result = len(get_arp_table) > 0
+
+        for arp_entry in get_arp_table:
+            result = result and self._test_model(models.arp_table, arp_entry)
+
+        self.assertTrue(result)
+
     def test_get_ntp_peers(self):
         try:
             get_ntp_peers = self.device.get_ntp_peers()
