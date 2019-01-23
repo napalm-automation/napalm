@@ -911,19 +911,15 @@ class EOSDriver(NetworkDriver):
         return bgp_config
 
     def get_arp_table(self, vrf=""):
-        if not vrf:
-            vrfs = self._get_vrfs()
-        else:
-            vrfs = [vrf]
-
         arp_table = []
 
         try:
-            commands = ["show arp vrf {}".format(v) for v in vrfs]
+            commands = ["show arp vrf all"]
             ipv4_neighbors = [
                 neighbor
-                for command in self.device.run_commands(commands)
-                for neighbor in command.get("ipV4Neighbors", [])
+                for k, v in self.device.run_commands(commands)[0].get("vrfs").items()
+                if not vrf or k == vrf
+                for neighbor in v.get("ipV4Neighbors", [])
             ]
         except pyeapi.eapilib.CommandError:
             return []
