@@ -911,19 +911,16 @@ class EOSDriver(NetworkDriver):
         return bgp_config
 
     def get_arp_table(self, vrf=""):
-        if vrf:
-            msg = "VRF support has not been added for this getter on this platform."
-            raise NotImplementedError(msg)
-
         arp_table = []
 
-        commands = ["show arp"]
-
-        ipv4_neighbors = []
         try:
-            ipv4_neighbors = self.device.run_commands(commands)[0].get(
-                "ipV4Neighbors", []
-            )
+            commands = ["show arp vrf all"]
+            ipv4_neighbors = [
+                neighbor
+                for k, v in self.device.run_commands(commands)[0].get("vrfs").items()
+                if not vrf or k == vrf
+                for neighbor in v.get("ipV4Neighbors", [])
+            ]
         except pyeapi.eapilib.CommandError:
             return []
 
