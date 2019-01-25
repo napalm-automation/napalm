@@ -121,8 +121,13 @@ class IOSDriver(NetworkDriver):
         self._dest_file_system = optional_args.get("dest_file_system", None)
         self.auto_rollback_on_error = optional_args.get("auto_rollback_on_error", True)
 
-        # Control automatic toggling of 'file prompt quiet' for file operations
+        # Control automatic execution of 'file prompt quiet' for file operations
         self.auto_file_prompt = optional_args.get("auto_file_prompt", True)
+
+        # Track whether 'file prompt quiet' has been changed by NAPALM.
+        self.prompt_quiet_changed = False
+        # Track whether 'file prompt quiet' is known to be configured
+        self.prompt_quiet_configured = None
 
         self.netmiko_optional_args = netmiko_args(optional_args)
 
@@ -157,7 +162,13 @@ class IOSDriver(NetworkDriver):
             raise CommandErrorException(msg)
 
     def close(self):
-        """Close the connection to the device."""
+        """Close the connection to the device and do the necessary cleanup."""
+
+        # Return file prompt quiet to the original state
+        if self.auto_file_prompt and self.prompt_quiet_changed is True:
+            self.device.send_config_set(["no file prompt quiet"])
+            self.prompt_quiet_changed = False
+            self.prompt_quiet_configured = False
         self._netmiko_close()
 
     def _send_command(self, command):
@@ -412,33 +423,32 @@ class IOSDriver(NetworkDriver):
         return diff.strip()
 
     def _file_prompt_quiet(f):
-        """Decorator to toggle 'file prompt quiet' around methods that perform file operations."""
+        """Decorator to toggle 'file prompt quiet' for methods that perform file operations."""
 
         @functools.wraps(f)
         def wrapper(self, *args, **kwargs):
-            # only toggle config if 'auto_file_prompt' is true
-            if self.auto_file_prompt:
-                # disable file operation prompts
-                self.device.send_config_set(["file prompt quiet"])
-                # call wrapped function
-                retval = f(self, *args, **kwargs)
-                # re-enable prompts
-                self.device.send_config_set(["no file prompt quiet"])
-            else:
-                # check if the command is already in the running-config
-                cmd = "file prompt quiet"
-                show_cmd = "show running-config | inc {}".format(cmd)
-                output = self.device.send_command_expect(show_cmd)
-                if cmd in output:
-                    # call wrapped function
-                    retval = f(self, *args, **kwargs)
+            if not self.prompt_quiet_configured:
+                if self.auto_file_prompt:
+                    # disable file operation prompts
+                    self.device.send_config_set(["file prompt quiet"])
+                    self.prompt_quiet_changed = True
+                    self.prompt_quiet_configured = True
                 else:
-                    msg = (
-                        "on-device file operations require prompts to be disabled. "
-                        "Configure 'file prompt quiet' or set 'auto_file_prompt=True'"
-                    )
-                    raise CommandErrorException(msg)
-            return retval
+                    # check if the command is already in the running-config
+                    cmd = "file prompt quiet"
+                    show_cmd = "show running-config | inc {}".format(cmd)
+                    output = self.device.send_command_expect(show_cmd)
+                    if cmd in output:
+                        self.prompt_quiet_configured = True
+                    else:
+                        msg = (
+                            "on-device file operations require prompts to be disabled. "
+                            "Configure 'file prompt quiet' or set 'auto_file_prompt=True'"
+                        )
+                        raise CommandErrorException(msg)
+
+            # call wrapped function
+            return f(self, *args, **kwargs)
 
         return wrapper
 
