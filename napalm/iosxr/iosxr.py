@@ -457,7 +457,9 @@ class IOSXRDriver(NetworkDriver):
                 )
 
                 if (
-                    text_type(napalm.base.helpers.find_txt(neighbor, "ConnectionAdminStatus"))
+                    text_type(
+                        napalm.base.helpers.find_txt(neighbor, "ConnectionAdminStatus")
+                    )
                     == "1"
                 ):
                     this_neighbor["is_enabled"] = True
