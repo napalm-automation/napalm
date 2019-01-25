@@ -530,6 +530,9 @@ class IOSDriver(NetworkDriver):
                 merge_error = "{0}:\n{1}".format(err_header, output)
                 raise MergeConfigException(merge_error)
 
+        # After a commit - we no longer know whether this is configured or not.
+        self.prompt_quiet_configured = None
+
         # Save config to startup (both replace and merge)
         output += self.device.save_config()
 
