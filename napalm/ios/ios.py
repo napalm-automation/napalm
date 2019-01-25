@@ -559,6 +559,9 @@ class IOSDriver(NetworkDriver):
         cmd = "configure replace {} force".format(cfg_file)
         self.device.send_command_expect(cmd)
 
+        # After a rollback - we no longer know whether this is configured or not.
+        self.prompt_quiet_configured = None
+
         # Save config to startup
         self.device.save_config()
 
