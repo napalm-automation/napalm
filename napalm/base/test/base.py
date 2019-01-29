@@ -159,7 +159,7 @@ class TestConfigNetworkDriver(object):
         self.device.load_template("set_hostname", hostname="my-hostname")
         diff = self.device.compare_config()
         self.device.discard_config()
-        self.assertTrue(diff is not "")
+        self.assertTrue(diff != "")
 
 
 class TestGettersNetworkDriver(object):
