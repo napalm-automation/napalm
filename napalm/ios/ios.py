@@ -2773,34 +2773,22 @@ class IOSDriver(NetworkDriver):
         """
         Get 802.1x session information for interfaces.
 
+        Typical format.  "Status" varies by platform and in some platforms may include a space. e.g.
+        "Authz Success".
+        Interface    MAC Address    Method  Domain  Status Fg Session ID
+        Gi0/8        f07f.06e2.80bc dot1x   DATA    Auth      0A8010010000001100025E2A
+        Gi0/2        f8a5.c5b2.1905 mab     VOICE   Auth      0A801001000000100001B348
+        Gi0/7        58f3.9cd9.0cb0 dot1x   DATA    Auth      0A801001000000130002C73F
         """
 
         command = "show auth sessions"
         output = self._send_command(command)
 
+        # use textfsm with template to return parsed table
+        sessions = ""
         sessions = textfsm_extractor(
             self, "show_authentication_sessions", output
         )
-        dot1x_session_table = []
-        # for session in sessions:
-        #     """
-        #     Typical format.  "Status" varies by platform and in some platforms may include a space. e.g. "Authz Success".
-        #     Interface    MAC Address    Method  Domain  Status Fg Session ID
-        #     Gi0/8        f07f.06e2.80bc dot1x   DATA    Auth      0A8010010000001100025E2A
-        #     Gi0/2        f8a5.c5b2.1905 mab     VOICE   Auth      0A801001000000100001B348
-        #     Gi0/7        58f3.9cd9.0cb0 dot1x   DATA    Auth      0A801001000000130002C73F
-        #     """
-        #
-        #     dot1x_session_table.append(
-        #         {
-        #             "interface": session[0],
-        #             "mac": session[1],
-        #             "method": session[2],
-        #             "domain": session[3],
-        #             "state": session[4],
-        #             "sessionid": session[5],
-        #         }
-        #     )
 
         return sessions
 
