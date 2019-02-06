@@ -1,0 +1,50 @@
+[
+    {
+        "vmac": "0000.5e00.0101", 
+        "group": "1", 
+        "preempt": "enabled", 
+        "interval": "1.000 sec", 
+        "vip": "100.0.100.254", 
+        "priority": "250 ", 
+        "state": "Master", 
+        "master": {
+            "ip": "100.0.100.1 (local)", 
+            "advert_interval": "1.000 sec", 
+            "prio": "250 ", 
+            "down_interval": "3.023 sec"
+        }, 
+        "interface": "GigabitEthernet2"
+    }, 
+    {
+        "vmac": "0000.5e00.0102", 
+        "group": "2", 
+        "preempt": "enabled", 
+        "interval": "1.000 sec", 
+        "vip": "100.0.101.254", 
+        "priority": "100 ", 
+        "state": "Master", 
+        "master": {
+            "ip": "100.0.100.1 (local)", 
+            "advert_interval": "1.000 sec", 
+            "prio": "100 ", 
+            "down_interval": "3.609 sec"
+        }, 
+        "interface": "GigabitEthernet2"
+    }, 
+    {
+        "vmac": "0000.5e00.0102", 
+        "group": "2", 
+        "preempt": "enabled", 
+        "interval": "1.000 sec", 
+        "vip": "100.1.1.1", 
+        "priority": "100 ", 
+        "state": "Init (interface down)", 
+        "master": {
+            "ip": "unknown", 
+            "advert_interval": "unknown", 
+            "prio": "unknown", 
+            "down_interval": "3.609 sec"
+        }, 
+        "interface": "GigabitEthernet3"
+    }
+]

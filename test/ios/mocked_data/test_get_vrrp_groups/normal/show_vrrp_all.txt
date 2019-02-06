@@ -1,0 +1,36 @@
+GigabitEthernet2 - Group 1  
+  State is Master
+  Virtual IP address is 100.0.100.254
+  Virtual MAC address is 0000.5e00.0101
+  Advertisement interval is 1.000 sec
+  Preemption enabled
+  Priority is 250 
+  Master Router is 100.0.100.1 (local), priority is 250 
+  Master Advertisement interval is 1.000 sec
+  Master Down interval is 3.023 sec
+  FLAGS: 1/1
+
+GigabitEthernet2 - Group 2  
+  State is Master
+  Virtual IP address is 100.0.101.254
+  Virtual MAC address is 0000.5e00.0102
+  Advertisement interval is 1.000 sec
+  Preemption enabled
+  Priority is 100 
+  Master Router is 100.0.100.1 (local), priority is 100 
+  Master Advertisement interval is 1.000 sec
+  Master Down interval is 3.609 sec
+  FLAGS: 1/1
+          
+GigabitEthernet3 - Group 2  
+  State is Init (interface down)
+  Virtual IP address is 100.1.1.1
+  Virtual MAC address is 0000.5e00.0102
+  Advertisement interval is 1.000 sec
+  Preemption enabled
+  Priority is 100 
+  Master Router is unknown, priority is unknown
+  Master Advertisement interval is unknown
+  Master Down interval is unknown
+  Master Down interval is 3.609 sec
+  FLAGS: 0/1
