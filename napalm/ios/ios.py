@@ -2438,8 +2438,11 @@ class IOSDriver(NetworkDriver):
 
     def get_vrrp_groups(self):
         """
-        Returns a list of dictionaries. Each dictionary represents a block of VRRP group/interface pair informations.
-        Most values are stored as strings including the VRRP intervals. Use of Regex were limited for speed efficiency.
+        Returns a list of dictionaries, earch represents a block of VRRP
+        group/interface pair informations.
+
+        Most values are stored as strings including the VRRP intervals.
+        Use of Regex were limited for speed efficiency.
 
         The dictionary has the following keys:
             interface (string)
