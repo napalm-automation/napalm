@@ -2438,28 +2438,11 @@ class IOSDriver(NetworkDriver):
 
     def get_vrrp_groups(self):
         """
-        Returns a list of dictionaries, earch represents a block of VRRP
+        Returns a list of dictionaries, each represents a block of VRRP
         group/interface pair informations.
 
         Most values are stored as strings including the VRRP intervals.
         Use of Regex were limited for speed efficiency.
-
-        The dictionary has the following keys:
-            interface (string)
-            group (string)
-            state (string)
-            vip (string)
-            vmac (string)
-            interval (string)
-            preempt (string)
-            priority (string)
-            master (dict)
-
-        The 'master' dictionary has the following keys:
-            ip (string)
-            prio (string)
-            advert_interval (string)
-            down_interval (string)
 
         Format 1 - show vrrp all (Cisco IOS XE Software, Version 16.10.01a):
          GigabitEthernet2 - Group 1

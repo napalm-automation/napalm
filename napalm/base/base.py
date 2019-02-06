@@ -1644,6 +1644,83 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
+    def get_vrrp_groups(self):
+        """
+        Return a list of dictionaries. Each dictionary represents a VRRP group/interface pair.
+        The returned dictionary has the following keys:
+
+            * interface (string)
+            * group (string)
+            * state (string)
+            * vip (string)
+            * vmac (string)
+            * interval (string)
+            * preempt (string)
+            * priority (string)
+            * master (dict)
+
+        The 'master' child dictionary has the following keys:
+
+            *  ip (string)
+            *  prio (string)
+            *  advert_interval (string)
+            *  down_interval (string)
+
+        Example::
+
+            [
+                {
+                    "vmac": "0000.5e00.0101",
+                    "group": "1",
+                    "preempt": "enabled",
+                    "interval": "1.000 sec",
+                    "vip": "100.0.100.254",
+                    "priority": "250 ",
+                    "state": "Master",
+                    "master": {
+                        "ip": "100.0.100.1 (local)",
+                        "advert_interval": "1.000 sec",
+                        "prio": "250 ",
+                        "down_interval": "3.023 sec"
+                    },
+                    "interface": "GigabitEthernet2"
+                },
+                {
+                    "vmac": "0000.5e00.0102",
+                    "group": "2",
+                    "preempt": "enabled",
+                    "interval": "1.000 sec",
+                    "vip": "100.0.101.254",
+                    "priority": "100 ",
+                    "state": "Master",
+                    "master": {
+                        "ip": "100.0.100.1 (local)",
+                        "advert_interval": "1.000 sec",
+                        "prio": "100 ",
+                        "down_interval": "3.609 sec"
+                    },
+                    "interface": "GigabitEthernet2"
+                },
+                {
+                    "vmac": "0000.5e00.0102",
+                    "group": "2",
+                    "preempt": "enabled",
+                    "interval": "1.000 sec",
+                    "vip": "100.1.1.1",
+                    "priority": "100 ",
+                    "state": "Init (interface down)",
+                    "master": {
+                        "ip": "unknown",
+                        "advert_interval": "unknown",
+                        "prio": "unknown",
+                        "down_interval": "3.609 sec"
+                    },
+                    "interface": "GigabitEthernet3"
+                }
+            ]
+        """
+        raise NotImplementedError
+
     def compliance_report(self, validation_file=None, validation_source=None):
         """
         Return a compliance report.
