@@ -2504,42 +2504,39 @@ class IOSDriver(NetworkDriver):
                 if len(line.split(" - ")) == 2:
                     interface, group = line.split(" - ")
                     vrrp_groups.append(
-                        {
-                            "interface": interface,
-                            "group": group.split()[1],
-                        }
+                        {"interface": interface, "group": group.split()[1]}
                     )
                 else:
                     raise ValueError("Unexpected output from: {}".format(line.split()))
 
             # State
             if line.startswith(VRRPSTATE_STR):
-                vrrp_groups[index]["state"] = line[len(VRRPSTATE_STR):]
+                vrrp_groups[index]["state"] = line[len(VRRPSTATE_STR) :]
 
             # Virtual IP Address
             if line.startswith(VRRPVIP_STR):
-                vrrp_groups[index]["vip"] = line[len(VRRPVIP_STR):]
+                vrrp_groups[index]["vip"] = line[len(VRRPVIP_STR) :]
 
             # Virtual MAC Address
             if line.startswith(VRRPVMAC_STR):
-                vrrp_groups[index]["vmac"] = line[len(VRRPVMAC_STR):]
+                vrrp_groups[index]["vmac"] = line[len(VRRPVMAC_STR) :]
 
             # Advertisement Interval
             if line.startswith(VRRPINT_STR):
-                vrrp_groups[index]["interval"] = line[len(VRRPINT_STR):]
+                vrrp_groups[index]["interval"] = line[len(VRRPINT_STR) :]
 
             # Preemption
             if line.startswith(VRRPPREEMPT_STR):
-                vrrp_groups[index]["preempt"] = line[len(VRRPPREEMPT_STR):]
+                vrrp_groups[index]["preempt"] = line[len(VRRPPREEMPT_STR) :]
 
             # Priority
             if line.startswith(VRRPPRIORITY_STR):
-                vrrp_groups[index]["priority"] = line[len(VRRPPRIORITY_STR):]
+                vrrp_groups[index]["priority"] = line[len(VRRPPRIORITY_STR) :]
 
             # Master Router
             if line.startswith(VRRPMASTER_STR):
                 vrrp_groups[index]["master"] = {}
-                vrrp_master_str = line[len(VRRPMASTER_STR):]
+                vrrp_master_str = line[len(VRRPMASTER_STR) :]
                 vrrp_master_ip = vrrp_master_str.split(",")[0]
                 vrrp_master_prio = vrrp_master_str.split("priority is ")[1]
                 vrrp_groups[index]["master"]["ip"] = vrrp_master_ip
@@ -2548,14 +2545,18 @@ class IOSDriver(NetworkDriver):
             # Master Advertisement Interval
             if line.startswith(VRRPMASTERADV_STR):
                 try:
-                    vrrp_groups[index]["master"]["advert_interval"] = line[len(VRRPMASTERADV_STR):]
+                    vrrp_groups[index]["master"]["advert_interval"] = line[
+                        len(VRRPMASTERADV_STR) :
+                    ]
                 except Exception:
                     continue
 
             # Master Down Interval
             if line.startswith(VRRPMASTERDWN_STR):
                 try:
-                    vrrp_groups[index]["master"]["down_interval"] = line[len(VRRPMASTERDWN_STR):]
+                    vrrp_groups[index]["master"]["down_interval"] = line[
+                        len(VRRPMASTERDWN_STR) :
+                    ]
                 except Exception:
                     continue
 
