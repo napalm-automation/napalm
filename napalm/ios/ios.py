@@ -2436,6 +2436,128 @@ class IOSDriver(NetworkDriver):
             )
         return users
 
+    def get_vrrp_groups(self):
+        """
+        Returns a list of dictionaries. Each dictionary represents a block of VRRP group/interface pair informations.
+        Most values are stored as strings including the VRRP intervals. Use of Regex were limited for speed efficiency.
+
+        The dictionary has the following keys:
+            interface (string)
+            group (string)
+            state (string)
+            vip (string)
+            vmac (string)
+            interval (string)
+            preempt (string)
+            priority (string)
+            master (dict)
+
+        The 'master' dictionary has the following keys:
+            ip (string)
+            prio (string)
+            advert_interval (string)
+            down_interval (string)
+
+        Format 1 - show vrrp all (Cisco IOS XE Software, Version 16.10.01a):
+         GigabitEthernet2 - Group 1
+           State is Master
+           Virtual IP address is 100.0.100.254
+           Virtual MAC address is 0000.5e00.0101
+           Advertisement interval is 1.000 sec
+           Preemption enabled
+           Priority is 250
+           Master Router is 100.0.100.1 (local), priority is 250
+           Master Advertisement interval is 1.000 sec
+           Master Down interval is 3.023 sec
+           FLAGS: 1/1
+        """
+        INTF_REGEX = r"(^[A-Z].*\d{1,3})"
+        FHRPGRP_REGEX = r"\b" + r"Group" + r"\b" + r" \d{1,3}"
+        SHOWVRRP_REGEX = r"^" + INTF_REGEX + r" - " + FHRPGRP_REGEX
+
+        VRRPSTATE_STR = "  State is "
+        VRRPVIP_STR = "  Virtual IP address is "
+        VRRPVMAC_STR = "  Virtual MAC address is "
+        VRRPINT_STR = "  Advertisement interval is "
+        VRRPPREEMPT_STR = "  Preemption "
+        VRRPPRIORITY_STR = "  Priority is "
+        VRRPMASTER_STR = "  Master Router is "
+        VRRPMASTERADV_STR = "  Master Advertisement interval is "
+        VRRPMASTERDWN_STR = "  Master Down interval is "
+
+        vrrp_groups = []
+
+        command = "show vrrp all"
+        output = self._send_command(command)
+
+        index = 0
+        for line in output.splitlines():
+            if line == "":
+                index += 1
+                continue
+
+            # Format 1
+            if re.search(SHOWVRRP_REGEX, line):
+                if len(line.split(" - ")) == 2:
+                    interface, group = line.split(" - ")
+                    vrrp_groups.append(
+                        {
+                            "interface": interface,
+                            "group": group.split()[1],
+                        }
+                    )
+                else:
+                    raise ValueError("Unexpected output from: {}".format(line.split()))
+
+            # State
+            if line.startswith(VRRPSTATE_STR):
+                vrrp_groups[index]["state"] = line[len(VRRPSTATE_STR):]
+
+            # Virtual IP Address
+            if line.startswith(VRRPVIP_STR):
+                vrrp_groups[index]["vip"] = line[len(VRRPVIP_STR):]
+
+            # Virtual MAC Address
+            if line.startswith(VRRPVMAC_STR):
+                vrrp_groups[index]["vmac"] = line[len(VRRPVMAC_STR):]
+
+            # Advertisement Interval
+            if line.startswith(VRRPINT_STR):
+                vrrp_groups[index]["interval"] = line[len(VRRPINT_STR):]
+
+            # Preemption
+            if line.startswith(VRRPPREEMPT_STR):
+                vrrp_groups[index]["preempt"] = line[len(VRRPPREEMPT_STR):]
+
+            # Priority
+            if line.startswith(VRRPPRIORITY_STR):
+                vrrp_groups[index]["priority"] = line[len(VRRPPRIORITY_STR):]
+
+            # Master Router
+            if line.startswith(VRRPMASTER_STR):
+                vrrp_groups[index]["master"] = {}
+                vrrp_master_str = line[len(VRRPMASTER_STR):]
+                vrrp_master_ip = vrrp_master_str.split(",")[0]
+                vrrp_master_prio = vrrp_master_str.split("priority is ")[1]
+                vrrp_groups[index]["master"]["ip"] = vrrp_master_ip
+                vrrp_groups[index]["master"]["prio"] = vrrp_master_prio
+
+            # Master Advertisement Interval
+            if line.startswith(VRRPMASTERADV_STR):
+                try:
+                    vrrp_groups[index]["master"]["advert_interval"] = line[len(VRRPMASTERADV_STR):]
+                except Exception:
+                    continue
+
+            # Master Down Interval
+            if line.startswith(VRRPMASTERDWN_STR):
+                try:
+                    vrrp_groups[index]["master"]["down_interval"] = line[len(VRRPMASTERDWN_STR):]
+                except Exception:
+                    continue
+
+        return vrrp_groups
+
     def ping(
         self,
         destination,
