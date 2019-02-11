@@ -690,6 +690,19 @@ junos_users_table_view:
     ssh_dsa: authentication/ssh-dsa/name
     ssh_ecdsa: authentication/ssh-ecdsa/name
 
+junos_root_table:
+  get: system
+  key: root-authentication
+  view: junos_root_table_view
+
+junos_root_table_view:
+  fields:
+    password: root-authentication/encrypted-password
+    ssh_rsa: root-authentication/ssh-rsa/name
+    ssh_dsa: root-authentication/ssh-dsa/name
+    ssh_ecdsa: root-authentication/ssh-ecdsa/name
+
+
 ###
 ### Get Optics
 ###

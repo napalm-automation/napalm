@@ -1,6 +1,7 @@
 [![PyPI](https://img.shields.io/pypi/v/napalm.svg)](https://pypi.python.org/pypi/napalm)
 [![Build Status](https://travis-ci.org/napalm-automation/napalm.svg?branch=master)](https://travis-ci.org/napalm-automation/napalm)
 [![Coverage Status](https://coveralls.io/repos/github/napalm-automation/napalm/badge.svg)](https://coveralls.io/github/napalm-automation/napalm)
+[![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 
 NAPALM

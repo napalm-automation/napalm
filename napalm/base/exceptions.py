@@ -18,9 +18,10 @@ from __future__ import unicode_literals
 
 
 class NapalmException(Exception):
-    '''
+    """
     Base Exception Class.
-    '''
+    """
+
     pass
 
 
@@ -29,32 +30,35 @@ class ModuleImportError(NapalmException):
 
 
 class ConnectionException(NapalmException):
-    '''
+    """
     Unable to connect to the network device.
-    '''
+    """
+
     pass
 
 
 class ConnectAuthError(ConnectionException):
-    '''
+    """
     Unable to connect to the network device
     due to invalid credentials.
-    '''
+    """
+
     pass
 
 
 class ConnectTimeoutError(ConnectionException):
-    '''
+    """
     Exception raised when the connection to the
     network device takes too long.
     This may be avoided by adjusting the `timeout`
     argument.
-    '''
+    """
+
     pass
 
 
 class ConnectionClosedException(ConnectionException):
-    '''
+    """
     The network device closed the connection.
     Raised whenever we try to execute a certain
     function, but we detect that the connection
@@ -62,7 +66,8 @@ class ConnectionClosedException(ConnectionException):
     various reasons: the network device terminates the
     session or it is dropped by a firewall or
     the server.
-    '''
+    """
+
     pass
 
 
@@ -75,24 +80,27 @@ class MergeConfigException(NapalmException):
 
 
 class CommitError(NapalmException):
-    '''
+    """
     Raised when unable to commit the candidate config
     into the running config.
-    '''
+    """
+
     pass
 
 
 class LockError(NapalmException):
-    '''
+    """
     Unable to lock the candidate config.
-    '''
+    """
+
     pass
 
 
 class UnlockError(NapalmException):
-    '''
+    """
     Unable to unlock the candidate config.
-    '''
+    """
+
     pass
 
 

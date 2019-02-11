@@ -114,6 +114,7 @@ ____________________________________
 * :code:`alt_key_file` (ios, iosxr, nxos_ssh) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
 * :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: ``False``).
+* :code:`lock_disable` (junos) - Disable all configuration locking for management by an external system (default: ``False``).
 * :code:`canonical_int` (ios) - Convert operational interface's returned name to canonical name (fully expanded name) (default: ``False``).
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
@@ -125,6 +126,7 @@ ____________________________________
 * :code:`secret` (ios, nxos_ssh) - Password required to enter privileged exec (enable) (default: ``''``).
 * :code:`ssh_config_file` (ios, iosxr, junos, nxos_ssh) - File name of OpenSSH configuration file.
 * :code:`ssh_strict` (ios, iosxr, nxos_ssh) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
+* :code:`ssl_verify` (nxos) - Requests argument, enable the SSL certificates verification. See requests ssl-cert-verification for valide values (default: ``None`` equivalent to ``False``).
 * :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`use_keys` (ios, iosxr, nxos_ssh) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
 * :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)

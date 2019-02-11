@@ -15,14 +15,18 @@ import httplib
 
 
 def print_info_message():
-    print("BOX is no longer reachable with vagrant up. Use ssh (check the IP in the initial conf)")
+    print(
+        "BOX is no longer reachable with vagrant up. Use ssh (check the IP in the initial conf)"
+    )
     print("Don't forget to change the network type of the first NIC of the box.")
 
 
 def provision_iosxr(port, username, password):
-    device = IOSXR(hostname='127.0.0.1', username=username, password=password, port=port)
+    device = IOSXR(
+        hostname="127.0.0.1", username=username, password=password, port=port
+    )
     device.open()
-    device.load_candidate_config(filename='../iosxr/initial.conf')
+    device.load_candidate_config(filename="../iosxr/initial.conf")
 
     try:
         device.commit_replace_config()
@@ -33,30 +37,30 @@ def provision_iosxr(port, username, password):
 
 def provision_eos(port, username, password):
     connection = pyeapi.client.connect(
-        transport='https',
-        host='localhost',
-        username='vagrant',
-        password='vagrant',
-        port=port
+        transport="https",
+        host="localhost",
+        username="vagrant",
+        password="vagrant",
+        port=port,
     )
     device = pyeapi.client.Node(connection)
 
     commands = list()
-    commands.append('configure session')
-    commands.append('rollback clean-config')
+    commands.append("configure session")
+    commands.append("rollback clean-config")
 
-    with open('../eos/initial.conf', 'r') as f:
+    with open("../eos/initial.conf", "r") as f:
         lines = f.readlines()
 
     for line in lines:
         line = line.strip()
-        if line == '':
+        if line == "":
             continue
-        if line.startswith('!'):
+        if line.startswith("!"):
             continue
         commands.append(line)
 
-    commands[-1] = 'commit'
+    commands[-1] = "commit"
 
     try:
         device.run_commands(commands)
@@ -66,14 +70,14 @@ def provision_eos(port, username, password):
 
 
 def provision_junos(port, username, password):
-    device = Device('127.0.0.1', user=username, port=port)
+    device = Device("127.0.0.1", user=username, port=port)
     device.open()
     device.bind(cu=Config)
 
-    with open('../junos/initial.conf', 'r') as f:
+    with open("../junos/initial.conf", "r") as f:
         configuration = f.read()
 
-    device.cu.load(configuration, format='text', overwrite=True)
+    device.cu.load(configuration, format="text", overwrite=True)
 
     try:
         device.cu.commit()
@@ -89,9 +93,9 @@ if __name__ == "__main__":
     username = sys.argv[3]
     password = sys.argv[4]
 
-    if os == 'iosxr':
+    if os == "iosxr":
         provision_iosxr(port, username, password)
-    elif os == 'eos':
+    elif os == "eos":
         provision_eos(port, username, password)
-    elif os == 'junos':
+    elif os == "junos":
         provision_junos(port, username, password)
