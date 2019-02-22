@@ -1,1 +1,2 @@
-SUPPORTED_DRIVERS = ["base", "eos", "ios", "iosxr", "junos", "nxos", "nxos_ssh"]
+SUPPORTED_DRIVERS = ["base", "eos", "ios", "iosxr", "junos", "nxos", 
+                     "nxos_ssh", "onyx_ssh"]
