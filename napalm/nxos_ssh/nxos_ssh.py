@@ -84,7 +84,7 @@ def parse_intf_section(interface):
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
     re_mac = r"^\s+Hardware:\s+(?P<hardware>.*),\s+address:\s+(?P<mac_address>\S+) "
-    re_speed = r"\s+MTU .*?,\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
+    re_speed = r"\s+MTU (?P<mtu>.*?),\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
     re_description_1 = r"^\s+Description:\s+(?P<description>.*)  (?:MTU|Internet)"
     re_description_2 = r"^\s+Description:\s+(?P<description>.*)$"
     re_hardware = r"^.* Hardware: (?P<hardware>\S+)$"
@@ -147,6 +147,7 @@ def parse_intf_section(interface):
 
     if speed_exist:
         match = re.search(re_speed, interface, flags=re.M)
+        mtu = int(match.group("mtu"))
         speed = int(match.group("speed"))
         speed_unit = match.group("speed_unit")
         speed_unit = speed_unit.rstrip(",")

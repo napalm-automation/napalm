@@ -811,6 +811,7 @@ class NXOSDriver(NXOSDriverBase):
 
         for interface_details in interfaces_body:
             interface_name = interface_details.get("interface")
+            interface_mtu = interface_details.get("eth_mtu")
             # Earlier version of Nexus returned a list for 'eth_bw' (observed on 7.1(0)N1(1a))
             interface_speed = interface_details.get("eth_bw", 0)
             if isinstance(interface_speed, list):
@@ -830,6 +831,7 @@ class NXOSDriver(NXOSDriverBase):
                     interface_details.get("eth_link_flapped", "")
                 ),
                 "speed": interface_speed,
+                "mtu": interface_mtu,
                 "mac_address": napalm.base.helpers.convert(
                     napalm.base.helpers.mac, interface_details.get("eth_hw_addr")
                 ),
