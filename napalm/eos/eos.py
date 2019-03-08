@@ -370,6 +370,7 @@ class EOSDriver(NetworkDriver):
                 "lastStatusChangeTimestamp", -1.0
             )
 
+            interfaces[interface]["mtu"] = int(values["mtu"])
             interfaces[interface]["speed"] = int(values["bandwidth"] * 1e-6)
             interfaces[interface]["mac_address"] = napalm.base.helpers.convert(
                 napalm.base.helpers.mac, values.pop("physicalAddress", "")
