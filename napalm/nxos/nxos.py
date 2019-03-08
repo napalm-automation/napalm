@@ -811,7 +811,8 @@ class NXOSDriver(NXOSDriverBase):
 
         for interface_details in interfaces_body:
             interface_name = interface_details.get("interface")
-            interface_mtu = interface_details.get("eth_mtu")
+            interface_mtu = interface_details.get("eth_mtu", 0)
+            interface_mtu = int(interface_mtu)
             # Earlier version of Nexus returned a list for 'eth_bw' (observed on 7.1(0)N1(1a))
             interface_speed = interface_details.get("eth_bw", 0)
             if isinstance(interface_speed, list):
