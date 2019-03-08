@@ -1056,7 +1056,7 @@ class IOSDriver(NetworkDriver):
             speed_regex = r"^\s+MTU\s+(\d+).+BW\s+(\d+)\s+([KMG]?b)"
             if re.search(speed_regex, line):
                 speed_match = re.search(speed_regex, line)
-                mtu = speed_match.groups()[0]
+                mtu = int(speed_match.groups()[0])
                 speed = speed_match.groups()[1]
                 speedformat = speed_match.groups()[2]
                 speed = float(speed)
@@ -1080,6 +1080,7 @@ class IOSDriver(NetworkDriver):
                     "description": description,
                     "mac_address": mac_address,
                     "last_flapped": last_flapped,
+                    "mtu": mtu,
                     "speed": speed,
                 }
 
