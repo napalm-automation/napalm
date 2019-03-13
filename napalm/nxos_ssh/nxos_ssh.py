@@ -84,7 +84,9 @@ def parse_intf_section(interface):
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
     re_mac = r"^\s+Hardware:\s+(?P<hardware>.*),\s+address:\s+(?P<mac_address>\S+) "
-    re_speed = r"\s+MTU (?P<mtu>\S+)\s+bytes,\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
+    re_speed = (
+        r"\s+MTU (?P<mtu>\S+)\s+bytes,\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
+    )
     re_mtu_nve = r"\s+MTU (?P<mtu_nve>\S+)\s+bytes.*$"
     re_description_1 = r"^\s+Description:\s+(?P<description>.*)  (?:MTU|Internet)"
     re_description_2 = r"^\s+Description:\s+(?P<description>.*)$"
