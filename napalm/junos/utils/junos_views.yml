@@ -20,6 +20,7 @@ junos_iface_view:
     last_flapped: { interface-flapped/@seconds: int }
     #mode: logical-interface/address-family/address-family-name
     speed: speed
+    mtu: mtu
     mac_address: current-physical-address
 
 junos_logical_iface_table:
@@ -35,6 +36,7 @@ junos_logical_iface_view:
     description: { description: unicode }
     last_flapped: { ../interface-flapped/@seconds: int }
     speed: ../speed
+    mtu: ../mtu
     mac_address: ../current-physical-address
 
 ####
