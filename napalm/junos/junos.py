@@ -337,7 +337,7 @@ class JunOSDriver(NetworkDriver):
                 }
                 # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
 
-                match_mtu  = re.search(r"(\w+)", str(iface_data["mtu"]) or "")
+                match_mtu = re.search(r"(\w+)", str(iface_data["mtu"]) or "")
                 mtu = napalm.base.helpers.convert(int, match_mtu.group(0), 0)
                 result[iface]["mtu"] = mtu
                 match = re.search(r"(\d+)(\w*)", iface_data["speed"] or "")
