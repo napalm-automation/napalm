@@ -818,11 +818,14 @@ class NXOSDriver(NXOSDriverBase):
             interface_speed = int(interface_speed / 1000)
             if "admin_state" in interface_details:
                 is_up = interface_details.get("admin_state", "") == "up"
+            elif "svi_admin_state" in interface_details:
+                is_up = interface_details.get("svi_admin_state", "") == "up"
             else:
                 is_up = interface_details.get("state", "") == "up"
             interfaces[interface_name] = {
                 "is_up": is_up,
-                "is_enabled": (interface_details.get("state") == "up"),
+                "is_enabled": (interface_details.get("state") == "up" or
+                               interface_details.get("svi_admin_state", "") == "up"),
                 "description": py23_compat.text_type(
                     interface_details.get("desc", "").strip('"')
                 ),
