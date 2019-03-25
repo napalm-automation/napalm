@@ -815,7 +815,7 @@ class NXOSDriver(NXOSDriverBase):
             if interface_details.get("eth_bw"):
                 interface_speed = interface_details["eth_bw"]
             elif interface_details.get("svi_bw"):
-                interface_speed = interface_details["swi_bw"]
+                interface_speed = interface_details["svi_bw"]
             else:
                 interface_speed = 0
             if isinstance(interface_speed, list):
