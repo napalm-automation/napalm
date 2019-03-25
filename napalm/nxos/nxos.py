@@ -812,20 +812,25 @@ class NXOSDriver(NXOSDriverBase):
         for interface_details in interfaces_body:
             interface_name = interface_details.get("interface")
             # Earlier version of Nexus returned a list for 'eth_bw' (observed on 7.1(0)N1(1a))
-            interface_speed = interface_details.get("eth_bw", 0)
+            if interface_details.get("eth_bw"):
+                interface_speed = interface_details["eth_bw"]
+            elif interface_details.get("svi_bw"):
+                interface_speed = interface_details["swi_bw"]
+            else:
+                interface_speed = 0
             if isinstance(interface_speed, list):
                 interface_speed = interface_speed[0]
             interface_speed = int(interface_speed / 1000)
-            if "admin_state" in interface_details:
-                is_up = interface_details.get("admin_state", "") == "up"
-            elif "svi_admin_state" in interface_details:
-                is_up = interface_details.get("svi_admin_state", "") == "up"
+            if interface_details.get("admin_state"):
+                is_up = interface_details["admin_state"] == "up"
+            elif interface_details.get("svi_admin_state"):
+                is_up = interface_details["svi_admin_state"] == "up"
             else:
                 is_up = interface_details.get("state", "") == "up"
             if interface_details.get("eth_hw_addr"):
-                mac_address = interface_details.get("eth_hw_addr")
+                mac_address = interface_details["eth_hw_addr"]
             elif interface_details.get("svi_mac"):
-                mac_address = interface_details.get("svi_mac")
+                mac_address = interface_details["svi_mac"]
             else:
                 mac_address = None
             interfaces[interface_name] = {
