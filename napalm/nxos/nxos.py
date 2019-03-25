@@ -833,15 +833,19 @@ class NXOSDriver(NXOSDriverBase):
                 mac_address = interface_details["svi_mac"]
             else:
                 mac_address = None
+            if interface_details.get("desc"):
+                description = interface_details["desc"]
+            elif interface_details.get("svi_desc"):
+                description = interface_details["svi_desc"]
+            else:
+                description = ""
             interfaces[interface_name] = {
                 "is_up": is_up,
                 "is_enabled": (
                     interface_details.get("state") == "up"
                     or interface_details.get("svi_admin_state", "") == "up"
                 ),
-                "description": py23_compat.text_type(
-                    interface_details.get("desc", "").strip('"')
-                ),
+                "description": py23_compat.text_type(description),
                 "last_flapped": self._compute_timestamp(
                     interface_details.get("eth_link_flapped", "")
                 ),
