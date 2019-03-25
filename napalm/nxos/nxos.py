@@ -820,7 +820,7 @@ class NXOSDriver(NXOSDriverBase):
                 interface_speed = 0
             if isinstance(interface_speed, list):
                 interface_speed = interface_speed[0]
-            interface_speed = int(interface_speed) / 1000
+            interface_speed = int(int(interface_speed) / 1000)
             if interface_details.get("admin_state"):
                 is_up = interface_details["admin_state"] == "up"
             elif interface_details.get("svi_admin_state"):
