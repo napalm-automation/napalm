@@ -822,11 +822,11 @@ class NXOSDriver(NXOSDriverBase):
                 is_up = interface_details.get("svi_admin_state", "") == "up"
             else:
                 is_up = interface_details.get("state", "") == "up"
-            if interface_details.get("eth_hw_addr")
+            if interface_details.get("eth_hw_addr"):
                 mac_address = interface_details.get("eth_hw_addr")
-            elif interface_details.get("svi_mac")
+            elif interface_details.get("svi_mac"):
                 mac_address = interface_details.get("svi_mac")
-            else
+            else:
                 mac_address = None
             interfaces[interface_name] = {
                 "is_up": is_up,
