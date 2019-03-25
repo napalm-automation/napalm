@@ -836,8 +836,8 @@ class NXOSDriver(NXOSDriverBase):
             interfaces[interface_name] = {
                 "is_up": is_up,
                 "is_enabled": (
-                    interface_details.get("state") == "up" or
-                    interface_details.get("svi_admin_state", "") == "up"
+                    interface_details.get("state") == "up"
+                    or interface_details.get("svi_admin_state", "") == "up"
                 ),
                 "description": py23_compat.text_type(
                     interface_details.get("desc", "").strip('"')
