@@ -822,6 +822,12 @@ class NXOSDriver(NXOSDriverBase):
                 is_up = interface_details.get("svi_admin_state", "") == "up"
             else:
                 is_up = interface_details.get("state", "") == "up"
+            if interface_details.get("eth_hw_addr")
+                mac_address = interface_details.get("eth_hw_addr")
+            elif interface_details.get("svi_mac")
+                mac_address = interface_details.get("svi_mac")
+            else
+                mac_address = None
             interfaces[interface_name] = {
                 "is_up": is_up,
                 "is_enabled": (interface_details.get("state") == "up" or
@@ -834,7 +840,7 @@ class NXOSDriver(NXOSDriverBase):
                 ),
                 "speed": interface_speed,
                 "mac_address": napalm.base.helpers.convert(
-                    napalm.base.helpers.mac, interface_details.get("eth_hw_addr")
+                    napalm.base.helpers.mac, mac_address
                 ),
             }
         return interfaces
