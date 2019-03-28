@@ -703,6 +703,8 @@ class NXOSDriver(NXOSDriverBase):
         vs
         {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
         """
+        if parent_table is None:
+            return []
         _table = parent_table.get(table_name)
         _table_rows = []
         if isinstance(_table, list):
@@ -1293,3 +1295,18 @@ class NXOSDriver(NXOSDriverBase):
         # else return results for all VRFs
         else:
             return vrfs
+
+    def get_vlans(self):
+        vlans = {}
+        command = "show vlan brief"
+        vlan_table_raw = self._get_command_table(command, "TABLE_vlanbriefxbrief",
+                                                 "ROW_vlanbriefxbrief")
+        if isinstance(vlan_table_raw, dict):
+            vlan_table_raw = [vlan_table_raw]
+
+        for vlan in vlan_table_raw:
+            vlans[vlan["vlanshowbr-vlanid"]] = {
+                "name": vlan["vlanshowbr-vlanname"],
+                "interfaces": [x.strip() for x in vlan["vlanshowplist-ifidx"].split(",")]
+            }
+        return vlans

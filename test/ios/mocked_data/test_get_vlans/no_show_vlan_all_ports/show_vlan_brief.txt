@@ -1,0 +1,14 @@
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Gi0/17, Gi0/18, Gi0/19, Gi0/20
+710  Vlan710                          active
+736  Vlan736                          active
+748  Vlan748                          active
+760  Vlan760                          active    Gi0/1, Gi0/3, Gi0/9, Gi0/10, Gi0/15, Gi0/16
+762  Vlan762                          active
+763  Vlan763                          active
+795  Vlan795                          active
+1002 Vlan1002                         act/unsup
+1003 Vlan1003                         act/unsup
+1004 Vlan1004                         act/unsup
+1005 Vlan1005                         act/unsup

@@ -1,0 +1,144 @@
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Te1/2/15, Te1/2/16, Te1/2/17, Te1/2/18, Te1/2/19, Te1/2/20, Te1/2/21, Te1/2/22, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+3    Vlan3                            active    Te1/3/7, Te2/1/20, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+2    Vlan2                            active    Te1/3/7, Te2/1/20, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+4    Vlan4                            active    Te1/3/8, Te2/1/21, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+5    Vlan5                            active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30, Po31, Po32
+7    Vlan7                            active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+60   Vlan60                           active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+61   Vlan61                           active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+448  Vlan448                          active    Te2/2/30, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+500  Vlan500                          active    Te2/2/30, Po1, Po2, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+502  Vlan502                          active    Te2/2/30, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+506  Vlan506                          active    Te1/3/8, Te2/1/21, Te2/2/30, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+507  Vlan507                          active    Te2/1/15, Te2/2/30, Te2/2/31, Te2/2/32, Po1, Po5, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+508  Vlan508                          active    Te2/1/15, Te2/2/30, Te2/2/32, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+510  Vlan510                          active    Te2/2/30, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+511  Vlan511                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+515  Vlan515                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+517  Vlan517                          active    Te2/2/30, Te2/2/32, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+518  Vlan518                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+520  Vlan520                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+522  Vlan522                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+523  Vlan523                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+524  Vlan524                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+529  Vlan529                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+531  Vlan531                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+533  Vlan533                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+538  Vlan538                          active    Te2/2/30, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+601  Vlan601                          active    Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+602  Vlan602                          active    Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+606  Vlan606                          active    Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+607  Vlan607                          active    Te2/1/23, Te2/2/23, Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+608  Vlan608                          active    Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+609  Vlan609                          active    Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+610  Vlan610                          active    Po1, Po5, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+611  Vlan611                          active    Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+612  Vlan612                          active    Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+613  Vlan613                          active    Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+702  Vlan702                          active    Te2/2/32, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+707  Vlan707                          active    Po1, Po5, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+710  Vlan710                          active    Te1/1/9, Te1/1/11, Te1/3/4, Te2/2/31, Te2/3/4, Te2/3/6, Po1, Po3, Po4, Po5, Po6, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po29, Po30, Po100
+711  Vlan711                          active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+736  Vlan736                          active    Po1, Po5, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+745  Vlan745                          active    Te2/2/31, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+746  Vlan746                          active    Te2/2/31, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+754  Vlan754                          active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po29, Po30
+756  Vlan756                          active    Po1, Po5, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+760  Vlan760                          active    Po1, Po5, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30, Po100
+762  Vlan762                          active    Te1/3/8, Te2/1/21, Po1, Po5, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+763  Vlan763                          active    Te1/3/8, Te2/1/21, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+764  Vlan764                          active    Po1, Po5, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+765  Vlan765                          active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+766  Vlan766                          active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+772  Vlan772                          active    Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+776  Vlan776                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+778  Vlan778                          active    Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+783  Vlan783                          active    Po1, Po5, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+786  Vlan786                          active    Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+787  Vlan787                          active    Te2/2/30, Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+788  Vlan788                          active    Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+790  Vlan790                          active    Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+792  Vlan792                          active    Po1, Po2, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+794  Vlan794                          active    Po1, Po5, Po6, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+795  Vlan795                          active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+1002 Vlan1002                         act/unsup Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+1003 Vlan1003                         act/unsup Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+1004 Vlan1004                         act/unsup Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+1005 Vlan1005                         act/unsup Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+1275 Vlan1275                         active
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+1    enet  100001     1500  -      -      -        -    -        0      0
+2    enet  100002     1500  -      -      -        -    -        0      0
+3    enet  100003     1500  -      -      -        -    -        0      0
+4    enet  100004     1500  -      -      -        -    -        0      0
+5    enet  100005     1500  -      -      -        -    -        0      0
+7    enet  100007     1500  -      -      -        -    -        0      0
+60   enet  100060     1500  -      -      -        -    -        0      0
+61   enet  100061     1500  -      -      -        -    -        0      0
+448  enet  100448     1500  -      -      -        -    -        0      0
+500  enet  100500     1500  -      -      -        -    -        0      0
+502  enet  100502     1500  -      -      -        -    -        0      0
+506  enet  100506     1500  -      -      -        -    -        0      0
+507  enet  100507     1500  -      -      -        -    -        0      0
+508  enet  100508     1500  -      -      -        -    -        0      0
+510  enet  100510     1500  -      -      -        -    -        0      0
+511  enet  100511     1500  -      -      -        -    -        0      0
+515  enet  100515     1500  -      -      -        -    -        0      0
+517  enet  100517     1500  -      -      -        -    -        0      0
+518  enet  100518     1500  -      -      -        -    -        0      0
+520  enet  100520     1500  -      -      -        -    -        0      0
+522  enet  100522     1500  -      -      -        -    -        0      0
+523  enet  100523     1500  -      -      -        -    -        0      0
+524  enet  100524     1500  -      -      -        -    -        0      0
+529  enet  100529     1500  -      -      -        -    -        0      0
+531  enet  100531     1500  -      -      -        -    -        0      0
+533  enet  100533     1500  -      -      -        -    -        0      0
+538  enet  100538     1500  -      -      -        -    -        0      0
+601  enet  100601     1500  -      -      -        -    -        0      0
+602  enet  100602     1500  -      -      -        -    -        0      0
+606  enet  100606     1500  -      -      -        -    -        0      0
+607  enet  100607     1500  -      -      -        -    -        0      0
+608  enet  100608     1500  -      -      -        -    -        0      0
+609  enet  100609     1500  -      -      -        -    -        0      0
+610  enet  100610     1500  -      -      -        -    -        0      0
+611  enet  100611     1500  -      -      -        -    -        0      0
+612  enet  100612     1500  -      -      -        -    -        0      0
+613  enet  100613     1500  -      -      -        -    -        0      0
+702  enet  100702     1500  -      -      -        -    -        0      0
+707  enet  100707     1500  -      -      -        -    -        0      0
+710  enet  100710     1500  -      -      -        -    -        0      0
+711  enet  100711     1500  -      -      -        -    -        0      0
+736  enet  100736     1500  -      -      -        -    -        0      0
+745  enet  100745     1500  -      -      -        -    -        0      0
+746  enet  100746     1500  -      -      -        -    -        0      0
+754  enet  100754     1500  -      -      -        -    -        0      0
+756  enet  100756     1500  -      -      -        -    -        0      0
+760  enet  100760     1500  -      -      -        -    -        0      0
+762  enet  100762     1500  -      -      -        -    -        0      0
+763  enet  100763     1500  -      -      -        -    -        0      0
+764  enet  100764     1500  -      -      -        -    -        0      0
+765  enet  100765     1500  -      -      -        -    -        0      0
+766  enet  100766     1500  -      -      -        -    -        0      0
+772  enet  100772     1500  -      -      -        -    -        0      0
+776  enet  100776     1500  -      -      -        -    -        0      0
+778  enet  100778     1500  -      -      -        -    -        0      0
+783  enet  100783     1500  -      -      -        -    -        0      0
+786  enet  100786     1500  -      -      -        -    -        0      0
+787  enet  100787     1500  -      -      -        -    -        0      0
+788  enet  100788     1500  -      -      -        -    -        0      0
+790  enet  100790     1500  -      -      -        -    -        0      0
+792  enet  100792     1500  -      -      -        -    -        0      0
+794  enet  100794     1500  -      -      -        -    -        0      0
+795  enet  100795     1500  -      -      -        -    -        0      0
+1002 fddi  101002     1500  -      -      -        -    -        0      0
+1003 tr    101003     1500  -      -      -        -    -        0      0
+1004 fdnet 101004     1500  -      -      -        ieee -        0      0
+1005 trnet 101005     1500  -      -      -        ibm  -        0      0
+1275 enet  101275     1500  -      -      -        -    -        0      0
+
+Primary Secondary Type              Ports
+------- --------- ----------------- ------------------------------------------
