@@ -282,7 +282,4 @@ firewall_policies = {
     "action": text_type,
 }
 
-vlan = {
-    "name": text_type,
-    "interfaces": list,
-}
+vlan = {"name": text_type, "interfaces": list}
