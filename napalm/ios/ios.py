@@ -3434,15 +3434,12 @@ class IOSDriver(NetworkDriver):
         for v in find:
             vlans[v[0]] = {
                 "name": v[1],
-                "interfaces": [interface_dict[x.strip()] for x in v[2].split(",")]
+                "interfaces": [interface_dict[x.strip()] for x in v[2].split(",")],
             }
         find_regexp = r"^(\d+)\s+(\S+)\s+\S+$"
         find = re.findall(find_regexp, output, re.MULTILINE)
         for v in find:
-            vlans[v[0]] = {
-                "name": v[1],
-                "interfaces": []
-            }
+            vlans[v[0]] = {"name": v[1], "interfaces": []}
         return vlans
 
     def _get_vlan_from_id(self, interface_dict):
@@ -3453,21 +3450,24 @@ class IOSDriver(NetworkDriver):
         vlans = {}
         for vlan in find_vlan:
             output = self._send_command("show vlan id {}".format(vlan[0]))
-            interface_regex = r"{}\s+{}\s+\S+\s+([A-Z][a-z].*)$".format(vlan[0], vlan[1])
+            interface_regex = r"{}\s+{}\s+\S+\s+([A-Z][a-z].*)$".format(
+                vlan[0], vlan[1]
+            )
             interfaces = re.findall(interface_regex, output, re.MULTILINE)
             if len(interfaces) == 1:
                 vlans[vlan[0]] = {
                     "name": vlan[1],
-                    "interfaces": [interface_dict[x.strip()] for x in interfaces[0].split(",")]
+                    "interfaces": [
+                        interface_dict[x.strip()] for x in interfaces[0].split(",")
+                    ],
                 }
             elif len(interfaces) == 0:
-                vlans[vlan[0]] = {
-                    "name": vlan[1],
-                    "interfaces": []
-                }
+                vlans[vlan[0]] = {"name": vlan[1], "interfaces": []}
             else:
-                raise ValueError("Error parsing for vlan id {}, "
-                                 "found more values than can be.".format(vlan[0]))
+                raise ValueError(
+                    "Error parsing for vlan id {}, "
+                    "found more values than can be.".format(vlan[0])
+                )
 
         return vlans
 

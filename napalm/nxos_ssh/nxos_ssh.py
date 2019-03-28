@@ -1527,14 +1527,17 @@ class NXOSSSHDriver(NXOSDriverBase):
     def get_vlans(self):
         vlans = {}
         command = "show vlan brief | json"
-        vlan_table_raw = self._get_command_table(command, "TABLE_vlanbriefxbrief",
-                                                 "ROW_vlanbriefxbrief")
+        vlan_table_raw = self._get_command_table(
+            command, "TABLE_vlanbriefxbrief", "ROW_vlanbriefxbrief"
+        )
         if isinstance(vlan_table_raw, dict):
             vlan_table_raw = [vlan_table_raw]
 
         for vlan in vlan_table_raw:
             vlans[vlan["vlanshowbr-vlanid"]] = {
                 "name": vlan["vlanshowbr-vlanname"],
-                "interfaces": [x.strip() for x in vlan["vlanshowplist-ifidx"].split(",")]
+                "interfaces": [
+                    x.strip() for x in vlan["vlanshowplist-ifidx"].split(",")
+                ],
             }
         return vlans

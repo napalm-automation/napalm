@@ -634,4 +634,3 @@ class TestGettersNetworkDriver(object):
             result = result and self._test_model(models.vlan, vlan_data)
 
         self.assertTrue(result)
-
