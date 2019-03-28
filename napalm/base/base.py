@@ -1690,4 +1690,3 @@ class NetworkDriver(object):
             )
         else:
             return interface
-
