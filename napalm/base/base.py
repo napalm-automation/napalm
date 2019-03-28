@@ -1680,3 +1680,20 @@ class NetworkDriver(object):
             )
         else:
             return interface
+
+    def get_vlans(self):
+        """
+        Return structure being spit balled is as follows.
+
+        {
+            1: {
+                "name": "vlan-1",
+                "interfaces": ["ge-0/0/1", "ge-0/0/2"]
+            },
+            2: {
+                "name": "vlan-2",
+                "interfaces": []
+            }
+        }
+        """
+        raise NotImplementedError

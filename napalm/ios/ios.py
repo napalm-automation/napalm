@@ -3409,3 +3409,76 @@ class IOSDriver(NetworkDriver):
         if self.device and self._dest_file_system is None:
             self._dest_file_system = self._discover_file_system()
         return self._dest_file_system
+
+    def get_vlans(self):
+        command = "show interfaces"
+        output = self._send_command(command)
+        interface_dict = {}
+        interface_regex = r"^(\S+?)\s+is\s+.+?,\s+line\s+protocol\s+is\s+\S+"
+        interfaces = re.findall(interface_regex, output, re.MULTILINE)
+        for interface in interfaces:
+            interface_dict[self._get_abrev_if(interface)] = interface
+
+        command = "show vlan all-ports"
+        output = self._send_command(command)
+        if output.find("Invalid input detected") >= 0:
+            return self._get_vlan_from_id(interface_dict)
+        else:
+            return self._get_vlan_all_ports(interface_dict, output)
+
+    def _get_vlan_all_ports(self, interface_dict, output):
+        # output = re.split("\n\n", output)[0]
+        find_regexp = r"^(\d+)\s+(\S+)\s+\S+\s+([A-Z][a-z].*)$"
+        find = re.findall(find_regexp, output, re.MULTILINE)
+        vlans = {}
+        for v in find:
+            vlans[v[0]] = {
+                "name": v[1],
+                "interfaces": [interface_dict[x.strip()] for x in v[2].split(",")]
+            }
+        find_regexp = r"^(\d+)\s+(\S+)\s+\S+$"
+        find = re.findall(find_regexp, output, re.MULTILINE)
+        for v in find:
+            vlans[v[0]] = {
+                "name": v[1],
+                "interfaces": []
+            }
+        return vlans
+
+    def _get_vlan_from_id(self, interface_dict):
+        command = "show vlan brief"
+        output = self._send_command(command)
+        vlan_regexp = r"^(\d+)\s+(\S+)\s+\S+.*$"
+        find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
+        vlans = {}
+        for vlan in find_vlan:
+            output = self._send_command("show vlan id {}".format(vlan[0]))
+            interface_regex = r"{}\s+{}\s+\S+\s+([A-Z][a-z].*)$".format(vlan[0], vlan[1])
+            interfaces = re.findall(interface_regex, output, re.MULTILINE)
+            if len(interfaces) == 1:
+                vlans[vlan[0]] = {
+                    "name": vlan[1],
+                    "interfaces": [interface_dict[x.strip()] for x in interfaces[0].split(",")]
+                }
+            elif len(interfaces) == 0:
+                vlans[vlan[0]] = {
+                    "name": vlan[1],
+                    "interfaces": []
+                }
+            else:
+                raise ValueError("Error parsing for vlan id {}, "
+                                 "found more values than can be.".format(vlan[0]))
+
+        return vlans
+
+    @staticmethod
+    def _get_abrev_if(interface):
+        if_index_re = re.search(r"\d.*", interface)
+        if_index_re = if_index_re.group() if if_index_re else ""
+
+        if interface.lower().startswith("eth"):
+            prefix = interface[:3]
+        else:
+            prefix = interface[:2]
+
+        return prefix + if_index_re

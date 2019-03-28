@@ -717,6 +717,38 @@ class NXOSDriver(NXOSDriverBase):
         )
         return time.time() - delta
 
+<<<<<<< HEAD
+=======
+    @staticmethod
+    def _get_table_rows(parent_table, table_name, row_name):
+        """
+        Inconsistent behavior:
+        {'TABLE_intf': [{'ROW_intf': {
+        vs
+        {'TABLE_mac_address': {'ROW_mac_address': [{
+        vs
+        {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
+        """
+        if parent_table is None:
+            return []
+        _table = parent_table.get(table_name)
+        _table_rows = []
+        if isinstance(_table, list):
+            _table_rows = [_table_row.get(row_name) for _table_row in _table]
+        elif isinstance(_table, dict):
+            _table_rows = _table.get(row_name)
+        if not isinstance(_table_rows, list):
+            _table_rows = [_table_rows]
+        return _table_rows
+
+    def _get_reply_table(self, result, table_name, row_name):
+        return self._get_table_rows(result, table_name, row_name)
+
+    def _get_command_table(self, command, table_name, row_name):
+        json_output = self._send_command(command)
+        return self._get_reply_table(json_output, table_name, row_name)
+
+>>>>>>> Added get_vlans functionality according to issues #927
     def is_alive(self):
         if self.device:
             return {"is_alive": True}
@@ -1333,6 +1365,7 @@ class NXOSDriver(NXOSDriverBase):
         else:
             return vrfs
 
+<<<<<<< HEAD
     def get_environment(self):
         def _process_pdus(power_data):
             normalized = defaultdict(dict)
@@ -1434,3 +1467,18 @@ class NXOSDriver(NXOSDriverBase):
             "cpu": _process_cpu(cpu_raw),
             "memory": _process_memory(memory_raw),
         }
+
+    def get_vlans(self):
+        vlans = {}
+        command = "show vlan brief"
+        vlan_table_raw = self._get_command_table(command, "TABLE_vlanbriefxbrief",
+                                                 "ROW_vlanbriefxbrief")
+        if isinstance(vlan_table_raw, dict):
+            vlan_table_raw = [vlan_table_raw]
+
+        for vlan in vlan_table_raw:
+            vlans[vlan["vlanshowbr-vlanid"]] = {
+                "name": vlan["vlanshowbr-vlanname"],
+                "interfaces": [x.strip() for x in vlan["vlanshowplist-ifidx"].split(",")]
+            }
+        return vlans

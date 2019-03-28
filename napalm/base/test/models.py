@@ -263,3 +263,8 @@ firewall_policies = {
     "dst_zone": str,
     "action": str,
 }
+
+vlan = {
+    "name": text_type,
+    "interfaces": list,
+}
