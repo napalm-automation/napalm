@@ -2799,7 +2799,7 @@ class IOSDriver(NetworkDriver):
         vlan_dict = {}
         
         for line in output.splitlines():
-            if line[0].isdigit() == False:
+            if line[0].isdigit() is False:
                 continue
 
             vlan_info = line.split()
@@ -2807,7 +2807,7 @@ class IOSDriver(NetworkDriver):
             name = vlan_info[1]
             status = vlan_info[2]
             # skip default vlans (fddi, token-ring)
-            if status != "active":
+            if status is not "active":
                 continue
             if len(vlan_info) > 3:
                 for port in range(3, len(vlan_info)):
