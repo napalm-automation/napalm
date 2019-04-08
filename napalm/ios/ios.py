@@ -2807,7 +2807,7 @@ class IOSDriver(NetworkDriver):
             name = vlan_info[1]
             status = vlan_info[2]
             # skip default vlans (fddi, token-ring)
-            if status is not "active":
+            if status != "active":
                 continue
             if len(vlan_info) > 3:
                 for port in range(3, len(vlan_info)):
