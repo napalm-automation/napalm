@@ -2810,7 +2810,7 @@ class IOSDriver(NetworkDriver):
             if status != "active":
                 continue
             if len(vlan_info) > 3:
-                for port in range(3,len(vlan_info)):
+                for port in range(3, len(vlan_info)):
                     ports.append(vlan_info[port])
             else:
                 ports.append("None")
