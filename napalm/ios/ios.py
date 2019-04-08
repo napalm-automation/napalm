@@ -2797,7 +2797,7 @@ class IOSDriver(NetworkDriver):
         vlan = name = status = ""
         ports = []
         vlan_dict = {}
-        
+
         for line in output.splitlines():
             if line[0].isdigit() is False:
                 continue
