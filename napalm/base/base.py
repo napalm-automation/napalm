@@ -1644,6 +1644,38 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
+    def get_vlans(self):
+        """
+        Returns a dictionary of dictionaries. The keys for the first dictionary will be the \
+        vlan ID. The inner dictionary will containing the following data for \
+        each vlan:
+         * id (int)
+         * name (string)
+         * ports (list of ports)
+        Example::
+            {
+            u'Vlan1':
+                {
+                'id': 1,
+                'name': 'default',
+                'ports': ['none'],
+                },
+            u'Vlan10':
+                {
+                'id': 10,
+                'name': 'FW_Uplinks',
+                'ports': ['Hu1/0/1,', 'Hu1/0/2'],
+                },
+            u'Vlan100':
+                {
+                'id': 100,
+                'name': 'WLAN_Clients',
+                'ports': ['none'],
+                }
+            }
+        """
+        raise NotImplementedError
+
     def compliance_report(self, validation_file=None, validation_source=None):
         """
         Return a compliance report.
