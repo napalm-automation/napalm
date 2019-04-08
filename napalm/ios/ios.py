@@ -2823,7 +2823,7 @@ class IOSDriver(NetworkDriver):
 
             vlan = name = status = ""
             ports = []
-
+        
         return vlan_dict
 
     @property
