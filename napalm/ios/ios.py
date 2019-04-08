@@ -2824,7 +2824,6 @@ class IOSDriver(NetworkDriver):
 
             ports = []
 
-
         return vlan_dict
 
     @property
