@@ -2774,6 +2774,57 @@ class IOSDriver(NetworkDriver):
                 }
             )
         return ipv6_neighbors_table
+    
+    def get_vlans(self):
+        """
+        Get vlan details.
+        Example Output:
+        {
+        u'Vlan1': {   'id': 1,
+                      'name': "default",
+                      'ports': ['None']},
+        u'Vlan10': {   'id': 10,
+                      'name': "FW_Uplinks",
+                      'ports': ['Hu1/0/1,', 'Hu1/0/2']},
+        u'Vlan100': {   'id': 100,
+                      'name': "WLAN_Clients",
+                      'ports': ['None']}}
+        """
+
+        command = "show vlan brief"
+        output = self._send_command(command)
+
+        vlan = name = status = ""
+        ports = []
+        vlan_dict = {}
+        
+        for line in output.splitlines():
+            if line[0].isdigit() == False:
+                continue
+
+            vlan_info = line.split()
+            vlan = vlan_info[0]
+            name = vlan_info[1]
+            status = vlan_info[2]
+            # skip default vlans (fddi, token-ring)
+            if status != "active":
+                continue
+            if len(vlan_info) > 3:
+                for port in range(3,len(vlan_info)):
+                    ports.append(vlan_info[port])
+            else:
+                ports.append("None")
+
+            vlan_dict[vlan] = {
+                    "id": vlan,
+                    "name": name,
+                    "ports": ports,
+            }
+
+            vlan = name = status = ""
+            ports = []
+
+        return vlan_dict
 
     @property
     def dest_file_system(self):
