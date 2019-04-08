@@ -2823,8 +2823,8 @@ class IOSDriver(NetworkDriver):
 
             vlan = name = status = ""
             ports = []
-        
-        return vlan_dict
+
+            return vlan_dict
 
     @property
     def dest_file_system(self):
