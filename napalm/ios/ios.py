@@ -2774,7 +2774,7 @@ class IOSDriver(NetworkDriver):
                 }
             )
         return ipv6_neighbors_table
-    
+
     def get_vlans(self):
         """
         Get vlan details.
