@@ -2815,11 +2815,7 @@ class IOSDriver(NetworkDriver):
             else:
                 ports.append("None")
 
-            vlan_dict[vlan] = {
-                    "id": vlan,
-                    "name": name,
-                    "ports": ports,
-            }
+            vlan_dict[vlan] = {"id": vlan, "name": name, "ports": ports}
 
             vlan = name = status = ""
             ports = []
