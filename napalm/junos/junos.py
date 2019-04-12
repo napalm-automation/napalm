@@ -1968,7 +1968,7 @@ class JunOSDriver(NetworkDriver):
         )
 
         # rtt values are valid only if a we get an ICMP reply
-        if packet_loss is not 100:
+        if packet_loss != 100:
             ping_dict["success"] = {}
             ping_dict["success"]["probes_sent"] = int(
                 probe_summary.findtext("probes-sent")
