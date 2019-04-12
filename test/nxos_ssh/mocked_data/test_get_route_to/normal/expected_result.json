@@ -1,0 +1,28 @@
+{
+    "1.0.4.0/24": [
+        {
+            "protocol": "bgp",
+            "outgoing_interface": "",
+            "age": 140400,
+            "current_active": false,
+            "routing_table": "default",
+            "last_active": false,
+            "next_hop": "192.168.0.2",
+            "selected_next_hop": false,
+            "inactive_reason": "",
+            "preference": 0,
+            "protocol_attributes": {
+                "as_path": "",
+                "remote_address": "192.168.0.2",
+                "local_preference": 100,
+                "communities": [
+                    "1234:45",
+                    "no-export",
+                    "RT:1234:45"
+                ],
+                "local_as": 1,
+                "remote_as": 1
+            }
+        }
+    ]
+}
