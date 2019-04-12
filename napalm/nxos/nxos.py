@@ -703,6 +703,8 @@ class NXOSDriver(NXOSDriverBase):
         vs
         {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
         """
+        if parent_table is None:
+            return []
         _table = parent_table.get(table_name)
         _table_rows = []
         if isinstance(_table, list):
