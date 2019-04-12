@@ -146,6 +146,9 @@ def build_help():
     )
     args = parser.parse_args()
 
+    if not hasattr(args, "which"):
+        args.which = None
+
     if args.password is None:
         password = getpass.getpass("Enter password: ")
         setattr(args, "password", password)
