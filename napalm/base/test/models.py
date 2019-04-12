@@ -19,6 +19,7 @@ interface = {
     "is_enabled": bool,
     "description": text_type,
     "last_flapped": float,
+    "mtu": int,
     "speed": int,
     "mac_address": text_type,
 }
