@@ -1053,11 +1053,12 @@ class IOSDriver(NetworkDriver):
                 descr_match = re.search(descr_regex, line)
                 description = descr_match.groups()[0]
 
-            speed_regex = r"^\s+MTU\s+\d+.+BW\s+(\d+)\s+([KMG]?b)"
+            speed_regex = r"^\s+MTU\s+(\d+).+BW\s+(\d+)\s+([KMG]?b)"
             if re.search(speed_regex, line):
                 speed_match = re.search(speed_regex, line)
-                speed = speed_match.groups()[0]
-                speedformat = speed_match.groups()[1]
+                mtu = int(speed_match.groups()[0])
+                speed = speed_match.groups()[1]
+                speedformat = speed_match.groups()[2]
                 speed = float(speed)
                 if speedformat.startswith("Kb"):
                     speed = speed / 1000.0
@@ -1079,6 +1080,7 @@ class IOSDriver(NetworkDriver):
                     "description": description,
                     "mac_address": mac_address,
                     "last_flapped": last_flapped,
+                    "mtu": mtu,
                     "speed": speed,
                 }
 
