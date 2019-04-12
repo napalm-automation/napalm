@@ -1,0 +1,50 @@
+
+BGP routing table entry for 10.0.4.0/24, version 198207
+Paths: (2 available, best #2)
+Flags: (0x80c0002) on xmit-list, is not in urib, exported, has label
+  vpn: version 50886751, (0x100002) on xmit-list
+  local label: 132
+
+  Path type: internal, path is valid, not best reason: Weight
+             Imported from 313:273:10.0.4.0/24
+  AS-Path: NONE, path sourced internal to AS
+    10.2.4.8 (metric 101) from 10.2.4.8 (10.2.4.8)
+      Origin incomplete, MED 45, localpref 100, weight 0
+      Received label 75
+      Community: 65004:2731
+      Extcommunity:
+          RT:65004:1
+          RT:65004:273
+          OSPF DOMAIN ID:0x0005:0x000000000200
+          OSPF RT:0.0.0.0:5:0
+          OSPF ROUTER ID:10.5.192.250
+
+  Advertised path-id 1, VPN AF advertised path-id 1
+  Path type: redist, path is valid, is best path
+  AS-Path: NONE, path locally originated
+    0.0.0.0 (metric 0) from 0.0.0.0 (10.5.192.251)
+      Origin incomplete, MED 45, localpref 100, weight 32768
+      Community: 65004:2731
+      Extcommunity:
+          RT:65004:1
+          RT:65004:273
+          OSPF DOMAIN ID:0x0005:0x000000000200
+          OSPF RT:0.0.0.0:5:0
+          OSPF ROUTER ID:10.5.192.251
+
+  VRF advertise information:
+  Path-id 1 not advertised to any peer
+
+  VPN AF advertise information:
+  Path-id 1 advertised to peers:
+    10.2.4.1         10.2.4.2         10.2.4.8         10.2.4.9
+    10.2.4.10        10.2.4.17        10.2.4.18        10.2.4.19
+    10.2.4.20        10.2.4.23        10.2.4.24        10.2.4.29
+    10.2.4.30        10.2.4.31        10.2.4.32        10.2.4.33
+    10.2.4.34        10.2.4.35        10.2.4.36        10.2.4.39
+    10.2.4.40        10.2.4.51        10.2.4.52        10.2.4.53
+    10.2.4.54        10.2.4.55        10.2.4.56        10.2.4.63
+    10.2.4.64        10.2.4.71        10.2.4.72        10.2.4.75
+    10.2.4.76        10.2.4.85        10.2.4.86        10.2.4.89
+    10.2.4.90        10.2.4.99        10.2.4.100       10.2.4.101
+    10.2.4.102       10.2.4.111       10.2.4.113
