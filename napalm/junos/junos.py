@@ -23,7 +23,7 @@ import json
 import logging
 import collections
 from copy import deepcopy
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 # import third party lib
 from lxml.builder import E
@@ -778,10 +778,9 @@ class JunOSDriver(NetworkDriver):
 
     def get_lldp_neighbors_detail(self, interface=""):
         """Detailed view of the LLDP neighbors."""
-        lldp_neighbors = {}
-
+        lldp_neighbors = defaultdict(list)
+        lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
         if not interface:
-            lldp_table = junos_views.junos_lldp_neighbors_detail_table(self.device)
             try:
                 lldp_table.get()
             except RpcError as rpcerr:
@@ -821,8 +820,6 @@ class JunOSDriver(NetworkDriver):
                     lldp_table.get(**interface_args)
 
             for item in lldp_table:
-                if interface not in lldp_neighbors.keys():
-                    lldp_neighbors[interface] = []
                 lldp_neighbors[interface].append(
                     {
                         "parent_interface": item.parent_interface,
@@ -1971,7 +1968,7 @@ class JunOSDriver(NetworkDriver):
         )
 
         # rtt values are valid only if a we get an ICMP reply
-        if packet_loss is not 100:
+        if packet_loss != 100:
             ping_dict["success"] = {}
             ping_dict["success"]["probes_sent"] = int(
                 probe_summary.findtext("probes-sent")
