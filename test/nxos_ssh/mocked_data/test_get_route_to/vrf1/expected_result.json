@@ -1,0 +1,58 @@
+{
+    "1.0.4.0/24": [
+        {
+            "protocol": "bgp",
+            "outgoing_interface": "Port-channel87.3572",
+            "age": 1728000,
+            "current_active": true,
+            "routing_table": "TEST2",
+            "last_active": true,
+            "next_hop": "10.5.192.35",
+            "selected_next_hop": true,
+            "inactive_reason": "",
+            "preference": 45,
+            "protocol_attributes": {
+                "as_path": "",
+                "remote_address": "0.0.0.0",
+                "local_preference": 100,
+                "communities": [
+                    "65004:2731",
+                    "RT:65004:1",
+                    "RT:65004:273",
+                    "OSPF DOMAIN ID:0x0005:0x000000000200",
+                    "OSPF RT:0.0.0.0:5:0",
+                    "OSPF ROUTER ID:10.5.192.251"
+                ],
+                "local_as": 65004,
+                "remote_as": 0
+            }
+        },
+        {
+            "protocol": "bgp",
+            "outgoing_interface": "Port-channel87.3572",
+            "age": 1728000,
+            "current_active": true,
+            "routing_table": "TEST2",
+            "last_active": true,
+            "next_hop": "10.5.192.36",
+            "selected_next_hop": true,
+            "inactive_reason": "",
+            "preference": 45,
+            "protocol_attributes": {
+                "as_path": "",
+                "remote_address": "0.0.0.0",
+                "local_preference": 100,
+                "communities": [
+                    "65004:2731",
+                    "RT:65004:1",
+                    "RT:65004:273",
+                    "OSPF DOMAIN ID:0x0005:0x000000000200",
+                    "OSPF RT:0.0.0.0:5:0",
+                    "OSPF ROUTER ID:10.5.192.251"
+                ],
+                "local_as": 65004,
+                "remote_as": 0
+            }
+        }
+    ]
+}
