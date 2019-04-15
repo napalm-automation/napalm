@@ -703,17 +703,18 @@ class NXOSDriver(NXOSDriverBase):
         vs
         {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
         """
-        if parent_table is None:
+        if parent_table:
+            _table = parent_table.get(table_name)
+            _table_rows = []
+            if isinstance(_table, list):
+                _table_rows = [_table_row.get(row_name) for _table_row in _table]
+            elif isinstance(_table, dict):
+                _table_rows = _table.get(row_name)
+            if not isinstance(_table_rows, list):
+                _table_rows = [_table_rows]
+            return _table_rows
+        else:
             return []
-        _table = parent_table.get(table_name)
-        _table_rows = []
-        if isinstance(_table, list):
-            _table_rows = [_table_row.get(row_name) for _table_row in _table]
-        elif isinstance(_table, dict):
-            _table_rows = _table.get(row_name)
-        if not isinstance(_table_rows, list):
-            _table_rows = [_table_rows]
-        return _table_rows
 
     def _get_reply_table(self, result, table_name, row_name):
         return self._get_table_rows(result, table_name, row_name)
