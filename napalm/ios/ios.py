@@ -1254,8 +1254,8 @@ class IOSDriver(NetworkDriver):
             return prefix_limit
 
         # Get BGP config using ciscoconfparse because some old devices dont support "| sec bgp"
-        cfg = self.get_config(retrieve="startup")
-        cfg = cfg["startup"].splitlines()
+        cfg = self.get_config(retrieve="running")
+        cfg = cfg["running"].splitlines()
         bgp_config_text = napalm.base.helpers.cisco_conf_parse_objects(
             "router bgp", cfg
         )
