@@ -5,6 +5,7 @@
         "is_up": false,
         "last_flapped": -1.0,
         "mac_address": "",
+        "mtu": 1500,
         "speed": 1000
     },
     "Tunnel901": {
@@ -13,6 +14,7 @@
         "is_up": true,
         "last_flapped": -1.0,
         "mac_address": "",
+        "mtu": 1476,
         "speed": 1
     }
 }

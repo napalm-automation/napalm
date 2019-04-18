@@ -333,9 +333,13 @@ class JunOSDriver(NetworkDriver):
                         py23_compat.text_type(iface_data["mac_address"]),
                     ),
                     "speed": -1,
+                    "mtu": 0,
                 }
                 # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
 
+                match_mtu = re.search(r"(\w+)", str(iface_data["mtu"]) or "")
+                mtu = napalm.base.helpers.convert(int, match_mtu.group(0), 0)
+                result[iface]["mtu"] = mtu
                 match = re.search(r"(\d+)(\w*)", iface_data["speed"] or "")
                 if match is None:
                     continue
@@ -1968,7 +1972,7 @@ class JunOSDriver(NetworkDriver):
         )
 
         # rtt values are valid only if a we get an ICMP reply
-        if packet_loss is not 100:
+        if packet_loss != 100:
             ping_dict["success"] = {}
             ping_dict["success"]["probes_sent"] = int(
                 probe_summary.findtext("probes-sent")

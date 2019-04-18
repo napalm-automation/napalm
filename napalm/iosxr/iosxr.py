@@ -247,12 +247,14 @@ class IOSXRDriver(NetworkDriver):
                 )
                 * 1e-3,
             )
+            mtu = int(napalm.base.helpers.find_txt(interface_tree, "MTU"))
             description = napalm.base.helpers.find_txt(interface_tree, "Description")
             interfaces[interface_name] = copy.deepcopy(INTERFACE_DEFAULTS)
             interfaces[interface_name].update(
                 {
                     "is_up": is_up,
                     "speed": speed,
+                    "mtu": mtu,
                     "is_enabled": enabled,
                     "mac_address": mac_address,
                     "description": description,
@@ -440,9 +442,10 @@ class IOSXRDriver(NetworkDriver):
 
                 if (
                     napalm.base.helpers.find_txt(neighbor, "ConnectionAdminStatus")
-                    is "1"
+                    == "1"
                 ):
                     this_neighbor["is_enabled"] = True
+
                 try:
                     this_neighbor["description"] = napalm.base.helpers.convert(
                         text_type, napalm.base.helpers.find_txt(neighbor, "Description")
@@ -456,15 +459,17 @@ class IOSXRDriver(NetworkDriver):
                 )
 
                 if (
-                    str(napalm.base.helpers.find_txt(neighbor, "ConnectionAdminStatus"))
-                    is "1"
+                    text_type(
+                        napalm.base.helpers.find_txt(neighbor, "ConnectionAdminStatus")
+                    )
+                    == "1"
                 ):
                     this_neighbor["is_enabled"] = True
                 else:
                     this_neighbor["is_enabled"] = False
 
                 if (
-                    str(napalm.base.helpers.find_txt(neighbor, "ConnectionState"))
+                    text_type(napalm.base.helpers.find_txt(neighbor, "ConnectionState"))
                     == "BGP_ST_ESTAB"
                 ):
                     this_neighbor["is_up"] = True
@@ -871,7 +876,7 @@ class IOSXRDriver(NetworkDriver):
                     "{command}" took too long! Please adjust your params!'.format(
                     command=command
                 )
-                raise CommandTimeoutException(str(cli_output))
+                raise CommandTimeoutException(text_type(cli_output))
 
         return cli_output
 

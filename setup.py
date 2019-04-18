@@ -9,7 +9,7 @@ __author__ = "David Barroso <dbarrosop@dravetech.com>"
 
 setup(
     name="napalm",
-    version="2.3.3",
+    version="2.4.0",
     packages=find_packages(exclude=("test*",)),
     test_suite="test_base",
     author="David Barroso, Kirk Byers, Mircea Ulinic",
@@ -24,6 +24,7 @@ setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Operating System :: POSIX :: Linux",
         "Operating System :: MacOS",
     ],
