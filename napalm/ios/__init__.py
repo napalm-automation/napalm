@@ -16,4 +16,4 @@
 from napalm.ios.ios import IOSDriver
 
 
-__all__ = ['IOSDriver']
+__all__ = ["IOSDriver"]

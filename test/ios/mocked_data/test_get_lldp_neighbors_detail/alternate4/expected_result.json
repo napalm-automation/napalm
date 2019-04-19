@@ -1,58 +1,58 @@
 {
     "GigabitEthernet1": [
         {
-            "parent_interface": "N/A",
+            "parent_interface": "",
             "remote_port": "Gi1",
             "remote_port_description": "GigabitEthernet1",
             "remote_chassis_id": "001e.bd3a.f900",
             "remote_system_name": "csr9.bogus.com",
             "remote_system_description": "Cisco IOS Software [Denali], CSR1000V Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.3.1, RELEASE SOFTWARE (fc3)",
-            "remote_system_capab": "B,R",
-            "remote_system_enable_capab": "R"
+            "remote_system_capab": ["bridge", "router"],
+            "remote_system_enable_capab": ["router"]
         },
         {
-            "parent_interface": "N/A",
+            "parent_interface": "",
             "remote_port": "Gi1",
             "remote_port_description": "GigabitEthernet1",
             "remote_chassis_id": "001e.bd60.ee00",
             "remote_system_name": "csr8.bogus.com",
             "remote_system_description": "Cisco IOS Software [Denali], CSR1000V Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.3.1, RELEASE SOFTWARE (fc3)",
-            "remote_system_capab": "B,R",
-            "remote_system_enable_capab": "R"
+            "remote_system_capab": ["bridge", "router"],
+            "remote_system_enable_capab": ["router"]
         },
         {
-            "parent_interface": "N/A",
+            "parent_interface": "",
             "remote_port": "Gi1",
             "remote_port_description": "GigabitEthernet1",
             "remote_chassis_id": "001e.e507.ed00",
             "remote_system_name": "csr12.bogus.com",
             "remote_system_description": "Cisco IOS Software [Denali], CSR1000V Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.3.1, RELEASE SOFTWARE (fc3)",
-            "remote_system_capab": "B,R",
-            "remote_system_enable_capab": "R"
+            "remote_system_capab": ["bridge", "router"],
+            "remote_system_enable_capab": ["router"]
         }
     ],
     "GigabitEthernet2": [
         {
-            "parent_interface": "N/A",
+            "parent_interface": "",
             "remote_port": "Gi2",
             "remote_port_description": "GigabitEthernet2",
             "remote_chassis_id": "001e.bd3a.f900",
             "remote_system_name": "csr9.bogus.com",
             "remote_system_description": "Cisco IOS Software [Denali], CSR1000V Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.3.1, RELEASE SOFTWARE (fc3)",
-            "remote_system_capab": "B,R",
-            "remote_system_enable_capab": "R"
+            "remote_system_capab": ["bridge", "router"],
+            "remote_system_enable_capab": ["router"]
         }
     ],
     "GigabitEthernet4": [
         {
-            "parent_interface": "N/A",
+            "parent_interface": "",
             "remote_port": "Gi4",
             "remote_port_description": "GigabitEthernet4",
             "remote_chassis_id": "001e.bd60.ee00",
             "remote_system_name": "csr8.bogus.com",
             "remote_system_description": "Cisco IOS Software [Denali], CSR1000V Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.3.1, RELEASE SOFTWARE (fc3)",
-            "remote_system_capab": "B,R",
-            "remote_system_enable_capab": "R"
+            "remote_system_capab": ["bridge", "router"],
+            "remote_system_enable_capab": ["router"]
         }
     ]
 }

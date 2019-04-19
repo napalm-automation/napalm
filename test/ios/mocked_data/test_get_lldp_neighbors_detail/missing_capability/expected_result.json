@@ -1,24 +1,24 @@
 {
     "GigabitEthernet1": [
         {
-            "parent_interface": "N/A", 
+            "parent_interface": "",
             "remote_chassis_id": "00ae.3b11.1d00", 
             "remote_port": "Gi2/0", 
             "remote_port_description": "GigabitEthernet2/0", 
-            "remote_system_capab": "B,R", 
+            "remote_system_capab": ["bridge", "router"],
             "remote_system_description": "Cisco IOS Software, vios_l2 Software (vios_l2-ADVENTERPRISEK9-M), Version 15.2(4.0.55)E, TEST ENGINEERING ESTG_WEEKLY BUILD, synced to  END_OF_FLO_ISP", 
-            "remote_system_enable_capab": "R", 
+            "remote_system_enable_capab": ["router"],
             "remote_system_name": "SW2.cisco.com"
         }, 
         {
-            "parent_interface": "N/A", 
+            "parent_interface": "",
             "remote_chassis_id": "0050.56c0.0001", 
             "remote_port": "0050.56c0.0001", 
-            "remote_port_description": "N/A", 
-            "remote_system_capab": "N/A", 
-            "remote_system_description": "N/A", 
-            "remote_system_enable_capab": "N/A", 
-            "remote_system_name": "N/A"
+            "remote_port_description": "",
+            "remote_system_capab": [],
+            "remote_system_description": "",
+            "remote_system_enable_capab": [],
+            "remote_system_name": ""
         }
     ]
 }

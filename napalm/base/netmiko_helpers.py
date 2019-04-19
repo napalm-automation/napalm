@@ -25,13 +25,13 @@ def netmiko_args(optional_args):
     defaults = fields[3]
 
     check_self = args.pop(0)
-    if check_self != 'self':
+    if check_self != "self":
         raise ValueError("Error processing Netmiko arguments")
 
     netmiko_argument_map = dict(zip(args, defaults))
 
     # Netmiko arguments that are integrated into NAPALM already
-    netmiko_filter = ['ip', 'host', 'username', 'password', 'device_type', 'timeout']
+    netmiko_filter = ["ip", "host", "username", "password", "device_type", "timeout"]
 
     # Filter out all of the arguments that are integrated into NAPALM
     for k in netmiko_filter:

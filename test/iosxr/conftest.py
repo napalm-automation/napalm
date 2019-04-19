@@ -12,16 +12,18 @@ from napalm.base.test.double import BaseTestDouble
 from napalm.iosxr import iosxr
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def set_device_parameters(request):
     """Set up the class."""
+
     def fin():
         request.cls.device.close()
+
     request.addfinalizer(fin)
 
     request.cls.driver = iosxr.IOSXRDriver
     request.cls.patched_driver = PatchedIOSXRDriver
-    request.cls.vendor = 'iosxr'
+    request.cls.vendor = "iosxr"
     parent_conftest.set_device_parameters(request)
 
 
@@ -37,13 +39,11 @@ class PatchedIOSXRDriver(iosxr.IOSXRDriver):
 
         super().__init__(hostname, username, password, timeout, optional_args)
 
-        self.patched_attrs = ['device']
+        self.patched_attrs = ["device"]
         self.device = FakeIOSXRDevice()
 
     def is_alive(self):
-        return {
-            'is_alive': True  # In testing everything works..
-        }
+        return {"is_alive": True}  # In testing everything works..
 
     def open(self):
         pass
@@ -56,7 +56,7 @@ class FakeIOSXRDevice(BaseTestDouble):
         pass
 
     def make_rpc_call(self, rpc_call, encoded=True):
-        filename = '{}.txt'.format(self.sanitize_text(rpc_call))
+        filename = "{}.txt".format(self.sanitize_text(rpc_call))
         full_path = self.find_file(filename)
         result = self.read_txt_file(full_path)
         if encoded:
@@ -65,13 +65,13 @@ class FakeIOSXRDevice(BaseTestDouble):
             return result
 
     def show_lldp_neighbors(self):
-        filename = 'show_lldp_neighbors.txt'
+        filename = "show_lldp_neighbors.txt"
         full_path = self.find_file(filename)
         result = self.read_txt_file(full_path)
         return result
 
     def _execute_config_show(self, show_command):
-        rpc_request = '<CLI><Configuration>{show_command}</Configuration></CLI>'.format(
+        rpc_request = "<CLI><Configuration>{show_command}</Configuration></CLI>".format(
             show_command=show_command
         )
         return self.make_rpc_call(rpc_request, encoded=False)

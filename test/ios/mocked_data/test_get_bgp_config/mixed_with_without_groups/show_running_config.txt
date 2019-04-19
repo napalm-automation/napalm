@@ -1,0 +1,174 @@
+!
+! Last configuration change at 18:41:02 UTC Thu Nov 24 2016
+!
+version 15.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console auto
+!
+hostname CSR1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+enable password cisco
+!
+aaa new-model
+!
+!
+aaa authentication login default local
+aaa authorization exec default local
+!
+!
+!
+!
+!
+aaa session-id common
+!
+ip vrf MGMT
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip domain name example.local
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9OSEGKJXRHE
+spanning-tree extend system-id
+!
+username cisco privilege 15 password 0 cisco
+!
+redundancy
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+!
+interface GigabitEthernet1
+ ip vrf forwarding MGMT
+ ip address 192.168.35.121 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet2
+ ip address 10.1.1.1 255.255.255.0
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+router ospf 1
+ redistribute connected subnets
+ network 10.1.1.0 0.0.0.255 area 0
+!
+!
+router bgp 65001
+ bgp log-neighbor-changes
+ neighbor RR-CLIENTS peer-group
+ neighbor RR-CLIENTS remote-as 65001
+ neighbor RR-CLIENTS description [ibgp - rr clients]
+ neighbor RR-CLIENTS update-source GigabitEthernet1
+ neighbor 10.0.0.1 remote-as 65111
+ neighbor 10.0.0.1 local-as 65005
+ neighbor 10.0.0.1 description external Peer
+ neighbor 10.0.0.3 peer-group RR-CLIENTS
+ neighbor 10.0.0.5 peer-group RR-CLIENTS
+ !
+ address-family ipv4
+  neighbor RR-CLIENTS route-reflector-client
+  neighbor RR-CLIENTS route-map PASS-IN in
+  neighbor RR-CLIENTS route-map PASS-OUT out
+  neighbor RR-CLIENTS maximum-prefix 1000 80 restart 15
+  neighbor 10.0.0.1 activate
+  neighbor 10.0.0.1 route-map PASS-IN in
+  neighbor 10.0.0.1 route-map PASS-OUT out
+  neighbor 10.0.0.1 maximum-prefix 500 restart 10
+  neighbor 10.0.0.3 activate
+  neighbor 10.0.0.5 activate
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+control-plane
+!
+ !
+ !
+ !
+ !
+!
+!
+!
+!
+!
+line con 0
+line vty 0 4
+!
+!
+end
