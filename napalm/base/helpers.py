@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 
 # std libs
 import os
+import re
 import sys
 import itertools
 
@@ -15,6 +16,7 @@ import textfsm
 from netaddr import EUI
 from netaddr import mac_unix
 from netaddr import IPAddress
+from ciscoconfparse import CiscoConfParse
 
 # local modules
 import napalm.base.exceptions
@@ -106,6 +108,67 @@ def load_template(
             )
         )
     return cls.load_merge_candidate(config=configuration)
+
+
+def cisco_conf_parse_parents(parent, child, config):
+    """
+    Use CiscoConfParse to find parent lines that contain a specific child line.
+
+    :param parent: The parent line to search for
+    :param child:  The child line required under the given parent
+    :param config: The device running/startup config
+    """
+    if type(config) == str:
+        config = config.splitlines()
+    parse = CiscoConfParse(config)
+    cfg_obj = parse.find_parents_w_child(parent, child)
+    return cfg_obj
+
+
+def cisco_conf_parse_objects(cfg_section, config):
+    """
+    Use CiscoConfParse to find and return a section of Cisco IOS config.
+    Similar to "show run | section <cfg_section>"
+
+    :param cfg_section: The section of the config to return eg. "router bgp"
+    :param config: The running/startup config of the device to parse
+    """
+    return_config = []
+    if type(config) is str:
+        config = config.splitlines()
+    parse = CiscoConfParse(config)
+    cfg_obj = parse.find_objects(cfg_section)
+    for parent in cfg_obj:
+        return_config.append(parent.text)
+        for child in parent.all_children:
+            return_config.append(child.text)
+    return return_config
+
+
+def regex_find_txt(pattern, text, default=""):
+    """""
+    RegEx search for pattern in text. Will try to match the data type of the "default" value
+    or return the default value if no match is found.
+    This is to parse IOS config like below:
+    regex_find_txt(r"remote-as (65000)", "neighbor 10.0.0.1 remote-as 65000", default=0)
+    RETURNS: 65001
+
+    :param pattern: RegEx pattern to match on
+    :param text: String of text ot search for "pattern" in
+    :param default="": Default value and type to return on error
+    """
+    text = str(text)
+    value = re.findall(pattern, text)
+    try:
+        if not value:
+            raise Exception
+        if not isinstance(value, type(default)):
+            if isinstance(value, list) and len(value) == 1:
+                value = value[0]
+            value = type(default)(value)
+    except Exception:  # in case of any exception, returns default
+        value = default
+    return value
 
 
 def textfsm_extractor(cls, template_name, raw_text):

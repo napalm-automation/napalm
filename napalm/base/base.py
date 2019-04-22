@@ -268,6 +268,7 @@ class NetworkDriver(object):
          * description (string)
          * last_flapped (float in seconds)
          * speed (int in Mbit)
+         * MTU (in Bytes)
          * mac_address (string)
 
         Example::
@@ -280,6 +281,7 @@ class NetworkDriver(object):
                 'description': '',
                 'last_flapped': -1.0,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:61',
                 },
             u'Ethernet1':
@@ -289,6 +291,7 @@ class NetworkDriver(object):
                 'description': 'foo',
                 'last_flapped': 1429978575.1554043,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:62',
                 },
             u'Ethernet2':
@@ -298,6 +301,7 @@ class NetworkDriver(object):
                 'description': 'bla',
                 'last_flapped': 1429978575.1555667,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:63',
                 },
             u'Ethernet3':
@@ -307,6 +311,7 @@ class NetworkDriver(object):
                 'description': 'bar',
                 'last_flapped': -1.0,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:64',
                 }
             }
