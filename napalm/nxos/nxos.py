@@ -1103,6 +1103,10 @@ class NXOSDriver(NXOSDriverBase):
                 interfaces_ip[interface_name] = {}
             if "ipv6" not in interfaces_ip[interface_name].keys():
                 interfaces_ip[interface_name]["ipv6"] = {}
+            if "addr" not in interface.keys():
+                # Handle nexus 9000 ipv6 interface output
+                addrs = [addr["addr"] for addr in interface["TABLE_addr"]["ROW_addr"]]
+                interface["addr"] = addrs
 
             if type(interface.get("addr", "")) is list:
                 for ipv6_address in interface.get("addr", ""):
