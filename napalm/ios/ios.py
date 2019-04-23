@@ -2542,6 +2542,10 @@ class IOSDriver(NetworkDriver):
                 continue
             elif re.search(r"vlan.*mac.*address.*type.*", line):
                 continue
+            elif re.search(
+                r"Displaying entries from active supervisor:\s+\w+\s+\[\d\]:", line
+            ):
+                continue
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
