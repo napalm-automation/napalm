@@ -21,7 +21,6 @@ from napalm.base.utils import py23_compat
 import napalm.base.exceptions
 
 import ast
-import json
 import os
 import re
 
@@ -38,10 +37,7 @@ def raise_exception(result):
 
 
 def is_mocked_method(method):
-    mocked_methods = [
-        "ping",
-        "traceroute",
-    ]
+    mocked_methods = ["ping", "traceroute"]
     if method.startswith("get_") or method in mocked_methods:
         return True
     return False
