@@ -1474,6 +1474,9 @@ class IOSDriver(NetworkDriver):
         cmd_bgp_all_sum = "show bgp all summary"
         summary_output = self._send_command(cmd_bgp_all_sum).strip()
 
+        if "Invalid input detected" in summary_output:
+            raise CommandErrorException("BGP is not running on this device")
+
         # get neighbor output from device
         neighbor_output = ""
         for afi in supported_afi:
@@ -1817,6 +1820,10 @@ class IOSDriver(NetworkDriver):
         bgp_detail = defaultdict(lambda: defaultdict(lambda: []))
 
         raw_bgp_sum = self._send_command("show ip bgp all sum").strip()
+
+        if "Invalid input detected" in raw_bgp_sum:
+            raise CommandErrorException("BGP is not running on this device")
+
         bgp_sum = napalm.base.helpers.textfsm_extractor(
             self, "ip_bgp_all_sum", raw_bgp_sum
         )
