@@ -20,6 +20,7 @@ from napalm.base.base import NetworkDriver
 from napalm.base.utils import py23_compat
 import napalm.base.exceptions
 
+import ast
 import json
 import os
 import re
@@ -39,6 +40,7 @@ def raise_exception(result):
 def is_mocked_method(method):
     mocked_methods = [
         "ping",
+        "traceroute",
     ]
     if method.startswith("get_") or method in mocked_methods:
         return True
@@ -74,7 +76,7 @@ def mocked_data(path, name, count):
     filename = "{}.{}".format(os.path.join(path, name), count)
     try:
         with open(filename) as f:
-            result = json.loads(f.read())
+            result = ast.literal_eval(f.read())
     except IOError:
         raise NotImplementedError("You can provide mocked data in {}".format(filename))
 

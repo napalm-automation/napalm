@@ -172,3 +172,13 @@ class TestMockDriver(object):
         assert len(result["success"]["results"]) == 5
         assert result["success"]["results"][0]["ip_address"] == "10.1.0.1"
         d.close()
+        
+    def test_traceroute(self):
+        d = driver("blah", "bleh", "blih", optional_args=optional_args)
+        d.open()
+        result = d.traceroute("8.8.8.8")
+        assert "success" in result
+        assert len(result["success"]) == 4
+        assert result["success"][4]["probes"][1]["ip_address"] == "8.8.8.8"
+
+    
