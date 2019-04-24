@@ -37,7 +37,9 @@ def raise_exception(result):
 
 
 def is_mocked_method(method):
-    mocked_methods = []
+    mocked_methods = [
+        "ping",
+    ]
     if method.startswith("get_") or method in mocked_methods:
         return True
     return False

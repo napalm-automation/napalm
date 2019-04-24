@@ -163,3 +163,12 @@ class TestMockDriver(object):
         d.compare_config() == "a_diff"
         d.commit_config()
         d.close()
+
+    def test_ping(self):
+        d = driver("blah", "bleh", "blih", optional_args=optional_args)
+        d.open()
+        result = d.ping("10.1.0.1")
+        assert "success" in result
+        assert len(result["success"]["results"]) == 5
+        assert result["success"]["results"][0]["ip_address"] == "10.1.0.1"
+        d.close()
