@@ -1,0 +1,21 @@
+Legend: * - primary entry
+       age - seconds since last seen
+       n/a - not available
+       S - secure entry
+       R - router's gateway mac address entry
+       D - Duplicate mac address entry
+       # - Fabric mac address entry. Clear mac cli doesn't clear this entry
+
+Displaying entries from active supervisor: Earl [1]:
+
+      vlan   mac address    type   learn    age                 ports
+-----+----+---------------+-------+-----+----------+-----------------------------
+*        1 dead.beef.1234  dynamic  Yes       25     Po13
+
+
+Displaying entries from active supervisor: Earl [2]:
+
+      vlan   mac address    type   learn    age                 ports
+-----+----+---------------+-------+-----+----------+-----------------------------
+      1234 1234.beef.dead  dynamic  Yes      115     Po201
+

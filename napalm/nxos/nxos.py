@@ -813,6 +813,8 @@ class NXOSDriver(NXOSDriverBase):
 
         for interface_details in interfaces_body:
             interface_name = interface_details.get("interface")
+            interface_mtu = interface_details.get("eth_mtu", 0)
+            interface_mtu = int(interface_mtu)
             # Earlier version of Nexus returned a list for 'eth_bw' (observed on 7.1(0)N1(1a))
             interface_speed = interface_details.get("eth_bw", 0)
             if isinstance(interface_speed, list):
@@ -832,6 +834,7 @@ class NXOSDriver(NXOSDriverBase):
                     interface_details.get("eth_link_flapped", "")
                 ),
                 "speed": interface_speed,
+                "mtu": interface_mtu,
                 "mac_address": napalm.base.helpers.convert(
                     napalm.base.helpers.mac, interface_details.get("eth_hw_addr")
                 ),
@@ -1100,6 +1103,10 @@ class NXOSDriver(NXOSDriverBase):
                 interfaces_ip[interface_name] = {}
             if "ipv6" not in interfaces_ip[interface_name].keys():
                 interfaces_ip[interface_name]["ipv6"] = {}
+            if "addr" not in interface.keys():
+                # Handle nexus 9000 ipv6 interface output
+                addrs = [addr["addr"] for addr in interface["TABLE_addr"]["ROW_addr"]]
+                interface["addr"] = addrs
 
             if type(interface.get("addr", "")) is list:
                 for ipv6_address in interface.get("addr", ""):
