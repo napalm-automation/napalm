@@ -340,7 +340,11 @@ class JunOSDriver(NetworkDriver):
                 match_mtu = re.search(r"(\w+)", str(iface_data["mtu"]) or "")
                 mtu = napalm.base.helpers.convert(int, match_mtu.group(0), 0)
                 result[iface]["mtu"] = mtu
-                match = re.search(r"(\d+)(\w*)", iface_data["speed"] or "")
+                match = re.search(r"(\d+|[Aa]uto)(\w*)", iface_data["speed"] or "")
+                if match and match.group(1).lower() == "auto":
+                    match = re.search(
+                        r"(\d+)(\w*)", iface_data["negotiated_speed"] or ""
+                    )
                 if match is None:
                     continue
                 speed_value = napalm.base.helpers.convert(int, match.group(1), -1)

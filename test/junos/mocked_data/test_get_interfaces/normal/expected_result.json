@@ -114,7 +114,7 @@
     "last_flapped": 17193266,
     "mac_address": "54:E0:32:80:68:83",
     "mtu": 1514,
-    "speed": -1
+    "speed": 1000
   },
   "ge-0/0/0.0": {
     "description": "",
@@ -123,7 +123,7 @@
     "last_flapped": 17193266,
     "mac_address": "54:E0:32:80:68:83",
     "mtu": 1514,
-    "speed": -1
+    "speed": 1000
   },
   "ge-0/0/1": {
     "description": "",
@@ -492,7 +492,7 @@
     "last_flapped": 12710488,
     "mac_address": "54:E0:32:80:68:B1",
     "mtu": 1514,
-    "speed": -1
+    "speed": 1000
   },
   "ge-0/0/46.0": {
     "description": "",
@@ -501,7 +501,7 @@
     "last_flapped": 12710488,
     "mac_address": "54:E0:32:80:68:B1",
     "mtu": 1514,
-    "speed": -1
+    "speed": 1000
   },
   "ge-0/0/47": {
     "description": "",
@@ -510,7 +510,7 @@
     "last_flapped": 12710487,
     "mac_address": "54:E0:32:80:68:B2",
     "mtu": 1514,
-    "speed": -1
+    "speed": 1000
   },
   "ge-0/0/47.0": {
     "description": "",
@@ -519,7 +519,7 @@
     "last_flapped": 12710487,
     "mac_address": "54:E0:32:80:68:B2",
     "mtu": 1514,
-    "speed": -1
+    "speed": 1000
   },
   "ge-0/0/5": {
     "description": "",
