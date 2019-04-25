@@ -774,12 +774,12 @@ class NXOSSSHDriver(NXOSDriverBase):
         environment = {}
         # sys_resources contains cpu and mem output
         sys_resources = self._send_command("show system resources")
-        temp_cmd = "show env temp"
+        temp_cmd = "show environment temperature"
 
         # cpu
         environment.setdefault("cpu", {})
-        environment["cpu"][0] = {}
-        environment["cpu"][0]["%usage"] = 0.0
+        environment["cpu"]["0"] = {}
+        environment["cpu"]["0"]["%usage"] = -1.0
         system_resources_cpu = helpers.textfsm_extractor(
             self, "system_resources", sys_resources
         )
