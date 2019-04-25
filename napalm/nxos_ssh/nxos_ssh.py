@@ -1540,7 +1540,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             }
         return vlans
 
-    def _parce_ports(self, vlan_s) -> list:
+    def _parce_ports(self, vlan_s):
         vlans = []
         find_regexp = r"^([A-Za-z\/-]+|.*\/)(\d+)-(\d+)$"
         vlan_str = ""
