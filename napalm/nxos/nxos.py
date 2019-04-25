@@ -1311,8 +1311,26 @@ class NXOSDriver(NXOSDriverBase):
         for vlan in vlan_table_raw:
             vlans[vlan["vlanshowbr-vlanid"]] = {
                 "name": vlan["vlanshowbr-vlanname"],
-                "interfaces": [
-                    x.strip() for x in vlan["vlanshowplist-ifidx"].split(",")
-                ],
+                "interfaces": self._parce_ports(vlan["vlanshowplist-ifidx"]),
             }
+        return vlans
+
+    def _parce_ports(self, vlan_s) -> list:
+        vlans = []
+        find_regexp = r"^([A-Za-z\/-]+|.*\/)(\d+)-(\d+)$"
+        vlan_str = ""
+
+        if isinstance(vlan_s, list):
+            for v in vlan_s:
+                vlan_str += f",{v}"
+        else:
+            vlan_str = vlan_s
+
+        for vls in vlan_str.split(","):
+            find = re.findall(find_regexp, vls.strip())
+            if find:
+                for i in range(int(find[0][1]), int(find[0][2]) + 1):
+                    vlans.append(f"{find[0][0]}{str(i)}")
+            else:
+                vlans.append(vls.strip())
         return vlans
