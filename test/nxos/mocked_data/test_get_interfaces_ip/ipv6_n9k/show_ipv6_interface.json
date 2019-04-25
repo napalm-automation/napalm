@@ -1,0 +1,64 @@
+{
+    "TABLE_intf": {
+        "ROW_intf": {
+            "vrf-name-out": "default",
+            "intf-name": "Ethernet1/128",
+            "proto-state": "down",
+            "link-state": "down",
+            "admin-state": "up",
+            "prefix": "2001:dead:beef::1/128",
+            "linklocal-addr": "fe80::5054:ff:fe12:345d",
+            "linklocal-configured": "FALSE",
+            "mrouting-enabled": "disabled",
+            "mgroup-locally-joined": "TRUE",
+            "mtu": 1500,
+            "urpf-mode": "none",
+            "ipv6-lstype": "none",
+            "stats-last-reset": "never",
+            "upkt-fwd": 0,
+            "upkt-orig": 0,
+            "upkt-consumed": 0,
+            "ubyte-fwd": 0,
+            "ubyte-orig": 0,
+            "ubyte-consumed": 0,
+            "mpkt-fwd": 0,
+            "mpkt-orig": 0,
+            "mpkt-consumed": 0,
+            "mbyte-fwd": 0,
+            "mbyte-orig": 0,
+            "mbyte-consumed": 0,
+            "TABLE_addr": {
+                "ROW_addr": [
+                    {
+                        "addr": "2001:dead:beef::1/128"
+                    },
+                    {
+                        "addr": "2001:c0ff:ee::1/128"
+                    }
+                ]
+            },
+            "TABLE_maddr": {
+                "ROW_maddr": [
+                    {
+                        "m-addr": "ff02::1:ff00:1"
+                    },
+                    {
+                        "m-addr": "ff02::2"
+                    },
+                    {
+                        "m-addr": "ff02::1"
+                    },
+                    {
+                        "m-addr": "ff02::1:ff00:1"
+                    },
+                    {
+                        "m-addr": "ff02::1:ff12:345d"
+                    },
+                    {
+                        "m-addr": "ff02::1:ff00:1"
+                    }
+                ]
+            }
+        }
+    }
+}
