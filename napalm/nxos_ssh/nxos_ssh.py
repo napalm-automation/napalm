@@ -780,7 +780,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         environment.setdefault("cpu", {})
         environment["cpu"][0] = {}
         environment["cpu"][0]["%usage"] = 0.0
-        system_resources_cpu = napalm.base.helpers.textfsm_extractor(
+        system_resources_cpu = helpers.textfsm_extractor(
             self, "system_resources", sys_resources
         )
         for cpu in system_resources_cpu:
