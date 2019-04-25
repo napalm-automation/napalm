@@ -1547,7 +1547,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         if isinstance(vlan_s, list):
             for v in vlan_s:
-                vlan_str += f",{v}"
+                vlan_str += "," + v
         else:
             vlan_str = vlan_s
 
@@ -1555,7 +1555,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             find = re.findall(find_regexp, vls.strip())
             if find:
                 for i in range(int(find[0][1]), int(find[0][2]) + 1):
-                    vlans.append(f"{find[0][0]}{str(i)}")
+                    vlans.append(find[0][0] + str(i))
             else:
                 vlans.append(vls.strip())
         return vlans
