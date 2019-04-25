@@ -773,56 +773,66 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         environment = {}
         # sys_resources contains cpu and mem output
-        sys_resources = self._send_command('show system resources')
-        temp_cmd = 'show env temp'
+        sys_resources = self._send_command("show system resources")
+        temp_cmd = "show env temp"
 
         # cpu
-        environment.setdefault('cpu', {})
-        environment['cpu'][0] = {}
-        environment['cpu'][0]['%usage'] = 0.0
-        system_resources_cpu = napalm.base.helpers.textfsm_extractor(self, 'system_resources',
-                                                                     sys_resources)
+        environment.setdefault("cpu", {})
+        environment["cpu"][0] = {}
+        environment["cpu"][0]["%usage"] = 0.0
+        system_resources_cpu = napalm.base.helpers.textfsm_extractor(
+            self, "system_resources", sys_resources
+        )
         for cpu in system_resources_cpu:
-            cpu_dict = {cpu.get('cpu_id'): {
-                        '%usage': round(100 - float(cpu.get('cpu_idle')), 2)}}
-            environment['cpu'].update(cpu_dict)
+            cpu_dict = {
+                cpu.get("cpu_id"): {
+                    "%usage": round(100 - float(cpu.get("cpu_idle")), 2)
+                }
+            }
+            environment["cpu"].update(cpu_dict)
 
         # memory
-        environment.setdefault('memory', {})
+        environment.setdefault("memory", {})
         for line in sys_resources.splitlines():
             # Memory usage:   16401224K total,   4798280K used,   11602944K free
-            if 'Memory usage:' in line:
-                proc_total_mem, proc_used_mem, _ = line.split(',')
-                proc_used_mem = re.search(r'\d+', proc_used_mem).group(0)
-                proc_total_mem = re.search(r'\d+', proc_total_mem).group(0)
+            if "Memory usage:" in line:
+                proc_total_mem, proc_used_mem, _ = line.split(",")
+                proc_used_mem = re.search(r"\d+", proc_used_mem).group(0)
+                proc_total_mem = re.search(r"\d+", proc_total_mem).group(0)
                 break
         else:
             raise ValueError("Unexpected output from: {}".format(line))
-        environment['memory']['used_ram'] = int(proc_used_mem)
-        environment['memory']['available_ram'] = int(proc_total_mem)
+        environment["memory"]["used_ram"] = int(proc_used_mem)
+        environment["memory"]["available_ram"] = int(proc_total_mem)
 
         # temperature
         output = self._send_command(temp_cmd)
-        environment.setdefault('temperature', {})
+        environment.setdefault("temperature", {})
         for line in output.splitlines():
             # Module   Sensor        MajorThresh   MinorThres   CurTemp     Status
             # 1        Intake          70              42          28         Ok
-            if re.match(r'^[0-9]', line):
+            if re.match(r"^[0-9]", line):
                 module, sensor, is_critical, is_alert, temp, _ = line.split()
                 is_critical = float(is_critical)
                 is_alert = float(is_alert)
                 temp = float(temp)
-                env_value = {'is_alert': temp >= is_alert,
-                             'is_critical': temp >= is_critical,
-                             'temperature': temp}
-                location = '{0}-{1}'.format(sensor, module)
-                environment['temperature'][location] = env_value
+                env_value = {
+                    "is_alert": temp >= is_alert,
+                    "is_critical": temp >= is_critical,
+                    "temperature": temp,
+                }
+                location = "{0}-{1}".format(sensor, module)
+                environment["temperature"][location] = env_value
 
         # Initialize 'power' and 'fan' to default values (not implemented)
-        environment.setdefault('power', {})
-        environment['power']['invalid'] = {'status': True, 'output': -1.0, 'capacity': -1.0}
-        environment.setdefault('fans', {})
-        environment['fans']['invalid'] = {'status': True}
+        environment.setdefault("power", {})
+        environment["power"]["invalid"] = {
+            "status": True,
+            "output": -1.0,
+            "capacity": -1.0,
+        }
+        environment.setdefault("fans", {})
+        environment["fans"]["invalid"] = {"status": True}
 
         return environment
 
