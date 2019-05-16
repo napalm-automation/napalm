@@ -1,0 +1,70 @@
+Capability codes:
+  (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+  (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+Device ID            Local Intf      Hold-time  Capability  Port ID  
+
+Chassis id: 2cc2.6054.dc2c
+Port id: Eth2/1
+Local Port id: Eth2/1
+Port Description: Ethernet2/1
+System Name: nxos2.madeupdomain.com
+System Description: Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00
+Time remaining: 104 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: 10.0.0.72
+Vlan ID: not advertised
+
+
+Chassis id: 2cc2.6064.e15f
+Port id: Eth2/2
+Local Port id: Eth2/2
+Port Description: Ethernet2/2
+System Name: nxos2.madeupdomain.com
+System Description: Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00
+Time remaining: 112 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: 10.0.0.72
+
+
+Vlan ID: not advertised
+Chassis id: 2cc2.6072.617b
+Port id: Eth2/3
+Local Port id: Eth2/3
+Port Description: Ethernet2/3
+System Name: nxos2.madeupdomain.com
+System Description: Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00
+Time remaining: 112 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: 10.0.0.72
+Vlan ID: not advertised
+
+
+Chassis id: 2cc2.6070.69da
+Port id: Eth2/4
+Local Port id: Eth2/4
+Port Description: Ethernet2/4
+System Name: nxos2.madeupdomain.com
+System Description: Cisco NX-OS(tm) titanium, Software (titanium-d1), Version 7.3(1)D1(1), Interim version 7.3(1)D1(0.10), RELEASE SOFTWARE Copyright (c) 2002-2013, 2015 by Cisco Systems, Inc. Compiled 1/11/2016 16:00:00
+Time remaining: 112 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: 10.0.0.72
+Vlan ID: not advertised
+
+
+Chassis id: chs123456s
+Port id: 1/2.1
+Local Port id: Eth1/6
+Port Description: Linux bigip.example.com 3.4.0-5.6.77.el10.x86_64 #1 SMP Tue Mar 27 06:47:55 PDT 2018 x86_64
+System Name: bigip.example.com
+System Description: Linux bigip.example.com 3.4.0-5.6.77.el10.x86_64 #1 SMP Tue Mar 27 06:47:55 PDT 2018 x86_64
+Time remaining: 102 seconds
+System Capabilities: B, R
+Enabled Capabilities: B, R
+Management Address: not advertised
+Vlan ID: 0
+
+Total entries displayed: 4

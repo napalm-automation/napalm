@@ -6,8 +6,6 @@
 
 junos_iface_table:
   rpc: get-interface-information
-  args:
-    extensive: True
   args_key: interface_name
   item: physical-interface
   view: junos_iface_view
@@ -20,6 +18,8 @@ junos_iface_view:
     last_flapped: { interface-flapped/@seconds: int }
     #mode: logical-interface/address-family/address-family-name
     speed: speed
+    negotiated_speed: ethernet-autonegotiation/link-partner-speed
+    mtu: mtu
     mac_address: current-physical-address
 
 junos_logical_iface_table:
@@ -35,6 +35,8 @@ junos_logical_iface_view:
     description: { description: unicode }
     last_flapped: { ../interface-flapped/@seconds: int }
     speed: ../speed
+    negotiated_speed: ../ethernet-autonegotiation/link-partner-speed
+    mtu: ../mtu
     mac_address: ../current-physical-address
 
 ####

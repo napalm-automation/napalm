@@ -1,1 +1,78 @@
-{"me0.0": [{"remote_port_description": "Po1:sw21.tpe01:xe-0/1/0", "remote_port": "Ethernet3/2/1", "remote_system_description": "Arista Networks EOS version 4.14.8M running on an Arista Networks DCS-7504", "remote_chassis_id": "00:1C:73:EE:C0:46", "remote_system_name": "core05.tpe01", "parent_interface": "ae0.0", "remote_system_capab": "Bridge Router", "remote_system_enable_capab": "Bridge"}], "xe-4/3/6": [{"remote_port_description": "Po1:sw21.tpe01:xe-0/1/0", "remote_port": "Ethernet3/2/1", "remote_system_description": "Arista Networks EOS version 4.14.8M running on an Arista Networks DCS-7504", "remote_chassis_id": "00:1C:73:EE:C0:46", "remote_system_name": "core05.tpe01", "parent_interface": "ae0.0", "remote_system_capab": "Bridge Router", "remote_system_enable_capab": "Bridge"}], "xe-0/1/0.0": [{"remote_port_description": "Po1:sw21.tpe01:xe-0/1/0", "remote_port": "Ethernet3/2/1", "remote_system_description": "Arista Networks EOS version 4.14.8M running on an Arista Networks DCS-7504", "remote_chassis_id": "00:1C:73:EE:C0:46", "remote_system_name": "core05.tpe01", "parent_interface": "ae0.0", "remote_system_capab": "Bridge Router", "remote_system_enable_capab": "Bridge"}], "ge-0/0/0.0": [{"remote_port_description": "Po1:sw21.tpe01:xe-0/1/0", "remote_port": "Ethernet3/2/1", "remote_system_description": "Arista Networks EOS version 4.14.8M running on an Arista Networks DCS-7504", "remote_chassis_id": "00:1C:73:EE:C0:46", "remote_system_name": "core05.tpe01", "parent_interface": "ae0.0", "remote_system_capab": "Bridge Router", "remote_system_enable_capab": "Bridge"}]}
+{
+  "me0.0": [
+    {
+      "remote_port_description": "Po1:sw21.tpe01:xe-0/1/0",
+      "remote_port": "Ethernet3/2/1",
+      "remote_system_description": "Arista Networks EOS version 4.14.8M running on an Arista Networks DCS-7504",
+      "remote_chassis_id": "00:1C:73:EE:C0:46",
+      "remote_system_name": "core05.tpe01",
+      "parent_interface": "ae0.0",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "station",
+        "wlan-access-point"
+      ],
+      "remote_system_enable_capab": [
+        "bridge"
+      ]
+    }
+  ],
+  "xe-4/3/6": [
+    {
+      "remote_port_description": "Po1:sw21.tpe01:xe-0/1/0",
+      "remote_port": "Ethernet3/2/1",
+      "remote_system_description": "Arista Networks EOS version 4.14.8M running on an Arista Networks DCS-7504",
+      "remote_chassis_id": "00:1C:73:EE:C0:46",
+      "remote_system_name": "core05.tpe01",
+      "parent_interface": "ae0.0",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "station",
+        "wlan-access-point"
+      ],
+      "remote_system_enable_capab": [
+        "bridge"
+      ]
+    }
+  ],
+  "xe-0/1/0.0": [
+    {
+      "remote_port_description": "Po1:sw21.tpe01:xe-0/1/0",
+      "remote_port": "Ethernet3/2/1",
+      "remote_system_description": "Arista Networks EOS version 4.14.8M running on an Arista Networks DCS-7504",
+      "remote_chassis_id": "00:1C:73:EE:C0:46",
+      "remote_system_name": "core05.tpe01",
+      "parent_interface": "ae0.0",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "station",
+        "wlan-access-point"
+      ],
+      "remote_system_enable_capab": [
+        "bridge"
+      ]
+    }
+  ],
+  "ge-0/0/0.0": [
+    {
+      "remote_port_description": "Po1:sw21.tpe01:xe-0/1/0",
+      "remote_port": "Ethernet3/2/1",
+      "remote_system_description": "Arista Networks EOS version 4.14.8M running on an Arista Networks DCS-7504",
+      "remote_chassis_id": "00:1C:73:EE:C0:46",
+      "remote_system_name": "core05.tpe01",
+      "parent_interface": "ae0.0",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "station",
+        "wlan-access-point"
+      ],
+      "remote_system_enable_capab": [
+        "bridge"
+      ]
+    }
+  ]
+}

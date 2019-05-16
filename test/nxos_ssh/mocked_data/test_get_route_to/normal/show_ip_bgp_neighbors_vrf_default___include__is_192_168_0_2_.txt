@@ -1,0 +1,1 @@
+BGP neighbor is 192.168.0.2,  remote AS 1, ibgp link, Peer index 1
