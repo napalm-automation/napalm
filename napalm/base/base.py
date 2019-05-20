@@ -89,9 +89,10 @@ class NetworkDriver(object):
         except NetMikoTimeoutException:
             raise ConnectionException("Cannot connect to {}".format(self.hostname))
 
+        # ensure in enable mode if not force disable
         if (
-            "secret" in netmiko_optional_args
-        ):  # ensure in enable mode only if we get secret
+            not self.force_no_enable
+        ):
             self._netmiko_device.enable()
         return self._netmiko_device
 
