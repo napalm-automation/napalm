@@ -2959,24 +2959,26 @@ class IOSDriver(NetworkDriver):
             }
         return instances if not name else instances[name]
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", extra_arg=""):
         """Implementation of get_config for IOS.
 
         Returns the startup or/and running configuration as dictionary.
         The keys of the dictionary represent the type of configuration
         (startup or running). The candidate is always empty string,
         since IOS does not support candidate configuration.
+
+        extra_arg - may be "full" or "view full" for get config with this options
         """
 
         configs = {"startup": "", "running": "", "candidate": ""}
 
         if retrieve in ("startup", "all"):
-            command = "show startup-config"
+            command = " ".join(["show startup-config", extra_arg])
             output = self._send_command(command)
             configs["startup"] = output
 
         if retrieve in ("running", "all"):
-            command = "show running-config"
+            command = " ".join(["show running-config", extra_arg])
             output = self._send_command(command)
             configs["running"] = output
 
