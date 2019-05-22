@@ -965,6 +965,8 @@ class IOSDriver(NetworkDriver):
 
         # interface_list filter
         interface_list = []
+        # Cisco adds a message "Any interface listed with OK..." in certain situations
+        show_ip_int_br = re.split(r"Any interface listed with.*", show_ip_int_br)[-1]
         show_ip_int_br = show_ip_int_br.strip()
         for line in show_ip_int_br.splitlines():
             if "Interface " in line:
