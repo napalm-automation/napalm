@@ -420,14 +420,13 @@ class NXOSDriverBase(NetworkDriver):
             command = "traceroute{version} {destination} {source_opt}".format(
                 version=version, destination=destination, source_opt=source_opt
             )
-        elif vrf != "":
-            command = "traceroute{version} {destination} vrf {vrf}".format(
-                version=version, destination=destination, vrf=vrf
-            )
         else:
             command = "traceroute{version} {destination}".format(
                 version=version, destination=destination
             )
+
+        if vrf != "":
+            command += " vrf {vrf}".format(vrf=vrf)
 
         try:
             traceroute_raw_output = self._send_command(command, raw_text=True)
