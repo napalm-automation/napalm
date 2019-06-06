@@ -463,6 +463,19 @@ class NXOSSSHDriver(NXOSDriverBase):
             commands = (command for command in commands.splitlines() if command)
         return self.device.send_config_set(commands)
 
+    def _commit_handler(self, cmd):
+        """
+        Special handler for hostname change on commit operation.
+        """
+        current_prompt = self.device.find_prompt().strip()
+        terminating_char = current_prompt[-1]
+        # Look for trailing pattern that includes '#' and '>'
+        pattern = r"[>#{}]\s*$".format(terminating_char)
+        output = self.device.send_command_expect(cmd, expect_string=pattern)
+        # Reset base prompt in case hostname changed
+        self.device.set_base_prompt()
+        return output
+
     @staticmethod
     def parse_uptime(uptime_str):
         """
@@ -514,8 +527,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         return {"is_alive": self.device.remote_conn.transport.is_active()}
 
     def _copy_run_start(self):
-
-        output = self.device.save_config()
+        output = self._commit_handler('copy running-config startup-config')
         if "complete" in output.lower():
             return True
         else:
