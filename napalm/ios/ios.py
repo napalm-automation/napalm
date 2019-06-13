@@ -2558,6 +2558,7 @@ class IOSDriver(NetworkDriver):
                 continue
             elif re.search(r"Destination Address.*Address.*Type.*VLAN.*Destination.*Port", line):
                 # If there are multiple modules, this line gets repeated for each module.
+                continue
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
