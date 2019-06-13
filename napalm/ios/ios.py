@@ -2553,6 +2553,11 @@ class IOSDriver(NetworkDriver):
                 r"Displaying entries from active supervisor:\s+\w+\s+\[\d\]:", line
             ):
                 continue
+            elif re.search(r"EHWIC:.*", line):
+                # Skip module - process_mac_fields doesn't care.
+                continue
+            elif re.search(r"Destination Address.*Address.*Type.*VLAN.*Destination.*Port", line):
+                # If there are multiple modules, this line gets repeated for each module.
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
