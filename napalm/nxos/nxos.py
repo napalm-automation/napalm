@@ -1106,7 +1106,9 @@ class NXOSDriver(NXOSDriverBase):
             if "addr" not in interface.keys():
                 # Handle nexus 9000 ipv6 interface output
                 if isinstance(interface["TABLE_addr"]["ROW_addr"], list):
-                    addrs = [addr["addr"] for addr in interface["TABLE_addr"]["ROW_addr"]]
+                    addrs = [
+                        addr["addr"] for addr in interface["TABLE_addr"]["ROW_addr"]
+                    ]
                 elif isinstance(interface["TABLE_addr"]["ROW_addr"], dict):
                     addrs = interface["TABLE_addr"]["ROW_addr"]["addr"]
                 interface["addr"] = addrs
