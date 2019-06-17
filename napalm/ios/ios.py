@@ -2556,7 +2556,9 @@ class IOSDriver(NetworkDriver):
             elif re.search(r"EHWIC:.*", line):
                 # Skip module - process_mac_fields doesn't care.
                 continue
-            elif re.search(r"Destination Address.*Address.*Type.*VLAN.*Destination.*Port", line):
+            elif re.search(
+                r"Destination Address.*Address.*Type.*VLAN.*Destination.*Port", line
+            ):
                 # If there are multiple modules, this line gets repeated for each module.
                 continue
             else:
