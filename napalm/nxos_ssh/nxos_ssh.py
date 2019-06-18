@@ -533,11 +533,9 @@ class NXOSSSHDriver(NXOSDriverBase):
         ]
 
         try:
-            rollback_result = self._send_command_list(commands, expect_string=r"#")
+            rollback_result = self._send_command_list(commands, expect_string=r"[#>]")
         finally:
             self.changed = True
-        # If hostname changes ensure Netmiko state is updated properly
-        self.device.set_base_prompt()
         msg = rollback_result
         if "Rollback failed." in msg:
             raise ReplaceConfigException(msg)
