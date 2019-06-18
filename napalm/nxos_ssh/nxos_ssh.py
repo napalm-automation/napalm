@@ -449,12 +449,15 @@ class NXOSSSHDriver(NXOSDriverBase):
         """
         return self.device.send_command(command)
 
-    def _send_command_list(self, commands):
+    def _send_command_list(self, commands, expect_string=None):
         """Wrapper for Netmiko's send_command method (for list of commands."""
         output = ""
         for command in commands:
             output += self.device.send_command(
-                command, strip_prompt=False, strip_command=False
+                command,
+                strip_prompt=False,
+                strip_command=False,
+                expect_string=expect_string,
             )
         return output
 
@@ -528,8 +531,9 @@ class NXOSSSHDriver(NXOSDriverBase):
             "rollback running-config file {}".format(self.candidate_cfg),
             "no terminal dont-ask",
         ]
+
         try:
-            rollback_result = self._send_command_list(commands)
+            rollback_result = self._send_command_list(commands, expect_string=r"[#>]")
         finally:
             self.changed = True
         msg = rollback_result
