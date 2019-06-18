@@ -218,6 +218,8 @@ class NXOSDriverBase(NetworkDriver):
 
             if self.replace:
                 self._load_cfg_from_checkpoint()
+                # If hostname changes ensure Netmiko state is updated properly
+                self._netmiko_device.set_base_prompt()
             else:
                 self._commit_merge()
 
