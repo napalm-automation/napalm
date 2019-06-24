@@ -62,7 +62,7 @@ copyright = u"2016, David Barroso"
 # built documents.
 #
 # The short X.Y version.
-version = "0"
+version = "latest"
 # The full version, including alpha/beta/rc tags.
 release = "1"
 
@@ -123,6 +123,14 @@ else:
 # further.  For a list of options available for each theme, see the
 # documentation.
 # html_theme_options = {}
+
+# Configuration for customized parts of the theme
+html_context = {
+  'display_github': True,
+  'github_user': 'napalm-automation',
+  'github_repo': 'napalm',
+  'github_version': 'develop/docs/'
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
