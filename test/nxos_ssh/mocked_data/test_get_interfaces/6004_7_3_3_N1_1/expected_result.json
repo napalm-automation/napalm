@@ -5,6 +5,7 @@
     "is_up": true,
     "last_flapped": -1.0,
     "mac_address": "2C:C2:60:12:EC:74",
+    "mtu": 1500,
     "speed": 40000
   }
 }
