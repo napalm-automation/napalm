@@ -557,7 +557,7 @@ class IOSDriver(NetworkDriver):
         if not self._check_file_exists(cfg_file):
             raise ReplaceConfigException("Rollback config file does not exist")
         cmd = "configure replace {} force".format(cfg_file)
-        self.device.send_command_expect(cmd)
+        self._commit_handler(cmd)
 
         # After a rollback - we no longer know whether this is configured or not.
         self.prompt_quiet_configured = None
