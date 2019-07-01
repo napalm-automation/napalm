@@ -5,6 +5,7 @@
     "last_flapped": 1474274582.7947989,
     "is_up": true,
     "mac_address": "",
+    "mtu": 65535,
     "speed": 0
   }
 }
