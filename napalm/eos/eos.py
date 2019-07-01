@@ -716,6 +716,7 @@ class EOSDriver(NetworkDriver):
             "description": "description",
             "import-policy": "import_policy",
             "export-policy": "export_policy",
+            "next-hop-self": "nhs",
         }
 
         _PEER_FIELD_MAP_ = {
@@ -770,7 +771,7 @@ class EOSDriver(NetworkDriver):
             )  # few more default values
             return group_dict
 
-        def default_neighbor_dict(local_as):
+        def default_neighbor_dict(local_as, peer_group=None):
             neighbor_dict = {}
             neighbor_dict.update(
                 {
@@ -781,6 +782,15 @@ class EOSDriver(NetworkDriver):
             neighbor_dict.update(
                 {"prefix_limit": {}, "local_as": local_as, "authentication_key": ""}
             )  # few more default values
+            if peer_group:
+                neighbor_dict.update(
+                     {
+                         "nhs": peer_group["nhs"], 
+                         "remote_as":peer_group["remote_as"],
+                         "local_address" : peer_group["local_address"],
+                         "route_reflector_client" : peer_group["route_reflector_client"]
+                     }
+                 )  # update non defaults from peer_group
             return neighbor_dict
 
         def parse_options(options, default_value=False):
@@ -870,9 +880,11 @@ class EOSDriver(NetworkDriver):
                 # if passes the test => it is an IP Address, thus a Neighbor!
                 peer_address = group_or_neighbor
                 if peer_address not in bgp_neighbors:
-                    bgp_neighbors[peer_address] = default_neighbor_dict(local_as)
-                if options[0] == "peer-group":
-                    bgp_neighbors[peer_address]["__group"] = options[1]
+                    if options[0] == "peer-group":
+                        bgp_neighbors[peer_address] = default_neighbor_dict(local_as, bgp_config[options[1]])
+                        bgp_neighbors[peer_address]["__group"] = options[1]
+                    else:
+                        bgp_neighbors[peer_address] = default_neighbor_dict(local_as)
 
                 # in the config, neighbor details are lister after
                 # the group is specified for the neighbor:
