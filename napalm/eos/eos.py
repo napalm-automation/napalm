@@ -788,7 +788,6 @@ class EOSDriver(NetworkDriver):
                          "nhs": peer_group["nhs"], 
                          "remote_as":peer_group["remote_as"],
                          "local_address" : peer_group["local_address"],
-                         "route_reflector_client" : peer_group["route_reflector_client"]
                      }
                  )  # update non defaults from peer_group
             return neighbor_dict
@@ -881,7 +880,8 @@ class EOSDriver(NetworkDriver):
                 peer_address = group_or_neighbor
                 if peer_address not in bgp_neighbors:
                     if options[0] == "peer-group":
-                        bgp_neighbors[peer_address] = default_neighbor_dict(local_as, bgp_config[options[1]])
+                        bgp_neighbors[peer_address] = default_neighbor_dict(local_as, 
+                            bgp_config[options[1]])
                         bgp_neighbors[peer_address]["__group"] = options[1]
                     else:
                         bgp_neighbors[peer_address] = default_neighbor_dict(local_as)
