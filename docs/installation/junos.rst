@@ -15,10 +15,3 @@ RedHat and CentOS
 .. code-block:: bash
 
     sudo yum install -y python-pip python-devel libxml2-devel libxslt-devel gcc openssl openssl-devel libffi-devel
-
-FreeBSD
--------
-
-.. code-block:: bash
-
-    sudo pkg_add -r py27-pip libxml2 libxslt
