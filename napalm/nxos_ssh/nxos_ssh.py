@@ -526,6 +526,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             raise CommandErrorException(msg)
 
     def _load_cfg_from_checkpoint(self):
+
         commands = [
             "terminal dont-ask",
             "rollback running-config file {}".format(self.candidate_cfg),
@@ -542,10 +543,16 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def rollback(self):
         if self.changed:
-            command = "rollback running-config file {}".format(self.rollback_cfg)
-            result = self._send_command(command)
+            commands = [
+                "terminal dont-ask",
+                "rollback running-config file {}".format(self.rollback_cfg),
+                "no terminal dont-ask",
+            ]
+            result = self._send_command_list(commands, expect_string=r"[#>]")
             if "completed" not in result.lower():
                 raise ReplaceConfigException(result)
+            # If hostname changes ensure Netmiko state is updated properly
+            self._netmiko_device.set_base_prompt()
             self._copy_run_start()
             self.changed = False
 
