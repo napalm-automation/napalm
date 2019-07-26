@@ -44,7 +44,7 @@ except ImportError:
 import napalm.base.helpers
 from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.exceptions
-from napalm.base.base import NetworkDriver
+from napalm.base.base import FakeDriverStub
 from napalm.base.utils.string_parsers import convert_uptime_string_seconds
 
 
@@ -638,11 +638,7 @@ class TestBaseHelpers(unittest.TestCase):
         self.assertEqual(netmiko_args(test_case), result_dict)
 
 
-class FakeNetworkDriver(NetworkDriver):
-    def __init__(self):
-        """Connection details not needed."""
-        pass
-
+class FakeNetworkDriver(FakeDriverStub):
     def load_merge_candidate(self, config=None):
         """
         This method is called at the end of the helper ```load_template```.

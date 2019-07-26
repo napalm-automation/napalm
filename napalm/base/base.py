@@ -11,16 +11,12 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import sys
 
 from netmiko import ConnectHandler, NetMikoTimeoutException
 
 # local modules
+from abc import ABCMeta, abstractmethod
 import napalm.base.exceptions
 import napalm.base.helpers
 from napalm.base import constants as c
@@ -28,7 +24,9 @@ from napalm.base import validate
 from napalm.base.exceptions import ConnectionException
 
 
-class NetworkDriver(object):
+class NetworkDriver(metaclass=ABCMeta):
+
+    @abstractmethod
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         """
         This is the base class you have to inherit from when writing your own Network Driver to
@@ -43,7 +41,7 @@ class NetworkDriver(object):
         :param optional_args: (dict) Pass additional arguments to underlying driver
         :return:
         """
-        raise NotImplementedError
+        pass
 
     def __enter__(self):
         try:
@@ -109,6 +107,7 @@ class NetworkDriver(object):
             self._netmiko_device = None
         self.device = None
 
+    @abstractmethod
     def open(self):
         """
         Opens a connection to the device.
@@ -1683,3 +1682,11 @@ class NetworkDriver(object):
             )
         else:
             return interface
+
+
+class FakeDriverStub(NetworkDriver):
+    def __init__(self):
+        pass
+
+    def open(self):
+        pass

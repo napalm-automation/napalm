@@ -25,6 +25,7 @@ import importlib
 
 # NAPALM base
 from napalm.base.base import NetworkDriver
+from napalm.base.base import FakeDriverStub
 from napalm.base.exceptions import ModuleImportError
 from napalm.base.mock import MockDriver
 from napalm.base.utils import py23_compat

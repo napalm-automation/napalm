@@ -70,3 +70,5 @@ tags
 docs/integrations/ansible/modules/napalm_*/
 docs/integrations/ansible/modules/source/*.json
 docs/napalm_ansible_repo/
+
+.mypy_cache

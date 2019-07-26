@@ -1,7 +1,7 @@
 """Tests for the validate operation."""
 from __future__ import unicode_literals
 
-from napalm.base.base import NetworkDriver
+from napalm.base.base import FakeDriverStub
 from napalm.base import constants as C
 import json
 
@@ -167,9 +167,8 @@ class TestValidate:
         assert source == witness, yaml.safe_dump(source)
 
 
-class FakeDriver(NetworkDriver):
+class FakeDriver(FakeDriverStub):
     """This is a fake NetworkDriver."""
-
     def __init__(self, path):
         self.path = path
 
