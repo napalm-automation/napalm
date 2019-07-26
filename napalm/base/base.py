@@ -28,7 +28,7 @@ from napalm.base.exceptions import ConnectionException
 GetFacts = TypedDict(
     "GetFacts",
     {
-        "uptime": float,
+        "uptime": int,
         "vendor": str,
         "os_version": str,
         "serial_number": str,
@@ -268,7 +268,7 @@ class NetworkDriver(metaclass=ABCMeta):
         Example:
 
           {
-              'uptime': float,
+              'uptime': int,
               'vendor': str,
               'os_version': str,
               'serial_number': str,

@@ -777,7 +777,18 @@ class NXOSDriver(NXOSDriverBase):
             self.changed = False
 
     def get_facts(self) -> GetFacts:
-        facts = {}
+
+        facts: GetFacts = {
+            "uptime": -1,
+            "vendor": "",
+            "os_version": "",
+            "serial_number": "",
+            "model": "",
+            "hostname": "",
+            "fqdn": "",
+            "interface_list": [],
+        }
+
         facts["vendor"] = "Cisco"
 
         show_version = self._send_command("show version")

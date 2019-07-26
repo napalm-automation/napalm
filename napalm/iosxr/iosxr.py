@@ -145,17 +145,6 @@ class IOSXRDriver(NetworkDriver):
 
     def get_facts(self) -> GetFacts:
 
-        facts = {
-            "vendor": "Cisco",
-            "os_version": "",
-            "hostname": "",
-            "uptime": -1.0,
-            "serial_number": "",
-            "fqdn": "",
-            "model": "",
-            "interface_list": [],
-        }
-
         facts_rpc_request = "<Get><Operational><SystemTime/><PlatformInventory/>\
         </Operational></Get>"
 
@@ -186,19 +175,16 @@ class IOSXRDriver(NetworkDriver):
         )
         interface_list = sorted(list(self.get_interfaces().keys()))
 
-        facts.update(
-            {
-                "os_version": os_version,
-                "hostname": hostname,
-                "model": model,
-                "uptime": uptime,
-                "serial_number": serial,
-                "fqdn": hostname,
-                "interface_list": interface_list,
-            }
-        )
-
-        return facts
+        return {
+            "vendor": "Cisco",
+            "os_version": os_version,
+            "hostname": hostname,
+            "model": model,
+            "uptime": uptime,
+            "serial_number": serial,
+            "fqdn": hostname,
+            "interface_list": interface_list,
+        }
 
     def get_interfaces(self):
 

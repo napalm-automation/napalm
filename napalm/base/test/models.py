@@ -152,13 +152,9 @@ ipv6_neighbor = {
     "state": text_type,
 }
 
-ntp_peer = {
-    # will populate it in the future wit potential keys
-}
+ntp_peer = {}  # type: ignore
 
-ntp_server = {
-    # will populate it in the future wit potential keys
-}
+ntp_server = {}  # type: ignore
 
 ntp_stats = {
     "remote": text_type,

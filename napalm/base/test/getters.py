@@ -1,14 +1,6 @@
 """Testing framework."""
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import functools
-
-# python2/3 support
-try:
-    from itertools import izip_longest as zip_longest
-except ImportError:
-    from itertools import zip_longest
+from itertools import zip_longest
 
 import inspect
 import json

@@ -639,8 +639,8 @@ class NXOSSSHDriver(NXOSDriverBase):
             # Return canonical interface name
             interface_list.append(helpers.canonical_interface_name(interface))
 
-        return {
-            "uptime": int(uptime),
+        return_dict: GetFacts = {
+            "uptime": uptime,
             "vendor": vendor,
             "os_version": py23_compat.text_type(os_version),
             "serial_number": py23_compat.text_type(serial_number),
@@ -649,6 +649,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             "fqdn": fqdn,
             "interface_list": interface_list,
         }
+        return return_dict
 
     def get_interfaces(self):
         """

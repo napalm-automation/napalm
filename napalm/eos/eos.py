@@ -56,7 +56,7 @@ import napalm.base.constants as c
 class EOSDriver(NetworkDriver):
     """Napalm driver for Arista EOS."""
 
-    SUPPORTED_OC_MODELS = []
+    SUPPORTED_OC_MODELS = []  # type: ignore
 
     HEREDOC_COMMANDS = [
         ("banner login", 1),

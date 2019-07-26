@@ -952,12 +952,12 @@ class IOSDriver(NetworkDriver):
             fqdn = "{}.{}".format(hostname, domain_name)
 
         # model filter
-        try:
-            match_model = re.search(
-                r"Cisco (.+?) .+bytes of", show_ver, flags=re.IGNORECASE
-            )
+        match_model = re.search(
+            r"Cisco (.+?) .+bytes of", show_ver, flags=re.IGNORECASE
+        )
+        if match_model:
             model = match_model.group(1)
-        except AttributeError:
+        else:
             model = "Unknown"
 
         # interface_list filter
