@@ -3097,15 +3097,3 @@ class IOSDriver(NetworkDriver):
                 )
 
         return vlans
-
-    @staticmethod
-    def _get_abrev_if(interface):
-        if_index_re = re.search(r"\d.*", interface)
-        if_index_re = if_index_re.group() if if_index_re else ""
-
-        if interface.lower().startswith("eth"):
-            prefix = interface[:3]
-        else:
-            prefix = interface[:2]
-
-        return prefix + if_index_re
