@@ -1670,11 +1670,11 @@ class NetworkDriver(object):
 
             {
                 1: {
-                    "name": "vlan-1",
-                    "interfaces": ["ge-0/0/1", "ge-0/0/2"]
+                    "name": "default",
+                    "interfaces": ["GigabitEthernet0/0/1", "GigabitEthernet0/0/2"]
                 },
                 2: {
-                    "name": "vlan-2",
+                    "name": "vlan2",
                     "interfaces": []
                 }
             }
