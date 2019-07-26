@@ -26,6 +26,7 @@ from netaddr.core import AddrFormatError
 
 # import NAPALM Base
 from napalm.base import helpers
+from napalm.base.base import GetFacts
 from napalm.base.exceptions import CommandErrorException, ReplaceConfigException
 from napalm.base.utils import py23_compat
 from napalm.nxos import NXOSDriverBase
@@ -571,7 +572,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         seconds += int(uptime_facts["up_secs"])
         return seconds
 
-    def get_facts(self):
+    def get_facts(self) -> GetFacts:
         """Return a set of facts from the devices."""
         # default values.
         vendor = "Cisco"

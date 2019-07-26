@@ -17,6 +17,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from napalm.base.base import NetworkDriver
+from napalm.base.base import GetFacts
 from napalm.base.utils import py23_compat
 import napalm.base.exceptions
 
@@ -189,6 +190,9 @@ class MockDriver(NetworkDriver):
         mocked_data(self.path, "discard_config", count)
 
     def rollback(self):
+        raise NotImplementedError
+
+    def get_facts(self) -> GetFacts:
         raise NotImplementedError
 
     def _rpc(self, get):

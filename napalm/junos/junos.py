@@ -15,8 +15,6 @@
 
 """Driver for JunOS devices."""
 
-from __future__ import unicode_literals
-
 # import stdlib
 import re
 import json
@@ -41,6 +39,7 @@ from jnpr.junos.exception import UnlockError as JnrpUnlockError
 # import NAPALM Base
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
+from napalm.base.base import GetFacts
 from napalm.base.utils import py23_compat
 from napalm.junos import constants as C
 from napalm.base.exceptions import ConnectionException
@@ -278,7 +277,7 @@ class JunOSDriver(NetworkDriver):
         self.device.cu.rollback(rb_id=1)
         self.commit_config()
 
-    def get_facts(self):
+    def get_facts(self) -> GetFacts:
         """Return facts of the device."""
         output = self.device.facts
 

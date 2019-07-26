@@ -17,9 +17,6 @@ Napalm driver for Arista EOS.
 
 Read napalm.readthedocs.org for more information.
 """
-from __future__ import print_function
-from __future__ import unicode_literals
-
 # std libs
 import re
 import time
@@ -38,6 +35,7 @@ from pyeapi.eapilib import ConnectionError
 # NAPALM base
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
+from napalm.base.base import GetFacts
 from napalm.base.utils import string_parsers
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import (
@@ -319,7 +317,7 @@ class EOSDriver(NetworkDriver):
         commands = ["configure replace flash:rollback-0", "write memory"]
         self.device.run_commands(commands)
 
-    def get_facts(self):
+    def get_facts(self) -> GetFacts:
         """Implementation of NAPALM method get_facts."""
         commands = ["show version", "show hostname", "show interfaces"]
 

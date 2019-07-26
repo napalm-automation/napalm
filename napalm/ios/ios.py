@@ -12,10 +12,6 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import copy
 import functools
 import os
@@ -31,6 +27,7 @@ from netmiko import FileTransfer, InLineTransfer
 import napalm.base.constants as C
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
+from napalm.base.base import GetFacts
 from napalm.base.exceptions import (
     ReplaceConfigException,
     MergeConfigException,
@@ -911,7 +908,7 @@ class IOSDriver(NetworkDriver):
         )
         return uptime_sec
 
-    def get_facts(self):
+    def get_facts(self) -> GetFacts:
         """Return a set of facts from the devices."""
         # default values.
         vendor = "Cisco"

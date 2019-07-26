@@ -207,7 +207,6 @@ class TestGettersNetworkDriver(object):
     def test_is_alive(self):
         if isinstance(self.device, FakeDriverStub):
             raise SkipTest()
-
         try:
             alive = self.device.is_alive()
         except NotImplementedError:
@@ -216,6 +215,8 @@ class TestGettersNetworkDriver(object):
         self.assertTrue(result)
 
     def test_get_facts(self):
+        if isinstance(self.device, FakeDriverStub):
+            raise SkipTest()
         try:
             facts = self.device.get_facts()
         except NotImplementedError:

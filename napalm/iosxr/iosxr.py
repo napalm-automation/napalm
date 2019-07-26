@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from __future__ import unicode_literals
-
 # import stdlib
 import re
 import copy
@@ -36,6 +34,7 @@ import napalm.base.helpers
 from napalm.base.netmiko_helpers import netmiko_args
 from napalm.iosxr import constants as C
 from napalm.base.base import NetworkDriver
+from napalm.base.base import GetFacts
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
@@ -144,13 +143,13 @@ class IOSXRDriver(NetworkDriver):
     def rollback(self):
         self.device.rollback()
 
-    def get_facts(self):
+    def get_facts(self) -> GetFacts:
 
         facts = {
             "vendor": "Cisco",
             "os_version": "",
             "hostname": "",
-            "uptime": -1,
+            "uptime": -1.0,
             "serial_number": "",
             "fqdn": "",
             "model": "",

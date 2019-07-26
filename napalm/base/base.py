@@ -11,17 +11,33 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
+from abc import ABCMeta, abstractmethod
+from typing import List
+from mypy_extensions import TypedDict
 import sys
 
 from netmiko import ConnectHandler, NetMikoTimeoutException
 
 # local modules
-from abc import ABCMeta, abstractmethod
 import napalm.base.exceptions
 import napalm.base.helpers
 from napalm.base import constants as c
 from napalm.base import validate
 from napalm.base.exceptions import ConnectionException
+
+GetFacts = TypedDict(
+    "GetFacts",
+    {
+        "uptime": float,
+        "vendor": str,
+        "os_version": str,
+        "serial_number": str,
+        "model": str,
+        "hostname": str,
+        "fqdn": str,
+        "interface_list": List[str],
+    },
+)
 
 
 class NetworkDriver(metaclass=ABCMeta):
@@ -236,7 +252,8 @@ class NetworkDriver(metaclass=ABCMeta):
         """Revert changes back to previous state (prior to commit_config)."""
         pass
 
-    def get_facts(self):
+    @abstractmethod
+    def get_facts(self) -> GetFacts:
         """
         Returns a dictionary containing the following information:
          * uptime - Uptime of the device in seconds.
@@ -248,21 +265,21 @@ class NetworkDriver(metaclass=ABCMeta):
          * serial_number - Serial number of the device
          * interface_list - List of the interfaces of the device
 
-        Example::
+        Example:
 
-            {
-            'uptime': 151005.57332897186,
-            'vendor': u'Arista',
-            'os_version': u'4.14.3-2329074.gaatlantarel',
-            'serial_number': u'SN0123A34AS',
-            'model': u'vEOS',
-            'hostname': u'eos-router',
-            'fqdn': u'eos-router',
-            'interface_list': [u'Ethernet2', u'Management1', u'Ethernet1', u'Ethernet3']
-            }
+          {
+              'uptime': float,
+              'vendor': str,
+              'os_version': str,
+              'serial_number': str,
+              'model': str,
+              'hostname': str,
+              'fqdn': str,
+              'interface_list': List[str]
+          }
 
         """
-        raise NotImplementedError
+        pass
 
     def get_interfaces(self):
         """
@@ -1713,4 +1730,7 @@ class FakeDriverStub(NetworkDriver):
         pass
 
     def rollback(self):
+        pass
+
+    def get_facts(self):
         pass
