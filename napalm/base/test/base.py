@@ -18,6 +18,7 @@ from __future__ import unicode_literals
 
 import difflib
 from napalm.base import exceptions
+from napalm.base import FakeDriverStub
 from napalm.base.test import models
 from unittest import SkipTest
 
@@ -204,6 +205,9 @@ class TestGettersNetworkDriver(object):
         self.assertTrue(result)
 
     def test_is_alive(self):
+        if isinstance(self.device, FakeDriverStub):
+            raise SkipTest()
+
         try:
             alive = self.device.is_alive()
         except NotImplementedError:

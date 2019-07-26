@@ -169,6 +169,7 @@ class TestValidate:
 
 class FakeDriver(FakeDriverStub):
     """This is a fake NetworkDriver."""
+
     def __init__(self, path):
         self.path = path
 

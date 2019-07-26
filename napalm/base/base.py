@@ -25,7 +25,6 @@ from napalm.base.exceptions import ConnectionException
 
 
 class NetworkDriver(metaclass=ABCMeta):
-
     @abstractmethod
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         """
@@ -109,26 +108,25 @@ class NetworkDriver(metaclass=ABCMeta):
 
     @abstractmethod
     def open(self):
-        """
-        Opens a connection to the device.
-        """
-        raise NotImplementedError
+        """Opens a connection to the device."""
+        pass
 
+    @abstractmethod
     def close(self):
-        """
-        Closes the connection to the device.
-        """
-        raise NotImplementedError
+        """Closes the connection to the device."""
+        pass
 
+    @abstractmethod
     def is_alive(self):
         """
-        Returns a flag with the connection state.
-        Depends on the nature of API used by each driver.
-        The state does not reflect only on the connection status (when SSH), it must also take into
-        consideration other parameters, e.g.: NETCONF session might not be usable, althought the
-        underlying SSH session is still open etc.
+        is_alive returns a flag indicating the state of the connection.
+
+        The exact behavior depends on the nature of the driver.
+
+        The state should not only reflect the TCP connection state, but should also indicate that
+        the SSH/NETCONF connection is actually usable.
         """
-        raise NotImplementedError
+        pass
 
     def pre_connection_tests(self):
         """
@@ -180,6 +178,7 @@ class NetworkDriver(metaclass=ABCMeta):
             **template_vars
         )
 
+    @abstractmethod
     def load_replace_candidate(self, filename=None, config=None):
         """
         Populates the candidate configuration. You can populate it from a file or from a string.
@@ -194,8 +193,9 @@ class NetworkDriver(metaclass=ABCMeta):
         :param config: String containing the desired configuration.
         :raise ReplaceConfigException: If there is an error on the configuration sent.
         """
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def load_merge_candidate(self, filename=None, config=None):
         """
         Populates the candidate configuration. You can populate it from a file or from a string.
@@ -210,33 +210,31 @@ class NetworkDriver(metaclass=ABCMeta):
         :param config: String containing the desired configuration.
         :raise MergeConfigException: If there is an error on the configuration sent.
         """
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def compare_config(self):
         """
         :return: A string showing the difference between the running configuration and the \
         candidate configuration. The running_config is loaded automatically just before doing the \
         comparison so there is no need for you to do it.
         """
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def commit_config(self, message=""):
-        """
-        Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
-        """
-        raise NotImplementedError
+        """Commits the changes staged by load_replace_candidate or load_merge_candidate."""
+        pass
 
+    @abstractmethod
     def discard_config(self):
-        """
-        Discards the configuration loaded into the candidate.
-        """
-        raise NotImplementedError
+        """Discards the configuration loaded into the candidate."""
+        pass
 
+    @abstractmethod
     def rollback(self):
-        """
-        If changes were made, revert changes to the original state.
-        """
-        raise NotImplementedError
+        """Revert changes back to previous state (prior to commit_config)."""
+        pass
 
     def get_facts(self):
         """
@@ -1685,8 +1683,34 @@ class NetworkDriver(metaclass=ABCMeta):
 
 
 class FakeDriverStub(NetworkDriver):
-    def __init__(self):
+    """Stub out all of the methods required by the ABC for a mock driver."""
+
+    def __init__(self, *args, **kwargs):
         pass
 
     def open(self):
+        pass
+
+    def close(self):
+        pass
+
+    def is_alive(self):
+        pass
+
+    def load_replace_candidate(self, *args, **kwargs):
+        pass
+
+    def load_merge_candidate(self, *args, **kwargs):
+        pass
+
+    def compare_config(self):
+        pass
+
+    def commit_config(self, *args, **kwargs):
+        pass
+
+    def discard_config(self):
+        pass
+
+    def rollback(self):
         pass

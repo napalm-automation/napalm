@@ -188,6 +188,9 @@ class MockDriver(NetworkDriver):
         self.config = None
         mocked_data(self.path, "discard_config", count)
 
+    def rollback(self):
+        raise NotImplementedError
+
     def _rpc(self, get):
         """This one is only useful for junos."""
         return list(self.cli([get]).values())[0]
