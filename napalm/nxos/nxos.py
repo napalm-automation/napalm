@@ -1336,8 +1336,7 @@ class NXOSDriver(NXOSDriverBase):
         vlan_str = ""
 
         if isinstance(vlan_s, list):
-            for v in vlan_s:
-                vlan_str += "," + v
+            vlan_str = ",".join(vlan_s)
         else:
             vlan_str = vlan_s
 
