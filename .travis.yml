@@ -1,9 +1,9 @@
+dist: xenial
 language: python
 
 python:
-  - 2.7
-  - 3.5
   - 3.6
+  - 3.7
 
 matrix:
   include:
@@ -13,6 +13,8 @@ matrix:
     env: TOXENV=black
   - python: 3.6
     env: TOXENV=sphinx
+  - python: 3.6
+    env: TOXENV=mypy
 
 install:
   - pip install tox==3.7.0 tox-travis coveralls
