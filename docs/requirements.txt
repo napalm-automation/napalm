@@ -2,3 +2,5 @@ sphinx
 sphinx-rtd-theme
 sphinxcontrib-napoleon
 invoke
+mypy==0.720
+mypy-extensions==0.4.1
