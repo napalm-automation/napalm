@@ -34,7 +34,7 @@ import napalm.base.helpers
 from napalm.base.netmiko_helpers import netmiko_args
 from napalm.iosxr import constants as C
 from napalm.base.base import NetworkDriver
-from napalm.base.base import GetFacts
+from napalm.base.getter_types import GetFacts
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException

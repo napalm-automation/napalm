@@ -20,6 +20,8 @@ Read napalm.readthedocs.org for more information.
 # std libs
 import re
 import time
+import copy
+from typing import Dict, Any
 
 from datetime import datetime
 from collections import defaultdict
@@ -35,7 +37,7 @@ from pyeapi.eapilib import ConnectionError
 # NAPALM base
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
-from napalm.base.base import GetFacts
+from napalm.base.getter_types import GetFacts, GetInterfaces, GetInterfacesInner
 from napalm.base.utils import string_parsers
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import (
@@ -343,37 +345,43 @@ class EOSDriver(NetworkDriver):
             "interface_list": interfaces,
         }
 
-    def get_interfaces(self):
+    def get_interfaces(self) -> GetInterfaces:
         commands = ["show interfaces"]
         output = self.device.run_commands(commands)[0]
-
-        interfaces = {}
+        interfaces: GetInterfaces = {}
 
         for interface, values in output["interfaces"].items():
-            interfaces[interface] = {}
+
+            # Ensure values are never stale
+            is_up = is_enabled = description = last_flapped = mtu = speed = mac_address = None
 
             if values["lineProtocolStatus"] == "up":
-                interfaces[interface]["is_up"] = True
-                interfaces[interface]["is_enabled"] = True
+                is_up = True
+                is_enabled = True
             else:
-                interfaces[interface]["is_up"] = False
+                is_up = False
                 if values["interfaceStatus"] == "disabled":
-                    interfaces[interface]["is_enabled"] = False
+                    is_enabled = False
                 else:
-                    interfaces[interface]["is_enabled"] = True
+                    is_enabled = True
 
-            interfaces[interface]["description"] = values["description"]
-
-            interfaces[interface]["last_flapped"] = values.pop(
-                "lastStatusChangeTimestamp", -1.0
-            )
-
-            interfaces[interface]["mtu"] = int(values["mtu"])
-            interfaces[interface]["speed"] = int(values["bandwidth"] * 1e-6)
-            interfaces[interface]["mac_address"] = napalm.base.helpers.convert(
+            description = values["description"]
+            last_flapped = values.pop("lastStatusChangeTimestamp", -1.0)
+            mtu = int(values["mtu"])
+            speed = int(values["bandwidth"] * 1e-6)
+            mac_address = napalm.base.helpers.convert(
                 napalm.base.helpers.mac, values.pop("physicalAddress", "")
             )
-
+            interfaces[interface] = {
+                "is_up": is_up,
+                "is_enabled": is_enabled,
+                "description": description,
+                "last_flapped": last_flapped,
+                "mtu": mtu,
+                "speed": speed,
+                "mac_address": mac_address,
+            }
+        
         return interfaces
 
     def get_lldp_neighbors(self):

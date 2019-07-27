@@ -39,7 +39,7 @@ from jnpr.junos.exception import UnlockError as JnrpUnlockError
 # import NAPALM Base
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
-from napalm.base.base import GetFacts
+from napalm.base.getter_types import GetFacts
 from napalm.base.utils import py23_compat
 from napalm.junos import constants as C
 from napalm.base.exceptions import ConnectionException

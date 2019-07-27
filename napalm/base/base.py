@@ -12,8 +12,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 from abc import ABCMeta, abstractmethod
-from typing import List
-from mypy_extensions import TypedDict
 import sys
 
 from netmiko import ConnectHandler, NetMikoTimeoutException
@@ -24,20 +22,7 @@ import napalm.base.helpers
 from napalm.base import constants as c
 from napalm.base import validate
 from napalm.base.exceptions import ConnectionException
-
-GetFacts = TypedDict(
-    "GetFacts",
-    {
-        "uptime": int,
-        "vendor": str,
-        "os_version": str,
-        "serial_number": str,
-        "model": str,
-        "hostname": str,
-        "fqdn": str,
-        "interface_list": List[str],
-    },
-)
+from napalm.base.getter_types import GetFacts, GetInterfaces
 
 
 class NetworkDriver(metaclass=ABCMeta):
@@ -265,7 +250,7 @@ class NetworkDriver(metaclass=ABCMeta):
          * serial_number - Serial number of the device
          * interface_list - List of the interfaces of the device
 
-        Example:
+        Example::
 
           {
               'uptime': int,
@@ -281,7 +266,8 @@ class NetworkDriver(metaclass=ABCMeta):
         """
         pass
 
-    def get_interfaces(self):
+    @abstractmethod
+    def get_interfaces(self) -> GetInterfaces:
         """
         Returns a dictionary of dictionaries. The keys for the first dictionary will be the \
         interfaces in the devices. The inner dictionary will containing the following data for \
@@ -298,7 +284,7 @@ class NetworkDriver(metaclass=ABCMeta):
         Example::
 
             {
-            u'Management1':
+            'Management1':
                 {
                 'is_up': False,
                 'is_enabled': False,
@@ -308,39 +294,9 @@ class NetworkDriver(metaclass=ABCMeta):
                 'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:61',
                 },
-            u'Ethernet1':
-                {
-                'is_up': True,
-                'is_enabled': True,
-                'description': 'foo',
-                'last_flapped': 1429978575.1554043,
-                'speed': 1000,
-                'mtu': 1500,
-                'mac_address': 'FA:16:3E:57:33:62',
-                },
-            u'Ethernet2':
-                {
-                'is_up': True,
-                'is_enabled': True,
-                'description': 'bla',
-                'last_flapped': 1429978575.1555667,
-                'speed': 1000,
-                'mtu': 1500,
-                'mac_address': 'FA:16:3E:57:33:63',
-                },
-            u'Ethernet3':
-                {
-                'is_up': False,
-                'is_enabled': True,
-                'description': 'bar',
-                'last_flapped': -1.0,
-                'speed': 1000,
-                'mtu': 1500,
-                'mac_address': 'FA:16:3E:57:33:64',
-                }
             }
         """
-        raise NotImplementedError
+        pass
 
     def get_lldp_neighbors(self):
         """
@@ -1733,4 +1689,7 @@ class FakeDriverStub(NetworkDriver):
         pass
 
     def get_facts(self):
-        pass
+        raise NotImplementedError
+
+    def get_interfaces(self):
+        raise NotImplementedError

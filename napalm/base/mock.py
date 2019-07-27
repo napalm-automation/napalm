@@ -16,8 +16,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from napalm.base.base import NetworkDriver
-from napalm.base.base import GetFacts
+from napalm.base.base import FakeDriverStub
+from napalm.base.getter_types import GetFacts
 from napalm.base.utils import py23_compat
 import napalm.base.exceptions
 
@@ -45,7 +45,7 @@ def is_mocked_method(method):
 
 
 def mocked_method(path, name, count):
-    parent_method = getattr(NetworkDriver, name)
+    parent_method = getattr(FakeDriverStub, name)
     parent_method_args = py23_compat.argspec(parent_method)
     modifier = 0 if "self" not in parent_method_args.args else 1
 
@@ -97,7 +97,7 @@ class MockDevice(object):
         return self.run_commands([command])
 
 
-class MockDriver(NetworkDriver):
+class MockDriver(FakeDriverStub):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         """
         Supported optional_args:
@@ -190,9 +190,6 @@ class MockDriver(NetworkDriver):
         mocked_data(self.path, "discard_config", count)
 
     def rollback(self):
-        raise NotImplementedError
-
-    def get_facts(self) -> GetFacts:
         raise NotImplementedError
 
     def _rpc(self, get):

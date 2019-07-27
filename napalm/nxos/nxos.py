@@ -35,7 +35,7 @@ from nxapi_plumbing import NXAPIAuthError, NXAPIConnectionError, NXAPICommandErr
 # import NAPALM Base
 import napalm.base.helpers
 from napalm.base import NetworkDriver
-from napalm.base.base import GetFacts
+from napalm.base.getter_types import GetFacts
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException

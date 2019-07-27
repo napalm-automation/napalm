@@ -26,7 +26,7 @@ from netaddr.core import AddrFormatError
 
 # import NAPALM Base
 from napalm.base import helpers
-from napalm.base.base import GetFacts
+from napalm.base.getter_types import GetFacts
 from napalm.base.exceptions import CommandErrorException, ReplaceConfigException
 from napalm.base.utils import py23_compat
 from napalm.nxos import NXOSDriverBase

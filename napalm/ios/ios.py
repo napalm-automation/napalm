@@ -27,7 +27,7 @@ from netmiko import FileTransfer, InLineTransfer
 import napalm.base.constants as C
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
-from napalm.base.base import GetFacts
+from napalm.base.getter_types import GetFacts, GetInterfaces, GetInterfacesInner
 from napalm.base.exceptions import (
     ReplaceConfigException,
     MergeConfigException,
@@ -980,7 +980,7 @@ class IOSDriver(NetworkDriver):
             "interface_list": interface_list,
         }
 
-    def get_interfaces(self):
+    def get_interfaces(self) -> GetInterfaces:
         """
         Get interface details.
 
@@ -1013,10 +1013,11 @@ class IOSDriver(NetworkDriver):
         command = "show interfaces"
         output = self._send_command(command)
 
-        interface = description = mac_address = speed = speedformat = ""
+        interface = description = mac_address = speedformat = ""
+        speed = -1
         is_enabled = is_up = None
 
-        interface_dict = {}
+        interface_dict: GetInterfaces = {}
         for line in output.splitlines():
 
             interface_regex_1 = r"^(\S+?)\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
@@ -1052,16 +1053,16 @@ class IOSDriver(NetworkDriver):
 
             speed_regex = r"^\s+MTU\s+(\d+).+BW\s+(\d+)\s+([KMG]?b)"
             if re.search(speed_regex, line):
+
                 speed_match = re.search(speed_regex, line)
                 mtu = int(speed_match.groups()[0])
-                speed = speed_match.groups()[1]
+                speed_tmp = float(speed_match.groups()[1])
                 speedformat = speed_match.groups()[2]
-                speed = float(speed)
                 if speedformat.startswith("Kb"):
-                    speed = speed / 1000.0
+                    speed_tmp = speed_tmp / 1000.0
                 elif speedformat.startswith("Gb"):
-                    speed = speed * 1000
-                speed = int(round(speed))
+                    speed_tmp = speed_tmp * 1000
+                speed = int(round(speed_tmp))
 
                 if interface == "":
                     raise ValueError(
@@ -1081,7 +1082,8 @@ class IOSDriver(NetworkDriver):
                     "speed": speed,
                 }
 
-                interface = description = mac_address = speed = speedformat = ""
+                interface = description = mac_address = speedformat = ""
+                speed = -1
                 is_enabled = is_up = None
 
         return interface_dict
