@@ -29,3 +29,8 @@ GetInterfacesInner = TypedDict(
     },
 )
 GetInterfaces = Dict[str, GetInterfacesInner]
+
+GetLldpNeighborsInner = TypedDict(
+    "GetLldpNeighborsInner", {"hostname": str, "port": str}
+)
+GetLldpNeighbors = Dict[str, List[GetLldpNeighborsInner]]

@@ -35,7 +35,7 @@ from pyeapi.eapilib import ConnectionError
 # NAPALM base
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
-from napalm.base.getter_types import GetFacts, GetInterfaces
+from napalm.base.getter_types import GetFacts, GetInterfaces, GetLldpNeighbors
 from napalm.base.utils import string_parsers
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import (
@@ -384,20 +384,20 @@ class EOSDriver(NetworkDriver):
 
         return interfaces
 
-    def get_lldp_neighbors(self):
+    def get_lldp_neighbors(self) -> GetLldpNeighbors:
         commands = ["show lldp neighbors"]
         output = self.device.run_commands(commands)[0]["lldpNeighbors"]
 
-        lldp = {}
-
-        for n in output:
-            if n["port"] not in lldp.keys():
-                lldp[n["port"]] = []
-
-            lldp[n["port"]].append(
-                {"hostname": n["neighborDevice"], "port": n["neighborPort"]}
+        lldp: GetLldpNeighbors = {}
+        for neighbor in output:
+            local_port = neighbor["port"]
+            remote_neighbors = lldp.setdefault(local_port, [])
+            remote_neighbors.append(
+                {
+                    "hostname": neighbor["neighborDevice"],
+                    "port": neighbor["neighborPort"],
+                }
             )
-
         return lldp
 
     def get_interfaces_counters(self):

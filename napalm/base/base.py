@@ -22,7 +22,7 @@ import napalm.base.helpers
 from napalm.base import constants as c
 from napalm.base import validate
 from napalm.base.exceptions import ConnectionException
-from napalm.base.getter_types import GetFacts, GetInterfaces
+from napalm.base.getter_types import GetFacts, GetInterfaces, GetLldpNeighbors
 
 
 class NetworkDriver(metaclass=ABCMeta):
@@ -298,7 +298,8 @@ class NetworkDriver(metaclass=ABCMeta):
         """
         pass
 
-    def get_lldp_neighbors(self):
+    @abstractmethod
+    def get_lldp_neighbors(self) -> GetLldpNeighbors:
         """
         Returns a dictionary where the keys are local ports and the value is a list of \
         dictionaries with the following information:
@@ -308,41 +309,16 @@ class NetworkDriver(metaclass=ABCMeta):
         Example::
 
             {
-            u'Ethernet2':
+            'Ethernet2':
                 [
                     {
-                    'hostname': u'junos-unittest',
-                    'port': u'520',
+                    'hostname': 'junos-unittest',
+                    'port': '520',
                     }
                 ],
-            u'Ethernet3':
-                [
-                    {
-                    'hostname': u'junos-unittest',
-                    'port': u'522',
-                    }
-                ],
-            u'Ethernet1':
-                [
-                    {
-                    'hostname': u'junos-unittest',
-                    'port': u'519',
-                    },
-                    {
-                    'hostname': u'ios-xrv-unittest',
-                    'port': u'Gi0/0/0/0',
-                    }
-                ],
-            u'Management1':
-                [
-                    {
-                    'hostname': u'junos-unittest',
-                    'port': u'508',
-                    }
-                ]
             }
         """
-        raise NotImplementedError
+        pass
 
     def get_bgp_neighbors(self):
         """
@@ -1692,4 +1668,7 @@ class FakeDriverStub(NetworkDriver):
         raise NotImplementedError
 
     def get_interfaces(self):
+        raise NotImplementedError
+
+    def get_lldp_neighbors(self):
         raise NotImplementedError

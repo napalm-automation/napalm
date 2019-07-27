@@ -40,7 +40,12 @@ from jnpr.junos.exception import UnlockError as JnrpUnlockError
 # import NAPALM Base
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
-from napalm.base.getter_types import GetFacts, GetInterfaces, GetInterfacesInner
+from napalm.base.getter_types import (
+    GetFacts,
+    GetInterfaces,
+    GetInterfacesInner,
+    GetLldpNeighbors,
+)
 from napalm.base.utils import py23_compat
 from napalm.junos import constants as C
 from napalm.base.exceptions import ConnectionException
@@ -747,28 +752,31 @@ class JunOSDriver(NetworkDriver):
                 bgp_tmp_dict[k] = v
         return bgp_tmp_dict
 
-    def get_lldp_neighbors(self):
+    def get_lldp_neighbors(self) -> GetLldpNeighbors:
         """Return LLDP neighbors details."""
         lldp = junos_views.junos_lldp_table(self.device)
         try:
             lldp.get()
         except RpcError as rpcerr:
-            # this assumes the library runs in an environment
-            # able to handle logs
+            # this assumes the library runs in an environment able to handle logs
             # otherwise, the user just won't see this happening
             log.error("Unable to retrieve the LLDP neighbors information:")
             log.error(py23_compat.text_type(rpcerr))
             return {}
         result = lldp.items()
 
-        neighbors = {}
+        neighbors: GetLldpNeighbors = {}
         for neigh in result:
-            if neigh[0] not in neighbors.keys():
-                neighbors[neigh[0]] = []
-            neighbors[neigh[0]].append(
-                {x[0]: py23_compat.text_type(x[1]) for x in neigh[1]}
+            local_port = neigh[0]
+            remote_neighbors = neigh[1]
+            neighbors.setdefault(local_port, [])
+            inner_dict = dict(remote_neighbors)
+            neighbors[local_port].append(
+                {
+                    "hostname": str(inner_dict["hostname"]),
+                    "port": str(inner_dict["port"]),
+                }
             )
-
         return neighbors
 
     def _transform_lldp_capab(self, capabilities):

@@ -27,7 +27,7 @@ from netmiko import FileTransfer, InLineTransfer
 import napalm.base.constants as C
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
-from napalm.base.getter_types import GetFacts, GetInterfaces
+from napalm.base.getter_types import GetFacts, GetInterfaces, GetLldpNeighbors
 from napalm.base.exceptions import (
     ReplaceConfigException,
     MergeConfigException,
@@ -803,9 +803,9 @@ class IOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_lldp_neighbors(self):
+    def get_lldp_neighbors(self) -> GetLldpNeighbors:
         """IOS implementation of get_lldp_neighbors."""
-        lldp = {}
+        lldp: GetLldpNeighbors = {}
         neighbors_detail = self.get_lldp_neighbors_detail()
         for intf_name, entries in neighbors_detail.items():
             lldp[intf_name] = []
@@ -815,8 +815,9 @@ class IOSDriver(NetworkDriver):
                 # When lacking a system name (in show lldp neighbors)
                 if not hostname:
                     hostname = lldp_entry["remote_chassis_id"]
-                lldp_dict = {"port": lldp_entry["remote_port"], "hostname": hostname}
-                lldp[intf_name].append(lldp_dict)
+                lldp[intf_name].append(
+                    {"port": lldp_entry["remote_port"], "hostname": hostname}
+                )
 
         return lldp
 
