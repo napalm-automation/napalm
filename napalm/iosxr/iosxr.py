@@ -40,12 +40,10 @@ from napalm.base.getter_types import (
     GetInterfacesInner,
     GetLldpNeighbors,
 )
-from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.exceptions import CommandTimeoutException
-from napalm.base.utils.py23_compat import text_type
 
 
 class IOSXRDriver(NetworkDriver):
@@ -163,20 +161,19 @@ class IOSXRDriver(NetworkDriver):
             platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)
 
         hostname = napalm.base.helpers.convert(
-            text_type, napalm.base.helpers.find_txt(system_time_tree, "Hostname")
+            str, napalm.base.helpers.find_txt(system_time_tree, "Hostname")
         )
         uptime = napalm.base.helpers.convert(
             int, napalm.base.helpers.find_txt(system_time_tree, "Uptime"), -1
         )
         serial = napalm.base.helpers.convert(
-            text_type, napalm.base.helpers.find_txt(platform_attr_tree, "SerialNumber")
+            str, napalm.base.helpers.find_txt(platform_attr_tree, "SerialNumber")
         )
         os_version = napalm.base.helpers.convert(
-            text_type,
-            napalm.base.helpers.find_txt(platform_attr_tree, "SoftwareRevision"),
+            str, napalm.base.helpers.find_txt(platform_attr_tree, "SoftwareRevision")
         )
         model = napalm.base.helpers.convert(
-            text_type, napalm.base.helpers.find_txt(platform_attr_tree, "ModelName")
+            str, napalm.base.helpers.find_txt(platform_attr_tree, "ModelName")
         )
         interface_list = sorted(list(self.get_interfaces().keys()))
 
@@ -400,7 +397,7 @@ class IOSXRDriver(NetworkDriver):
 
             if vrf == "global":
                 this_vrf["router_id"] = napalm.base.helpers.convert(
-                    text_type,
+                    str,
                     napalm.base.helpers.find_txt(
                         result_tree,
                         "Get/Operational/BGP/InstanceTable/Instance/InstanceActive/DefaultVRF"
@@ -409,7 +406,7 @@ class IOSXRDriver(NetworkDriver):
                 )
             else:
                 this_vrf["router_id"] = napalm.base.helpers.convert(
-                    text_type,
+                    str,
                     napalm.base.helpers.find_txt(
                         result_tree,
                         "Get/Operational/BGP/InstanceTable/Instance/InstanceActive/VRFTable/VRF"
@@ -428,7 +425,7 @@ class IOSXRDriver(NetworkDriver):
                     int, napalm.base.helpers.find_txt(neighbor, "RemoteAS")
                 )
                 this_neighbor["remote_id"] = napalm.base.helpers.convert(
-                    text_type, napalm.base.helpers.find_txt(neighbor, "RouterID")
+                    str, napalm.base.helpers.find_txt(neighbor, "RouterID")
                 )
 
                 if (
@@ -439,7 +436,7 @@ class IOSXRDriver(NetworkDriver):
 
                 try:
                     this_neighbor["description"] = napalm.base.helpers.convert(
-                        text_type, napalm.base.helpers.find_txt(neighbor, "Description")
+                        str, napalm.base.helpers.find_txt(neighbor, "Description")
                     )
                 except AttributeError:
                     this_neighbor["description"] = ""
@@ -450,9 +447,7 @@ class IOSXRDriver(NetworkDriver):
                 )
 
                 if (
-                    text_type(
-                        napalm.base.helpers.find_txt(neighbor, "ConnectionAdminStatus")
-                    )
+                    str(napalm.base.helpers.find_txt(neighbor, "ConnectionAdminStatus"))
                     == "1"
                 ):
                     this_neighbor["is_enabled"] = True
@@ -460,7 +455,7 @@ class IOSXRDriver(NetworkDriver):
                     this_neighbor["is_enabled"] = False
 
                 if (
-                    text_type(napalm.base.helpers.find_txt(neighbor, "ConnectionState"))
+                    str(napalm.base.helpers.find_txt(neighbor, "ConnectionState"))
                     == "BGP_ST_ESTAB"
                 ):
                     this_neighbor["is_up"] = True
@@ -776,8 +771,8 @@ class IOSXRDriver(NetworkDriver):
 
             lldp[local_interface].append(
                 {
-                    "hostname": napalm.base.helpers.convert(text_type, n.split()[0]),
-                    "port": napalm.base.helpers.convert(text_type, n.split()[4]),
+                    "hostname": napalm.base.helpers.convert(str, n.split()[0]),
+                    "port": napalm.base.helpers.convert(str, n.split()[4]),
                 }
             )
 
@@ -793,11 +788,10 @@ class IOSXRDriver(NetworkDriver):
 
         for neighbor in result_tree.xpath(".//Neighbors/DetailTable/Detail/Entry"):
             interface_name = napalm.base.helpers.convert(
-                text_type,
-                napalm.base.helpers.find_txt(neighbor, "ReceivingInterfaceName"),
+                str, napalm.base.helpers.find_txt(neighbor, "ReceivingInterfaceName")
             )
             parent_interface = napalm.base.helpers.convert(
-                text_type,
+                str,
                 napalm.base.helpers.find_txt(neighbor, "ReceivingParentInterfaceName"),
             )
             chassis_id_raw = napalm.base.helpers.find_txt(neighbor, "ChassisID")
@@ -805,25 +799,22 @@ class IOSXRDriver(NetworkDriver):
                 napalm.base.helpers.mac, chassis_id_raw, chassis_id_raw
             )
             port_id = napalm.base.helpers.convert(
-                text_type, napalm.base.helpers.find_txt(neighbor, "PortIDDetail")
+                str, napalm.base.helpers.find_txt(neighbor, "PortIDDetail")
             )
             port_descr = napalm.base.helpers.convert(
-                text_type,
-                napalm.base.helpers.find_txt(neighbor, "Detail/PortDescription"),
+                str, napalm.base.helpers.find_txt(neighbor, "Detail/PortDescription")
             )
             system_name = napalm.base.helpers.convert(
-                text_type, napalm.base.helpers.find_txt(neighbor, "Detail/SystemName")
+                str, napalm.base.helpers.find_txt(neighbor, "Detail/SystemName")
             )
             system_descr = napalm.base.helpers.convert(
-                text_type,
-                napalm.base.helpers.find_txt(neighbor, "Detail/SystemDescription"),
+                str, napalm.base.helpers.find_txt(neighbor, "Detail/SystemDescription")
             )
             system_capabilities = napalm.base.helpers.convert(
-                text_type,
-                napalm.base.helpers.find_txt(neighbor, "Detail/SystemCapabilities"),
+                str, napalm.base.helpers.find_txt(neighbor, "Detail/SystemCapabilities")
             )
             enabled_capabilities = napalm.base.helpers.convert(
-                text_type,
+                str,
                 napalm.base.helpers.find_txt(neighbor, "Detail/EnabledCapabilities"),
             )
 
@@ -857,17 +848,15 @@ class IOSXRDriver(NetworkDriver):
 
         for command in commands:
             try:
-                cli_output[text_type(command)] = text_type(
-                    self.device._execute_show(command)
-                )
+                cli_output[str(command)] = str(self.device._execute_show(command))
             except TimeoutError:
                 cli_output[
-                    text_type(command)
+                    str(command)
                 ] = 'Execution of command \
                     "{command}" took too long! Please adjust your params!'.format(
                     command=command
                 )
-                raise CommandTimeoutException(text_type(cli_output))
+                raise CommandTimeoutException(str(cli_output))
 
         return cli_output
 
@@ -1068,7 +1057,7 @@ class IOSXRDriver(NetworkDriver):
                 "apply_groups": [],  # on IOS-XR will always be empty list!
                 "description": description,
                 "local_as": local_as,
-                "type": text_type(bgp_type),
+                "type": str(bgp_type),
                 "import_policy": import_policy,
                 "export_policy": export_policy,
                 "local_address": local_address,
@@ -1264,7 +1253,7 @@ class IOSXRDriver(NetworkDriver):
                 if connection_state == "Estab":
                     connection_state = "Established"
                 previous_connection_state = napalm.base.helpers.convert(
-                    text_type,
+                    str,
                     _BGP_STATE_.get(
                         napalm.base.helpers.find_txt(
                             neighbor, "PreviousConnectionState", "0"
@@ -1386,10 +1375,10 @@ class IOSXRDriver(NetworkDriver):
 
         for arp_entry in result_tree.xpath(".//EntryTable/Entry"):
             interface = napalm.base.helpers.convert(
-                text_type, napalm.base.helpers.find_txt(arp_entry, ".//InterfaceName")
+                str, napalm.base.helpers.find_txt(arp_entry, ".//InterfaceName")
             )
             ip = napalm.base.helpers.convert(
-                text_type, napalm.base.helpers.find_txt(arp_entry, ".//Address")
+                str, napalm.base.helpers.find_txt(arp_entry, ".//Address")
             )
             age = napalm.base.helpers.convert(
                 float, napalm.base.helpers.find_txt(arp_entry, ".//Age"), 0.0
@@ -1526,8 +1515,7 @@ class IOSXRDriver(NetworkDriver):
         ipv4_xpath = ".//IPV4Network/InterfaceTable/Interface"
         for interface in ipv4_ipv6_tree.xpath(ipv4_xpath):
             interface_name = napalm.base.helpers.convert(
-                text_type,
-                napalm.base.helpers.find_txt(interface, "Naming/InterfaceName"),
+                str, napalm.base.helpers.find_txt(interface, "Naming/InterfaceName")
             )
             primary_ip = napalm.base.helpers.ip(
                 napalm.base.helpers.find_txt(
@@ -1569,8 +1557,7 @@ class IOSXRDriver(NetworkDriver):
         )
         for interface in ipv4_ipv6_tree.xpath(ipv6_xpath):
             interface_name = napalm.base.helpers.convert(
-                text_type,
-                napalm.base.helpers.find_txt(interface, "Naming/InterfaceName"),
+                str, napalm.base.helpers.find_txt(interface, "Naming/InterfaceName")
             )
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = {}
@@ -1634,7 +1621,7 @@ class IOSXRDriver(NetworkDriver):
 
         routes = {}
 
-        if not isinstance(destination, py23_compat.string_types):
+        if not isinstance(destination, str):
             raise TypeError("Please specify a valid destination!")
 
         protocol = protocol.lower()
@@ -1689,7 +1676,7 @@ class IOSXRDriver(NetworkDriver):
 
         for route in routes_tree.xpath(".//Route"):
             route_protocol = napalm.base.helpers.convert(
-                text_type, napalm.base.helpers.find_txt(route, "ProtocolName").lower()
+                str, napalm.base.helpers.find_txt(route, "ProtocolName").lower()
             )
             if protocol and route_protocol != protocol:
                 continue  # ignore routes learned via a different protocol
@@ -1705,7 +1692,7 @@ class IOSXRDriver(NetworkDriver):
                 int, napalm.base.helpers.find_txt(route, "RouteAge")
             )
             destination = napalm.base.helpers.convert(
-                text_type, "{prefix}/{length}".format(prefix=address, length=length)
+                str, "{prefix}/{length}".format(prefix=address, length=length)
             )
             if destination not in routes.keys():
                 routes[destination] = []
@@ -2157,11 +2144,9 @@ class IOSXRDriver(NetworkDriver):
                     last_probe_host_name = last_probe_ip_address
                 last_hop_dict["probes"][last_probe_index] = {
                     "ip_address": napalm.base.helpers.convert(
-                        text_type, last_probe_ip_address
+                        str, last_probe_ip_address
                     ),
-                    "host_name": napalm.base.helpers.convert(
-                        text_type, last_probe_host_name
-                    ),
+                    "host_name": napalm.base.helpers.convert(str, last_probe_host_name),
                     "rtt": timeout * 1000.0,
                 }
                 continue
@@ -2208,9 +2193,7 @@ class IOSXRDriver(NetworkDriver):
             level = _CISCO_GROUP_TO_CISCO_PRIVILEGE_MAP.get(group, 0)
             password = napalm.base.helpers.find_txt(user_entry, "Password/Password")
             user_details = _DEFAULT_USER_DETAILS.copy()
-            user_details.update(
-                {"level": level, "password": py23_compat.text_type(password)}
-            )
+            user_details.update({"level": level, "password": str(password)})
             users[username] = user_details
 
         return users
@@ -2220,11 +2203,11 @@ class IOSXRDriver(NetworkDriver):
         config = {"startup": "", "running": "", "candidate": ""}  # default values
 
         if retrieve.lower() in ["running", "all"]:
-            config["running"] = py23_compat.text_type(
+            config["running"] = str(
                 self.device._execute_config_show("show running-config")
             )
         if retrieve.lower() in ["candidate", "all"]:
-            config["candidate"] = py23_compat.text_type(
+            config["candidate"] = str(
                 self.device._execute_config_show("show configuration merge")
             )
 
