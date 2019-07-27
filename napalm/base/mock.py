@@ -12,14 +12,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from napalm.base.base import NetworkDriver
-from napalm.base.utils import py23_compat
 import napalm.base.exceptions
 
+import inspect
 import json
 import os
 import re
@@ -45,7 +41,7 @@ def is_mocked_method(method):
 
 def mocked_method(path, name, count):
     parent_method = getattr(NetworkDriver, name)
-    parent_method_args = py23_compat.argspec(parent_method)
+    parent_method_args = inspect.getfullargspec(parent_method)
     modifier = 0 if "self" not in parent_method_args.args else 1
 
     def _mocked_method(*args, **kwargs):

@@ -8,7 +8,6 @@ from __future__ import unicode_literals
 import yaml
 
 from napalm.base.exceptions import ValidationException
-from napalm.base.utils import py23_compat
 
 import copy
 import re
@@ -116,8 +115,8 @@ def _compare_getter_dict(src, dst, mode):
 
 
 def compare(src, dst):
-    if isinstance(src, py23_compat.string_types):
-        src = py23_compat.text_type(src)
+    if isinstance(src, str):
+        src = str(src)
 
     if isinstance(src, dict):
         mode = _mode(src.pop("_mode", ""))
@@ -129,12 +128,12 @@ def compare(src, dst):
             return _compare_getter_list(src["list"], dst, mode)
         return _compare_getter_dict(src, dst, mode)
 
-    elif isinstance(src, py23_compat.string_types):
+    elif isinstance(src, str):
         if src.startswith("<") or src.startswith(">"):
             cmp_result = _compare_numeric(src, dst)
             return cmp_result
         else:
-            m = re.search(src, py23_compat.text_type(dst))
+            m = re.search(src, str(dst))
             if m:
                 return bool(m)
             else:
