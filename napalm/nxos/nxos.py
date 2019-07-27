@@ -35,7 +35,7 @@ from nxapi_plumbing import NXAPIAuthError, NXAPIConnectionError, NXAPICommandErr
 # import NAPALM Base
 import napalm.base.helpers
 from napalm.base import NetworkDriver
-from napalm.base.getter_types import GetFacts
+from napalm.base.getter_types import GetFacts, GetInterfaces, GetInterfacesInner
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
@@ -823,7 +823,7 @@ class NXOSDriver(NXOSDriverBase):
 
         return facts
 
-    def get_interfaces(self):
+    def get_interfaces(self) -> GetInterfaces:
         interfaces = {}
         iface_cmd = "show interface"
         interfaces_out = self._send_command(iface_cmd)
@@ -842,7 +842,7 @@ class NXOSDriver(NXOSDriverBase):
                 is_up = interface_details.get("admin_state", "") == "up"
             else:
                 is_up = interface_details.get("state", "") == "up"
-            interfaces[interface_name] = {
+            intf_dict: GetInterfacesInner = {
                 "is_up": is_up,
                 "is_enabled": (interface_details.get("state") == "up"),
                 "description": py23_compat.text_type(
@@ -857,6 +857,8 @@ class NXOSDriver(NXOSDriverBase):
                     napalm.base.helpers.mac, interface_details.get("eth_hw_addr")
                 ),
             }
+            interfaces[interface_name] = intf_dict
+
         return interfaces
 
     def get_bgp_neighbors(self):

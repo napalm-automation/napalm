@@ -26,7 +26,7 @@ from netaddr.core import AddrFormatError
 
 # import NAPALM Base
 from napalm.base import helpers
-from napalm.base.getter_types import GetFacts
+from napalm.base.getter_types import GetFacts, GetInterfaces
 from napalm.base.exceptions import CommandErrorException, ReplaceConfigException
 from napalm.base.utils import py23_compat
 from napalm.nxos import NXOSDriverBase
@@ -76,7 +76,7 @@ RE_BGP_REMOTE_AS = re.compile(r"remote AS (" + ASN_REGEX + r")")
 RE_BGP_COMMUN = re.compile(r"[ ]{10}([\S ]+)")
 
 
-def parse_intf_section(interface):
+def parse_intf_section(interface: str) -> GetInterfaces:
     """Parse a single entry from show interfaces output.
 
     Different cases:
@@ -134,8 +134,8 @@ def parse_intf_section(interface):
             for x_pattern in [re_is_enabled_1, re_is_enabled_2]:
                 match = re.search(x_pattern, interface, flags=re.M)
                 if match:
-                    is_enabled = match.group("is_enabled").strip()
-                    is_enabled = True if re.search("up", is_enabled) else False
+                    match_is_enabled = match.group("is_enabled").strip()
+                    is_enabled = True if re.search("up", match_is_enabled) else False
                     break
             else:
                 msg = "Error parsing intf, 'admin state' never detected:\n\n{}".format(
@@ -651,33 +651,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         }
         return return_dict
 
-    def get_interfaces(self):
-        """
-        Get interface details.
-
-        last_flapped is not implemented
-
-        Example Output:
-
-        {   u'Vlan1': {   'description': u'',
-                      'is_enabled': True,
-                      'is_up': True,
-                      'last_flapped': -1.0,
-                      'mac_address': u'a493.4cc1.67a7',
-                      'speed': 100},
-        u'Vlan100': {   'description': u'Data Network',
-                        'is_enabled': True,
-                        'is_up': True,
-                        'last_flapped': -1.0,
-                        'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100},
-        u'Vlan200': {   'description': u'Voice Network',
-                        'is_enabled': True,
-                        'is_up': True,
-                        'last_flapped': -1.0,
-                        'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100}}
-        """
+    def get_interfaces(self) -> GetInterfaces:
         interfaces = {}
         command = "show interface"
         output = self._send_command(command)
