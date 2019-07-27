@@ -34,7 +34,7 @@ import napalm.base.helpers
 from napalm.base.netmiko_helpers import netmiko_args
 from napalm.iosxr import constants as C
 from napalm.base.base import NetworkDriver
-from napalm.base.getter_types import GetFacts
+from napalm.base.getter_types import GetFacts, GetInterfaces, GetInterfacesInner
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
@@ -186,13 +186,14 @@ class IOSXRDriver(NetworkDriver):
             "interface_list": interface_list,
         }
 
-    def get_interfaces(self):
+    def get_interfaces(self) -> GetInterfaces:
 
         interfaces = {}
 
-        INTERFACE_DEFAULTS = {
+        INTERFACE_DEFAULTS: GetInterfacesInner = {
             "is_enabled": False,
             "is_up": False,
+            "mtu": -1,
             "mac_address": "",
             "description": "",
             "speed": -1,

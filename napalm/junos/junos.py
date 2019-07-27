@@ -22,6 +22,7 @@ import logging
 import collections
 from copy import deepcopy
 from collections import OrderedDict, defaultdict
+from typing import Dict, Any
 
 # import third party lib
 from lxml.builder import E
@@ -39,7 +40,7 @@ from jnpr.junos.exception import UnlockError as JnrpUnlockError
 # import NAPALM Base
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
-from napalm.base.getter_types import GetFacts
+from napalm.base.getter_types import GetFacts, GetInterfaces, GetInterfacesInner
 from napalm.base.utils import py23_compat
 from napalm.junos import constants as C
 from napalm.base.exceptions import ConnectionException
@@ -298,22 +299,14 @@ class JunOSDriver(NetworkDriver):
             "interface_list": interface_list,
         }
 
-    def get_interfaces(self):
+    def get_interfaces(self) -> GetInterfaces:
         """Return interfaces details."""
-        result = {}
-
-        interfaces = junos_views.junos_iface_table(self.device)
-        interfaces.get()
-        interfaces_logical = junos_views.junos_logical_iface_table(self.device)
-        interfaces_logical.get()
 
         # convert all the tuples to our pre-defined dict structure
-        def _convert_to_dict(interfaces):
-            # calling .items() here wont work.
-            # The dictionary values will end up being tuples instead of dictionaries
-            interfaces = dict(interfaces)
+        def _convert_to_dict(interfaces: Dict[str, Any]) -> GetInterfaces:
+            intf_dict: GetInterfaces = {}
             for iface, iface_data in interfaces.items():
-                result[iface] = {
+                tmp_dict: GetInterfacesInner = {
                     "is_up": iface_data["is_up"],
                     # For physical interfaces <admin-status> will always be there, so just
                     # return the value interfaces[iface]['is_enabled']
@@ -334,30 +327,38 @@ class JunOSDriver(NetworkDriver):
                     "speed": -1,
                     "mtu": 0,
                 }
-                # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
 
                 match_mtu = re.search(r"(\w+)", str(iface_data["mtu"]) or "")
                 mtu = napalm.base.helpers.convert(int, match_mtu.group(0), 0)
-                result[iface]["mtu"] = mtu
+                tmp_dict["mtu"] = mtu
                 match = re.search(r"(\d+|[Aa]uto)(\w*)", iface_data["speed"] or "")
                 if match and match.group(1).lower() == "auto":
                     match = re.search(
                         r"(\d+)(\w*)", iface_data["negotiated_speed"] or ""
                     )
                 if match is None:
+                    intf_dict[iface] = tmp_dict
                     continue
                 speed_value = napalm.base.helpers.convert(int, match.group(1), -1)
                 if speed_value == -1:
+                    intf_dict[iface] = tmp_dict
                     continue
                 speed_unit = match.group(2)
                 if speed_unit.lower() == "gbps":
                     speed_value *= 1000
-                result[iface]["speed"] = speed_value
+                tmp_dict["speed"] = speed_value
+                intf_dict[iface] = tmp_dict
 
-            return result
+            return intf_dict
 
-        result = _convert_to_dict(interfaces)
-        result.update(_convert_to_dict(interfaces_logical))
+        interfaces = junos_views.junos_iface_table(self.device)
+        interfaces.get()
+        interfaces_logical = junos_views.junos_logical_iface_table(self.device)
+        interfaces_logical.get()
+
+        result: GetInterfaces = {}
+        result.update(_convert_to_dict(dict(interfaces)))
+        result.update(_convert_to_dict(dict(interfaces_logical)))
         return result
 
     def get_interfaces_counters(self):

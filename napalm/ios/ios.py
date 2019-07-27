@@ -981,32 +981,7 @@ class IOSDriver(NetworkDriver):
         }
 
     def get_interfaces(self) -> GetInterfaces:
-        """
-        Get interface details.
 
-        last_flapped is not implemented
-
-        Example Output:
-
-        {   u'Vlan1': {   'description': u'N/A',
-                      'is_enabled': True,
-                      'is_up': True,
-                      'last_flapped': -1.0,
-                      'mac_address': u'a493.4cc1.67a7',
-                      'speed': 100},
-        u'Vlan100': {   'description': u'Data Network',
-                        'is_enabled': True,
-                        'is_up': True,
-                        'last_flapped': -1.0,
-                        'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100},
-        u'Vlan200': {   'description': u'Voice Network',
-                        'is_enabled': True,
-                        'is_up': True,
-                        'last_flapped': -1.0,
-                        'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100}}
-        """
         # default values.
         last_flapped = -1.0
 
