@@ -17,7 +17,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from napalm.base.base import FakeDriverStub
-from napalm.base.getter_types import GetFacts
 from napalm.base.utils import py23_compat
 import napalm.base.exceptions
 

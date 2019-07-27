@@ -20,8 +20,6 @@ Read napalm.readthedocs.org for more information.
 # std libs
 import re
 import time
-import copy
-from typing import Dict, Any
 
 from datetime import datetime
 from collections import defaultdict
@@ -37,7 +35,7 @@ from pyeapi.eapilib import ConnectionError
 # NAPALM base
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
-from napalm.base.getter_types import GetFacts, GetInterfaces, GetInterfacesInner
+from napalm.base.getter_types import GetFacts, GetInterfaces
 from napalm.base.utils import string_parsers
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import (
@@ -353,7 +351,9 @@ class EOSDriver(NetworkDriver):
         for interface, values in output["interfaces"].items():
 
             # Ensure values are never stale
-            is_up = is_enabled = description = last_flapped = mtu = speed = mac_address = None
+            is_up = (
+                is_enabled
+            ) = description = last_flapped = mtu = speed = mac_address = None
 
             if values["lineProtocolStatus"] == "up":
                 is_up = True
@@ -381,7 +381,7 @@ class EOSDriver(NetworkDriver):
                 "speed": speed,
                 "mac_address": mac_address,
             }
-        
+
         return interfaces
 
     def get_lldp_neighbors(self):

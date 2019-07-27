@@ -27,7 +27,7 @@ from netmiko import FileTransfer, InLineTransfer
 import napalm.base.constants as C
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
-from napalm.base.getter_types import GetFacts, GetInterfaces, GetInterfacesInner
+from napalm.base.getter_types import GetFacts, GetInterfaces
 from napalm.base.exceptions import (
     ReplaceConfigException,
     MergeConfigException,
