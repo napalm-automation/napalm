@@ -34,7 +34,12 @@ import napalm.base.helpers
 from napalm.base.netmiko_helpers import netmiko_args
 from napalm.iosxr import constants as C
 from napalm.base.base import NetworkDriver
-from napalm.base.getter_types import GetFacts, GetInterfaces, GetInterfacesInner
+from napalm.base.getter_types import (
+    GetFacts,
+    GetInterfaces,
+    GetInterfacesInner,
+    GetLldpNeighbors,
+)
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
@@ -758,10 +763,10 @@ class IOSXRDriver(NetworkDriver):
 
         return environment_status
 
-    def get_lldp_neighbors(self):
+    def get_lldp_neighbors(self) -> GetLldpNeighbors:
 
         # init result dict
-        lldp = {}
+        lldp: GetLldpNeighbors = {}
         sh_lldp = self.device.show_lldp_neighbors().splitlines()[5:-3]
 
         for n in sh_lldp:

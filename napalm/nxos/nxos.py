@@ -35,7 +35,12 @@ from nxapi_plumbing import NXAPIAuthError, NXAPIConnectionError, NXAPICommandErr
 # import NAPALM Base
 import napalm.base.helpers
 from napalm.base import NetworkDriver
-from napalm.base.getter_types import GetFacts, GetInterfaces, GetInterfacesInner
+from napalm.base.getter_types import (
+    GetFacts,
+    GetInterfaces,
+    GetInterfacesInner,
+    GetLldpNeighbors,
+)
 from napalm.base.utils import py23_compat
 from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
@@ -540,9 +545,9 @@ class NXOSDriverBase(NetworkDriver):
             )
         return config
 
-    def get_lldp_neighbors(self):
+    def get_lldp_neighbors(self) -> GetLldpNeighbors:
         """IOS implementation of get_lldp_neighbors."""
-        lldp = {}
+        lldp: GetLldpNeighbors = {}
         neighbors_detail = self.get_lldp_neighbors_detail()
         for intf_name, entries in neighbors_detail.items():
             lldp[intf_name] = []
@@ -552,8 +557,9 @@ class NXOSDriverBase(NetworkDriver):
                 # When lacking a system name (in show lldp neighbors)
                 if hostname == "N/A":
                     hostname = lldp_entry["remote_chassis_id"]
-                lldp_dict = {"port": lldp_entry["remote_port"], "hostname": hostname}
-                lldp[intf_name].append(lldp_dict)
+                lldp[intf_name].append(
+                    {"port": lldp_entry["remote_port"], "hostname": hostname}
+                )
 
         return lldp
 
