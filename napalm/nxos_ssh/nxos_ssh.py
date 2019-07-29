@@ -22,6 +22,7 @@ import socket
 
 # import third party lib
 from netaddr import IPAddress, IPNetwork
+import json
 from netaddr.core import AddrFormatError
 
 # import NAPALM Base
@@ -584,15 +585,22 @@ class NXOSSSHDriver(NXOSDriverBase):
         show_int_status = self._send_command("show interface status")
         show_hostname = self._send_command("show hostname")
 
+        show_inventory_table = self._get_command_table(
+            "show inventory | json", "TABLE_inv", "ROW_inv"
+        )
+        if isinstance(show_inventory_table, dict):
+            show_inventory_table = [show_inventory_table]
+
+        for row in show_inventory_table:
+            if row["name"] == "Chassis":
+                serial_number = row.get("serialnum", "")
+                break
+
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
             if " uptime is " in line:
                 _, uptime_str = line.split(" uptime is ")
                 uptime = self.parse_uptime(uptime_str)
-
-            if "Processor Board ID" in line:
-                _, serial_number = line.split("Processor Board ID ")
-                serial_number = serial_number.strip()
 
             if "system: " in line or "NXOS: " in line:
                 line = line.strip()
@@ -1487,3 +1495,34 @@ class NXOSSSHDriver(NXOSDriverBase):
                     continue
                 users[username]["sshkeys"].append(py23_compat.text_type(sshkeyvalue))
         return users
+
+    @staticmethod
+    def _get_table_rows(parent_table, table_name, row_name):
+        """
+        Inconsistent behavior:
+        {'TABLE_intf': [{'ROW_intf': {
+        vs
+        {'TABLE_mac_address': {'ROW_mac_address': [{
+        vs
+        {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
+        """
+        if parent_table is None:
+            return []
+        _table = parent_table.get(table_name)
+        _table_rows = []
+        if isinstance(_table, list):
+            _table_rows = [_table_row.get(row_name) for _table_row in _table]
+        elif isinstance(_table, dict):
+            _table_rows = _table.get(row_name)
+        if not isinstance(_table_rows, list):
+            _table_rows = [_table_rows]
+        return _table_rows
+
+    def _get_reply_table(self, result, table_name, row_name):
+        return self._get_table_rows(result, table_name, row_name)
+
+    def _get_command_table(self, command, table_name, row_name):
+        json_output = self._send_command(command)
+        if type(json_output) is not dict:
+            json_output = json.loads(json_output)
+        return self._get_reply_table(json_output, table_name, row_name)

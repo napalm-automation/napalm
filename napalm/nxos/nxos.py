@@ -779,10 +779,20 @@ class NXOSDriver(NXOSDriverBase):
         facts = {}
         facts["vendor"] = "Cisco"
 
+        show_inventory_table = self._get_command_table(
+            "show inventory", "TABLE_inv", "ROW_inv"
+        )
+        if isinstance(show_inventory_table, dict):
+            show_inventory_table = [show_inventory_table]
+
+        for row in show_inventory_table:
+            if row["name"] == "Chassis":
+                facts["serial_number"] = row.get("serialnum", "")
+                break
+
         show_version = self._send_command("show version")
         facts["model"] = show_version.get("chassis_id", "")
         facts["hostname"] = show_version.get("host_name", "")
-        facts["serial_number"] = show_version.get("proc_board_id", "")
         facts["os_version"] = show_version.get("sys_ver_str", "")
 
         uptime_days = show_version.get("kern_uptm_days", 0)
