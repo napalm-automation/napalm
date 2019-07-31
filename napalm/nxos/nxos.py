@@ -221,6 +221,12 @@ class NXOSDriverBase(NetworkDriver):
             else:
                 self._commit_merge()
 
+            try:
+                # If hostname changes ensure Netmiko state is updated properly
+                self._netmiko_device.set_base_prompt()
+            except AttributeError:
+                pass
+
             self._copy_run_start()
             self.loaded = False
         else:
@@ -1109,7 +1115,12 @@ class NXOSDriver(NXOSDriverBase):
                 interfaces_ip[interface_name]["ipv6"] = {}
             if "addr" not in interface.keys():
                 # Handle nexus 9000 ipv6 interface output
-                addrs = [addr["addr"] for addr in interface["TABLE_addr"]["ROW_addr"]]
+                if isinstance(interface["TABLE_addr"]["ROW_addr"], list):
+                    addrs = [
+                        addr["addr"] for addr in interface["TABLE_addr"]["ROW_addr"]
+                    ]
+                elif isinstance(interface["TABLE_addr"]["ROW_addr"], dict):
+                    addrs = interface["TABLE_addr"]["ROW_addr"]["addr"]
                 interface["addr"] = addrs
 
             if type(interface.get("addr", "")) is list:

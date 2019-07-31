@@ -153,7 +153,7 @@ class JunOSDriver(NetworkDriver):
                 self.device.cu.unlock()
                 self.locked = False
             except JnrpUnlockError as jue:
-                raise UnlockError(jue.messsage)
+                raise UnlockError(jue)
 
     def _rpc(self, get, child=None, **kwargs):
         """
@@ -818,7 +818,7 @@ class JunOSDriver(NetworkDriver):
                 interface_args = {interface_variable: interface}
                 lldp_table.get(**interface_args)
             except RpcError as e:
-                if "syntax error" in e.message:
+                if "syntax error" in str(e):
                     # Looks like we need to call a different RPC on this device
                     # Switch to the alternate style
                     lldp_table.GET_RPC = alt_rpc
@@ -1571,7 +1571,7 @@ class JunOSDriver(NetworkDriver):
         except RpcError as e:
             # Device hasn't got it's l2 subsystem running
             # Don't error but just return an empty result
-            if "l2-learning subsystem" in e.message:
+            if "l2-learning subsystem" in str(e):
                 return []
             else:
                 raise
