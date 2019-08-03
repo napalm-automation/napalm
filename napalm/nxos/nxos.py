@@ -526,6 +526,7 @@ class NXOSDriverBase(NetworkDriver):
 
     def get_config(self, retrieve="all", full=False):
         config = {"startup": "", "running": "", "candidate": ""}  # default values
+        # NX-OS only supports "all" on "show run"
         run_full = " all" if full else ""
 
         if retrieve.lower() in ("running", "all"):
@@ -534,7 +535,7 @@ class NXOSDriverBase(NetworkDriver):
                 self._send_command(command, raw_text=True)
             )
         if retrieve.lower() in ("startup", "all"):
-            command = "show startup-config{}".format(run_full)
+            command = "show startup-config"
             config["startup"] = py23_compat.text_type(
                 self._send_command(command, raw_text=True)
             )

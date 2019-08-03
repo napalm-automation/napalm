@@ -2968,10 +2968,11 @@ class IOSDriver(NetworkDriver):
         """
 
         configs = {"startup": "", "running": "", "candidate": ""}
+        # IOS only supports "all" on "show run"
         run_full = " all" if full else ""
 
         if retrieve in ("startup", "all"):
-            command = "show startup-config{}".format(run_full)
+            command = "show startup-config"
             output = self._send_command(command)
             configs["startup"] = output
 

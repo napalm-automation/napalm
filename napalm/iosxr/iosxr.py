@@ -2227,6 +2227,7 @@ class IOSXRDriver(NetworkDriver):
     def get_config(self, retrieve="all", full=False):
 
         config = {"startup": "", "running": "", "candidate": ""}  # default values
+        # IOS-XR only supports "all" on "show run"
         run_full = " all" if full else ""
 
         if retrieve.lower() in ["running", "all"]:
@@ -2238,7 +2239,7 @@ class IOSXRDriver(NetworkDriver):
         if retrieve.lower() in ["candidate", "all"]:
             config["candidate"] = py23_compat.text_type(
                 self.device._execute_config_show(
-                    "show configuration merge{}".format(run_full)
+                    "show configuration merge"
                 )
             )
 
