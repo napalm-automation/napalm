@@ -1692,7 +1692,7 @@ class EOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False):
         """get_config implementation for EOS."""
         get_startup = retrieve == "all" or retrieve == "startup"
         get_running = retrieve == "all" or retrieve == "running"
@@ -1700,12 +1700,19 @@ class EOSDriver(NetworkDriver):
             retrieve == "all" or retrieve == "candidate"
         ) and self.config_session
 
+        run_full = " all" if full else ""
+
         if retrieve == "all":
-            commands = ["show startup-config", "show running-config"]
+            commands = [
+                "show startup-config{}".format(run_full),
+                "show running-config{}".format(run_full),
+            ]
 
             if self.config_session:
                 commands.append(
-                    "show session-config named {}".format(self.config_session)
+                    "show session-config named {} {}".format(
+                        self.config_session, run_full
+                    )
                 )
 
             output = self.device.run_commands(commands, encoding="text")
@@ -1721,7 +1728,7 @@ class EOSDriver(NetworkDriver):
                 else "",
             }
         elif get_startup or get_running:
-            commands = ["show {}-config".format(retrieve)]
+            commands = ["show {}-config{}".format(retrieve, run_full)]
             output = self.device.run_commands(commands, encoding="text")
             return {
                 "startup": py23_compat.text_type(output[0]["output"])
@@ -1733,7 +1740,9 @@ class EOSDriver(NetworkDriver):
                 "candidate": "",
             }
         elif get_candidate:
-            commands = ["show session-config named {}".format(self.config_session)]
+            commands = [
+                "show session-config named {}{}".format(self.config_session, run_full)
+            ]
             output = self.device.run_commands(commands, encoding="text")
             return {
                 "startup": "",
