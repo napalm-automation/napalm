@@ -2238,9 +2238,7 @@ class IOSXRDriver(NetworkDriver):
             )
         if retrieve.lower() in ["candidate", "all"]:
             config["candidate"] = py23_compat.text_type(
-                self.device._execute_config_show(
-                    "show configuration merge"
-                )
+                self.device._execute_config_show("show configuration merge")
             )
 
         return config

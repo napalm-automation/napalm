@@ -1704,16 +1704,11 @@ class EOSDriver(NetworkDriver):
         run_full = " all" if full else ""
 
         if retrieve == "all":
-            commands = [
-                "show startup-config"
-                "show running-config{}".format(run_full),
-            ]
+            commands = ["show startup-config", "show running-config{}".format(run_full)]
 
             if self.config_session:
                 commands.append(
-                    "show session-config named {}".format(
-                        self.config_session
-                    )
+                    "show session-config named {}".format(self.config_session)
                 )
 
             output = self.device.run_commands(commands, encoding="text")
@@ -1744,9 +1739,7 @@ class EOSDriver(NetworkDriver):
                 "candidate": "",
             }
         elif get_candidate:
-            commands = [
-                "show session-config named {}".format(self.config_session)
-            ]
+            commands = ["show session-config named {}".format(self.config_session)]
             output = self.device.run_commands(commands, encoding="text")
             return {
                 "startup": "",
