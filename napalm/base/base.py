@@ -1729,7 +1729,7 @@ class NetworkDriver(object):
     def get_yang_config(
         self, target="running", validate=True, include=None, exclude=None
     ):
-        config = self.get_config(retrieve=target)[target]
+        config = self.get_config(retrieve=target, full=True)[target]
         return self.rosetta.parse(
             native={"dev_conf": config},
             include=include,
@@ -1737,7 +1737,13 @@ class NetworkDriver(object):
             validate=validate,
         )
 
-    def _yang_config_getter(self, target, path):
+    def merge_yang_config(self, data, replace=False):
+        running = self.get_yang_config("running", validate=True)
+        return self.rosetta.merge(
+            running=running.raw_value(), candidate=data, replace=replace
+        )
+
+    def _yang_config_getter(self, path, target):
         config = self.get_config(retrieve=target)[target]
         include, exclude = get_yang_filter(path, self.yang_model)
         return self.rosetta.parse(
@@ -1745,7 +1751,22 @@ class NetworkDriver(object):
         )
 
     def get_yang_vlan_config(self, target="running"):
-        return self._yang_getter("vlans", target)
+        return self._yang_config_getter("vlans", target)
+
+    def merge_yang_vlan_config(self, data, replace=False):
+        running = self.get_yang_vlan_config("running")
+        return self.rosetta.merge(
+            running=running.raw_value(), candidate=data, replace=replace
+        )
 
     def get_yang_interfaces_config(self, target="running"):
-        return self._yang_getter("interfaces", target)
+        return self._yang_config_getter("interfaces", target)
+
+    def merge_yang_interfaces_config(self, data, replace=False):
+        running = self.get_yang_vlan_config("running")
+        return self.rosetta.merge(
+            running=running.raw_value(), candidate=data, replace=replace
+        )
+
+    def translate_yang_config(self, data, replace=False):
+        return self.rosetta.translate(data, replace)

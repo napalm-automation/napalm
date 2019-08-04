@@ -1,0 +1,5 @@
+{
+	"startup": "",
+	"running": "interface FastEthernet1\n   description This is Fa1\n   shutdown\n   exit\n!\ninterface FastEthernet1.1\n   description This is Fa1.1\n   exit\n!\ninterface FastEthernet1.2\n   description This is Fa1.2\n   exit\n!\ninterface FastEthernet3\n   description This is Fa3\n   no shutdown\n   switchport mode access\n   switchport access vlan 10\n   exit\n!\ninterface FastEthernet4\n   shutdown\n   switchport mode trunk\n   switchport trunk allowed vlan 10,20\n   exit\n!\nvlan 10\n   name prod\n   no shutdown\n   exit\n!\nvlan 20\n   name dev\n   shutdown\n   exit\n!",
+	"candidate": ""
+}
