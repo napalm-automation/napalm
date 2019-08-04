@@ -29,6 +29,8 @@ from collections import defaultdict
 from netaddr import IPAddress
 from netaddr import IPNetwork
 
+from ntc_rosetta import get_driver
+
 from netaddr.core import AddrFormatError
 
 # third party libs
@@ -85,7 +87,16 @@ class EOSDriver(NetworkDriver):
         re.VERBOSE,
     )
 
-    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+    def __init__(
+        self,
+        hostname,
+        username,
+        password,
+        timeout=60,
+        rosetta_driver=None,
+        yang_model="openconfig",
+        optional_args=None,
+    ):
         """Constructor."""
         self.device = None
         self.hostname = hostname
@@ -99,6 +110,10 @@ class EOSDriver(NetworkDriver):
         self.profile = [self.platform]
 
         self._process_optional_args(optional_args or {})
+
+        self.yang_model = yang_model
+        self.rosetta_driver = rosetta_driver
+        self.rosetta = get_driver(rosetta_driver or self.platform, yang_model)()
 
     def _process_optional_args(self, optional_args):
         self.enablepwd = optional_args.pop("enable_password", "")

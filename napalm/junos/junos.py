@@ -25,6 +25,8 @@ import collections
 from copy import deepcopy
 from collections import OrderedDict, defaultdict
 
+from ntc_rosetta import get_driver
+
 # import third party lib
 from lxml.builder import E
 from lxml import etree
@@ -60,7 +62,16 @@ log = logging.getLogger(__file__)
 class JunOSDriver(NetworkDriver):
     """JunOSDriver class - inherits NetworkDriver from napalm.base."""
 
-    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+    def __init__(
+        self,
+        hostname,
+        username,
+        password,
+        timeout=60,
+        rosetta_driver=None,
+        yang_model="openconfig",
+        optional_args=None,
+    ):
         """
         Initialise JunOS driver.
 
@@ -114,6 +125,10 @@ class JunOSDriver(NetworkDriver):
 
         self.platform = "junos"
         self.profile = [self.platform]
+
+        self.yang_model = yang_model
+        self.rosetta_driver = rosetta_driver
+        self.rosetta = get_driver(rosetta_driver or self.platform, yang_model)()
 
     def open(self):
         """Open the connection with the device."""

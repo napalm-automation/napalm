@@ -28,6 +28,8 @@ from collections import defaultdict
 
 from netmiko import FileTransfer, InLineTransfer
 
+from ntc_rosetta import get_driver
+
 import napalm.base.constants as C
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
@@ -97,7 +99,16 @@ AFI_COMMAND_MAP = {
 class IOSDriver(NetworkDriver):
     """NAPALM Cisco IOS Handler."""
 
-    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+    def __init__(
+        self,
+        hostname,
+        username,
+        password,
+        timeout=60,
+        rosetta_driver=None,
+        yang_model="openconfig",
+        optional_args=None,
+    ):
         """NAPALM Cisco IOS Handler."""
         if optional_args is None:
             optional_args = {}
@@ -141,6 +152,10 @@ class IOSDriver(NetworkDriver):
         self.platform = "ios"
         self.profile = [self.platform]
         self.use_canonical_interface = optional_args.get("canonical_int", False)
+
+        self.yang_model = yang_model
+        self.rosetta_driver = rosetta_driver
+        self.rosetta = get_driver(rosetta_driver or self.platform, yang_model)()
 
     def open(self):
         """Open a connection to the device."""

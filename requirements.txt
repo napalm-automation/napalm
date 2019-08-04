@@ -13,3 +13,4 @@ junos-eznc>=2.2.0
 nxapi-plumbing>=0.5.2
 ciscoconfparse
 scp
+ntc-rosetta

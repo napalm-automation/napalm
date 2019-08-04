@@ -28,8 +28,49 @@ from napalm.base import validate
 from napalm.base.exceptions import ConnectionException
 
 
+yang_filters = {
+    "interfaces": {
+        "openconfig": {"include": ["/openconfig-interfaces:interfaces"], "exclude": []},
+        "ntc": {"include": [], "exclude": []},
+    },
+    "vlans": {
+        "openconfig": {
+            "include": [
+                "/openconfig-network-instance:network-instances/network-instance/name",
+                "/openconfig-network-instance:network-instances/network-instance/config",
+                "/openconfig-network-instance:network-instances/network-instance/vlans",
+            ],
+            "exclude": [],
+        },
+        "ntc": {"include": ["/ntc-vlan:vlan/config/vlans"], "exclude": []},
+    },
+}
+
+
+def get_yang_filter(path, model):
+    try:
+        include = yang_filters[path][model]["include"]
+        exclude = yang_filters[path][model]["exclude"]
+    except KeyError:
+        raise NotImplementedError("{}: {} not supported".format(path, model))
+
+    if not include and not exclude:
+        raise NotImplementedError("{}: {} not supported".format(path, model))
+
+    return include, exclude
+
+
 class NetworkDriver(object):
-    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+    def __init__(
+        self,
+        hostname,
+        username,
+        password,
+        rosetta_driver=None,
+        yang_model="openconfig",
+        timeout=60,
+        optional_args=None,
+    ):
         """
         This is the base class you have to inherit from when writing your own Network Driver to
         manage any device. You will, in addition, have to override all the methods specified on
@@ -1684,3 +1725,27 @@ class NetworkDriver(object):
             )
         else:
             return interface
+
+    def get_yang_config(
+        self, target="running", validate=True, include=None, exclude=None
+    ):
+        config = self.get_config(retrieve=target)[target]
+        return self.rosetta.parse(
+            native={"dev_conf": config},
+            include=include,
+            exclude=exclude,
+            validate=validate,
+        )
+
+    def _yang_config_getter(self, target, path):
+        config = self.get_config(retrieve=target)[target]
+        include, exclude = get_yang_filter(path, self.yang_model)
+        return self.rosetta.parse(
+            native={"dev_conf": config}, include=include, exclude=exclude, validate=True
+        )
+
+    def get_yang_vlan_config(self, target="running"):
+        return self._yang_getter("vlans", target)
+
+    def get_yang_interfaces_config(self, target="running"):
+        return self._yang_getter("interfaces", target)
