@@ -1086,13 +1086,15 @@ class JunOSDriver(NetworkDriver):
         _DATATYPE_DEFAULT_ = {py23_compat.text_type: "", int: 0, bool: False, list: []}
 
         bgp_config = {}
+        # Retrieve configuration from running config (not candidate)
+        options = {"database": "committed"}
 
         if group:
             bgp = junos_views.junos_bgp_config_group_table(self.device)
-            bgp.get(group=group)
+            bgp.get(group=group, options=options)
         else:
             bgp = junos_views.junos_bgp_config_table(self.device)
-            bgp.get()
+            bgp.get(options=options)
             neighbor = ""  # if no group is set, no neighbor should be set either
         bgp_items = bgp.items()
 
@@ -1105,7 +1107,7 @@ class JunOSDriver(NetworkDriver):
         # The resulting dict (nhs_policies) will be used by _check_nhs to determine if "nhs"
         # is configured or not in the policies applied to a BGP neighbor
         policy = junos_views.junos_policy_nhs_config_table(self.device)
-        policy.get()
+        policy.get(options=options)
         nhs_policies = dict()
         for policy_name, is_nhs_list in policy.items():
             # is_nhs_list is a list with one element. Ex: [('is_nhs', True)]
