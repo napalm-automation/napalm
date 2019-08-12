@@ -2231,7 +2231,7 @@ class JunOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False):
         rv = {"startup": "", "running": "", "candidate": ""}
 
         options = {"format": "text", "database": "candidate"}
