@@ -748,5 +748,5 @@ junos_nw_instances_table:
 junos_nw_instances_view:
   fields:
     instance_type: {instance-type: unicode}
-    interfaces: {interface/name: unicode}
+    interfaces: {interface/name | bridge-domains/domain/interface/name: unicode}
     route_distinguisher: {route-distinguisher/rd-type: unicode}
