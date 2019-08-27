@@ -94,6 +94,11 @@ class JunOSDriver(NetworkDriver):
         self.lock_disable = optional_args.get("lock_disable", False)
         self.session_config_lock = optional_args.get("config_lock", False)
 
+        # Junos driver specific options
+        self.junos_config_database = optional_args.get(
+            "junos_config_database", "committed"
+        )
+
         if self.key_file:
             self.device = Device(
                 hostname,
@@ -1089,10 +1094,10 @@ class JunOSDriver(NetworkDriver):
 
         if group:
             bgp = junos_views.junos_bgp_config_group_table(self.device)
-            bgp.get(group=group)
+            bgp.get(group=group, options={"database": self.junos_config_database})
         else:
             bgp = junos_views.junos_bgp_config_table(self.device)
-            bgp.get()
+            bgp.get(options={"database": self.junos_config_database})
             neighbor = ""  # if no group is set, no neighbor should be set either
         bgp_items = bgp.items()
 
@@ -1105,7 +1110,7 @@ class JunOSDriver(NetworkDriver):
         # The resulting dict (nhs_policies) will be used by _check_nhs to determine if "nhs"
         # is configured or not in the policies applied to a BGP neighbor
         policy = junos_views.junos_policy_nhs_config_table(self.device)
-        policy.get()
+        policy.get(options={"database": self.junos_config_database})
         nhs_policies = dict()
         for policy_name, is_nhs_list in policy.items():
             # is_nhs_list is a list with one element. Ex: [('is_nhs', True)]
@@ -1443,7 +1448,7 @@ class JunOSDriver(NetworkDriver):
     def get_ntp_peers(self):
         """Return the NTP peers configured on the device."""
         ntp_table = junos_views.junos_ntp_peers_config_table(self.device)
-        ntp_table.get()
+        ntp_table.get(options={"database": self.junos_config_database})
 
         ntp_peers = ntp_table.items()
 
@@ -1455,7 +1460,7 @@ class JunOSDriver(NetworkDriver):
     def get_ntp_servers(self):
         """Return the NTP servers configured on the device."""
         ntp_table = junos_views.junos_ntp_servers_config_table(self.device)
-        ntp_table.get()
+        ntp_table.get(options={"database": self.junos_config_database})
 
         ntp_servers = ntp_table.items()
 
@@ -1729,7 +1734,7 @@ class JunOSDriver(NetworkDriver):
         snmp_information = {}
 
         snmp_config = junos_views.junos_snmp_config_table(self.device)
-        snmp_config.get()
+        snmp_config.get(options={"database": self.junos_config_database})
         snmp_items = snmp_config.items()
 
         if not snmp_items:
@@ -1767,7 +1772,7 @@ class JunOSDriver(NetworkDriver):
         probes = {}
 
         probes_table = junos_views.junos_rpm_probes_config_table(self.device)
-        probes_table.get()
+        probes_table.get(options={"database": self.junos_config_database})
         probes_table_items = probes_table.items()
 
         for probe_test in probes_table_items:
@@ -2072,7 +2077,7 @@ class JunOSDriver(NetworkDriver):
         _DEFAULT_USER_DETAILS = {"level": 20, "password": "", "sshkeys": []}
         root = {}
         root_table = junos_views.junos_root_table(self.device)
-        root_table.get()
+        root_table.get(options={"database": self.junos_config_database})
         root_items = root_table.items()
         for user_entry in root_items:
             username = "root"
@@ -2106,7 +2111,7 @@ class JunOSDriver(NetworkDriver):
         _DEFAULT_USER_DETAILS = {"level": 0, "password": "", "sshkeys": []}
 
         users_table = junos_views.junos_users_table(self.device)
-        users_table.get()
+        users_table.get(options={"database": self.junos_config_database})
         users_items = users_table.items()
         root_user = self._get_root()
 
@@ -2250,7 +2255,7 @@ class JunOSDriver(NetworkDriver):
         network_instances = {}
 
         ri_table = junos_views.junos_nw_instances_table(self.device)
-        ri_table.get()
+        ri_table.get(options={"database": self.junos_config_database})
         ri_entries = ri_table.items()
 
         vrf_interfaces = []
