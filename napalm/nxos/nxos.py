@@ -785,7 +785,7 @@ class NXOSDriver(NXOSDriverBase):
         if isinstance(show_inventory_table, dict):
             show_inventory_table = [show_inventory_table]
 
-        facts['serial_number'] = None
+        facts["serial_number"] = None
 
         for row in show_inventory_table:
             if row["name"] == "Chassis":
