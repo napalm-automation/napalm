@@ -524,11 +524,13 @@ class NXOSDriverBase(NetworkDriver):
     def _disable_confirmation(self):
         self._send_command_list(["terminal dont-ask"])
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False):
         config = {"startup": "", "running": "", "candidate": ""}  # default values
+        # NX-OS only supports "all" on "show run"
+        run_full = " all" if full else ""
 
         if retrieve.lower() in ("running", "all"):
-            command = "show running-config"
+            command = "show running-config{}".format(run_full)
             config["running"] = py23_compat.text_type(
                 self._send_command(command, raw_text=True)
             )
