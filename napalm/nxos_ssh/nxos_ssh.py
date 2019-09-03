@@ -22,7 +22,6 @@ import socket
 
 # import third party lib
 from netaddr import IPAddress, IPNetwork
-import json
 from netaddr.core import AddrFormatError
 
 # import NAPALM Base

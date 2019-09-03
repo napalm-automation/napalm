@@ -31,6 +31,7 @@ from netaddr.core import AddrFormatError
 from netmiko import file_transfer
 from nxapi_plumbing import Device as NXOSDevice
 from nxapi_plumbing import NXAPIAuthError, NXAPIConnectionError, NXAPICommandError
+import json
 
 # import NAPALM Base
 import napalm.base.helpers
@@ -628,6 +629,8 @@ class NXOSDriverBase(NetworkDriver):
 
     def _get_command_table(self, command, table_name, row_name):
         json_output = self._send_command(command)
+        if type(json_output) is not dict:
+            json_output = json.loads(json_output)
         return self._get_reply_table(json_output, table_name, row_name)
 
 
