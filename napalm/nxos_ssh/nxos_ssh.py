@@ -584,15 +584,22 @@ class NXOSSSHDriver(NXOSDriverBase):
         show_int_status = self._send_command("show interface status")
         show_hostname = self._send_command("show hostname")
 
+        show_inventory_table = self._get_command_table(
+            "show inventory | json", "TABLE_inv", "ROW_inv"
+        )
+        if isinstance(show_inventory_table, dict):
+            show_inventory_table = [show_inventory_table]
+
+        for row in show_inventory_table:
+            if row["name"] == "Chassis":
+                serial_number = row.get("serialnum", "")
+                break
+
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
             if " uptime is " in line:
                 _, uptime_str = line.split(" uptime is ")
                 uptime = self.parse_uptime(uptime_str)
-
-            if "Processor Board ID" in line:
-                _, serial_number = line.split("Processor Board ID ")
-                serial_number = serial_number.strip()
 
             if "system: " in line or "NXOS: " in line:
                 line = line.strip()
