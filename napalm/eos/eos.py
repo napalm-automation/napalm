@@ -1692,7 +1692,7 @@ class EOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False):
         """get_config implementation for EOS."""
         get_startup = retrieve == "all" or retrieve == "startup"
         get_running = retrieve == "all" or retrieve == "running"
@@ -1700,8 +1700,11 @@ class EOSDriver(NetworkDriver):
             retrieve == "all" or retrieve == "candidate"
         ) and self.config_session
 
+        # EOS only supports "all" on "show run"
+        run_full = " all" if full else ""
+
         if retrieve == "all":
-            commands = ["show startup-config", "show running-config"]
+            commands = ["show startup-config", "show running-config{}".format(run_full)]
 
             if self.config_session:
                 commands.append(
@@ -1721,7 +1724,10 @@ class EOSDriver(NetworkDriver):
                 else "",
             }
         elif get_startup or get_running:
-            commands = ["show {}-config".format(retrieve)]
+            if retrieve == "running":
+                commands = ["show {}-config{}".format(retrieve, run_full)]
+            elif retrieve == "startup":
+                commands = ["show {}-config".format(retrieve)]
             output = self.device.run_commands(commands, encoding="text")
             return {
                 "startup": py23_compat.text_type(output[0]["output"])
