@@ -599,6 +599,35 @@ class NXOSDriverBase(NetworkDriver):
 
         return lldp
 
+    @staticmethod
+    def _get_table_rows(parent_table, table_name, row_name):
+        """
+        Inconsistent behavior:
+        {'TABLE_intf': [{'ROW_intf': {
+        vs
+        {'TABLE_mac_address': {'ROW_mac_address': [{
+        vs
+        {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
+        """
+        if parent_table is None:
+            return []
+        _table = parent_table.get(table_name)
+        _table_rows = []
+        if isinstance(_table, list):
+            _table_rows = [_table_row.get(row_name) for _table_row in _table]
+        elif isinstance(_table, dict):
+            _table_rows = _table.get(row_name)
+        if not isinstance(_table_rows, list):
+            _table_rows = [_table_rows]
+        return _table_rows
+
+    def _get_reply_table(self, result, table_name, row_name):
+        return self._get_table_rows(result, table_name, row_name)
+
+    def _get_command_table(self, command, table_name, row_name):
+        json_output = self._send_command(command)
+        return self._get_reply_table(json_output, table_name, row_name)
+
 
 class NXOSDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
@@ -698,35 +727,6 @@ class NXOSDriver(NXOSDriverBase):
             [det.get("count", 0) * det.get("weight") for det in things.values()]
         )
         return time.time() - delta
-
-    @staticmethod
-    def _get_table_rows(parent_table, table_name, row_name):
-        """
-        Inconsistent behavior:
-        {'TABLE_intf': [{'ROW_intf': {
-        vs
-        {'TABLE_mac_address': {'ROW_mac_address': [{
-        vs
-        {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
-        """
-        if parent_table is None:
-            return []
-        _table = parent_table.get(table_name)
-        _table_rows = []
-        if isinstance(_table, list):
-            _table_rows = [_table_row.get(row_name) for _table_row in _table]
-        elif isinstance(_table, dict):
-            _table_rows = _table.get(row_name)
-        if not isinstance(_table_rows, list):
-            _table_rows = [_table_rows]
-        return _table_rows
-
-    def _get_reply_table(self, result, table_name, row_name):
-        return self._get_table_rows(result, table_name, row_name)
-
-    def _get_command_table(self, command, table_name, row_name):
-        json_output = self._send_command(command)
-        return self._get_reply_table(json_output, table_name, row_name)
 
     def is_alive(self):
         if self.device:
