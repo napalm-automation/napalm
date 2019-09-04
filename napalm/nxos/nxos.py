@@ -31,6 +31,7 @@ from netaddr.core import AddrFormatError
 from netmiko import file_transfer
 from nxapi_plumbing import Device as NXOSDevice
 from nxapi_plumbing import NXAPIAuthError, NXAPIConnectionError, NXAPICommandError
+import json
 
 # import NAPALM Base
 import napalm.base.helpers
@@ -222,6 +223,12 @@ class NXOSDriverBase(NetworkDriver):
                 self._load_cfg_from_checkpoint()
             else:
                 self._commit_merge()
+
+            try:
+                # If hostname changes ensure Netmiko state is updated properly
+                self._netmiko_device.set_base_prompt()
+            except AttributeError:
+                pass
 
             self._copy_run_start()
             self.loaded = False
@@ -520,11 +527,13 @@ class NXOSDriverBase(NetworkDriver):
     def _disable_confirmation(self):
         self._send_command_list(["terminal dont-ask"])
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False):
         config = {"startup": "", "running": "", "candidate": ""}  # default values
+        # NX-OS only supports "all" on "show run"
+        run_full = " all" if full else ""
 
         if retrieve.lower() in ("running", "all"):
-            command = "show running-config"
+            command = "show running-config{}".format(run_full)
             config["running"] = py23_compat.text_type(
                 self._send_command(command, raw_text=True)
             )
@@ -594,6 +603,37 @@ class NXOSDriverBase(NetworkDriver):
             lldp[local_intf].append(lldp_entry)
 
         return lldp
+
+    @staticmethod
+    def _get_table_rows(parent_table, table_name, row_name):
+        """
+        Inconsistent behavior:
+        {'TABLE_intf': [{'ROW_intf': {
+        vs
+        {'TABLE_mac_address': {'ROW_mac_address': [{
+        vs
+        {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
+        """
+        if parent_table is None:
+            return []
+        _table = parent_table.get(table_name)
+        _table_rows = []
+        if isinstance(_table, list):
+            _table_rows = [_table_row.get(row_name) for _table_row in _table]
+        elif isinstance(_table, dict):
+            _table_rows = _table.get(row_name)
+        if not isinstance(_table_rows, list):
+            _table_rows = [_table_rows]
+        return _table_rows
+
+    def _get_reply_table(self, result, table_name, row_name):
+        return self._get_table_rows(result, table_name, row_name)
+
+    def _get_command_table(self, command, table_name, row_name):
+        json_output = self._send_command(command)
+        if type(json_output) is not dict:
+            json_output = json.loads(json_output)
+        return self._get_reply_table(json_output, table_name, row_name)
 
 
 class NXOSDriver(NXOSDriverBase):
@@ -695,35 +735,6 @@ class NXOSDriver(NXOSDriverBase):
         )
         return time.time() - delta
 
-    @staticmethod
-    def _get_table_rows(parent_table, table_name, row_name):
-        """
-        Inconsistent behavior:
-        {'TABLE_intf': [{'ROW_intf': {
-        vs
-        {'TABLE_mac_address': {'ROW_mac_address': [{
-        vs
-        {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
-        """
-        if parent_table is None:
-            return []
-        _table = parent_table.get(table_name)
-        _table_rows = []
-        if isinstance(_table, list):
-            _table_rows = [_table_row.get(row_name) for _table_row in _table]
-        elif isinstance(_table, dict):
-            _table_rows = _table.get(row_name)
-        if not isinstance(_table_rows, list):
-            _table_rows = [_table_rows]
-        return _table_rows
-
-    def _get_reply_table(self, result, table_name, row_name):
-        return self._get_table_rows(result, table_name, row_name)
-
-    def _get_command_table(self, command, table_name, row_name):
-        json_output = self._send_command(command)
-        return self._get_reply_table(json_output, table_name, row_name)
-
     def is_alive(self):
         if self.device:
             return {"is_alive": True}
@@ -775,10 +786,22 @@ class NXOSDriver(NXOSDriverBase):
         facts = {}
         facts["vendor"] = "Cisco"
 
+        show_inventory_table = self._get_command_table(
+            "show inventory", "TABLE_inv", "ROW_inv"
+        )
+        if isinstance(show_inventory_table, dict):
+            show_inventory_table = [show_inventory_table]
+
+        facts["serial_number"] = None
+
+        for row in show_inventory_table:
+            if row["name"] == "Chassis":
+                facts["serial_number"] = row.get("serialnum", "")
+                break
+
         show_version = self._send_command("show version")
         facts["model"] = show_version.get("chassis_id", "")
         facts["hostname"] = show_version.get("host_name", "")
-        facts["serial_number"] = show_version.get("proc_board_id", "")
         facts["os_version"] = show_version.get("sys_ver_str", "")
 
         uptime_days = show_version.get("kern_uptm_days", 0)
@@ -1105,6 +1128,15 @@ class NXOSDriver(NXOSDriverBase):
                 interfaces_ip[interface_name] = {}
             if "ipv6" not in interfaces_ip[interface_name].keys():
                 interfaces_ip[interface_name]["ipv6"] = {}
+            if "addr" not in interface.keys():
+                # Handle nexus 9000 ipv6 interface output
+                if isinstance(interface["TABLE_addr"]["ROW_addr"], list):
+                    addrs = [
+                        addr["addr"] for addr in interface["TABLE_addr"]["ROW_addr"]
+                    ]
+                elif isinstance(interface["TABLE_addr"]["ROW_addr"], dict):
+                    addrs = interface["TABLE_addr"]["ROW_addr"]["addr"]
+                interface["addr"] = addrs
 
             if type(interface.get("addr", "")) is list:
                 for ipv6_address in interface.get("addr", ""):

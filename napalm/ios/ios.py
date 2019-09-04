@@ -557,7 +557,7 @@ class IOSDriver(NetworkDriver):
         if not self._check_file_exists(cfg_file):
             raise ReplaceConfigException("Rollback config file does not exist")
         cmd = "configure replace {} force".format(cfg_file)
-        self.device.send_command_expect(cmd)
+        self._commit_handler(cmd)
 
         # After a rollback - we no longer know whether this is configured or not.
         self.prompt_quiet_configured = None
@@ -1474,6 +1474,9 @@ class IOSDriver(NetworkDriver):
         cmd_bgp_all_sum = "show bgp all summary"
         summary_output = self._send_command(cmd_bgp_all_sum).strip()
 
+        if "Invalid input detected" in summary_output:
+            raise CommandErrorException("BGP is not running on this device")
+
         # get neighbor output from device
         neighbor_output = ""
         for afi in supported_afi:
@@ -1817,6 +1820,10 @@ class IOSDriver(NetworkDriver):
         bgp_detail = defaultdict(lambda: defaultdict(lambda: []))
 
         raw_bgp_sum = self._send_command("show ip bgp all sum").strip()
+
+        if "Invalid input detected" in raw_bgp_sum:
+            raise CommandErrorException("BGP is not running on this device")
+
         bgp_sum = napalm.base.helpers.textfsm_extractor(
             self, "ip_bgp_all_sum", raw_bgp_sum
         )
@@ -2542,6 +2549,10 @@ class IOSDriver(NetworkDriver):
                 continue
             elif re.search(r"vlan.*mac.*address.*type.*", line):
                 continue
+            elif re.search(
+                r"Displaying entries from active supervisor:\s+\w+\s+\[\d\]:", line
+            ):
+                continue
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
@@ -2947,7 +2958,7 @@ class IOSDriver(NetworkDriver):
             }
         return instances if not name else instances[name]
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False):
         """Implementation of get_config for IOS.
 
         Returns the startup or/and running configuration as dictionary.
@@ -2957,6 +2968,8 @@ class IOSDriver(NetworkDriver):
         """
 
         configs = {"startup": "", "running": "", "candidate": ""}
+        # IOS only supports "all" on "show run"
+        run_full = " all" if full else ""
 
         if retrieve in ("startup", "all"):
             command = "show startup-config"
@@ -2964,7 +2977,7 @@ class IOSDriver(NetworkDriver):
             configs["startup"] = output
 
         if retrieve in ("running", "all"):
-            command = "show running-config"
+            command = "show running-config{}".format(run_full)
             output = self._send_command(command)
             configs["running"] = output
 

@@ -44,7 +44,27 @@ If you found a bug and know how to fix just contribute the bugfix. It might be i
 Documentation
 -------------
 
-Just do it! :)
+The documentation is built using `Sphinx`_ and hosted on Read the Docs. The docs
+are kept in the ``docs/`` directory at the top of the source tree.
+
+To make changes, it is preferable to set up a `python virtual environment`_
+called ``env`` and activate it.
+
+Next, install the documentation dependencies using ``pip``:
+
+.. code:: console
+
+   pip install -r docs/requirements.txt
+
+Make your changes and then check them for correctness by building them locally:
+
+.. code:: console
+
+   # in the docs directory
+   make html
+
+.. tip:: If it is a simple change to a single page, you can use the "Edit on
+   GitHub" button in the upper right hand corner of the page in question.
 
 Proposing a new driver
 ----------------------
@@ -58,3 +78,6 @@ Please check :ref:`contributing-drivers` to understand the process.
 
    core
    drivers
+
+.. _python virtual environment: https://packaging.python.org/guides/installing-using-pip-and-virtualenv/
+.. _Sphinx: http://www.sphinx-doc.org/en/master/

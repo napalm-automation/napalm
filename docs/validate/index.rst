@@ -263,7 +263,7 @@ CLI & Ansible
 If you prefer, you can also make use of the validate functionality via the CLI with the command ``cl_napalm_validate`` or with ansible plugin. You can find more information about them here:
 
 * CLI - https://github.com/napalm-automation/napalm/pull/168
-* Ansible - https://github.com/napalm-automation/napalm-ansible/blob/master/library/napalm_validate.py
+* Ansible - https://github.com/napalm-automation/napalm-ansible/blob/master/napalm_ansible/modules/napalm_validate.py
 
 
 Why this and what's next
