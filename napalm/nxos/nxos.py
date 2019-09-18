@@ -793,7 +793,7 @@ class NXOSDriver(NXOSDriverBase):
         facts["serial_number"] = None
 
         for row in show_inventory_table:
-            if row["name"] == "Chassis":
+            if row["name"] == '"Chassis"' or row["name"] == "Chassis":
                 facts["serial_number"] = row.get("serialnum", "")
                 break
 
