@@ -31,6 +31,7 @@ from netaddr.core import AddrFormatError
 from netmiko import file_transfer
 from nxapi_plumbing import Device as NXOSDevice
 from nxapi_plumbing import NXAPIAuthError, NXAPIConnectionError, NXAPICommandError
+import json
 
 # import NAPALM Base
 import napalm.base.helpers
@@ -528,11 +529,13 @@ class NXOSDriverBase(NetworkDriver):
     def _disable_confirmation(self):
         self._send_command_list(["terminal dont-ask"])
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False):
         config = {"startup": "", "running": "", "candidate": ""}  # default values
+        # NX-OS only supports "all" on "show run"
+        run_full = " all" if full else ""
 
         if retrieve.lower() in ("running", "all"):
-            command = "show running-config"
+            command = "show running-config{}".format(run_full)
             config["running"] = py23_compat.text_type(
                 self._send_command(command, raw_text=True)
             )
@@ -602,6 +605,37 @@ class NXOSDriverBase(NetworkDriver):
             lldp[local_intf].append(lldp_entry)
 
         return lldp
+
+    @staticmethod
+    def _get_table_rows(parent_table, table_name, row_name):
+        """
+        Inconsistent behavior:
+        {'TABLE_intf': [{'ROW_intf': {
+        vs
+        {'TABLE_mac_address': {'ROW_mac_address': [{
+        vs
+        {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
+        """
+        if parent_table is None:
+            return []
+        _table = parent_table.get(table_name)
+        _table_rows = []
+        if isinstance(_table, list):
+            _table_rows = [_table_row.get(row_name) for _table_row in _table]
+        elif isinstance(_table, dict):
+            _table_rows = _table.get(row_name)
+        if not isinstance(_table_rows, list):
+            _table_rows = [_table_rows]
+        return _table_rows
+
+    def _get_reply_table(self, result, table_name, row_name):
+        return self._get_table_rows(result, table_name, row_name)
+
+    def _get_command_table(self, command, table_name, row_name):
+        json_output = self._send_command(command)
+        if type(json_output) is not dict:
+            json_output = json.loads(json_output)
+        return self._get_reply_table(json_output, table_name, row_name)
 
 
 class NXOSDriver(NXOSDriverBase):
@@ -703,35 +737,6 @@ class NXOSDriver(NXOSDriverBase):
         )
         return time.time() - delta
 
-    @staticmethod
-    def _get_table_rows(parent_table, table_name, row_name):
-        """
-        Inconsistent behavior:
-        {'TABLE_intf': [{'ROW_intf': {
-        vs
-        {'TABLE_mac_address': {'ROW_mac_address': [{
-        vs
-        {'TABLE_vrf': {'ROW_vrf': {'TABLE_adj': {'ROW_adj': {
-        """
-        if parent_table is None:
-            return []
-        _table = parent_table.get(table_name)
-        _table_rows = []
-        if isinstance(_table, list):
-            _table_rows = [_table_row.get(row_name) for _table_row in _table]
-        elif isinstance(_table, dict):
-            _table_rows = _table.get(row_name)
-        if not isinstance(_table_rows, list):
-            _table_rows = [_table_rows]
-        return _table_rows
-
-    def _get_reply_table(self, result, table_name, row_name):
-        return self._get_table_rows(result, table_name, row_name)
-
-    def _get_command_table(self, command, table_name, row_name):
-        json_output = self._send_command(command)
-        return self._get_reply_table(json_output, table_name, row_name)
-
     def is_alive(self):
         if self.device:
             return {"is_alive": True}
@@ -783,11 +788,25 @@ class NXOSDriver(NXOSDriverBase):
         facts = {}
         facts["vendor"] = "Cisco"
 
+        show_inventory_table = self._get_command_table(
+            "show inventory", "TABLE_inv", "ROW_inv"
+        )
+        if isinstance(show_inventory_table, dict):
+            show_inventory_table = [show_inventory_table]
+
+        facts["serial_number"] = None
+
+        for row in show_inventory_table:
+            if row["name"] == '"Chassis"' or row["name"] == "Chassis":
+                facts["serial_number"] = row.get("serialnum", "")
+                break
+
         show_version = self._send_command("show version")
         facts["model"] = show_version.get("chassis_id", "")
         facts["hostname"] = show_version.get("host_name", "")
-        facts["serial_number"] = show_version.get("proc_board_id", "")
-        facts["os_version"] = show_version.get("sys_ver_str", "")
+        facts["os_version"] = show_version.get(
+            "sys_ver_str", show_version.get("rr_sys_ver", "")
+        )
 
         uptime_days = show_version.get("kern_uptm_days", 0)
         uptime_hours = show_version.get("kern_uptm_hrs", 0)
@@ -1317,3 +1336,105 @@ class NXOSDriver(NXOSDriverBase):
         # else return results for all VRFs
         else:
             return vrfs
+
+    def get_environment(self):
+        def _process_pdus(power_data):
+            normalized = defaultdict(dict)
+            ps_info_table = power_data["TABLE_psinfo"]
+            # Later version of nxos will have a list under TABLE_psinfo like
+            # TABLE_psinfo : [{'ROW_psinfo': {...
+            # and not have the psnum under the row
+            if isinstance(ps_info_table, list):
+                # if this is one of those later versions, make the data look like
+                # the older way
+                count = 1
+                tmp_table = []
+                for entry in ps_info_table:
+                    tmp = entry.get("ROW_psinfo")
+                    tmp["psnum"] = count
+                    # to access the power supply status, the key looks like it is device dependent
+                    # on a 3k device it is ps_status_3k
+                    status_key = [
+                        i
+                        for i in entry["ROW_psinfo"].keys()
+                        if i.startswith("ps_status")
+                    ][0]
+                    tmp["ps_status"] = entry["ROW_psinfo"][status_key]
+                    count += 1
+                    tmp_table.append(tmp)
+                ps_info_table = {"ROW_psinfo": tmp_table}
+            for psinfo in ps_info_table["ROW_psinfo"]:
+                normalized[psinfo["psnum"]]["status"] = (
+                    psinfo.get("ps_status", "ok") == "ok"
+                )
+                normalized[psinfo["psnum"]]["output"] = float(psinfo.get("watts", -1.0))
+                # The capacity of the power supply can be determined by the model
+                # ie N2200-PAC-400W = 400 watts
+                ps_model = psinfo.get("psmodel", "-1")
+                normalized[psinfo["psnum"]]["capacity"] = float(
+                    ps_model.split("-")[-1][:-1]
+                )
+            return json.loads(json.dumps(normalized))
+
+        def _process_fans(fan_data):
+            normalized = {}
+            for entry in fan_data["TABLE_faninfo"]["ROW_faninfo"]:
+                if "PS" in entry["fanname"]:
+                    # Skip fans in power supplies
+                    continue
+                normalized[entry["fanname"]] = {
+                    # Copying the behavior of eos.py where if the fanstatus key is not found
+                    # we default the status to True
+                    "status": entry.get("fanstatus", "Ok")
+                    == "Ok"
+                }
+            return normalized
+
+        def _process_temperature(temperature_data):
+            normalized = {}
+            # The modname and sensor type are not unique enough keys, so adding a count
+            count = 1
+            past_tempmod = "1"
+            for entry in temperature_data["ROW_tempinfo"]:
+                mod_name = entry.get("tempmod").rstrip()
+                # if the mod name has change reset the count to 1
+                if past_tempmod != mod_name:
+                    count = 1
+                name = "{}-{} {}".format(mod_name, count, entry.get("sensor").rstrip())
+                normalized[name] = {
+                    "temperature": float(entry.get("curtemp", -1)),
+                    "is_alert": entry.get("alarmstatus", "Ok").rstrip() != "Ok",
+                    "is_critical": float(entry.get("curtemp"))
+                    > float(entry.get("majthres")),
+                }
+                count += 1
+            return normalized
+
+        def _process_cpu(cpu_data):
+            idle = (
+                cpu_data.get("idle_percent")
+                if cpu_data.get("idle_percent")
+                else cpu_data["TABLE_cpu_util"]["ROW_cpu_util"]["idle_percent"]
+            )
+            return {0: {"%usage": round(100 - float(idle), 2)}}
+
+        def _process_memory(memory_data):
+            avail = memory_data["TABLE_process_tag"]["ROW_process_tag"][
+                "process-memory-share-total-shm-avail"
+            ]
+            used = memory_data["TABLE_process_tag"]["ROW_process_tag"][
+                "process-memory-share-total-shm-used"
+            ]
+            return {"available_ram": int(avail) * 1000, "used_ram": int(used) * 1000}
+
+        environment_raw = self._send_command("show environment")
+        cpu_raw = self._send_command("show processes cpu")
+        memory_raw = self._send_command("show processes memory shared")
+        fan_key = [i for i in environment_raw.keys() if i.startswith("fandetails")][0]
+        return {
+            "power": _process_pdus(environment_raw["powersup"]),
+            "fans": _process_fans(environment_raw[fan_key]),
+            "temperature": _process_temperature(environment_raw["TABLE_tempinfo"]),
+            "cpu": _process_cpu(cpu_raw),
+            "memory": _process_memory(memory_raw),
+        }
