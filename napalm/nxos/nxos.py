@@ -149,7 +149,9 @@ class NXOSDriverBase(NetworkDriver):
         except Exception as e:
             self.changed = True
             self.rollback()
-            raise MergeConfigException(str(e))
+            err_header = "Configuration merge failed; automatic rollback attempted"
+            merge_error = "{0}:\n{1}".format(err_header, repr(str(e)))
+            raise MergeConfigException(merge_error)
 
         self.changed = True
         # clear the merge buffer
