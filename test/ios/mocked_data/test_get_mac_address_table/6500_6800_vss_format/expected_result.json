@@ -1,0 +1,20 @@
+[
+    {
+        "static": false,
+        "active": true,
+        "vlan": 1,
+        "mac": "DE:AD:BE:EF:12:34",
+        "interface": "Po13",
+        "moves": -1,
+        "last_move": -1.0
+    },
+    {
+        "static": false,
+        "active": true,
+        "vlan": 1234,
+        "mac": "12:34:BE:EF:DE:AD",
+        "interface": "Po201",
+        "moves": -1,
+        "last_move": -1.0
+    }
+]

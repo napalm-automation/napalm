@@ -16,14 +16,16 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import sys
+
+from netmiko import ConnectHandler, NetMikoTimeoutException
+
 # local modules
 import napalm.base.exceptions
-from napalm.base.exceptions import ConnectionException
 import napalm.base.helpers
 from napalm.base import constants as c
 from napalm.base import validate
-
-from netmiko import ConnectHandler, NetMikoTimeoutException
+from napalm.base.exceptions import ConnectionException
 
 
 class NetworkDriver(object):
@@ -44,8 +46,15 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def __enter__(self):
-        self.open()
-        return self
+        try:
+            self.open()
+            return self
+        except:  # noqa: E722
+            # Swallow exception if __exit__ returns a True value
+            if self.__exit__(*sys.exc_info()):
+                pass
+            else:
+                raise
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.close()
@@ -95,8 +104,9 @@ class NetworkDriver(object):
 
     def _netmiko_close(self):
         """Standardized method of closing a Netmiko connection."""
-        self.device.disconnect()
-        self._netmiko_device = None
+        if getattr(self, "_netmiko_device", None):
+            self._netmiko_device.disconnect()
+            self._netmiko_device = None
         self.device = None
 
     def open(self):
@@ -268,6 +278,7 @@ class NetworkDriver(object):
          * description (string)
          * last_flapped (float in seconds)
          * speed (int in Mbit)
+         * MTU (in Bytes)
          * mac_address (string)
 
         Example::
@@ -280,6 +291,7 @@ class NetworkDriver(object):
                 'description': '',
                 'last_flapped': -1.0,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:61',
                 },
             u'Ethernet1':
@@ -289,6 +301,7 @@ class NetworkDriver(object):
                 'description': 'foo',
                 'last_flapped': 1429978575.1554043,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:62',
                 },
             u'Ethernet2':
@@ -298,6 +311,7 @@ class NetworkDriver(object):
                 'description': 'bla',
                 'last_flapped': 1429978575.1555667,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:63',
                 },
             u'Ethernet3':
@@ -307,6 +321,7 @@ class NetworkDriver(object):
                 'description': 'bar',
                 'last_flapped': -1.0,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:64',
                 }
             }
@@ -1497,13 +1512,14 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False):
         """
         Return the configuration of a device.
 
         Args:
             retrieve(string): Which configuration type you want to populate, default is all of them.
                               The rest will be set to "".
+            full(bool): Retrieve all the configuration. For instance, on ios, "sh run all".
 
         Returns:
           The object returned is a dictionary with a key for each configuration store:

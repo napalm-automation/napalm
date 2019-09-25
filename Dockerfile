@@ -1,15 +1,10 @@
-FROM debian:stretch
-
-## Install min deps
-RUN apt-get update
+FROM python:3.6-slim-stretch
 
 COPY ./ /var/cache/napalm/
 
-## Install NAPALM & underlying libraries dependencies
-RUN apt-get install -y python-cffi python-dev libxslt1-dev libssl-dev libffi-dev \
-    && apt-get install -y python-pip \
-    && pip install -U cffi \
-    && pip install -U cryptography \
-    && pip install /var/cache/napalm/
-
-RUN rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+ && apt-get install -y python-dev python-cffi libxslt1-dev libssl-dev libffi-dev \
+ && apt-get autoremove \
+ && rm -rf /var/lib/apt/lists/* \
+ && pip --no-cache-dir install -U cffi cryptography /var/cache/napalm/ \
+ && rm -rf /var/cache/napalm/
