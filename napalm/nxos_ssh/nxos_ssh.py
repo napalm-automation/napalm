@@ -591,7 +591,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             show_inventory_table = [show_inventory_table]
 
         for row in show_inventory_table:
-            if row["name"] == "Chassis":
+            if row["name"] == '"Chassis"' or row["name"] == "Chassis":
                 serial_number = row.get("serialnum", "")
                 break
 
