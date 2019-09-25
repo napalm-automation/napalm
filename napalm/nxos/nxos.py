@@ -1332,3 +1332,105 @@ class NXOSDriver(NXOSDriverBase):
         # else return results for all VRFs
         else:
             return vrfs
+
+    def get_environment(self):
+        def _process_pdus(power_data):
+            normalized = defaultdict(dict)
+            ps_info_table = power_data["TABLE_psinfo"]
+            # Later version of nxos will have a list under TABLE_psinfo like
+            # TABLE_psinfo : [{'ROW_psinfo': {...
+            # and not have the psnum under the row
+            if isinstance(ps_info_table, list):
+                # if this is one of those later versions, make the data look like
+                # the older way
+                count = 1
+                tmp_table = []
+                for entry in ps_info_table:
+                    tmp = entry.get("ROW_psinfo")
+                    tmp["psnum"] = count
+                    # to access the power supply status, the key looks like it is device dependent
+                    # on a 3k device it is ps_status_3k
+                    status_key = [
+                        i
+                        for i in entry["ROW_psinfo"].keys()
+                        if i.startswith("ps_status")
+                    ][0]
+                    tmp["ps_status"] = entry["ROW_psinfo"][status_key]
+                    count += 1
+                    tmp_table.append(tmp)
+                ps_info_table = {"ROW_psinfo": tmp_table}
+            for psinfo in ps_info_table["ROW_psinfo"]:
+                normalized[psinfo["psnum"]]["status"] = (
+                    psinfo.get("ps_status", "ok") == "ok"
+                )
+                normalized[psinfo["psnum"]]["output"] = float(psinfo.get("watts", -1.0))
+                # The capacity of the power supply can be determined by the model
+                # ie N2200-PAC-400W = 400 watts
+                ps_model = psinfo.get("psmodel", "-1")
+                normalized[psinfo["psnum"]]["capacity"] = float(
+                    ps_model.split("-")[-1][:-1]
+                )
+            return json.loads(json.dumps(normalized))
+
+        def _process_fans(fan_data):
+            normalized = {}
+            for entry in fan_data["TABLE_faninfo"]["ROW_faninfo"]:
+                if "PS" in entry["fanname"]:
+                    # Skip fans in power supplies
+                    continue
+                normalized[entry["fanname"]] = {
+                    # Copying the behavior of eos.py where if the fanstatus key is not found
+                    # we default the status to True
+                    "status": entry.get("fanstatus", "Ok")
+                    == "Ok"
+                }
+            return normalized
+
+        def _process_temperature(temperature_data):
+            normalized = {}
+            # The modname and sensor type are not unique enough keys, so adding a count
+            count = 1
+            past_tempmod = "1"
+            for entry in temperature_data["ROW_tempinfo"]:
+                mod_name = entry.get("tempmod").rstrip()
+                # if the mod name has change reset the count to 1
+                if past_tempmod != mod_name:
+                    count = 1
+                name = "{}-{} {}".format(mod_name, count, entry.get("sensor").rstrip())
+                normalized[name] = {
+                    "temperature": float(entry.get("curtemp", -1)),
+                    "is_alert": entry.get("alarmstatus", "Ok").rstrip() != "Ok",
+                    "is_critical": float(entry.get("curtemp"))
+                    > float(entry.get("majthres")),
+                }
+                count += 1
+            return normalized
+
+        def _process_cpu(cpu_data):
+            idle = (
+                cpu_data.get("idle_percent")
+                if cpu_data.get("idle_percent")
+                else cpu_data["TABLE_cpu_util"]["ROW_cpu_util"]["idle_percent"]
+            )
+            return {0: {"%usage": round(100 - float(idle), 2)}}
+
+        def _process_memory(memory_data):
+            avail = memory_data["TABLE_process_tag"]["ROW_process_tag"][
+                "process-memory-share-total-shm-avail"
+            ]
+            used = memory_data["TABLE_process_tag"]["ROW_process_tag"][
+                "process-memory-share-total-shm-used"
+            ]
+            return {"available_ram": int(avail) * 1000, "used_ram": int(used) * 1000}
+
+        environment_raw = self._send_command("show environment")
+        cpu_raw = self._send_command("show processes cpu")
+        memory_raw = self._send_command("show processes memory shared")
+        fan_key = [i for i in environment_raw.keys() if i.startswith("fandetails")][0]
+        return {
+            "power": _process_pdus(environment_raw["powersup"]),
+            "fans": _process_fans(environment_raw[fan_key]),
+            "temperature": _process_temperature(environment_raw["TABLE_tempinfo"]),
+            "cpu": _process_cpu(cpu_raw),
+            "memory": _process_memory(memory_raw),
+        }

@@ -1,0 +1,121 @@
+{
+    "TABLE_tempinfo": {
+        "ROW_tempinfo": [
+            {
+                "alarmstatus": "ok             ",
+                "curtemp": "37         ",
+                "majthres": "92           ",
+                "minthres": "85          ",
+                "sensor": "ASIC      ",
+                "tempmod": "1       "
+            },
+            {
+                "alarmstatus": "ok             ",
+                "curtemp": "20         ",
+                "majthres": "45           ",
+                "minthres": "31          ",
+                "sensor": "INTAKE    ",
+                "tempmod": "1       "
+            },
+            {
+                "alarmstatus": "ok             ",
+                "curtemp": "37         ",
+                "majthres": "110          ",
+                "minthres": "90          ",
+                "sensor": "ASIC      ",
+                "tempmod": "1       "
+            },
+            {
+                "alarmstatus": "ok             ",
+                "curtemp": "20         ",
+                "majthres": "70           ",
+                "minthres": "40          ",
+                "sensor": "INTAKE    ",
+                "tempmod": "1       "
+            }
+        ]
+    },
+    "fandetails": {
+        "TABLE_faninfo": {
+            "ROW_faninfo": [
+                {
+                    "fanhwver": "--",
+                    "fanmodel": "NXA-FAN-30CFM-F",
+                    "fanname": "Fan-1",
+                    "fanstatus": "ok"
+                },
+                {
+                    "fanhwver": "--",
+                    "fanmodel": "NXA-FAN-30CFM-F",
+                    "fanname": "Fan-2",
+                    "fanstatus": "ok"
+                },
+                {
+                    "fanhwver": "--",
+                    "fanmodel": "NXA-FAN-30CFM-F",
+                    "fanname": "Fan-3",
+                    "fanstatus": "ok"
+                },
+                {
+                    "fanhwver": "--",
+                    "fanmodel": "NXA-FAN-30CFM-F",
+                    "fanname": "Fan-4",
+                    "fanstatus": "ok"
+                },
+                {
+                    "fanhwver": "--",
+                    "fanmodel": "N2200-PAC-400W",
+                    "fanname": "PS-1",
+                    "fanstatus": "ok"
+                },
+                {
+                    "fanhwver": "--",
+                    "fanmodel": "N2200-PAC-400W",
+                    "fanname": "PS-2",
+                    "fanstatus": "ok"
+                }
+            ]
+        },
+        "fan_filter_status": "NotSupported"
+    },
+    "powersup": {
+        "TABLE_mod_pow_info": {
+            "ROW_mod_pow_info": {
+                "amps_alloced": "29.10  ",
+                "amps_requested": "29.10  ",
+                "mod_model": "N3K-C3548P-10GX-SUP",
+                "modnum": "1   ",
+                "modstatus": "powered-up          ",
+                "watts_alloced": "349.20 ",
+                "watts_requested": "349.20 "
+            }
+        },
+        "TABLE_psinfo": {
+            "ROW_psinfo": [
+                {
+                    "amps": "  33.00",
+                    "ps_status": "ok",
+                    "psmodel": "N2200-PAC-400W",
+                    "psnum": 1,
+                    "watts": " 396.00"
+                },
+                {
+                    "amps": "  33.00",
+                    "ps_status": "ok",
+                    "psmodel": "N2200-PAC-400W",
+                    "psnum": 2,
+                    "watts": " 396.00"
+                }
+            ]
+        },
+        "power_summary": {
+            "available_pow": "  442.80",
+            "pow_used_by_mods": "    0.00",
+            "ps_redun_mode": "redundant",
+            "ps_redun_op_mode": "Non-redundant",
+            "reserve_sup": "  349.20",
+            "tot_pow_capacity": "  792.00"
+        },
+        "voltage_level": 12
+    }
+}
