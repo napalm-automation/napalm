@@ -449,12 +449,15 @@ class NXOSSSHDriver(NXOSDriverBase):
         """
         return self.device.send_command(command)
 
-    def _send_command_list(self, commands):
+    def _send_command_list(self, commands, expect_string=None):
         """Wrapper for Netmiko's send_command method (for list of commands."""
         output = ""
         for command in commands:
             output += self.device.send_command(
-                command, strip_prompt=False, strip_command=False
+                command,
+                strip_prompt=False,
+                strip_command=False,
+                expect_string=expect_string,
             )
         return output
 
@@ -523,13 +526,15 @@ class NXOSSSHDriver(NXOSDriverBase):
             raise CommandErrorException(msg)
 
     def _load_cfg_from_checkpoint(self):
+
         commands = [
             "terminal dont-ask",
             "rollback running-config file {}".format(self.candidate_cfg),
             "no terminal dont-ask",
         ]
+
         try:
-            rollback_result = self._send_command_list(commands)
+            rollback_result = self._send_command_list(commands, expect_string=r"[#>]")
         finally:
             self.changed = True
         msg = rollback_result
@@ -538,10 +543,16 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def rollback(self):
         if self.changed:
-            command = "rollback running-config file {}".format(self.rollback_cfg)
-            result = self._send_command(command)
+            commands = [
+                "terminal dont-ask",
+                "rollback running-config file {}".format(self.rollback_cfg),
+                "no terminal dont-ask",
+            ]
+            result = self._send_command_list(commands, expect_string=r"[#>]")
             if "completed" not in result.lower():
                 raise ReplaceConfigException(result)
+            # If hostname changes ensure Netmiko state is updated properly
+            self._netmiko_device.set_base_prompt()
             self._copy_run_start()
             self.changed = False
 
@@ -573,15 +584,22 @@ class NXOSSSHDriver(NXOSDriverBase):
         show_int_status = self._send_command("show interface status")
         show_hostname = self._send_command("show hostname")
 
+        show_inventory_table = self._get_command_table(
+            "show inventory | json", "TABLE_inv", "ROW_inv"
+        )
+        if isinstance(show_inventory_table, dict):
+            show_inventory_table = [show_inventory_table]
+
+        for row in show_inventory_table:
+            if row["name"] == '"Chassis"' or row["name"] == "Chassis":
+                serial_number = row.get("serialnum", "")
+                break
+
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
             if " uptime is " in line:
                 _, uptime_str = line.split(" uptime is ")
                 uptime = self.parse_uptime(uptime_str)
-
-            if "Processor Board ID" in line:
-                _, serial_number = line.split("Processor Board ID ")
-                serial_number = serial_number.strip()
 
             if "system: " in line or "NXOS: " in line:
                 line = line.strip()
@@ -762,6 +780,79 @@ class NXOSSSHDriver(NXOSDriverBase):
             output = self._send_command(command)
             cli_output[py23_compat.text_type(command)] = output
         return cli_output
+
+    def get_environment(self):
+        """
+        Get environment facts.
+
+        power and fan are currently not implemented
+        cpu is using 1-minute average
+        """
+
+        environment = {}
+        # sys_resources contains cpu and mem output
+        sys_resources = self._send_command("show system resources")
+        temp_cmd = "show environment temperature"
+
+        # cpu
+        environment.setdefault("cpu", {})
+        environment["cpu"]["0"] = {}
+        environment["cpu"]["0"]["%usage"] = -1.0
+        system_resources_cpu = helpers.textfsm_extractor(
+            self, "system_resources", sys_resources
+        )
+        for cpu in system_resources_cpu:
+            cpu_dict = {
+                cpu.get("cpu_id"): {
+                    "%usage": round(100 - float(cpu.get("cpu_idle")), 2)
+                }
+            }
+            environment["cpu"].update(cpu_dict)
+
+        # memory
+        environment.setdefault("memory", {})
+        for line in sys_resources.splitlines():
+            # Memory usage:   16401224K total,   4798280K used,   11602944K free
+            if "Memory usage:" in line:
+                proc_total_mem, proc_used_mem, _ = line.split(",")
+                proc_used_mem = re.search(r"\d+", proc_used_mem).group(0)
+                proc_total_mem = re.search(r"\d+", proc_total_mem).group(0)
+                break
+        else:
+            raise ValueError("Unexpected output from: {}".format(line))
+        environment["memory"]["used_ram"] = int(proc_used_mem)
+        environment["memory"]["available_ram"] = int(proc_total_mem)
+
+        # temperature
+        output = self._send_command(temp_cmd)
+        environment.setdefault("temperature", {})
+        for line in output.splitlines():
+            # Module   Sensor        MajorThresh   MinorThres   CurTemp     Status
+            # 1        Intake          70              42          28         Ok
+            if re.match(r"^[0-9]", line):
+                module, sensor, is_critical, is_alert, temp, _ = line.split()
+                is_critical = float(is_critical)
+                is_alert = float(is_alert)
+                temp = float(temp)
+                env_value = {
+                    "is_alert": temp >= is_alert,
+                    "is_critical": temp >= is_critical,
+                    "temperature": temp,
+                }
+                location = "{0}-{1}".format(sensor, module)
+                environment["temperature"][location] = env_value
+
+        # Initialize 'power' and 'fan' to default values (not implemented)
+        environment.setdefault("power", {})
+        environment["power"]["invalid"] = {
+            "status": True,
+            "output": -1.0,
+            "capacity": -1.0,
+        }
+        environment.setdefault("fans", {})
+        environment["fans"]["invalid"] = {"status": True}
+
+        return environment
 
     def get_arp_table(self, vrf=""):
         """

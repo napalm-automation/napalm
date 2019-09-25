@@ -86,7 +86,26 @@ class EOSDriver(NetworkDriver):
     )
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
-        """Constructor."""
+        """
+        Initialize EOS Driver.
+
+        Optional args:
+            * lock_disable (True/False): force configuration lock to be disabled (for external lock
+                management).
+            * enable_password (True/False): Enable password for privilege elevation
+            * eos_autoComplete (True/False): Allow for shortening of cli commands
+            * transport (string): pyeapi transport, defaults to eos_transport if set
+                - socket
+                - http_local
+                - http
+                - https
+                - https_certs
+                (from: https://github.com/arista-eosplus/pyeapi/blob/develop/pyeapi/client.py#L115)
+                transport is the preferred method
+            * eos_transport (string): pyeapi transport, defaults to https
+                eos_transport for backwards compatibility
+
+        """
         self.device = None
         self.hostname = hostname
         self.username = username
@@ -101,6 +120,9 @@ class EOSDriver(NetworkDriver):
         self._process_optional_args(optional_args or {})
 
     def _process_optional_args(self, optional_args):
+        # Define locking method
+        self.lock_disable = optional_args.get("lock_disable", False)
+
         self.enablepwd = optional_args.pop("enable_password", "")
         self.eos_autoComplete = optional_args.pop("eos_autoComplete", None)
         # eos_transport is there for backwards compatibility, transport is the preferred method
@@ -115,7 +137,7 @@ class EOSDriver(NetworkDriver):
         init_args.pop(0)  # Remove "self"
         init_args.append("enforce_verification")  # Not an arg for unknown reason
 
-        filter_args = ["host", "username", "password", "timeout"]
+        filter_args = ["host", "username", "password", "timeout", "lock_disable"]
 
         self.eapi_kwargs = {
             k: v
@@ -154,8 +176,6 @@ class EOSDriver(NetworkDriver):
         return {"is_alive": True}  # always true as eAPI is HTTP-based
 
     def _lock(self):
-        if self.config_session is None:
-            self.config_session = "napalm_{}".format(datetime.now().microsecond)
         sess = self.device.run_commands(["show configuration sessions"])[0]["sessions"]
         if [
             k
@@ -227,9 +247,10 @@ class EOSDriver(NetworkDriver):
         return ret
 
     def _load_config(self, filename=None, config=None, replace=True):
-        commands = []
+        if self.config_session is None:
+            self.config_session = "napalm_{}".format(datetime.now().microsecond)
 
-        self._lock()
+        commands = []
         commands.append("configure session {}".format(self.config_session))
         if replace:
             commands.append("rollback clean-config")
@@ -293,6 +314,9 @@ class EOSDriver(NetworkDriver):
 
     def commit_config(self, message=""):
         """Implementation of NAPALM method commit_config."""
+
+        if not self.lock_disable:
+            self._lock()
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
@@ -1692,7 +1716,7 @@ class EOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False):
         """get_config implementation for EOS."""
         get_startup = retrieve == "all" or retrieve == "startup"
         get_running = retrieve == "all" or retrieve == "running"
@@ -1700,8 +1724,11 @@ class EOSDriver(NetworkDriver):
             retrieve == "all" or retrieve == "candidate"
         ) and self.config_session
 
+        # EOS only supports "all" on "show run"
+        run_full = " all" if full else ""
+
         if retrieve == "all":
-            commands = ["show startup-config", "show running-config"]
+            commands = ["show startup-config", "show running-config{}".format(run_full)]
 
             if self.config_session:
                 commands.append(
@@ -1721,7 +1748,10 @@ class EOSDriver(NetworkDriver):
                 else "",
             }
         elif get_startup or get_running:
-            commands = ["show {}-config".format(retrieve)]
+            if retrieve == "running":
+                commands = ["show {}-config{}".format(retrieve, run_full)]
+            elif retrieve == "startup":
+                commands = ["show {}-config".format(retrieve)]
             output = self.device.run_commands(commands, encoding="text")
             return {
                 "startup": py23_compat.text_type(output[0]["output"])

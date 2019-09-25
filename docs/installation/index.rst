@@ -14,6 +14,25 @@ You can install napalm with pip:
 That will install all the drivers currently available.
 
 
+OS Package Managers
+-------------------
+
+Some execution environments offer napalm through a system-level package manager. Installing with pip outside of a user profile or virtualenv/venv is inadvisable in these cases.
+
+FreeBSD
+~~~~~~~
+
+.. code-block:: bash
+
+    pkg install net-mgmt/py-napalm
+
+This will install napalm and all drivers and dependencies for the default version(s) of python. To install for a specific version, python X.Y, if supported:
+
+.. code-block:: bash
+
+    pkg install pyXY-napalm
+
+
 Dependencies
 ------------
 
