@@ -399,7 +399,8 @@ class NXOSDriverBase(NetworkDriver):
             r"(",  # beginning of host_name (ip_address) group only
             r"([a-zA-Z0-9\.:-]*)",  # hostname
             r"\s+",
-            r"\(?([a-fA-F0-9\.:][^\)]*)\)?"  # IP Address between brackets
+            r"\(?([a-fA-F0-9\.:][^\)]*)\)?",  # IP Address between brackets
+            r"(?:\s+\(AS\s+[0-9]+\))?",  # AS number -- may or may not be present
             r")?",  # end of host_name (ip_address) group only
             # also hostname/ip are optional -- they can or cannot be specified
             # if not specified, means the current probe followed the same path as the previous
@@ -431,6 +432,9 @@ class NXOSDriverBase(NetworkDriver):
             command = "traceroute{version} {destination}".format(
                 version=version, destination=destination
             )
+
+        if vrf != "":
+            command += " vrf {vrf}".format(vrf=vrf)
 
         try:
             traceroute_raw_output = self._send_command(command, raw_text=True)
