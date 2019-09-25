@@ -2175,12 +2175,12 @@ class IOSDriver(NetworkDriver):
             ]
         """
         if vrf:
-            msg = "VRF support has not been added for this getter on this platform."
-            raise NotImplementedError(msg)
+            command = 'show arp vrf {} | exclude Incomplete'.format(vrf)
+        else:
+            command = 'show arp | exclude Incomplete'
 
         arp_table = []
 
-        command = "show arp | exclude Incomplete"
         output = self._send_command(command)
 
         # Skip the first line which is a header
