@@ -1467,8 +1467,15 @@ class IOSDriver(NetworkDriver):
 
         Supports both IPv4 and IPv6. vrf aware
         """
-        supported_afi = ['ipv4 unicast', 'ipv4 multicast', 'ipv6 unicast', 'ipv6 multicast',
-                         'vpnv4 unicast', 'vpnv6 unicast', 'ipv4 mdt']
+        supported_afi = [
+            "ipv4 unicast",
+            "ipv4 multicast",
+            "ipv6 unicast",
+            "ipv6 multicast",
+            "vpnv4 unicast",
+            "vpnv6 unicast",
+            "ipv4 mdt",
+        ]
 
         bgp_neighbor_data = dict()
         # vrfs where bgp is configured
@@ -1483,13 +1490,18 @@ class IOSDriver(NetworkDriver):
         # get neighbor output from device
         neighbor_output = ""
         for afi in supported_afi:
-            if afi in ['ipv4 unicast', 'ipv4 multicast', 'ipv6 unicast', 'ipv6 multicast']:
-                cmd_bgp_neighbor = 'show bgp %s neighbors' % afi
+            if afi in [
+                "ipv4 unicast",
+                "ipv4 multicast",
+                "ipv6 unicast",
+                "ipv6 multicast",
+            ]:
+                cmd_bgp_neighbor = "show bgp %s neighbors" % afi
                 neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
                 neighbor_output += "\n"
-            elif afi in ['vpnv4 unicast', 'vpnv6 unicast', 'ipv4 mdt']:
-                cmd_bgp_neighbor = 'show bgp %s all neighbors' % afi
+            elif afi in ["vpnv4 unicast", "vpnv6 unicast", "ipv4 mdt"]:
+                cmd_bgp_neighbor = "show bgp %s all neighbors" % afi
                 neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
                 neighbor_output += "\n"
@@ -1499,8 +1511,10 @@ class IOSDriver(NetworkDriver):
             "patterns": [
                 # For address family: IPv4 Unicast
                 # variable afi contains both afi and safi, i.e 'IPv4 Unicast'
-                {'regexp': re.compile(r'^For address family: (?P<afi>[\S ]+)$'),
-                 'record': False},
+                {
+                    "regexp": re.compile(r"^For address family: (?P<afi>[\S ]+)$"),
+                    "record": False,
+                },
                 # Capture router_id and local_as values, e.g.:
                 # BGP router identifier 10.0.1.1, local AS number 65000
                 {
@@ -1587,12 +1601,16 @@ class IOSDriver(NetworkDriver):
         parse_neighbors = {
             "patterns": [
                 # Capture BGP neighbor is 10.0.0.2,  remote AS 65000, internal link
-                {'regexp': re.compile(r'^BGP neighbor is (?P<remote_addr>({})|({})),'
-                                      r'(\s+vrf (?P<vrf>\S+),)?'
-                                      r'\s+remote AS (?P<remote_as>{}).*'.format(
-                                            IPV4_ADDR_REGEX, IPV6_ADDR_REGEX, ASN_REGEX
-                                      )),
-                 'record': False},
+                {
+                    "regexp": re.compile(
+                        r"^BGP neighbor is (?P<remote_addr>({})|({})),"
+                        r"(\s+vrf (?P<vrf>\S+),)?"
+                        r"\s+remote AS (?P<remote_as>{}).*".format(
+                            IPV4_ADDR_REGEX, IPV6_ADDR_REGEX, ASN_REGEX
+                        )
+                    ),
+                    "record": False,
+                },
                 # Capture description
                 {
                     "regexp": re.compile(r"^\s+Description: (?P<description>.+)"),
@@ -1614,8 +1632,10 @@ class IOSDriver(NetworkDriver):
                 },
                 # Capture AFI and SAFI names, e.g.:
                 # For address family: IPv4 Unicast
-                {'regexp': re.compile(r'^\s+For address family: (?P<afi>[\S ]+)$'),
-                 'record': False},
+                {
+                    "regexp": re.compile(r"^\s+For address family: (?P<afi>[\S ]+)$"),
+                    "record": False,
+                },
                 # Capture current sent and accepted prefixes, e.g.:
                 #     Prefixes Current:          637213       3142 (Consumes 377040 bytes)
                 {
@@ -1678,12 +1698,12 @@ class IOSDriver(NetworkDriver):
                 if match:
                     # a match was found, so update the temp entry with the match's groupdict
                     neighbor_data_entry.update(match.groupdict())
-                    if item['record']:
+                    if item["record"]:
                         # update list of vrfs where bgp is configured
-                        if not neighbor_data_entry['vrf']:
-                            vrf_to_add = 'global'
+                        if not neighbor_data_entry["vrf"]:
+                            vrf_to_add = "global"
                         else:
-                            vrf_to_add = neighbor_data_entry['vrf']
+                            vrf_to_add = neighbor_data_entry["vrf"]
                         if vrf_to_add not in bgp_config_vrfs:
                             bgp_config_vrfs.append(vrf_to_add)
                         # Record indicates the last piece of data has been obtained; move
@@ -1711,8 +1731,8 @@ class IOSDriver(NetworkDriver):
         # create dict keys for vrfs where bgp is configured
         for vrf in bgp_config_vrfs:
             bgp_neighbor_data[vrf] = {}
-            bgp_neighbor_data[vrf]['router_id'] = router_id
-            bgp_neighbor_data[vrf]['peers'] = {}
+            bgp_neighbor_data[vrf]["router_id"] = router_id
+            bgp_neighbor_data[vrf]["peers"] = {}
         # add parsed data to output dict
         for entry in summary_data:
             remote_addr = napalm.base.helpers.ip(entry["remote_addr"])
@@ -1786,24 +1806,24 @@ class IOSDriver(NetworkDriver):
                 description = ""
 
             # check the remote router_id looks like an ipv4 address
-            remote_id = napalm.base.helpers.ip(neighbor_entry['remote_id'], version=4)
+            remote_id = napalm.base.helpers.ip(neighbor_entry["remote_id"], version=4)
 
             # get vrf name, if None use 'global'
-            if neighbor_entry['vrf']:
-                vrf = neighbor_entry['vrf']
+            if neighbor_entry["vrf"]:
+                vrf = neighbor_entry["vrf"]
             else:
-                vrf = 'global'
+                vrf = "global"
 
-            if remote_addr not in bgp_neighbor_data[vrf]['peers']:
-                bgp_neighbor_data[vrf]['peers'][remote_addr] = {
-                    'local_as': napalm.base.helpers.as_number(entry['local_as']),
-                    'remote_as': napalm.base.helpers.as_number(entry['remote_as']),
-                    'remote_id': remote_id,
-                    'is_up': is_up,
-                    'is_enabled': is_enabled,
-                    'description': description,
-                    'uptime': uptime,
-                    'address_family': {
+            if remote_addr not in bgp_neighbor_data[vrf]["peers"]:
+                bgp_neighbor_data[vrf]["peers"][remote_addr] = {
+                    "local_as": napalm.base.helpers.as_number(entry["local_as"]),
+                    "remote_as": napalm.base.helpers.as_number(entry["remote_as"]),
+                    "remote_id": remote_id,
+                    "is_up": is_up,
+                    "is_enabled": is_enabled,
+                    "description": description,
+                    "uptime": uptime,
+                    "address_family": {
                         afi: {
                             "received_prefixes": received_prefixes,
                             "accepted_prefixes": accepted_prefixes,
@@ -1813,8 +1833,8 @@ class IOSDriver(NetworkDriver):
                 }
             else:
                 # found previous data for matching remote_addr, but for different afi
-                existing = bgp_neighbor_data[vrf]['peers'][remote_addr]
-                assert afi not in existing['address_family']
+                existing = bgp_neighbor_data[vrf]["peers"][remote_addr]
+                assert afi not in existing["address_family"]
                 # compare with existing values and croak if they don't match
                 assert existing["local_as"] == napalm.base.helpers.as_number(
                     entry["local_as"]
@@ -2192,9 +2212,9 @@ class IOSDriver(NetworkDriver):
             ]
         """
         if vrf:
-            command = 'show arp vrf {} | exclude Incomplete'.format(vrf)
+            command = "show arp vrf {} | exclude Incomplete".format(vrf)
         else:
-            command = 'show arp | exclude Incomplete'
+            command = "show arp | exclude Incomplete"
 
         arp_table = []
 
