@@ -1,12 +1,12 @@
 {
 	"FastEthernet4": [{
-		"parent_interface": "N/A",
-		"remote_system_capab": "B",
+		"parent_interface": "",
+		"remote_system_capab": ["bridge"],
 		"remote_system_description": "ProCurve J9019A Switch 2510-24, revision Q.10.01, ROM Q.10.02 (/sw/code/build/harp(harp))",
 		"remote_port": "15",
 		"remote_chassis_id": "0018.fe1e.b020",
 		"remote_system_name": "twb-sf-hpsw1",
-		"remote_system_enable_capab": "B",
+		"remote_system_enable_capab": ["bridge"],
 		"remote_port_description": "15"
 	}]
 }

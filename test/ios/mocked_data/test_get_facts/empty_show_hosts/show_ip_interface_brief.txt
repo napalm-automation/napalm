@@ -1,3 +1,5 @@
+Any interface listed with OK? value "NO" does not have a valid configuration
+
 Interface              IP-Address      OK? Method Status                Protocol
 Vlan1                  unassigned      YES NVRAM  administratively down down
 Vlan20                 172.29.50.3     YES NVRAM  up                    up

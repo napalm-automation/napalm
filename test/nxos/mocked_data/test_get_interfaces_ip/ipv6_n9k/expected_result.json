@@ -1,0 +1,59 @@
+{
+    "Ethernet1/1": {
+        "ipv4": {
+            "172.16.100.1": {
+                "prefix_length": 24
+            }
+        },
+        "ipv6": {
+            "200::2": {
+                "prefix_length": 128
+            },
+            "dead:beef::1": {
+                "prefix_length": 64
+            }
+        }
+    },
+    "Ethernet1/2": {
+        "ipv6": {
+            "2001:c0ff:ee::1": {
+                "prefix_length": 128
+            }
+        }
+    },
+    "loopback103": {
+        "ipv4": {
+            "192.168.3.100": {
+                "prefix_length": 24
+            }
+        }
+    },
+    "loopback102": {
+        "ipv4": {
+            "192.168.2.100": {
+                "prefix_length": 24
+            }
+        }
+    },
+    "loopback101": {
+        "ipv4": {
+            "192.168.1.100": {
+                "prefix_length": 24
+            }
+        }
+    },
+    "loopback100": {
+        "ipv4": {
+            "10.0.0.100": {
+                "prefix_length": 24
+            }
+        }
+    },
+    "Ethernet2/5": {
+        "ipv4": {
+            "1.1.1.1": {
+                "prefix_length": 24
+            }
+        }
+    }
+}

@@ -10,9 +10,9 @@ class CustomJinjaFilters(object):
     def filters(cls):
         """Return jinja2 filters that this module provide."""
         return {
-            'oc_attr_isdefault': oc_attr_isdefault,
-            'openconfig_to_cisco_af': openconfig_to_cisco_af,
-            'openconfig_to_eos_af': openconfig_to_eos_af,
+            "oc_attr_isdefault": oc_attr_isdefault,
+            "openconfig_to_cisco_af": openconfig_to_cisco_af,
+            "openconfig_to_eos_af": openconfig_to_eos_af,
         }
 
 
@@ -31,12 +31,12 @@ def openconfig_to_cisco_af(value):
         value = value.split(":")[1]
 
     mapd = {
-        'IPV4_UNICAST':               "ipv4 unicast",
-        'IPV6_UNICAST':               "ipv6 unicast",
-        'IPV4_LABELED_UNICAST':       "ipv4 unicast",
-        'IPV6_LABELED_UNICAST':       "ipv6 unicast",
-        'L3VPN_IPV4_UNICAST':         "vpnv4",
-        'L3VPN_IPV6_UNICAST':         "vpnv6",
+        "IPV4_UNICAST": "ipv4 unicast",
+        "IPV6_UNICAST": "ipv6 unicast",
+        "IPV4_LABELED_UNICAST": "ipv4 unicast",
+        "IPV6_LABELED_UNICAST": "ipv6 unicast",
+        "L3VPN_IPV4_UNICAST": "vpnv4",
+        "L3VPN_IPV6_UNICAST": "vpnv6",
     }
     return mapd[value]
 
@@ -46,8 +46,5 @@ def openconfig_to_eos_af(value):
     if ":" in value:
         value = value.split(":")[1]
 
-    mapd = {
-        'IPV4_UNICAST':               "ipv4",
-        'IPV6_UNICAST':               "ipv6",
-    }
+    mapd = {"IPV4_UNICAST": "ipv4", "IPV6_UNICAST": "ipv6"}
     return mapd[value]

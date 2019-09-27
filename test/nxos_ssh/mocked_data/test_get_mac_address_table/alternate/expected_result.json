@@ -2,7 +2,7 @@
   {
     "vlan": 110,
     "last_move": -1,
-    "interface": "Po28",
+    "interface": "Port-channel28",
     "mac": "00:18:74:1C:40:00",
     "static": false,
     "active": true,
@@ -11,7 +11,7 @@
   {
     "vlan": 202,
     "last_move": -1,
-    "interface": "Eth51/1/11",
+    "interface": "Ethernet51/1/11",
     "mac": "00:50:56:9A:7B:6B",
     "static": false,
     "active": true,
@@ -20,7 +20,7 @@
   {
     "vlan": 986,
     "last_move": -1,
-    "interface": "Po28",
+    "interface": "Port-channel28",
     "mac": "00:00:0C:07:AC:F0",
     "static": false,
     "active": true,
@@ -29,7 +29,7 @@
   {
     "vlan": 989,
     "last_move": -1,
-    "interface": "Po28",
+    "interface": "Port-channel28",
     "mac": "00:00:0C:07:AC:EF",
     "static": false,
     "active": true,
@@ -38,7 +38,7 @@
   {
     "vlan": 989,
     "last_move": -1,
-    "interface": "Po28",
+    "interface": "Port-channel28",
     "mac": "00:18:74:1C:40:00",
     "static": false,
     "active": true,
@@ -47,7 +47,7 @@
   {
     "vlan": 393,
     "last_move": -1,
-    "interface": "Eth51/1/16",
+    "interface": "Ethernet51/1/16",
     "mac": "00:1B:4F:03:56:20",
     "static": false,
     "active": true,
@@ -56,7 +56,7 @@
   {
     "vlan": 393,
     "last_move": -1,
-    "interface": "Eth51/1/16",
+    "interface": "Ethernet51/1/16",
     "mac": "00:1B:4F:11:2C:7C",
     "static": false,
     "active": true,
@@ -65,7 +65,7 @@
   {
     "vlan": 299,
     "last_move": -1,
-    "interface": "Eth52/1/29",
+    "interface": "Ethernet52/1/29",
     "mac": "00:CA:FE:19:47:76",
     "static": false,
     "active": true,
@@ -74,7 +74,7 @@
   {
     "vlan": 358,
     "last_move": -1,
-    "interface": "Eth52/1/4",
+    "interface": "Ethernet52/1/4",
     "mac": "00:CA:FE:31:68:82",
     "static": false,
     "active": true,
@@ -83,7 +83,7 @@
   {
     "vlan": 393,
     "last_move": -1,
-    "interface": "Eth51/1/16",
+    "interface": "Ethernet51/1/16",
     "mac": "00:CA:FE:54:21:07",
     "static": false,
     "active": true,
@@ -92,7 +92,7 @@
   {
     "vlan": 388,
     "last_move": -1,
-    "interface": "Po28",
+    "interface": "Port-channel28",
     "mac": "00:50:56:9F:79:30",
     "static": false,
     "active": true,
@@ -101,7 +101,7 @@
   {
     "vlan": 299,
     "last_move": -1,
-    "interface": "Eth52/1/30",
+    "interface": "Ethernet52/1/30",
     "mac": "00:50:56:9F:7A:74",
     "static": false,
     "active": true,
@@ -110,7 +110,7 @@
   {
     "vlan": 388,
     "last_move": -1,
-    "interface": "Po28",
+    "interface": "Port-channel28",
     "mac": "00:50:56:9F:7B:98",
     "static": false,
     "active": true,
@@ -119,7 +119,7 @@
   {
     "vlan": 299,
     "last_move": -1,
-    "interface": "Eth52/1/26",
+    "interface": "Ethernet52/1/26",
     "mac": "00:50:56:9F:7B:A2",
     "static": false,
     "active": true,
@@ -128,7 +128,7 @@
   {
     "vlan": 388,
     "last_move": -1,
-    "interface": "Po28",
+    "interface": "Port-channel28",
     "mac": "00:50:56:9F:7E:9A",
     "static": false,
     "active": true,
@@ -137,7 +137,7 @@
   {
     "vlan": 388,
     "last_move": -1,
-    "interface": "Po28",
+    "interface": "Port-channel28",
     "mac": "00:50:56:9F:7E:E5",
     "static": false,
     "active": true,
@@ -146,7 +146,7 @@
   {
     "vlan": 388,
     "last_move": -1,
-    "interface": "Po28",
+    "interface": "Port-channel28",
     "mac": "00:50:56:9F:7F:02",
     "static": false,
     "active": true,

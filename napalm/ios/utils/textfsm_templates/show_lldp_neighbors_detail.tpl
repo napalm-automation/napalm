@@ -8,10 +8,6 @@ Value REMOTE_SYSTEM_CAPAB (.*)
 Value REMOTE_SYSTEM_ENABLE_CAPAB (.*)
 
 Start
-  # A line of hyphens delimits neighbor records
-  ^------+ -> Record Neighbor
-
-Neighbor
   ^Local Intf\s*?[:-]\s+${LOCAL_INTERFACE}
   ^Chassis id\s*?[:-]\s+${REMOTE_CHASSIS_ID}
   ^Port id\s*?[:-]\s+${REMOTE_PORT}
@@ -25,4 +21,4 @@ Neighbor
 
 Description
   # Capture the entire line and go back to Neighbor state
-  ^${REMOTE_SYSTEM_DESCRIPTION} -> Neighbor
+  ^${REMOTE_SYSTEM_DESCRIPTION} -> Start
