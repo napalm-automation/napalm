@@ -2149,7 +2149,7 @@ class IOSDriver(NetworkDriver):
         re_temp_value = re.compile("(.*) Temperature Value")
         # The 'show env temperature status' is not ubiquitous in Cisco IOS
         output = self._send_command(temp_cmd)
-        if "% Invalid" not in output:
+        if "% Invalid" not in output and "Not Supported" not in output:
             for line in output.splitlines():
                 m = re_temp_value.match(line)
                 if m is not None:
