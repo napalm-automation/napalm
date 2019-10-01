@@ -19,7 +19,7 @@ Supported Network Operating Systems:
 * Cisco NX-OS
 * Juniper JunOS
 
-extras
+Extras
 ______
 
 In addition to the core drivers napalm also supports community driven drivers. You can find more information about them here: :ref:`contributing-drivers`
