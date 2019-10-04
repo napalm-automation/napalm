@@ -2134,13 +2134,23 @@ class IOSDriver(NetworkDriver):
                 break
 
         output = self._send_command(mem_cmd)
-        for line in output.splitlines():
-            if "Processor" in line:
-                _, _, proc_total_mem, proc_used_mem, _ = line.split()[:5]
-            elif "I/O" in line or "io" in line:
-                _, _, io_total_mem, io_used_mem, _ = line.split()[:5]
-        total_mem = int(proc_total_mem) + int(io_total_mem)
-        used_mem = int(proc_used_mem) + int(io_used_mem)
+        if "Invalid input detected at" not in output:
+            for line in output.splitlines():
+                if "Processor" in line:
+                    _, _, proc_total_mem, proc_used_mem, _ = line.split()[:5]
+                elif "I/O" in line or "io" in line:
+                    _, _, io_total_mem, io_used_mem, _ = line.split()[:5]
+            total_mem = int(proc_total_mem) + int(io_total_mem)
+            used_mem = int(proc_used_mem) + int(io_used_mem)
+        else:
+            # Parse the memory for IOS-XR devices correctly
+            output = self._send_command("show memory")
+            for line in output.splitlines():
+                if "System memory" in line:
+                    total_mem, _, used_mem = line.split()[3:6]
+                    total_mem = int(total_mem.replace("K", ""))
+                    used_mem = int(used_mem.replace("K", ""))
+
         environment.setdefault("memory", {})
         environment["memory"]["used_ram"] = used_mem
         environment["memory"]["available_ram"] = total_mem
