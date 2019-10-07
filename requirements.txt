@@ -9,7 +9,7 @@ pyYAML
 pyeapi>=0.8.2
 netmiko>=2.3.0
 pyIOSXR>=0.53
-junos-eznc>=2.2.0
+junos-eznc==2.2.1
 nxapi-plumbing>=0.5.2
 ciscoconfparse
 scp
