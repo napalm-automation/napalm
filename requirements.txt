@@ -7,7 +7,7 @@ jinja2
 netaddr
 pyYAML
 pyeapi>=0.8.2
-netmiko>=2.3.0
+netmiko==2.4.2
 pyIOSXR>=0.53
 junos-eznc==2.2.1
 nxapi-plumbing>=0.5.2
