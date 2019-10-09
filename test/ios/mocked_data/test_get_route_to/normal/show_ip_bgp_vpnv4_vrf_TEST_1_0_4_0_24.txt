@@ -1,0 +1,21 @@
+BGP routing table entry for 65417:2:1.0.4.0/24, version 651739
+Paths: (3 available, best #1, table TEST)
+  Advertised to update-groups:
+     2
+  Refresh Epoch 1
+  65201 8244 3269 65020 65017
+    10.105.113.164 (metric 3840) (via vrf TEST) from 10.105.113.164 (10.105.113.242)
+      Origin incomplete, metric 0, localpref 100, valid, internal, best
+      Extended Community: RT:65417:2
+      rx pathid: 0, tx pathid: 0x0
+  Refresh Epoch 1
+  65201 8244 3269 65020 65017
+    10.105.49.101 (via vrf TEST) from 10.105.49.101 (10.106.0.174)
+      Origin incomplete, localpref 50, valid, external
+      Extended Community: RT:65417:2
+      rx pathid: 0, tx pathid: 0
+  Refresh Epoch 1
+  65201 8244 3269 65020 65017, (received-only)
+    10.105.49.101 (via vrf TEST) from 10.105.49.101 (10.106.0.174)
+      Origin incomplete, localpref 100, valid, external
+      rx pathid: 0, tx pathid: 0
