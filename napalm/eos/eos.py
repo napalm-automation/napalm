@@ -1245,7 +1245,13 @@ class EOSDriver(NetworkDriver):
                         as_path = bgp_route_details.get("asPathEntry", {}).get(
                             "asPath", ""
                         )
-                        remote_as = int(as_path.strip("()").split()[-1])
+                        as_path_type = bgp_route_details.get("asPathEntry", {}).get(
+                            "asPathType", ""
+                        )
+                        if as_path_type in ["Internal", "Local"]:
+                            remote_as = local_as
+                        else:
+                            remote_as = int(as_path.strip("()").split()[-1])
                         remote_address = napalm.base.helpers.ip(
                             bgp_route_details.get("routeDetail", {})
                             .get("peerEntry", {})
