@@ -1483,13 +1483,21 @@ class IOSDriver(NetworkDriver):
     def get_bgp_neighbors(self):
         """BGP neighbor information.
 
-        Currently no VRF support. Supports both IPv4 and IPv6.
+        Supports both IPv4 and IPv6. vrf aware
         """
-        supported_afi = ["ipv4", "ipv6"]
+        supported_afi = [
+            "ipv4 unicast",
+            "ipv4 multicast",
+            "ipv6 unicast",
+            "ipv6 multicast",
+            "vpnv4 unicast",
+            "vpnv6 unicast",
+            "ipv4 mdt",
+        ]
 
         bgp_neighbor_data = dict()
-        bgp_neighbor_data["global"] = {}
-
+        # vrfs where bgp is configured
+        bgp_config_vrfs = []
         # get summary output from device
         cmd_bgp_all_sum = "show bgp all summary"
         summary_output = self._send_command(cmd_bgp_all_sum).strip()
@@ -1500,17 +1508,29 @@ class IOSDriver(NetworkDriver):
         # get neighbor output from device
         neighbor_output = ""
         for afi in supported_afi:
-            cmd_bgp_neighbor = "show bgp %s unicast neighbors" % afi
-            neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
-            # trailing newline required for parsing
-            neighbor_output += "\n"
+            if afi in [
+                "ipv4 unicast",
+                "ipv4 multicast",
+                "ipv6 unicast",
+                "ipv6 multicast",
+            ]:
+                cmd_bgp_neighbor = "show bgp %s neighbors" % afi
+                neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
+                # trailing newline required for parsing
+                neighbor_output += "\n"
+            elif afi in ["vpnv4 unicast", "vpnv6 unicast", "ipv4 mdt"]:
+                cmd_bgp_neighbor = "show bgp %s all neighbors" % afi
+                neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
+                # trailing newline required for parsing
+                neighbor_output += "\n"
 
         # Regular expressions used for parsing BGP summary
         parse_summary = {
             "patterns": [
                 # For address family: IPv4 Unicast
+                # variable afi contains both afi and safi, i.e 'IPv4 Unicast'
                 {
-                    "regexp": re.compile(r"^For address family: (?P<afi>\S+) "),
+                    "regexp": re.compile(r"^For address family: (?P<afi>[\S ]+)$"),
                     "record": False,
                 },
                 # Capture router_id and local_as values, e.g.:
@@ -1602,6 +1622,7 @@ class IOSDriver(NetworkDriver):
                 {
                     "regexp": re.compile(
                         r"^BGP neighbor is (?P<remote_addr>({})|({})),"
+                        r"(\s+vrf (?P<vrf>\S+),)?"
                         r"\s+remote AS (?P<remote_as>{}).*".format(
                             IPV4_ADDR_REGEX, IPV6_ADDR_REGEX, ASN_REGEX
                         )
@@ -1630,7 +1651,7 @@ class IOSDriver(NetworkDriver):
                 # Capture AFI and SAFI names, e.g.:
                 # For address family: IPv4 Unicast
                 {
-                    "regexp": re.compile(r"^\s+For address family: (?P<afi>\S+) "),
+                    "regexp": re.compile(r"^\s+For address family: (?P<afi>[\S ]+)$"),
                     "record": False,
                 },
                 # Capture current sent and accepted prefixes, e.g.:
@@ -1696,6 +1717,13 @@ class IOSDriver(NetworkDriver):
                     # a match was found, so update the temp entry with the match's groupdict
                     neighbor_data_entry.update(match.groupdict())
                     if item["record"]:
+                        # update list of vrfs where bgp is configured
+                        if not neighbor_data_entry["vrf"]:
+                            vrf_to_add = "global"
+                        else:
+                            vrf_to_add = neighbor_data_entry["vrf"]
+                        if vrf_to_add not in bgp_config_vrfs:
+                            bgp_config_vrfs.append(vrf_to_add)
                         # Record indicates the last piece of data has been obtained; move
                         # on to next entry
                         neighbor_data.append(copy.deepcopy(neighbor_data_entry))
@@ -1718,9 +1746,12 @@ class IOSDriver(NetworkDriver):
         # check the router_id looks like an ipv4 address
         router_id = napalm.base.helpers.ip(router_id, version=4)
 
+        # create dict keys for vrfs where bgp is configured
+        for vrf in bgp_config_vrfs:
+            bgp_neighbor_data[vrf] = {}
+            bgp_neighbor_data[vrf]["router_id"] = router_id
+            bgp_neighbor_data[vrf]["peers"] = {}
         # add parsed data to output dict
-        bgp_neighbor_data["global"]["router_id"] = router_id
-        bgp_neighbor_data["global"]["peers"] = {}
         for entry in summary_data:
             remote_addr = napalm.base.helpers.ip(entry["remote_addr"])
             afi = entry["afi"].lower()
@@ -1795,8 +1826,14 @@ class IOSDriver(NetworkDriver):
             # check the remote router_id looks like an ipv4 address
             remote_id = napalm.base.helpers.ip(neighbor_entry["remote_id"], version=4)
 
-            if remote_addr not in bgp_neighbor_data["global"]["peers"]:
-                bgp_neighbor_data["global"]["peers"][remote_addr] = {
+            # get vrf name, if None use 'global'
+            if neighbor_entry["vrf"]:
+                vrf = neighbor_entry["vrf"]
+            else:
+                vrf = "global"
+
+            if remote_addr not in bgp_neighbor_data[vrf]["peers"]:
+                bgp_neighbor_data[vrf]["peers"][remote_addr] = {
                     "local_as": napalm.base.helpers.as_number(entry["local_as"]),
                     "remote_as": napalm.base.helpers.as_number(entry["remote_as"]),
                     "remote_id": remote_id,
@@ -1814,7 +1851,7 @@ class IOSDriver(NetworkDriver):
                 }
             else:
                 # found previous data for matching remote_addr, but for different afi
-                existing = bgp_neighbor_data["global"]["peers"][remote_addr]
+                existing = bgp_neighbor_data[vrf]["peers"][remote_addr]
                 assert afi not in existing["address_family"]
                 # compare with existing values and croak if they don't match
                 assert existing["local_as"] == napalm.base.helpers.as_number(
@@ -2115,13 +2152,23 @@ class IOSDriver(NetworkDriver):
                 break
 
         output = self._send_command(mem_cmd)
-        for line in output.splitlines():
-            if "Processor" in line:
-                _, _, proc_total_mem, proc_used_mem, _ = line.split()[:5]
-            elif "I/O" in line or "io" in line:
-                _, _, io_total_mem, io_used_mem, _ = line.split()[:5]
-        total_mem = int(proc_total_mem) + int(io_total_mem)
-        used_mem = int(proc_used_mem) + int(io_used_mem)
+        if "Invalid input detected at" not in output:
+            for line in output.splitlines():
+                if "Processor" in line:
+                    _, _, proc_total_mem, proc_used_mem, _ = line.split()[:5]
+                elif "I/O" in line or "io" in line:
+                    _, _, io_total_mem, io_used_mem, _ = line.split()[:5]
+            total_mem = int(proc_total_mem) + int(io_total_mem)
+            used_mem = int(proc_used_mem) + int(io_used_mem)
+        else:
+            # Parse the memory for IOS-XR devices correctly
+            output = self._send_command("show memory")
+            for line in output.splitlines():
+                if "System memory" in line:
+                    total_mem, _, used_mem = line.split()[3:6]
+                    total_mem = int(total_mem.replace("K", ""))
+                    used_mem = int(used_mem.replace("K", ""))
+
         environment.setdefault("memory", {})
         environment["memory"]["used_ram"] = used_mem
         environment["memory"]["available_ram"] = total_mem
@@ -2130,7 +2177,7 @@ class IOSDriver(NetworkDriver):
         re_temp_value = re.compile("(.*) Temperature Value")
         # The 'show env temperature status' is not ubiquitous in Cisco IOS
         output = self._send_command(temp_cmd)
-        if "% Invalid" not in output:
+        if "% Invalid" not in output and "Not Supported" not in output:
             for line in output.splitlines():
                 m = re_temp_value.match(line)
                 if m is not None:
@@ -2193,9 +2240,9 @@ class IOSDriver(NetworkDriver):
             ]
         """
         if vrf:
-            command = 'show arp vrf {} | exclude Incomplete'.format(vrf)
+            command = "show arp vrf {} | exclude Incomplete".format(vrf)
         else:
-            command = 'show arp | exclude Incomplete'
+            command = "show arp | exclude Incomplete"
 
         arp_table = []
 
