@@ -1,0 +1,26 @@
+IP Route Table for VRF "default"
+'*' denotes best ucast next-hop
+'**' denotes best mcast next-hop
+'[x/y]' denotes [preference/metric]
+'%<string>' in via output denotes VRF <string>
+
+1.0.4.0/24, ubest/mbest: 1/0
+    *via 10.0.0.5, Eth2/2, [110/41], 5d23h, ospf-1, intra
+     via 192.168.0.2, [200/0], 1d15h, bgp-1, internal, tag 1,  (hidden)
+
+IP Route Table for VRF "management"
+'*' denotes best ucast next-hop
+'**' denotes best mcast next-hop
+'[x/y]' denotes [preference/metric]
+'%<string>' in via output denotes VRF <string>
+
+Route not found
+
+IP Route Table for VRF "test-vrf"
+'*' denotes best ucast next-hop
+'**' denotes best mcast next-hop
+'[x/y]' denotes [preference/metric]
+'%<string>' in via output denotes VRF <string>
+
+Route not found
+

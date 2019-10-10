@@ -1,0 +1,53 @@
+IP Route Table for VRF "default"
+'*' denotes best ucast next-hop
+'**' denotes best mcast next-hop
+'[x/y]' denotes [preference/metric]
+'%<string>' in via output denotes VRF <string>
+
+Route not found
+
+IP Route Table for VRF "management"
+'*' denotes best ucast next-hop
+'**' denotes best mcast next-hop
+'[x/y]' denotes [preference/metric]
+'%<string>' in via output denotes VRF <string>
+
+Route not found
+
+
+IP Route Table for VRF "TEST1"
+'*' denotes best ucast next-hop
+'**' denotes best mcast next-hop
+'[x/y]' denotes [preference/metric]
+'%<string>' in via output denotes VRF <string>
+
+1.0.4.0/24, ubest/mbest: 2/0
+    *via 10.5.192.35, Po87.3572, [110/45], 13w5d, ospf-1000, type-1, tag 2731,
+    *via 10.5.192.36, Po87.3572, [110/45], 13w5d, ospf-1000, type-1, tag 2731,
+
+IP Route Table for VRF "TEST5"
+'*' denotes best ucast next-hop
+'**' denotes best mcast next-hop
+'[x/y]' denotes [preference/metric]
+'%<string>' in via output denotes VRF <string>
+
+Route not found
+
+IP Route Table for VRF "TEST2"
+'*' denotes best ucast next-hop
+'**' denotes best mcast next-hop
+'[x/y]' denotes [preference/metric]
+'%<string>' in via output denotes VRF <string>
+
+1.0.4.0/24, ubest/mbest: 2/0
+    *via 10.5.192.35%TEST1, Po87.3572, [20/45], 2w6d, bgp-65004, external, tag 65004,
+    *via 10.5.192.36%TEST1, Po87.3572, [20/45], 2w6d, bgp-65004, external, tag 65004,
+
+IP Route Table for VRF "TEST3"
+'*' denotes best ucast next-hop
+'**' denotes best mcast next-hop
+'[x/y]' denotes [preference/metric]
+'%<string>' in via output denotes VRF <string>
+
+Route not found
+

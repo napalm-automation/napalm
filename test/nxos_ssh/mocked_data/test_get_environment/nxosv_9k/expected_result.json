@@ -1,0 +1,27 @@
+{
+    "cpu": {
+        "0": {
+            "%usage": 15.91
+        },
+        "1": {
+            "%usage": 4.31
+        }
+    },
+    "memory": {
+        "used_ram": 4176656,
+        "available_ram": 6096260
+    },
+    "temperature": {},
+    "power": {
+        "invalid": {
+            "status": true,
+            "output": -1.0,
+            "capacity": -1.0
+        }
+    },
+    "fans": {
+        "invalid": {
+            "status": true
+        }
+    }
+}
