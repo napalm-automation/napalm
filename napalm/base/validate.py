@@ -3,14 +3,11 @@ Validation methods for the NAPALM base.
 
 See: https://napalm.readthedocs.io/en/latest/validate.html
 """
-from __future__ import unicode_literals
-
 import yaml
-
-from napalm.base.exceptions import ValidationException
-
 import copy
 import re
+
+from napalm.base.exceptions import ValidationException
 
 
 # We put it here to compile it only once

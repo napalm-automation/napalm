@@ -2,17 +2,11 @@
 Test base helpers.
 """
 
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
-
-
 # NAPALM base
 from napalm.base import get_network_driver
 import napalm.base.exceptions
 
 import pytest
-
 import os
 
 

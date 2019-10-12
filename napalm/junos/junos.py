@@ -15,8 +15,6 @@
 
 """Driver for JunOS devices."""
 
-from __future__ import unicode_literals
-
 # import stdlib
 import re
 import json
@@ -769,9 +767,7 @@ class JunOSDriver(NetworkDriver):
         for neigh in result:
             if neigh[0] not in neighbors.keys():
                 neighbors[neigh[0]] = []
-            neighbors[neigh[0]].append(
-                {x[0]: str(x[1]) for x in neigh[1]}
-            )
+            neighbors[neigh[0]].append({x[0]: str(x[1]) for x in neigh[1]})
 
         return neighbors
 

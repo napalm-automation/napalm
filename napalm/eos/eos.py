@@ -17,8 +17,6 @@ Napalm driver for Arista EOS.
 
 Read napalm.readthedocs.org for more information.
 """
-from __future__ import print_function
-from __future__ import unicode_literals
 
 # std libs
 import re

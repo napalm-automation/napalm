@@ -1,9 +1,4 @@
 """Helper functions for the NAPALM base."""
-
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
-
 # std libs
 import os
 import re

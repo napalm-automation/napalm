@@ -14,14 +14,9 @@
 
 """napalm.base package."""
 
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
-
 # Python std lib
 import inspect
 import importlib
-
 
 # NAPALM base
 from napalm.base.base import NetworkDriver
