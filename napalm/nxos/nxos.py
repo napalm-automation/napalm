@@ -515,7 +515,7 @@ class NXOSDriverBase(NetworkDriver):
         run_full = " all" if full else ""
 
         if retrieve.lower() in ("running", "all"):
-            command = "show running-config"
+            command = f"show running-config{run_full}"
             config["running"] = str(self._send_command(command, raw_text=True))
         if retrieve.lower() in ("startup", "all"):
             command = "show startup-config"

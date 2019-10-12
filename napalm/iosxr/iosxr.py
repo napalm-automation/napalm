@@ -68,7 +68,7 @@ class IOSXRDriver(NetworkDriver):
             timeout=timeout,
             port=self.port,
             lock=self.lock_on_connect,
-            **self.netmiko_optional_args
+            **self.netmiko_optional_args,
         )
 
     def open(self):
@@ -632,7 +632,9 @@ class IOSXRDriver(NetworkDriver):
                 psu_status["status"] = True
 
             if this_psu_current and this_psu_voltage:
-                psu_status["output"] = (this_psu_voltage * this_psu_current) / 1000000.0
+                psu_status["output"] = (
+                    this_psu_voltage * this_psu_current
+                ) / 1_000_000.0
 
             environment_status["power"][psu] = psu_status
 
@@ -2208,12 +2210,13 @@ class IOSXRDriver(NetworkDriver):
     def get_config(self, retrieve="all", full=False):
 
         config = {"startup": "", "running": "", "candidate": ""}  # default values
+
         # IOS-XR only supports "all" on "show run"
         run_full = " all" if full else ""
 
         if retrieve.lower() in ["running", "all"]:
             config["running"] = str(
-                self.device._execute_config_show("show running-config")
+                self.device._execute_config_show(f"show running-config{run_full}")
             )
         if retrieve.lower() in ["candidate", "all"]:
             config["candidate"] = str(
