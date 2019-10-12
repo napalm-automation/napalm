@@ -770,7 +770,7 @@ class JunOSDriver(NetworkDriver):
             if neigh[0] not in neighbors.keys():
                 neighbors[neigh[0]] = []
             neighbors[neigh[0]].append(
-                {x[0]: py23_compat.text_type(x[1]) for x in neigh[1]}
+                {x[0]: str(x[1]) for x in neigh[1]}
             )
 
         return neighbors
