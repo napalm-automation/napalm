@@ -1,15 +1,6 @@
 """Testing framework."""
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import functools
-
-# python2/3 support
-try:
-    from itertools import izip_longest as zip_longest
-except ImportError:
-    from itertools import zip_longest
-
+from itertools import zip_longest
 import inspect
 import json
 
@@ -17,10 +8,6 @@ import pytest
 from napalm.base.test import helpers
 from napalm.base.test import models
 from napalm.base import NetworkDriver
-
-# text_type is 'unicode' for py2 and 'str' for py3
-from napalm.base.utils.py23_compat import text_type, argspec
-
 from napalm.base.test import conftest
 
 
@@ -134,17 +121,17 @@ class BaseTestGetters(object):
                 continue
             try:
                 orig = getattr(NetworkDriver, attr)
-                orig_spec = argspec(orig)
+                orig_spec = inspect.getfullargspec(orig)
             except AttributeError:
                 orig_spec = "Method does not exist in napalm.base"
-            func_spec = argspec(func)
+            func_spec = inspect.getfullargspec(func)
             if orig_spec != func_spec:
                 errors[attr] = (orig_spec, func_spec)
 
         EXTRA_METHODS = ["__init__"]
         for method in EXTRA_METHODS:
-            orig_spec = argspec(getattr(NetworkDriver, method))
-            func_spec = argspec(getattr(cls, method))
+            orig_spec = inspect.getfullargspec(getattr(NetworkDriver, method))
+            func_spec = inspect.getfullargspec(getattr(cls, method))
             if orig_spec != func_spec:
                 errors[attr] = (orig_spec, func_spec)
 
@@ -227,7 +214,7 @@ class BaseTestGetters(object):
         assert "global" in get_bgp_neighbors.keys()
 
         for vrf, vrf_data in get_bgp_neighbors.items():
-            assert isinstance(vrf_data["router_id"], text_type)
+            assert isinstance(vrf_data["router_id"], str)
 
             for peer, peer_data in vrf_data["peers"].items():
                 assert helpers.test_model(models.peer, peer_data)
@@ -270,7 +257,7 @@ class BaseTestGetters(object):
         assert len(get_bgp_neighbors_detail) > 0
 
         for vrf, vrf_ases in get_bgp_neighbors_detail.items():
-            assert isinstance(vrf, text_type)
+            assert isinstance(vrf, str)
             for remote_as, neighbor_list in vrf_ases.items():
                 assert isinstance(remote_as, int)
                 for neighbor in neighbor_list:
@@ -317,7 +304,7 @@ class BaseTestGetters(object):
         assert len(get_ntp_peers) > 0
 
         for peer, peer_details in get_ntp_peers.items():
-            assert isinstance(peer, text_type)
+            assert isinstance(peer, str)
             assert helpers.test_model(models.ntp_peer, peer_details)
 
         return get_ntp_peers
@@ -329,7 +316,7 @@ class BaseTestGetters(object):
         assert len(get_ntp_servers) > 0
 
         for server, server_details in get_ntp_servers.items():
-            assert isinstance(server, text_type)
+            assert isinstance(server, str)
             assert helpers.test_model(models.ntp_server, server_details)
 
         return get_ntp_servers
@@ -479,7 +466,7 @@ class BaseTestGetters(object):
         assert isinstance(get_optics, dict)
 
         for iface, iface_data in get_optics.items():
-            assert isinstance(iface, text_type)
+            assert isinstance(iface, str)
             for channel in iface_data["physical_channels"]["channel"]:
                 assert len(channel) == 2
                 assert isinstance(channel["index"], int)

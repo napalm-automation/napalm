@@ -1,12 +1,10 @@
 """Tests for the validate operation."""
-from __future__ import unicode_literals
+import json
+import os
+import yaml
 
 from napalm.base.base import NetworkDriver
 from napalm.base import constants as C
-import json
-
-import os
-import yaml
 
 
 BASEPATH = os.path.dirname(__file__)
