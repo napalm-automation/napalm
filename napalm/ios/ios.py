@@ -13,9 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import copy
 import functools
 import os
@@ -45,7 +42,6 @@ from napalm.base.helpers import (
     textfsm_extractor,
 )
 from napalm.base.netmiko_helpers import netmiko_args
-from napalm.base.utils import py23_compat
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
@@ -237,7 +233,7 @@ class IOSDriver(NetworkDriver):
     def _create_tmp_file(config):
         """Write temp file and for use with inline config and SCP."""
         tmp_dir = tempfile.gettempdir()
-        rand_fname = py23_compat.text_type(uuid.uuid4())
+        rand_fname = str(uuid.uuid4())
         filename = os.path.join(tmp_dir, rand_fname)
         with open(filename, "wt") as fobj:
             fobj.write(config)
@@ -995,10 +991,10 @@ class IOSDriver(NetworkDriver):
         return {
             "uptime": uptime,
             "vendor": vendor,
-            "os_version": py23_compat.text_type(os_version),
-            "serial_number": py23_compat.text_type(serial_number),
-            "model": py23_compat.text_type(model),
-            "hostname": py23_compat.text_type(hostname),
+            "os_version": str(os_version),
+            "serial_number": str(serial_number),
+            "model": str(model),
+            "hostname": str(hostname),
             "fqdn": fqdn,
             "interface_list": interface_list,
         }
@@ -1819,7 +1815,7 @@ class IOSDriver(NetworkDriver):
 
             # get description
             try:
-                description = py23_compat.text_type(neighbor_entry["description"])
+                description = str(neighbor_entry["description"])
             except KeyError:
                 description = ""
 
@@ -2370,12 +2366,12 @@ class IOSDriver(NetworkDriver):
             try:
                 ntp_stats.append(
                     {
-                        "remote": py23_compat.text_type(address_regex.group(2)),
+                        "remote": str(address_regex.group(2)),
                         "synchronized": ("*" in address_regex.group(1)),
-                        "referenceid": py23_compat.text_type(ref_clock),
+                        "referenceid": str(ref_clock),
                         "stratum": int(st),
                         "type": "-",
-                        "when": py23_compat.text_type(when),
+                        "when": str(when),
                         "hostpoll": int(poll),
                         "reachability": int(reach),
                         "delay": float(delay),
@@ -3145,10 +3141,7 @@ class IOSDriver(NetworkDriver):
                     results_array = []
                     for i in range(probes_received):
                         results_array.append(
-                            {
-                                "ip_address": py23_compat.text_type(destination),
-                                "rtt": 0.0,
-                            }
+                            {"ip_address": str(destination), "rtt": 0.0}
                         )
                     ping_dict["success"].update({"results": results_array})
 
@@ -3262,8 +3255,8 @@ class IOSDriver(NetworkDriver):
                     current_probe += 1
                 # If current_element contains msec record the entry for probe
                 elif "msec" in current_element:
-                    ip_address = py23_compat.text_type(ip_address)
-                    host_name = py23_compat.text_type(host_name)
+                    ip_address = str(ip_address)
+                    host_name = str(host_name)
                     rtt = float(current_element.replace("msec", ""))
                     results[current_hop]["probes"][current_probe][
                         "ip_address"
