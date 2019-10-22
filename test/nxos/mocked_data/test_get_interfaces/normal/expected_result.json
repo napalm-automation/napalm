@@ -265,9 +265,9 @@
         "description": "",
         "last_flapped": -1.0,
         "is_up": false,
-        "mac_address": "",
-        "mtu": 0,
-        "speed": 0
+        "mac_address": "2C:C2:60:1C:7B:94",
+        "mtu": 1500,
+        "speed": 1000
     },
     "Ethernet3/47": {
         "is_enabled": false,
