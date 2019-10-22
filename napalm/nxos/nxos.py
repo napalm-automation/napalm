@@ -824,7 +824,7 @@ class NXOSDriver(NXOSDriverBase):
             elif interface_details.get("eth_mtu"):
                 interface_mtu = int(interface_details["svi_mtu"])
             else:
-                interface_mtu = int(interface_mtu)
+                interface_mtu = 0
 
             # Earlier version of Nexus returned a list for 'eth_bw' (observed on 7.1(0)N1(1a))
             if interface_details.get("eth_bw"):
