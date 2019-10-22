@@ -849,8 +849,6 @@ class NXOSDriver(NXOSDriverBase):
                 mac_address = interface_details["svi_mac"].strip()
             else:
                 mac_address = None
-            print(interface_name)
-            print(mac_address)
             interfaces[interface_name] = {
                 "is_up": is_up,
                 "is_enabled": (
