@@ -846,10 +846,11 @@ class NXOSDriver(NXOSDriverBase):
             if interface_details.get("eth_hw_addr"):
                 mac_address = interface_details["eth_hw_addr"]
             elif interface_details.get("svi_mac"):
-                mac_address = interface_details["svi_mac"]
+                mac_address = interface_details["svi_mac"].strip()
             else:
                 mac_address = None
-
+            print(interface_name)
+            print(mac_address)
             interfaces[interface_name] = {
                 "is_up": is_up,
                 "is_enabled": (
