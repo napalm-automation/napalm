@@ -852,7 +852,8 @@ class NXOSDriver(NXOSDriverBase):
 
             interfaces[interface_name] = {
                 "is_up": is_up,
-                "is_enabled": (interface_details.get("state") == "up"),
+                "is_enabled": (interface_details.get("state") == "up" or
+                               interface_details.get("svi_admin_state") == "up"),
                 "description": str(interface_details.get("desc", "").strip('"')),
                 "last_flapped": self._compute_timestamp(
                     interface_details.get("eth_link_flapped", "")
