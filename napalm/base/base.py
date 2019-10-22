@@ -12,18 +12,16 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
+import sys
+
+from netmiko import ConnectHandler, NetMikoTimeoutException
 
 # local modules
 import napalm.base.exceptions
-from napalm.base.exceptions import ConnectionException
 import napalm.base.helpers
 from napalm.base import constants as c
 from napalm.base import validate
-
-from netmiko import ConnectHandler, NetMikoTimeoutException
+from napalm.base.exceptions import ConnectionException
 
 
 class NetworkDriver(object):
@@ -44,8 +42,15 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def __enter__(self):
-        self.open()
-        return self
+        try:
+            self.open()
+            return self
+        except:  # noqa: E722
+            # Swallow exception if __exit__ returns a True value
+            if self.__exit__(*sys.exc_info()):
+                pass
+            else:
+                raise
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.close()
@@ -95,8 +100,9 @@ class NetworkDriver(object):
 
     def _netmiko_close(self):
         """Standardized method of closing a Netmiko connection."""
-        self.device.disconnect()
-        self._netmiko_device = None
+        if getattr(self, "_netmiko_device", None):
+            self._netmiko_device.disconnect()
+            self._netmiko_device = None
         self.device = None
 
     def open(self):
@@ -266,8 +272,9 @@ class NetworkDriver(object):
          * is_up (True/False)
          * is_enabled (True/False)
          * description (string)
-         * last_flapped (int in seconds)
+         * last_flapped (float in seconds)
          * speed (int in Mbit)
+         * MTU (in Bytes)
          * mac_address (string)
 
         Example::
@@ -278,8 +285,9 @@ class NetworkDriver(object):
                 'is_up': False,
                 'is_enabled': False,
                 'description': '',
-                'last_flapped': -1,
+                'last_flapped': -1.0,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:61',
                 },
             u'Ethernet1':
@@ -289,6 +297,7 @@ class NetworkDriver(object):
                 'description': 'foo',
                 'last_flapped': 1429978575.1554043,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:62',
                 },
             u'Ethernet2':
@@ -298,6 +307,7 @@ class NetworkDriver(object):
                 'description': 'bla',
                 'last_flapped': 1429978575.1555667,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:63',
                 },
             u'Ethernet3':
@@ -305,8 +315,9 @@ class NetworkDriver(object):
                 'is_up': False,
                 'is_enabled': True,
                 'description': 'bar',
-                'last_flapped': -1,
+                'last_flapped': -1.0,
                 'speed': 1000,
+                'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:64',
                 }
             }
@@ -775,7 +786,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_arp_table(self):
+    def get_arp_table(self, vrf=""):
 
         """
         Returns a list of dictionaries having the following set of keys:
@@ -783,6 +794,12 @@ class NetworkDriver(object):
             * mac (string)
             * ip (string)
             * age (float)
+
+        'vrf' of null-string will default to all VRFs. Specific 'vrf' will return the ARP table
+        entries for that VRFs (including potentially 'default' or 'global').
+
+        In all cases the same data structure is returned and no reference to the VRF that was used
+        is included in the output.
 
         Example::
 
@@ -1491,13 +1508,14 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False):
         """
         Return the configuration of a device.
 
         Args:
             retrieve(string): Which configuration type you want to populate, default is all of them.
                               The rest will be set to "".
+            full(bool): Retrieve all the configuration. For instance, on ios, "sh run all".
 
         Returns:
           The object returned is a dictionary with a key for each configuration store:

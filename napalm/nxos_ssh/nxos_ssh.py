@@ -13,20 +13,18 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from __future__ import unicode_literals
-
 # import stdlib
 from builtins import super
 import re
 import socket
 
 # import third party lib
-from netaddr import IPAddress
+from netaddr import IPAddress, IPNetwork
+from netaddr.core import AddrFormatError
 
 # import NAPALM Base
 from napalm.base import helpers
 from napalm.base.exceptions import CommandErrorException, ReplaceConfigException
-from napalm.base.utils import py23_compat
 from napalm.nxos import NXOSDriverBase
 
 # Easier to store these as constants
@@ -59,6 +57,20 @@ RE_MAC = re.compile(r"{}".format(MAC_REGEX))
 # Period needed for 32-bit AS Numbers
 ASN_REGEX = r"[\d\.]+"
 
+RE_IP_ROUTE_VIA_REGEX = re.compile(
+    r"    (?P<used>[\*| ])via ((?P<ip>" + IPV4_ADDR_REGEX + r")"
+    r"(%(?P<vrf>\S+))?, )?"
+    r"((?P<int>[\w./:]+), )?\[(\d+)/(?P<metric>\d+)\]"
+    r", (?P<age>[\d\w:]+), (?P<source>[\w]+)(-(?P<procnr>\d+))?"
+    r"(?P<rest>.*)"
+)
+RE_RT_VRF_NAME = re.compile(r"VRF \"(\S+)\"")
+RE_RT_IPV4_ROUTE_PREF = re.compile(r"(" + IPV4_ADDR_REGEX + r"/\d{1,2}), ubest.*")
+
+RE_BGP_PROTO_TAG = re.compile(r"BGP Protocol Tag\s+: (\d+)")
+RE_BGP_REMOTE_AS = re.compile(r"remote AS (" + ASN_REGEX + r")")
+RE_BGP_COMMUN = re.compile(r"[ ]{10}([\S ]+)")
+
 
 def parse_intf_section(interface):
     """Parse a single entry from show interfaces output.
@@ -84,7 +96,10 @@ def parse_intf_section(interface):
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
     re_mac = r"^\s+Hardware:\s+(?P<hardware>.*),\s+address:\s+(?P<mac_address>\S+) "
-    re_speed = r"\s+MTU .*?,\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
+    re_speed = (
+        r"\s+MTU (?P<mtu>\S+)\s+bytes,\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
+    )
+    re_mtu_nve = r"\s+MTU (?P<mtu_nve>\S+)\s+bytes.*$"
     re_description_1 = r"^\s+Description:\s+(?P<description>.*)  (?:MTU|Internet)"
     re_description_2 = r"^\s+Description:\s+(?P<description>.*)$"
     re_hardware = r"^.* Hardware: (?P<hardware>\S+)$"
@@ -143,11 +158,14 @@ def parse_intf_section(interface):
     speed_exist = True
     if match:
         if match.group("hardware") == "NVE":
+            match = re.search(re_mtu_nve, interface, flags=re.M)
+            mtu = int(match.group("mtu_nve"))
             speed_exist = False
 
     if speed_exist:
         match = re.search(re_speed, interface, flags=re.M)
         speed = int(match.group("speed"))
+        mtu = int(match.group("mtu"))
         speed_unit = match.group("speed_unit")
         speed_unit = speed_unit.rstrip(",")
         # This was alway in Kbit (in the data I saw)
@@ -174,6 +192,7 @@ def parse_intf_section(interface):
             "is_up": is_up,
             "last_flapped": -1.0,
             "mac_address": mac_address,
+            "mtu": mtu,
             "speed": speed,
         }
     }
@@ -427,17 +446,20 @@ class NXOSSSHDriver(NXOSDriverBase):
         """
         return self.device.send_command(command)
 
-    def _send_command_list(self, commands):
+    def _send_command_list(self, commands, expect_string=None):
         """Wrapper for Netmiko's send_command method (for list of commands."""
         output = ""
         for command in commands:
             output += self.device.send_command(
-                command, strip_prompt=False, strip_command=False
+                command,
+                strip_prompt=False,
+                strip_command=False,
+                expect_string=expect_string,
             )
         return output
 
     def _send_config(self, commands):
-        if isinstance(commands, py23_compat.string_types):
+        if isinstance(commands, str):
             commands = (command for command in commands.splitlines() if command)
         return self.device.send_config_set(commands)
 
@@ -501,13 +523,15 @@ class NXOSSSHDriver(NXOSDriverBase):
             raise CommandErrorException(msg)
 
     def _load_cfg_from_checkpoint(self):
+
         commands = [
             "terminal dont-ask",
             "rollback running-config file {}".format(self.candidate_cfg),
             "no terminal dont-ask",
         ]
+
         try:
-            rollback_result = self._send_command_list(commands)
+            rollback_result = self._send_command_list(commands, expect_string=r"[#>]")
         finally:
             self.changed = True
         msg = rollback_result
@@ -516,10 +540,16 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def rollback(self):
         if self.changed:
-            command = "rollback running-config file {}".format(self.rollback_cfg)
-            result = self._send_command(command)
+            commands = [
+                "terminal dont-ask",
+                "rollback running-config file {}".format(self.rollback_cfg),
+                "no terminal dont-ask",
+            ]
+            result = self._send_command_list(commands, expect_string=r"[#>]")
             if "completed" not in result.lower():
                 raise ReplaceConfigException(result)
+            # If hostname changes ensure Netmiko state is updated properly
+            self._netmiko_device.set_base_prompt()
             self._copy_run_start()
             self.changed = False
 
@@ -551,15 +581,22 @@ class NXOSSSHDriver(NXOSDriverBase):
         show_int_status = self._send_command("show interface status")
         show_hostname = self._send_command("show hostname")
 
+        show_inventory_table = self._get_command_table(
+            "show inventory | json", "TABLE_inv", "ROW_inv"
+        )
+        if isinstance(show_inventory_table, dict):
+            show_inventory_table = [show_inventory_table]
+
+        for row in show_inventory_table:
+            if row["name"] == '"Chassis"' or row["name"] == "Chassis":
+                serial_number = row.get("serialnum", "")
+                break
+
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
             if " uptime is " in line:
                 _, uptime_str = line.split(" uptime is ")
                 uptime = self.parse_uptime(uptime_str)
-
-            if "Processor Board ID" in line:
-                _, serial_number = line.split("Processor Board ID ")
-                serial_number = serial_number.strip()
 
             if "system: " in line or "NXOS: " in line:
                 line = line.strip()
@@ -608,10 +645,10 @@ class NXOSSSHDriver(NXOSDriverBase):
         return {
             "uptime": int(uptime),
             "vendor": vendor,
-            "os_version": py23_compat.text_type(os_version),
-            "serial_number": py23_compat.text_type(serial_number),
-            "model": py23_compat.text_type(model),
-            "hostname": py23_compat.text_type(hostname),
+            "os_version": str(os_version),
+            "serial_number": str(serial_number),
+            "model": str(model),
+            "hostname": str(hostname),
             "fqdn": fqdn,
             "interface_list": interface_list,
         }
@@ -738,10 +775,83 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         for command in commands:
             output = self._send_command(command)
-            cli_output[py23_compat.text_type(command)] = output
+            cli_output[str(command)] = output
         return cli_output
 
-    def get_arp_table(self):
+    def get_environment(self):
+        """
+        Get environment facts.
+
+        power and fan are currently not implemented
+        cpu is using 1-minute average
+        """
+
+        environment = {}
+        # sys_resources contains cpu and mem output
+        sys_resources = self._send_command("show system resources")
+        temp_cmd = "show environment temperature"
+
+        # cpu
+        environment.setdefault("cpu", {})
+        environment["cpu"]["0"] = {}
+        environment["cpu"]["0"]["%usage"] = -1.0
+        system_resources_cpu = helpers.textfsm_extractor(
+            self, "system_resources", sys_resources
+        )
+        for cpu in system_resources_cpu:
+            cpu_dict = {
+                cpu.get("cpu_id"): {
+                    "%usage": round(100 - float(cpu.get("cpu_idle")), 2)
+                }
+            }
+            environment["cpu"].update(cpu_dict)
+
+        # memory
+        environment.setdefault("memory", {})
+        for line in sys_resources.splitlines():
+            # Memory usage:   16401224K total,   4798280K used,   11602944K free
+            if "Memory usage:" in line:
+                proc_total_mem, proc_used_mem, _ = line.split(",")
+                proc_used_mem = re.search(r"\d+", proc_used_mem).group(0)
+                proc_total_mem = re.search(r"\d+", proc_total_mem).group(0)
+                break
+        else:
+            raise ValueError("Unexpected output from: {}".format(line))
+        environment["memory"]["used_ram"] = int(proc_used_mem)
+        environment["memory"]["available_ram"] = int(proc_total_mem)
+
+        # temperature
+        output = self._send_command(temp_cmd)
+        environment.setdefault("temperature", {})
+        for line in output.splitlines():
+            # Module   Sensor        MajorThresh   MinorThres   CurTemp     Status
+            # 1        Intake          70              42          28         Ok
+            if re.match(r"^[0-9]", line):
+                module, sensor, is_critical, is_alert, temp, _ = line.split()
+                is_critical = float(is_critical)
+                is_alert = float(is_alert)
+                temp = float(temp)
+                env_value = {
+                    "is_alert": temp >= is_alert,
+                    "is_critical": temp >= is_critical,
+                    "temperature": temp,
+                }
+                location = "{0}-{1}".format(sensor, module)
+                environment["temperature"][location] = env_value
+
+        # Initialize 'power' and 'fan' to default values (not implemented)
+        environment.setdefault("power", {})
+        environment["power"]["invalid"] = {
+            "status": True,
+            "output": -1.0,
+            "capacity": -1.0,
+        }
+        environment.setdefault("fans", {})
+        environment["fans"]["invalid"] = {"status": True}
+
+        return environment
+
+    def get_arp_table(self, vrf=""):
         """
         Get arp table information.
 
@@ -769,7 +879,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         """
         arp_table = []
 
-        command = "show ip arp vrf default | exc INCOMPLETE"
+        command = "show ip arp vrf {} | exc INCOMPLETE".format(vrf or "all")
         output = self._send_command(command)
 
         separator = r"^Address\s+Age.*Interface.*$"
@@ -836,12 +946,6 @@ class NXOSSSHDriver(NXOSDriverBase):
     def get_ntp_servers(self):
         return self._get_ntp_entity("Server")
 
-    def __get_ntp_stats(self):
-        ntp_stats = []
-        command = "show ntp peer-status"
-        output = self._send_command(command)  # noqa
-        return ntp_stats
-
     def get_interfaces_ip(self):
         """
         Get interface IP details. Returns a dictionary of dictionaries.
@@ -873,8 +977,8 @@ class NXOSSSHDriver(NXOSDriverBase):
         }
         """
         interfaces_ip = {}
-        ipv4_command = "show ip interface vrf default"
-        ipv6_command = "show ipv6 interface vrf default"
+        ipv4_command = "show ip interface vrf all"
+        ipv6_command = "show ipv6 interface vrf all"
         output_v4 = self._send_command(ipv4_command)
         output_v6 = self._send_command(ipv6_command)
 
@@ -903,13 +1007,21 @@ class NXOSSSHDriver(NXOSDriverBase):
             #   2001:cc11:22bb:0:2ec2:60ff:fe4f:feb2/64 [VALID]
             # IPv6 subnet:  2001::/24
             # IPv6 link-local address: fe80::2ec2:60ff:fe4f:feb2 (default) [VALID]
+            # IPv6 address: fe80::a293:51ff:fe5f:5ce9 [VALID]
             if "Interface status" in line:
                 interface = line.split(",")[0]
                 continue
             if "VALID" in line:
                 line = line.strip()
                 if "link-local address" in line:
+                    # match the following format:
+                    # IPv6 link-local address: fe80::2ec2:60ff:fe4f:feb2 (default) [VALID]
                     ip_address = line.split()[3]
+                    prefix_len = "64"
+                elif "IPv6 address" in line:
+                    # match the following format:
+                    # IPv6 address: fe80::a293:51ff:fe5f:5ce9 [VALID]
+                    ip_address = line.split()[2]
                     prefix_len = "64"
                 else:
                     ip_address, prefix_len = line.split()[0].split("/")
@@ -971,7 +1083,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         mac_address_table = []
         command = "show mac address-table"
-        output = self._send_command(command)  # noqa
+        output = self._send_command(command)
 
         def remove_prefix(s, prefix):
             return s[len(prefix) :] if s.startswith(prefix) else s
@@ -998,7 +1110,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 active = False
             return {
                 "mac": helpers.mac(mac),
-                "interface": interface,
+                "interface": helpers.canonical_interface_name(interface),
                 "vlan": int(vlan),
                 "static": static,
                 "active": active,
@@ -1064,6 +1176,238 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         return mac_address_table
 
+    def _get_bgp_route_attr(self, destination, vrf, next_hop, ip_version=4):
+        """
+        BGP protocol attributes for get_route_tp
+        Only IPv4 supported
+        """
+
+        CMD_SHIBNV = 'show ip bgp neighbors vrf {vrf} | include "is {neigh}"'
+
+        search_re_dict = {
+            "aspath": {
+                "re": r"AS-Path: ([\d\(\)]([\d\(\) ])*)",
+                "group": 1,
+                "default": "",
+            },
+            "bgpnh": {
+                "re": r"[^|\\n][ ]{4}(" + IP_ADDR_REGEX + r")",
+                "group": 1,
+                "default": "",
+            },
+            "bgpfrom": {
+                "re": r"from (" + IP_ADDR_REGEX + r")",
+                "group": 1,
+                "default": "",
+            },
+            "bgpcomm": {
+                "re": r"  Community: ([\w\d\-\: ]+)",
+                "group": 1,
+                "default": "",
+            },
+            "bgplp": {"re": r"localpref (\d+)", "group": 1, "default": ""},
+            # external, internal, redist
+            "bgpie": {"re": r"^: (\w+),", "group": 1, "default": ""},
+            "vrfimp": {
+                "re": r"Imported from [\S]+ \(VRF (\S+)\)",
+                "group": 1,
+                "default": "",
+            },
+        }
+
+        bgp_attr = {}
+        # get BGP AS number
+        outbgp = self._send_command('show bgp process | include "BGP Protocol Tag"')
+        matchbgpattr = RE_BGP_PROTO_TAG.match(outbgp)
+        if not matchbgpattr:
+            return bgp_attr
+        bgpas = matchbgpattr.group(1)
+        if ip_version == 4:
+            bgpcmd = "show ip bgp vrf {vrf} {destination}".format(
+                vrf=vrf, destination=destination
+            )
+            outbgp = self._send_command(bgpcmd)
+            outbgpsec = outbgp.split("Path type")
+
+            # this should not happen (zero BGP paths)...
+            if len(outbgpsec) == 1:
+                return bgp_attr
+
+            # process all bgp paths
+            for bgppath in outbgpsec[1:]:
+                if "is best path" not in bgppath:
+                    # only best path is added to protocol attributes
+                    continue
+                # find BGP attributes
+                for key in search_re_dict:
+                    matchre = re.search(search_re_dict[key]["re"], bgppath)
+                    if matchre:
+                        groupnr = int(search_re_dict[key]["group"])
+                        search_re_dict[key]["result"] = matchre.group(groupnr)
+                    else:
+                        search_re_dict[key]["result"] = search_re_dict[key]["default"]
+                bgpnh = search_re_dict["bgpnh"]["result"]
+
+                # if route is not leaked next hops have to match
+                if (
+                    not (search_re_dict["bgpie"]["result"] in ["redist", "local"])
+                ) and (bgpnh != next_hop):
+                    # this is not the right route
+                    continue
+                # find remote AS nr. of this neighbor
+                bgpcmd = CMD_SHIBNV.format(vrf=vrf, neigh=bgpnh)
+                outbgpnei = self._send_command(bgpcmd)
+                matchbgpras = RE_BGP_REMOTE_AS.search(outbgpnei)
+                if matchbgpras:
+                    bgpras = matchbgpras.group(1)
+                else:
+                    # next-hop is not known in this vrf, route leaked from
+                    #  other vrf or from vpnv4 table?
+                    # get remote AS nr. from as-path if it is ebgp neighbor
+                    # if locally sourced remote AS if undefined
+                    bgpie = search_re_dict["bgpie"]["result"]
+                    if bgpie == "external":
+                        bgpras = bgpie.split(" ")[0].replace("(", "")
+                    elif bgpie == "internal":
+                        bgpras = bgpas
+                    else:  # redist, local
+                        bgpras = ""
+                # community
+                bothcomm = []
+                extcomm = []
+                stdcomm = search_re_dict["bgpcomm"]["result"].split()
+                commsplit = bgppath.split("Extcommunity:")
+                if len(commsplit) == 2:
+                    for line in commsplit[1].split("\n")[1:]:
+                        #          RT:65004:22
+                        matchcommun = RE_BGP_COMMUN.match(line)
+                        if matchcommun:
+                            extcomm.append(matchcommun.group(1))
+                        else:
+                            # we've reached end of the extended community section
+                            break
+                bothcomm = stdcomm + extcomm
+                bgp_attr = {
+                    "as_path": search_re_dict["aspath"]["result"].strip(),
+                    "remote_address": search_re_dict["bgpfrom"]["result"],
+                    "local_preference": int(search_re_dict["bgplp"]["result"]),
+                    "communities": bothcomm,
+                    "local_as": helpers.as_number(bgpas),
+                }
+                if bgpras:
+                    bgp_attr["remote_as"] = helpers.as_number(bgpras)
+                else:
+                    bgp_attr["remote_as"] = 0  # 0? , locally sourced
+        return bgp_attr
+
+    def get_route_to(self, destination="", protocol=""):
+        """
+        Only IPv4 supported, vrf aware, longer_prefixes parameter ready
+        """
+        longer_pref = ""  # longer_prefixes support, for future use
+        vrf = ""
+
+        ip_version = None
+        try:
+            ip_version = IPNetwork(destination).version
+        except AddrFormatError:
+            return "Please specify a valid destination!"
+        if ip_version == 4:  # process IPv4 routing table
+            routes = {}
+            if vrf:
+                send_cmd = "show ip route vrf {vrf} {destination} {longer}".format(
+                    vrf=vrf, destination=destination, longer=longer_pref
+                ).rstrip()
+            else:
+                send_cmd = "show ip route vrf all {destination} {longer}".format(
+                    destination=destination, longer=longer_pref
+                ).rstrip()
+            out_sh_ip_rou = self._send_command(send_cmd)
+            # IP Route Table for VRF "TEST"
+            for vrfsec in out_sh_ip_rou.split("IP Route Table for ")[1:]:
+                if "Route not found" in vrfsec:
+                    continue
+                vrffound = False
+                preffound = False
+                nh_list = []
+                cur_prefix = ""
+                for line in vrfsec.split("\n"):
+                    if not vrffound:
+                        vrfstr = RE_RT_VRF_NAME.match(line)
+                        if vrfstr:
+                            curvrf = vrfstr.group(1)
+                            vrffound = True
+                    else:
+                        # 10.10.56.0/24, ubest/mbest: 2/0
+                        prefstr = RE_RT_IPV4_ROUTE_PREF.match(line)
+                        if prefstr:
+                            if preffound:  # precess previous prefix
+                                if cur_prefix not in routes:
+                                    routes[cur_prefix] = []
+                                for nh in nh_list:
+                                    routes[cur_prefix].append(nh)
+                                nh_list = []
+                            else:
+                                preffound = True
+                            cur_prefix = prefstr.group(1)
+                            continue
+                        #     *via 10.2.49.60, Vlan3013, [0/0], 1y18w, direct
+                        #      via 10.17.205.132, Po77.3602, [110/20], 1y18w, ospf-1000,
+                        #            type-2, tag 2112
+                        #     *via 10.17.207.42, Eth3/7.212, [110/20], 02:19:36, ospf-1000, type-2,
+                        #            tag 2121
+                        #     *via 10.17.207.73, [1/0], 1y18w, static
+                        #     *via 10.17.209.132%vrf2, Po87.3606, [20/20], 1y25w, bgp-65000,
+                        #            external, tag 65000
+                        #     *via Vlan596, [1/0], 1y18w, static
+                        viastr = RE_IP_ROUTE_VIA_REGEX.match(line)
+                        if viastr:
+                            nh_used = viastr.group("used") == "*"
+                            nh_ip = viastr.group("ip") or ""
+                            # when next hop is leaked from other vrf, for future use
+                            # nh_vrf = viastr.group('vrf')
+                            nh_int = viastr.group("int")
+                            nh_metric = viastr.group("metric")
+                            nh_age = bgp_time_conversion(viastr.group("age"))
+                            nh_source = viastr.group("source")
+                            # for future use
+                            # rest_of_line = viastr.group('rest')
+                            # use only routes from specified protocol
+                            if protocol and protocol != nh_source:
+                                continue
+                            # routing protocol process number, for future use
+                            # nh_source_proc_nr = viastr.group('procnr)
+                            if nh_int:
+                                nh_int_canon = helpers.canonical_interface_name(nh_int)
+                            else:
+                                nh_int_canon = ""
+                            route_entry = {
+                                "protocol": nh_source,
+                                "outgoing_interface": nh_int_canon,
+                                "age": nh_age,
+                                "current_active": nh_used,
+                                "routing_table": curvrf,
+                                "last_active": nh_used,
+                                "next_hop": nh_ip,
+                                "selected_next_hop": nh_used,
+                                "inactive_reason": "",
+                                "preference": int(nh_metric),
+                            }
+                            if nh_source == "bgp":
+                                route_entry[
+                                    "protocol_attributes"
+                                ] = self._get_bgp_route_attr(cur_prefix, curvrf, nh_ip)
+                            else:
+                                route_entry["protocol_attributes"] = {}
+                            nh_list.append(route_entry)
+                # process last next hop entries
+                if preffound:
+                    if cur_prefix not in routes:
+                        routes[cur_prefix] = []
+                    for nh in nh_list:
+                        routes[cur_prefix].append(nh)
+        return routes
+
     def get_snmp_information(self):
         snmp_information = {}
         command = "show running-config"
@@ -1074,34 +1418,34 @@ class NXOSSSHDriver(NXOSDriverBase):
             return snmp_information
 
         snmp_information = {
-            "contact": py23_compat.text_type(""),
-            "location": py23_compat.text_type(""),
+            "contact": str(""),
+            "location": str(""),
             "community": {},
-            "chassis_id": py23_compat.text_type(""),
+            "chassis_id": str(""),
         }
 
         for snmp_entry in snmp_config:
-            contact = py23_compat.text_type(snmp_entry.get("contact", ""))
+            contact = str(snmp_entry.get("contact", ""))
             if contact:
                 snmp_information["contact"] = contact
-            location = py23_compat.text_type(snmp_entry.get("location", ""))
+            location = str(snmp_entry.get("location", ""))
             if location:
                 snmp_information["location"] = location
 
-            community_name = py23_compat.text_type(snmp_entry.get("community", ""))
+            community_name = str(snmp_entry.get("community", ""))
             if not community_name:
                 continue
 
             if community_name not in snmp_information["community"].keys():
                 snmp_information["community"][community_name] = {
-                    "acl": py23_compat.text_type(snmp_entry.get("acl", "")),
-                    "mode": py23_compat.text_type(snmp_entry.get("mode", "").lower()),
+                    "acl": str(snmp_entry.get("acl", "")),
+                    "mode": str(snmp_entry.get("mode", "").lower()),
                 }
             else:
-                acl = py23_compat.text_type(snmp_entry.get("acl", ""))
+                acl = str(snmp_entry.get("acl", ""))
                 if acl:
                     snmp_information["community"][community_name]["acl"] = acl
-                mode = py23_compat.text_type(snmp_entry.get("mode", "").lower())
+                mode = str(snmp_entry.get("mode", "").lower())
                 if mode:
                     snmp_information["community"][community_name]["mode"] = mode
         return snmp_information
@@ -1127,7 +1471,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
             password = user.get("password", "")
             if password:
-                users[username]["password"] = py23_compat.text_type(password.strip())
+                users[username]["password"] = str(password.strip())
 
             level = 0
             role = user.get("role", "")
@@ -1145,5 +1489,5 @@ class NXOSSSHDriver(NXOSDriverBase):
             if sshkeytype and sshkeyvalue:
                 if sshkeytype not in ["ssh-rsa", "ssh-dsa"]:
                     continue
-                users[username]["sshkeys"].append(py23_compat.text_type(sshkeyvalue))
+                users[username]["sshkeys"].append(str(sshkeyvalue))
         return users

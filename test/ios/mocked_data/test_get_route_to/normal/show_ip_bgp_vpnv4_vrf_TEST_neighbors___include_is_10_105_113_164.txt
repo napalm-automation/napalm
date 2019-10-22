@@ -1,0 +1,1 @@
+BGP neighbor is 10.105.113.164,  vrf TEST,  remote AS 65417, internal link

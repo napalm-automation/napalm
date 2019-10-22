@@ -1,7 +1,3 @@
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
-
 # import helpers
 from napalm.base import get_network_driver
 from napalm.base.clitools import helpers
@@ -145,6 +141,9 @@ def build_help():
         help="Validation file containing resources derised states",
     )
     args = parser.parse_args()
+
+    if not hasattr(args, "which"):
+        args.which = None
 
     if args.password is None:
         password = getpass.getpass("Enter password: ")

@@ -5,6 +5,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Ethernet1/2": {
@@ -13,6 +14,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:17",
+		"mtu": 1500,
 		"speed": 1000
 	},
 	"Ethernet1/3": {
@@ -21,6 +23,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:18",
+		"mtu": 1500,
 		"speed": 1000
 	},
 	"Ethernet1/4": {
@@ -29,6 +32,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:19",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/5": {
@@ -37,6 +41,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:1A",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/6": {
@@ -45,6 +50,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:1B",
+		"mtu": 1500,
 		"speed": 1000
 	},
 	"Ethernet1/7": {
@@ -53,6 +59,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:1C",
+		"mtu": 1500,
 		"speed": 1000
 	},
 	"Ethernet1/8": {
@@ -61,6 +68,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:1D",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/9": {
@@ -69,6 +77,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:1E",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/49": {
@@ -77,6 +86,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 100000
 	},
 	"Ethernet1/42": {
@@ -85,6 +95,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"port-channel93": {
@@ -93,6 +104,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:18",
+		"mtu": 1500,
 		"speed": 1000
 	},
 	"Vlan333": {
@@ -101,6 +113,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "",
+		"mtu": 1500,
 		"speed": 1000
 	},
 	"Ethernet1/34": {
@@ -109,6 +122,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:37",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/35": {
@@ -117,6 +131,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:38",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/36": {
@@ -125,6 +140,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Ethernet1/37": {
@@ -133,6 +149,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:3A",
+		"mtu": 9216,
 		"speed": 25000
 	},
 	"Ethernet1/30": {
@@ -141,6 +158,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:33",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/31": {
@@ -149,6 +167,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:34",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/32": {
@@ -157,6 +176,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:35",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/33": {
@@ -165,6 +185,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:36",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/38": {
@@ -173,6 +194,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:3B",
+		"mtu": 9216,
 		"speed": 25000
 	},
 	"Ethernet1/39": {
@@ -181,6 +203,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Vlan650": {
@@ -189,6 +212,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "",
+		"mtu": 9216,
 		"speed": 1000
 	},
 	"nve1": {
@@ -197,6 +221,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "",
+		"mtu": 9216,
 		"speed": -1
 	},
 	"port-channel1": {
@@ -205,6 +230,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:56",
+		"mtu": 9216,
 		"speed": 200000
 	},
 	"Ethernet1/27": {
@@ -213,6 +239,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:30",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Ethernet1/26": {
@@ -221,6 +248,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2F",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/25": {
@@ -229,6 +257,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2E",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/24": {
@@ -237,6 +266,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2D",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/23": {
@@ -245,6 +275,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2C",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/22": {
@@ -253,6 +284,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2B",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/21": {
@@ -261,6 +293,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2A",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/20": {
@@ -269,6 +302,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:29",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel34": {
@@ -277,6 +311,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:37",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel37": {
@@ -285,6 +320,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "00:00:00:00:00:00",
+		"mtu": 9216,
 		"speed": 100
 	},
 	"port-channel30": {
@@ -293,6 +329,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:33",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/29": {
@@ -301,6 +338,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:32",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel33": {
@@ -309,6 +347,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:36",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel20": {
@@ -317,6 +356,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:29",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Vlan600": {
@@ -325,6 +365,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "",
+		"mtu": 9216,
 		"speed": 1000
 	},
 	"Vlan1": {
@@ -333,6 +374,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "",
+		"mtu": 1500,
 		"speed": 1000
 	},
 	"mgmt0": {
@@ -341,6 +383,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:0E",
+		"mtu": 1500,
 		"speed": 1000
 	},
 	"Ethernet1/54": {
@@ -349,6 +392,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:5A",
+		"mtu": 9216,
 		"speed": 100000
 	},
 	"Ethernet1/52": {
@@ -357,6 +401,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 9216,
 		"speed": 100000
 	},
 	"Ethernet1/53": {
@@ -365,6 +410,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:56",
+		"mtu": 9216,
 		"speed": 100000
 	},
 	"Ethernet1/50": {
@@ -373,6 +419,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 100000
 	},
 	"Ethernet1/51": {
@@ -381,6 +428,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 9216,
 		"speed": 100000
 	},
 	"Ethernet1/28": {
@@ -389,6 +437,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:31",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Ethernet1/12": {
@@ -397,6 +446,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Ethernet1/13": {
@@ -405,6 +455,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:22",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel29": {
@@ -413,6 +464,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:32",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/11": {
@@ -421,6 +473,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:20",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Ethernet1/16": {
@@ -429,6 +482,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:25",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/17": {
@@ -437,6 +491,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:26",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/14": {
@@ -445,6 +500,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:23",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/15": {
@@ -453,6 +509,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:24",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel23": {
@@ -461,6 +518,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2C",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel22": {
@@ -469,6 +527,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2B",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/18": {
@@ -477,6 +536,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:27",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/19": {
@@ -485,6 +545,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:28",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel26": {
@@ -493,6 +554,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2F",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel25": {
@@ -501,6 +563,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2E",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel24": {
@@ -509,6 +572,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2D",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel16": {
@@ -517,6 +581,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:25",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"loopback1": {
@@ -525,6 +590,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "",
+		"mtu": 1500,
 		"speed": 8000
 	},
 	"Ethernet1/10": {
@@ -533,6 +599,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:1F",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/41": {
@@ -541,6 +608,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Ethernet1/40": {
@@ -549,6 +617,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Ethernet1/43": {
@@ -557,6 +626,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"port-channel99": {
@@ -565,6 +635,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:1E",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"Ethernet1/45": {
@@ -573,6 +644,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Ethernet1/44": {
@@ -581,6 +653,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Ethernet1/47": {
@@ -589,6 +662,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"Ethernet1/46": {
@@ -597,6 +671,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"port-channel92": {
@@ -605,6 +680,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:17",
+		"mtu": 1500,
 		"speed": 1000
 	},
 	"Ethernet1/48": {
@@ -613,6 +689,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "50:0F:80:FD:0A:15",
+		"mtu": 1500,
 		"speed": 25000
 	},
 	"port-channel96": {
@@ -621,6 +698,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:1B",
+		"mtu": 1500,
 		"speed": 1000
 	},
 	"port-channel97": {
@@ -629,6 +707,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:1C",
+		"mtu": 1500,
 		"speed": 1000
 	},
 	"port-channel94": {
@@ -637,6 +716,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:19",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel95": {
@@ -645,6 +725,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:1A",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel13": {
@@ -653,6 +734,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:22",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel10": {
@@ -661,6 +743,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:1F",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel11": {
@@ -669,6 +752,7 @@
 		"last_flapped": -1.0,
 		"is_up": false,
 		"mac_address": "00:00:00:00:00:00",
+		"mtu": 1500,
 		"speed": 100
 	},
 	"loopback0": {
@@ -677,6 +761,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "",
+		"mtu": 1500,
 		"speed": 8000
 	},
 	"port-channel17": {
@@ -685,6 +770,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:26",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel14": {
@@ -693,6 +779,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:23",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel15": {
@@ -701,6 +788,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:24",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel18": {
@@ -709,6 +797,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:27",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel19": {
@@ -717,6 +806,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:28",
+		"mtu": 1500,
 		"speed": 10000
 	},
 	"port-channel21": {
@@ -725,6 +815,7 @@
 		"last_flapped": -1.0,
 		"is_up": true,
 		"mac_address": "50:0F:80:FD:0A:2A",
+		"mtu": 1500,
 		"speed": 10000
 	}
 }
