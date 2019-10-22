@@ -821,7 +821,7 @@ class NXOSDriver(NXOSDriverBase):
 
             if interface_details.get("eth_mtu"):
                 interface_mtu = int(interface_details["eth_mtu"])
-            elif interface_details.get("eth_mtu"):
+            elif interface_details.get("svi_mtu"):
                 interface_mtu = int(interface_details["svi_mtu"])
             else:
                 interface_mtu = 0
