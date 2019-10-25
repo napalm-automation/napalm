@@ -848,6 +848,8 @@ class JunOSDriver(NetworkDriver):
                         "remote_system_enable_capab": self._transform_lldp_capab(
                             item.remote_system_enable_capab
                         ),
+                        "remote_management_address": item.remote_management_address,
+                        "remote_management_address_port_id": item.remote_management_address_port_id,
                     }
                 )
 

@@ -250,6 +250,8 @@ junos_lldp_neighbors_detail_view:
     remote_system_description: {lldp-system-description/lldp-remote-system-description: unicode}
     remote_system_capab: {lldp-remote-system-capabilities-supported: unicode}
     remote_system_enable_capab: {lldp-remote-system-capabilities-enabled: unicode}
+    remote_management_address: {lldp-remote-management-address: unicode}
+    remote_management_address_port_id: {lldp-remote-management-address-port-id: unicode}
 
 ###
 ### BGP config
