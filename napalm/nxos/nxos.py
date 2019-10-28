@@ -822,20 +822,43 @@ class NXOSDriver(NXOSDriverBase):
 
         for interface_details in interfaces_body:
             interface_name = interface_details.get("interface")
-            interface_mtu = interface_details.get("eth_mtu", 0)
-            interface_mtu = int(interface_mtu)
+
+            if interface_details.get("eth_mtu"):
+                interface_mtu = int(interface_details["eth_mtu"])
+            elif interface_details.get("svi_mtu"):
+                interface_mtu = int(interface_details["svi_mtu"])
+            else:
+                interface_mtu = 0
+
             # Earlier version of Nexus returned a list for 'eth_bw' (observed on 7.1(0)N1(1a))
-            interface_speed = interface_details.get("eth_bw", 0)
+            if interface_details.get("eth_bw"):
+                interface_speed = interface_details["eth_bw"]
+            elif interface_details.get("svi_bw"):
+                interface_speed = interface_details["svi_bw"]
+            else:
+                interface_speed = 0
             if isinstance(interface_speed, list):
                 interface_speed = interface_speed[0]
-            interface_speed = int(interface_speed / 1000)
+            interface_speed = int(int(interface_speed) / 1000)
+
             if "admin_state" in interface_details:
                 is_up = interface_details.get("admin_state", "") == "up"
+            elif "svi_admin_state" in interface_details:
+                is_up = interface_details.get("svi_admin_state", "") == "up"
             else:
                 is_up = interface_details.get("state", "") == "up"
+            if interface_details.get("eth_hw_addr"):
+                mac_address = interface_details["eth_hw_addr"]
+            elif interface_details.get("svi_mac"):
+                mac_address = interface_details["svi_mac"].strip()
+            else:
+                mac_address = None
             interfaces[interface_name] = {
                 "is_up": is_up,
-                "is_enabled": (interface_details.get("state") == "up"),
+                "is_enabled": (
+                    interface_details.get("state") == "up"
+                    or interface_details.get("svi_admin_state") == "up"
+                ),
                 "description": str(interface_details.get("desc", "").strip('"')),
                 "last_flapped": self._compute_timestamp(
                     interface_details.get("eth_link_flapped", "")
@@ -843,7 +866,7 @@ class NXOSDriver(NXOSDriverBase):
                 "speed": interface_speed,
                 "mtu": interface_mtu,
                 "mac_address": napalm.base.helpers.convert(
-                    napalm.base.helpers.mac, interface_details.get("eth_hw_addr")
+                    napalm.base.helpers.mac, mac_address
                 ),
             }
         return interfaces
