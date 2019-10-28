@@ -24,10 +24,10 @@ from lxml import etree as ETREE
 from netaddr import IPAddress  # needed for traceroute, to check IP version
 from netaddr.core import AddrFormatError
 
-from pyIOSXR import IOSXR
-from pyIOSXR.exceptions import ConnectError
-from pyIOSXR.exceptions import TimeoutError
-from pyIOSXR.exceptions import InvalidInputError
+from napalm.pyIOSXR import IOSXR
+from napalm.pyIOSXR.exceptions import ConnectError
+from napalm.pyIOSXR.exceptions import TimeoutError
+from napalm.pyIOSXR.exceptions import InvalidInputError
 
 # import NAPALM base
 import napalm.base.helpers
