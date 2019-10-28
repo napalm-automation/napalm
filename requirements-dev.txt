@@ -1,7 +1,7 @@
 black==18.9b0
 coveralls==1.8.2
 ddt==1.2.1
-flake8-import-order==0.18
+flake8-import-order==0.18.1
 pytest==5.2.2
 pytest-cov==2.8.1
 pytest-json==0.4.0
