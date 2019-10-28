@@ -613,7 +613,7 @@ class NXOSDriverBase(NetworkDriver):
 
     def _get_command_table(self, command, table_name, row_name):
         json_output = self._send_command(command)
-        if type(json_output) is not dict:
+        if type(json_output) is not dict and json_output:
             json_output = json.loads(json_output)
         return self._get_reply_table(json_output, table_name, row_name)
 
