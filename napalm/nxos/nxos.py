@@ -27,8 +27,12 @@ from requests.exceptions import ConnectionError
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from netmiko import file_transfer
-from nxapi_plumbing import Device as NXOSDevice
-from nxapi_plumbing import NXAPIAuthError, NXAPIConnectionError, NXAPICommandError
+from napalm.nxapi_plumbing import Device as NXOSDevice
+from napalm.nxapi_plumbing import (
+    NXAPIAuthError,
+    NXAPIConnectionError,
+    NXAPICommandError,
+)
 import json
 
 # import NAPALM Base

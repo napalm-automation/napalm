@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ins_api>
+  <type>cli_show</type>
+  <version>1.2</version>
+  <sid>eoc</sid>
+  <outputs>
+    <output>
+      <body>
+      <hostname>nxos.domain.com</hostname>
+     </body>
+      <input>show hostname</input>
+      <msg>Success</msg>
+      <code>200</code>
+    </output>
+  </outputs>
+</ins_api>
