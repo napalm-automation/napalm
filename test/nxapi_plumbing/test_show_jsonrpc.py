@@ -53,4 +53,6 @@ def test_show_invalid_jsonrpc(mock_pynxos_device):
     """Execute an invalid command."""
     with pytest.raises(NXAPICommandError) as e:
         mock_pynxos_device.show("bogus command")
-    assert 'The command "bogus command" gave the error "% Invalid command' in str(e)
+    assert 'The command "bogus command" gave the error "% Invalid command' in str(
+        e.value
+    )

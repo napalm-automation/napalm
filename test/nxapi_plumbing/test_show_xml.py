@@ -61,5 +61,5 @@ def test_show_invalid_xml(mock_pynxos_device_xml):
     """Execute an invalid command."""
     with pytest.raises(NXAPICommandError) as e:
         mock_pynxos_device_xml.show("bogus command")
-    assert 'The command "bogus command" gave the error' in str(e)
-    assert "Syntax error while parsing" in str(e)
+    assert 'The command "bogus command" gave the error' in str(e.value)
+    assert "Syntax error while parsing" in str(e.value)
