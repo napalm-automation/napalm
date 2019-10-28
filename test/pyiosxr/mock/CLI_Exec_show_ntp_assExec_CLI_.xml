@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response MajorVersion="1" MinorVersion="0"><CLI><Exec>
+
+      address         ref clock     st  when  poll reach  delay  offset    disp
++~172.17.17.1    .GPSs.            1   945  1024  377   94.95   2.765  15.819
+*~172.17.17.2     172.17.17.3     2   106  1024  377   96.99  -1.388  31.374
+ * sys_peer, # selected, + candidate, - outlayer, x falseticker, ~ configured
+</Exec></CLI><ResultSummary ErrorCount="0"/></Response>
+XML>
