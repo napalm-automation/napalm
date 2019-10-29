@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response MajorVersion="1" MinorVersion="0"><CLI><Configuration>
+ntp
+ server 172.17.17.1
+ server 172.17.17.2
+ peer 192.168.0.1
+ peer 192.168.0.2
+ source Loopback0
+ update-calendar
+!
+
+</Configuration></CLI><ResultSummary ErrorCount="0"/></Response>
+XML>

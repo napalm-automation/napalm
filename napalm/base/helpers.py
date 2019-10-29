@@ -1,9 +1,4 @@
 """Helper functions for the NAPALM base."""
-
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
-
 # std libs
 import os
 import re
@@ -22,7 +17,6 @@ from ciscoconfparse import CiscoConfParse
 import napalm.base.exceptions
 from napalm.base import constants
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
-from napalm.base.utils import py23_compat
 from napalm.base.canonical_map import base_interfaces, reverse_mapping
 
 
@@ -50,12 +44,12 @@ def load_template(
 ):
     try:
         search_path = []
-        if isinstance(template_source, py23_compat.string_types):
+        if isinstance(template_source, str):
             template = jinja2.Template(template_source)
         else:
             if template_path is not None:
                 if (
-                    isinstance(template_path, py23_compat.string_types)
+                    isinstance(template_path, str)
                     and os.path.isdir(template_path)
                     and os.path.isabs(template_path)
                 ):
@@ -104,7 +98,7 @@ def load_template(
     ) as jinjaerr:
         raise napalm.base.exceptions.TemplateRenderException(
             "Unable to render the Jinja config template {template_name}: {error}".format(
-                template_name=template_name, error=py23_compat.text_type(jinjaerr)
+                template_name=template_name, error=str(jinjaerr)
             )
         )
     return cls.load_merge_candidate(config=configuration)
@@ -214,7 +208,7 @@ def textfsm_extractor(cls, template_name, raw_text):
         except textfsm.TextFSMTemplateError as tfte:
             raise napalm.base.exceptions.TemplateRenderException(
                 "Wrong format of TextFSM template {template_name}: {error}".format(
-                    template_name=template_name, error=py23_compat.text_type(tfte)
+                    template_name=template_name, error=str(tfte)
                 )
             )
 
@@ -246,7 +240,7 @@ def find_txt(xml_tree, path, default=""):
                 value = xpath_result
     except Exception:  # in case of any exception, returns default
         value = default
-    return py23_compat.text_type(value)
+    return str(value)
 
 
 def convert(to, who, default=""):
@@ -301,7 +295,7 @@ def mac(raw):
         raw = "{flat_raw}{zeros_stuffed}".format(
             flat_raw=flat_raw, zeros_stuffed="0" * (12 - len(flat_raw))
         )
-    return py23_compat.text_type(EUI(raw, dialect=_MACFormat))
+    return str(EUI(raw, dialect=_MACFormat))
 
 
 def ip(addr, version=None):
@@ -330,12 +324,12 @@ def ip(addr, version=None):
     addr_obj = IPAddress(addr)
     if version and addr_obj.version != version:
         raise ValueError("{} is not an ipv{} address".format(addr, version))
-    return py23_compat.text_type(addr_obj)
+    return str(addr_obj)
 
 
 def as_number(as_number_val):
     """Convert AS Number to standardized asplain notation as an integer."""
-    as_number_str = py23_compat.text_type(as_number_val)
+    as_number_str = str(as_number_val)
     if "." in as_number_str:
         big, little = as_number_str.split(".")
         return (int(big) << 16) + int(little)
@@ -374,7 +368,7 @@ def canonical_interface_name(interface, addl_name_map=None):
     # check in dict for mapping
     if name_map.get(interface_type):
         long_int = name_map.get(interface_type)
-        return long_int + py23_compat.text_type(interface_number)
+        return long_int + str(interface_number)
     # if nothing matched, return the original name
     else:
         return interface
@@ -412,9 +406,7 @@ def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=N
         canonical_type = interface_type
 
     try:
-        abbreviated_name = rev_name_map[canonical_type] + py23_compat.text_type(
-            interface_number
-        )
+        abbreviated_name = rev_name_map[canonical_type] + str(interface_number)
         return abbreviated_name
     except KeyError:
         pass
@@ -424,7 +416,7 @@ def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=N
 
 
 def transform_lldp_capab(capabilities):
-    if capabilities and isinstance(capabilities, py23_compat.string_types):
+    if capabilities and isinstance(capabilities, str):
         capabilities = capabilities.strip().lower().split(",")
         return sorted(
             [constants.LLDP_CAPAB_TRANFORM_TABLE[c.strip()] for c in capabilities]

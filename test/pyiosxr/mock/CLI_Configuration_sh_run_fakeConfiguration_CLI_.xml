@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response MajorVersion="1" MinorVersion="0"><CLI><Configuration>
+sh run fake
+        ^
+% Invalid input detected at &apos;^&apos; marker.
+</Configuration></CLI><ResultSummary ErrorCount="0"/></Response>
+XML>

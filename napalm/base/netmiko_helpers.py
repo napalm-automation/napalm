@@ -9,8 +9,7 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-from __future__ import unicode_literals
-from napalm.base.utils import py23_compat
+import inspect
 from netmiko import BaseConnection
 
 
@@ -20,7 +19,7 @@ def netmiko_args(optional_args):
     Return a dictionary of these optional args  that will be passed into the Netmiko
     ConnectHandler call.
     """
-    fields = py23_compat.argspec(BaseConnection.__init__)
+    fields = inspect.getfullargspec(BaseConnection.__init__)
     args = fields[0]
     defaults = fields[3]
 

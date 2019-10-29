@@ -1,0 +1,281 @@
+{
+    "TABLE_process_tag": {
+        "ROW_process_tag": {
+            "TABLE_SHOWPROC": {
+                "ROW_SHOWPROC": {
+                    "TABLE_ONEITEM": [
+                        {
+                            "ROW_ONEITEM": [
+                                {
+                                    "process-memory-share-proc-smr-name": "smm",
+                                    "process-memory-share-smr-addr": "50000000",
+                                    "process-memory-share-smr-avail": 1085,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 44,
+                                    "process-memory-share-smr-size": 1088,
+                                    "process-memory-share-smr-star-char": {},
+                                    "process-memory-share-smr-used": 3
+                                },
+                                {
+                                    "process-memory-share-proc-smr-name": "cli",
+                                    "process-memory-share-smr-addr": "50110000",
+                                    "process-memory-share-smr-avail": 29270,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 20,
+                                    "process-memory-share-smr-size": 49216,
+                                    "process-memory-share-smr-star-char": "*",
+                                    "process-memory-share-smr-used": 19946
+                                },
+                                {
+                                    "process-memory-share-proc-smr-name": "npacl",
+                                    "process-memory-share-smr-addr": "53120000",
+                                    "process-memory-share-smr-avail": 4158,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 2,
+                                    "process-memory-share-smr-size": 4160,
+                                    "process-memory-share-smr-star-char": {},
+                                    "process-memory-share-smr-used": 2
+                                },
+                                {
+                                    "process-memory-share-dynamic-smr-name": "urib"
+                                }
+                            ]
+                        },
+                        {
+                            "ROW_ONEITEM": [
+                                {
+                                    "process-memory-share-proc-smr-name": "urib-pib",
+                                    "process-memory-share-smr-addr": "57540000",
+                                    "process-memory-share-smr-avail": 842,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 20,
+                                    "process-memory-share-smr-size": 1088,
+                                    "process-memory-share-smr-star-char": "*",
+                                    "process-memory-share-smr-used": 247
+                                },
+                                {
+                                    "process-memory-share-proc-smr-name": "urib-redist",
+                                    "process-memory-share-smr-addr": "57650000",
+                                    "process-memory-share-smr-avail": 4244,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 20,
+                                    "process-memory-share-smr-size": 5184,
+                                    "process-memory-share-smr-star-char": "*",
+                                    "process-memory-share-smr-used": 940
+                                },
+                                {
+                                    "process-memory-share-proc-smr-name": "urib-ufdm",
+                                    "process-memory-share-smr-addr": "57B60000",
+                                    "process-memory-share-smr-avail": 8138,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 1,
+                                    "process-memory-share-smr-size": 8256,
+                                    "process-memory-share-smr-star-char": "*",
+                                    "process-memory-share-smr-used": 118
+                                },
+                                {
+                                    "process-memory-share-dynamic-smr-name": "mrib"
+                                }
+                            ]
+                        },
+                        {
+                            "ROW_ONEITEM": [
+                                {
+                                    "process-memory-share-proc-smr-name": "mrib-mfdm",
+                                    "process-memory-share-smr-addr": "5BD80000",
+                                    "process-memory-share-smr-avail": 4160,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 1,
+                                    "process-memory-share-smr-size": 4160,
+                                    "process-memory-share-smr-star-char": "*",
+                                    "process-memory-share-smr-used": 0
+                                },
+                                {
+                                    "process-memory-share-proc-smr-name": "am",
+                                    "process-memory-share-smr-addr": "5C190000",
+                                    "process-memory-share-smr-avail": 1044,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 8,
+                                    "process-memory-share-smr-size": 1088,
+                                    "process-memory-share-smr-star-char": "*",
+                                    "process-memory-share-smr-used": 44
+                                },
+                                {
+                                    "process-memory-share-proc-smr-name": "am_limit",
+                                    "process-memory-share-smr-addr": "5C2A0000",
+                                    "process-memory-share-smr-avail": 127,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 8,
+                                    "process-memory-share-smr-size": 128,
+                                    "process-memory-share-smr-star-char": "*",
+                                    "process-memory-share-smr-used": 1
+                                },
+                                {
+                                    "process-memory-share-dynamic-smr-name": "u6rib"
+                                }
+                            ]
+                        },
+                        {
+                            "ROW_ONEITEM": [
+                                {
+                                    "process-memory-share-proc-smr-name": "u6rib-pib",
+                                    "process-memory-share-smr-addr": "5DAD0000",
+                                    "process-memory-share-smr-avail": 816,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 12,
+                                    "process-memory-share-smr-size": 1088,
+                                    "process-memory-share-smr-star-char": "*",
+                                    "process-memory-share-smr-used": 272
+                                },
+                                {
+                                    "process-memory-share-proc-smr-name": "u6rib-notify",
+                                    "process-memory-share-smr-addr": "5DBE0000",
+                                    "process-memory-share-smr-avail": 2341,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 12,
+                                    "process-memory-share-smr-size": 3136,
+                                    "process-memory-share-smr-star-char": "*",
+                                    "process-memory-share-smr-used": 795
+                                },
+                                {
+                                    "process-memory-share-proc-smr-name": "icmpv6",
+                                    "process-memory-share-smr-addr": "5DEF0000",
+                                    "process-memory-share-smr-avail": 4160,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 10,
+                                    "process-memory-share-smr-size": 4160,
+                                    "process-memory-share-smr-star-char": {},
+                                    "process-memory-share-smr-used": 0
+                                },
+                                {
+                                    "process-memory-share-dynamic-smr-name": "m6rib"
+                                }
+                            ]
+                        },
+                        {
+                            "ROW_ONEITEM": [
+                                {
+                                    "process-memory-share-proc-smr-name": "m6rib-mfdm",
+                                    "process-memory-share-smr-addr": "5EB10000",
+                                    "process-memory-share-smr-avail": 5184,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 2,
+                                    "process-memory-share-smr-size": 5184,
+                                    "process-memory-share-smr-star-char": {},
+                                    "process-memory-share-smr-used": 0
+                                },
+                                {
+                                    "process-memory-share-proc-smr-name": "ip",
+                                    "process-memory-share-smr-addr": "5F020000",
+                                    "process-memory-share-smr-avail": 10239,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 15,
+                                    "process-memory-share-smr-size": 10304,
+                                    "process-memory-share-smr-star-char": {},
+                                    "process-memory-share-smr-used": 65
+                                },
+                                {
+                                    "process-memory-share-proc-smr-name": "ipv6",
+                                    "process-memory-share-smr-addr": "5FA30000",
+                                    "process-memory-share-smr-avail": 8255,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 10,
+                                    "process-memory-share-smr-size": 8256,
+                                    "process-memory-share-smr-star-char": {},
+                                    "process-memory-share-smr-used": 1
+                                },
+                                {
+                                    "process-memory-share-dynamic-smr-name": "rpm"
+                                }
+                            ]
+                        },
+                        {
+                            "ROW_ONEITEM": [
+                                {
+                                    "process-memory-share-proc-smr-name": "igmp",
+                                    "process-memory-share-smr-addr": "61250000",
+                                    "process-memory-share-smr-avail": 4160,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 2,
+                                    "process-memory-share-smr-size": 4160,
+                                    "process-memory-share-smr-star-char": "*",
+                                    "process-memory-share-smr-used": 0
+                                },
+                                {
+                                    "process-memory-share-proc-smr-name": "mcastfwd",
+                                    "process-memory-share-smr-addr": "61660000",
+                                    "process-memory-share-smr-avail": 12338,
+                                    "process-memory-share-smr-empty-char": "",
+                                    "process-memory-share-smr-ref-count": 2,
+                                    "process-memory-share-smr-size": 12352,
+                                    "process-memory-share-smr-star-char": {},
+                                    "process-memory-share-smr-used": 14
+                                }
+                            ]
+                        }
+                    ],
+                    "TABLE_ONEITEMDYNAMIC": [
+                        {
+                            "ROW_ONEITEMDYNAMIC": {
+                                "process-memory-share-dynamic-plus-char": "+",
+                                "process-memory-share-dynamic-smr-addr": "53530000",
+                                "process-memory-share-dynamic-smr-avail": 136,
+                                "process-memory-share-dynamic-smr-ref-count": "20",
+                                "process-memory-share-dynamic-smr-size": 1024,
+                                "process-memory-share-dynamic-smr-used": 888,
+                                "process-memory-share-max-mem-size-str": "(65600)"
+                            }
+                        },
+                        {
+                            "ROW_ONEITEMDYNAMIC": {
+                                "process-memory-share-dynamic-plus-char": "+",
+                                "process-memory-share-dynamic-smr-addr": "58370000",
+                                "process-memory-share-dynamic-smr-avail": 3069,
+                                "process-memory-share-dynamic-smr-ref-count": "3",
+                                "process-memory-share-dynamic-smr-size": 3072,
+                                "process-memory-share-dynamic-smr-used": 3,
+                                "process-memory-share-max-mem-size-str": "(59456)"
+                            }
+                        },
+                        {
+                            "ROW_ONEITEMDYNAMIC": {
+                                "process-memory-share-dynamic-plus-char": "+",
+                                "process-memory-share-dynamic-smr-addr": "5C2C0000",
+                                "process-memory-share-dynamic-smr-avail": 708,
+                                "process-memory-share-dynamic-smr-ref-count": "12",
+                                "process-memory-share-dynamic-smr-size": 1024,
+                                "process-memory-share-dynamic-smr-used": 316,
+                                "process-memory-share-max-mem-size-str": "(24640)"
+                            }
+                        },
+                        {
+                            "ROW_ONEITEMDYNAMIC": {
+                                "process-memory-share-dynamic-plus-char": "+",
+                                "process-memory-share-dynamic-smr-addr": "5E300000",
+                                "process-memory-share-dynamic-smr-avail": 3060,
+                                "process-memory-share-dynamic-smr-ref-count": "1",
+                                "process-memory-share-dynamic-smr-size": 3072,
+                                "process-memory-share-dynamic-smr-used": 12,
+                                "process-memory-share-max-mem-size-str": "(8256)"
+                            }
+                        },
+                        {
+                            "ROW_ONEITEMDYNAMIC": {
+                                "process-memory-share-dynamic-plus-char": "+",
+                                "process-memory-share-dynamic-smr-addr": "60240000",
+                                "process-memory-share-dynamic-smr-avail": 2047,
+                                "process-memory-share-dynamic-smr-ref-count": "5",
+                                "process-memory-share-dynamic-smr-size": 2048,
+                                "process-memory-share-dynamic-smr-used": 1,
+                                "process-memory-share-max-mem-size-str": "(16448)"
+                            }
+                        }
+                    ]
+                }
+            },
+            "process-memory-share-total-shm-avail": 268,
+            "process-memory-share-total-shm-size": 291,
+            "process-memory-share-total-shm-used": 24
+        }
+    }
+}
