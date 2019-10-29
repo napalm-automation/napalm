@@ -1,0 +1,1 @@
+BGP neighbor is 10.105.179.5,  remote AS 8244, external link

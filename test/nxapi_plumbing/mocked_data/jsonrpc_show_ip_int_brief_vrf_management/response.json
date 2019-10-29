@@ -1,0 +1,18 @@
+{
+    "TABLE_intf": {
+        "ROW_intf": {
+            "admin-state": "up",
+            "intf-name": "mgmt0",
+            "iod": 3,
+            "ip-disabled": "FALSE",
+            "link-state": "up",
+            "prefix": "10.0.0.71",
+            "proto-state": "up"
+        }
+    },
+    "TABLE_vrf": {
+        "ROW_vrf": {
+            "vrf-name-out": "management"
+        }
+    }
+}

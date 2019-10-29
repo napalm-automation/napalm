@@ -1,0 +1,30 @@
+{
+  "TABLE_interface": {
+    "ROW_interface": [
+      {
+        "interface": "Vlan120",
+        "svi_admin_state": "up",
+        "svi_line_proto": "up",
+        "svi_mac": "002a.6ad3.0000",
+        "svi_desc": "",
+        "svi_ip_addr": "192.168.0.10",
+        "svi_ip_mask": "24",
+        "svi_mtu": "1500",
+        "svi_bw": "1000000",
+        "svi_delay": "10"
+      },
+      {
+        "interface": "Vlan198",
+        "svi_admin_state": "down",
+        "state_rsn_desc": "Administratively down",
+        "svi_line_proto": "down",
+        "svi_mac": "002a.6ad3.0000",
+        "svi_ip_addr": "192.168.0.11",
+        "svi_ip_mask": "24",
+        "svi_mtu": "1500",
+        "svi_bw": "1000000",
+        "svi_delay": "10"
+      }
+    ]
+  }
+}

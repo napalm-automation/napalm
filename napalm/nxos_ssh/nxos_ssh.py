@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from __future__ import unicode_literals
-
 # import stdlib
 from builtins import super
 import re
@@ -27,7 +25,6 @@ from netaddr.core import AddrFormatError
 # import NAPALM Base
 from napalm.base import helpers
 from napalm.base.exceptions import CommandErrorException, ReplaceConfigException
-from napalm.base.utils import py23_compat
 from napalm.nxos import NXOSDriverBase
 
 # Easier to store these as constants
@@ -462,7 +459,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         return output
 
     def _send_config(self, commands):
-        if isinstance(commands, py23_compat.string_types):
+        if isinstance(commands, str):
             commands = (command for command in commands.splitlines() if command)
         return self.device.send_config_set(commands)
 
@@ -584,15 +581,22 @@ class NXOSSSHDriver(NXOSDriverBase):
         show_int_status = self._send_command("show interface status")
         show_hostname = self._send_command("show hostname")
 
+        show_inventory_table = self._get_command_table(
+            "show inventory | json", "TABLE_inv", "ROW_inv"
+        )
+        if isinstance(show_inventory_table, dict):
+            show_inventory_table = [show_inventory_table]
+
+        for row in show_inventory_table:
+            if row["name"] == '"Chassis"' or row["name"] == "Chassis":
+                serial_number = row.get("serialnum", "")
+                break
+
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
             if " uptime is " in line:
                 _, uptime_str = line.split(" uptime is ")
                 uptime = self.parse_uptime(uptime_str)
-
-            if "Processor Board ID" in line:
-                _, serial_number = line.split("Processor Board ID ")
-                serial_number = serial_number.strip()
 
             if "system: " in line or "NXOS: " in line:
                 line = line.strip()
@@ -641,10 +645,10 @@ class NXOSSSHDriver(NXOSDriverBase):
         return {
             "uptime": int(uptime),
             "vendor": vendor,
-            "os_version": py23_compat.text_type(os_version),
-            "serial_number": py23_compat.text_type(serial_number),
-            "model": py23_compat.text_type(model),
-            "hostname": py23_compat.text_type(hostname),
+            "os_version": str(os_version),
+            "serial_number": str(serial_number),
+            "model": str(model),
+            "hostname": str(hostname),
             "fqdn": fqdn,
             "interface_list": interface_list,
         }
@@ -771,7 +775,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         for command in commands:
             output = self._send_command(command)
-            cli_output[py23_compat.text_type(command)] = output
+            cli_output[str(command)] = output
         return cli_output
 
     def get_environment(self):
@@ -1414,34 +1418,34 @@ class NXOSSSHDriver(NXOSDriverBase):
             return snmp_information
 
         snmp_information = {
-            "contact": py23_compat.text_type(""),
-            "location": py23_compat.text_type(""),
+            "contact": str(""),
+            "location": str(""),
             "community": {},
-            "chassis_id": py23_compat.text_type(""),
+            "chassis_id": str(""),
         }
 
         for snmp_entry in snmp_config:
-            contact = py23_compat.text_type(snmp_entry.get("contact", ""))
+            contact = str(snmp_entry.get("contact", ""))
             if contact:
                 snmp_information["contact"] = contact
-            location = py23_compat.text_type(snmp_entry.get("location", ""))
+            location = str(snmp_entry.get("location", ""))
             if location:
                 snmp_information["location"] = location
 
-            community_name = py23_compat.text_type(snmp_entry.get("community", ""))
+            community_name = str(snmp_entry.get("community", ""))
             if not community_name:
                 continue
 
             if community_name not in snmp_information["community"].keys():
                 snmp_information["community"][community_name] = {
-                    "acl": py23_compat.text_type(snmp_entry.get("acl", "")),
-                    "mode": py23_compat.text_type(snmp_entry.get("mode", "").lower()),
+                    "acl": str(snmp_entry.get("acl", "")),
+                    "mode": str(snmp_entry.get("mode", "").lower()),
                 }
             else:
-                acl = py23_compat.text_type(snmp_entry.get("acl", ""))
+                acl = str(snmp_entry.get("acl", ""))
                 if acl:
                     snmp_information["community"][community_name]["acl"] = acl
-                mode = py23_compat.text_type(snmp_entry.get("mode", "").lower())
+                mode = str(snmp_entry.get("mode", "").lower())
                 if mode:
                     snmp_information["community"][community_name]["mode"] = mode
         return snmp_information
@@ -1467,7 +1471,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
             password = user.get("password", "")
             if password:
-                users[username]["password"] = py23_compat.text_type(password.strip())
+                users[username]["password"] = str(password.strip())
 
             level = 0
             role = user.get("role", "")
@@ -1485,5 +1489,5 @@ class NXOSSSHDriver(NXOSDriverBase):
             if sshkeytype and sshkeyvalue:
                 if sshkeytype not in ["ssh-rsa", "ssh-dsa"]:
                     continue
-                users[username]["sshkeys"].append(py23_compat.text_type(sshkeyvalue))
+                users[username]["sshkeys"].append(str(sshkeyvalue))
         return users
