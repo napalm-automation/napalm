@@ -1497,9 +1497,9 @@ class IOSDriver(NetworkDriver):
         # get summary output from device
         cmd_bgp_all_sum = "show bgp all summary"
         summary_output = self._send_command(cmd_bgp_all_sum).strip()
-
-        if "Invalid input detected" in summary_output:
-            raise CommandErrorException("BGP is not running on this device")
+        bgp_not_running = ["Invalid input", "BGP not active"]
+        if any((s in summary_output for s in bgp_not_running)):
+            return {}
 
         # get neighbor output from device
         neighbor_output = ""

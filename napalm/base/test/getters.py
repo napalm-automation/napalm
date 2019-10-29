@@ -211,7 +211,8 @@ class BaseTestGetters(object):
     def test_get_bgp_neighbors(self, test_case):
         """Test get_bgp_neighbors."""
         get_bgp_neighbors = self.device.get_bgp_neighbors()
-        assert "global" in get_bgp_neighbors.keys()
+        if len(get_bgp_neighbors) > 0:
+            assert "global" in get_bgp_neighbors.keys()
 
         for vrf, vrf_data in get_bgp_neighbors.items():
             assert isinstance(vrf_data["router_id"], str)
