@@ -264,4 +264,4 @@ firewall_policies = {
     "action": str,
 }
 
-vlan = {"name": text_type, "interfaces": list}
+vlan = {"name": str, "interfaces": list}
