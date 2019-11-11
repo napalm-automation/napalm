@@ -1,0 +1,96 @@
+{
+  "1": {
+    "name": "default",
+    "interfaces": [
+      "GigabitEthernet0/17",
+      "GigabitEthernet0/18",
+      "GigabitEthernet0/19",
+      "GigabitEthernet0/20"
+    ]
+  },
+  "710": {
+    "name": "Vlan710",
+    "interfaces": [
+      "Port-channel1"
+    ]
+  },
+  "736": {
+    "name": "Vlan736",
+    "interfaces": [
+      "GigabitEthernet0/6",
+      "Port-channel1"
+    ]
+  },
+  "748": {
+    "name": "Vlan748",
+    "interfaces": [
+      "GigabitEthernet0/5",
+      "Port-channel1"
+    ]
+  },
+  "760": {
+    "name": "Vlan760",
+    "interfaces": [
+      "GigabitEthernet0/1",
+      "GigabitEthernet0/2",
+      "GigabitEthernet0/3",
+      "GigabitEthernet0/4",
+      "GigabitEthernet0/5",
+      "GigabitEthernet0/6",
+      "GigabitEthernet0/7",
+      "GigabitEthernet0/8",
+      "GigabitEthernet0/9",
+      "GigabitEthernet0/10",
+      "GigabitEthernet0/11",
+      "GigabitEthernet0/12",
+      "GigabitEthernet0/13",
+      "GigabitEthernet0/15",
+      "GigabitEthernet0/16",
+      "Port-channel1"
+    ]
+  },
+  "762": {
+    "name": "Vlan762",
+    "interfaces": [
+      "GigabitEthernet0/2",
+      "GigabitEthernet0/11",
+      "GigabitEthernet0/14",
+      "Port-channel1"
+    ]
+  },
+  "763": {
+    "name": "Vlan763",
+    "interfaces": [
+      "GigabitEthernet0/2",
+      "GigabitEthernet0/7",
+      "GigabitEthernet0/12",
+      "GigabitEthernet0/13",
+      "Port-channel1"
+    ]
+  },
+  "795": {
+    "name": "Vlan795",
+    "interfaces": [
+      "GigabitEthernet0/7",
+      "GigabitEthernet0/12",
+      "GigabitEthernet0/13",
+      "Port-channel1"
+    ]
+  },
+  "1002": {
+    "name": "Vlan1002",
+    "interfaces": []
+  },
+  "1003": {
+    "name": "Vlan1003",
+    "interfaces": []
+  },
+  "1004": {
+    "name": "Vlan1004",
+    "interfaces": []
+  },
+  "1005": {
+    "name": "Vlan1005",
+    "interfaces": []
+  }
+}

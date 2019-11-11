@@ -529,3 +529,15 @@ class BaseTestGetters(object):
             for policy_term in policy_details:
                 assert helpers.test_model(models.firewall_policies, policy_term)
         return get_firewall_policies
+
+    @wrap_test_cases
+    def test_get_vlans(self, test_case):
+        """Test get_vlans."""
+        get_vlans = self.device.get_vlans()
+
+        assert len(get_vlans) > 0
+
+        for vlan, vlan_data in get_vlans.items():
+            assert helpers.test_model(models.vlan, vlan_data)
+
+        return get_vlans

@@ -622,3 +622,15 @@ class TestGettersNetworkDriver(object):
             result = result and self._test_model(models.ipv6_neighbor, entry)
 
         self.assertTrue(result)
+
+    def test_get_vlans(self):
+        try:
+            get_vlans = self.device.get_vlans()
+        except NotImplementedError:
+            raise SkipTest()
+        result = len(get_vlans) > 0
+
+        for vlan, vlan_data in get_vlans.items():
+            result = result and self._test_model(models.vlan, vlan_data)
+
+        self.assertTrue(result)

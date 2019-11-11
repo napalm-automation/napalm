@@ -1491,3 +1491,19 @@ class NXOSSSHDriver(NXOSDriverBase):
                     continue
                 users[username]["sshkeys"].append(str(sshkeyvalue))
         return users
+
+    def get_vlans(self):
+        vlans = {}
+        command = "show vlan brief | json"
+        vlan_table_raw = self._get_command_table(
+            command, "TABLE_vlanbriefxbrief", "ROW_vlanbriefxbrief"
+        )
+        if isinstance(vlan_table_raw, dict):
+            vlan_table_raw = [vlan_table_raw]
+
+        for vlan in vlan_table_raw:
+            vlans[vlan["vlanshowbr-vlanid"]] = {
+                "name": vlan["vlanshowbr-vlanname"],
+                "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),
+            }
+        return vlans

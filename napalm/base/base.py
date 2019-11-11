@@ -1656,6 +1656,28 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
+    def get_vlans(self):
+        """
+        Return structure being spit balled is as follows.
+            * vlan_id (int)
+                * name (text_type)
+                * interfaces (list)
+
+        Example::
+
+            {
+                1: {
+                    "name": "default",
+                    "interfaces": ["GigabitEthernet0/0/1", "GigabitEthernet0/0/2"]
+                },
+                2: {
+                    "name": "vlan2",
+                    "interfaces": []
+                }
+            }
+        """
+        raise NotImplementedError
+
     def compliance_report(self, validation_file=None, validation_source=None):
         """
         Return a compliance report.
