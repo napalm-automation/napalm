@@ -1,0 +1,14 @@
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+748  Vlan748                          active    Gi0/5, Po1
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+748  enet  100748     1500  -      -      -        -    -        0      0
+
+Remote SPAN VLAN
+----------------
+Disabled
+
+Primary Secondary Type              Ports
+------- --------- ----------------- ------------------------------------------

@@ -12,7 +12,6 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-
 import copy
 import functools
 import os
@@ -3409,3 +3408,61 @@ class IOSDriver(NetworkDriver):
         if self.device and self._dest_file_system is None:
             self._dest_file_system = self._discover_file_system()
         return self._dest_file_system
+
+    def get_vlans(self):
+        command = "show vlan all-ports"
+        output = self._send_command(command)
+        if output.find("Invalid input detected") >= 0:
+            return self._get_vlan_from_id()
+        else:
+            return self._get_vlan_all_ports(output)
+
+    def _get_vlan_all_ports(self, output):
+        find_regexp = r"^(\d+)\s+(\S+)\s+\S+\s+([A-Z][a-z].*)$"
+        find = re.findall(find_regexp, output, re.MULTILINE)
+        vlans = {}
+        for vlan_id, vlan_name, interfaces in find:
+            vlans[vlan_id] = {
+                "name": vlan_name,
+                "interfaces": [
+                    canonical_interface_name(intf.strip())
+                    for intf in interfaces.split(",")
+                ],
+            }
+
+        find_regexp = r"^(\d+)\s+(\S+)\s+\S+$"
+        find = re.findall(find_regexp, output, re.MULTILINE)
+        for vlan_id, vlan_name in find:
+            vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
+        return vlans
+
+    def _get_vlan_from_id(self):
+        command = "show vlan brief"
+        output = self._send_command(command)
+        vlan_regexp = r"^(\d+)\s+(\S+)\s+\S+.*$"
+        find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
+        vlans = {}
+        for vlan_id, vlan_name in find_vlan:
+            output = self._send_command("show vlan id {}".format(vlan_id))
+            interface_regex = r"{}\s+{}\s+\S+\s+([A-Z][a-z].*)$".format(
+                vlan_id, vlan_name
+            )
+            interfaces = re.findall(interface_regex, output, re.MULTILINE)
+            if len(interfaces) == 1:
+                interfaces = interfaces[0]
+                vlans[vlan_id] = {
+                    "name": vlan_name,
+                    "interfaces": [
+                        canonical_interface_name(intf.strip())
+                        for intf in interfaces.split(",")
+                    ],
+                }
+            elif len(interfaces) == 0:
+                vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
+            else:
+                raise ValueError(
+                    "Error parsing vlan_id {}, "
+                    "found more values than can be present.".format(vlan_id)
+                )
+
+        return vlans
