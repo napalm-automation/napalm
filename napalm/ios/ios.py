@@ -3314,7 +3314,11 @@ class IOSDriver(NetworkDriver):
             if "No interfaces" in first_part:
                 interfaces = {}
             else:
-                interfaces = {itf: {} for itf in if_regex.group(1).split()}
+                interfaces = {canonical_interface_name(itf): {} for itf in if_regex.group(1).split()}
+
+            # remove interfaces in the VRF from the default VRF
+            for item in interfaces:
+                del instances['default']['interfaces']['interface'][item]
 
             instances[vrf_name] = {
                 "name": vrf_name,
