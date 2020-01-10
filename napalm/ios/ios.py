@@ -3223,7 +3223,11 @@ class IOSDriver(NetworkDriver):
                 # Now you have the start and stop index for each hop
                 # and you can parse the probes
             # Set the hop_variable, and remove spaces between msec and [AS 12345] garbage for easier matching
-            hop_string = re.sub(' \[AS [0-9.]+\]', '', output[start_index:stop_index].replace(" msec", "msec"))
+            hop_string = re.sub(
+                r" \[AS [0-9.]+\]",
+                "",
+                output[start_index:stop_index].replace(" msec", "msec"),
+            )
             hop_list = hop_string.split()
             current_hop = int(hop_list.pop(0))
             # Prepare dictionary for each hop (assuming there are 3 probes in each hop)
