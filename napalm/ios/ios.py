@@ -3222,7 +3222,7 @@ class IOSDriver(NetworkDriver):
                 stop_index = next_hop_match.start()
                 # Now you have the start and stop index for each hop
                 # and you can parse the probes
-            # Set the hop_variable, and remove spaces between msec and [AS 12345] garbage for easier matching
+            # Set the hop_variable, and remove spaces between msec and [AS 1234] for easier matching
             hop_string = re.sub(
                 r" \[AS [0-9.]+\]",
                 "",
