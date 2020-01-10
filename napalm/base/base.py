@@ -904,7 +904,7 @@ class NetworkDriver(object):
         Returns all configured IP addresses on all interfaces as a dictionary of dictionaries.
         Keys of the main dictionary represent the name of the interface.
         Values of the main dictionary represent are dictionaries that may consist of two keys
-        'ipv4' and 'ipv6' (one, both or none) which are themselvs dictionaries witht the IP
+        'ipv4' and 'ipv6' (one, both or none) which are themselves dictionaries with the IP
         addresses as keys.
         Each IP Address dictionary has the following keys:
 
