@@ -994,10 +994,14 @@ class NXOSSSHDriver(NXOSDriverBase):
                 ip_address = line.split(",")[0].split()[2]
                 try:
                     prefix_len = int(line.split()[5].split("/")[1])
-                except ValueError:
+                except (ValueError, IndexError):
                     prefix_len = "N/A"
-                val = {"prefix_length": prefix_len}
-                v4_interfaces.setdefault(interface, {})[ip_address] = val
+
+                if ip_address == "none":
+                    v4_interfaces.setdefault(interface, {})
+                else:
+                    val = {"prefix_length": prefix_len}
+                    v4_interfaces.setdefault(interface, {})[ip_address] = val
 
         v6_interfaces = {}
         for line in output_v6.splitlines():
@@ -1028,6 +1032,10 @@ class NXOSSSHDriver(NXOSDriverBase):
                 prefix_len = int(prefix_len)
                 val = {"prefix_length": prefix_len}
                 v6_interfaces.setdefault(interface, {})[ip_address] = val
+            else:
+                # match the following format:
+                # IPv6 address: none
+                v6_interfaces.setdefault(interface, {})
 
         # Join data from intermediate dictionaries.
         for interface, data in v4_interfaces.items():
