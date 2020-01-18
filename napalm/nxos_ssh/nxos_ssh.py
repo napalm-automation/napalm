@@ -581,16 +581,25 @@ class NXOSSSHDriver(NXOSDriverBase):
         show_int_status = self._send_command("show interface status")
         show_hostname = self._send_command("show hostname")
 
-        show_inventory_table = self._get_command_table(
-            "show inventory | json", "TABLE_inv", "ROW_inv"
-        )
-        if isinstance(show_inventory_table, dict):
-            show_inventory_table = [show_inventory_table]
+        try:
+            show_inventory_table = self._get_command_table(
+                "show inventory | json", "TABLE_inv", "ROW_inv"
+            )
+            if isinstance(show_inventory_table, dict):
+                show_inventory_table = [show_inventory_table]
 
-        for row in show_inventory_table:
-            if row["name"] == '"Chassis"' or row["name"] == "Chassis":
-                serial_number = row.get("serialnum", "")
-                break
+            for row in show_inventory_table:
+                if row["name"] == '"Chassis"' or row["name"] == "Chassis":
+                    serial_number = row.get("serialnum", "")
+                    break
+        except ValueError:
+            show_inventory = self._send_command("show inventory")
+            find_regexp = r"^NAME:\s+\"(.*)\",.*\n^PID:.*SN:\s+(\w*)"
+            find = re.findall(find_regexp, show_inventory, re.MULTILINE)
+            for row in find:
+                if row[0] == "Chassis":
+                    serial_number = row[1]
+                    break
 
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
