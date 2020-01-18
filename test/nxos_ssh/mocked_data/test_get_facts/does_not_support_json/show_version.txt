@@ -1,0 +1,46 @@
+Cisco Nexus Operating System (NX-OS) Software
+TAC support: http://www.cisco.com/tac
+Copyright (C) 2002-2017, Cisco and/or its affiliates.
+All rights reserved.
+The copyrights to certain works contained in this software are
+owned by other third parties and used and distributed under their own
+licenses, such as open source.  This software is provided "as is," and unless
+otherwise stated, there is no warranty, express or implied, including but not
+limited to warranties of merchantability and fitness for a particular purpose.
+Certain components of this software are licensed under
+the GNU General Public License (GPL) version 2.0 or 
+GNU General Public License (GPL) version 3.0  or the GNU
+Lesser General Public License (LGPL) Version 2.1 or 
+Lesser General Public License (LGPL) Version 2.0. 
+A copy of each such license is available at
+http://www.opensource.org/licenses/gpl-2.0.php and
+http://opensource.org/licenses/gpl-3.0.html and
+http://www.opensource.org/licenses/lgpl-2.1.php and
+http://www.gnu.org/licenses/old-licenses/library.txt.
+
+Software
+  BIOS: version 07.61
+  NXOS: version 7.0(3)I7(2)
+  BIOS compile time:  04/06/2017
+  NXOS image file is: bootflash:///nxos.7.0.3.I7.2.bin
+  NXOS compile time:  11/22/2017 13:00:00 [11/22/2017 22:55:29]
+
+
+Hardware
+  cisco Nexus9000 93180YC-EX chassis 
+  Intel(R) Xeon(R) CPU  @ 1.80GHz with 24633476 kB of memory.
+  Processor Board ID FDO21270U84
+
+  Device name: SWITCHNAME
+  bootflash:   53298520 kB
+Kernel uptime is 2 day(s), 23 hour(s), 4 minute(s), 51 second(s)
+
+Last reset 
+  Reason: Unknown
+  System version: 7.0(3)I7(2)
+  Service: 
+
+plugin
+  Core Plugin, Ethernet Plugin
+
+Active Package(s):
