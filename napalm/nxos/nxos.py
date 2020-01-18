@@ -617,6 +617,25 @@ class NXOSDriverBase(NetworkDriver):
             json_output = json.loads(json_output)
         return self._get_reply_table(json_output, table_name, row_name)
 
+    def _parse_vlan_ports(self, vlan_s):
+        vlans = []
+        find_regexp = r"^([A-Za-z\/-]+|.*\/)(\d+)-(\d+)$"
+        vlan_str = ""
+
+        if isinstance(vlan_s, list):
+            vlan_str = ",".join(vlan_s)
+        else:
+            vlan_str = vlan_s
+
+        for vls in vlan_str.split(","):
+            find = re.findall(find_regexp, vls.strip())
+            if find:
+                for i in range(int(find[0][1]), int(find[0][2]) + 1):
+                    vlans.append(find[0][0] + str(i))
+            else:
+                vlans.append(vls.strip())
+        return vlans
+
 
 class NXOSDriver(NXOSDriverBase):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
@@ -1434,3 +1453,19 @@ class NXOSDriver(NXOSDriverBase):
             "cpu": _process_cpu(cpu_raw),
             "memory": _process_memory(memory_raw),
         }
+
+    def get_vlans(self):
+        vlans = {}
+        command = "show vlan brief"
+        vlan_table_raw = self._get_command_table(
+            command, "TABLE_vlanbriefxbrief", "ROW_vlanbriefxbrief"
+        )
+        if isinstance(vlan_table_raw, dict):
+            vlan_table_raw = [vlan_table_raw]
+
+        for vlan in vlan_table_raw:
+            vlans[vlan["vlanshowbr-vlanid"]] = {
+                "name": vlan["vlanshowbr-vlanname"],
+                "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),
+            }
+        return vlans

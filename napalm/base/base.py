@@ -904,7 +904,7 @@ class NetworkDriver(object):
         Returns all configured IP addresses on all interfaces as a dictionary of dictionaries.
         Keys of the main dictionary represent the name of the interface.
         Values of the main dictionary represent are dictionaries that may consist of two keys
-        'ipv4' and 'ipv6' (one, both or none) which are themselvs dictionaries witht the IP
+        'ipv4' and 'ipv6' (one, both or none) which are themselves dictionaries with the IP
         addresses as keys.
         Each IP Address dictionary has the following keys:
 
@@ -1653,6 +1653,28 @@ class NetworkDriver(object):
                     'state'     : 'STALE'
                 }
             ]
+        """
+        raise NotImplementedError
+
+    def get_vlans(self):
+        """
+        Return structure being spit balled is as follows.
+            * vlan_id (int)
+                * name (text_type)
+                * interfaces (list)
+
+        Example::
+
+            {
+                1: {
+                    "name": "default",
+                    "interfaces": ["GigabitEthernet0/0/1", "GigabitEthernet0/0/2"]
+                },
+                2: {
+                    "name": "vlan2",
+                    "interfaces": []
+                }
+            }
         """
         raise NotImplementedError
 

@@ -1,0 +1,1194 @@
+{
+    "1": {
+        "name": "default",
+        "interfaces": [
+            "TenGigabitEthernet1/2/15",
+            "TenGigabitEthernet1/2/16",
+            "TenGigabitEthernet1/2/17",
+            "TenGigabitEthernet1/2/18",
+            "TenGigabitEthernet1/2/19",
+            "TenGigabitEthernet1/2/20",
+            "TenGigabitEthernet1/2/21",
+            "TenGigabitEthernet1/2/22",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "2": {
+        "name": "Vlan2",
+        "interfaces": [
+            "TenGigabitEthernet1/3/7",
+            "TenGigabitEthernet2/1/20",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "3": {
+        "name": "Vlan3",
+        "interfaces": [
+            "TenGigabitEthernet1/3/7",
+            "TenGigabitEthernet2/1/20",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "4": {
+        "name": "Vlan4",
+        "interfaces": [
+            "TenGigabitEthernet1/3/8",
+            "TenGigabitEthernet2/1/21",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "5": {
+        "name": "Vlan5",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30",
+            "Port-channel31",
+            "Port-channel32"
+        ]
+    },
+    "7": {
+        "name": "Vlan7",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "60": {
+        "name": "Vlan60",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "61": {
+        "name": "Vlan61",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "448": {
+        "name": "Vlan448",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "500": {
+        "name": "Vlan500",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel2",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "502": {
+        "name": "Vlan502",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "506": {
+        "name": "Vlan506",
+        "interfaces": [
+            "TenGigabitEthernet1/3/8",
+            "TenGigabitEthernet2/1/21",
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "507": {
+        "name": "Vlan507",
+        "interfaces": [
+            "TenGigabitEthernet2/1/15",
+            "TenGigabitEthernet2/2/30",
+            "TenGigabitEthernet2/2/31",
+            "TenGigabitEthernet2/2/32",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel7",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "508": {
+        "name": "Vlan508",
+        "interfaces": [
+            "TenGigabitEthernet2/1/15",
+            "TenGigabitEthernet2/2/30",
+            "TenGigabitEthernet2/2/32",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "510": {
+        "name": "Vlan510",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "511": {
+        "name": "Vlan511",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "515": {
+        "name": "Vlan515",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "517": {
+        "name": "Vlan517",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "TenGigabitEthernet2/2/32",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "518": {
+        "name": "Vlan518",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "520": {
+        "name": "Vlan520",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "522": {
+        "name": "Vlan522",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "523": {
+        "name": "Vlan523",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "524": {
+        "name": "Vlan524",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "529": {
+        "name": "Vlan529",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "531": {
+        "name": "Vlan531",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "533": {
+        "name": "Vlan533",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "538": {
+        "name": "Vlan538",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "601": {
+        "name": "Vlan601",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel3",
+            "Port-channel4",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "602": {
+        "name": "Vlan602",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel3",
+            "Port-channel4",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "606": {
+        "name": "Vlan606",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel3",
+            "Port-channel4",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "607": {
+        "name": "Vlan607",
+        "interfaces": [
+            "TenGigabitEthernet2/1/23",
+            "TenGigabitEthernet2/2/23",
+            "Port-channel1",
+            "Port-channel3",
+            "Port-channel4",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "608": {
+        "name": "Vlan608",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel3",
+            "Port-channel4",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "609": {
+        "name": "Vlan609",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel3",
+            "Port-channel4",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "610": {
+        "name": "Vlan610",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel7",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "611": {
+        "name": "Vlan611",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel3",
+            "Port-channel4",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "612": {
+        "name": "Vlan612",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel3",
+            "Port-channel4",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "613": {
+        "name": "Vlan613",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel3",
+            "Port-channel4",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "702": {
+        "name": "Vlan702",
+        "interfaces": [
+            "TenGigabitEthernet2/2/32",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "707": {
+        "name": "Vlan707",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel7",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "710": {
+        "name": "Vlan710",
+        "interfaces": [
+            "TenGigabitEthernet1/1/9",
+            "TenGigabitEthernet1/1/11",
+            "TenGigabitEthernet1/3/4",
+            "TenGigabitEthernet2/2/31",
+            "TenGigabitEthernet2/3/4",
+            "TenGigabitEthernet2/3/6",
+            "Port-channel1",
+            "Port-channel3",
+            "Port-channel4",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel7",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel29",
+            "Port-channel30",
+            "Port-channel100"
+        ]
+    },
+    "711": {
+        "name": "Vlan711",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "736": {
+        "name": "Vlan736",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel7",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "745": {
+        "name": "Vlan745",
+        "interfaces": [
+            "TenGigabitEthernet2/2/31",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "746": {
+        "name": "Vlan746",
+        "interfaces": [
+            "TenGigabitEthernet2/2/31",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "754": {
+        "name": "Vlan754",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel29",
+            "Port-channel30"
+        ]
+    },
+    "756": {
+        "name": "Vlan756",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel7",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "760": {
+        "name": "Vlan760",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel7",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30",
+            "Port-channel100"
+        ]
+    },
+    "762": {
+        "name": "Vlan762",
+        "interfaces": [
+            "TenGigabitEthernet1/3/8",
+            "TenGigabitEthernet2/1/21",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel7",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "763": {
+        "name": "Vlan763",
+        "interfaces": [
+            "TenGigabitEthernet1/3/8",
+            "TenGigabitEthernet2/1/21",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "764": {
+        "name": "Vlan764",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel7",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "765": {
+        "name": "Vlan765",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "766": {
+        "name": "Vlan766",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "772": {
+        "name": "Vlan772",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "776": {
+        "name": "Vlan776",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "778": {
+        "name": "Vlan778",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel3",
+            "Port-channel4",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "783": {
+        "name": "Vlan783",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel7",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "786": {
+        "name": "Vlan786",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "787": {
+        "name": "Vlan787",
+        "interfaces": [
+            "TenGigabitEthernet2/2/30",
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "788": {
+        "name": "Vlan788",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "790": {
+        "name": "Vlan790",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "792": {
+        "name": "Vlan792",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel2",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "794": {
+        "name": "Vlan794",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel6",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "795": {
+        "name": "Vlan795",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "1002": {
+        "name": "Vlan1002",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "1003": {
+        "name": "Vlan1003",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "1004": {
+        "name": "Vlan1004",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "1005": {
+        "name": "Vlan1005",
+        "interfaces": [
+            "Port-channel1",
+            "Port-channel5",
+            "Port-channel21",
+            "Port-channel22",
+            "Port-channel23",
+            "Port-channel24",
+            "Port-channel25",
+            "Port-channel26",
+            "Port-channel27",
+            "Port-channel28",
+            "Port-channel30"
+        ]
+    },
+    "1275": {
+        "name": "Vlan1275",
+        "interfaces": []
+    }
+}
