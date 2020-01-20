@@ -2942,7 +2942,7 @@ class IOSDriver(NetworkDriver):
             prefix = str(ipnet_dest.network)
             netmask = ""
             routes = {}
-            if '/' in destination:
+            if "/" in destination:
                 netmask = str(ipnet_dest.netmask)
                 routes = {destination: []}
             commands = []
