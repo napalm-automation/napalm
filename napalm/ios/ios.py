@@ -2971,7 +2971,7 @@ class IOSDriver(NetworkDriver):
                         route_match_regex = RE_RP_ROUTE.search(outitem)
                         if route_match_regex:
                             route_match = route_match_regex.group(1)
-                            if not route_match in routes:
+                            if route_match not in routes:
                                 routes[route_match] = []
                     # routing protocol name (bgp, ospf, ...)
                     route_proto = route_proto_regex.group(1)
