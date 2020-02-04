@@ -98,7 +98,7 @@ class FakeJunOSDevice(BaseTestDouble):
     def uptime(self):
         return self._uptime
 
-    def open(self):
+    def open(self, auto_probe=0):
         pass
 
     def close(self):
