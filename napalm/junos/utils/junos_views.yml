@@ -605,6 +605,38 @@ junos_route_table_view:
     level: {../rt-isis-level: int}
 
 ###
+### Adj-RIB Information
+###
+
+junos_protocol_adj_rib_table:
+  rpc: get-route-information
+  args:
+    extensive: True
+    all: True
+  args_key:
+    peer
+    receive-protocol-name
+  item: route-table/rt
+  key:  rt-destination
+  view: junos_adj_rib_table_view
+
+junos_adj_rib_table_view:
+  fields:
+    ###
+    ### Common fields
+    ###
+    destination: {rt-destination: unicode}
+    prefix_length: {rt-prefix-length: int}
+    protocol: {rt-entry/protocol-name: unicode}
+    next_hop: {rt-entry/nh/to: unicode}
+    routing_table: {../table-name: unicode}
+    ###
+    ### BGP Specific fields
+    ###
+    as_path: {rt-entry/as-path: unicode}
+    communities: {rt-entry/communities/community: unicode}
+
+###
 ### SNMP Config
 ###
 
