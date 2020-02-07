@@ -1393,6 +1393,114 @@ class JunOSDriver(NetworkDriver):
         #     neighbor_data = bgp_neighbors_table.get(neighbor_address=neighbor_address).items()
         #     _bgp_iter_core(neighbor_data)
         return bgp_neighbors
+    
+    def get_adj_rib(self, protocol="", neighbor="", direction="", vrf=""):
+        """
+        Returns a dictionary of dictionaries containing details of all routes advertised
+        to or received from a neighbor.
+        """
+        adj_rib = {}
+
+        if not isinstance(protocol, str):
+            raise TypeError("Please specify a protocol!")
+        else:
+            protocol = protocol.lower()
+
+        if not isinstance(neighbor, str):
+            raise TypeError("Please specify a valid neighbor IP!")
+
+        if direction not in ["in", "out"]:
+            raise TypeError("Please specify a valid direction!")
+
+        _COMMON_PROTOCOL_FIELDS_ = [
+            "destination",
+            "prefix_length",
+            "protocol",
+            "next_hop",
+            "routing_table",
+        ]  # identifies the list of fileds common for all protocols
+
+        _PROTOCOL_SPECIFIC_FIELDS_ = {
+            "bgp": [
+                "as_path",
+                "communities",
+                "local_preference",
+            ],
+        }
+
+        adj_rib_table = junos_views.junos_protocol_adj_rib_table(self.device)
+
+        rt_kargs = {"peer": neighbor}
+        if protocol and direction == "in":
+            rt_kargs["receive-protocol-name"] = protocol
+        elif protocol and direction == "out":
+            rt_kargs["advertising-protocol-name"] = protocol
+        if vrf:
+            rt_kargs["table"] = vrf
+
+        try:
+            adj_rib_table.get(**rt_kargs)
+        except RpcTimeoutError:
+            # on devices with milions of routes
+            # in case the destination is too generic (e.g.: 10/8)
+            # will take very very long to determine all routes and
+            # moreover will return a huge list
+            raise CommandTimeoutException(
+                "Too many routes returned!"
+            )
+        except RpcError as rpce:
+            if len(rpce.errs) > 0 and "bad_element" in rpce.errs[0]:
+                raise CommandErrorException(
+                    "Unknown protocol: {proto}".format(
+                        proto=rpce.errs[0]["bad_element"]
+                    )
+                )
+            raise CommandErrorException(rpce)
+        except Exception as err:
+            raise CommandErrorException(
+                "Cannot retrieve routes! Reason: {err}".format(err=err)
+            )
+
+        adj_rib_items = adj_rib_table.items()
+
+        for route in adj_rib_items:
+            d = {}
+            # next_hop = route[0]
+            d = {elem[0]: elem[1] for elem in route[1]}
+            destination = d.pop("destination", "")
+            prefix_length = d.pop("prefix_length", 32)
+            destination = "{d}/{p}".format(d=destination, p=prefix_length)
+            as_path = d.get("as_path")
+            if as_path is not None:
+                d["as_path"] = (
+                    as_path.split(" I ")[0]
+                    .replace("AS path:", "")
+                    .replace("I", "")
+                    .strip()
+                )
+                # to be sure that contains only AS Numbers
+            route_protocol = d.get("protocol").lower()
+            if protocol and protocol != route_protocol:
+                continue
+            communities = d.get("communities")
+            if communities is not None and type(communities) is not list:
+                d["communities"] = [communities]
+            d_keys = list(d.keys())
+            # fields that are not in _COMMON_PROTOCOL_FIELDS_ are supposed to be protocol specific
+            all_protocol_attributes = {
+                key: d.pop(key) for key in d_keys if key not in _COMMON_PROTOCOL_FIELDS_
+            }
+            protocol_attributes = {
+                key: value
+                for key, value in all_protocol_attributes.items()
+                if key in _PROTOCOL_SPECIFIC_FIELDS_.get(route_protocol, [])
+            }
+            d["protocol_attributes"] = protocol_attributes
+            if destination not in adj_rib.keys():
+                adj_rib[destination] = []
+            adj_rib[destination].append(d)
+
+        return adj_rib
 
     def get_arp_table(self, vrf=""):
         """Return the ARP table."""
