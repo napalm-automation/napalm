@@ -1422,18 +1422,20 @@ class JunOSDriver(NetworkDriver):
 
         _PROTOCOL_SPECIFIC_FIELDS_ = {
             "bgp": [
+                "metric",			
+                "local_preference",
                 "as_path",
                 "communities",
-                "local_preference",
             ],
         }
 
         adj_rib_table = junos_views.junos_protocol_adj_rib_table(self.device)
 
-        rt_kargs = {"peer": neighbor}
         if protocol and direction == "in":
+            rt_kargs = {"peer": neighbor}
             rt_kargs["receive-protocol-name"] = protocol
         elif protocol and direction == "out":
+            rt_kargs = {"neighbor": neighbor}
             rt_kargs["advertising-protocol-name"] = protocol
         if vrf:
             rt_kargs["table"] = vrf

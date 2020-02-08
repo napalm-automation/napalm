@@ -615,7 +615,9 @@ junos_protocol_adj_rib_table:
     all: True
   args_key:
     peer
+    neighbor
     receive-protocol-name
+    advertising-protocol-name
   item: route-table/rt
   key:  rt-destination
   view: junos_adj_rib_table_view
@@ -633,6 +635,8 @@ junos_adj_rib_table_view:
     ###
     ### BGP Specific fields
     ###
+    metric: {rt-entry/med: int}
+    local_preference: {rt-entry/local-preference: int}
     as_path: {rt-entry/as-path: unicode}
     communities: {rt-entry/communities/community: unicode}
 
