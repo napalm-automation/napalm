@@ -453,8 +453,18 @@ class NetworkDriver(object):
             * metric2 (int)               
 
         Example::
-                                                                                                                                                                                                                                                         {                                                                                                                                                                                                                                                "1.0.0.0/24": [                                                                                                                                                                                                                                  {                                                                                                                                                                                                                                                "protocol"          : u"BGP",
-                        "inactive_reason"   : u"Local Preference",                                                                                                                                                                                                   "last_active"       : False,                                                                                                                                                                                                                 "age"               : 105219,                                                                                                                                                                                                                "next_hop"          : u"172.17.17.17",                                                                                                                                                                                                       "selected_next_hop" : True,                                                                                                                                                                                                                  "preference"        : 170,                                                                                                                                                                                                                   "current_active"    : False,
+
+            {
+                "1.0.0.0/24": [
+                    {
+                        "protocol"          : u"BGP",
+                        "inactive_reason"   : u"Local Preference",
+                        "last_active"       : False,
+                        "age"               : 105219,
+                        "next_hop"          : u"172.17.17.17",
+                        "selected_next_hop" : True,
+                        "preference"        : 170,
+                        "current_active"    : False,
                         "outgoing_interface": u"ae9.0",
                         "routing_table"     : "inet.0",
                         "protocol_attributes": {
@@ -462,13 +472,18 @@ class NetworkDriver(object):
                             "as_path"           : u"2914 8403 54113 I",
                             "communities"       : [
                                 u"2914:1234",
-                                u"2914:5678",                                                                                                                                                                                                                                u"8403:1717",
+                                u"2914:5678",
+                                u"8403:1717",
                                 u"54113:9999"
                             ],
-                            "preference2"       : -101,                                                                                                                                                                                                                  "remote_as"         : 2914,                                                                                                                                                                                                                  "local_preference"  : 100                                                                                                                                                                                                                }                                                                                 
-                            "remote_as"         : 2914,                                                                                                                                                                                                                  "local_preference"  : 100                                                                                                                                                                                                                }                                                                                                                                                                                                                                        }
+                            "preference2"       : -101,
+                            "remote_as"         : 2914,
+                            "local_preference"  : 100
+                        }
+                    }
                 ]
-        """				}                                                                                                                                                                                                                                        """
+            }
+        """
         raise NotImplementedError
 
     def get_environment(self):
