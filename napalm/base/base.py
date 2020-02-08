@@ -427,11 +427,17 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_adj_rib(self, protocol="", neighbor="", direction="", vrf=""):                                                                                                                                                                           """                                                                                                                                                                                                                                          Returns a dictionary of dictionaries containing details of all routes advertised
+    def get_adj_rib(self, protocol="", neighbor="", direction="", vrf=""):
+        """
+        Returns a dictionary of dictionaries containing details of all routes advertised
         to or received from a peer.
-                                                                                                                                                                                                                                                     :param neighbor: The peer to query to retreive routes for.                                                                                                                                                                                   :param direction: The direction to receive routes for (in/out).                                                                                                                                                                              :param vrf (optional): The VRF to receive routes for (defaults to all)
 
-        Each inner dictionary contains the following fields:                                                                                                                                                                                                                                                                                                                                                                                                                                          * current_active (True/False)
+       :param neighbor: The peer to query to retreive routes for.
+       :param direction: The direction to receive routes for (in/out).
+        :param vrf (optional): The VRF to receive routes for (defaults to all)	   
+
+        Each inner dictionary contains the following fields:
+		    * current_active (True/False)
             * next_hop (string)                                                                                                                                                                                                                          * preference (int)                                                                                                                                                                                                                           * inactive_reason (string)
             * routing_table (string)
             * protocol_attributes (dictionary)
@@ -461,7 +467,8 @@ class NetworkDriver(object):
                             ],
                             "preference2"       : -101,                                                                                                                                                                                                                  "remote_as"         : 2914,                                                                                                                                                                                                                  "local_preference"  : 100                                                                                                                                                                                                                }                                                                                 
                             "remote_as"         : 2914,                                                                                                                                                                                                                  "local_preference"  : 100                                                                                                                                                                                                                }                                                                                                                                                                                                                                        }
-                ]                                                                                                                                                                                                                                        }                                                                                                                                                                                                                                        """
+                ]
+        """				}                                                                                                                                                                                                                                        """
         raise NotImplementedError
 
     def get_environment(self):
