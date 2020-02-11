@@ -7,5 +7,5 @@ pytest-cov==2.8.1
 pytest-json==0.4.0
 pytest-pythonpath==0.7.3
 pylama==7.7.1
-mock==3.0.5
+mock==4.0.1
 tox==3.14.3
