@@ -378,6 +378,24 @@ class BaseTestGetters(object):
         return get_route_to
 
     @wrap_test_cases
+    def test_get_route_to_longer(self, test_case):
+        """Test get_route_to with longer=True"""
+        destination = "1.0.4.0/24"
+        protocol = "bgp"
+
+        get_route_to = self.device.get_route_to(
+            destination=destination, protocol=protocol, longer=True
+        )
+
+        assert len(get_route_to) > 0
+
+        for prefix, routes in get_route_to.items():
+            for route in routes:
+                assert helpers.test_model(models.route, route)
+
+        return get_route_to
+
+    @wrap_test_cases
     def test_get_snmp_information(self, test_case):
         """Test get_snmp_information."""
         get_snmp_information = self.device.get_snmp_information()

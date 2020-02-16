@@ -86,12 +86,12 @@ class TestMockDriver(object):
         d.open()
 
         with pytest.raises(TypeError) as excinfo:
-            d.get_route_to(1, 2, 3)
-        assert "get_route_to: expected at most 3 arguments, got 4" in str(excinfo.value)
+            d.get_route_to(1, 2, 3, 4)
+        assert "get_route_to: expected at most 4 arguments, got 5" in str(excinfo.value)
 
         with pytest.raises(TypeError) as excinfo:
-            d.get_route_to(1, 1, protocol=2)
-        assert "get_route_to: expected at most 3 arguments, got 3" in str(excinfo.value)
+            d.get_route_to(1, 1, 1, protocol=2)
+        assert "get_route_to: expected at most 4 arguments, got 4" in str(excinfo.value)
 
         with pytest.raises(TypeError) as excinfo:
             d.get_route_to(proto=2)
