@@ -1,5 +1,10 @@
 import pkg_resources
 import sys
+import logging
+
+logger = logging.getLogger('napalm')
+
+
 from napalm.base import get_network_driver
 from napalm._SUPPORTED_DRIVERS import SUPPORTED_DRIVERS
 
