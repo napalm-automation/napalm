@@ -207,6 +207,10 @@ class IOSXRDriver(NetworkDriver):
             "description": "",
             "speed": -1,
             "last_flapped": -1.0,
+            "is_l2_transport_enabled": False,
+            "encapsulation": "",
+            "encapsulation_type": "",
+            "interface_type": ""
         }
 
         interfaces_rpc_request = "<Get><Operational><Interfaces/></Operational></Get>"
@@ -242,6 +246,10 @@ class IOSXRDriver(NetworkDriver):
                 )
                 * 1e-3,
             )
+            is_l2_transport_enabled = napalm.base.helpers.find_txt(interface_tree, "IsL2TransportEnabled")
+            encapsulation = napalm.base.helpers.find_txt(interface_tree, "Encapsulation")
+            encapsulation_type = napalm.base.helpers.find_txt(interface_tree, "EncapsulationTypeString")
+            interface_type = napalm.base.helpers.find_txt(interface_tree, "InterfaceType")
             mtu = int(napalm.base.helpers.find_txt(interface_tree, "MTU"))
             description = napalm.base.helpers.find_txt(interface_tree, "Description")
             interfaces[interface_name] = copy.deepcopy(INTERFACE_DEFAULTS)
@@ -253,6 +261,10 @@ class IOSXRDriver(NetworkDriver):
                     "is_enabled": enabled,
                     "mac_address": mac_address,
                     "description": description,
+                    "is_l2_transport_enabled": is_l2_transport_enabled,
+                    "encapsulation": encapsulation,
+                    "encapsulation_type": encapsulation_type,
+                    "interface_type": interface_type
                 }
             )
 
