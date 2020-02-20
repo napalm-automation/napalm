@@ -1360,7 +1360,6 @@ class NXOSDriver(NXOSDriverBase):
     def get_environment(self):
         def _process_pdus(power_data):
             normalized = defaultdict(dict)
-
             # some nexus devices have keys postfixed with the shorthand device series name (ie n3k)
             # ex. on a 9k, the key is TABLE_psinfo, but on a 3k it is TABLE_psinfo_n3k
             ps_info_key = [
@@ -1391,7 +1390,6 @@ class NXOSDriver(NXOSDriverBase):
                     count += 1
                     tmp_table.append(tmp)
                 ps_info_table = {"ROW_psinfo": tmp_table}
-            
             # some nexus devices have keys postfixed with the shorthand device series name (ie n3k)
             # ex. on a 9k the key is ROW_psinfo, but on a 3k it is ROW_psinfo_n3k
             ps_info_row_key = [
@@ -1404,12 +1402,18 @@ class NXOSDriver(NXOSDriverBase):
                     psinfo.get("ps_status", "ok") == "ok"
                 )
                 normalized[psinfo["psnum"]]["output"] = float(psinfo.get("watts", -1.0))
-                # The capacity of the power supply can be determined by the model
+                # Newer nxos versions provide the total capacity in the `tot_capa` key
+                if "tot_capa" in psinfo:
+                    normalized[psinfo["psnum"]]["capacity"] = float(
+                        psinfo["tot_capa"].split()[0]
+                    )
+                # The capacity of the power supply can be determined by the model for older nxos releases
                 # ie N2200-PAC-400W = 400 watts
-                ps_model = psinfo.get("psmodel", "-1")
-                normalized[psinfo["psnum"]]["capacity"] = float(
-                    ps_model.split("-")[-1][:-1]
-                )
+                else:
+                    ps_model = psinfo.get("psmodel", "-1")
+                    normalized[psinfo["psnum"]]["capacity"] = float(
+                        ps_model.split("-")[-1][:-1]
+                    )
             return json.loads(json.dumps(normalized))
 
         def _process_fans(fan_data):
