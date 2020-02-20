@@ -1407,7 +1407,7 @@ class NXOSDriver(NXOSDriverBase):
                     normalized[psinfo["psnum"]]["capacity"] = float(
                         psinfo["tot_capa"].split()[0]
                     )
-                # The capacity of the power supply can be determined by the model for older nxos releases
+                # The capacity of the power supply can be determined by the model 
                 # ie N2200-PAC-400W = 400 watts
                 else:
                     ps_model = psinfo.get("psmodel", "-1")
