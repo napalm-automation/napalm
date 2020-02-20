@@ -1363,9 +1363,7 @@ class NXOSDriver(NXOSDriverBase):
             # some nexus devices have keys postfixed with the shorthand device series name (ie n3k)
             # ex. on a 9k, the key is TABLE_psinfo, but on a 3k it is TABLE_psinfo_n3k
             ps_info_key = [
-                i
-                for i in power_data.keys()
-                if i.startswith('TABLE_psinfo')
+                i for i in power_data.keys() if i.startswith("TABLE_psinfo")
             ][0]
             ps_info_table = power_data[ps_info_key]
             # Later version of nxos will have a list under TABLE_psinfo like
@@ -1393,9 +1391,7 @@ class NXOSDriver(NXOSDriverBase):
             # some nexus devices have keys postfixed with the shorthand device series name (ie n3k)
             # ex. on a 9k the key is ROW_psinfo, but on a 3k it is ROW_psinfo_n3k
             ps_info_row_key = [
-                i
-                for i in ps_info_table.keys()
-                if i.startswith('ROW_psinfo')
+                i for i in ps_info_table.keys() if i.startswith("ROW_psinfo")
             ][0]
             for psinfo in ps_info_table[ps_info_row_key]:
                 normalized[psinfo["psnum"]]["status"] = (
@@ -1407,7 +1403,7 @@ class NXOSDriver(NXOSDriverBase):
                     normalized[psinfo["psnum"]]["capacity"] = float(
                         psinfo["tot_capa"].split()[0]
                     )
-                # The capacity of the power supply can be determined by the model 
+                # The capacity of the power supply can be determined by the model
                 # ie N2200-PAC-400W = 400 watts
                 else:
                     ps_model = psinfo.get("psmodel", "-1")
