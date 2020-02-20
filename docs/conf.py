@@ -21,7 +21,7 @@ import subprocess
 import sys
 
 from glob import glob
-from napalm import NetworkDriver
+from napalm.base import NetworkDriver
 from jinja2 import Environment, FileSystemLoader
 
 # If extensions (or modules to document with autodoc) are in another directory,
