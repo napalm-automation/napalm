@@ -2,7 +2,7 @@ import pkg_resources
 import sys
 import logging
 
-logger = logging.getLogger('napalm')
+logger = logging.getLogger("napalm")
 
 
 from napalm.base import get_network_driver
