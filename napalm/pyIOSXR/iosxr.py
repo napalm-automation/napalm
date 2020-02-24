@@ -30,7 +30,7 @@ import logging
 from threading import Lock
 from xml.sax.saxutils import escape as escape_xml
 
-logger = logging.getLogger('napalm.iosxr')
+logger = logging.getLogger("napalm.iosxr")
 
 # third party lib
 from lxml import etree as ET
@@ -163,10 +163,10 @@ class IOSXR(object):
         """
         # ~~~ hack: ~~~
         if not self.is_alive():
-            logger.debug('Force closing tunnel before making RPC Call')
+            logger.debug("Force closing tunnel before making RPC Call")
             self.close()  # force close for safety
             self.open()  # reopen
-            logger.debug('Re-opening tunnel before making RPC Call')
+            logger.debug("Re-opening tunnel before making RPC Call")
         # ~~~ end hack ~~~
         result = self._execute_rpc(rpc_command)
         logger.debug(result)
