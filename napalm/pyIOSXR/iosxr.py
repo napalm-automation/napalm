@@ -30,7 +30,6 @@ import logging
 from threading import Lock
 from xml.sax.saxutils import escape as escape_xml
 
-logger = logging.getLogger("napalm.iosxr")
 
 # third party lib
 from lxml import etree as ET
@@ -48,6 +47,8 @@ from napalm.pyIOSXR.exceptions import TimeoutError
 from napalm.pyIOSXR.exceptions import IteratorIDError
 from napalm.pyIOSXR.exceptions import InvalidInputError
 from napalm.pyIOSXR.exceptions import InvalidXMLResponse
+
+logger = logging.getLogger("napalm.iosxr")
 
 
 class IOSXR(object):

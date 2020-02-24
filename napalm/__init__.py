@@ -2,9 +2,6 @@ import pkg_resources
 import sys
 import logging
 
-logger = logging.getLogger("napalm")
-
-
 from napalm.base import get_network_driver
 from napalm._SUPPORTED_DRIVERS import SUPPORTED_DRIVERS
 
@@ -31,3 +28,5 @@ except pkg_resources.DistributionNotFound:
     __version__ = "Not installed"
 
 __all__ = ("get_network_driver", "SUPPORTED_DRIVERS")
+
+logger = logging.getLogger("napalm")

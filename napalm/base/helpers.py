@@ -169,7 +169,9 @@ def regex_find_txt(pattern, text, default=""):
             value = type(default)(value)
     except Exception as regexFindTxtErr01:  # in case of any exception, returns default
         logger.error(
-            'errorCode="regexFindTxtErr01" in napalm.base.helpers with systemMessage="%s" message="Error while attempting to find regex pattern, default to empty string"'
+            'errorCode="regexFindTxtErr01" in napalm.base.helpers with systemMessage="%s"\
+                 message="Error while attempting to find regex pattern, \
+                      default to empty string"'
             % (regexFindTxtErr01)
         )
         value = default
@@ -216,7 +218,10 @@ def textfsm_extractor(cls, template_name, raw_text):
                 return textfsm_data
         except IOError as textfsmExtractorErr01:  # Template not present in this class
             logger.error(
-                'errorCode="textfsmExtractorErr01" in napalm.base.helpers with systemMessage="%s" message="Error while attempting to apply a textfsm template to format the output returned from the device, continuing loop..."'
+                'errorCode="textfsmExtractorErr01" in napalm.base.helpers with systemMessage="%s"\
+                message="Error while attempting to apply a textfsm template to  \
+                format the output returned from the device,\
+                continuing loop..."'
                 % (textfsmExtractorErr01)
             )
             continue  # Continue up the MRO
@@ -260,10 +265,11 @@ def find_txt(xml_tree, path, default=""):
             else:
                 value = xpath_result
         else:
-            if xpath_applied == None or xpath_applied == "":
+            if xpath_applied == "":
                 xpath_applied = ""
             logger.debug(
-                "Unable to find the specified-text-element/XML path: %s in the XML tree provided. Total Items in XML tree: %d "
+                "Unable to find the specified-text-element/XML path: %s in  \
+                    the XML tree provided. Total Items in XML tree: %d "
                 % (path, xpath_length)
             )
     except Exception as findTxtErr01:  # in case of any exception, returns default
