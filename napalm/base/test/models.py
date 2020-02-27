@@ -19,10 +19,6 @@ interface = {
     "mtu": int,
     "speed": int,
     "mac_address": str,
-    "is_l2_transport_enabled": bool,
-    "encapsulation": str,
-    "encapsulation_type": str,
-    "interface_type": str,
 }
 
 lldp_neighbors = {"hostname": str, "port": str}
