@@ -48,7 +48,7 @@ from napalm.pyIOSXR.exceptions import IteratorIDError
 from napalm.pyIOSXR.exceptions import InvalidInputError
 from napalm.pyIOSXR.exceptions import InvalidXMLResponse
 
-logger = logging.getLogger("napalm.iosxr")
+logger = logging.getLogger("napalm.pyiosxr")
 
 
 class IOSXR(object):
@@ -191,8 +191,10 @@ class IOSXR(object):
             self.device.timeout = self.timeout
             self._xml_agent_alive = True  # successfully open thus alive
         except NetMikoTimeoutException as t_err:
+            logger.error(t_err.args[0])
             raise ConnectError(t_err.args[0])
         except NetMikoAuthenticationException as au_err:
+            logger.error(au_err.args[0])
             raise ConnectError(au_err.args[0])
 
         self._cli_prompt = self.device.find_prompt()  # get the prompt
@@ -426,12 +428,14 @@ class IOSXR(object):
             root = ET.fromstring(str.encode(response))
         except ET.XMLSyntaxError:
             if 'IteratorID="' in response:
+                logger.error(self._ITERATOR_ID_ERROR_MSG)
                 raise IteratorIDError(self._ITERATOR_ID_ERROR_MSG, self)
             raise InvalidXMLResponse(
                 "Unable to process the XML Response from the device!", self
             )
 
         if "IteratorID" in root.attrib:
+            logger.error(self._ITERATOR_ID_ERROR_MSG)
             raise IteratorIDError(self._ITERATOR_ID_ERROR_MSG, self)
 
         childs = [x.tag for x in list(root)]
@@ -483,6 +487,7 @@ class IOSXR(object):
             if output is None:
                 output = ""
             elif "Invalid input detected" in output:
+                logger.error("Invalid input entered:\n%s" % (output))
                 raise InvalidInputError("Invalid input entered:\n%s" % output, self)
 
         return root
