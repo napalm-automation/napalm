@@ -45,3 +45,29 @@ INT_RPC_REQ_FILTER = '''
     </interface>
   </interface-xr>
 </interfaces>'''
+
+# subtree filter to get interface counters using GET RPC
+INT_COUNTERS_RPC_REQ_FILTER = '''
+<interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper">
+  <interface-xr>
+    <interface>
+      <interface-name/>
+      <interface-statistics>
+        <full-interface-stats>
+          <multicast-packets-sent/>
+          <output-drops/>
+          <bytes-sent/>
+          <output-errors/>
+          <bytes-received/>
+          <packets-sent/>
+          <input-errors/>
+          <broadcast-packets-sent/>
+          <multicast-packets-received/>
+          <broadcast-packets-received/>
+          <input-drops/>
+          <packets-received/>
+        </full-interface-stats>
+      </interface-statistics>
+    </interface>
+  </interface-xr>
+</interfaces>'''

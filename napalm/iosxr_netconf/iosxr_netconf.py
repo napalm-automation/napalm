@@ -211,7 +211,112 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_interfaces_counters(self):
         """Return interfaces counters."""
-        return NotImplementedError
+        rpc_reply = self.netconf_ssh.get(filter=(
+                    'subtree', C.INT_COUNTERS_RPC_REQ_FILTER)).xml
+        # Converts string to tree
+        rpc_reply_etree = ETREE.fromstring(rpc_reply)
+
+        interface_counters = {}
+
+        # Retrieves interfaces counters details
+        interface_xr_tree = rpc_reply_etree.xpath(
+            ".//int:interfaces/int:interface-xr/int:interface", namespaces=C.NS)
+        for interface in interface_xr_tree:
+            interface_name = self._find_txt(
+                interface, "./int:interface-name", namespace=C.NS)
+            interface_stats = {}
+            if not interface.xpath(
+                    "./int:interface-statistics/int:full-interface-stats", namespaces=C.NS):
+                continue
+            else:
+                interface_stats = {}
+                int_stats_xpath = "./int:interface-statistics/int:full-interface-stats/"
+                interface_stats["tx_multicast_packets"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface,
+                        int_stats_xpath+"int:multicast-packets-sent", "0", namespace=C.NS
+                    ),
+                )
+                interface_stats["tx_discards"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface,
+                        int_stats_xpath+"int:output-drops", "0", namespace=C.NS
+                    ),
+                )
+                interface_stats["tx_octets"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface,
+                        int_stats_xpath+"int:bytes-sent", "0", namespace=C.NS
+                    ),
+                )
+                interface_stats["tx_errors"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface,
+                        int_stats_xpath+"int:output-errors", "0", namespace=C.NS
+                    ),
+                )
+                interface_stats["rx_octets"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface,
+                        int_stats_xpath+"int:bytes-received", "0", namespace=C.NS
+                    ),
+                )
+                interface_stats["tx_unicast_packets"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface,
+                        int_stats_xpath+"int:packets-sent", "0", namespace=C.NS
+                    ),
+                )
+                interface_stats["rx_errors"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface,
+                        int_stats_xpath+"int:input-errors", "0", namespace=C.NS
+                    ),
+                )
+                interface_stats["tx_broadcast_packets"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface,
+                        int_stats_xpath+"int:broadcast-packets-sent", "0", namespace=C.NS
+                    ),
+                )
+                interface_stats["rx_multicast_packets"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface,
+                        int_stats_xpath+"int:multicast-packets-received", "0", namespace=C.NS
+                    ),
+                )
+                interface_stats["rx_broadcast_packets"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface,
+                        int_stats_xpath+"int:broadcast-packets-received", "0", namespace=C.NS
+                    ),
+                )
+                interface_stats["rx_discards"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface,
+                        int_stats_xpath+"int:input-drops", "0", namespace=C.NS
+                    ),
+                )
+                interface_stats["rx_unicast_packets"] = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        interface, int_stats_xpath+"int:packets-received", "0", namespace=C.NS
+                    ),
+                )
+            interface_counters[interface_name] = interface_stats
+
+        return interface_counters
 
     def get_bgp_neighbors(self):
         """Return BGP neighbors details."""
