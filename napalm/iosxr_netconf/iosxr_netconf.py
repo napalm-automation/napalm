@@ -23,6 +23,7 @@ import copy
 # import third party lib
 from ncclient import manager
 from lxml import etree as ETREE
+from ncclient.xml_ import to_ele
 
 # import NAPALM base
 from napalm.iosxr_netconf import constants as C
@@ -30,6 +31,7 @@ from napalm.base.base import NetworkDriver
 from napalm.base.exceptions import ConnectionException
 import napalm.base.helpers
 from napalm.base.utils import py23_compat
+from napalm.base.utils.py23_compat import text_type
 
 
 class IOSXRNETCONFDriver(NetworkDriver):
@@ -146,7 +148,75 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_facts(self):
         """Return facts of the device."""
-        return NotImplementedError
+        facts = {
+            "vendor": "Cisco",
+            "os_version": "",
+            "hostname": "",
+            "uptime": -1,
+            "serial_number": "",
+            "fqdn": "",
+            "model": "",
+            "interface_list": [],
+        }
+
+        interface_list = []
+
+        facts_rpc_reply = self.netconf_ssh.dispatch(to_ele(C.FACTS_RPC_REQ)).xml
+
+        # Converts string to etree
+        facts_rpc_reply_etree = ETREE.fromstring(facts_rpc_reply)
+
+        # Retrieves hostname
+        hostname = napalm.base.helpers.convert(
+            text_type, self._find_txt(facts_rpc_reply_etree, ".//suo:system-time/\
+            suo:uptime/suo:host-name", namespace=C.NS)
+        )
+
+        # Retrieves uptime
+        uptime = napalm.base.helpers.convert(
+            int, self._find_txt(facts_rpc_reply_etree, ".//suo:system-time/\
+            suo:uptime/suo:uptime", namespace=C.NS), -1
+        )
+
+        # Retrieves interfaces name
+        interface_tree = facts_rpc_reply_etree.xpath(
+                        ".//int:interfaces/int:interfaces/int:interface",
+                        namespaces=C.NS)
+        for interface in interface_tree:
+            name = self._find_txt(interface, "./int:interface-name", namespace=C.NS)
+            interface_list.append(name)
+
+        # Retrieves os version, model, serial number
+        basic_info_tree = facts_rpc_reply_etree.xpath(
+                        ".//imo:inventory/imo:racks/imo:rack/imo:attributes/\
+                        imo:inv-basic-bag", namespaces=C.NS)[0]
+        os_version = napalm.base.helpers.convert(
+            text_type,
+            self._find_txt(
+                basic_info_tree, "./imo:software-revision", namespace=C.NS)
+        )
+        model = napalm.base.helpers.convert(
+            text_type,
+            self._find_txt(basic_info_tree, "./imo:model-name", namespace=C.NS)
+        )
+        serial = napalm.base.helpers.convert(
+            text_type, self._find_txt(
+                basic_info_tree, "./imo:serial-number", namespace=C.NS)
+        )
+
+        facts.update(
+            {
+                "os_version": os_version,
+                "hostname": hostname,
+                "model": model,
+                "uptime": uptime,
+                "serial_number": serial,
+                "fqdn": hostname,
+                "interface_list": interface_list,
+            }
+        )
+
+        return facts
 
     def get_interfaces(self):
         """Return interfaces details."""

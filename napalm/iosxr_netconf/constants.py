@@ -21,7 +21,36 @@ from napalm.base.constants import *  # noqa
 
 # namespaces for XR native models
 NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
+      'suo': 'http://cisco.com/ns/yang/Cisco-IOS-XR-shellutil-oper',
+      'imo': 'http://cisco.com/ns/yang/Cisco-IOS-XR-invmgr-oper',
       }
+
+# GET RPC to retrieve device facts
+FACTS_RPC_REQ = '''<get xmlns="urn:ietf:params:xml:ns:netconf:base:1.1">
+  <filter>
+    <system-time xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-shellutil-oper"/>
+    <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper">
+      <interfaces>
+        <interface>
+          <interface-name/>
+        </interface>
+      </interfaces>
+    </interfaces>
+    <inventory xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-invmgr-oper">
+      <racks>
+        <rack>
+          <attributes>
+            <inv-basic-bag>
+              <software-revision/>
+              <model-name/>
+              <serial-number/>
+            </inv-basic-bag>
+          </attributes>
+        </rack>
+      </racks>
+    </inventory>
+  </filter>
+</get>'''
 
 # subtree filter to get interface state using GET RPC
 INT_RPC_REQ_FILTER = '''
