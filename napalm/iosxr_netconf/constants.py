@@ -28,6 +28,7 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'lldp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ethernet-lldp-oper',
       'bgp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-oper',
       'bgpc': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-cfg',
+      'mac': 'http://cisco.com/ns/yang/Cisco-IOS-XR-l2vpn-oper',
       }
 
 # GET RPC to retrieve device facts
@@ -174,3 +175,13 @@ BGP_CFG_RPC_REQ_FILTER = '''
     <instance-name>default</instance-name>
   </instance>
 </bgp>'''
+
+# subtree filter to get MAC address table using GET RPC
+MAC_TABLE_RPC_REQ_FILTER = '''
+<l2vpn-forwarding xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-l2vpn-oper">
+  <nodes>
+    <node>
+      <l2fibmac-details/>
+    </node>
+  </nodes>
+</l2vpn-forwarding>'''

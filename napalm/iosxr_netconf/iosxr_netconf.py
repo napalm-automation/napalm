@@ -1269,7 +1269,38 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_mac_address_table(self):
         """Return the MAC address table."""
-        return NotImplementedError
+        mac_table = []
+
+        rpc_reply = self.netconf_ssh.get(filter=(
+                    "subtree", C.MAC_TABLE_RPC_REQ_FILTER)).xml
+        # Converts string to etree
+        result_tree = ETREE.fromstring(rpc_reply)
+
+        mac_xpath = ".//mac:l2vpn-forwarding/mac:nodes/mac:node/mac:l2fibmac-details"
+        for mac_entry in result_tree.xpath(
+                mac_xpath+"/mac:l2fibmac-detail", namespaces=C.NS):
+            mac_raw = self._find_txt(mac_entry, "./mac:address", namespace=C.NS)
+            vlan = napalm.base.helpers.convert(
+                int,
+                self._find_txt(mac_entry, "./mac:name", namespace=C.NS).replace(
+                    "vlan", ""), 0,
+            )
+            interface = self._find_txt(mac_entry, "./mac:segment/mac:ac/\
+                            mac:interface-handle", namespace=C.NS)
+
+            mac_table.append(
+                {
+                    "mac": napalm.base.helpers.mac(mac_raw),
+                    "interface": interface,
+                    "vlan": vlan,
+                    "active": True,
+                    "static": False,
+                    "moves": 0,
+                    "last_move": 0.0,
+                }
+            )
+
+        return mac_table
 
     def get_route_to(self, destination="", protocol=""):
         """Return route details to a specific destination."""
