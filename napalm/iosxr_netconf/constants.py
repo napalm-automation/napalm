@@ -18,3 +18,30 @@
 from __future__ import unicode_literals
 
 from napalm.base.constants import *  # noqa
+
+# namespaces for XR native models
+NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
+      }
+
+# subtree filter to get interface state using GET RPC
+INT_RPC_REQ_FILTER = '''
+<interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper">
+  <interfaces>
+    <interface>
+      <interface-name/>
+      <description/>
+    </interface>
+  </interfaces>
+  <interface-xr>
+    <interface>
+      <interface-name/>
+      <line-state/>
+      <state/>
+      <mac-address>
+        <address/>
+      </mac-address>
+      <bandwidth/>
+      <mtu/>
+    </interface>
+  </interface-xr>
+</interfaces>'''

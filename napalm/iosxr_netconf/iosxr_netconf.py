@@ -17,13 +17,19 @@
 
 from __future__ import unicode_literals
 
+# import stdlib
+import copy
+
 # import third party lib
 from ncclient import manager
+from lxml import etree as ETREE
 
 # import NAPALM base
 from napalm.iosxr_netconf import constants as C
 from napalm.base.base import NetworkDriver
 from napalm.base.exceptions import ConnectionException
+import napalm.base.helpers
+from napalm.base.utils import py23_compat
 
 
 class IOSXRNETCONFDriver(NetworkDriver):
@@ -117,7 +123,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Rollback to previous commit."""
         return NotImplementedError
 
-    def _find_txt(self, xml_tree, path, default="", namespace=""):
+    def _find_txt(self, xml_tree, path, default="", namespace=None):
         """
         Extract the text value from an XML tree, using XPath.
 
@@ -128,7 +134,15 @@ class IOSXRNETCONFDriver(NetworkDriver):
         :param ns: namespace dict
         :return: a str value.
         """
-        pass
+        value = ""
+        try:
+            xpath_applied = xml_tree.xpath(path, namespaces=namespace)
+            if len(xpath_applied) and xpath_applied[0] is not None:
+                xpath_result = xpath_applied[0]
+                value = xpath_result.text.strip()
+        except Exception:  # in case of any exception, returns default
+            value = default
+        return py23_compat.text_type(value)
 
     def get_facts(self):
         """Return facts of the device."""
@@ -136,7 +150,64 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_interfaces(self):
         """Return interfaces details."""
-        return NotImplementedError
+        interfaces = {}
+
+        INTERFACE_DEFAULTS = {
+            "is_enabled": False,
+            "is_up": False,
+            "mac_address": "",
+            "description": "",
+            "speed": -1,
+            "last_flapped": -1.0,
+        }
+
+        interfaces_rpc_reply = self.netconf_ssh.get(filter=(
+                                    'subtree', C.INT_RPC_REQ_FILTER)).xml
+        # Converts string to etree
+        interfaces_rpc_reply_etree = ETREE.fromstring(interfaces_rpc_reply)
+
+        # Retrieves interfaces details
+        for (interface_tree, description_tree) in zip(
+                interfaces_rpc_reply_etree.xpath(
+                ".//int:interfaces/int:interface-xr/int:interface",
+                namespaces=C.NS),
+                interfaces_rpc_reply_etree.xpath(
+                ".//int:interfaces/int:interfaces/int:interface",
+                namespaces=C.NS)):
+
+            interface_name = self._find_txt(
+                    interface_tree, "./int:interface-name", namespace=C.NS)
+            if not interface_name:
+                continue
+            is_up = (self._find_txt(
+                interface_tree, "./int:line-state", namespace=C.NS) == "im-state-up")
+            enabled = (self._find_txt(
+                interface_tree, "./int:state", namespace=C.NS)
+                != "im-state-admin-down")
+            raw_mac = self._find_txt(
+                interface_tree, "./int:mac-address/int:address", namespace=C.NS)
+            mac_address = napalm.base.helpers.convert(
+                napalm.base.helpers.mac, raw_mac, raw_mac
+            )
+            speed = napalm.base.helpers.convert(
+                int, napalm.base.helpers.convert(int, self._find_txt(
+                 interface_tree, "./int:bandwidth", namespace=C.NS), 0) * 1e-3,)
+            mtu = int(self._find_txt(interface_tree, "./int:mtu", namespace=C.NS))
+            description = self._find_txt(
+                description_tree, "./int:description", namespace=C.NS)
+            interfaces[interface_name] = copy.deepcopy(INTERFACE_DEFAULTS)
+            interfaces[interface_name].update(
+                {
+                    "is_up": is_up,
+                    "speed": speed,
+                    "mtu": mtu,
+                    "is_enabled": enabled,
+                    "mac_address": mac_address,
+                    "description": description,
+                }
+            )
+
+        return interfaces
 
     def get_interfaces_counters(self):
         """Return interfaces counters."""
