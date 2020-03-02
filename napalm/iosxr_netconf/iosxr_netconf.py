@@ -1265,7 +1265,82 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_interfaces_ip(self):
         """Return the configured IP addresses."""
-        return NotImplementedError
+        interfaces_ip = {}
+
+        rpc_reply = self.netconf_ssh.dispatch(to_ele(C.INT_IPV4_IPV6_RPC_REQ)).xml
+        # Converts string to etree
+        ipv4_ipv6_tree = ETREE.fromstring(rpc_reply)
+
+        # parsing IPv4
+        int4_xpath = ".//int4:ipv4-network/int4:nodes/int4:node/\
+            int4:interface-data/int4:vrfs/int4:vrf/int4:details"
+        for interface in ipv4_ipv6_tree.xpath(int4_xpath+"/int4:detail", namespaces=C.NS):
+            interface_name = napalm.base.helpers.convert(
+                text_type,
+                self._find_txt(interface, "./int4:interface-name", namespace=C.NS),
+            )
+            primary_ip = napalm.base.helpers.ip(
+                self._find_txt(
+                    interface, "./int4:primary-address", namespace=C.NS
+                )
+            )
+            primary_prefix = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    interface, "./int4:prefix-length", namespace=C.NS
+                ),
+            )
+            if interface_name not in interfaces_ip.keys():
+                interfaces_ip[interface_name] = {}
+            if "ipv4" not in interfaces_ip[interface_name].keys():
+                interfaces_ip[interface_name]["ipv4"] = {}
+            if primary_ip not in interfaces_ip[interface_name].get(
+                    "ipv4", {}).keys():
+                interfaces_ip[interface_name]["ipv4"][primary_ip] = {
+                    "prefix_length": primary_prefix
+                }
+            for secondary_address in interface.xpath(
+                            "./int4:secondary-address", namespaces=C.NS):
+                secondary_ip = napalm.base.helpers.ip(
+                    self._find_txt(secondary_address, "./int4:address", namespace=C.NS)
+                )
+                secondary_prefix = napalm.base.helpers.convert(
+                    int, self._find_txt(secondary_address, "./int4:prefix-length", namespace=C.NS)
+                )
+                if secondary_ip not in interfaces_ip[interface_name]:
+                    interfaces_ip[interface_name]["ipv4"][secondary_ip] = {
+                        "prefix_length": secondary_prefix
+                    }
+
+        # parsing IPv6
+        int6_xpath = ".//int6:ipv6-network/int6:nodes/int6:node/\
+            int6:interface-data"
+        for interface in ipv4_ipv6_tree.xpath(int6_xpath + "/int6:vrfs/int6:vrf/int6:global-details/\
+                                int6:global-detail", namespaces=C.NS):
+            interface_name = napalm.base.helpers.convert(
+                text_type,
+                self._find_txt(interface, "./int6:interface-name", namespace=C.NS),
+            )
+            if interface_name not in interfaces_ip.keys():
+                interfaces_ip[interface_name] = {}
+            if "ipv6" not in interfaces_ip[interface_name].keys():
+                interfaces_ip[interface_name]["ipv6"] = {}
+            for address in interface.xpath("./int6:address", namespaces=C.NS):
+                address_ip = napalm.base.helpers.ip(
+                    self._find_txt(address, "./int6:address", namespace=C.NS)
+                )
+                address_prefix = napalm.base.helpers.convert(
+                    int, self._find_txt(address, "./int6:prefix-length", namespace=C.NS)
+                )
+                if (
+                    address_ip
+                    not in interfaces_ip[interface_name].get("ipv6", {}).keys()
+                ):
+                    interfaces_ip[interface_name]["ipv6"][address_ip] = {
+                            "prefix_length": address_prefix
+                        }
+
+        return interfaces_ip
 
     def get_mac_address_table(self):
         """Return the MAC address table."""

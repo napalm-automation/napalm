@@ -29,6 +29,8 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'bgp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-oper',
       'bgpc': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-cfg',
       'mac': 'http://cisco.com/ns/yang/Cisco-IOS-XR-l2vpn-oper',
+      'int4': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-io-oper',
+      'int6': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv6-ma-oper',
       }
 
 # GET RPC to retrieve device facts
@@ -185,3 +187,40 @@ MAC_TABLE_RPC_REQ_FILTER = '''
     </node>
   </nodes>
 </l2vpn-forwarding>'''
+
+# GET RPC to retrieve ipv4 and ipv6 addresses
+INT_IPV4_IPV6_RPC_REQ = '''
+<get xmlns="urn:ietf:params:xml:ns:netconf:base:1.1">
+  <filter>
+    <ipv4-network xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-io-oper">
+      <nodes>
+        <node>
+          <interface-data>
+            <vrfs>
+              <vrf>
+                <details>
+                  <detail/>
+                </details>
+              </vrf>
+            </vrfs>
+          </interface-data>
+        </node>
+      </nodes>
+    </ipv4-network>
+    <ipv6-network xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv6-ma-oper">
+      <nodes>
+        <node>
+          <interface-data>
+            <vrfs>
+              <vrf>
+                <global-details>
+                  <global-detail/>
+                </global-details>
+              </vrf>
+            </vrfs>
+          </interface-data>
+        </node>
+      </nodes>
+    </ipv6-network>
+  </filter>
+</get>'''
