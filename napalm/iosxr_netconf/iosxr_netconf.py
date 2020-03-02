@@ -610,7 +610,275 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_bgp_config(self, group="", neighbor=""):
         """Return BGP configuration."""
-        return NotImplementedError
+        bgp_config = {}
+
+        # a helper
+        def build_prefix_limit(
+             af_table, limit, prefix_percent, prefix_timeout):
+            prefix_limit = {}
+            inet = False
+            inet6 = False
+            preifx_type = "inet"
+            if "ipv4" in af_table.lower():
+                inet = True
+            if "ipv6" in af_table.lower():
+                inet6 = True
+                preifx_type = "inet6"
+            if inet or inet6:
+                prefix_limit = {
+                    preifx_type: {
+                        af_table[5:].lower(): {
+                            "limit": limit,
+                            "teardown": {
+                                "threshold": prefix_percent,
+                                "timeout": prefix_timeout,
+                            },
+                        }
+                    }
+                }
+            return prefix_limit
+
+        # here begins actual method...
+        rpc_reply = self.netconf_ssh.get_config(source="running", filter=(
+                            'subtree', C.BGP_CFG_RPC_REQ_FILTER)).xml
+
+        # Converts string to etree
+        result_tree = ETREE.fromstring(rpc_reply)
+
+        if not group:
+            neighbor = ""
+
+        bgp_group_neighbors = {}
+        bgp_neighbor_xpath = ".//bgpc:bgp/bgpc:instance/bgpc:instance-as/\
+             bgpc:four-byte-as/bgpc:default-vrf/bgpc:bgp-entity/bgpc:neighbors/bgpc:neighbor"
+        for bgp_neighbor in result_tree.xpath(bgp_neighbor_xpath, namespaces=C.NS):
+            group_name = self._find_txt(
+                bgp_neighbor,
+                "./bgpc:neighbor-group-add-member", namespace=C.NS
+            )
+            peer = napalm.base.helpers.ip(
+                self._find_txt(
+                    bgp_neighbor,
+                    "./bgpc:neighbor-address", namespace=C.NS
+                )
+            )
+            if neighbor and peer != neighbor:
+                continue
+            description = self._find_txt(
+                bgp_neighbor,
+                "./bgpc:description", namespace=C.NS)
+            peer_as = napalm.base.helpers.convert(
+                int, self._find_txt(
+                    bgp_neighbor,
+                    "./bgpc:remote-as/bgpc:as-yy", namespace=C.NS), 0
+            )
+            local_as = napalm.base.helpers.convert(
+                int, self._find_txt(
+                    bgp_neighbor,
+                    "./bgpc:local-as/bgpc:as-yy", namespace=C.NS), 0
+            )
+            af_table = self._find_txt(
+                bgp_neighbor,
+                "./bgpc:neighbor-afs/bgpc:neighbor-af/bgpc:af-name", namespace=C.NS
+            )
+            prefix_limit = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    bgp_neighbor,
+                    "./bgpc:neighbor-afs/bgpc:neighbor-af/\
+                    bgpc:maximum-prefixes/bgpc:prefix-limit", namespace=C.NS
+                ),
+                0,
+            )
+            prefix_percent = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    bgp_neighbor,
+                    "./bgpc:neighbor-afs/bgpc:neighbor-af/\
+                    bgpc:maximum-prefixes/bgpc:warning-percentage", namespace=C.NS
+                ),
+                0,
+            )
+            prefix_timeout = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    bgp_neighbor,
+                    "./bgpc:neighbor-afs/bgpc:neighbor-af/\
+                    bgpc:maximum-prefixes/bgpc:restart-time", namespace=C.NS
+                ),
+                0,
+            )
+            import_policy = self._find_txt(
+                bgp_neighbor,
+                "./bgpc:neighbor-afs/bgpc:neighbor-af/bgpc:route-policy-in", namespace=C.NS
+            )
+            export_policy = self._find_txt(
+                bgp_neighbor,
+                "./bgpc:neighbor-afs/bgpc:neighbor-af/bgpc:route-policy-out", namespace=C.NS
+            )
+            local_addr_raw = self._find_txt(
+                bgp_neighbor,
+                "./bgpc:local-address/bgpc:local-ip-address", namespace=C.NS
+            )
+            local_address = napalm.base.helpers.convert(
+                napalm.base.helpers.ip, local_addr_raw, local_addr_raw
+            )
+            password = self._find_txt(
+                bgp_neighbor,
+                "./bgpc:password/bgpc:password", namespace=C.NS
+            )
+            nhs = False
+            route_reflector = False
+            if group_name not in bgp_group_neighbors.keys():
+                bgp_group_neighbors[group_name] = {}
+            bgp_group_neighbors[group_name][peer] = {
+                "description": description,
+                "remote_as": peer_as,
+                "prefix_limit": build_prefix_limit(
+                    af_table, prefix_limit, prefix_percent, prefix_timeout
+                ),
+                "export_policy": export_policy,
+                "import_policy": import_policy,
+                "local_address": local_address,
+                "local_as": local_as,
+                "authentication_key": password,
+                "nhs": nhs,
+                "route_reflector_client": route_reflector,
+            }
+            if neighbor and peer == neighbor:
+                break
+
+        bgp_neighbor_group_xpath = ".//bgpc:bgp/bgpc:instance/bgpc:instance-as/\
+             bgpc:four-byte-as/bgpc:default-vrf/bgpc:bgp-entity/\
+             bgpc:neighbor-groups/bgpc:neighbor-group"
+        for bgp_group in result_tree.xpath(
+                        bgp_neighbor_group_xpath, namespaces=C.NS):
+            group_name = self._find_txt(
+                bgp_group,
+                "./bgpc:neighbor-group-name", namespace=C.NS
+            )
+            if group and group != group_name:
+                continue
+            bgp_type = "external"  # by default external
+            # must check
+            description = self._find_txt(
+                bgp_group,
+                "./bgpc:description", namespace=C.NS)
+            import_policy = self._find_txt(
+                bgp_group,
+                "./bgpc:neighbor-group-afs/\
+                bgpc:neighbor-group-af/bgpc:route-policy-in", namespace=C.NS
+            )
+            export_policy = self._find_txt(
+                bgp_group,
+                "./bgpc:neighbor-group-afs/\
+                bgpc:neighbor-group-af/bgpc:route-policy-out", namespace=C.NS
+            )
+            multipath = (
+                self._find_txt(
+                    bgp_group,
+                    "./bgpc:neighbor-group-afs/\
+                    bgpc:neighbor-group-af/bgpc:multipath", namespace=C.NS
+                )
+                == "true"
+            )
+            peer_as = napalm.base.helpers.convert(
+                int, self._find_txt(
+                    bgp_group,
+                    "./bgpc:remote-as/bgpc:as-yy", namespace=C.NS),
+                0,
+            )
+            local_as = napalm.base.helpers.convert(
+                int, self._find_txt(
+                    bgp_group,
+                    "./bgpc:local-as/bgpc:as-yy", namespace=C.NS),
+                0,
+            )
+            multihop_ttl = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    bgp_group,
+                    "./bgpc:ebgp-multihop/bgpc:max-hop-count", namespace=C.NS),
+                0,
+            )
+            local_addr_raw = self._find_txt(
+                bgp_group,
+                "./bgpc:local-address/bgpc:local-ip-address", namespace=C.NS
+            )
+            local_address = napalm.base.helpers.convert(
+                napalm.base.helpers.ip, local_addr_raw, local_addr_raw
+            )
+            af_table = self._find_txt(
+                bgp_group,
+                "./bgpc:neighbor-afs/bgpc:neighbor-af/bgpc:af-name", namespace=C.NS)
+            prefix_limit = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    bgp_group,
+                    "./bgpc:neighbor-group-afs/\
+                    bgpc:neighbor-group-af/bgpc:maximum-prefixes/\
+                    bgpc:prefix-limit", namespace=C.NS
+                ),
+                0,
+            )
+            prefix_percent = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    bgp_group,
+                    "./bgpc:neighbor-group-afs/\
+                    bgpc:neighbor-group-af/bgpc:maximum-prefixes/\
+                    bgpc:warning-percentage", namespace=C.NS
+                ),
+                0,
+            )
+            prefix_timeout = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    bgp_group,
+                    "./bgpc:neighbor-group-afs/\
+                    bgpc:neighbor-group-af/bgpc:maximum-prefixes/\
+                    bgpc:restart-time", namespace=C.NS
+                ),
+                0,
+            )
+            remove_private = True  # is it specified in the XML?
+            bgp_config[group_name] = {
+                "apply_groups": [],  # on IOS-XR will always be empty list!
+                "description": description,
+                "local_as": local_as,
+                "type": text_type(bgp_type),
+                "import_policy": import_policy,
+                "export_policy": export_policy,
+                "local_address": local_address,
+                "multipath": multipath,
+                "multihop_ttl": multihop_ttl,
+                "remote_as": peer_as,
+                "remove_private_as": remove_private,
+                "prefix_limit": build_prefix_limit(
+                    af_table, prefix_limit, prefix_percent, prefix_timeout
+                ),
+                "neighbors": bgp_group_neighbors.get(group_name, {}),
+            }
+            if group and group == group_name:
+                break
+        if "" in bgp_group_neighbors.keys():
+            bgp_config["_"] = {
+                "apply_groups": [],
+                "description": "",
+                "local_as": 0,
+                "type": "",
+                "import_policy": "",
+                "export_policy": "",
+                "local_address": "",
+                "multipath": False,
+                "multihop_ttl": 0,
+                "remote_as": 0,
+                "remove_private_as": False,
+                "prefix_limit": {},
+                "neighbors": bgp_group_neighbors.get("", {}),
+            }
+
+        return bgp_config
 
     def get_bgp_neighbors_detail(self, neighbor_address=""):
         """Detailed view of the BGP neighbors operational data."""
