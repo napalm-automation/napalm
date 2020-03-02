@@ -477,7 +477,58 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_ntp_stats(self):
         """Return NTP stats (associations)."""
-        return NotImplementedError
+        ntp_stats = []
+
+        rpc_reply = self.netconf_ssh.get(filter=(
+                            "subtree", C.NTP_STAT_RPC_REQ_FILTER)).xml
+        # Converts string to etree
+        result_tree = ETREE.fromstring(rpc_reply)
+
+        xpath = ".//ntp:ntp/ntp:nodes/ntp:node/ntp:associations/\
+                ntp:peer-summary-info/ntp:peer-info-common"
+        for node in result_tree.xpath(xpath, namespaces=C.NS):
+            synchronized = self._find_txt(
+                        node, "./ntp:is-sys-peer", namespace=C.NS) == "true"
+            address = self._find_txt(node, "./ntp:address", namespace=C.NS)
+            if address == "DLRSC node":
+                continue
+            referenceid = self._find_txt(node, "./ntp:reference-id", namespace=C.NS)
+            hostpoll = napalm.base.helpers.convert(
+                int, self._find_txt(node, "./ntp:host-poll", "0", namespace=C.NS)
+            )
+            reachability = napalm.base.helpers.convert(
+                int, self._find_txt(node, "./ntp:reachability", "0", namespace=C.NS)
+            )
+            stratum = napalm.base.helpers.convert(
+                int, self._find_txt(node, "./ntp:stratum", "0", namespace=C.NS)
+            )
+            delay = napalm.base.helpers.convert(
+                float, self._find_txt(node, "./ntp:delay", "0.0", namespace=C.NS)
+            )
+            offset = napalm.base.helpers.convert(
+                float, self._find_txt(node, "./ntp:offset", "0.0", namespace=C.NS)
+            )
+            jitter = napalm.base.helpers.convert(
+                float, self._find_txt(node, "./ntp:dispersion", "0.0", namespace=C.NS)
+            )
+
+            ntp_stats.append(
+                {
+                    "remote": address,
+                    "synchronized": synchronized,
+                    "referenceid": referenceid,
+                    "stratum": stratum,
+                    "type": "",
+                    "when": "",
+                    "hostpoll": hostpoll,
+                    "reachability": reachability,
+                    "delay": delay,
+                    "offset": offset,
+                    "jitter": jitter,
+                }
+            )
+
+        return ntp_stats
 
     def get_interfaces_ip(self):
         """Return the configured IP addresses."""

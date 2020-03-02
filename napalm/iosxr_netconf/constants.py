@@ -24,6 +24,7 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'suo': 'http://cisco.com/ns/yang/Cisco-IOS-XR-shellutil-oper',
       'imo': 'http://cisco.com/ns/yang/Cisco-IOS-XR-invmgr-oper',
       'ntpc': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-cfg',
+      'ntp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-oper',
       }
 
 # GET RPC to retrieve device facts
@@ -108,4 +109,18 @@ NTP_RPC_REQ_FILTER = '''
   <peer-vrfs>
     <peer-vrf/>
   </peer-vrfs>
+</ntp>'''
+
+# subtree filter to get NTP statistics using GET RPC
+NTP_STAT_RPC_REQ_FILTER = '''
+<ntp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-oper">
+  <nodes>
+    <node>
+      <associations>
+        <peer-summary-info>
+          <peer-info-common/>
+        </peer-summary-info>
+      </associations>
+    </node>
+  </nodes>
 </ntp>'''
