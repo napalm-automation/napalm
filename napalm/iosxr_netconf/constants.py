@@ -25,6 +25,7 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'imo': 'http://cisco.com/ns/yang/Cisco-IOS-XR-invmgr-oper',
       'ntpc': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-cfg',
       'ntp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-oper',
+      'lldp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ethernet-lldp-oper',
       }
 
 # GET RPC to retrieve device facts
@@ -124,3 +125,19 @@ NTP_STAT_RPC_REQ_FILTER = '''
     </node>
   </nodes>
 </ntp>'''
+
+# subtree filter to get LLDP neighbors and neighbors detail using GET RPC
+LLDP_RPC_REQ_FILTER = '''
+<lldp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ethernet-lldp-oper">
+  <nodes>
+    <node>
+      <neighbors>
+        <details>
+          <detail>
+            <lldp-neighbor/>
+          </detail>
+        </details>
+      </neighbors>
+    </node>
+  </nodes>
+</lldp>'''
