@@ -390,7 +390,176 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_bgp_neighbors(self):
         """Return BGP neighbors details."""
-        return NotImplementedError
+        def get_vrf_neighbors(rpc_reply_etree, xpath):
+            """Return BGP neighbors details for a given VRF."""
+            neighbors = {}
+
+            for neighbor in rpc_reply_etree.xpath(xpath, namespaces=C.NS):
+
+                this_neighbor = {}
+                this_neighbor["local_as"] = napalm.base.helpers.convert(
+                    int, self._find_txt(neighbor, "./bgp:local-as", namespace=C.NS)
+                )
+                this_neighbor["remote_as"] = napalm.base.helpers.convert(
+                    int, self._find_txt(neighbor, "./bgp:remote-as", namespace=C.NS)
+                )
+                this_neighbor["remote_id"] = napalm.base.helpers.convert(
+                    text_type, self._find_txt(
+                        neighbor, "./bgp:router-id", namespace=C.NS)
+                )
+
+                if (self._find_txt(
+                     neighbor, "./bgp:connection-admin-status", C.NS) == "1"):
+                    this_neighbor["is_enabled"] = True
+
+                try:
+                    this_neighbor["description"] = napalm.base.helpers.convert(
+                        text_type, self._find_txt(
+                         neighbor, "./bgp:description", namespace=C.NS)
+                    )
+                except AttributeError:
+                    this_neighbor["description"] = ""
+
+                this_neighbor["is_enabled"] = (
+                    self._find_txt(
+                     neighbor, "./bgp:connection-admin-status", namespace=C.NS)
+                    == "1"
+                )
+
+                if (
+                    text_type(
+                     self._find_txt(
+                      neighbor, "./bgp:connection-admin-status", namespace=C.NS)
+                    )
+                    == "1"
+                ):
+                    this_neighbor["is_enabled"] = True
+                else:
+                    this_neighbor["is_enabled"] = False
+
+                if (
+                    text_type(self._find_txt(
+                        neighbor, "./bgp:connection-state", namespace=C.NS))
+                    == "bgp-st-estab"
+                ):
+                    this_neighbor["is_up"] = True
+                    this_neighbor["uptime"] = napalm.base.helpers.convert(
+                        int,
+                        self._find_txt(
+                         neighbor, "./bgp:connection-established-time", namespace=C.NS
+                        ),
+                    )
+                else:
+                    this_neighbor["is_up"] = False
+                    this_neighbor["uptime"] = -1
+
+                this_neighbor["address_family"] = {}
+
+                if (self._find_txt(neighbor, "./bgp:connection-remote-address/\
+                     bgp:afi", C.NS) == "ipv4"):
+                    this_afi = "ipv4"
+                elif (
+                    self._find_txt(
+                     neighbor, "./bgp:connection-remote-address/bgp:afi", namespace=C.NS
+                    )
+                    == "ipv6"
+                ):
+                    this_afi = "ipv6"
+                else:
+                    this_afi = self._find_txt(
+                     neighbor, "./bgp:connection-remote-address/bgp:afi", namespace=C.NS
+                    )
+
+                this_neighbor["address_family"][this_afi] = {}
+
+                try:
+                    this_neighbor["address_family"][this_afi][
+                        "received_prefixes"
+                    ] = napalm.base.helpers.convert(
+                        int,
+                        self._find_txt(
+                         neighbor, "./bgp:af-data/bgp:prefixes-accepted", namespace=C.NS
+                        ),
+                        0,
+                    ) + napalm.base.helpers.convert(
+                        int,
+                        self._find_txt(
+                         neighbor, "./bgp:af-data/bgp:prefixes-denied", namespace=C.NS
+                        ),
+                        0,
+                    )
+                    this_neighbor["address_family"][this_afi][
+                        "accepted_prefixes"
+                    ] = napalm.base.helpers.convert(
+                        int,
+                        self._find_txt(
+                         neighbor, "./bgp:af-data/bgp:prefixes-accepted", namespace=C.NS
+                        ),
+                        0,
+                    )
+                    this_neighbor["address_family"][this_afi][
+                        "sent_prefixes"
+                    ] = napalm.base.helpers.convert(
+                        int, self._find_txt(neighbor, "./bgp:af-data/\
+                            bgp:prefixes-advertised", namespace=C.NS), 0,
+                    )
+                except AttributeError:
+                    this_neighbor["address_family"][this_afi][
+                                        "received_prefixes"] = -1
+                    this_neighbor["address_family"][this_afi][
+                                        "accepted_prefixes"] = -1
+                    this_neighbor["address_family"][this_afi][
+                                        "sent_prefixes"] = -1
+
+                neighbor_ip = napalm.base.helpers.ip(
+                    self._find_txt(
+                        neighbor, "./bgp:neighbor-address", namespace=C.NS
+                    )
+                )
+
+                neighbors[neighbor_ip] = this_neighbor
+
+            return neighbors
+
+        rpc_reply = self.netconf_ssh.get(filter=(
+                    'subtree', C.BGP_NEIGHBOR_REQ_FILTER)).xml
+        # Converts string to tree
+        rpc_reply_etree = ETREE.fromstring(rpc_reply)
+        result = {}
+        this_vrf = {}
+        this_vrf["peers"] = {}
+
+        # get neighbors and router id from default(global) VRF
+        default_vrf_xpath = '''.//bgp:bgp/bgp:instances/bgp:instance/
+          bgp:instance-active/bgp:default-vrf/'''
+        this_vrf["router_id"] = napalm.base.helpers.convert(
+            text_type,
+            self._find_txt(
+               rpc_reply_etree, default_vrf_xpath+"bgp:global-process-info/\
+                    bgp:vrf/bgp:router-id", namespace=C.NS)
+        )
+        this_vrf["peers"] = get_vrf_neighbors(rpc_reply_etree,
+                    default_vrf_xpath+"bgp:neighbors/bgp:neighbor")
+        result['global'] = this_vrf
+
+        # get neighbors and router id from other VRFs
+        vrf_xpath = '''.//bgp:bgp/bgp:instances/
+                    bgp:instance/bgp:instance-active/bgp:vrfs'''
+        for vrf in rpc_reply_etree.xpath(
+                        vrf_xpath+"/bgp:vrf", namespaces=C.NS):
+            this_vrf = {}
+            this_vrf["peers"] = {}
+            this_vrf["router_id"] = napalm.base.helpers.convert(
+                text_type,
+                self._find_txt(vrf, "./bgp:global-process-info/bgp:vrf/\
+                                    bgp:router-id", namespace=C.NS))
+            vrf_name = self._find_txt(vrf, "./bgp:vrf-name", namespace=C.NS)
+            this_vrf["peers"] = get_vrf_neighbors(rpc_reply_etree,
+                        vrf_xpath+"/bgp:vrf[bgp:vrf-name='"+vrf_name+"']\
+                        /bgp:neighbors/bgp:neighbor")
+            result[vrf_name] = this_vrf
+
+        return result
 
     def get_environment(self):
         """Return environment details."""

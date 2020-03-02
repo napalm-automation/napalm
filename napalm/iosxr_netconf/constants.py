@@ -26,6 +26,7 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'ntpc': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-cfg',
       'ntp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-oper',
       'lldp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ethernet-lldp-oper',
+      'bgp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-oper',
       }
 
 # GET RPC to retrieve device facts
@@ -141,3 +142,26 @@ LLDP_RPC_REQ_FILTER = '''
     </node>
   </nodes>
 </lldp>'''
+
+# subtree filter to get BGP neighbors and neighbors detail using GET RPC
+BGP_NEIGHBOR_REQ_FILTER = '''
+<bgp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-oper">
+  <instances>
+    <instance>
+      <instance-name>default</instance-name>
+      <instance-active>
+        <default-vrf>
+          <global-process-info/>
+          <neighbors/>
+        </default-vrf>
+        <vrfs>
+          <vrf>
+            <vrf-name/>
+            <global-process-info/>
+            <neighbors/>
+          </vrf>
+        </vrfs>
+      </instance-active>
+    </instance>
+  </instances>
+</bgp>'''
