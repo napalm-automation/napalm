@@ -449,7 +449,31 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_ntp_servers(self):
         """Return the NTP servers configured on the device."""
-        return NotImplementedError
+        ntp_servers = {}
+
+        rpc_reply = self.netconf_ssh.get_config(source="running", filter=(
+                            "subtree", C.NTP_RPC_REQ_FILTER)).xml
+        # Converts string to etree
+        result_tree = ETREE.fromstring(rpc_reply)
+
+        for version in ["ipv4", "ipv6"]:
+            ntp_xpath = ".//ntpc:ntp/ntpc:peer-vrfs/ntpc:peer-vrf/\
+                        ntpc:peer-{version}s".format(version=version)
+            for peer in result_tree.xpath(
+                    ntp_xpath+"/ntpc:peer-{version}".format(
+                    version=version), namespaces=C.NS):
+                peer_type = self._find_txt(peer, "./ntpc:peer-type-{version}/\
+                    ntpc:peer-type".format(version=version), namespace=C.NS)
+                if peer_type != "server":
+                    continue
+                server_address = self._find_txt(
+                        peer, "./ntpc:address-{version}".format(
+                                version=version), namespace=C.NS)
+                if not server_address:
+                    continue
+                ntp_servers[server_address] = {}
+
+        return ntp_servers
 
     def get_ntp_stats(self):
         """Return NTP stats (associations)."""
