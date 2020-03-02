@@ -23,6 +23,7 @@ from napalm.base.constants import *  # noqa
 NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'suo': 'http://cisco.com/ns/yang/Cisco-IOS-XR-shellutil-oper',
       'imo': 'http://cisco.com/ns/yang/Cisco-IOS-XR-invmgr-oper',
+      'ntpc': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-cfg',
       }
 
 # GET RPC to retrieve device facts
@@ -100,3 +101,11 @@ INT_COUNTERS_RPC_REQ_FILTER = '''
     </interface>
   </interface-xr>
 </interfaces>'''
+
+# subtree filter to get NTP peers and servers using GET CONFIG RPC
+NTP_RPC_REQ_FILTER = '''
+<ntp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-cfg">
+  <peer-vrfs>
+    <peer-vrf/>
+  </peer-vrfs>
+</ntp>'''
