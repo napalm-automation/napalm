@@ -31,6 +31,7 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'mac': 'http://cisco.com/ns/yang/Cisco-IOS-XR-l2vpn-oper',
       'int4': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-io-oper',
       'int6': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv6-ma-oper',
+      'snmp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-snmp-agent-cfg',
       }
 
 # GET RPC to retrieve device facts
@@ -224,3 +225,7 @@ INT_IPV4_IPV6_RPC_REQ = '''
     </ipv6-network>
   </filter>
 </get>'''
+
+# subtree filter to get SNMP configuration using GET CONFIG RPC
+SNMP_RPC_REQ_FILTER = '''
+<snmp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-snmp-agent-cfg"/>'''

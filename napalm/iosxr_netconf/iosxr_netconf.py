@@ -1383,7 +1383,38 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_snmp_information(self):
         """Return the SNMP configuration."""
-        return NotImplementedError
+        snmp_information = {}
+
+        rpc_reply = self.netconf_ssh.get_config(source="running", filter=(
+                                        "subtree", C.SNMP_RPC_REQ_FILTER)).xml
+        # Converts string to etree
+        snmp_result_tree = ETREE.fromstring(rpc_reply)
+
+        _PRIVILEGE_MODE_MAP_ = {"read-only": "ro", "read-write": "rw"}
+
+        snmp_information = {
+            "chassis_id": self._find_txt(
+                snmp_result_tree, ".//snmp:snmp/snmp:system/snmp:chassis-id", namespace=C.NS
+            ),
+            "contact": self._find_txt(
+                snmp_result_tree, ".//snmp:snmp/snmp:system/snmp:contact", namespace=C.NS),
+            "location": self._find_txt(
+                snmp_result_tree, ".//snmp:snmp/snmp:system/snmp:location", namespace=C.NS),
+            "community": {},
+        }
+
+        for community in snmp_result_tree.xpath(".//snmp:snmp/snmp:administration/\
+             snmp:default-communities/snmp:default-community", namespaces=C.NS):
+            name = self._find_txt(community, "./snmp:community-name", namespace=C.NS)
+            privilege = self._find_txt(community, "./snmp:priviledge", namespace=C.NS)
+            acl = (self._find_txt(community, "./snmp:v6-access-list", namespace=C.NS)
+                  or self._find_txt(community, "./snmp:v4-access-list", namespace=C.NS))
+            snmp_information["community"][name] = {
+                "mode": _PRIVILEGE_MODE_MAP_.get(privilege, ""),
+                "acl": acl,
+            }
+
+        return snmp_information
 
     def get_probes_config(self):
         """Return the configuration of the probes."""
