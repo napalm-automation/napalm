@@ -412,10 +412,14 @@ class IOSXRNETCONFDriver(NetworkDriver):
                             lldp_xpath+"/lldp:lldp-neighbor", namespaces=C.NS):
             interface_name = self._find_txt(
                 neighbor, "./lldp:receiving-interface-name", namespace=C.NS)
-            system_name = self._find_txt(
-                neighbor, "./lldp:detail/lldp:system-name", namespace=C.NS)
-            port_id = self._find_txt(
-                neighbor, "./lldp:port-id-detail", namespace=C.NS)
+            system_name = napalm.base.helpers.convert(
+                text_type,
+                self._find_txt(neighbor, "./lldp:detail/lldp:system-name", namespace=C.NS)
+            )
+            port_id = napalm.base.helpers.convert(
+                text_type,
+                self._find_txt(neighbor, "./lldp:port-id-detail", namespace=C.NS)
+            )
             if interface_name not in lldp_neighbors.keys():
                 lldp_neighbors[interface_name] = []
             lldp_neighbors[interface_name].append(
