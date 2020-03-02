@@ -32,6 +32,8 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'int4': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-io-oper',
       'int6': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv6-ma-oper',
       'snmp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-snmp-agent-cfg',
+      'usr': 'http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-locald-cfg',
+      'aaa': 'http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-lib-cfg',
       }
 
 # GET RPC to retrieve device facts
@@ -229,3 +231,11 @@ INT_IPV4_IPV6_RPC_REQ = '''
 # subtree filter to get SNMP configuration using GET CONFIG RPC
 SNMP_RPC_REQ_FILTER = '''
 <snmp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-snmp-agent-cfg"/>'''
+
+# subtree filter to get SNMP configuration using GET CONFIG RPC
+USERS_RPC_REQ_FILTER = '''
+<aaa xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-lib-cfg">
+  <usernames xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-locald-cfg">
+    <username/>
+  </usernames>
+</aaa>'''

@@ -1437,7 +1437,37 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_users(self):
         """Return user configuration."""
-        return NotImplementedError
+        users = {}
+
+        _CISCO_GROUP_TO_CISCO_PRIVILEGE_MAP = {
+            "root-system": 15,
+            "operator": 5,
+            "sysadmin": 1,
+            "serviceadmin": 1,
+            "root-lr": 15,
+        }
+
+        _DEFAULT_USER_DETAILS = {"level": 0, "password": "", "sshkeys": []}
+
+        rpc_reply = self.netconf_ssh.get_config(source="running", filter=(
+                                            "subtree", C.USERS_RPC_REQ_FILTER)).xml
+        # Converts string to etree
+        users_xml_reply = ETREE.fromstring(rpc_reply)
+
+        for user_entry in users_xml_reply.xpath(".//aaa:aaa/usr:usernames/\
+                                            usr:username", namespaces=C.NS):
+            username = self._find_txt(user_entry, "./usr:name", namespace=C.NS)
+            group = self._find_txt(user_entry, "./usr:usergroup-under-usernames/\
+                                usr:usergroup-under-username/usr:name", namespace=C.NS)
+            level = _CISCO_GROUP_TO_CISCO_PRIVILEGE_MAP.get(group, 0)
+            password = self._find_txt(user_entry, "./usr:password", namespace=C.NS)
+            user_details = _DEFAULT_USER_DETAILS.copy()
+            user_details.update(
+                {"level": level, "password": py23_compat.text_type(password)}
+            )
+            users[username] = user_details
+
+        return users
 
     def get_config(self, retrieve="all", full=False):
         """Return device configuration."""
