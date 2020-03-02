@@ -882,7 +882,272 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_bgp_neighbors_detail(self, neighbor_address=""):
         """Detailed view of the BGP neighbors operational data."""
-        return NotImplementedError
+        def get_vrf_neighbors_detail(rpc_reply_etree, xpath, vrf_name, vrf_keepalive, vrf_holdtime):
+            """Detailed view of the BGP neighbors operational data for a given VRF."""
+            bgp_vrf_neighbors_detail = {}
+            bgp_vrf_neighbors_detail[vrf_name] = {}
+            for neighbor in rpc_reply_etree.xpath(xpath, namespaces=C.NS):
+                up = (
+                    self._find_txt(neighbor, "./bgp:connection-state", namespace=C.NS)
+                    == "bgp-st-estab"
+                )
+                local_as = napalm.base.helpers.convert(
+                    int, self._find_txt(neighbor, "./bgp:local-as", namespace=C.NS), 0
+                )
+                remote_as = napalm.base.helpers.convert(
+                    int, self._find_txt(neighbor, "./bgp:remote-as", namespace=C.NS), 0
+                )
+                router_id = napalm.base.helpers.ip(
+                    self._find_txt(neighbor, "./bgp:router-id", namespace=C.NS)
+                )
+                remote_address = napalm.base.helpers.ip(
+                    self._find_txt(
+                        neighbor, "./bgp:neighbor-address",
+                        namespace=C.NS
+                    )
+                )
+                local_address_configured = (self._find_txt(
+                    neighbor, "./bgp:is-local-address-configured", namespace=C.NS)
+                    == "true"
+                )
+                local_address = napalm.base.helpers.ip(self._find_txt(
+                        neighbor, "./bgp:connection-local-address/\
+                        bgp:ipv4-address", namespace=C.NS
+                    )
+                    or self._find_txt(
+                     neighbor, "./bgp:connection-local-address/\
+                     bgp:ipv6-address", namespace=C.NS
+                    )
+                )
+                local_port = napalm.base.helpers.convert(
+                    int, self._find_txt(
+                     neighbor, "./bgp:connection-local-port", namespace=C.NS)
+                )
+                remote_address = napalm.base.helpers.ip(
+                    self._find_txt(
+                        neighbor, "./bgp:connection-remote-address/\
+                        bgp:ipv4-address", namespace=C.NS
+                    )
+                    or self._find_txt(
+                        neighbor, "./bgp:connection-remote-address/\
+                        bgp:ipv6-address", namespace=C.NS
+                    )
+                )
+                remote_port = napalm.base.helpers.convert(
+                    int, self._find_txt(
+                     neighbor, "./bgp:connection-remote-port", namespace=C.NS)
+                )
+                multihop = (self._find_txt(
+                    neighbor, "\
+                    ./bgp:is-external-neighbor-not-directly-connected", namespace=C.NS
+                    )
+                    == "true"
+                )
+                remove_private_as = (self._find_txt(
+                    neighbor, "./bgp:af-data/\
+                    bgp:remove-private-as-from-updates", namespace=C.NS
+                    )
+                    == "true"
+                )
+                multipath = (
+                    self._find_txt(
+                     neighbor, "./bgp:af-data/\
+                     bgp:selective-multipath-eligible", namespace=C.NS
+                    )
+                    == "true"
+                )
+                import_policy = self._find_txt(
+                    neighbor, "./bgp:af-data/bgp:route-policy-in", namespace=C.NS
+                )
+                export_policy = self._find_txt(
+                    neighbor, "./bgp:af-data/bgp:route-policy-out", namespace=C.NS
+                )
+                input_messages = napalm.base.helpers.convert(
+                    int, self._find_txt(
+                        neighbor, "./bgp:messges-received", namespace=C.NS), 0
+                )
+                output_messages = napalm.base.helpers.convert(
+                    int, self._find_txt(
+                        neighbor, "./bgp:messages-sent", namespace=C.NS), 0
+                )
+                connection_down_count = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        neighbor, "./bgp:connection-down-count", namespace=C.NS),
+                    0,
+                )
+                messages_queued_out = napalm.base.helpers.convert(
+                    int, self._find_txt(
+                        neighbor, "./bgp:messages-queued-out", namespace=C.NS), 0
+                )
+                connection_state = (
+                    self._find_txt(neighbor, "./bgp:connection-state", namespace=C.NS)
+                    .replace("bgp-st-", "")
+                    .title()
+                )
+                if connection_state == "Estab":
+                    connection_state = "Established"
+                previous_connection_state = napalm.base.helpers.convert(
+                    text_type,
+                    _BGP_STATE_.get(self._find_txt(
+                        neighbor, "./bgp:previous-connection-state", "0", namespace=C.NS
+                        )
+                    ),
+                )
+                active_prefix_count = napalm.base.helpers.convert(
+                    int, self._find_txt(
+                     neighbor, "./bgp:af-data/bgp:number-of-bestpaths", namespace=C.NS
+                    ),
+                    0,
+                )
+                accepted_prefix_count = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        neighbor, "./bgp:af-data/bgp:prefixes-accepted", namespace=C.NS
+                    ),
+                    0,
+                )
+                suppressed_prefix_count = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        neighbor, "./bgp:af-data/bgp:prefixes-denied", namespace=C.NS
+                    ),
+                    0,
+                )
+                received_prefix_count = accepted_prefix_count + suppressed_prefix_count
+                advertised_prefix_count = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        neighbor, "./bgp:af-data/\
+                        bgp:prefixes-advertised", namespace=C.NS
+                    ),
+                    0,
+                )
+                suppress_4byte_as = (
+                    self._find_txt(
+                        neighbor, "./bgp:suppress4-byte-as", namespace=C.NS) == "true"
+                )
+                local_as_prepend = (
+                    self._find_txt(
+                        neighbor, "./bgp:local-as-no-prepend", namespace=C.NS) != "true"
+                )
+                holdtime = (
+                    napalm.base.helpers.convert(
+                        int, self._find_txt(
+                            neighbor, "./bgp:hold-time", namespace=C.NS), 0
+                    )
+                    or vrf_holdtime
+                )
+                configured_holdtime = napalm.base.helpers.convert(
+                    int, self._find_txt(
+                        neighbor, "./bgp:configured-hold-time", namespace=C.NS), 0
+                )
+                keepalive = (
+                    napalm.base.helpers.convert(
+                        int, self._find_txt(
+                            neighbor, "./bgp:keep-alive-time", namespace=C.NS), 0
+                    )
+                    or vrf_keepalive
+                )
+                configured_keepalive = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                        neighbor, "./bgp:configured-keepalive", namespace=C.NS),
+                    0,
+                )
+                flap_count = int(connection_down_count / 2)
+                if up:
+                    flap_count -= 1
+
+                if remote_as not in bgp_vrf_neighbors_detail[vrf_name].keys():
+                    bgp_vrf_neighbors_detail[vrf_name][remote_as] = []
+                bgp_vrf_neighbors_detail[vrf_name][remote_as].append(
+                    {
+                        "up": up,
+                        "local_as": local_as,
+                        "remote_as": remote_as,
+                        "router_id": router_id,
+                        "local_address": local_address,
+                        "routing_table": vrf_name,
+                        "local_address_configured": local_address_configured,
+                        "local_port": local_port,
+                        "remote_address": remote_address,
+                        "remote_port": remote_port,
+                        "multihop": multihop,
+                        "multipath": multipath,
+                        "import_policy": import_policy,
+                        "export_policy": export_policy,
+                        "input_messages": input_messages,
+                        "output_messages": output_messages,
+                        "input_updates": 0,
+                        "output_updates": 0,
+                        "messages_queued_out": messages_queued_out,
+                        "connection_state": connection_state,
+                        "previous_connection_state": previous_connection_state,
+                        "last_event": "",
+                        "remove_private_as": remove_private_as,
+                        "suppress_4byte_as": suppress_4byte_as,
+                        "local_as_prepend": local_as_prepend,
+                        "holdtime": holdtime,
+                        "configured_holdtime": configured_holdtime,
+                        "keepalive": keepalive,
+                        "configured_keepalive": configured_keepalive,
+                        "active_prefix_count": active_prefix_count,
+                        "received_prefix_count": received_prefix_count,
+                        "accepted_prefix_count": accepted_prefix_count,
+                        "suppressed_prefix_count": suppressed_prefix_count,
+                        "advertised_prefix_count": advertised_prefix_count,
+                        "flap_count": flap_count,
+                    }
+                )
+            return bgp_vrf_neighbors_detail
+
+        rpc_reply = self.netconf_ssh.get(filter=(
+                    'subtree', C.BGP_NEIGHBOR_REQ_FILTER)).xml
+        # Converts string to tree
+        rpc_reply_etree = ETREE.fromstring(rpc_reply)
+        _BGP_STATE_ = {
+            "0": "Unknown",
+            "1": "Idle",
+            "2": "Connect",
+            "3": "OpenSent",
+            "4": "OpenConfirm",
+            "5": "Active",
+            "6": "Established",
+        }
+        bgp_neighbors_detail = {}
+
+        # get neighbors from default(global) VRF
+        default_vrf_xpath = '''.//bgp:bgp/bgp:instances/bgp:instance/
+          bgp:instance-active/bgp:default-vrf'''
+        vrf_name = "default"
+        default_vrf_keepalive = napalm.base.helpers.convert(int, self._find_txt(
+                rpc_reply_etree, default_vrf_xpath+"/bgp:global-process-info/bgp:vrf/\
+                bgp:keep-alive-time", namespace=C.NS),)
+        default_vrf_holdtime = napalm.base.helpers.convert(int, self._find_txt(
+                rpc_reply_etree, default_vrf_xpath+"/bgp:global-process-info/bgp:vrf/\
+                bgp:hold-time", namespace=C.NS),)
+        bgp_neighbors_detail["global"] = get_vrf_neighbors_detail(rpc_reply_etree,
+                default_vrf_xpath+"/bgp:neighbors/bgp:neighbor", vrf_name,
+                default_vrf_keepalive, default_vrf_holdtime)[vrf_name]
+
+        # get neighbors from other VRFs
+        vrf_xpath = '''.//bgp:bgp/bgp:instances/
+                    bgp:instance/bgp:instance-active/bgp:vrfs'''
+        for vrf in rpc_reply_etree.xpath(
+                        vrf_xpath+"/bgp:vrf", namespaces=C.NS):
+            vrf_name = self._find_txt(vrf, "./bgp:vrf-name", namespace=C.NS)
+            vrf_keepalive = napalm.base.helpers.convert(int, self._find_txt(
+                    vrf, "./bgp:global-process-info/bgp:vrf/\
+                    bgp:keep-alive-time", namespace=C.NS),)
+            vrf_holdtime = napalm.base.helpers.convert(int, self._find_txt(
+                    vrf, "./bgp:global-process-info/bgp:vrf/\
+                    bgp:hold-time", namespace=C.NS),)
+            bgp_neighbors_detail.update(get_vrf_neighbors_detail(
+                    rpc_reply_etree, vrf_xpath+"/bgp:vrf[bgp:vrf-name='"+vrf_name+"']\
+                    /bgp:neighbors/bgp:neighbor", vrf_name, vrf_keepalive, vrf_holdtime))
+
+        return bgp_neighbors_detail
 
     def get_arp_table(self, vrf=""):
         """Return the ARP table."""
