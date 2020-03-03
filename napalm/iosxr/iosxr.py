@@ -2094,7 +2094,9 @@ class IOSXRDriver(NetworkDriver):
         try:
             ipv = IPAddress(destination).version
         except AddrFormatError:
-            if (!destination):
+            try:
+                destination
+            except NameError:
                 destination = ""
             logger.error('Incorrect format of IP Address in traceroute \
              with value provided:%s' % (str(destination)))
