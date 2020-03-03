@@ -42,6 +42,7 @@ from napalm.base.exceptions import CommandTimeoutException
 
 logger = logging.getLogger(__name__)
 
+
 class IOSXRDriver(NetworkDriver):
     """IOS-XR driver class: inherits NetworkDriver from napalm.base."""
 
@@ -81,7 +82,7 @@ class IOSXRDriver(NetworkDriver):
             raise ConnectionException(conn_err.args[0])
 
     def close(self):
-        logger.debug('Closed connection with device %s' % (self.hostname))
+        logger.debug("Closed connection with device %s" % (self.hostname))
         self.device.close()
 
     def is_alive(self):
@@ -452,7 +453,10 @@ class IOSXRDriver(NetworkDriver):
                         str, napalm.base.helpers.find_txt(neighbor, "Description")
                     )
                 except AttributeError:
-                    logger.debug("No attribute 'description' for neighbor %s" % (this_neighbor['remote_as']))
+                    logger.debug(
+                        "No attribute 'description' for neighbor %s"
+                        % (this_neighbor["remote_as"])
+                    )
                     this_neighbor["description"] = ""
 
                 this_neighbor["is_enabled"] = (
@@ -1660,7 +1664,7 @@ class IOSXRDriver(NetworkDriver):
         try:
             ipv = IPAddress(network).version
         except AddrFormatError:
-            logger.error('Wrong destination IP Address format supplied to get_route_to')
+            logger.error("Wrong destination IP Address format supplied to get_route_to")
             raise TypeError("Wrong destination IP Address!")
 
         if ipv == 6:
@@ -2098,8 +2102,11 @@ class IOSXRDriver(NetworkDriver):
                 destination
             except NameError:
                 destination = ""
-            logger.error('Incorrect format of IP Address in traceroute \
-             with value provided:%s' % (str(destination)))
+            logger.error(
+                "Incorrect format of IP Address in traceroute \
+             with value provided:%s"
+                % (str(destination))
+            )
             return {"error": "Wrong destination IP Address!"}
 
         source_tag = ""
