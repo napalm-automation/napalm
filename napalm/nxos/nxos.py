@@ -1138,9 +1138,14 @@ class NXOSDriver(NXOSDriverBase):
                 )
 
         ipv6_command = "show ipv6 interface"
-        ipv6_interf_table_vrf = self._get_command_table(
-            ipv6_command, "TABLE_intf", "ROW_intf"
-        )
+        # If the switch doesn't run IPv6 or support it the show ipv6 interface
+        # command will throw an error so catch it and return the ipv4 addresses
+        try:
+            ipv6_interf_table_vrf = self._get_command_table(
+                ipv6_command, "TABLE_intf", "ROW_intf"
+            )
+        except napalm.nxapi_plumbing.errors.NXAPIPostError:
+            return interfaces_ip
 
         for interface in ipv6_interf_table_vrf:
             interface_name = str(interface.get("intf-name", ""))

@@ -33,6 +33,7 @@ from jnpr.junos.exception import RpcError
 from jnpr.junos.exception import ConfigLoadError
 from jnpr.junos.exception import RpcTimeoutError
 from jnpr.junos.exception import ConnectTimeoutError
+from jnpr.junos.exception import ProbeError
 from jnpr.junos.exception import LockError as JnprLockError
 from jnpr.junos.exception import UnlockError as JnrpUnlockError
 
@@ -86,6 +87,7 @@ class JunOSDriver(NetworkDriver):
         self.keepalive = optional_args.get("keepalive", 30)
         self.ssh_config_file = optional_args.get("ssh_config_file", None)
         self.ignore_warning = optional_args.get("ignore_warning", False)
+        self.auto_probe = optional_args.get("auto_probe", 0)
 
         # Define locking method
         self.lock_disable = optional_args.get("lock_disable", False)
@@ -120,9 +122,9 @@ class JunOSDriver(NetworkDriver):
     def open(self):
         """Open the connection with the device."""
         try:
-            self.device.open()
-        except ConnectTimeoutError as cte:
-            raise ConnectionException(cte.msg)
+            self.device.open(auto_probe=self.auto_probe)
+        except (ConnectTimeoutError, ProbeError) as cte:
+            raise ConnectionException(cte.msg) from cte
         self.device.timeout = self.timeout
         self.device._conn._session.transport.set_keepalive(self.keepalive)
         if hasattr(self.device, "cu"):
@@ -1598,12 +1600,15 @@ class JunOSDriver(NetworkDriver):
 
         return mac_address_table
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
         """Return route details to a specific destination, learned from a certain protocol."""
         routes = {}
 
         if not isinstance(destination, str):
             raise TypeError("Please specify a valid destination!")
+
+        if longer:
+            raise NotImplementedError("Longer prefixes not yet supported on JunOS")
 
         if protocol and isinstance(destination, str):
             protocol = protocol.lower()
