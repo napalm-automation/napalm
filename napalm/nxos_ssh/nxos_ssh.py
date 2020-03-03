@@ -1317,10 +1317,12 @@ class NXOSSSHDriver(NXOSDriverBase):
                     bgp_attr["remote_as"] = 0  # 0? , locally sourced
         return bgp_attr
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
         """
         Only IPv4 supported, vrf aware, longer_prefixes parameter ready
         """
+        if longer:
+            raise NotImplementedError("Longer prefixes not yet supported for NXOS")
         longer_pref = ""  # longer_prefixes support, for future use
         vrf = ""
 
