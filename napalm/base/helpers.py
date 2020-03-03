@@ -266,12 +266,11 @@ def find_txt(xml_tree, path, default=""):
                 value = xpath_result
         else:
             if xpath_applied == "":
-                xpath_applied = ""
-            logger.debug(
-                "Unable to find the specified-text-element/XML path: %s in  \
-                    the XML tree provided. Total Items in XML tree: %d "
-                % (path, xpath_length)
-            )
+                logger.debug(
+                    "Unable to find the specified-text-element/XML path: %s in  \
+                        the XML tree provided. Total Items in XML tree: %d "
+                    % (path, xpath_length)
+                )
     except Exception as findTxtErr01:  # in case of any exception, returns default
         logger.error(findTxtErr01)
         value = default
