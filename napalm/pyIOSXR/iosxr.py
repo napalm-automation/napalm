@@ -48,7 +48,7 @@ from napalm.pyIOSXR.exceptions import IteratorIDError
 from napalm.pyIOSXR.exceptions import InvalidInputError
 from napalm.pyIOSXR.exceptions import InvalidXMLResponse
 
-logger = logging.getLogger("napalm.pyiosxr")
+logger = logging.getLogger(__name__)
 
 
 class IOSXR(object):
