@@ -1,0 +1,18 @@
+[{
+	"static": false,
+	"active": true,
+	"vlan": 2,
+	"mac": "11:11:22:22:33:33",
+	"interface": "GigabitEthernet0/0/1",
+	"moves": -1,
+	"last_move": -1.0
+},
+{
+	"static": false,
+	"active": true,
+	"vlan": 1,
+	"mac": "3333.2222.1111",
+	"interface": "GigabitEthernet0/1/1",
+	"moves": -1,
+	"last_move": -1.0
+}]
