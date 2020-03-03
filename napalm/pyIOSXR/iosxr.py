@@ -476,6 +476,7 @@ class IOSXR(object):
                 error_msg = root.get("ErrorMsg") or ""
 
             error_msg += "\nOriginal call was: %s" % xml_rpc_command
+            logger.error(error_msg)
             raise XMLCLIError(error_msg, self)
 
         if "CLI" in childs:
