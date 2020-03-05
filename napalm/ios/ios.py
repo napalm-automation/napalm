@@ -163,32 +163,10 @@ class IOSDriver(NetworkDriver):
         self.device = self._netmiko_open(
             device_type, netmiko_optional_args=self.netmiko_optional_args
         )
+        """
         # ensure in enable mode
-        #
-        # check current privilege level
-        output = self.device.send_command('show privilege')
-        privilege_level = re.match(r'.*[Pp]rivilege\s[Ll]evel.*\s(\d+)', output)
-
-        if privilege_level is not None:
-            privilege_level = privilege_level.group(1)
-            if int(privilege_level) == 1:
-                if 'secret' in self.netmiko_optional_args:
-                    self.device.enable()
-                    output = self.device.send_command('show privilege')
-                    privilege_level = re.match(r'.*[Pp]rivilege\s[Ll]evel.*\s(\d+)', output)
-                    if privilege_level is not None:
-                        privilege_level = privilege_level.group(1)
-                        if int(privilege_level) < 15:
-                            msg = ("unable to enter privileged exec mode"
-                                   "privilege-level 15 required"
-                                   )
-                            raise PermissionError(msg)
-                else:
-                    msg = ( "unable to enter privileged exec mode - please provide enable secret")
-                    raise PermissionError(msg)
-        else:
-            msg = ("unable to detect privilege level")
-            raise CommandErrorException(msg)
+        self.device.enable()
+        """
 
     def _discover_file_system(self):
         try:
