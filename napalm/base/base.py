@@ -95,7 +95,6 @@ class NetworkDriver(object):
             raise ConnectionException("Cannot connect to {}".format(self.hostname))
 
         # ensure in enable mode
-        self._netmiko_device.enable()
         return self._netmiko_device
 
     def _netmiko_close(self):
