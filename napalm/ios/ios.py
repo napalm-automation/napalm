@@ -3346,7 +3346,7 @@ class IOSDriver(NetworkDriver):
             }
         try:
             return instances if not name else instances[name]
-        except:
+        except AttributeError:
             raise ValueError("The vrf %s does not exist" % name)
 
     def get_config(self, retrieve="all", full=False):
