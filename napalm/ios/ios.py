@@ -3315,6 +3315,13 @@ class IOSDriver(NetworkDriver):
             "interfaces": {"interface": interface_dict},
         }
 
+        # No vrf is defined return default one
+        if len(sh_vrf_detail) == 0:
+            if name:
+                raise ValueError("No vrf is setup on router")
+            else:
+                return instances
+
         for vrf in sh_vrf_detail.split("\n\n"):
 
             first_part = vrf.split("Address family")[0]
@@ -3337,7 +3344,10 @@ class IOSDriver(NetworkDriver):
                 "state": {"route_distinguisher": RD},
                 "interfaces": {"interface": interfaces},
             }
-        return instances if not name else instances[name]
+        try:
+            return instances if not name else instances[name]
+        except AttributeError:
+            raise ValueError("The vrf %s does not exist" % name)
 
     def get_config(self, retrieve="all", full=False):
         """Implementation of get_config for IOS.
