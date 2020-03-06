@@ -2358,9 +2358,17 @@ class IOSDriver(NetworkDriver):
                 return []
 
             elif len(line.split()) == 9:
-                address, ref_clock, st, when, poll, reach, delay, offset, disp = (
-                    line.split()
-                )
+                (
+                    address,
+                    ref_clock,
+                    st,
+                    when,
+                    poll,
+                    reach,
+                    delay,
+                    offset,
+                    disp,
+                ) = line.split()
                 address_regex = re.match(r"(\W*)([0-9.*]*)", address)
             try:
                 ntp_stats.append(
@@ -2961,8 +2969,8 @@ class IOSDriver(NetworkDriver):
                                         destination, _vrf, nh, ip_version
                                     )
                                 nh_line_found = (
-                                    False
-                                )  # for next RT entry processing ...
+                                    False  # for next RT entry processing ...
+                                )
                                 routes[destination].append(route_entry)
         return routes
 
@@ -3339,7 +3347,7 @@ class IOSDriver(NetworkDriver):
         try:
             return instances if not name else instances[name]
         except:
-            raise ValueError('The vrf %s does not exist' % name)
+            raise ValueError("The vrf %s does not exist" % name)
 
     def get_config(self, retrieve="all", full=False):
         """Implementation of get_config for IOS.
