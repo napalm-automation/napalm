@@ -540,9 +540,8 @@ class IOSDriver(NetworkDriver):
         If merge operation, perform copy <file> running-config.
         """
         if self.priv_exec_mode is False:
-            msg = ("Must be in privileged exec mode to alter device configuration - "
-                   "no enable secret set")
-            raise ValueError(msg)
+            msg = ("Must be in privileged exec mode to alter device configuration")
+            raise PermissionError(msg)
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
@@ -596,7 +595,7 @@ class IOSDriver(NetworkDriver):
         """Discard loaded candidate configurations."""
         if self.priv_exec_mode is False:
             msg = ("Must be in priv exec mode(level 15) to alter device configuration candidates")
-            raise ValueError(msg)
+            raise PermissionError(msg)
         self._discard_config()
 
     @_file_prompt_quiet
@@ -613,7 +612,7 @@ class IOSDriver(NetworkDriver):
         """Rollback configuration to filename or to self.rollback_cfg file."""
         if self.priv_exec_mode is False:
             msg = ("Must be in priv exec mode(level 15) to access device configuration archive")
-            raise ValueError(msg)
+            raise PermissionError(msg)
         filename = self.rollback_cfg
         cfg_file = self._gen_full_path(filename)
         if not self._check_file_exists(cfg_file):
@@ -2473,7 +2472,10 @@ class IOSDriver(NetworkDriver):
         ----    -----------       --------    -----
         All    1111.2222.3333    STATIC      CPU
         """
-
+        # requires priv exec mode (level 15)
+        if self.priv_exec_mode is False:
+            msg = ("this command requires privileged exec mode(level 15)")
+            raise PermissionError
         RE_MACTABLE_DEFAULT = r"^" + MAC_REGEX
         RE_MACTABLE_6500_1 = r"^\*\s+{}\s+{}\s+".format(
             VLAN_REGEX, MAC_REGEX
@@ -2670,8 +2672,10 @@ class IOSDriver(NetworkDriver):
         return mac_address_table
 
     def get_probes_config(self):
-        if self.enable_secret_avail is False:
-            pass
+        # requires priv exec mode(level 15)
+        if self.priv_exec_mode is False:
+            msg = ("this command requires privileged exec mode(level 15)")
+            raise PermissionError(msg)
         probes = {}
         probes_regex = (
             r"ip\s+sla\s+(?P<id>\d+)\n"
@@ -3033,6 +3037,10 @@ class IOSDriver(NetworkDriver):
         'location': u'123 Anytown USA Rack 404'}
 
         """
+        # requires priv exec mode (level 15)
+        if self.priv_exec_mode is False:
+            msg = ("this command requires privileged exec mode(level 15)")
+            raise PermissionError(msg)
         # default values
         snmp_dict = {
             "chassis_id": "unknown",
@@ -3086,6 +3094,10 @@ class IOSDriver(NetworkDriver):
         The level is an integer between 0 and 15, where 0 is the
         lowest access and 15 represents full access to the device.
         """
+        # requires priv exec mode (level 15)
+        if self.priv_exec_mode is False:
+            msg = ("this command requires privileged exec mode(level 15)")
+            raise PermissionError(msg)
         username_regex = (
             r"^username\s+(?P<username>\S+)\s+(?:privilege\s+(?P<priv_level>\S+)"
             r"\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
