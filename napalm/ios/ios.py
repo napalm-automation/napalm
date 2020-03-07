@@ -154,6 +154,10 @@ class IOSDriver(NetworkDriver):
         self.platform = "ios"
         self.profile = [self.platform]
         self.use_canonical_interface = optional_args.get("canonical_int", False)
+        if 'secret' in optional_args:
+            self.enable_secret_avail = True
+        else:
+            self.enable_secret_avail = False
 
     def open(self):
         """Open a connection to the device."""
@@ -163,10 +167,10 @@ class IOSDriver(NetworkDriver):
         self.device = self._netmiko_open(
             device_type, netmiko_optional_args=self.netmiko_optional_args
         )
-        """
-        # ensure in enable mode
-        self.device.enable()
-        """
+        # check for enable mode if secret is given
+        if self.priv_exec is True:
+            self.device.enable()
+
 
     def _discover_file_system(self):
         try:
@@ -392,6 +396,9 @@ class IOSDriver(NetworkDriver):
         return "\n".join(new_diff)
 
     def compare_config(self):
+        if self.enable_secret_avail is False:
+            msg = ("Must be in enable mode to access device configuration archive")
+            raise ValueError(msg)
         """
         show archive config differences <base_file> <new_file>.
 
@@ -504,6 +511,10 @@ class IOSDriver(NetworkDriver):
 
         If merge operation, perform copy <file> running-config.
         """
+        if self.enable_secret_avail is False:
+            msg = ("Must be in privileged exec mode to alter device configuration - "
+                   "no enable secret set")
+            raise ValueError(msg)
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
@@ -555,6 +566,10 @@ class IOSDriver(NetworkDriver):
 
     def discard_config(self):
         """Discard loaded candidate configurations."""
+        if self.enable_secret_avail is False:
+            msg = ("Must be in enable mode to access device configuration archive - "
+                   "no enable secret set")
+            raise ValueError(msg)
         self._discard_config()
 
     @_file_prompt_quiet
@@ -569,6 +584,9 @@ class IOSDriver(NetworkDriver):
 
     def rollback(self):
         """Rollback configuration to filename or to self.rollback_cfg file."""
+        if self.enable_secret_avail is False:
+            msg = ("Must be in enable mode to access device configuration archive")
+            raise ValueError(msg)
         filename = self.rollback_cfg
         cfg_file = self._gen_full_path(filename)
         if not self._check_file_exists(cfg_file):
@@ -2625,6 +2643,8 @@ class IOSDriver(NetworkDriver):
         return mac_address_table
 
     def get_probes_config(self):
+        if self.enable_secret_avail is False:
+
         probes = {}
         probes_regex = (
             r"ip\s+sla\s+(?P<id>\d+)\n"
