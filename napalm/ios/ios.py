@@ -175,7 +175,7 @@ class IOSDriver(NetworkDriver):
         # check if session privileges would allow config changes
         if self.enable_secret_avail is True:
             self.device.enable()
-            self._check_priv_exec()
+            self.priv_exec_mode = True
         else:
             if self.device.check_enable_mode() is True:
                 self._check_priv_exec()
@@ -595,7 +595,7 @@ class IOSDriver(NetworkDriver):
     def discard_config(self):
         """Discard loaded candidate configurations."""
         if self.priv_exec_mode is False:
-            msg = ("Must be in priv exec mode(level15) to alter device configuration candidates")
+            msg = ("Must be in priv exec mode(level 15) to alter device configuration candidates")
             raise ValueError(msg)
         self._discard_config()
 
@@ -612,7 +612,7 @@ class IOSDriver(NetworkDriver):
     def rollback(self):
         """Rollback configuration to filename or to self.rollback_cfg file."""
         if self.priv_exec_mode is False:
-            msg = ("Must be in priv exec mode(level15) to access device configuration archive")
+            msg = ("Must be in priv exec mode(level 15) to access device configuration archive")
             raise ValueError(msg)
         filename = self.rollback_cfg
         cfg_file = self._gen_full_path(filename)
@@ -1284,7 +1284,12 @@ class IOSDriver(NetworkDriver):
             :param group='':
             :param neighbor='':
         """
-
+        # relies on show running output - therefore check for priv-exec
+        if self.priv_exec_mode is False:
+            msg = ("unable to obtain bgp config - command requires privilege exec mode(level 15)\n"
+                   "no enable secret was given and the current ssh session"
+                   " privilege level is not suitable")
+            raise PermissionError(msg)
         bgp_config = {}
 
         def build_prefix_limit(af_table, limit, prefix_percent, prefix_timeout):
@@ -2379,16 +2384,11 @@ class IOSDriver(NetworkDriver):
             }
         """
         ntp_servers = {}
-        command = "show run | include ntp server"
+        command = "show ntp assoc"
         output = self._send_command(command)
-
-        for line in output.splitlines():
-            split_line = line.split()
-            if "vrf" == split_line[2]:
-                ntp_servers[split_line[4]] = {}
-            else:
-                ntp_servers[split_line[2]] = {}
-
+        ipregex = re.compile(r'((\d+\.){3}(\d+)).*$', re.MULTILINE)
+        for match in re.finditer(ipregex, output):
+            ntp_servers[str(match.group(1))] = {}
         return ntp_servers
 
     def get_ntp_stats(self):
