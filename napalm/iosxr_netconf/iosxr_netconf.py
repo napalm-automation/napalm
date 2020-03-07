@@ -99,7 +99,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def is_alive(self):
         """Return flag with the state of the connection."""
-        return NotImplementedError
+        if self.netconf_ssh is None:
+            return {"is_alive": False}
+        return {"is_alive": self.netconf_ssh._session.transport.is_active()}
 
     def load_replace_candidate(self, filename=None, config=None):
         """Open the candidate config and replace."""
