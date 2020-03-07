@@ -155,7 +155,11 @@ class IOSDriver(NetworkDriver):
         self.profile = [self.platform]
         self.use_canonical_interface = optional_args.get("canonical_int", False)
         if 'secret' in optional_args:
-            self.enable_secret_avail = True
+            if isinstance(optional_args['secret'], str):
+                self.enable_secret_avail = True
+            else:
+                msg = ("Expected <class \'str\'> not a {0}".format(type(optional_args['secret'])))
+                raise ValueError(msg)
         else:
             self.enable_secret_avail = False
         self.priv_exec_mode = False
@@ -168,34 +172,41 @@ class IOSDriver(NetworkDriver):
         self.device = self._netmiko_open(
             device_type, netmiko_optional_args=self.netmiko_optional_args
         )
-        # check for enable mode if secret is given
+        # check if session privileges would allow config changes
         if self.enable_secret_avail is True:
             self.device.enable()
+            self._check_priv_exec()
         else:
             if self.device.check_enable_mode() is True:
                 self._check_priv_exec()
-
 
     def _check_priv_exec(self, fn=''):
         if self._get_current_privilege_level() == 15:
             self.priv_exec_mode = True
 
     def _get_current_privilege_level(self) -> int:
+        """Attempts to obtain the privilege level of the session"""
         output = self.device.send_command('show privilege')
         output = re.match('.*(\d{1,2})$', output)
         if output is not None:
             privlevel = output.group(1)
+        else:
+            msg = (
+                "unable to detect privilege level"
+            )
+            raise ValueError(msg)
         return int(privlevel)
 
     def _discover_file_system(self):
-        try:
-            return self.device._autodetect_fs()
-        except Exception:
-            msg = (
-                "Netmiko _autodetect_fs failed (to workaround specify "
-                "dest_file_system in optional_args.)"
-            )
-            raise CommandErrorException(msg)
+        if self.priv_exec_mode is True:
+            try:
+                return self.device._autodetect_fs()
+            except Exception:
+                msg = (
+                    "Netmiko _autodetect_fs failed (to workaround specify "
+                    "dest_file_system in optional_args.)"
+                )
+                raise CommandErrorException(msg)
 
     def close(self):
         """Close the connection to the device and do the necessary cleanup."""
@@ -411,9 +422,11 @@ class IOSDriver(NetworkDriver):
         return "\n".join(new_diff)
 
     def compare_config(self):
-        if self.enable_secret_avail is False:
-            msg = ("Must be in enable mode to access device configuration archive")
-            raise ValueError(msg)
+        if self.priv_exec_mode is False:
+            msg = ("Must be in privileged exec mode(level 15)"
+                   " to access device configuration archive"
+                   )
+            raise PermissionError(msg)
         """
         show archive config differences <base_file> <new_file>.
 
@@ -526,7 +539,7 @@ class IOSDriver(NetworkDriver):
 
         If merge operation, perform copy <file> running-config.
         """
-        if self.enable_secret_avail is False:
+        if self.priv_exec_mode is False:
             msg = ("Must be in privileged exec mode to alter device configuration - "
                    "no enable secret set")
             raise ValueError(msg)
@@ -581,9 +594,8 @@ class IOSDriver(NetworkDriver):
 
     def discard_config(self):
         """Discard loaded candidate configurations."""
-        if self.enable_secret_avail is False:
-            msg = ("Must be in enable mode to access device configuration archive - "
-                   "no enable secret set")
+        if self.priv_exec_mode is False:
+            msg = ("Must be in priv exec mode(level15) to alter device configuration candidates")
             raise ValueError(msg)
         self._discard_config()
 
@@ -599,8 +611,8 @@ class IOSDriver(NetworkDriver):
 
     def rollback(self):
         """Rollback configuration to filename or to self.rollback_cfg file."""
-        if self.enable_secret_avail is False:
-            msg = ("Must be in enable mode to access device configuration archive")
+        if self.priv_exec_mode is False:
+            msg = ("Must be in priv exec mode(level15) to access device configuration archive")
             raise ValueError(msg)
         filename = self.rollback_cfg
         cfg_file = self._gen_full_path(filename)
