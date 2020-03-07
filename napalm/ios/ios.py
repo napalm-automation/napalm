@@ -3133,8 +3133,15 @@ class IOSDriver(NetworkDriver):
     def ping(self, destination, **kwargs):
         """
         Execute ping on the device and returns a dictionary with the result.
+        optional arguments:
+            * source
+            * ttl
+            * timeout
+            * size
+            * count
+            * vrf
 
-        certain parameters require privilege exec mode:
+        certain arguments require privilege exec mode:
             * source
             * ttl
             * timeout
@@ -3165,39 +3172,28 @@ class IOSDriver(NetworkDriver):
                     if self.priv_exec_mode is False:
                         msg = ("option {0} requires privileged exec mode(level 15) ".format(param))
                         raise PermissionError(msg)
-        if 'source' in kwargs:
-            source = kwargs['source']
-        else:
-            source = C.PING_SOURCE
-        if 'timeout' in kwargs:
-            timeout = kwargs['timeout']
-        else:
-            timeout = C.PING_TIMEOUT
-        if 'size' in kwargs:
-            size = kwargs['size']
-        else:
-            size = C.PING_SIZE
-        if 'count' in kwargs:
-            count = kwargs['count']
-        else:
-            count = C.PING_COUNT
-        if 'vrf' in kwargs:
-            vrf = kwargs['vrf']
-        else:
-            vrf = C.PING_VRF
-        ttl = C.PING_TTL
         ping_dict = {}
         # vrf needs to be right after the ping command
-        if vrf:
-            command = "ping vrf {} {}".formsourceat(vrf, destination)
+        if 'vrf' in kwargs:
+            command = "ping vrf {} {}".formsourceat(kwargs['vrf'], destination)
         else:
             command = "ping {}".format(destination)
         if self.priv_exec_mode is True:
-            command += " timeout {}".format(timeout)
-            command += " size {}".format(size)
-            command += " repeat {}".format(count)
-            if source != "":
-                command += " source {}".format(source)
+            if 'timeout' in kwargs:
+                command += " timeout {}".format(kwargs['timeout'])
+            else:
+                command += " timeout {}".format(C.PING_TIMEOUT)
+            if 'size' in kwargs:
+                command += " size {}".format(kwargs['size'])
+            else:
+                command += " size {}".format(C.PING_SIZE)
+            if 'count' in kwargs:
+                command += " repeat {}".format(kwargs['count'])
+            else:
+                command += " repeat {}".format(C.PING_COUNT)
+            if 'source' in kwargs:
+                if kwargs['source'] != "":
+                    command += " source {}".format(kwargs['source'])
         output = self._send_command(command)
         if "%" in output:
             ping_dict["error"] = output
@@ -3240,18 +3236,12 @@ class IOSDriver(NetworkDriver):
 
         return ping_dict
 
-    def traceroute(
-        self,
-        destination,
-        source=C.TRACEROUTE_SOURCE,
-        ttl=C.TRACEROUTE_TTL,
-        timeout=C.TRACEROUTE_TIMEOUT,
-        vrf=C.TRACEROUTE_VRF,
-    ):
+    def traceroute(self, destination, **kwargs):
         """
         Executes traceroute on the device and returns a dictionary with the result.
 
         :param destination: Host or IP Address of the destination
+        # these work only in privileged exec mode (level 15)
         :param source (optional): Use a specific IP Address to execute the traceroute
         :param ttl (optional): Maimum number of hops -> int (0-255)
         :param timeout (optional): Number of seconds to wait for response -> int (1-3600)
@@ -3267,21 +3257,32 @@ class IOSDriver(NetworkDriver):
             * ip_address (str)
             * host_name (str)
         """
-
+        timeout = C.TRACEROUTE_TIMEOUT
+        ttl = C.TRACEROUTE_TTL
         # vrf needs to be right after the traceroute command
-        if vrf:
-            command = "traceroute vrf {} {}".format(vrf, destination)
+        if 'vrf' in kwargs:
+            command = "traceroute vrf {} {}".format(kwargs['vrf'], destination)
         else:
             command = "traceroute {}".format(destination)
-        if source:
-            command += " source {}".format(source)
-        if ttl:
-            if isinstance(ttl, int) and 0 <= timeout <= 255:
-                command += " ttl 0 {}".format(str(ttl))
-        if timeout:
-            # Timeout should be an integer between 1 and 3600
-            if isinstance(timeout, int) and 1 <= timeout <= 3600:
-                command += " timeout {}".format(str(timeout))
+        # check if session has the right privileges for certain parameters
+        params = ('source', 'ttl', 'timeout')
+        for param in params:
+            if param in kwargs:
+                msg = ("option {0} requires privileged exec mode(level 15) ".format(param))
+                raise PermissionError(msg)
+        # these params work only in priv exec - skip if unprivileged
+        if self.priv_exec_mode is True:
+            if 'source' in kwargs:
+                command += " source {}".format(kwargs['source'])
+            if 'ttl' in kwargs:
+                if isinstance(kwargs['ttl'], int) and 0 <= kwargs['ttl'] <= 255:
+                    command += " ttl 0 {}".format(str(kwargs['ttl']))
+                    ttl = kwargs['ttl']
+            if 'timeout' in kwargs:
+                # Timeout should be an integer between 1 and 3600
+                if isinstance(kwargs['timeout'], int) and 1 <= kwargs['timeout'] <= 3600:
+                    command += " timeout {}".format(str(kwargs['timeout']))
+                    timeout = kwargs['timeout']
 
         # Calculation to leave enough time for traceroute to complete assumes send_command
         # delay of .2 seconds.
