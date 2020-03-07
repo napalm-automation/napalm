@@ -158,6 +158,7 @@ class IOSDriver(NetworkDriver):
             self.enable_secret_avail = True
         else:
             self.enable_secret_avail = False
+        self.priv_exec_mode = False
 
     def open(self):
         """Open a connection to the device."""
@@ -168,9 +169,23 @@ class IOSDriver(NetworkDriver):
             device_type, netmiko_optional_args=self.netmiko_optional_args
         )
         # check for enable mode if secret is given
-        if self.priv_exec is True:
+        if self.enable_secret_avail is True:
             self.device.enable()
+        else:
+            if self.device.check_enable_mode() is True:
+                self._check_priv_exec()
 
+
+    def _check_priv_exec(self, fn=''):
+        if self._get_current_privilege_level() == 15:
+            self.priv_exec_mode = True
+
+    def _get_current_privilege_level(self) -> int:
+        output = self.device.send_command('show privilege')
+        output = re.match('.*(\d{1,2})$', output)
+        if output is not None:
+            privlevel = output.group(1)
+        return int(privlevel)
 
     def _discover_file_system(self):
         try:
@@ -2644,7 +2659,7 @@ class IOSDriver(NetworkDriver):
 
     def get_probes_config(self):
         if self.enable_secret_avail is False:
-
+            pass
         probes = {}
         probes_regex = (
             r"ip\s+sla\s+(?P<id>\d+)\n"
