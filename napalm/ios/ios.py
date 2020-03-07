@@ -3130,18 +3130,17 @@ class IOSDriver(NetworkDriver):
             )
         return users
 
-    def ping(
-        self,
-        destination,
-        source=C.PING_SOURCE,
-        ttl=C.PING_TTL,
-        timeout=C.PING_TIMEOUT,
-        size=C.PING_SIZE,
-        count=C.PING_COUNT,
-        vrf=C.PING_VRF,
-    ):
+    def ping(self, destination, **kwargs):
         """
         Execute ping on the device and returns a dictionary with the result.
+
+        certain parameters require privilege exec mode:
+            * source
+            * ttl
+            * timeout
+            * size
+            * count
+
 
         Output dictionary has one of following keys:
             * success
@@ -3158,18 +3157,47 @@ class IOSDriver(NetworkDriver):
             * ip_address (str)
             * rtt (float)
         """
+        params = ('source', 'ttl', 'timeout', 'size', 'count')
+        req_privexec = False
+        for param in params:
+            if param in kwargs:
+                if self.priv_exec_mode is False:
+                    if self.priv_exec_mode is False:
+                        msg = ("option {0} requires privileged exec mode(level 15) ".format(param))
+                        raise PermissionError(msg)
+        if 'source' in kwargs:
+            source = kwargs['source']
+        else:
+            source = C.PING_SOURCE
+        if 'timeout' in kwargs:
+            timeout = kwargs['timeout']
+        else:
+            timeout = C.PING_TIMEOUT
+        if 'size' in kwargs:
+            size = kwargs['size']
+        else:
+            size = C.PING_SIZE
+        if 'count' in kwargs:
+            count = kwargs['count']
+        else:
+            count = C.PING_COUNT
+        if 'vrf' in kwargs:
+            vrf = kwargs['vrf']
+        else:
+            vrf = C.PING_VRF
+        ttl = C.PING_TTL
         ping_dict = {}
         # vrf needs to be right after the ping command
         if vrf:
-            command = "ping vrf {} {}".format(vrf, destination)
+            command = "ping vrf {} {}".formsourceat(vrf, destination)
         else:
             command = "ping {}".format(destination)
-        command += " timeout {}".format(timeout)
-        command += " size {}".format(size)
-        command += " repeat {}".format(count)
-        if source != "":
-            command += " source {}".format(source)
-
+        if self.priv_exec_mode is True:
+            command += " timeout {}".format(timeout)
+            command += " size {}".format(size)
+            command += " repeat {}".format(count)
+            if source != "":
+                command += " source {}".format(source)
         output = self._send_command(command)
         if "%" in output:
             ping_dict["error"] = output
