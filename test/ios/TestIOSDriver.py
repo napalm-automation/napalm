@@ -148,9 +148,9 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
         cls.device = ios.IOSDriver(
             ip_addr, username, password, optional_args=optional_args
         )
-        cls.mock_priv_exec_mode = mock.patch.object('device', 'priv_exec_mode', return_value=True)
         if cls.mock:
             cls.device.device = FakeIOSDevice()
+
 
         else:
             cls.device.open()

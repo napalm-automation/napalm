@@ -37,6 +37,7 @@ class PatchedIOSDriver(ios.IOSDriver):
 
         self.patched_attrs = ["device"]
         self.device = FakeIOSDevice()
+        self.priv_exec_mode = True
 
     def disconnect(self):
         pass
