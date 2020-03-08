@@ -2385,8 +2385,11 @@ class IOSDriver(NetworkDriver):
         ntp_servers = {}
         command = "show ntp assoc"
         output = self._send_command(command)
-        ipregex = re.compile(r'((\d+\.){3}(\d+)).*$', re.MULTILINE)
-        for match in re.finditer(ipregex, output):
+        ip4regex = re.compile(r'((\d+\.){3}(\d+)).*$', re.MULTILINE)
+        ip6regex = re.compile(r'((([0-9A-Fa-f]+):)+([0-9A-Fa-f]+)).*$', re.MULTILINE)
+        for match in re.finditer(ip4regex, output):
+            ntp_servers[str(match.group(1))] = {}
+        for match in re.finditer(ip6regex, output):
             ntp_servers[str(match.group(1))] = {}
         return ntp_servers
 

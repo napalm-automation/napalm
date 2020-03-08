@@ -18,8 +18,10 @@ import unittest
 from napalm.ios import ios
 from napalm.base.test.base import TestConfigNetworkDriver, TestGettersNetworkDriver
 import re
+import mock
 
 
+@patch('TestConfigIOSDriver.priv_exec_mode', True)
 class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
     """Configuration Tests for IOSDriver.
 
@@ -48,17 +50,18 @@ class TestConfigIOSDriver(unittest.TestCase, TestConfigNetworkDriver):
     @classmethod
     def setUpClass(cls):
         """Executed when the class is instantiated."""
+
+
         ip_addr = "127.0.0.1"
         username = "vagrant"
         password = "vagrant"
         cls.vendor = "ios"
-        optional_args = {"port": 12204, "dest_file_system": "bootflash:"}
+        optional_args = {"port": 12204, "dest_file_system": "bootflash:", 'secret': 'test12'}
 
         cls.device = ios.IOSDriver(
             ip_addr, username, password, optional_args=optional_args
         )
         cls.device.open()
-
         # Setup initial state
         cls.device.load_replace_candidate(filename="%s/initial.conf" % cls.vendor)
         cls.device.commit_config()
@@ -141,13 +144,14 @@ class TestGetterIOSDriver(unittest.TestCase, TestGettersNetworkDriver):
         cls.vendor = "ios"
         optional_args = {}
         optional_args["dest_file_system"] = "flash:"
-
+        optional_args["secret"] = "flash:"
         cls.device = ios.IOSDriver(
             ip_addr, username, password, optional_args=optional_args
         )
-
+        cls.mock_priv_exec_mode = mock.patch.object('device', 'priv_exec_mode', return_value=True)
         if cls.mock:
             cls.device.device = FakeIOSDevice()
+
         else:
             cls.device.open()
 
