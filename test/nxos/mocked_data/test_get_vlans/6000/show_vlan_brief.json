@@ -6,8 +6,7 @@
         "vlanshowbr-vlanid-utf": 230,
         "vlanshowbr-vlanname": "database",
         "vlanshowbr-vlanstate": "active",
-        "vlanshowbr-shutstate": "noshutdown",
-        "vlanshowplist-ifidx": "port-channel1-2,port-channel10-13,port-channel99,Ethernet1/3,Ethernet1/6-10,Ethernet1/20-24,Ethernet1/29-44,Ethernet2/1-2"
+        "vlanshowbr-shutstate": "noshutdown"
       },
       {
         "vlanshowbr-vlanid": 231,
