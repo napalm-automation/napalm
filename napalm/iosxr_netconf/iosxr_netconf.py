@@ -1473,4 +1473,17 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_config(self, retrieve="all", full=False):
         """Return device configuration."""
-        return NotImplementedError
+        # NOTE: 'full' argument ignored. 'with-default' capability not supported.
+
+        # default values
+        config = {"startup": "", "running": "", "candidate": ""}
+
+        if retrieve.lower() in ["running", "all"]:
+            config["running"] = py23_compat.text_type(
+                                    self.netconf_ssh.get_config(
+                                        source="running").xml)
+        if retrieve.lower() in ["candidate", "all"]:
+            config["candidate"] = py23_compat.text_type(
+                                      self.netconf_ssh.get_config(
+                                        source="candidate").xml)
+        return config
