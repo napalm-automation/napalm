@@ -72,7 +72,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                            password=self.password,
                            timeout=self.timeout,
                            device_params={'name': 'iosxr'})
-            if not self.lock_on_connect:
+            if self.lock_on_connect:
                 self._lock()
         except Exception as conn_err:
             raise ConnectionException(conn_err.args[0])
