@@ -79,7 +79,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def close(self):
         """Close the connection."""
-        return NotImplementedError
+        if self.locked:
+            self._unlock()
+        self.netconf_ssh.close_session()
 
     def _lock(self):
         """Lock the config DB."""
