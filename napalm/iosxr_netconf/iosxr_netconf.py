@@ -145,7 +145,10 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def commit_config(self, message=""):
         """Commit configuration."""
-        return NotImplementedError
+        self.netconf_ssh.commit()
+        self.pending_changes = False
+        if self.locked:
+            self._unlock()
 
     def discard_config(self):
         """Discard changes."""
