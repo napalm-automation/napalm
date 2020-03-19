@@ -129,7 +129,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def load_replace_candidate(self, filename=None, config=None):
         """Open the candidate config and replace."""
-        return NotImplementedError
+        self.replace = True
+        self._load_candidate_config(
+             filename=filename, config=config, default_operation="replace")
 
     def load_merge_candidate(self, filename=None, config=None):
         """Open the candidate config and merge."""
