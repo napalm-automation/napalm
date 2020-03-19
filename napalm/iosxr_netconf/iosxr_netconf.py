@@ -159,7 +159,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def rollback(self):
         """Rollback to previous commit."""
-        return NotImplementedError
+        self.netconf_ssh.dispatch(to_ele(C.ROLLBACK_RPC_REQ))
 
     def _find_txt(self, xml_tree, path, default="", namespace=None):
         """

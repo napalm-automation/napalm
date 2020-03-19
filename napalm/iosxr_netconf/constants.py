@@ -239,3 +239,9 @@ USERS_RPC_REQ_FILTER = '''
     <username/>
   </usernames>
 </aaa>'''
+
+# RPC to rollback the last commit to the running configuration
+ROLLBACK_RPC_REQ = '''
+<roll-back-configuration-last xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cfgmgr-rollback-act">
+  <count>1</count>
+</roll-back-configuration-last>'''
