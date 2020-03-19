@@ -22,16 +22,20 @@ import copy
 
 # import third party lib
 from ncclient import manager
-from lxml import etree as ETREE
 from ncclient.xml_ import to_ele
+from ncclient.operations.rpc import RPCError
+from lxml import etree as ETREE
+from lxml.etree import XMLSyntaxError
 
 # import NAPALM base
 from napalm.iosxr_netconf import constants as C
 from napalm.base.base import NetworkDriver
-from napalm.base.exceptions import ConnectionException
 import napalm.base.helpers
 from napalm.base.utils import py23_compat
 from napalm.base.utils.py23_compat import text_type
+from napalm.base.exceptions import ConnectionException
+from napalm.base.exceptions import MergeConfigException
+from napalm.base.exceptions import ReplaceConfigException
 
 
 class IOSXRNETCONFDriver(NetworkDriver):
@@ -97,7 +101,25 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def _load_candidate_config(self, filename, config, default_operation):
         """Edit Configuration."""
-        pass
+        if filename is None:
+            configuration = config
+        else:
+            with open(filename) as f:
+                configuration = f.read()
+        self.pending_changes = True
+        if not self.lock_on_connect:
+            self._lock()
+        try:
+            self.netconf_ssh.edit_config(
+                    config=configuration, default_operation=default_operation,
+                    error_option="rollback-on-error")
+        except (RPCError, XMLSyntaxError) as e:
+            self.pending_changes = False
+            if self.replace:
+                self.replace = False
+                raise ReplaceConfigException(e)
+            else:
+                raise MergeConfigException(e)
 
     def is_alive(self):
         """Return flag with the state of the connection."""
@@ -111,7 +133,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def load_merge_candidate(self, filename=None, config=None):
         """Open the candidate config and merge."""
-        return NotImplementedError
+        self.replace = False
+        self._load_candidate_config(
+             filename=filename, config=config, default_operation="merge")
 
     def compare_config(self):
         """Compare candidate config with running."""
