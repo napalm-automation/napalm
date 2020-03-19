@@ -152,7 +152,10 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def discard_config(self):
         """Discard changes."""
-        return NotImplementedError
+        self.netconf_ssh.discard_changes()
+        self.pending_changes = False
+        if not self.lock_on_connect:
+            self._unlock()
 
     def rollback(self):
         """Rollback to previous commit."""
