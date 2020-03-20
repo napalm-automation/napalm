@@ -257,7 +257,9 @@ def find_txt(xml_tree, path, default="", namespaces=None):
     """
     value = ""
     try:
-        xpath_applied = xml_tree.xpath(path, namespaces=namespaces)  # will consider the first match only
+        xpath_applied = xml_tree.xpath(
+            path, namespaces=namespaces
+        )  # will consider the first match only
         xpath_length = len(xpath_applied)  # get a count of items in XML tree
         if xpath_length and xpath_applied[0] is not None:
             xpath_result = xpath_applied[0]
