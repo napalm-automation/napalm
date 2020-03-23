@@ -97,7 +97,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             self.netconf_ssh.unlock()
             self.locked = False
 
-    def _load_candidate_config(self, filename, config, default_operation):
+    def _load_config(self, filename, config):
         """Edit Configuration."""
         if filename is None:
             configuration = config
@@ -107,17 +107,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self.pending_changes = True
         if not self.lock_on_connect:
             self._lock()
-        try:
-            self.netconf_ssh.edit_config(
-                    config=configuration, default_operation=default_operation,
-                    error_option="rollback-on-error")
-        except (RPCError, XMLSyntaxError) as e:
-            self.pending_changes = False
-            if self.replace:
-                self.replace = False
-                raise ReplaceConfigException(e)
-            else:
-                raise MergeConfigException(e)
+        return configuration
 
     def is_alive(self):
         """Return flag with the state of the connection."""
@@ -128,14 +118,26 @@ class IOSXRNETCONFDriver(NetworkDriver):
     def load_replace_candidate(self, filename=None, config=None):
         """Open the candidate config and replace."""
         self.replace = True
-        self._load_candidate_config(
-             filename=filename, config=config, default_operation="replace")
+        configuration = self._load_config(filename=filename, config=config)
+        configuration = "<source>"+configuration+"</source>"
+        try:
+            self.netconf_ssh.copy_config(
+                source=configuration, target="candidate")
+        except (RPCError, XMLSyntaxError) as e:
+            self.pending_changes = False
+            self.replace = False
+            raise ReplaceConfigException(e)
 
     def load_merge_candidate(self, filename=None, config=None):
         """Open the candidate config and merge."""
         self.replace = False
-        self._load_candidate_config(
-             filename=filename, config=config, default_operation="merge")
+        configuration = self._load_config(filename=filename, config=config)
+        try:
+            self.netconf_ssh.edit_config(
+                config=configuration, error_option="rollback-on-error")
+        except (RPCError, XMLSyntaxError) as e:
+            self.pending_changes = False
+            raise MergeConfigException(e)
 
     def compare_config(self):
         """Compare candidate config with running."""
