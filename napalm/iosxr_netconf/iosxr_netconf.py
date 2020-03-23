@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 
 # import stdlib
 import copy
+import difflib
 
 # import third party lib
 from ncclient import manager
@@ -141,7 +142,21 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def compare_config(self):
         """Compare candidate config with running."""
-        return NotImplementedError
+        if not self.pending_changes:
+            return ""
+        else:
+            diff = ""
+            run_conf = self.netconf_ssh.get_config("running").xml
+            can_conf = self.netconf_ssh.get_config("candidate").xml
+            # Remove rpc-reply and data tag then reformat XML before doing the diff
+            parser = ETREE.XMLParser(remove_blank_text=True)
+            run_conf = ETREE.tostring(ETREE.XML(
+                    run_conf, parser=parser)[0], pretty_print=True).decode()
+            can_conf = ETREE.tostring(ETREE.XML(
+                    can_conf, parser=parser)[0], pretty_print=True).decode()
+            for line in difflib.unified_diff(run_conf.splitlines(1), can_conf.splitlines(1)):
+                diff += line
+            return diff
 
     def commit_config(self, message=""):
         """Commit configuration."""
