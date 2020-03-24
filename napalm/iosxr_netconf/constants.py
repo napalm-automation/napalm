@@ -34,6 +34,7 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'snmp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-snmp-agent-cfg',
       'usr': 'http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-locald-cfg',
       'aaa': 'http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-lib-cfg',
+      'arp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-arp-oper',
       }
 
 # GET RPC to retrieve device facts
@@ -245,3 +246,15 @@ ROLLBACK_RPC_REQ = '''
 <roll-back-configuration-last xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cfgmgr-rollback-act">
   <count>1</count>
 </roll-back-configuration-last>'''
+
+# subtree filter to get ARP table using GET RPC
+ARP_RPC_REQ_FILTER = '''
+<arp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-arp-oper">
+  <nodes>
+    <node>
+      <entries>
+        <entry/>
+      </entries>
+    </node>
+  </nodes>
+</arp>'''

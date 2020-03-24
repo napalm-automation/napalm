@@ -1258,7 +1258,37 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_arp_table(self, vrf=""):
         """Return the ARP table."""
-        return NotImplementedError
+        if vrf:
+            msg = "VRF support has not been added for \
+                this getter on this platform."
+            raise NotImplementedError(msg)
+
+        arp_table = []
+
+        rpc_reply = self.netconf_ssh.get(filter=('subtree', C.ARP_RPC_REQ_FILTER)).xml
+        # Converts string to etree
+        result_tree = ETREE.fromstring(rpc_reply)
+        arp_entry_xpath = ".//arp:arp/arp:nodes/arp:node/arp:entries/arp:entry"
+        for arp_entry in result_tree.xpath(arp_entry_xpath, namespaces=C.NS):
+            interface = napalm.base.helpers.convert(str, self._find_txt(
+                arp_entry, "./arp:interface-name", namespaces=C.NS))
+            ip = napalm.base.helpers.convert(str, self._find_txt(
+                arp_entry, "./arp:address", namespaces=C.NS))
+            age = napalm.base.helpers.convert(float, self._find_txt(
+                arp_entry, "./arp:age", default="0.0", namespaces=C.NS))
+            mac_raw = self._find_txt(
+                        arp_entry, "./arp:hardware-address", namespaces=C.NS)
+
+            arp_table.append(
+                {
+                    "interface": interface,
+                    "mac": napalm.base.helpers.mac(mac_raw),
+                    "ip": napalm.base.helpers.ip(ip),
+                    "age": age,
+                }
+            )
+
+        return arp_table
 
     def get_ntp_peers(self):
         """Return the NTP peers configured on the device."""
