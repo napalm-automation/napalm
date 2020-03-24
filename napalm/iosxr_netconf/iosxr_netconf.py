@@ -657,7 +657,59 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_lldp_neighbors_detail(self, interface=""):
         """Detailed view of the LLDP neighbors."""
-        return NotImplementedError
+        lldp_neighbors_detail = {}
+
+        rpc_reply = self.netconf_ssh.get(filter=(
+                    "subtree", C.LLDP_RPC_REQ_FILTER)).xml
+        # Converts string to etree
+        result_tree = ETREE.fromstring(rpc_reply)
+
+        lldp_neighbor_xpath = ".//lldp:lldp/lldp:nodes/lldp:node/lldp:neighbors\
+                /lldp:details/lldp:detail/lldp:lldp-neighbor"
+        for neighbor in result_tree.xpath(
+                        lldp_neighbor_xpath, namespaces=C.NS):
+            interface_name = napalm.base.helpers.convert(str, self._find_txt(
+                neighbor, "./lldp:receiving-interface-name", default="", namespaces=C.NS))
+            parent_interface = napalm.base.helpers.convert(str, self._find_txt(
+                neighbor, "./lldp:receiving-parent-interface-name", default="None", namespaces=C.NS))
+            chassis_id_raw = self._find_txt(
+                neighbor, "./lldp:chassis-id", default="", namespaces=C.NS)
+            chassis_id = napalm.base.helpers.convert(
+                napalm.base.helpers.mac, chassis_id_raw, chassis_id_raw
+            )
+            port_id = napalm.base.helpers.convert(str, self._find_txt(
+                neighbor, "./lldp:port-id-detail", default="", namespaces=C.NS))
+            port_descr = napalm.base.helpers.convert(str, self._find_txt(
+                neighbor, "./lldp:detail/lldp:port-description", default="", namespaces=C.NS))
+            system_name = napalm.base.helpers.convert(str, self._find_txt(
+                neighbor, "./lldp:detail/lldp:system-name", default="", namespaces=C.NS))
+            system_descr = napalm.base.helpers.convert(str, self._find_txt(
+                neighbor, "./lldp:detail/lldp:system-description", default="", namespaces=C.NS))
+            system_capabilities = napalm.base.helpers.convert(str, self._find_txt(
+                neighbor, "./lldp:detail/lldp:system-capabilities", default="", namespaces=C.NS))
+            enabled_capabilities = napalm.base.helpers.convert(str, self._find_txt(
+                neighbor, "./lldp:detail/lldp:enabled-capabilities", default="", namespaces=C.NS))
+
+            if interface_name not in lldp_neighbors_detail.keys():
+                lldp_neighbors_detail[interface_name] = []
+            lldp_neighbors_detail[interface_name].append(
+                {
+                    "parent_interface": parent_interface,
+                    "remote_chassis_id": chassis_id,
+                    "remote_port": port_id,
+                    "remote_port_description": port_descr,
+                    "remote_system_name": system_name,
+                    "remote_system_description": system_descr,
+                    "remote_system_capab":
+                        napalm.base.helpers.transform_lldp_capab(
+                            system_capabilities),
+                    "remote_system_enable_capab":
+                        napalm.base.helpers.transform_lldp_capab(
+                            enabled_capabilities),
+                }
+            )
+
+        return lldp_neighbors_detail
 
     def cli(self, commands):
         """Execute raw CLI commands and returns their output."""
