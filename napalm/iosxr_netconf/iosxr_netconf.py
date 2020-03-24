@@ -1555,7 +1555,57 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_probes_config(self):
         """Return the configuration of the probes."""
-        return NotImplementedError
+        sla_config = {}
+
+        _PROBE_TYPE_XML_TAG_MAP_ = {
+            "icmp-echo": "icmp-ping",
+            "udp-echo": "udp-ping",
+            "icmp-jitter": "icmp-ping-timestamp",
+            "udp-jitter": "udp-ping-timestamp",
+        }
+
+        rpc_reply = self.netconf_ssh.get_config(source="running", filter=(
+                                    "subtree", C.PROBE_CFG_RPC_REQ_FILTER)).xml
+        # Converts string to etree
+        sla_config_result_tree = ETREE.fromstring(rpc_reply)
+
+        probes_config_xpath = ".//prbc:ipsla/prbc:operation/prbc:definitions/\
+            prbc:definition"
+        for probe in sla_config_result_tree.xpath(probes_config_xpath, namespaces=C.NS):
+            probe_name = self._find_txt(
+                probe, "./prbc:operation-id", default="", namespaces=C.NS)
+            operation_type_etree = probe.xpath(
+                "./prbc:operation-type", namespaces=C.NS)
+            if len(operation_type_etree):
+                operation_type = operation_type_etree[0].getchildren(
+                    )[0].tag.replace("{"+C.NS.get('prbc')+"}", "")
+                probe_type = _PROBE_TYPE_XML_TAG_MAP_.get(operation_type, "")
+                operation_xpath = "./prbc:operation-type/prbc:{op_type}".format(
+                    op_type=operation_type)
+                operation = probe.xpath(operation_xpath, namespaces=C.NS)[0]
+                test_name = self._find_txt(
+                    operation, "./prbc:tag", default="", namespaces=C.NS)
+                source = self._find_txt(
+                    operation, "./prbc:source-address", default="", namespaces=C.NS)
+                target = self._find_txt(
+                    operation, "./prbc:dest-address", default="", namespaces=C.NS)
+                test_interval = napalm.base.helpers.convert(int, self._find_txt(
+                    operation, "./prbc:frequency", default="", namespaces=C.NS))
+                probe_count = napalm.base.helpers.convert(int, self._find_txt(
+                    operation, "./prbc:history/prbc:buckets", default="", namespaces=C.NS))
+                if probe_name not in sla_config.keys():
+                    sla_config[probe_name] = {}
+                if test_name not in sla_config[probe_name]:
+                    sla_config[probe_name][test_name] = {}
+                sla_config[probe_name][test_name] = {
+                    "probe_type": probe_type,
+                    "source": source,
+                    "target": target,
+                    "probe_count": probe_count,
+                    "test_interval": test_interval,
+                }
+
+        return sla_config
 
     def get_probes_results(self):
         """Return the results of the probes."""
