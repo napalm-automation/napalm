@@ -36,6 +36,7 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'aaa': 'http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-lib-cfg',
       'arp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-arp-oper',
       'prbc': 'http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-cfg',
+      'prb': 'http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-oper',
       }
 
 # GET RPC to retrieve device facts
@@ -266,4 +267,12 @@ PROBE_CFG_RPC_REQ_FILTER = '''
   <operation>
     <definitions/>
   </operation>
+</ipsla>'''
+
+# subtree filter to get probe results using GET RPC
+PROBE_OPER_RPC_REQ_FILTER = '''
+<ipsla xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-oper">
+  <operation-data>
+    <operations/>
+  </operation-data>
 </ipsla>'''

@@ -1609,7 +1609,199 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_probes_results(self):
         """Return the results of the probes."""
-        return NotImplementedError
+        sla_results = {}
+
+        _PROBE_TYPE_XML_TAG_MAP_ = {
+            "icmp-echo": "icmp-ping",
+            "udp-echo": "udp-ping",
+            "icmp-jitter": "icmp-ping-timestamp",
+            "udp-jitter": "udp-ping-timestamp",
+        }
+
+        rpc_reply = self.netconf_ssh.get(filter=('subtree', C.PROBE_OPER_RPC_REQ_FILTER)).xml
+        # Converts string to etree
+        sla_results_tree = ETREE.fromstring(rpc_reply)
+
+        probes_config = (
+            self.get_probes_config()
+        )  # need to retrieve also the configuration
+        # source and tag/test_name not provided
+        probe_result_xpath = ".//prb:ipsla/prb:operation-data/\
+            prb:operations/prb:operation"
+        for probe in sla_results_tree.xpath(probe_result_xpath, namespaces=C.NS):
+            probe_name = self._find_txt(probe, "./prb:operation-id", default="", namespaces=C.NS)
+            test_name = list(probes_config.get(probe_name).keys())[0]
+            target = self._find_txt(
+                probe, "./prb:history/prb:path/prb:lifes/prb:life/prb:buckets/\
+                    prb:bucket[0]/prb:samples/prb:sample/prb:target-address/\
+                    prb:ipv4-prefix-target/prb:address", default="", namespaces=C.NS
+            )
+            source = probes_config.get(probe_name).get(test_name, {}).get(
+                                        "source", "")
+            probe_type = _PROBE_TYPE_XML_TAG_MAP_.get(
+                self._find_txt(
+                    probe, "./prb:statistics/prb:latest/prb:target/\
+                    prb:specific-stats/prb:op-type", default="",
+                    namespaces=C.NS
+                )
+            )
+            probe_count = (
+                probes_config.get(probe_name).get(test_name, {}).get(
+                        "probe_count", 0)
+            )
+            response_times = probe.xpath(
+                "./prb:history/prb:target/prb:lifes/prb:life[last()]/\
+                    prb:buckets/prb:bucket/prb:response-time",
+                namespaces=C.NS
+            )
+            response_times = [
+                napalm.base.helpers.convert(
+                    int, self._find_txt(response_time, ".", default="0", namespaces=C.NS)
+                )
+                for response_time in response_times
+            ]
+            rtt = 0.0
+
+            if len(response_times):
+                rtt = sum(response_times, 0.0) / len(response_times)
+            return_codes = probe.xpath(
+                "./prb:history/prb:target/prb:lifes/prb:life[last()]/\
+                    prb:buckets/prb:bucket/prb:return-code", namespaces=C.NS
+            )
+            return_codes = [
+                self._find_txt(return_code, ".", default="", namespaces=C.NS)
+                for return_code in return_codes
+            ]
+
+            last_test_loss = 0.0
+            if len(return_codes):
+                last_test_loss = napalm.base.helpers.convert(
+                    int,
+                    100
+                    * (
+                        1
+                        - return_codes.count("ipsla-ret-code-ok")
+                        / napalm.base.helpers.convert(float, len(return_codes))
+                    ),
+                )
+            rms = napalm.base.helpers.convert(
+                float,
+                self._find_txt(
+                    probe,
+                    "./prb:statistics/prb:aggregated/prb:hours/prb:hour/\
+                    prb:distributed/prb:target/prb:distribution-intervals/\
+                    prb:distribution-interval/prb:common-stats/\
+                    prb:sum2-response-time", default="", namespaces=C.NS
+                ),
+            )
+            global_test_updates = napalm.base.helpers.convert(
+                float,
+                self._find_txt(
+                    probe,
+                    "./prb:statistics/prb:aggregated/prb:hours/prb:hour/\
+                    prb:distributed/prb:target/prb:distribution-intervals/\
+                    prb:distribution-interval/prb:common-stats/\
+                    prb:update-count", default="", namespaces=C.NS
+                ),
+            )
+
+            jitter = 0.0
+            if global_test_updates:
+                jitter = rtt - (rms / global_test_updates) ** 0.5
+            # jitter = max(rtt - max(response_times), rtt - min(response_times))
+            current_test_min_delay = 0.0  # no stats for undergoing test :(
+            current_test_max_delay = 0.0
+            current_test_avg_delay = 0.0
+            last_test_min_delay = napalm.base.helpers.convert(
+                float,
+                self._find_txt(
+                    probe, "./prb:statistics/prb:latest/prb:target/\
+                    prb:common-stats/prb:min-response-time", default="",
+                    namespaces=C.NS
+                ),
+            )
+            last_test_max_delay = napalm.base.helpers.convert(
+                float,
+                self._find_txt(
+                    probe, "./prb:statistics/prb:latest/prb:target/\
+                    prb:common-stats/prb:max-response-time", default="",
+                    namespaces=C.NS
+                ),
+            )
+            last_test_sum_delay = napalm.base.helpers.convert(
+                float,
+                self._find_txt(
+                    probe, "./prb:statistics/prb:latest/prb:target/\
+                    prb:common-stats/prb:sum-response-time", default="",
+                    namespaces=C.NS
+                ),
+            )
+            last_test_updates = napalm.base.helpers.convert(
+                float,
+                self._find_txt(
+                    probe, ".//prb:statistics/prb:latest/prb:target/\
+                    prb:common-stats/prb:update-count", default="",
+                    namespaces=C.NS
+                ),
+            )
+            last_test_avg_delay = 0.0
+            if last_test_updates:
+                last_test_avg_delay = last_test_sum_delay / last_test_updates
+            global_test_min_delay = napalm.base.helpers.convert(
+                float,
+                self._find_txt(
+                    probe,
+                    "./prb:statistics/prb:aggregated/prb:hours/prb:hour/\
+                    prb:distributed/prb:target/prb:distribution-intervals/\
+                    prb:distribution-interval/prb:common-stats/\
+                    prb:min-response-time", default="", namespaces=C.NS
+                ),
+            )
+            global_test_max_delay = napalm.base.helpers.convert(
+                float,
+                self._find_txt(
+                    probe,
+                    "./prb:statistics/prb:aggregated/prb:hours/prb:hour/\
+                    prb:distributed/prb:target/prb:distribution-intervals/\
+                    prb:distribution-interval/prb:common-stats/\
+                    prb:max-response-time", default="", namespaces=C.NS
+                ),
+            )
+            global_test_sum_delay = napalm.base.helpers.convert(
+                float,
+                self._find_txt(
+                    probe,
+                    "./prb:statistics/prb:aggregated/prb:hours/prb:hour/\
+                    prb:distributed/prb:target/prb:distribution-intervals/\
+                    prb:distribution-interval/prb:common-stats/\
+                    prb:sum-response-time", default="", namespaces=C.NS
+                ),
+            )
+            global_test_avg_delay = 0.0
+            if global_test_updates:
+                global_test_avg_delay = global_test_sum_delay / global_test_updates
+            if probe_name not in sla_results.keys():
+                sla_results[probe_name] = {}
+            sla_results[probe_name][test_name] = {
+                "target": target,
+                "source": source,
+                "probe_type": probe_type,
+                "probe_count": probe_count,
+                "rtt": rtt,
+                "round_trip_jitter": jitter,
+                "last_test_loss": last_test_loss,
+                "current_test_min_delay": current_test_min_delay,
+                "current_test_max_delay": current_test_max_delay,
+                "current_test_avg_delay": current_test_avg_delay,
+                "last_test_min_delay": last_test_min_delay,
+                "last_test_max_delay": last_test_max_delay,
+                "last_test_avg_delay": last_test_avg_delay,
+                "global_test_min_delay": global_test_min_delay,
+                "global_test_max_delay": global_test_max_delay,
+                "global_test_avg_delay": global_test_avg_delay,
+            }
+
+        return sla_results
 
     def traceroute(
         self,
