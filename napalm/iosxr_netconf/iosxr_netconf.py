@@ -27,6 +27,8 @@ from ncclient.xml_ import to_ele
 from ncclient.operations.rpc import RPCError
 from lxml import etree as ETREE
 from lxml.etree import XMLSyntaxError
+from netaddr import IPAddress  # needed for traceroute, to check IP version
+from netaddr.core import AddrFormatError
 
 # import NAPALM base
 from napalm.iosxr_netconf import constants as C
@@ -1514,9 +1516,104 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         return mac_table
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
         """Return route details to a specific destination."""
-        return NotImplementedError
+        routes = {}
+
+        if not isinstance(destination, str):
+            raise TypeError("Please specify a valid destination!")
+
+        if longer:
+            raise NotImplementedError("Longer prefixes not yet supported for IOS-XR")
+
+        protocol = protocol.lower()
+        if protocol == "direct":
+            protocol = "connected"
+
+        dest_split = destination.split("/")
+        network = dest_split[0]
+        prefix_tag = ""
+        if len(dest_split) == 2:
+            prefix_tag = "<prefix-length>{prefix_length}\
+            </prefix-length>".format(prefix_length=dest_split[1])
+
+        ipv = 4
+        try:
+            ipv = IPAddress(network).version
+        except AddrFormatError:
+            raise TypeError("Wrong destination IP Address!")
+
+        if ipv == 6:
+            route_info_rpc_command = (C.ROUTE_IPV6_RPC_REQ_FILTER).format(
+                network=network, prefix_length=prefix_tag)
+        else:
+            route_info_rpc_command = (C.ROUTE_IPV4_RPC_REQ_FILTER).format(
+                network=network, prefix_length=prefix_tag)
+
+        rpc_reply = self.netconf_ssh.get(filter=('subtree', route_info_rpc_command)).xml
+        # Converts string to etree
+        routes_tree = ETREE.fromstring(rpc_reply)
+        if ipv == 6:
+            route_xpath = ".//rib{}:ipv6-rib".format(ipv)
+        else:
+            route_xpath = ".//rib{}:rib".format(ipv)
+        route_xpath = route_xpath + "/rib{ip}:vrfs/rib{ip}:vrf/rib{ip}:afs/\
+        rib{ip}:af/rib{ip}:safs/rib{ip}:saf/rib{ip}:ip-rib-route-table-names/\
+        rib{ip}:ip-rib-route-table-name/rib{ip}:routes/rib{ip}:route".format(ip=ipv)
+        for route in routes_tree.xpath(route_xpath, namespaces=C.NS):
+            route_protocol = napalm.base.helpers.convert(
+                str, self._find_txt(route, "./rib{}:protocol-name".format(ipv),
+                    namespaces=C.NS).lower())
+            if protocol and route_protocol != protocol:
+                continue  # ignore routes learned via a different protocol
+            # only in case the user requested a certain protocol
+            route_details = {}
+            address = self._find_txt(route, "./rib{}:prefix".format(
+                            ipv), namespaces=C.NS)
+            length = self._find_txt(route, "./rib{}:prefix-length-xr".format(
+                            ipv), namespaces=C.NS)
+            priority = napalm.base.helpers.convert(
+                int, self._find_txt(route, "./rib{}:priority".format(
+                            ipv), namespaces=C.NS))
+            age = napalm.base.helpers.convert(
+                int, self._find_txt(route, "./rib{}:route-age".format(
+                            ipv), namespaces=C.NS))
+            destination = napalm.base.helpers.convert(
+                str, "{prefix}/{length}".format(
+                    prefix=address, length=length))
+            if destination not in routes.keys():
+                routes[destination] = []
+
+            route_details = {
+                "current_active": False,
+                "last_active": False,
+                "age": age,
+                "next_hop": "",
+                "protocol": route_protocol,
+                "outgoing_interface": "",
+                "preference": priority,
+                "selected_next_hop": False,
+                "inactive_reason": "",
+                "routing_table": "default",
+                "protocol_attributes": {},
+            }
+
+            first_route = True
+            for route_entry in route.xpath(
+              ".//rib{ipv}:route-path/rib{ipv}:ipv{ipv}-rib-edm-path"
+                                        .format(ipv=ipv), namespaces=C.NS):
+                # get all possible entries
+                next_hop = self._find_txt(
+                 route_entry, "./rib{ipv}:address".format(ipv=ipv), namespaces=C.NS)
+                single_route_details = {}
+                single_route_details.update(route_details)
+                single_route_details.update(
+                    {"current_active": first_route, "next_hop": next_hop}
+                )
+                routes[destination].append(single_route_details)
+                first_route = False
+
+        return routes
 
     def get_snmp_information(self):
         """Return the SNMP configuration."""

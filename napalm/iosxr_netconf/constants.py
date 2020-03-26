@@ -37,6 +37,8 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'arp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-arp-oper',
       'prbc': 'http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-cfg',
       'prb': 'http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-oper',
+      'rib4': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv4-oper',
+      'rib6': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv6-oper',
       }
 
 # GET RPC to retrieve device facts
@@ -276,3 +278,65 @@ PROBE_OPER_RPC_REQ_FILTER = '''
     <operations/>
   </operation-data>
 </ipsla>'''
+
+# subtree filter to get ipv6 address route using GET RPC
+ROUTE_IPV6_RPC_REQ_FILTER = '''
+<ipv6-rib xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv6-oper">
+  <vrfs>
+    <vrf>
+      <vrf-name>default</vrf-name>
+      <afs>
+        <af>
+          <af-name>IPv6</af-name>
+          <safs>
+            <saf>
+              <saf-name>Unicast</saf-name>
+              <ip-rib-route-table-names>
+                <ip-rib-route-table-name>
+                  <route-table-name>default</route-table-name>
+                  <routes>
+                    <route>
+                    <address>{network}</address>
+                    {prefix_length}
+                    </route>
+                  </routes>
+                </ip-rib-route-table-name>
+              </ip-rib-route-table-names>
+            </saf>
+          </safs>
+        </af>
+      </afs>
+    </vrf>
+  </vrfs>
+</ipv6-rib>'''
+
+# subtree filter to get ipv4 address route using GET RPC
+ROUTE_IPV4_RPC_REQ_FILTER = '''
+<rib xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv4-oper">
+  <vrfs>
+    <vrf>
+      <vrf-name>default</vrf-name>
+      <afs>
+        <af>
+          <af-name>IPv4</af-name>
+          <safs>
+            <saf>
+              <saf-name>Unicast</saf-name>
+              <ip-rib-route-table-names>
+                <ip-rib-route-table-name>
+                  <route-table-name>default</route-table-name>
+                  <routes>
+                    <route>
+                     <address>{network}</address>
+                     {prefix_length}
+                    </route>
+                  </routes>
+                </ip-rib-route-table-name>
+              </ip-rib-route-table-names>
+            </saf>
+          </safs>
+        </af>
+      </afs>
+    </vrf>
+  </vrfs>
+</rib>'''
