@@ -65,12 +65,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self.lock_on_connect = optional_args.get("config_lock", False)
 
         self.platform = "iosxr"
-        self.netconf_ssh = None
+        self.device = None
 
     def open(self):
         """Open the connection with the device."""
         try:
-            self.netconf_ssh = manager.connect(
+            self.device = manager.connect(
                            host=self.hostname,
                            port=self.port,
                            username=self.username,
@@ -86,18 +86,18 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Close the connection."""
         if self.locked:
             self._unlock()
-        self.netconf_ssh.close_session()
+        self.device.close_session()
 
     def _lock(self):
         """Lock the config DB."""
         if not self.locked:
-            self.netconf_ssh.lock()
+            self.device.lock()
             self.locked = True
 
     def _unlock(self):
         """Unlock the config DB."""
         if self.locked:
-            self.netconf_ssh.unlock()
+            self.device.unlock()
             self.locked = False
 
     def _load_config(self, filename, config):
@@ -114,9 +114,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def is_alive(self):
         """Return flag with the state of the connection."""
-        if self.netconf_ssh is None:
+        if self.device is None:
             return {"is_alive": False}
-        return {"is_alive": self.netconf_ssh._session.transport.is_active()}
+        return {"is_alive": self.device._session.transport.is_active()}
 
     def load_replace_candidate(self, filename=None, config=None):
         """Open the candidate config and replace."""
@@ -124,7 +124,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         configuration = self._load_config(filename=filename, config=config)
         configuration = "<source>"+configuration+"</source>"
         try:
-            self.netconf_ssh.copy_config(
+            self.device.copy_config(
                 source=configuration, target="candidate")
         except (RPCError, XMLSyntaxError) as e:
             self.pending_changes = False
@@ -136,7 +136,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self.replace = False
         configuration = self._load_config(filename=filename, config=config)
         try:
-            self.netconf_ssh.edit_config(
+            self.device.edit_config(
                 config=configuration, error_option="rollback-on-error")
         except (RPCError, XMLSyntaxError) as e:
             self.pending_changes = False
@@ -148,8 +148,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
             return ""
         else:
             diff = ""
-            run_conf = self.netconf_ssh.get_config("running").xml
-            can_conf = self.netconf_ssh.get_config("candidate").xml
+            run_conf = self.device.get_config("running").xml
+            can_conf = self.device.get_config("candidate").xml
             # Remove rpc-reply and data tag then reformat XML before doing the diff
             parser = ETREE.XMLParser(remove_blank_text=True)
             run_conf = ETREE.tostring(ETREE.XML(
@@ -162,21 +162,21 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def commit_config(self, message=""):
         """Commit configuration."""
-        self.netconf_ssh.commit()
+        self.device.commit()
         self.pending_changes = False
         if self.locked:
             self._unlock()
 
     def discard_config(self):
         """Discard changes."""
-        self.netconf_ssh.discard_changes()
+        self.device.discard_changes()
         self.pending_changes = False
         if not self.lock_on_connect:
             self._unlock()
 
     def rollback(self):
         """Rollback to previous commit."""
-        self.netconf_ssh.dispatch(to_ele(C.ROLLBACK_RPC_REQ))
+        self.device.dispatch(to_ele(C.ROLLBACK_RPC_REQ))
 
     def _find_txt(self, xml_tree, path, default=None, namespaces=None):
         """
@@ -215,10 +215,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
             "model": "",
             "interface_list": [],
         }
-
         interface_list = []
 
-        facts_rpc_reply = self.netconf_ssh.dispatch(to_ele(C.FACTS_RPC_REQ)).xml
+        facts_rpc_reply = self.device.dispatch(to_ele(C.FACTS_RPC_REQ)).xml
 
         # Converts string to etree
         facts_rpc_reply_etree = ETREE.fromstring(facts_rpc_reply)
@@ -288,7 +287,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             "last_flapped": -1.0,
         }
 
-        interfaces_rpc_reply = self.netconf_ssh.get(filter=(
+        interfaces_rpc_reply = self.device.get(filter=(
                                     'subtree', C.INT_RPC_REQ_FILTER)).xml
         # Converts string to etree
         interfaces_rpc_reply_etree = ETREE.fromstring(interfaces_rpc_reply)
@@ -338,7 +337,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_interfaces_counters(self):
         """Return interfaces counters."""
-        rpc_reply = self.netconf_ssh.get(filter=(
+        rpc_reply = self.device.get(filter=(
                     'subtree', C.INT_COUNTERS_RPC_REQ_FILTER)).xml
         # Converts string to tree
         rpc_reply_etree = ETREE.fromstring(rpc_reply)
@@ -578,7 +577,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
             return neighbors
 
-        rpc_reply = self.netconf_ssh.get(filter=(
+        rpc_reply = self.device.get(filter=(
                     'subtree', C.BGP_NEIGHBOR_REQ_FILTER)).xml
         # Converts string to tree
         rpc_reply_etree = ETREE.fromstring(rpc_reply)
@@ -627,7 +626,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         # init result dict
         lldp_neighbors = {}
 
-        rpc_reply = self.netconf_ssh.get(
+        rpc_reply = self.device.get(
                 filter=("subtree", C.LLDP_RPC_REQ_FILTER)).xml
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
@@ -661,7 +660,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Detailed view of the LLDP neighbors."""
         lldp_neighbors_detail = {}
 
-        rpc_reply = self.netconf_ssh.get(filter=(
+        rpc_reply = self.device.get(filter=(
                     "subtree", C.LLDP_RPC_REQ_FILTER)).xml
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
@@ -748,7 +747,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             return prefix_limit
 
         # here begins actual method...
-        rpc_reply = self.netconf_ssh.get_config(source="running", filter=(
+        rpc_reply = self.device.get_config(source="running", filter=(
                             'subtree', C.BGP_CFG_RPC_REQ_FILTER)).xml
 
         # Converts string to etree
@@ -1211,7 +1210,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 )
             return bgp_vrf_neighbors_detail
 
-        rpc_reply = self.netconf_ssh.get(filter=(
+        rpc_reply = self.device.get(filter=(
                     'subtree', C.BGP_NEIGHBOR_REQ_FILTER)).xml
         # Converts string to tree
         rpc_reply_etree = ETREE.fromstring(rpc_reply)
@@ -1267,7 +1266,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         arp_table = []
 
-        rpc_reply = self.netconf_ssh.get(filter=('subtree', C.ARP_RPC_REQ_FILTER)).xml
+        rpc_reply = self.device.get(filter=('subtree', C.ARP_RPC_REQ_FILTER)).xml
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
         arp_entry_xpath = ".//arp:arp/arp:nodes/arp:node/arp:entries/arp:entry"
@@ -1296,7 +1295,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Return the NTP peers configured on the device."""
         ntp_peers = {}
 
-        rpc_reply = self.netconf_ssh.get_config(source="running", filter=(
+        rpc_reply = self.device.get_config(source="running", filter=(
                         'subtree', C.NTP_RPC_REQ_FILTER)).xml
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
@@ -1323,7 +1322,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Return the NTP servers configured on the device."""
         ntp_servers = {}
 
-        rpc_reply = self.netconf_ssh.get_config(source="running", filter=(
+        rpc_reply = self.device.get_config(source="running", filter=(
                             "subtree", C.NTP_RPC_REQ_FILTER)).xml
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
@@ -1351,7 +1350,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Return NTP stats (associations)."""
         ntp_stats = []
 
-        rpc_reply = self.netconf_ssh.get(filter=(
+        rpc_reply = self.device.get(filter=(
                             "subtree", C.NTP_STAT_RPC_REQ_FILTER)).xml
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
@@ -1406,7 +1405,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Return the configured IP addresses."""
         interfaces_ip = {}
 
-        rpc_reply = self.netconf_ssh.dispatch(to_ele(C.INT_IPV4_IPV6_RPC_REQ)).xml
+        rpc_reply = self.device.dispatch(to_ele(C.INT_IPV4_IPV6_RPC_REQ)).xml
         # Converts string to etree
         ipv4_ipv6_tree = ETREE.fromstring(rpc_reply)
 
@@ -1485,7 +1484,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Return the MAC address table."""
         mac_table = []
 
-        rpc_reply = self.netconf_ssh.get(filter=(
+        rpc_reply = self.device.get(filter=(
                     "subtree", C.MAC_TABLE_RPC_REQ_FILTER)).xml
         # Converts string to etree
         result_tree = ETREE.fromstring(rpc_reply)
@@ -1550,7 +1549,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             route_info_rpc_command = (C.ROUTE_IPV4_RPC_REQ_FILTER).format(
                 network=network, prefix_length=prefix_tag)
 
-        rpc_reply = self.netconf_ssh.get(filter=('subtree', route_info_rpc_command)).xml
+        rpc_reply = self.device.get(filter=('subtree', route_info_rpc_command)).xml
         # Converts string to etree
         routes_tree = ETREE.fromstring(rpc_reply)
         if ipv == 6:
@@ -1619,7 +1618,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Return the SNMP configuration."""
         snmp_information = {}
 
-        rpc_reply = self.netconf_ssh.get_config(source="running", filter=(
+        rpc_reply = self.device.get_config(source="running", filter=(
                                         "subtree", C.SNMP_RPC_REQ_FILTER)).xml
         # Converts string to etree
         snmp_result_tree = ETREE.fromstring(rpc_reply)
@@ -1661,7 +1660,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             "udp-jitter": "udp-ping-timestamp",
         }
 
-        rpc_reply = self.netconf_ssh.get_config(source="running", filter=(
+        rpc_reply = self.device.get_config(source="running", filter=(
                                     "subtree", C.PROBE_CFG_RPC_REQ_FILTER)).xml
         # Converts string to etree
         sla_config_result_tree = ETREE.fromstring(rpc_reply)
@@ -1715,7 +1714,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             "udp-jitter": "udp-ping-timestamp",
         }
 
-        rpc_reply = self.netconf_ssh.get(filter=('subtree', C.PROBE_OPER_RPC_REQ_FILTER)).xml
+        rpc_reply = self.device.get(filter=('subtree', C.PROBE_OPER_RPC_REQ_FILTER)).xml
         # Converts string to etree
         sla_results_tree = ETREE.fromstring(rpc_reply)
 
@@ -1925,7 +1924,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         _DEFAULT_USER_DETAILS = {"level": 0, "password": "", "sshkeys": []}
 
-        rpc_reply = self.netconf_ssh.get_config(source="running", filter=(
+        rpc_reply = self.device.get_config(source="running", filter=(
                                             "subtree", C.USERS_RPC_REQ_FILTER)).xml
         # Converts string to etree
         users_xml_reply = ETREE.fromstring(rpc_reply)
@@ -1954,10 +1953,10 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         if retrieve.lower() in ["running", "all"]:
             config["running"] = str(
-                                    self.netconf_ssh.get_config(
+                                    self.device.get_config(
                                         source="running").xml)
         if retrieve.lower() in ["candidate", "all"]:
             config["candidate"] = str(
-                                      self.netconf_ssh.get_config(
+                                      self.device.get_config(
                                         source="candidate").xml)
         return config
