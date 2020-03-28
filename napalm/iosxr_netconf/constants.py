@@ -297,7 +297,7 @@ ROUTE_IPV6_RPC_REQ_FILTER = '''
                   <routes>
                     <route>
                     <address>{network}</address>
-                    {prefix_length}
+                    <prefix-length>{prefix_length}</prefix-length>
                     </route>
                   </routes>
                 </ip-rib-route-table-name>
@@ -328,7 +328,7 @@ ROUTE_IPV4_RPC_REQ_FILTER = '''
                   <routes>
                     <route>
                      <address>{network}</address>
-                     {prefix_length}
+                     <prefix-length>{prefix_length}</prefix-length>
                     </route>
                   </routes>
                 </ip-rib-route-table-name>

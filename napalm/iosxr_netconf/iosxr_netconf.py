@@ -1531,10 +1531,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         dest_split = destination.split("/")
         network = dest_split[0]
-        prefix_tag = ""
+        prefix_length = 0
         if len(dest_split) == 2:
-            prefix_tag = "<prefix-length>{prefix_length}\
-            </prefix-length>".format(prefix_length=dest_split[1])
+            prefix_length = dest_split[1]
 
         ipv = 4
         try:
@@ -1544,10 +1543,10 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         if ipv == 6:
             route_info_rpc_command = (C.ROUTE_IPV6_RPC_REQ_FILTER).format(
-                network=network, prefix_length=prefix_tag)
+                network=network, prefix_length=prefix_length)
         else:
             route_info_rpc_command = (C.ROUTE_IPV4_RPC_REQ_FILTER).format(
-                network=network, prefix_length=prefix_tag)
+                network=network, prefix_length=prefix_length)
 
         rpc_reply = self.device.get(filter=('subtree', route_info_rpc_command)).xml
         # Converts string to etree
