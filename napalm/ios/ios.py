@@ -39,6 +39,8 @@ from napalm.base.helpers import (
     canonical_interface_name,
     transform_lldp_capab,
     textfsm_extractor,
+    split_interface,
+    abbreviated_interface_name,
 )
 from napalm.base.netmiko_helpers import netmiko_args
 
@@ -2102,6 +2104,10 @@ class IOSDriver(NetworkDriver):
                     match = re.search(r"(\d+) output errors", line)
                     counters[interface]["tx_errors"] = int(match.group(1))
                     counters[interface]["tx_discards"] = -1
+
+            interface_type, interface_number = split_interface(interface)
+            if interface_type in ['HundredGigabitEthernet','FortyGigabitEthernet','TenGigabitEthernet']:
+                interface = abbreviated_interface_name(interface)
             for line in sh_int_sum_cmd_out.splitlines():
                 if interface in line:
                     # Line is tabular output with columns
