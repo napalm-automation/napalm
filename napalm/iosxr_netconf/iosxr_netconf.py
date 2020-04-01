@@ -496,17 +496,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 )
 
                 if (
-                    str(
-                     self._find_txt(
-                      neighbor, "./bgp:connection-admin-status", namespaces=C.NS)
-                    )
-                    == "1"
-                ):
-                    this_neighbor["is_enabled"] = True
-                else:
-                    this_neighbor["is_enabled"] = False
-
-                if (
                     str(self._find_txt(
                         neighbor, "./bgp:connection-state", namespaces=C.NS))
                     == "bgp-st-estab"
