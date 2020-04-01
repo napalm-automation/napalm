@@ -350,12 +350,24 @@ class IOSXRNETCONFDriver(NetworkDriver):
         for interface in interface_xr_tree:
             interface_name = self._find_txt(
                 interface, "./int:interface-name", namespaces=C.NS)
-            interface_stats = {}
-            if not interface.xpath(
-                    "./int:interface-statistics/int:full-interface-stats", namespaces=C.NS):
+            if interface_name[:8] == "Loopback" and interface_name[8:].isdigit():
                 continue
+            interface_stats = {}
+            if self._find_txt(interface,
+                    "./int:interface-statistics/int:stats-type", namespaces=C.NS) == 'basic':
+                interface_stats["tx_multicast_packets"] = ""
+                interface_stats["tx_discards"] = ""
+                interface_stats["tx_octets"] = ""
+                interface_stats["tx_errors"] = ""
+                interface_stats["rx_octets"] = ""
+                interface_stats["tx_unicast_packets"] = ""
+                interface_stats["rx_errors"] = ""
+                interface_stats["tx_broadcast_packets"] = ""
+                interface_stats["rx_multicast_packets"] = ""
+                interface_stats["rx_broadcast_packets"] = ""
+                interface_stats["rx_discards"] = ""
+                interface_stats["rx_unicast_packets"] = ""
             else:
-                interface_stats = {}
                 int_stats_xpath = "./int:interface-statistics/int:full-interface-stats/"
                 interface_stats["tx_multicast_packets"] = napalm.base.helpers.convert(
                     int,
@@ -440,6 +452,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         interface, int_stats_xpath+"int:packets-received", "0", namespaces=C.NS
                     ),
                 )
+
             interface_counters[interface_name] = interface_stats
 
         return interface_counters

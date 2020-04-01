@@ -98,6 +98,7 @@ INT_COUNTERS_RPC_REQ_FILTER = '''
     <interface>
       <interface-name/>
       <interface-statistics>
+        <stats-type/>
         <full-interface-stats>
           <multicast-packets-sent/>
           <output-drops/>
