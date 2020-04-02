@@ -39,6 +39,7 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'prb': 'http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-oper',
       'rib4': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv4-oper',
       'rib6': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv6-oper',
+      'tr': 'http://cisco.com/ns/yang/Cisco-IOS-XR-traceroute-act',
       }
 
 # GET RPC to retrieve device facts
@@ -341,3 +342,13 @@ ROUTE_IPV4_RPC_REQ_FILTER = '''
     </vrf>
   </vrfs>
 </rib>'''
+
+# GET RPC to retrieve trace route data
+TRACEROUTE_RPC_REQ = '''
+<traceroute xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-traceroute-act">
+  <ipv{version}>
+    <destination>{destination}</destination>
+    {vrf_tag}{source_tag}
+    {ttl_tag}{timeout_tag}
+  </ipv{version}>
+</traceroute>'''

@@ -25,6 +25,7 @@ import difflib
 from ncclient import manager
 from ncclient.xml_ import to_ele
 from ncclient.operations.rpc import RPCError
+from ncclient.operations.errors import TimeoutExpiredError
 from lxml import etree as ETREE
 from lxml.etree import XMLSyntaxError
 from netaddr import IPAddress  # needed for traceroute, to check IP version
@@ -1909,7 +1910,94 @@ class IOSXRNETCONFDriver(NetworkDriver):
         vrf=C.TRACEROUTE_VRF,
     ):
         """Execute traceroute and return results."""
-        return NotImplementedError
+        traceroute_result = {}
+
+        ipv = 4
+        try:
+            ipv = IPAddress(destination).version
+        except AddrFormatError:
+            return {"error": "Wrong destination IP Address!"}
+
+        source_tag = ""
+        ttl_tag = ""
+        timeout_tag = ""
+        vrf_tag = ""
+        if source:
+            source_tag = "<source>{source}</source>".format(source=source)
+        if ttl:
+            ttl_tag = "<max-ttl>{maxttl}</max-ttl>".format(maxttl=ttl)
+        if timeout:
+            timeout_tag = "<timeout>{timeout}</timeout>".format(
+                                    timeout=timeout)
+        if vrf:
+            vrf_tag = "<vrf-name>{vrf}</vrf-name>".format(vrf=vrf)
+
+        traceroute_rpc_command = C.TRACEROUTE_RPC_REQ.format(
+            version=ipv,
+            destination=destination,
+            vrf_tag=vrf_tag,
+            source_tag=source_tag,
+            ttl_tag=ttl_tag,
+            timeout_tag=timeout_tag,
+        )
+
+        try:
+            rpc_reply = self.device.dispatch(to_ele(
+                                    traceroute_rpc_command)).xml
+        except TimeoutExpiredError:
+            return {"error": "Timed out while waiting for reply"}
+        except RPCError as e:
+            if e.message:
+                return {"error": e.message}
+            else:
+                return {"error": "Invalid request ({})".format(e.tag)}
+
+        # Converts string to etree
+        traceroute_tree = ETREE.fromstring(rpc_reply)
+        hops = traceroute_tree.xpath(
+            ".//tr:ipv{}/tr:hops/tr:hop".format(ipv), namespaces=C.NS)
+
+        traceroute_result["success"] = {}
+
+        for hop in hops:
+            hop_index = napalm.base.helpers.convert(
+                int, self._find_txt(hop, "./tr:hop-index", default="-1", namespaces=C.NS)
+            )
+            hop_address = self._find_txt(
+                hop, "./tr:hop-address", default="", namespaces=C.NS)
+
+            if hop_address == "":
+                continue
+            hop_name = self._find_txt(
+                hop, "./tr:hop-hostname", default=hop_address, namespaces=C.NS)
+
+            traceroute_result["success"][hop_index] = {"probes": {}}
+            for probe in hop.xpath("./tr:probes/tr:probe", namespaces=C.NS):
+                probe_index = napalm.base.helpers.convert(
+                    int, self._find_txt(
+                     probe, "./tr:probe-index", default="", namespaces=C.NS), 0
+                ) + 1
+                probe_hop_address = str(
+                    self._find_txt(
+                        probe, "./tr:hop-address", default=hop_address, namespaces=C.NS)
+                )
+                probe_hop_name = str(
+                    self._find_txt(
+                        probe, "./tr:hop-hostname", default=hop_name, namespaces=C.NS)
+                )
+                rtt = (
+                    napalm.base.helpers.convert(
+                        float, self._find_txt(
+                            probe, "./tr:delta-time", default="", namespaces=C.NS), timeout*1000.0
+                    )
+                )  # ms
+                traceroute_result["success"][hop_index]["probes"][probe_index] = {
+                    "ip_address": probe_hop_address,
+                    "host_name": probe_hop_name,
+                    "rtt": rtt,
+                }
+
+        return traceroute_result
 
     def get_users(self):
         """Return user configuration."""
