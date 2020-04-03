@@ -2106,7 +2106,7 @@ class IOSDriver(NetworkDriver):
                     counters[interface]["tx_discards"] = -1
 
             interface_type, interface_number = split_interface(interface)
-            if interface_type in['HundredGigabitEthernet', 'FortyGigabitEthernet', \
+            if interface_type in['HundredGigabitEthernet', 'FortyGigabitEthernet',
                     'TenGigabitEthernet']:
                 interface = abbreviated_interface_name(interface)
             for line in sh_int_sum_cmd_out.splitlines():
