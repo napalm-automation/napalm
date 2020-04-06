@@ -1,4 +1,3 @@
-"""NAPALM Cisco IOS Handler."""
 # Copyright 2015 Spotify AB. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
@@ -2106,9 +2105,11 @@ class IOSDriver(NetworkDriver):
                     counters[interface]["tx_discards"] = -1
 
             interface_type, interface_number = split_interface(interface)
-            if interface_type in[
-                    'HundredGigabitEthernet', 'FortyGigabitEthernet',
-                    'TenGigabitEthernet']:
+            if interface_type in [
+                'HundredGigabitEthernet',
+                'FortyGigabitEthernet',
+                'TenGigabitEthernet'
+            ]:
                 interface = abbreviated_interface_name(interface)
             for line in sh_int_sum_cmd_out.splitlines():
                 if interface in line:
