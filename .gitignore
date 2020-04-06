@@ -57,6 +57,8 @@ docs/_static/
 .DS_Store
 .vagrant
 .venv
+.vscode
+.devcontainer
 
 env
 *.swp
