@@ -2108,7 +2108,7 @@ class IOSDriver(NetworkDriver):
             if interface_type in [
                 'HundredGigabitEthernet',
                 'FortyGigabitEthernet',
-                'TenGigabitEthernet'
+                'TenGigabitEthernet',
             ]:
                 interface = abbreviated_interface_name(interface)
             for line in sh_int_sum_cmd_out.splitlines():
