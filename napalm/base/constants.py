@@ -1,7 +1,5 @@
 """Constants to be used across NAPALM drivers."""
 
-from __future__ import unicode_literals
-
 CONFIG_LOCK = True  # must be changed soon!
 TIMEOUT = 60  # seconds
 

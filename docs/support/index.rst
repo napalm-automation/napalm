@@ -112,6 +112,7 @@ ____________________________________
 * :code:`allow_agent` (ios, iosxr, nxos_ssh) - Paramiko argument, enable connecting to the SSH agent (default: ``False``).
 * :code:`alt_host_keys` (ios, iosxr, nxos_ssh) - If ``True``, host keys will be loaded from the file specified in ``alt_key_file``.
 * :code:`alt_key_file` (ios, iosxr, nxos_ssh) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
+* :code:`auto_probe` (junos) - A timeout in seconds, for which to probe the device. Probing determines if the device accepts remote connections. If `auto_probe` is set to ``0``, no probing will be done. (default: ``0``).
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
 * :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: ``False``).
 * :code:`lock_disable` (junos) - Disable all configuration locking for management by an external system (default: ``False``).

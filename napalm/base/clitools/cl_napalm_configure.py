@@ -6,10 +6,6 @@ NAPALM CLI Tools: configure
 Deploy device config from the shell.
 """
 
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
-
 # import helpers
 from napalm.base import get_network_driver
 from napalm.base.clitools.helpers import build_help

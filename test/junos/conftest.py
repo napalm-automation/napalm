@@ -77,6 +77,10 @@ class FakeJunOSDevice(BaseTestDouble):
         }
         self._uptime = 4380
 
+        # Since junos-eznc 2.3.0 the new SAX parser is used as default. Thus
+        # disable it to use the DOM parser which was used prior.
+        self._use_filter = False
+
     @property
     def facts(self):
         # we want to reinitialize it every time to avoid side effects
@@ -94,7 +98,7 @@ class FakeJunOSDevice(BaseTestDouble):
     def uptime(self):
         return self._uptime
 
-    def open(self):
+    def open(self, auto_probe=0):
         pass
 
     def close(self):

@@ -2,18 +2,11 @@
 Test base helpers.
 """
 
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
-
-
 # NAPALM base
 from napalm.base import get_network_driver
 import napalm.base.exceptions
-from napalm.base.utils import py23_compat
 
 import pytest
-
 import os
 
 
@@ -45,21 +38,21 @@ class TestMockDriver(object):
 
         with pytest.raises(napalm.base.exceptions.ConnectionClosedException) as excinfo:
             d.get_facts()
-        assert "connection closed" in py23_compat.text_type(excinfo.value)
+        assert "connection closed" in str(excinfo.value)
 
     def test_context_manager(self):
         with pytest.raises(napalm.base.exceptions.ConnectionException) as e, driver(
             "blah", "bleh", "blih", optional_args=fail_args
         ) as d:
             pass
-        assert "You told me to do this" in py23_compat.text_type(e.value)
+        assert "You told me to do this" in str(e.value)
         with pytest.raises(AttributeError) as e, driver(
             "blah", "bleh", "blih", optional_args=optional_args
         ) as d:
             assert d.is_alive() == {"is_alive": True}
             d.__fake_call()
         assert d.is_alive() == {"is_alive": False}
-        assert "object has no attribute" in py23_compat.text_type(e.value)
+        assert "object has no attribute" in str(e.value)
 
     def test_mocking_getters(self):
         d = driver("blah", "bleh", "blih", optional_args=optional_args)
@@ -77,14 +70,14 @@ class TestMockDriver(object):
         expected = "You can provide mocked data in {}".format(
             os.path.join(optional_args["path"], "get_route_to.1")
         )
-        assert expected in py23_compat.text_type(excinfo.value)
+        assert expected in str(excinfo.value)
 
         with pytest.raises(NotImplementedError) as excinfo:
             d.get_route_to()
         expected = "You can provide mocked data in {}".format(
             os.path.join(optional_args["path"], "get_route_to.2")
         )
-        assert expected in py23_compat.text_type(excinfo.value)
+        assert expected in str(excinfo.value)
 
         d.close()
 
@@ -93,24 +86,17 @@ class TestMockDriver(object):
         d.open()
 
         with pytest.raises(TypeError) as excinfo:
-            d.get_route_to(1, 2, 3)
-        assert (
-            "get_route_to: expected at most 3 arguments, got 4"
-            in py23_compat.text_type(excinfo.value)
-        )
+            d.get_route_to(1, 2, 3, 4)
+        assert "get_route_to: expected at most 4 arguments, got 5" in str(excinfo.value)
 
         with pytest.raises(TypeError) as excinfo:
-            d.get_route_to(1, 1, protocol=2)
-        assert (
-            "get_route_to: expected at most 3 arguments, got 3"
-            in py23_compat.text_type(excinfo.value)
-        )
+            d.get_route_to(1, 1, 1, protocol=2)
+        assert "get_route_to: expected at most 4 arguments, got 4" in str(excinfo.value)
 
         with pytest.raises(TypeError) as excinfo:
             d.get_route_to(proto=2)
-        assert (
-            "get_route_to got an unexpected keyword argument 'proto'"
-            in py23_compat.text_type(excinfo.value)
+        assert "get_route_to got an unexpected keyword argument 'proto'" in str(
+            excinfo.value
         )
 
         d.close()
@@ -121,18 +107,15 @@ class TestMockDriver(object):
 
         with pytest.raises(KeyError) as excinfo:
             d.get_bgp_neighbors()
-        assert "Something" in py23_compat.text_type(excinfo.value)
+        assert "Something" in str(excinfo.value)
 
         with pytest.raises(napalm.base.exceptions.ConnectionClosedException) as excinfo:
             d.get_bgp_neighbors()
-        assert "Something" in py23_compat.text_type(excinfo.value)
+        assert "Something" in str(excinfo.value)
 
         with pytest.raises(TypeError) as excinfo:
             d.get_bgp_neighbors()
-            assert (
-                "Couldn't resolve exception NoIdeaException"
-                in py23_compat.text_type(excinfo.value)
-            )
+            assert "Couldn't resolve exception NoIdeaException" in str(excinfo.value)
 
         d.close()
 

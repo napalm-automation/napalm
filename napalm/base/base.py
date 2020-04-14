@@ -12,10 +12,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import sys
 
 from netmiko import ConnectHandler, NetMikoTimeoutException
@@ -908,7 +904,7 @@ class NetworkDriver(object):
         Returns all configured IP addresses on all interfaces as a dictionary of dictionaries.
         Keys of the main dictionary represent the name of the interface.
         Values of the main dictionary represent are dictionaries that may consist of two keys
-        'ipv4' and 'ipv6' (one, both or none) which are themselvs dictionaries witht the IP
+        'ipv4' and 'ipv6' (one, both or none) which are themselves dictionaries with the IP
         addresses as keys.
         Each IP Address dictionary has the following keys:
 
@@ -1007,7 +1003,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
 
         """
         Returns a dictionary of dictionaries containing details of all available routes to a
@@ -1015,6 +1011,7 @@ class NetworkDriver(object):
 
         :param destination: The destination prefix to be used when filtering the routes.
         :param protocol (optional): Retrieve the routes only for a specific protocol.
+        :param longer (optional): Retrieve more specific routes as well.
 
         Each inner dictionary contains the following fields:
 
@@ -1657,6 +1654,28 @@ class NetworkDriver(object):
                     'state'     : 'STALE'
                 }
             ]
+        """
+        raise NotImplementedError
+
+    def get_vlans(self):
+        """
+        Return structure being spit balled is as follows.
+            * vlan_id (int)
+                * name (text_type)
+                * interfaces (list)
+
+        Example::
+
+            {
+                1: {
+                    "name": "default",
+                    "interfaces": ["GigabitEthernet0/0/1", "GigabitEthernet0/0/2"]
+                },
+                2: {
+                    "name": "vlan2",
+                    "interfaces": []
+                }
+            }
         """
         raise NotImplementedError
 

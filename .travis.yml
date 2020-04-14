@@ -1,21 +1,31 @@
 language: python
 
 python:
-  - 2.7
-  - 3.5
-  - 3.6
+  - "3.6"
+  - "3.7"
+  - "3.8-dev"
+  - "nightly"
+
+stages:
+  - lint
+  - test
 
 matrix:
   include:
-  - python: 3.6
-    env: TOXENV=pylama
-  - python: 3.6
-    env: TOXENV=black
-  - python: 3.6
-    env: TOXENV=sphinx
+    - stage: lint
+      name: Black
+      python: 3.6
+      env: TOXENV=black
+    - stage: lint
+      name: Pylama
+      python: 3.6
+      env: TOXENV=pylama
+  allow_failures:
+    - python: 3.8-dev
+    - python: nightly
 
 install:
-  - pip install tox==3.7.0 tox-travis coveralls
+  - pip install tox==3.14.0 tox-travis==0.12 coveralls==1.8.2
 
 deploy:
   provider: pypi
@@ -32,3 +42,4 @@ script:
 
 after_success:
   - coveralls
+

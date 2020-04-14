@@ -1,7 +1,5 @@
 """Constants for the JunOS driver."""
 
-from __future__ import unicode_literals
-
 from napalm.base.constants import *  # noqa
 
 # OpenConfig mapping

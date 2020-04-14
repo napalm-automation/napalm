@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response MajorVersion="1" MinorVersion="0"><CLI><Exec>
+Building configuration...
+!! IOS XR Configuration version = 6.2.1.08I
+!! Last configuration change at Wed Aug 17 15:58:08 2016 by vagrant
+!
+telnet vrf default ipv4 server max-servers 10
+username vagrant
+ group root-lr
+ group cisco-support
+ secret 5 $1$gZpA$ued8wLDDwikqTVKTEvUe2/
+!
+tpa
+ address-family ipv4
+  update-source MgmtEth0/RP0/CPU0/0
+ !
+!
+ntp
+ server 8.8.8.8 prefer
+ peer 172.17.17.1
+!
+interface MgmtEth0/RP0/CPU0/0
+ description testing parallel commits
+ ipv4 address dhcp
+!
+interface GigabitEthernet0/0/0/0
+ shutdown
+!
+interface GigabitEthernet0/0/0/1
+ shutdown
+!
+interface GigabitEthernet0/0/0/2
+ shutdown
+!
+interface GigabitEthernet0/0/0/3
+ shutdown
+!
+router static
+ address-family ipv4 unicast
+  0.0.0.0/0 MgmtEth0/RP0/CPU0/0 10.0.2.2
+ !
+!
+grpc
+ port 57777
+!
+xml agent tty
+ iteration on size 1
+!
+ssh server v2
+ssh server vrf default
+end
+
+</Exec></CLI><ResultSummary ErrorCount="0"/></Response>
+XML>
+
