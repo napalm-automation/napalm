@@ -6,7 +6,8 @@
         "vlanshowbr-vlanid-utf": "1",
         "vlanshowbr-vlanname": "default",
         "vlanshowbr-vlanstate": "active",
-        "vlanshowbr-shutstate": "noshutdown"
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/15,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
       },
       {
         "vlanshowbr-vlanid": "161",
