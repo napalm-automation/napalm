@@ -244,19 +244,22 @@ def textfsm_extractor(cls, template_name, raw_text):
     )
 
 
-def find_txt(xml_tree, path, default=""):
+def find_txt(xml_tree, path, default="", namespaces=None):
     """
     Extracts the text value from an XML tree, using XPath.
     In case of error, will return a default value.
 
-    :param xml_tree: the XML Tree object. Assumed is <type 'lxml.etree._Element'>.
-    :param path:     XPath to be applied, in order to extract the desired data.
-    :param default:  Value to be returned in case of error.
+    :param xml_tree:   the XML Tree object. Assumed is <type 'lxml.etree._Element'>.
+    :param path:       XPath to be applied, in order to extract the desired data.
+    :param default:    Value to be returned in case of error.
+    :param namespaces: prefix-namespace mappings to process XPath
     :return: a str value.
     """
     value = ""
     try:
-        xpath_applied = xml_tree.xpath(path)  # will consider the first match only
+        xpath_applied = xml_tree.xpath(
+            path, namespaces=namespaces
+        )  # will consider the first match only
         xpath_length = len(xpath_applied)  # get a count of items in XML tree
         if xpath_length and xpath_applied[0] is not None:
             xpath_result = xpath_applied[0]
