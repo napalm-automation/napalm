@@ -1,0 +1,4 @@
+  Name                             Default RD            Protocols   Interfaces
+  Mgmt-intf                        <not set>             ipv4,ipv6   Gi0
+  TEST                             314:46                ipv4        Gi0/1/6.892
+  TEST2                            314:47                ipv4        Gi0/1/6.123

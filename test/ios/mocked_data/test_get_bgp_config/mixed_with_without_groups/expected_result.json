@@ -1,0 +1,110 @@
+{
+  "RR-CLIENTS": {
+    "apply_groups": [],
+    "description": "[ibgp - rr clients]",
+    "export_policy": "PASS-OUT",
+    "import_policy": "PASS-IN",
+    "local_address": "GigabitEthernet1",
+    "local_as": 0,
+    "multihop_ttl": 0,
+    "multipath": false,
+    "neighbors": {
+      "10.0.0.3": {
+        "authentication_key": "",
+        "description": "",
+        "export_policy": "",
+        "import_policy": "",
+        "local_address": "",
+        "local_as": 0,
+        "nhs": false,
+        "prefix_limit": {
+          "inet": {
+            "unicast": {
+              "limit": 0,
+              "teardown": {
+                "threshold": 0,
+                "timeout": 0
+              }
+            }
+          }
+        },
+        "remote_as": 0,
+        "route_reflector_client": false
+      },
+      "10.0.0.5": {
+        "authentication_key": "",
+        "description": "",
+        "export_policy": "",
+        "import_policy": "",
+        "local_address": "",
+        "local_as": 0,
+        "nhs": false,
+        "prefix_limit": {
+          "inet": {
+            "unicast": {
+              "limit": 0,
+              "teardown": {
+                "threshold": 0,
+                "timeout": 0
+              }
+            }
+          }
+        },
+        "remote_as": 0,
+        "route_reflector_client": false
+      }
+    },
+    "prefix_limit": {
+      "inet": {
+        "unicast": {
+          "limit": 1000,
+          "teardown": {
+            "threshold": 80,
+            "timeout": 15
+          }
+        }
+      }
+    },
+    "remote_as": 65001,
+    "remove_private_as": false,
+    "type": "internal"
+  },
+  "_": {
+    "apply_groups": [],
+    "description": "",
+    "export_policy": "",
+    "import_policy": "",
+    "local_address": "",
+    "local_as": 0,
+    "multihop_ttl": 0,
+    "multipath": false,
+    "neighbors": {
+      "10.0.0.1": {
+        "authentication_key": "",
+        "description": "external Peer",
+        "export_policy": "PASS-OUT",
+        "import_policy": "PASS-IN",
+        "local_address": "",
+        "local_as": 65005,
+        "nhs": false,
+        "prefix_limit": {
+          "inet": {
+            "unicast": {
+              "limit": 0,
+              "teardown": {
+                "threshold": 0,
+                "timeout": 0
+              }
+            }
+          }
+        },
+        "remote_as": 65111,
+        "route_reflector_client": false
+      }
+    },
+    "prefix_limit": {},
+    "remote_as": 0,
+    "remove_private_as": false,
+    "type": ""
+  }
+}

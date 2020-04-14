@@ -1,0 +1,6 @@
+System memory   : 3931592K total, 1506752K used, 2424840K free, 221424K kernel reserved
+Lowest(b)       : 1854732696
+
+                Total(K)     Used(K)      Free(K)
+Process         3931592      1506752      2424840     
+Config          0            0            0

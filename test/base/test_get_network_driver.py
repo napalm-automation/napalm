@@ -1,7 +1,4 @@
 """Test the method get_network_driver."""
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import unittest
 from ddt import ddt, data
 
@@ -21,7 +18,7 @@ class TestGetNetworkDriver(unittest.TestCase):
         """Check that we can get the desired driver and is instance of NetworkDriver."""
         self.assertTrue(issubclass(get_network_driver(driver), NetworkDriver))
 
-    @data('fake', 'network', 'driver', 'sys', 1)
+    @data("fake", "network", "driver", "sys", 1)
     def test_get_wrong_network_driver(self, driver):
         """Check that inexisting driver throws ModuleImportError."""
         self.assertRaises(ModuleImportError, get_network_driver, driver, prepend=False)

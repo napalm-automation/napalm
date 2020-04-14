@@ -1,0 +1,44 @@
+For address family: IPv4 Unicast
+BGP router identifier 192.168.0.2, local AS number 1
+BGP table version is 25, main routing table version 25
+4 network entries using 576 bytes of memory
+4 path entries using 320 bytes of memory
+3/3 BGP path/bestpath attribute entries using 456 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 1352 total bytes of memory
+BGP activity 10/3 prefixes, 18/11 paths, scan interval 60 secs
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+192.168.0.1     4            1      46      46       25    0    0 00:36:42        2
+192.168.0.3     4            1      18      16       25    0    0 00:08:14        1
+
+For address family: IPv6 Unicast
+BGP router identifier 192.168.0.2, local AS number 1
+BGP table version is 1, main routing table version 1
+2 network entries using 336 bytes of memory
+2 path entries using 208 bytes of memory
+1/0 BGP path/bestpath attribute entries using 152 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 696 total bytes of memory
+BGP activity 10/3 prefixes, 18/11 paths, scan interval 60 secs
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+192.168.0.1     4            1      46      46        1    0    0 00:36:42        0
+192.168.0.3     4            1      18      16        1    0    0 00:08:14        2
+
+For address family: IPv4 Multicast
+BGP router identifier 192.168.0.2, local AS number 1
+BGP table version is 1, main routing table version 1
+1 network entries using 144 bytes of memory
+1 path entries using 76 bytes of memory
+1/0 BGP path/bestpath attribute entries using 152 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 372 total bytes of memory
+BGP activity 10/3 prefixes, 18/11 paths, scan interval 60 secs
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+192.168.0.1     4            1      46      46        1    0    0 00:36:42        1
+192.168.0.3     4            1      18      16        1    0    0 00:08:14        0

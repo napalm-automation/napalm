@@ -9,16 +9,18 @@ from napalm.base.test.double import BaseTestDouble
 from napalm.nxos import nxos
 
 
-@pytest.fixture(scope='class')
+@pytest.fixture(scope="class")
 def set_device_parameters(request):
     """Set up the class."""
+
     def fin():
         request.cls.device.close()
+
     request.addfinalizer(fin)
 
     request.cls.driver = nxos.NXOSDriver
     request.cls.patched_driver = PatchedNXOSDriver
-    request.cls.vendor = 'nxos'
+    request.cls.vendor = "nxos"
     parent_conftest.set_device_parameters(request)
 
 
@@ -33,16 +35,14 @@ class PatchedNXOSDriver(nxos.NXOSDriver):
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         super().__init__(hostname, username, password, timeout, optional_args)
 
-        self.patched_attrs = ['device']
+        self.patched_attrs = ["device"]
         self.device = FakeNXOSDevice()
 
     def disconnect(self):
         pass
 
     def is_alive(self):
-        return {
-            'is_alive': True  # In testing everything works..
-        }
+        return {"is_alive": True}  # In testing everything works..
 
     def open(self):
         pass
@@ -50,14 +50,24 @@ class PatchedNXOSDriver(nxos.NXOSDriver):
 
 class FakeNXOSDevice(BaseTestDouble):
     """NXOS device test double."""
+
     def __init__(self):
         super().__init__()
-        full_path = self.find_file('test_get_facts/normal/facts.json')
-        self.facts = self.read_json_file(full_path)
+
+    def _send_command(self, command, raw_text=False):
+        """
+        Wrapper for NX-API show method.
+
+        Allows more code sharing between NX-API and SSH.
+        """
+        return self.show(command, raw_text=raw_text)
+
+    def _send_command_list(self, commands):
+        return self.config_list(commands)
 
     def show(self, command, raw_text=False):
         """Fake show."""
-        filename = '{}.json'.format(command.replace(' ', '_'))
+        filename = "{}.json".format(command.replace(" ", "_"))
         full_path = self.find_file(filename)
 
         if raw_text:

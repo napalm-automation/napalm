@@ -1,7 +1,5 @@
 """Constants for the IOS-XR driver."""
 
-from __future__ import unicode_literals
-
 from napalm.base.constants import *  # noqa
 
 SR_638170159_SOLVED = False

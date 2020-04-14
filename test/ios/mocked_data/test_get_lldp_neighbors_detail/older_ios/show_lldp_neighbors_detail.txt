@@ -1,0 +1,68 @@
+
+
+Chassis id: f4a7.39cd.2e40
+Port id: ge-0/0/23
+Port Description: ptp to switch
+System Name: switch1
+
+System Description:
+Juniper Networks, Inc. ex3300-24p , version 12.3R12.4 Build date: 2016-01-20 05:03:06 UTC
+
+Time remaining: 105 seconds
+System Capabilities: B,R
+Enabled Capabilities: B,R
+Management Addresses - not advertised
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    Other/unknown
+    100base-TX(HD)
+    Symm Pause(FD)
+    Symm, Asym Pause(FD)
+    1000baseX(FD)
+    1000baseT(HD)
+Media Attachment Unit type - not advertised
+
+MED Information:
+
+    MED Codes:
+          (NP) Network Policy, (LI) Location Identification
+          (PS) Power Source Entity, (PD) Power Device
+          (IN) Inventory
+
+    Inventory information - not advertised
+    Capabilities: NP, LI, PS
+    Device type: Network connectivity
+    Network Policies - not advertised
+    Power requirements - not advertised
+---------------------------------------------
+
+
+Chassis id: a8b1.d41d.8680
+Port id: Gi0/2
+Port Description: GigabitEthernet0/2
+System Name: switch2
+
+System Description:
+Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 15.0(1)SE2, RELEASE SOFTWARE (fc3)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2011 by Cisco Systems, Inc.
+Compiled Thu 22-Dec-11 00:46 by prod_rel_team
+
+Time remaining: 115 seconds
+System Capabilities: B
+Enabled Capabilities: B
+Management Addresses:
+    IP: 10.10.10.10
+Auto Negotiation - supported, enabled
+Physical media capabilities:
+    Other/unknown
+    Symm Pause(FD)
+    Symm, Asym Pause(FD)
+    1000baseX(FD)
+    1000baseT(HD)
+Media Attachment Unit type: 30
+---------------------------------------------
+
+
+Total entries displayed: 2
+

@@ -1,15 +1,6 @@
 """Testing framework."""
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import functools
-
-# python2/3 support
-try:
-    from itertools import izip_longest as zip_longest
-except ImportError:
-    from itertools import zip_longest
-
+from itertools import zip_longest
 import inspect
 import json
 
@@ -17,15 +8,7 @@ import pytest
 from napalm.base.test import helpers
 from napalm.base.test import models
 from napalm.base import NetworkDriver
-
-# text_type is 'unicode' for py2 and 'str' for py3
-from napalm.base.utils.py23_compat import text_type
-
 from napalm.base.test import conftest
-
-
-# inspect.getargspec deprecated in Python 3.5, use getfullargspec if available
-inspect_getargspec = getattr(inspect, "getfullargspec", inspect.getargspec)
 
 
 def list_dicts_diff(prv, nxt):
@@ -52,17 +35,17 @@ def dict_diff(prv, nxt):
                     result[k] = diff
             else:
                 "If only one is a dict they are clearly different"
-                result[k] = {'result': prv.get(k), 'expected': nxt.get(k)}
+                result[k] = {"result": prv.get(k), "expected": nxt.get(k)}
         else:
-            "Ellipsis is a wildcard."""
+            "Ellipsis is a wildcard." ""
             if prv.get(k) != nxt.get(k) and nxt.get(k) != "...":
-                result[k] = {'result': prv.get(k), 'expected': nxt.get(k)}
+                result[k] = {"result": prv.get(k), "expected": nxt.get(k)}
     return result
 
 
 def wrap_test_cases(func):
     """Wrap test cases."""
-    func.__dict__['build_test_cases'] = True
+    func.__dict__["build_test_cases"] = True
 
     @functools.wraps(func)
     def mock_wrapper(cls, test_case):
@@ -97,13 +80,14 @@ def wrap_test_cases(func):
             diff = dict_diff(result, expected_result)
         if diff:
             print("Resulting JSON object was: {}".format(json.dumps(result)))
-            raise AssertionError("Expected result varies on some keys {}".format(
-                                                                        json.dumps(diff)))
+            raise AssertionError(
+                "Expected result varies on some keys {}".format(json.dumps(diff))
+            )
 
         for patched_attr in cls.device.patched_attrs:
             attr = getattr(cls.device, patched_attr)
-            attr.current_test = ''   # Empty them to avoid side effects
-            attr.current_test_case = ''   # Empty them to avoid side effects
+            attr.current_test = ""  # Empty them to avoid side effects
+            attr.current_test_case = ""  # Empty them to avoid side effects
 
         return result
 
@@ -129,25 +113,25 @@ class BaseTestGetters(object):
         errors = {}
         cls = self.driver
         # Create fictional driver instance (py3 needs bound methods)
-        tmp_obj = cls(hostname='test', username='admin', password='pwd')
+        tmp_obj = cls(hostname="test", username="admin", password="pwd")
         attrs = [m for m, v in inspect.getmembers(tmp_obj)]
         for attr in attrs:
             func = getattr(tmp_obj, attr)
-            if attr.startswith('_') or not inspect.ismethod(func):
+            if attr.startswith("_") or not inspect.ismethod(func):
                 continue
             try:
                 orig = getattr(NetworkDriver, attr)
-                orig_spec = inspect_getargspec(orig)
+                orig_spec = inspect.getfullargspec(orig)
             except AttributeError:
-                orig_spec = 'Method does not exist in napalm.base'
-            func_spec = inspect_getargspec(func)
+                orig_spec = "Method does not exist in napalm.base"
+            func_spec = inspect.getfullargspec(func)
             if orig_spec != func_spec:
                 errors[attr] = (orig_spec, func_spec)
 
-        EXTRA_METHODS = ['__init__', ]
+        EXTRA_METHODS = ["__init__"]
         for method in EXTRA_METHODS:
-            orig_spec = inspect_getargspec(getattr(NetworkDriver, method))
-            func_spec = inspect_getargspec(getattr(cls, method))
+            orig_spec = inspect.getfullargspec(getattr(NetworkDriver, method))
+            func_spec = inspect.getfullargspec(getattr(cls, method))
             if orig_spec != func_spec:
                 errors[attr] = (orig_spec, func_spec)
 
@@ -207,19 +191,19 @@ class BaseTestGetters(object):
         environment = self.device.get_environment()
         assert len(environment) > 0
 
-        for fan, fan_data in environment['fans'].items():
+        for fan, fan_data in environment["fans"].items():
             assert helpers.test_model(models.fan, fan_data)
 
-        for power, power_data in environment['power'].items():
+        for power, power_data in environment["power"].items():
             assert helpers.test_model(models.power, power_data)
 
-        for temperature, temperature_data in environment['temperature'].items():
+        for temperature, temperature_data in environment["temperature"].items():
             assert helpers.test_model(models.temperature, temperature_data)
 
-        for cpu, cpu_data in environment['cpu'].items():
+        for cpu, cpu_data in environment["cpu"].items():
             assert helpers.test_model(models.cpu, cpu_data)
 
-        assert helpers.test_model(models.memory, environment['memory'])
+        assert helpers.test_model(models.memory, environment["memory"])
 
         return environment
 
@@ -227,15 +211,16 @@ class BaseTestGetters(object):
     def test_get_bgp_neighbors(self, test_case):
         """Test get_bgp_neighbors."""
         get_bgp_neighbors = self.device.get_bgp_neighbors()
-        assert 'global' in get_bgp_neighbors.keys()
+        if len(get_bgp_neighbors) > 0:
+            assert "global" in get_bgp_neighbors.keys()
 
         for vrf, vrf_data in get_bgp_neighbors.items():
-            assert isinstance(vrf_data['router_id'], text_type)
+            assert isinstance(vrf_data["router_id"], str)
 
-            for peer, peer_data in vrf_data['peers'].items():
+            for peer, peer_data in vrf_data["peers"].items():
                 assert helpers.test_model(models.peer, peer_data)
 
-                for af, af_data in peer_data['address_family'].items():
+                for af, af_data in peer_data["address_family"].items():
                     assert helpers.test_model(models.af, af_data)
 
         return get_bgp_neighbors
@@ -260,7 +245,7 @@ class BaseTestGetters(object):
 
         for bgp_group in get_bgp_config.values():
             assert helpers.test_model(models.bgp_config_group, bgp_group)
-            for bgp_neighbor in bgp_group.get('neighbors', {}).values():
+            for bgp_neighbor in bgp_group.get("neighbors", {}).values():
                 assert helpers.test_model(models.bgp_config_neighbor, bgp_neighbor)
 
         return get_bgp_config
@@ -273,7 +258,7 @@ class BaseTestGetters(object):
         assert len(get_bgp_neighbors_detail) > 0
 
         for vrf, vrf_ases in get_bgp_neighbors_detail.items():
-            assert isinstance(vrf, text_type)
+            assert isinstance(vrf, str)
             for remote_as, neighbor_list in vrf_ases.items():
                 assert isinstance(remote_as, int)
                 for neighbor in neighbor_list:
@@ -285,6 +270,17 @@ class BaseTestGetters(object):
     def test_get_arp_table(self, test_case):
         """Test get_arp_table."""
         get_arp_table = self.device.get_arp_table()
+        assert len(get_arp_table) > 0
+
+        for arp_entry in get_arp_table:
+            assert helpers.test_model(models.arp_table, arp_entry)
+
+        return get_arp_table
+
+    @wrap_test_cases
+    def test_get_arp_table_with_vrf(self, test_case):
+        """Test get_arp_table."""
+        get_arp_table = self.device.get_arp_table(vrf="TEST")
         assert len(get_arp_table) > 0
 
         for arp_entry in get_arp_table:
@@ -309,7 +305,7 @@ class BaseTestGetters(object):
         assert len(get_ntp_peers) > 0
 
         for peer, peer_details in get_ntp_peers.items():
-            assert isinstance(peer, text_type)
+            assert isinstance(peer, str)
             assert helpers.test_model(models.ntp_peer, peer_details)
 
         return get_ntp_peers
@@ -321,7 +317,7 @@ class BaseTestGetters(object):
         assert len(get_ntp_servers) > 0
 
         for server, server_details in get_ntp_servers.items():
-            assert isinstance(server, text_type)
+            assert isinstance(server, str)
             assert helpers.test_model(models.ntp_server, server_details)
 
         return get_ntp_servers
@@ -344,8 +340,8 @@ class BaseTestGetters(object):
         assert len(get_interfaces_ip) > 0
 
         for interface, interface_details in get_interfaces_ip.items():
-            ipv4 = interface_details.get('ipv4', {})
-            ipv6 = interface_details.get('ipv6', {})
+            ipv4 = interface_details.get("ipv4", {})
+            ipv6 = interface_details.get("ipv6", {})
             for ip, ip_details in ipv4.items():
                 assert helpers.test_model(models.interfaces_ip, ip_details)
             for ip, ip_details in ipv6.items():
@@ -383,9 +379,29 @@ class BaseTestGetters(object):
     @wrap_test_cases
     def test_get_route_to(self, test_case):
         """Test get_route_to."""
-        destination = '1.0.4.0/24'
-        protocol = 'bgp'
-        get_route_to = self.device.get_route_to(destination=destination, protocol=protocol)
+        destination = "1.0.4.0/24"
+        protocol = "bgp"
+        get_route_to = self.device.get_route_to(
+            destination=destination, protocol=protocol
+        )
+
+        assert len(get_route_to) > 0
+
+        for prefix, routes in get_route_to.items():
+            for route in routes:
+                assert helpers.test_model(models.route, route)
+
+        return get_route_to
+
+    @wrap_test_cases
+    def test_get_route_to_longer(self, test_case):
+        """Test get_route_to with longer=True"""
+        destination = "1.0.4.0/24"
+        protocol = "bgp"
+
+        get_route_to = self.device.get_route_to(
+            destination=destination, protocol=protocol, longer=True
+        )
 
         assert len(get_route_to) > 0
 
@@ -405,7 +421,7 @@ class BaseTestGetters(object):
         for snmp_entry in get_snmp_information:
             assert helpers.test_model(models.snmp, get_snmp_information)
 
-        for community, community_data in get_snmp_information['community'].items():
+        for community, community_data in get_snmp_information["community"].items():
             assert helpers.test_model(models.snmp_community, community_data)
 
         return get_snmp_information
@@ -438,14 +454,14 @@ class BaseTestGetters(object):
     @wrap_test_cases
     def test_ping(self, test_case):
         """Test ping."""
-        destination = '8.8.8.8'
+        destination = "8.8.8.8"
         get_ping = self.device.ping(destination)
-        assert isinstance(get_ping.get('success'), dict)
-        ping_results = get_ping.get('success', {})
+        assert isinstance(get_ping.get("success"), dict)
+        ping_results = get_ping.get("success", {})
 
         assert helpers.test_model(models.ping, ping_results)
 
-        for ping_result in ping_results.get('results', []):
+        for ping_result in ping_results.get("results", []):
             assert helpers.test_model(models.ping_result, ping_result)
 
         return get_ping
@@ -453,13 +469,13 @@ class BaseTestGetters(object):
     @wrap_test_cases
     def test_traceroute(self, test_case):
         """Test traceroute."""
-        destination = '8.8.8.8'
+        destination = "8.8.8.8"
         get_traceroute = self.device.traceroute(destination)
-        assert isinstance(get_traceroute.get('success'), dict)
-        traceroute_results = get_traceroute.get('success', {})
+        assert isinstance(get_traceroute.get("success"), dict)
+        traceroute_results = get_traceroute.get("success", {})
 
         for hope_id, hop_result in traceroute_results.items():
-            for probe_id, probe_result in hop_result.get('probes', {}).items():
+            for probe_id, probe_result in hop_result.get("probes", {}).items():
                 assert helpers.test_model(models.traceroute, probe_result)
 
         return get_traceroute
@@ -472,7 +488,9 @@ class BaseTestGetters(object):
 
         for user, user_details in get_users.items():
             assert helpers.test_model(models.users, user_details)
-            assert (0 <= user_details.get('level') <= 15)
+            assert (0 <= user_details.get("level") <= 15) or (
+                user_details.get("level") == 20
+            )
 
         return get_users
 
@@ -483,19 +501,17 @@ class BaseTestGetters(object):
         assert isinstance(get_optics, dict)
 
         for iface, iface_data in get_optics.items():
-            assert isinstance(iface, text_type)
-            for channel in iface_data['physical_channels']['channel']:
+            assert isinstance(iface, str)
+            for channel in iface_data["physical_channels"]["channel"]:
                 assert len(channel) == 2
-                assert isinstance(channel['index'], int)
-                for field in ['input_power', 'output_power',
-                              'laser_bias_current']:
+                assert isinstance(channel["index"], int)
+                for field in ["input_power", "output_power", "laser_bias_current"]:
 
-                    assert len(channel['state'][field]) == 4
-                    assert isinstance(channel['state'][field]['instant'],
-                                      float)
-                    assert isinstance(channel['state'][field]['avg'], float)
-                    assert isinstance(channel['state'][field]['min'], float)
-                    assert isinstance(channel['state'][field]['max'], float)
+                    assert len(channel["state"][field]) == 4
+                    assert isinstance(channel["state"][field]["instant"], float)
+                    assert isinstance(channel["state"][field]["avg"], float)
+                    assert isinstance(channel["state"][field]["min"], float)
+                    assert isinstance(channel["state"][field]["max"], float)
 
         return get_optics
 
@@ -512,12 +528,12 @@ class BaseTestGetters(object):
     @wrap_test_cases
     def test_get_config_filtered(self, test_case):
         """Test get_config method."""
-        for config in ['running', 'startup', 'candidate']:
+        for config in ["running", "startup", "candidate"]:
             get_config = self.device.get_config(retrieve=config)
 
-            assert get_config['candidate'] == "" if config != "candidate" else True
-            assert get_config['startup'] == "" if config != "startup" else True
-            assert get_config['running'] == "" if config != "running" else True
+            assert get_config["candidate"] == "" if config != "candidate" else True
+            assert get_config["startup"] == "" if config != "startup" else True
+            assert get_config["running"] == "" if config != "running" else True
 
         return get_config
 
@@ -529,9 +545,12 @@ class BaseTestGetters(object):
         assert isinstance(get_network_instances, dict)
         for network_instance_name, network_instance in get_network_instances.items():
             assert helpers.test_model(models.network_instance, network_instance)
-            assert helpers.test_model(models.network_instance_state, network_instance['state'])
-            assert helpers.test_model(models.network_instance_interfaces,
-                                      network_instance['interfaces'])
+            assert helpers.test_model(
+                models.network_instance_state, network_instance["state"]
+            )
+            assert helpers.test_model(
+                models.network_instance_interfaces, network_instance["interfaces"]
+            )
 
         return get_network_instances
 
@@ -544,3 +563,15 @@ class BaseTestGetters(object):
             for policy_term in policy_details:
                 assert helpers.test_model(models.firewall_policies, policy_term)
         return get_firewall_policies
+
+    @wrap_test_cases
+    def test_get_vlans(self, test_case):
+        """Test get_vlans."""
+        get_vlans = self.device.get_vlans()
+
+        assert len(get_vlans) > 0
+
+        for vlan, vlan_data in get_vlans.items():
+            assert helpers.test_model(models.vlan, vlan_data)
+
+        return get_vlans

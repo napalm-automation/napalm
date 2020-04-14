@@ -1,0 +1,10 @@
+<lldp-neighbors-information style="brief">
+    <lldp-neighbor-information>
+        <lldp-local-interface>fe-0/0/2.0</lldp-local-interface>
+        <lldp-local-parent-interface-name>-</lldp-local-parent-interface-name>
+        <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
+        <lldp-remote-chassis-id>0c:8d:db:63:62:00</lldp-remote-chassis-id>
+        <lldp-remote-port-description>lan port 0</lldp-remote-port-description>
+        <lldp-remote-system-name>Meraki MX64</lldp-remote-system-name>
+    </lldp-neighbor-information>
+</lldp-neighbors-information>

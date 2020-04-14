@@ -1,0 +1,11 @@
+Routing entry for 1.0.4.0/24
+  Known via "bgp 65201", distance 20, metric 0
+  Tag 8244, type external
+  Last update from 10.105.179.5 1d21h ago
+  Routing Descriptor Blocks:
+  * 10.105.179.5, from 10.105.179.5, 1d21h ago
+      Route metric is 0, traffic share count is 1
+      AS Hops 4
+      Route tag 8244
+      MPLS label: none
+

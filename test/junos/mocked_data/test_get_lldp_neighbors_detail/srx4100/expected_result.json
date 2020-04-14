@@ -5,9 +5,15 @@
             "remote_chassis_id": "2C:21:31:A5:17:C0", 
             "remote_port": "549", 
             "remote_port_description": "ge-3/3/1", 
-            "remote_system_capab": "Bridge Router", 
+            "remote_system_capab": [
+                "bridge",
+                "router"
+            ],
             "remote_system_description": "Juniper Networks, Inc. ex9208 Ethernet Switch, kernel JUNOS 16.1R5.7, Build date: 2017-08-18 17:58:37 UTC Copyright (c) 1996-2017 Juniper Networks, Inc.", 
-            "remote_system_enable_capab": "Bridge Router", 
+            "remote_system_enable_capab": [
+                "bridge",
+                "router"
+            ],
             "remote_system_name": "EX9208"
         }
     ]

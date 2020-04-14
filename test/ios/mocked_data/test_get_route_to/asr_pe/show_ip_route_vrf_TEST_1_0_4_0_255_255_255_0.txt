@@ -1,0 +1,13 @@
+
+Routing Table: TEST
+Routing entry for 1.0.4.0/24
+  Known via "bgp 65404", distance 200, metric 0
+  Tag 64560, type internal
+  Last update from 10.33.4.10 12:25:28 ago
+  Routing Descriptor Blocks:
+  * 10.33.4.10 (default), from 10.33.4.10, 12:25:28 ago
+      Route metric is 0, traffic share count is 1
+      AS Hops 2
+      Route tag 64560
+      MPLS label: 6038
+      MPLS Flags: MPLS Required, NSF

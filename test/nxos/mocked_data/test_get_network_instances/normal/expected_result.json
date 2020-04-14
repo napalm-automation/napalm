@@ -1,0 +1,36 @@
+{
+    "management": {
+        "name": "management",
+        "type": "L3VRF",
+        "state": {
+            "route_distinguisher": "0:0"
+        },
+        "interfaces": {
+            "interface": {
+                "mgmt0": {}
+            }
+        }
+    },
+    "default": {
+        "name": "default",
+        "type": "DEFAULT_INSTANCE",
+        "state": {
+            "route_distinguisher": "0:0"
+        },
+        "interfaces": {
+            "interface": {
+                "Vlan1": {},
+                "Vlan100": {},
+                "Vlan101": {},
+                "Vlan102": {},
+                "Vlan103": {},
+                "Vlan104": {},
+                "Vlan105": {},
+                "loopback1": {},
+                "Null0": {},
+                "Ethernet1/5": {},
+                "Ethernet1/5.1": {}
+            }
+        }
+    }
+}

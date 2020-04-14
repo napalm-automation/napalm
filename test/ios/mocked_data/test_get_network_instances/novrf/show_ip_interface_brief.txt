@@ -1,0 +1,65 @@
+
+Interface              IP-Address      OK? Method Status                Protocol
+Vlan1                  unassigned      YES NVRAM  administratively down down    
+Vlan1980               10.196.16.254   YES NVRAM  up                    up      
+Vlan1981               10.196.17.254   YES NVRAM  up                    up      
+Vlan1982               10.196.18.254   YES NVRAM  up                    down    
+Vlan1983               10.196.19.254   YES NVRAM  up                    up      
+Vlan1984               10.196.20.254   YES NVRAM  up                    down    
+Vlan1985               10.196.21.254   YES NVRAM  up                    down    
+Vlan1986               10.196.22.254   YES NVRAM  up                    down    
+Vlan1987               unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/1   unassigned      YES unset  down                  down    
+GigabitEthernet1/0/2   unassigned      YES unset  down                  down    
+GigabitEthernet1/0/3   unassigned      YES unset  up                    up      
+GigabitEthernet1/0/4   unassigned      YES unset  down                  down    
+GigabitEthernet1/0/5   unassigned      YES unset  down                  down    
+GigabitEthernet1/0/6   unassigned      YES unset  down                  down    
+GigabitEthernet1/0/7   unassigned      YES unset  up                    up      
+GigabitEthernet1/0/8   unassigned      YES unset  down                  down    
+GigabitEthernet1/0/9   unassigned      YES unset  down                  down    
+GigabitEthernet1/0/10  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/11  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/12  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/13  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/14  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/15  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/16  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/17  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/18  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/19  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/20  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/21  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/22  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/23  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/24  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/25  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/26  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/27  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/28  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/29  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/30  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/31  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/32  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/33  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/34  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/35  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/36  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/37  unassigned      YES unset  up                    up      
+GigabitEthernet1/0/38  unassigned      YES unset  up                    up      
+GigabitEthernet1/0/39  unassigned      YES unset  up                    up      
+GigabitEthernet1/0/40  10.127.0.189    YES NVRAM  up                    up      
+GigabitEthernet1/0/41  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/42  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/43  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/44  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/45  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/46  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/47  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/48  unassigned      YES unset  down                  down    
+GigabitEthernet1/0/49  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/50  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/51  unassigned      YES unset  administratively down down    
+GigabitEthernet1/0/52  10.235.48.16    YES NVRAM  up                    up      
+Loopback1987           10.196.23.254   YES NVRAM  up                    up      
+Tunnel100              10.127.0.181    YES NVRAM  up                    up      
