@@ -5,6 +5,7 @@
     "last_flapped": 1466586841.4151127,
     "is_up": true,
     "mac_address": "08:00:27:10:C4:8F",
+    "mtu": 9214,
     "speed": 0
   },
   "Management1": {
@@ -13,6 +14,7 @@
     "last_flapped": 1466586841.4284112,
     "is_up": true,
     "mac_address": "08:00:27:20:B9:04",
+    "mtu": 1500,
     "speed": 1000
   },
   "Ethernet1": {
@@ -21,6 +23,7 @@
     "last_flapped": 1466586841.4148579,
     "is_up": true,
     "mac_address": "08:00:27:C6:00:F0",
+    "mtu": 9214,
     "speed": 0
   },
   "Ethernet4": {
@@ -29,6 +32,7 @@
     "last_flapped": 1466586841.415464,
     "is_up": true,
     "mac_address": "08:00:27:E0:12:D2",
+    "mtu": 9214,
     "speed": 0
   },
   "Ethernet3": {
@@ -37,6 +41,7 @@
     "last_flapped": 1466586841.4152465,
     "is_up": true,
     "mac_address": "08:00:27:1F:60:43",
+    "mtu": 9214,
     "speed": 0
   }
 }

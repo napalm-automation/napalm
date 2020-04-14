@@ -1,0 +1,262 @@
+{
+  "TABLE_vlanbriefxbrief": {
+    "ROW_vlanbriefxbrief": [
+      {
+        "vlanshowbr-vlanid": "1",
+        "vlanshowbr-vlanid-utf": "1",
+        "vlanshowbr-vlanname": "default",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/15,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "161",
+        "vlanshowbr-vlanid-utf": "161",
+        "vlanshowbr-vlanname": "Vlan161",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel22,port-channel23,port-channel24,port-channel25,port-channel34,port-channel35,port-channel36,port-channel37,port-channel38,port-channel39,port-channel40,port-channel41,port-channel42,port-channel43,port-channel100,Ethernet1/4,Ethernet1/5,Ethernet1/6,Ethernet1/7,Ethernet1/8,Ethernet1/12,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/28,Ethernet1/29,Ethernet1/31,Ethernet1/32,Ethernet1/33,Ethernet1/35,Ethernet1/36,Ethernet1/37,Ethernet1/38,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "177",
+        "vlanshowbr-vlanid-utf": "177",
+        "vlanshowbr-vlanname": "Vlan177",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "185",
+        "vlanshowbr-vlanid-utf": "185",
+        "vlanshowbr-vlanname": "Vlan185",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel26,port-channel27,port-channel28,port-channel29,port-channel34,port-channel35,port-channel37,port-channel40,port-channel41,port-channel42,port-channel100,Ethernet1/6,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/25,Ethernet1/26,Ethernet1/27,Ethernet1/28,Ethernet1/29,Ethernet1/30,Ethernet1/31,Ethernet1/33,Ethernet1/36,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "186",
+        "vlanshowbr-vlanid-utf": "186",
+        "vlanshowbr-vlanname": "Vlan186",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel34,port-channel35,port-channel37,port-channel40,port-channel41,port-channel42,port-channel100,Ethernet1/6,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/28,Ethernet1/29,Ethernet1/31,Ethernet1/33,Ethernet1/36,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "187",
+        "vlanshowbr-vlanid-utf": "187",
+        "vlanshowbr-vlanname": "Vlan187",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel34,port-channel35,port-channel37,port-channel40,port-channel41,port-channel42,port-channel100,Ethernet1/6,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/28,Ethernet1/29,Ethernet1/31,Ethernet1/33,Ethernet1/36,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "188",
+        "vlanshowbr-vlanid-utf": "188",
+        "vlanshowbr-vlanname": "Vlan188",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel34,port-channel35,port-channel37,port-channel40,port-channel41,port-channel42,port-channel100,Ethernet1/6,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/28,Ethernet1/29,Ethernet1/31,Ethernet1/33,Ethernet1/36,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "189",
+        "vlanshowbr-vlanid-utf": "189",
+        "vlanshowbr-vlanname": "Vlan189",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel30,port-channel41,port-channel42,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/28,Ethernet1/29,Ethernet1/34,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "190",
+        "vlanshowbr-vlanid-utf": "190",
+        "vlanshowbr-vlanname": "Vlan190",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel36,port-channel38,port-channel39,port-channel100,Ethernet1/4,Ethernet1/5,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/35,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "191",
+        "vlanshowbr-vlanid-utf": "191",
+        "vlanshowbr-vlanname": "Vlan191",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel36,port-channel38,port-channel39,port-channel100,Ethernet1/4,Ethernet1/5,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/35,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "195",
+        "vlanshowbr-vlanid-utf": "195",
+        "vlanshowbr-vlanname": "Vlan195",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel34,port-channel35,port-channel37,port-channel40,port-channel100,Ethernet1/6,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/31,Ethernet1/33,Ethernet1/36,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "331",
+        "vlanshowbr-vlanid-utf": "331",
+        "vlanshowbr-vlanname": "Vlan331",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel22,port-channel23,port-channel24,port-channel25,port-channel41,port-channel42,port-channel100,Ethernet1/7,Ethernet1/8,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/28,Ethernet1/29,Ethernet1/37,Ethernet1/38,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1100",
+        "vlanshowbr-vlanid-utf": "1100",
+        "vlanshowbr-vlanname": "Vlan1100",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel22,port-channel23,port-channel24,port-channel25,port-channel31,port-channel32,port-channel33,port-channel44,port-channel45,port-channel46,port-channel100,Ethernet1/1,Ethernet1/2,Ethernet1/3,Ethernet1/7,Ethernet1/8,Ethernet1/9,Ethernet1/10,Ethernet1/11,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/37,Ethernet1/38,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1101",
+        "vlanshowbr-vlanid-utf": "1101",
+        "vlanshowbr-vlanname": "Vlan1101",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel22,port-channel23,port-channel24,port-channel25,port-channel100,Ethernet1/7,Ethernet1/8,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/37,Ethernet1/38,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1102",
+        "vlanshowbr-vlanid-utf": "1102",
+        "vlanshowbr-vlanname": "Vlan1102",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel22,port-channel23,port-channel24,port-channel25,port-channel100,Ethernet1/7,Ethernet1/8,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/37,Ethernet1/38,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1103",
+        "vlanshowbr-vlanid-utf": "1103",
+        "vlanshowbr-vlanname": "Vlan1103",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel22,port-channel23,port-channel24,port-channel25,port-channel100,Ethernet1/7,Ethernet1/8,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/37,Ethernet1/38,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1104",
+        "vlanshowbr-vlanid-utf": "1104",
+        "vlanshowbr-vlanname": "Vlan1104",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel22,port-channel23,port-channel24,port-channel25,port-channel100,Ethernet1/7,Ethernet1/8,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/37,Ethernet1/38,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1105",
+        "vlanshowbr-vlanid-utf": "1105",
+        "vlanshowbr-vlanname": "Vlan1105",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel22,port-channel23,port-channel24,port-channel25,port-channel100,Ethernet1/7,Ethernet1/8,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/37,Ethernet1/38,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1106",
+        "vlanshowbr-vlanid-utf": "1106",
+        "vlanshowbr-vlanname": "Vlan1106",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel22,port-channel23,port-channel24,port-channel25,port-channel100,Ethernet1/7,Ethernet1/8,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/37,Ethernet1/38,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1107",
+        "vlanshowbr-vlanid-utf": "1107",
+        "vlanshowbr-vlanname": "Vlan1107",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1108",
+        "vlanshowbr-vlanid-utf": "1108",
+        "vlanshowbr-vlanname": "Vlan1108",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1109",
+        "vlanshowbr-vlanid-utf": "1109",
+        "vlanshowbr-vlanname": "Vlan1109",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1110",
+        "vlanshowbr-vlanid-utf": "1110",
+        "vlanshowbr-vlanname": "Vlan1110",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1111",
+        "vlanshowbr-vlanid-utf": "1111",
+        "vlanshowbr-vlanname": "Vlan1111",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1112",
+        "vlanshowbr-vlanid-utf": "1112",
+        "vlanshowbr-vlanname": "Vlan1112",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1113",
+        "vlanshowbr-vlanid-utf": "1113",
+        "vlanshowbr-vlanname": "Vlan1113",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1114",
+        "vlanshowbr-vlanid-utf": "1114",
+        "vlanshowbr-vlanname": "Vlan1114",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1115",
+        "vlanshowbr-vlanid-utf": "1115",
+        "vlanshowbr-vlanname": "Vlan1115",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1116",
+        "vlanshowbr-vlanid-utf": "1116",
+        "vlanshowbr-vlanname": "Vlan1116",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1117",
+        "vlanshowbr-vlanid-utf": "1117",
+        "vlanshowbr-vlanname": "Vlan1117",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1118",
+        "vlanshowbr-vlanid-utf": "1118",
+        "vlanshowbr-vlanname": "Vlan1118",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      },
+      {
+        "vlanshowbr-vlanid": "1119",
+        "vlanshowbr-vlanid-utf": "1119",
+        "vlanshowbr-vlanname": "Vlan1119",
+        "vlanshowbr-vlanstate": "active",
+        "vlanshowbr-shutstate": "noshutdown",
+        "vlanshowplist-ifidx": "port-channel12,port-channel100,Ethernet1/21,Ethernet1/22,Ethernet1/23,Ethernet1/24,Ethernet1/47,Ethernet1/48"
+      }
+    ]
+  }
+}

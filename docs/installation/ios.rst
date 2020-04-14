@@ -15,11 +15,3 @@ RedHat and CentOS
 .. code-block:: bash
 
     sudo yum install -y python-pip gcc openssl openssl-devel libffi-devel python-devel
-
-
-FreeBSD
--------
-
-.. code-block:: bash
-
-    sudo pkg_add -r py27-pip

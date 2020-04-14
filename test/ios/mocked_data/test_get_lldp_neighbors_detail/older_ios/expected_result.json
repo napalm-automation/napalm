@@ -1,0 +1,26 @@
+{
+    "GigabitEthernet0/24": [
+        {
+            "parent_interface": "",
+            "remote_chassis_id": "f4a7.39cd.2e40",
+            "remote_port": "ge-0/0/23",
+            "remote_port_description": "ptp to switch",
+            "remote_system_capab": ["bridge", "router"],
+            "remote_system_description": "Juniper Networks, Inc. ex3300-24p , version 12.3R12.4 Build date: 2016-01-20 05:03:06 UTC",
+            "remote_system_enable_capab": ["bridge", "router"],
+            "remote_system_name": "switch1"
+        }
+    ],
+    "GigabitEthernet0/1": [
+        {
+            "parent_interface": "",
+            "remote_chassis_id": "a8b1.d41d.8680",
+            "remote_port": "Gi0/2",
+            "remote_port_description": "GigabitEthernet0/2",
+            "remote_system_capab": ["bridge"],
+            "remote_system_description": "Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 15.0(1)SE2, RELEASE SOFTWARE (fc3)",
+            "remote_system_enable_capab": ["bridge"],
+            "remote_system_name": "switch2"
+        }
+    ]
+}

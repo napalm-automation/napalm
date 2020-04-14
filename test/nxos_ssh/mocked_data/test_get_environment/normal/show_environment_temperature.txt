@@ -1,0 +1,9 @@
+Temperature:
+--------------------------------------------------------------------
+Module   Sensor        MajorThresh   MinorThres   CurTemp     Status
+                       (Celsius)     (Celsius)    (Celsius)
+--------------------------------------------------------------------
+1        Intake          70              42          28         Ok
+1        Exhaust         90              80          33         Ok
+1        CPU             100             90          44         Ok
+1        Davos           110             90          49         Ok 

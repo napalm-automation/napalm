@@ -1,23 +1,23 @@
 {
     "GigabitEthernet1": [
         {
-            "parent_interface": "N/A", 
+            "parent_interface": "",
             "remote_chassis_id": "2cc2.603e.363b", 
             "remote_port": "Management1", 
-            "remote_port_description": "N/A", 
-            "remote_system_capab": "B,R", 
+            "remote_port_description": "",
+            "remote_system_capab": ["bridge", "router"],
             "remote_system_description": "Arista Networks EOS version 4.15.2F running on an Arista Networks vEOS", 
-            "remote_system_enable_capab": "B,R", 
+            "remote_system_enable_capab": ["bridge", "router"],
             "remote_system_name": "eos-spine1.ntc.com"
         }, 
         {
-            "parent_interface": "N/A", 
+            "parent_interface": "",
             "remote_chassis_id": "0005.8671.58c0", 
             "remote_port": "fxp0", 
             "remote_port_description": "fxp0", 
-            "remote_system_capab": "B,R", 
+            "remote_system_capab": ["bridge", "router"],
             "remote_system_description": "Juniper Networks, Inc. vmx internet router, kernel JUNOS 15.1F4.15, Build date: 2015-12-23 19:22:55 UTC Copyright (c) 1996-2015 Juniper Networks, Inc.", 
-            "remote_system_enable_capab": "B,R", 
+            "remote_system_enable_capab": ["bridge", "router"],
             "remote_system_name": "vmx1"
         }
     ]

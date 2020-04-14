@@ -1,0 +1,20 @@
+NAME: "Chassis", DESCR: "Nexus5548 Chassis"
+PID: N5K-C5548UP       , VID: V01 , SN: FDO21270U84
+
+NAME: "Module 1", DESCR: "O2 32X10GE/Modular Universal Platform Supervisor"
+PID: N5K-C5548UP       , VID: V01 , SN: FOC16130WSQ
+
+NAME: "Fan 1", DESCR: "Chassis fan module"
+PID: N5548P-FAN        , VID: N/A , SN: N/A
+
+NAME: "Fan 2", DESCR: "Chassis fan module"
+PID: N5548P-FAN        , VID: N/A , SN: N/A
+
+NAME: "Power supply 1", DESCR: "AC power supply"
+PID: N55-PAC-750W      , VID: V01 , SN: ART1552X1QW
+
+NAME: "Power supply 2", DESCR: "AC power supply"
+PID: N55-PAC-750W      , VID: V02 , SN: POG16147T6G
+
+NAME: "Module 3", DESCR: "O2 Non L3 Daughter Card"
+PID: N55-DL2           , VID: V01 , SN: FOC16156F2F

@@ -1,0 +1,40 @@
+For address family: IPv4 MDT
+BGP router identifier 10.23.4.9, local AS number 65904
+BGP table version is 1196, main routing table version 1196
+44 network entries using 11264 bytes of memory
+158 path entries using 20224 bytes of memory
+38/34 BGP path/bestpath attribute entries using 9424 bytes of memory
+120 BGP rrinfo entries using 4800 bytes of memory
+107 BGP AS-PATH entries using 6560 bytes of memory
+24 BGP community entries using 576 bytes of memory
+352 BGP extended community entries using 57618 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 110466 total bytes of memory
+BGP activity 7518411/7495529 prefixes, 42295720/42241362 paths, scan interval 10 secs
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.23.4.1      4        65904 16623253 21263669     1196    0    0 1y4w            2
+10.23.4.2      4        65904 16622654 21254551     1196    0    0 1y4w            2
+
+For address family: VPNv4 Unicast
+BGP router identifier 10.23.4.9, local AS number 65904
+BGP table version is 128859195, main routing table version 128859195
+22838 network entries using 5846528 bytes of memory
+54200 path entries using 6504000 bytes of memory
+2858/1411 BGP path/bestpath attribute entries using 754512 bytes of memory
+120 BGP rrinfo entries using 4800 bytes of memory
+107 BGP AS-PATH entries using 6560 bytes of memory
+24 BGP community entries using 576 bytes of memory
+352 BGP extended community entries using 57618 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 13174594 total bytes of memory
+9784 received paths for inbound soft reconfiguration
+BGP activity 7518411/7495529 prefixes, 42295720/42241362 paths, scan interval 10 secs
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.124.238.162   4        65221 3258980 3260629 128859195    0    0 11w0d           5
+10.124.238.174   4        65221 3258986 3260630 128859195    0    0 11w0d           5
+10.23.4.1      4        65904 16623876 21264368 128859991    0    0 1y4w           28
+10.23.4.2      4        65904 16623277 21255250 128859991    0    0 1y4w           28

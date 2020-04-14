@@ -1,66 +1,74 @@
 {
   "GigabitEthernet0/0": {
-    "last_flapped": -1,
+    "description": "",
     "is_enabled": true,
     "is_up": false,
-    "speed": 1000,
+    "last_flapped": -1,
     "mac_address": "FA:16:3E:57:33:6F",
-    "description": ""
+    "mtu": 1500,
+    "speed": 1000
   },
   "GigabitEthernet0/1": {
-    "last_flapped": -1,
+    "description": "to iosvl2-2",
     "is_enabled": true,
     "is_up": true,
-    "speed": 1000,
+    "last_flapped": -1,
     "mac_address": "FA:16:3E:4F:41:CC",
-    "description": "to iosvl2-2"
-  },
-  "Port-channel1": {
-    "last_flapped": -1,
-    "is_enabled": true,
-    "is_up": false,
-    "speed": 100,
-    "mac_address": "FA:16:3E:4F:41:CC",
-    "description": ""
-  },
-  "GigabitEthernet0/3": {
-    "last_flapped": -1,
-    "is_enabled": true,
-    "is_up": true,
-    "speed": 1000,
-    "mac_address": "FA:16:3E:31:2C:47",
-    "description": "to iosvl2-3"
-  },
-  "Loopback0": {
-    "last_flapped": -1,
-    "is_enabled": true,
-    "is_up": true,
-    "speed": 8000,
-    "mac_address": "",
-    "description": "Loopback"
-  },
-  "GigabitEthernet1/0": {
-    "last_flapped": -1,
-    "is_enabled": true,
-    "is_up": true,
-    "speed": 1000,
-    "mac_address": "FA:16:3E:C8:50:AB",
-    "description": "to iosvl2-3"
-  },
-  "Vlan1": {
-    "last_flapped": -1,
-    "is_enabled": true,
-    "is_up": true,
-    "speed": 1000,
-    "mac_address": "FA:16:3E:57:80:01",
-    "description": "OOB Management"
+    "mtu": 1500,
+    "speed": 1000
   },
   "GigabitEthernet0/2": {
-    "last_flapped": -1,
+    "description": "to iosvl2-4",
     "is_enabled": true,
     "is_up": true,
-    "speed": 1000,
+    "last_flapped": -1,
     "mac_address": "FA:16:3E:A3:3E:49",
-    "description": "to iosvl2-4"
+    "mtu": 1500,
+    "speed": 1000
+  },
+  "GigabitEthernet0/3": {
+    "description": "to iosvl2-3",
+    "is_enabled": true,
+    "is_up": true,
+    "last_flapped": -1,
+    "mac_address": "FA:16:3E:31:2C:47",
+    "mtu": 1500,
+    "speed": 1000
+  },
+  "GigabitEthernet1/0": {
+    "description": "to iosvl2-3",
+    "is_enabled": true,
+    "is_up": true,
+    "last_flapped": -1,
+    "mac_address": "FA:16:3E:C8:50:AB",
+    "mtu": 1500,
+    "speed": 1000
+  },
+  "Loopback0": {
+    "description": "Loopback",
+    "is_enabled": true,
+    "is_up": true,
+    "last_flapped": -1,
+    "mac_address": "",
+    "mtu": 1514,
+    "speed": 8000
+  },
+  "Port-channel1": {
+    "description": "",
+    "is_enabled": true,
+    "is_up": false,
+    "last_flapped": -1,
+    "mac_address": "FA:16:3E:4F:41:CC",
+    "mtu": 1500,
+    "speed": 100
+  },
+  "Vlan1": {
+    "description": "OOB Management",
+    "is_enabled": true,
+    "is_up": true,
+    "last_flapped": -1,
+    "mac_address": "FA:16:3E:57:80:01",
+    "mtu": 1500,
+    "speed": 1000
   }
 }

@@ -1,0 +1,9 @@
+BGP routing table entry for 1.0.4.0/24, version 279621
+Paths: (1 available, best #1, table default)
+  Advertised to update-groups:
+     2
+  Refresh Epoch 1
+  8244 3269 65020 65017
+    10.105.179.5 from 10.105.179.5 (195.22.211.242)
+      Origin incomplete, localpref 100, valid, external, best
+      rx pathid: 0, tx pathid: 0x0

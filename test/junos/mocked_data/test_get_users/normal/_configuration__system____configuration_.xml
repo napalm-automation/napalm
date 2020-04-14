@@ -1,0 +1,7 @@
+<configuration>
+    <system>
+        <root-authentication>
+            <encrypted-password>$1$LiP5a8I9$feewr345W3H2342</encrypted-password>
+        </root-authentication>
+    </system>
+</configuration>
