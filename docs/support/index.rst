@@ -119,6 +119,7 @@ ____________________________________
 * :code:`canonical_int` (ios) - Convert operational interface's returned name to canonical name (fully expanded name) (default: ``False``).
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
+* :code:`force_no_enable` (ios, nxos_ssh) - Do not automatically enter enable-mode on connect (default: ``False``).
 * :code:`global_delay_factor` (ios, nxos_ssh) - Allow for additional delay in command execution (default: ``1``).
 * :code:`ignore_warning` (junos) - Allows to set `ignore_warning` when loading configuration to avoid exceptions via junos-pyez. (default: ``False``).
 * :code:`keepalive` (iosxr, junos) - SSH keepalive interval, in seconds (default: ``30`` seconds).
