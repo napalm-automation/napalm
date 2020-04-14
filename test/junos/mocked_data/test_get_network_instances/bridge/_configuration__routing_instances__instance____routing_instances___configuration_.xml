@@ -1,0 +1,21 @@
+<configuration>
+        <routing-instances>
+            <instance>
+                <name>vswitch1</name>
+                <description>A virtual switch instance</description>
+                <instance-type>virtual-switch</instance-type>
+                <bridge-domains>
+                    <domain>
+                        <name>MY-BD</name>
+                        <domain-type>bridge</domain-type>
+                        <vlan-id>none</vlan-id>
+                        <no-local-switching/>
+                        <interface>
+                            <name>ge-0/0/4.0</name>
+                        </interface>
+                        <routing-interface>irb.1</routing-interface>
+                    </domain>
+                </bridge-domains>
+            </instance>
+        </routing-instances>
+</configuration>

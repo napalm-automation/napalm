@@ -12,18 +12,16 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
+import sys
+
+from netmiko import ConnectHandler, NetMikoTimeoutException
 
 # local modules
 import napalm.base.exceptions
-from napalm.base.exceptions import ConnectionException
 import napalm.base.helpers
 from napalm.base import constants as c
 from napalm.base import validate
-
-from netmiko import ConnectHandler, NetMikoTimeoutException
+from napalm.base.exceptions import ConnectionException
 
 
 class NetworkDriver(object):
@@ -44,8 +42,15 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def __enter__(self):
-        self.open()
-        return self
+        try:
+            self.open()
+            return self
+        except:  # noqa: E722
+            # Swallow exception if __exit__ returns a True value
+            if self.__exit__(*sys.exc_info()):
+                pass
+            else:
+                raise
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.close()
@@ -96,8 +101,9 @@ class NetworkDriver(object):
 
     def _netmiko_close(self):
         """Standardized method of closing a Netmiko connection."""
-        self.device.disconnect()
-        self._netmiko_device = None
+        if getattr(self, "_netmiko_device", None):
+            self._netmiko_device.disconnect()
+            self._netmiko_device = None
         self.device = None
 
     def open(self):
@@ -899,7 +905,7 @@ class NetworkDriver(object):
         Returns all configured IP addresses on all interfaces as a dictionary of dictionaries.
         Keys of the main dictionary represent the name of the interface.
         Values of the main dictionary represent are dictionaries that may consist of two keys
-        'ipv4' and 'ipv6' (one, both or none) which are themselvs dictionaries witht the IP
+        'ipv4' and 'ipv6' (one, both or none) which are themselves dictionaries with the IP
         addresses as keys.
         Each IP Address dictionary has the following keys:
 
@@ -998,7 +1004,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
 
         """
         Returns a dictionary of dictionaries containing details of all available routes to a
@@ -1006,6 +1012,7 @@ class NetworkDriver(object):
 
         :param destination: The destination prefix to be used when filtering the routes.
         :param protocol (optional): Retrieve the routes only for a specific protocol.
+        :param longer (optional): Retrieve more specific routes as well.
 
         Each inner dictionary contains the following fields:
 
@@ -1503,13 +1510,14 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False):
         """
         Return the configuration of a device.
 
         Args:
             retrieve(string): Which configuration type you want to populate, default is all of them.
                               The rest will be set to "".
+            full(bool): Retrieve all the configuration. For instance, on ios, "sh run all".
 
         Returns:
           The object returned is a dictionary with a key for each configuration store:
@@ -1647,6 +1655,28 @@ class NetworkDriver(object):
                     'state'     : 'STALE'
                 }
             ]
+        """
+        raise NotImplementedError
+
+    def get_vlans(self):
+        """
+        Return structure being spit balled is as follows.
+            * vlan_id (int)
+                * name (text_type)
+                * interfaces (list)
+
+        Example::
+
+            {
+                1: {
+                    "name": "default",
+                    "interfaces": ["GigabitEthernet0/0/1", "GigabitEthernet0/0/2"]
+                },
+                2: {
+                    "name": "vlan2",
+                    "interfaces": []
+                }
+            }
         """
         raise NotImplementedError
 

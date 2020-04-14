@@ -1,0 +1,147 @@
+{
+    "TABLE_tempinfo": {
+        "ROW_tempinfo": [
+            {
+                "alarmstatus": "Ok",
+                "curtemp": "56",
+                "majthres": "92  ",
+                "minthres": "85  ",
+                "sensor": "ASIC",
+                "tempmod": "1        "
+            },
+            {
+                "alarmstatus": "Ok",
+                "curtemp": "23",
+                "majthres": "45  ",
+                "minthres": "31  ",
+                "sensor": "INTAKE",
+                "tempmod": "1        "
+            },
+            {
+                "alarmstatus": "Ok",
+                "curtemp": "56",
+                "majthres": "110 ",
+                "minthres": "90  ",
+                "sensor": "ASIC",
+                "tempmod": "1        "
+            },
+            {
+                "alarmstatus": "Ok",
+                "curtemp": "23",
+                "majthres": "70  ",
+                "minthres": "40  ",
+                "sensor": "INTAKE",
+                "tempmod": "1        "
+            }
+        ]
+    },
+    "fandetails_3k": {
+        "TABLE_fan_zone_speed": {
+            "ROW_fan_zone_speed": {
+                "speed": 0,
+                "zone": "1"
+            }
+        },
+        "TABLE_faninfo": {
+            "ROW_faninfo": [
+                {
+                    "fandir": "front-to-back",
+                    "fanhwver": "0.0",
+                    "fanmodel": "NXA-FAN-30CFM-F",
+                    "fanname": "Fan1(sys_fan1)",
+                    "fanstatus": "Ok"
+                },
+                {
+                    "fandir": "front-to-back",
+                    "fanhwver": "0.0",
+                    "fanmodel": "NXA-FAN-30CFM-F",
+                    "fanname": "Fan2(sys_fan2)",
+                    "fanstatus": "Ok"
+                },
+                {
+                    "fandir": "front-to-back",
+                    "fanhwver": "0.0",
+                    "fanmodel": "NXA-FAN-30CFM-F",
+                    "fanname": "Fan3(sys_fan3)",
+                    "fanstatus": "Ok"
+                },
+                {
+                    "fandir": "front-to-back",
+                    "fanhwver": "0.0",
+                    "fanmodel": "NXA-FAN-30CFM-F",
+                    "fanname": "Fan4(sys_fan4)",
+                    "fanstatus": "Ok"
+                },
+                {
+                    "fandir": "front-to-back",
+                    "fanhwver": "--",
+                    "fanmodel": "N2200-PAC-400W",
+                    "fanname": "Fan_in_PS1",
+                    "fanstatus": "Ok"
+                },
+                {
+                    "fandir": "front-to-back",
+                    "fanhwver": "--",
+                    "fanmodel": "N2200-PAC-400W",
+                    "fanname": "Fan_in_PS2",
+                    "fanstatus": "Ok"
+                }
+            ]
+        },
+        "fan_filter_status": "NotSupported"
+    },
+    "powersup": {
+        "TABLE_mod_pow_info": [
+            {
+                "ROW_mod_pow_info": {
+                    "modnum": "1 "
+                }
+            },
+            {
+                "ROW_mod_pow_info": {
+                    "modnum": "2 "
+                }
+            },
+            {
+                "ROW_mod_pow_info": {
+                    "amps_alloced": "29.00  ",
+                    "amps_requested": "29.00  ",
+                    "mod_model": "N3K-C3548P-10G     ",
+                    "modnum": "1   ",
+                    "modstatus_3k": "powered-up",
+                    "watts_alloced": "348.00 ",
+                    "watts_requested": "348.00 "
+                }
+            }
+        ],
+        "TABLE_psinfo": [
+            {
+                "ROW_psinfo": {
+                    "amps": "  33.00",
+                    "input_type": "AC",
+                    "ps_status_3k": "ok",
+                    "psmodel": "N2200-PAC-400W",
+                    "watts": " 396.00"
+                }
+            },
+            {
+                "ROW_psinfo": {
+                    "amps": "  33.00",
+                    "input_type": "AC",
+                    "ps_status_3k": "ok",
+                    "psmodel": "N2200-PAC-400W",
+                    "watts": " 396.00"
+                }
+            }
+        ],
+        "power_summary": {
+            "available_pow": "  444.00 W",
+            "pow_used_by_mods": "    0.00 W",
+            "ps_redun_mode_3k": "Redundant",
+            "ps_redun_op_mode": "Redundant",
+            "reserve_sup": "  348.00 W",
+            "tot_pow_capacity": "  792.00 W"
+        },
+        "voltage_level": 12
+    }
+}

@@ -1,0 +1,7 @@
+BGP routing table entry for 1.0.4.0/24, version 46
+Paths: (1 available, best #1, table Default-IP-Routing-Table)
+  Not advertised to any peer
+  55610, (received & used)
+    1.2.3.4 from 1.2.3.4 (1.2.3.8)
+      Origin IGP, localpref 100, valid, external, best
+

@@ -1,0 +1,1 @@
+BGP neighbor is 1.2.3.4,  remote AS 55610, external link
