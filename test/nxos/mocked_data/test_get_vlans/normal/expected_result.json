@@ -1,7 +1,17 @@
 {
     "1": {
         "name": "default",
-        "interfaces": [""]
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/15",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
     },
     "161": {
         "name": "Vlan161",
