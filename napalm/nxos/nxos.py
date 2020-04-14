@@ -804,7 +804,7 @@ class NXOSDriver(NXOSDriverBase):
         facts["model"] = show_version.get("chassis_id", "")
         facts["hostname"] = show_version.get("host_name", "")
         facts["os_version"] = show_version.get(
-            "sys_ver_str", show_version.get("rr_sys_ver", "")
+            "sys_ver_str", show_version.get("kickstart_ver_str", "")
         )
 
         uptime_days = show_version.get("kern_uptm_days", 0)
