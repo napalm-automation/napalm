@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<ins_api>
+  <type>cli_show</type>
+  <version>1.2</version>
+  <sid>eoc</sid>
+  <outputs>
+    <output>
+      <clierror>Syntax error while parsing 'bogus command  | xml '
+
+
+Cmd exec error.
+</clierror>
+      <input>bogus command</input>
+      <msg>Input CLI command error</msg>
+      <code>400</code>
+    </output>
+  </outputs>
+</ins_api>

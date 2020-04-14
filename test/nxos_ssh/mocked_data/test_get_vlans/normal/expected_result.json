@@ -1,0 +1,610 @@
+{
+    "1": {
+        "name": "default",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/15",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "161": {
+        "name": "Vlan161",
+        "interfaces": [
+            "port-channel12",
+            "port-channel22",
+            "port-channel23",
+            "port-channel24",
+            "port-channel25",
+            "port-channel34",
+            "port-channel35",
+            "port-channel36",
+            "port-channel37",
+            "port-channel38",
+            "port-channel39",
+            "port-channel40",
+            "port-channel41",
+            "port-channel42",
+            "port-channel43",
+            "port-channel100",
+            "Ethernet1/4",
+            "Ethernet1/5",
+            "Ethernet1/6",
+            "Ethernet1/7",
+            "Ethernet1/8",
+            "Ethernet1/12",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/28",
+            "Ethernet1/29",
+            "Ethernet1/31",
+            "Ethernet1/32",
+            "Ethernet1/33",
+            "Ethernet1/35",
+            "Ethernet1/36",
+            "Ethernet1/37",
+            "Ethernet1/38",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "177": {
+        "name": "Vlan177",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "185": {
+        "name": "Vlan185",
+        "interfaces": [
+            "port-channel12",
+            "port-channel26",
+            "port-channel27",
+            "port-channel28",
+            "port-channel29",
+            "port-channel34",
+            "port-channel35",
+            "port-channel37",
+            "port-channel40",
+            "port-channel41",
+            "port-channel42",
+            "port-channel100",
+            "Ethernet1/6",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/25",
+            "Ethernet1/26",
+            "Ethernet1/27",
+            "Ethernet1/28",
+            "Ethernet1/29",
+            "Ethernet1/30",
+            "Ethernet1/31",
+            "Ethernet1/33",
+            "Ethernet1/36",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "186": {
+        "name": "Vlan186",
+        "interfaces": [
+            "port-channel12",
+            "port-channel34",
+            "port-channel35",
+            "port-channel37",
+            "port-channel40",
+            "port-channel41",
+            "port-channel42",
+            "port-channel100",
+            "Ethernet1/6",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/28",
+            "Ethernet1/29",
+            "Ethernet1/31",
+            "Ethernet1/33",
+            "Ethernet1/36",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "187": {
+        "name": "Vlan187",
+        "interfaces": [
+            "port-channel12",
+            "port-channel34",
+            "port-channel35",
+            "port-channel37",
+            "port-channel40",
+            "port-channel41",
+            "port-channel42",
+            "port-channel100",
+            "Ethernet1/6",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/28",
+            "Ethernet1/29",
+            "Ethernet1/31",
+            "Ethernet1/33",
+            "Ethernet1/36",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "188": {
+        "name": "Vlan188",
+        "interfaces": [
+            "port-channel12",
+            "port-channel34",
+            "port-channel35",
+            "port-channel37",
+            "port-channel40",
+            "port-channel41",
+            "port-channel42",
+            "port-channel100",
+            "Ethernet1/6",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/28",
+            "Ethernet1/29",
+            "Ethernet1/31",
+            "Ethernet1/33",
+            "Ethernet1/36",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "189": {
+        "name": "Vlan189",
+        "interfaces": [
+            "port-channel12",
+            "port-channel30",
+            "port-channel41",
+            "port-channel42",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/28",
+            "Ethernet1/29",
+            "Ethernet1/34",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "190": {
+        "name": "Vlan190",
+        "interfaces": [
+            "port-channel12",
+            "port-channel36",
+            "port-channel38",
+            "port-channel39",
+            "port-channel100",
+            "Ethernet1/4",
+            "Ethernet1/5",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/35",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "191": {
+        "name": "Vlan191",
+        "interfaces": [
+            "port-channel12",
+            "port-channel36",
+            "port-channel38",
+            "port-channel39",
+            "port-channel100",
+            "Ethernet1/4",
+            "Ethernet1/5",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/35",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "195": {
+        "name": "Vlan195",
+        "interfaces": [
+            "port-channel12",
+            "port-channel34",
+            "port-channel35",
+            "port-channel37",
+            "port-channel40",
+            "port-channel100",
+            "Ethernet1/6",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/31",
+            "Ethernet1/33",
+            "Ethernet1/36",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "331": {
+        "name": "Vlan331",
+        "interfaces": [
+            "port-channel12",
+            "port-channel22",
+            "port-channel23",
+            "port-channel24",
+            "port-channel25",
+            "port-channel41",
+            "port-channel42",
+            "port-channel100",
+            "Ethernet1/7",
+            "Ethernet1/8",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/28",
+            "Ethernet1/29",
+            "Ethernet1/37",
+            "Ethernet1/38",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1100": {
+        "name": "Vlan1100",
+        "interfaces": [
+            "port-channel12",
+            "port-channel22",
+            "port-channel23",
+            "port-channel24",
+            "port-channel25",
+            "port-channel31",
+            "port-channel32",
+            "port-channel33",
+            "port-channel44",
+            "port-channel45",
+            "port-channel46",
+            "port-channel100",
+            "Ethernet1/1",
+            "Ethernet1/2",
+            "Ethernet1/3",
+            "Ethernet1/7",
+            "Ethernet1/8",
+            "Ethernet1/9",
+            "Ethernet1/10",
+            "Ethernet1/11",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/37",
+            "Ethernet1/38",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1101": {
+        "name": "Vlan1101",
+        "interfaces": [
+            "port-channel12",
+            "port-channel22",
+            "port-channel23",
+            "port-channel24",
+            "port-channel25",
+            "port-channel100",
+            "Ethernet1/7",
+            "Ethernet1/8",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/37",
+            "Ethernet1/38",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1102": {
+        "name": "Vlan1102",
+        "interfaces": [
+            "port-channel12",
+            "port-channel22",
+            "port-channel23",
+            "port-channel24",
+            "port-channel25",
+            "port-channel100",
+            "Ethernet1/7",
+            "Ethernet1/8",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/37",
+            "Ethernet1/38",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1103": {
+        "name": "Vlan1103",
+        "interfaces": [
+            "port-channel12",
+            "port-channel22",
+            "port-channel23",
+            "port-channel24",
+            "port-channel25",
+            "port-channel100",
+            "Ethernet1/7",
+            "Ethernet1/8",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/37",
+            "Ethernet1/38",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1104": {
+        "name": "Vlan1104",
+        "interfaces": [
+            "port-channel12",
+            "port-channel22",
+            "port-channel23",
+            "port-channel24",
+            "port-channel25",
+            "port-channel100",
+            "Ethernet1/7",
+            "Ethernet1/8",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/37",
+            "Ethernet1/38",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1105": {
+        "name": "Vlan1105",
+        "interfaces": [
+            "port-channel12",
+            "port-channel22",
+            "port-channel23",
+            "port-channel24",
+            "port-channel25",
+            "port-channel100",
+            "Ethernet1/7",
+            "Ethernet1/8",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/37",
+            "Ethernet1/38",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1106": {
+        "name": "Vlan1106",
+        "interfaces": [
+            "port-channel12",
+            "port-channel22",
+            "port-channel23",
+            "port-channel24",
+            "port-channel25",
+            "port-channel100",
+            "Ethernet1/7",
+            "Ethernet1/8",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/37",
+            "Ethernet1/38",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1107": {
+        "name": "Vlan1107",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1108": {
+        "name": "Vlan1108",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1109": {
+        "name": "Vlan1109",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1110": {
+        "name": "Vlan1110",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1111": {
+        "name": "Vlan1111",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1112": {
+        "name": "Vlan1112",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1113": {
+        "name": "Vlan1113",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1114": {
+        "name": "Vlan1114",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1115": {
+        "name": "Vlan1115",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1116": {
+        "name": "Vlan1116",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1117": {
+        "name": "Vlan1117",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1118": {
+        "name": "Vlan1118",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    },
+    "1119": {
+        "name": "Vlan1119",
+        "interfaces": [
+            "port-channel12",
+            "port-channel100",
+            "Ethernet1/21",
+            "Ethernet1/22",
+            "Ethernet1/23",
+            "Ethernet1/24",
+            "Ethernet1/47",
+            "Ethernet1/48"
+        ]
+    }
+}

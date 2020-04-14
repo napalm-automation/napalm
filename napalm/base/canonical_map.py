@@ -1,7 +1,3 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-
-
 base_interfaces = {
     "ATM": "ATM",
     "AT": "ATM",
@@ -76,6 +72,9 @@ base_interfaces = {
     "Tunnel": "Tunnel",
     "Tun": "Tunnel",
     "Tu": "Tunnel",
+    "Twe": "TwentyFiveGigE",
+    "Tw": "TwoGigabitEthernet",
+    "Two": "TwoGigabitEthernet",
     "Virtual-Access": "Virtual-Access",
     "Vi": "Virtual-Access",
     "Virtual-Template": "Virtual-Template",
@@ -103,6 +102,8 @@ reverse_mapping = {
     "Serial": "Se",
     "TenGigabitEthernet": "Te",
     "Tunnel": "Tu",
+    "TwoGigabitEthernet": "Two",
+    "TwentyFiveGigE": "Twe",
     "Virtual-Access": "Vi",
     "Virtual-Template": "Vt",
     "VLAN": "Vl",

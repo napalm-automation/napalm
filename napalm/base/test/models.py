@@ -1,30 +1,27 @@
-# text_type is 'unicode' for py2 and 'str' for py3
-from napalm.base.utils.py23_compat import text_type
-
 alive = {"is_alive": bool}
 
 facts = {
-    "os_version": text_type,
+    "os_version": str,
     "uptime": int,
     "interface_list": list,
-    "vendor": text_type,
-    "serial_number": text_type,
-    "model": text_type,
-    "hostname": text_type,
-    "fqdn": text_type,
+    "vendor": str,
+    "serial_number": str,
+    "model": str,
+    "hostname": str,
+    "fqdn": str,
 }
 
 interface = {
     "is_up": bool,
     "is_enabled": bool,
-    "description": text_type,
+    "description": str,
     "last_flapped": float,
     "mtu": int,
     "speed": int,
-    "mac_address": text_type,
+    "mac_address": str,
 }
 
-lldp_neighbors = {"hostname": text_type, "port": text_type}
+lldp_neighbors = {"hostname": str, "port": str}
 
 interface_counters = {
     "tx_errors": int,
@@ -55,8 +52,8 @@ peer = {
     "is_enabled": bool,
     "uptime": int,
     "remote_as": int,
-    "description": text_type,
-    "remote_id": text_type,
+    "description": str,
+    "remote_id": str,
     "local_as": int,
     "is_up": bool,
     "address_family": dict,
@@ -65,38 +62,38 @@ peer = {
 af = {"sent_prefixes": int, "accepted_prefixes": int, "received_prefixes": int}
 
 lldp_neighbors_detail = {
-    "parent_interface": text_type,
-    "remote_port": text_type,
-    "remote_chassis_id": text_type,
-    "remote_port_description": text_type,
-    "remote_system_name": text_type,
-    "remote_system_description": text_type,
+    "parent_interface": str,
+    "remote_port": str,
+    "remote_chassis_id": str,
+    "remote_port_description": str,
+    "remote_system_name": str,
+    "remote_system_description": str,
     "remote_system_capab": list,
     "remote_system_enable_capab": list,
 }
 
 bgp_config_group = {
-    "type": text_type,
-    "description": text_type,
+    "type": str,
+    "description": str,
     "apply_groups": list,
     "multihop_ttl": int,
     "multipath": bool,
-    "local_address": text_type,
+    "local_address": str,
     "local_as": int,
     "remote_as": int,
-    "import_policy": text_type,
-    "export_policy": text_type,
+    "import_policy": str,
+    "export_policy": str,
     "remove_private_as": bool,
     "prefix_limit": dict,
     "neighbors": dict,
 }
 
 bgp_config_neighbor = {
-    "description": text_type,
-    "import_policy": text_type,
-    "export_policy": text_type,
-    "local_address": text_type,
-    "authentication_key": text_type,
+    "description": str,
+    "import_policy": str,
+    "export_policy": str,
+    "local_address": str,
+    "authentication_key": str,
     "nhs": bool,
     "route_reflector_client": bool,
     "local_as": int,
@@ -108,26 +105,26 @@ peer_details = {
     "up": bool,
     "local_as": int,
     "remote_as": int,
-    "router_id": text_type,
-    "local_address": text_type,
-    "routing_table": text_type,
+    "router_id": str,
+    "local_address": str,
+    "routing_table": str,
     "local_address_configured": bool,
     "local_port": int,
-    "remote_address": text_type,
+    "remote_address": str,
     "remote_port": int,
     "multihop": bool,
     "multipath": bool,
     "remove_private_as": bool,
-    "import_policy": text_type,
-    "export_policy": text_type,
+    "import_policy": str,
+    "export_policy": str,
     "input_messages": int,
     "output_messages": int,
     "input_updates": int,
     "output_updates": int,
     "messages_queued_out": int,
-    "connection_state": text_type,
-    "previous_connection_state": text_type,
-    "last_event": text_type,
+    "connection_state": str,
+    "previous_connection_state": str,
+    "last_event": str,
     "suppress_4byte_as": bool,
     "local_as_prepend": bool,
     "holdtime": int,
@@ -142,15 +139,9 @@ peer_details = {
     "flap_count": int,
 }
 
-arp_table = {"interface": text_type, "mac": text_type, "ip": text_type, "age": float}
+arp_table = {"interface": str, "mac": str, "ip": str, "age": float}
 
-ipv6_neighbor = {
-    "interface": text_type,
-    "mac": text_type,
-    "ip": text_type,
-    "age": float,
-    "state": text_type,
-}
+ipv6_neighbor = {"interface": str, "mac": str, "ip": str, "age": float, "state": str}
 
 ntp_peer = {
     # will populate it in the future wit potential keys
@@ -161,12 +152,12 @@ ntp_server = {
 }
 
 ntp_stats = {
-    "remote": text_type,
-    "referenceid": text_type,
+    "remote": str,
+    "referenceid": str,
     "synchronized": bool,
     "stratum": int,
-    "type": text_type,
-    "when": text_type,
+    "type": str,
+    "when": str,
     "hostpoll": int,
     "reachability": int,
     "delay": float,
@@ -177,8 +168,8 @@ ntp_stats = {
 interfaces_ip = {"prefix_length": int}
 
 mac_address_table = {
-    "mac": text_type,
-    "interface": text_type,
+    "mac": str,
+    "interface": str,
     "vlan": int,
     "static": bool,
     "active": bool,
@@ -187,40 +178,35 @@ mac_address_table = {
 }
 
 route = {
-    "protocol": text_type,
+    "protocol": str,
     "current_active": bool,
     "last_active": bool,
     "age": int,
-    "next_hop": text_type,
-    "outgoing_interface": text_type,
+    "next_hop": str,
+    "outgoing_interface": str,
     "selected_next_hop": bool,
     "preference": int,
-    "inactive_reason": text_type,
-    "routing_table": text_type,
+    "inactive_reason": str,
+    "routing_table": str,
     "protocol_attributes": dict,
 }
 
-snmp = {
-    "chassis_id": text_type,
-    "community": dict,
-    "contact": text_type,
-    "location": text_type,
-}
+snmp = {"chassis_id": str, "community": dict, "contact": str, "location": str}
 
-snmp_community = {"acl": text_type, "mode": text_type}
+snmp_community = {"acl": str, "mode": str}
 
 probe_test = {
-    "probe_type": text_type,
-    "target": text_type,
-    "source": text_type,
+    "probe_type": str,
+    "target": str,
+    "source": str,
     "probe_count": int,
     "test_interval": int,
 }
 
 probe_test_results = {
-    "target": text_type,
-    "source": text_type,
-    "probe_type": text_type,
+    "target": str,
+    "source": str,
+    "probe_type": str,
     "probe_count": int,
     "rtt": float,
     "round_trip_jitter": float,
@@ -246,24 +232,19 @@ ping = {
     "results": list,
 }
 
-ping_result = {"ip_address": text_type, "rtt": float}
+ping_result = {"ip_address": str, "rtt": float}
 
-traceroute = {"rtt": float, "ip_address": text_type, "host_name": text_type}
+traceroute = {"rtt": float, "ip_address": str, "host_name": str}
 
-users = {"level": int, "password": text_type, "sshkeys": list}
+users = {"level": int, "password": str, "sshkeys": list}
 
 optics_state = {"instant": float, "avg": float, "min": float, "max": float}
 
-config = {"running": text_type, "startup": text_type, "candidate": text_type}
+config = {"running": str, "startup": str, "candidate": str}
 
-network_instance = {
-    "name": text_type,
-    "type": text_type,
-    "state": dict,
-    "interfaces": dict,
-}
+network_instance = {"name": str, "type": str, "state": dict, "interfaces": dict}
 
-network_instance_state = {"route_distinguisher": text_type}
+network_instance_state = {"route_distinguisher": str}
 
 network_instance_interfaces = {"interface": dict}
 
@@ -271,14 +252,16 @@ firewall_policies = {
     "position": int,
     "packet_hits": int,
     "byte_hits": int,
-    "id": text_type,
+    "id": str,
     "enabled": bool,
-    "schedule": text_type,
-    "log": text_type,
-    "l3_src": text_type,
-    "l3_dst": text_type,
-    "service": text_type,
-    "src_zone": text_type,
-    "dst_zone": text_type,
-    "action": text_type,
+    "schedule": str,
+    "log": str,
+    "l3_src": str,
+    "l3_dst": str,
+    "service": str,
+    "src_zone": str,
+    "dst_zone": str,
+    "action": str,
 }
+
+vlan = {"name": str, "interfaces": list}
