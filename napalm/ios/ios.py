@@ -2439,9 +2439,7 @@ class IOSDriver(NetworkDriver):
         )  # 7 fields
         RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 6 fields
         RE_MACTABLE_6500_3 = r"^\s{51}\S+"  # Fill down prior
-        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(
-            VLAN_REGEX, MAC_REGEX
-        )  # Router field
+        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(VLAN_REGEX)  # Router field
         RE_MACTABLE_6500_5 = r"^R\s+N/A\s+{}.*Router".format(
             MAC_REGEX
         )  # Router skipped
