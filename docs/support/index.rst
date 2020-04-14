@@ -116,6 +116,7 @@ ____________________________________
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
 * :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: ``False``).
 * :code:`lock_disable` (junos) - Disable all configuration locking for management by an external system (default: ``False``).
+* :code:`config_private` (junos) - Configure private, no DB locking (default: ``False``).
 * :code:`canonical_int` (ios) - Convert operational interface's returned name to canonical name (fully expanded name) (default: ``False``).
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).

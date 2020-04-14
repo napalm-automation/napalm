@@ -66,6 +66,7 @@ class JunOSDriver(NetworkDriver):
             * config_lock (True/False): lock configuration DB after the connection is established.
             * lock_disable (True/False): force configuration lock to be disabled (for external lock
                 management).
+            * config_private (True/False): juniper configure private command, no DB locking
             * port (int): custom port
             * key_file (string): SSH key file path
             * keepalive (int): Keepalive interval
@@ -92,6 +93,7 @@ class JunOSDriver(NetworkDriver):
         # Define locking method
         self.lock_disable = optional_args.get("lock_disable", False)
         self.session_config_lock = optional_args.get("config_lock", False)
+        self.config_private = optional_args.get("config_private", False)
 
         # Junos driver specific options
         self.junos_config_database = optional_args.get(
@@ -223,7 +225,11 @@ class JunOSDriver(NetworkDriver):
             with open(filename) as f:
                 configuration = f.read()
 
-        if not self.lock_disable and not self.session_config_lock:
+        if (
+            not self.lock_disable
+            and not self.session_config_lock
+            and not self.config_private
+        ):
             # if not locked during connection time, will try to lock
             self._lock()
 
@@ -232,6 +238,13 @@ class JunOSDriver(NetworkDriver):
 
             if fmt == "xml":
                 configuration = etree.XML(configuration)
+
+            if self.config_private:
+                try:
+                    self.device.rpc.open_configuration(private=True, normalize=True)
+                except RpcError as err:
+                    if str(err) == "uncommitted changes will be discarded on exit":
+                        pass
 
             self.device.cu.load(
                 configuration,
