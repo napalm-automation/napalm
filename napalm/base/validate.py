@@ -129,7 +129,7 @@ def compare(src, dst):
         if src.startswith("<") or src.startswith(">"):
             cmp_result = _compare_numeric(src, dst)
             return cmp_result
-        elif not src.startswith('-') and '-' in src:
+        elif not src.startswith("-") and "-" in src:
             cmp_result = _compare_range(src, dst)
             return cmp_result
         else:
@@ -178,15 +178,18 @@ def _compare_range(src_num, dst_num):
     """Compare value against a range of values. You can use '%d-%d'."""
     dst_num = float(dst_num)
 
-    match = src_num.split('-')
+    match = src_num.split("-")
     if len(match) != 2:
-        error = "Failed range comparison. Collected: {}. Expected: {}".format(dst_num, src_num)
+        error = "Failed range comparison. Collected: {}. Expected: {}".format(
+            dst_num, src_num
+        )
         raise ValueError(error)
 
     if float(match[0]) <= dst_num <= float(match[1]):
         return True
     else:
         return False
+
 
 def empty_tree(input_list):
     """Recursively iterate through values in nested lists."""
