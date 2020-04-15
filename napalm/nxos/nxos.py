@@ -84,6 +84,7 @@ class NXOSDriverBase(NetworkDriver):
         self.candidate_cfg = "candidate_config.txt"
         self.rollback_cfg = "rollback_config.txt"
         self._dest_file_system = optional_args.pop("dest_file_system", "bootflash:")
+        self.force_no_enable = optional_args.get("force_no_enable", False)
         self.netmiko_optional_args = netmiko_args(optional_args)
         self.device = None
 
