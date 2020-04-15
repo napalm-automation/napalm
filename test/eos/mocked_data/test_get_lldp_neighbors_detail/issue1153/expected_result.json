@@ -1,0 +1,58 @@
+{
+  "Ethernet1/1": [
+    {
+      "parent_interface": "Ethernet1/1",
+      "remote_port": "1ce7.1003.5413",
+      "remote_port_description": "eth0",
+      "remote_system_name": "some-server",
+      "remote_system_description": "Ubuntu 18.04.3 LTS Linux 5.0.0-36-generic #39~18.04.1-Ubuntu SMP Tue Nov 12 11:09:50 UTC 2019 x86_64",
+      "remote_chassis_id": "1C:E7:10:03:54:13",
+      "remote_system_capab": [
+        "bridge",
+        "router",
+        "station",
+        "wlan-access-point"
+      ],
+      "remote_system_enable_capab": [
+        "bridge",
+        "router"
+      ]
+    }
+  ],
+  "Ethernet26/1": [
+    {
+      "parent_interface": "Ethernet26/1",
+      "remote_port": "et-0/0/20",
+      "remote_port_description": "et-0/0/20",
+      "remote_system_name": "some-other-switch",
+      "remote_system_description": "boom boom",
+      "remote_chassis_id": "04:43:10:03:54:13",
+      "remote_system_capab": [
+        "bridge",
+        "router"
+      ],
+      "remote_system_enable_capab": [
+        "bridge",
+        "router"
+      ]
+    }
+  ],
+  "Ethernet27/1": [
+    {
+      "parent_interface": "Ethernet27/1",
+      "remote_port": "et-0/0/20",
+      "remote_port_description": "et-0/0/20",
+      "remote_system_name": "some-switch",
+      "remote_system_description": "blah blih bleh",
+      "remote_chassis_id": "FC:66:10:03:54:13",
+      "remote_system_capab": [
+        "bridge",
+        "router"
+      ],
+      "remote_system_enable_capab": [
+        "bridge",
+        "router"
+      ]
+    }
+  ]
+}
