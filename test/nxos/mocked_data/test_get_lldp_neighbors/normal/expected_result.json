@@ -1,5 +1,5 @@
 {
-    "Eth1/1": [
+    "Ethernet1/1": [
         {
             "hostname": "n9k2.ntc.com", 
             "port": "Ethernet1/1"
@@ -11,7 +11,7 @@
             "port": "Fa1/0/9"
         }
     ], 
-    "Eth1/2": [
+    "Ethernet1/2": [
         {
             "hostname": "n9k2.ntc.com", 
             "port": "Ethernet1/2"

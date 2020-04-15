@@ -1,0 +1,15 @@
+BGP routing table information for VRF default, address family IPv4 Unicast
+BGP routing table entry for 1.0.4.0/24, version 11
+Paths: (1 available, best #1)
+Flags: (0x080012) on xmit-list, is in urib, is backup urib route, is in HW,
+
+  Advertised path-id 1
+  Path type: internal, path is valid, is best path
+  AS-Path: NONE, path sourced internal to AS
+    192.168.0.2 (metric 41) from 192.168.0.2 (192.168.0.2)
+      Origin IGP, MED 0, localpref 100, weight 0
+      Community: 1234:45 no-export
+      Extcommunity:
+          RT:1234:45
+
+  Path-id 1 not advertised to any peer

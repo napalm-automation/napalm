@@ -1,0 +1,36 @@
+### Description of Issue/Question
+
+*Note*: Please check https://guides.github.com/features/mastering-markdown/
+to see how to properly format your request.
+
+### Did you follow the steps from https://github.com/napalm-automation/napalm#faq
+(Place an ``x`` between the square brackets where applicable)
+
+- [] Yes
+- [] No
+
+
+### Setup
+
+### napalm version
+(Paste verbatim output from `pip freeze | grep napalm` between quotes below)
+
+```
+
+```
+
+### Network operating system version
+(Paste verbatim output from `show version` - or equivalent - between quotes below)
+
+```
+
+```
+
+### Steps to Reproduce the Issue
+
+### Error Traceback
+(Paste the complete traceback of the exception between quotes below)
+
+```
+
+```

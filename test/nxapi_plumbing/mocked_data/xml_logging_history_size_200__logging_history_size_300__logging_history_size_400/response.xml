@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ins_api>
+  <type>cli_conf</type>
+  <version>1.2</version>
+  <sid>eoc</sid>
+  <outputs>
+    <output>
+      <body/>
+      <code>200</code>
+      <msg>Success</msg>
+    </output>
+    <output>
+      <body/>
+      <code>200</code>
+      <msg>Success</msg>
+    </output>
+    <output>
+      <body/>
+      <code>200</code>
+      <msg>Success</msg>
+    </output>
+  </outputs>
+</ins_api>

@@ -1,0 +1,78 @@
+{
+  "TABLE_if": {
+    "ROW_if": [
+      {
+        "if_name": "Vlan1",
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "soo": "--"
+      },
+      {
+        "if_name": "Vlan100",
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "soo": "--"
+      },
+      {
+        "if_name": "Vlan101",
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "soo": "--"
+      },
+      {
+        "if_name": "Vlan102",
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "soo": "--"
+      },
+      {
+        "if_name": "Vlan103",
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "soo": "--"
+      },
+      {
+        "if_name": "Vlan104",
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "soo": "--"
+      },
+      {
+        "if_name": "Vlan105",
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "soo": "--"
+      },
+      {
+        "if_name": "loopback1",
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "soo": "--"
+      },
+      {
+        "if_name": "Null0",
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "soo": "--"
+      },
+      {
+        "if_name": "Ethernet1/5",
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "soo": "--"
+      },
+      {
+        "if_name": "Ethernet1/5.1",
+        "vrf_name": "default",
+        "vrf_id": 1,
+        "soo": "--"
+      },
+      {
+        "if_name": "mgmt0",
+        "vrf_name": "management",
+        "vrf_id": 2,
+        "soo": "--"
+      }
+    ]
+  }
+}

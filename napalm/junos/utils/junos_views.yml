@@ -6,8 +6,6 @@
 
 junos_iface_table:
   rpc: get-interface-information
-  args:
-    extensive: True
   args_key: interface_name
   item: physical-interface
   view: junos_iface_view
@@ -20,6 +18,8 @@ junos_iface_view:
     last_flapped: { interface-flapped/@seconds: int }
     #mode: logical-interface/address-family/address-family-name
     speed: speed
+    negotiated_speed: ethernet-autonegotiation/link-partner-speed
+    mtu: mtu
     mac_address: current-physical-address
 
 junos_logical_iface_table:
@@ -35,6 +35,8 @@ junos_logical_iface_view:
     description: { description: unicode }
     last_flapped: { ../interface-flapped/@seconds: int }
     speed: ../speed
+    negotiated_speed: ../ethernet-autonegotiation/link-partner-speed
+    mtu: ../mtu
     mac_address: ../current-physical-address
 
 ####
@@ -690,6 +692,19 @@ junos_users_table_view:
     ssh_dsa: authentication/ssh-dsa/name
     ssh_ecdsa: authentication/ssh-ecdsa/name
 
+junos_root_table:
+  get: system
+  key: root-authentication
+  view: junos_root_table_view
+
+junos_root_table_view:
+  fields:
+    password: root-authentication/encrypted-password
+    ssh_rsa: root-authentication/ssh-rsa/name
+    ssh_dsa: root-authentication/ssh-dsa/name
+    ssh_ecdsa: root-authentication/ssh-ecdsa/name
+
+
 ###
 ### Get Optics
 ###
@@ -733,5 +748,5 @@ junos_nw_instances_table:
 junos_nw_instances_view:
   fields:
     instance_type: {instance-type: unicode}
-    interfaces: {interface/name: unicode}
+    interfaces: {interface/name | bridge-domains/domain/interface/name: unicode}
     route_distinguisher: {route-distinguisher/rd-type: unicode}

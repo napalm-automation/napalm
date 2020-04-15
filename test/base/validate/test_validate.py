@@ -1,12 +1,10 @@
 """Tests for the validate operation."""
-from __future__ import unicode_literals
+import json
+import os
+import yaml
 
 from napalm.base.base import NetworkDriver
 from napalm.base import constants as C
-import json
-
-import os
-import yaml
 
 
 BASEPATH = os.path.dirname(__file__)
@@ -19,9 +17,9 @@ def construct_yaml_str(self, node):
 
 
 def _read_yaml(filename):
-    yaml.Loader.add_constructor(u'tag:yaml.org,2002:str', construct_yaml_str)
-    yaml.SafeLoader.add_constructor(u'tag:yaml.org,2002:str', construct_yaml_str)
-    with open(filename, 'r') as f:
+    yaml.Loader.add_constructor("tag:yaml.org,2002:str", construct_yaml_str)
+    yaml.SafeLoader.add_constructor("tag:yaml.org,2002:str", construct_yaml_str)
+    with open(filename, "r") as f:
         return yaml.safe_load(f.read())
 
 
@@ -34,7 +32,9 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
+        actual_report = device.compliance_report(
+            os.path.join(mocked_data, "validate.yml")
+        )
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -44,7 +44,9 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
+        actual_report = device.compliance_report(
+            os.path.join(mocked_data, "validate.yml")
+        )
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -65,7 +67,9 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
+        actual_report = device.compliance_report(
+            os.path.join(mocked_data, "validate.yml")
+        )
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -86,7 +90,9 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
+        actual_report = device.compliance_report(
+            os.path.join(mocked_data, "validate.yml")
+        )
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -107,7 +113,9 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
+        actual_report = device.compliance_report(
+            os.path.join(mocked_data, "validate.yml")
+        )
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -128,7 +136,9 @@ class TestValidate:
         expected_report = _read_yaml(os.path.join(mocked_data, "report.yml"))
 
         device = FakeDriver(mocked_data)
-        actual_report = device.compliance_report(os.path.join(mocked_data, "validate.yml"))
+        actual_report = device.compliance_report(
+            os.path.join(mocked_data, "validate.yml")
+        )
 
         assert expected_report == actual_report, yaml.safe_dump(actual_report)
 
@@ -164,9 +174,11 @@ class FakeDriver(NetworkDriver):
     def __getattribute__(self, name):
         def load_json(filename):
             def func(**kwargs):
-                with open(filename, 'r') as f:
+                with open(filename, "r") as f:
                     return json.loads(f.read())
+
             return func
+
         if name.startswith("get_") or name in C.ACTION_TYPE_METHODS:
             filename = os.path.join(self.path, "{}.json".format(name))
             return load_json(filename)

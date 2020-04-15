@@ -1,0 +1,13 @@
+
+Routing Table: TEST
+Routing entry for 1.0.4.0/24
+  Known via "bgp 65417", distance 200, metric 0
+  Tag 65201, type internal
+  Redistributing via eigrp 1
+  Last update from 10.105.113.164 1w6d ago
+  Routing Descriptor Blocks:
+  * 10.105.113.164, from 10.105.113.164, 1w6d ago
+      Route metric is 0, traffic share count is 1
+      AS Hops 5
+      Route tag 65201
+      MPLS label: none

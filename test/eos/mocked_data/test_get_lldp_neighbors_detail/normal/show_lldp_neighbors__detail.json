@@ -1,2057 +1,2057 @@
 {
-"lldpNeighbors": {
-"Ethernet8": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516710.5839026,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.ced1",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516710.5839026,
-"lastContactTime": 1454588267.8133426,
-"chassisId": "2c60.0cad.30de",
-"systemName": "78m3",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.21",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet9": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516758.6997478,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f290",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516758.6997478,
-"lastContactTime": 1454588266.8433216,
-"chassisId": "2c60.0cad.2ed2",
-"systemName": "78m4",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.27",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet12": {
-"lldpNeighborInfo": []
-},
-"Ethernet2": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516399.4961276,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f181",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516399.4961276,
-"lastContactTime": 1454588250.7714615,
-"chassisId": "2c60.0cad.3034",
-"systemName": "78m1",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.9",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet3": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454421670.8033395,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f1c0",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454421670.8033395,
-"lastContactTime": 1454588270.694012,
-"chassisId": "2c60.0cad.2f66",
-"systemName": "ord78",
-"systemDescription": "Linux 3.14.18-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.4",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet1": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516399.495588,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f180",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516399.495588,
-"lastContactTime": 1454588250.7713106,
-"chassisId": "2c60.0cad.3034",
-"systemName": "78m1",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.9",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet6": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516818.1631715,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cc71",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516818.1631715,
-"lastContactTime": 1454588266.8377957,
-"chassisId": "2c60.0cad.300c",
-"systemName": "78m2",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.15",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet7": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516710.5833964,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.ced0",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516710.5833964,
-"lastContactTime": 1454588267.8131862,
-"chassisId": "2c60.0cad.30de",
-"systemName": "78m3",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.21",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet4": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454421701.859456,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f1c1",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454421701.859456,
-"lastContactTime": 1454588270.694201,
-"chassisId": "2c60.0cad.2f66",
-"systemName": "ord78",
-"systemDescription": "Linux 3.14.18-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.4",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet5": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516818.1625724,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cc70",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516818.1625724,
-"lastContactTime": 1454588266.8375843,
-"chassisId": "2c60.0cad.300c",
-"systemName": "78m2",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.15",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet52/1": {
-"lldpNeighborInfo": []
-},
-"Ethernet52/3": {
-"lldpNeighborInfo": []
-},
-"Ethernet52/2": {
-"lldpNeighborInfo": []
-},
-"Ethernet52/4": {
-"lldpNeighborInfo": []
-},
-"Ethernet22": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516761.3589199,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.e161",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516761.3589199,
-"lastContactTime": 1454588268.8432488,
-"chassisId": "2c60.0cad.2fc4",
-"systemName": "78m9",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.57",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet13": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516911.9732785,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cce0",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516911.9732785,
-"lastContactTime": 1454588278.790144,
-"chassisId": "2c60.0cad.2e6e",
-"systemName": "78m5",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.33",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet50/4": {
-"lldpNeighborInfo": []
-},
-"Ethernet50/3": {
-"lldpNeighborInfo": []
-},
-"Ethernet50/2": {
-"lldpNeighborInfo": []
-},
-"Ethernet50/1": {
-"lldpNeighborInfo": []
-},
-"Ethernet51/4": {
-"lldpNeighborInfo": []
-},
-"Ethernet51/2": {
-"lldpNeighborInfo": []
-},
-"Ethernet51/3": {
-"lldpNeighborInfo": []
-},
-"Ethernet51/1": {
-"lldpNeighborInfo": []
-},
-"Ethernet38": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516710.6058156,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f641",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516710.6058156,
-"lastContactTime": 1454588274.8154712,
-"chassisId": "2c60.0cad.30da",
-"systemName": "78m15",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.93",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet39": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516186.48703,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.5330.fed0",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516186.48703,
-"lastContactTime": 1454588273.7741265,
-"chassisId": "2c60.0cbc.0e7d",
-"systemName": "78m16",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.99",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet18": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516739.4538176,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cbd1",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516739.4538176,
-"lastContactTime": 1454588262.714813,
-"chassisId": "2c60.0cad.2d72",
-"systemName": "78m7",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.45",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet19": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454517053.0751758,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f130",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454517053.0751758,
-"lastContactTime": 1454588273.9276395,
-"chassisId": "2c60.0cad.3016",
-"systemName": "78m8",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.51",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet32": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516326.560528,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cb71",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516326.560528,
-"lastContactTime": 1454588250.852702,
-"chassisId": "2c60.0cad.2f3e",
-"systemName": "78m13",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.81",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet15": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516674.4163268,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cc60",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516674.4163268,
-"lastContactTime": 1454588264.7876494,
-"chassisId": "2c60.0cad.2d6e",
-"systemName": "78m6",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.39",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet16": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516674.4168422,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cc61",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516674.4168422,
-"lastContactTime": 1454588264.7878315,
-"chassisId": "2c60.0cad.2d6e",
-"systemName": "78m6",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.39",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet31": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516326.5600317,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cb70",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516326.5600317,
-"lastContactTime": 1454588250.8525124,
-"chassisId": "2c60.0cad.2f3e",
-"systemName": "78m13",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.81",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet36": {
-"lldpNeighborInfo": []
-},
-"Ethernet37": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516710.6054,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f640",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516710.6054,
-"lastContactTime": 1454588274.815284,
-"chassisId": "2c60.0cad.30da",
-"systemName": "78m15",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.93",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet34": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516221.0539045,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cf11",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516221.0539045,
-"lastContactTime": 1454588255.8004835,
-"chassisId": "2c60.0cad.2f5e",
-"systemName": "78m14",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.87",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet35": {
-"lldpNeighborInfo": []
-},
-"Ethernet10": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516758.7002578,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f291",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516758.7002578,
-"lastContactTime": 1454588266.8434055,
-"chassisId": "2c60.0cad.2ed2",
-"systemName": "78m4",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.27",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet33": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516221.053389,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cf10",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516221.053389,
-"lastContactTime": 1454588255.8002849,
-"chassisId": "2c60.0cad.2f5e",
-"systemName": "78m14",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.87",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet14": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516911.9738097,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cce1",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516911.9738097,
-"lastContactTime": 1454588278.7903469,
-"chassisId": "2c60.0cad.2e6e",
-"systemName": "78m5",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.33",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet49/4": {
-"lldpNeighborInfo": []
-},
-"Ethernet30": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516754.7620492,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f091",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516754.7620492,
-"lastContactTime": 1454588275.7998114,
-"chassisId": "2c60.0cad.2fbc",
-"systemName": "78m12",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.75",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Management1": {
-"lldpNeighborInfo": []
-},
-"Ethernet17": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516739.453295,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cbd0",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516739.453295,
-"lastContactTime": 1454588262.7146215,
-"chassisId": "2c60.0cad.2d72",
-"systemName": "78m7",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.45",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet48": {
-"lldpNeighborInfo": []
-},
-"Ethernet47": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": true,
-"router": true
-},
-"lastChangeTime": 1453191939.598909,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "local",
-"interfaceId": "\"597\"",
-"interfaceDescription": "To switch",
-"autoNegCapability": "capableAndEnabled",
-"autoNegAdvertisedCapabilities": [
-"10BASE-T (half-duplex)",
-"10BASE-T (full-duplex)",
-"100BASE-TX (half-duplex)",
-"100BASE-TX (full-duplex)",
-"1000BASE-T (full-duplex)"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "Unknown",
-"vlanNames": {
-"100": "vlan-100",
-"637": "vlan-637",
-"900": "vlan-900"
-},
-"maxFrameSize": 1514,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": [
-{
-"ouiStr": "00-12-BB",
-"subType": 1,
-"tlvLines": [
-"00 0f 04"
-]
-},
-{
-"ouiStr": "00-90-69",
-"subType": 1,
-"tlvLines": [
-"43 55 30 32 31 35 32 36 30 34 37 33"
-]
-}
-]
-},
-"neighborDiscoveryTime": 1453191939.598909,
-"lastContactTime": 1454588254.4154942,
-"chassisId": "5c45.27b4.9000",
-"systemName": "ms01.bru01",
-"systemDescription": "Juniper Networks, Inc. ex2200-48t-4g , version 12.3R6.6 Build date: 2014-03-13 07:02:54 UTC ",
-"ttl": 120,
-"managementAddresses": [],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet49/1": {
-"lldpNeighborInfo": []
-},
-"Ethernet45": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516722.0432456,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532b.cfe0",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516722.0432456,
-"lastContactTime": 1454588268.8442051,
-"chassisId": "2c60.0cbc.0dd1",
-"systemName": "78m19",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.117",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet44": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516619.2276077,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.5327.0c21",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516619.2276077,
-"lastContactTime": 1454588253.8570056,
-"chassisId": "2c60.0cbc.0c9f",
-"systemName": "78m18",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.111",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet43": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516619.227118,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.5327.0c20",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516619.227118,
-"lastContactTime": 1454588253.856812,
-"chassisId": "2c60.0cbc.0c9f",
-"systemName": "78m18",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.111",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet42": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516299.4397647,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.5331.abc1",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516299.4397647,
-"lastContactTime": 1454588252.772014,
-"chassisId": "2c60.0cbc.0cb7",
-"systemName": "78m17",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.105",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet41": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516299.4392633,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.5331.abc0",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516299.4392633,
-"lastContactTime": 1454588252.7718499,
-"chassisId": "2c60.0cbc.0cb7",
-"systemName": "78m17",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.105",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet40": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516186.4875634,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.5330.fed1",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516186.4875634,
-"lastContactTime": 1454588273.774319,
-"chassisId": "2c60.0cbc.0e7d",
-"systemName": "78m16",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.99",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet29": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516754.7615435,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f090",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516754.7615435,
-"lastContactTime": 1454588275.7996252,
-"chassisId": "2c60.0cad.2fbc",
-"systemName": "78m12",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.75",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet28": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516256.0548964,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cb81",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516256.0548964,
-"lastContactTime": 1454588251.7086487,
-"chassisId": "2c60.0cad.2fa2",
-"systemName": "78m11",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.69",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet11": {
-"lldpNeighborInfo": []
-},
-"Ethernet49/3": {
-"lldpNeighborInfo": []
-},
-"Ethernet46": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516722.0437684,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532b.cfe1",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516722.0437684,
-"lastContactTime": 1454588268.8442929,
-"chassisId": "2c60.0cbc.0dd1",
-"systemName": "78m19",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.117",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet21": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516761.358385,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.e160",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516761.358385,
-"lastContactTime": 1454588268.8430948,
-"chassisId": "2c60.0cad.2fc4",
-"systemName": "78m9",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.57",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet20": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454517053.0756881,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.f131",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454517053.0756881,
-"lastContactTime": 1454588273.92781,
-"chassisId": "2c60.0cad.3016",
-"systemName": "78m8",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.51",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet23": {
-"lldpNeighborInfo": []
-},
-"Ethernet49/2": {
-"lldpNeighborInfo": []
-},
-"Ethernet25": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516997.885245,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.ccc0",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516997.885245,
-"lastContactTime": 1454588268.788667,
-"chassisId": "2c60.0cad.2fd0",
-"systemName": "78m10",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.63",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet24": {
-"lldpNeighborInfo": []
-},
-"Ethernet27": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516256.05438,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.cb80",
-"interfaceDescription": "eth2",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516256.05438,
-"lastContactTime": 1454588251.7084908,
-"chassisId": "2c60.0cad.2fa2",
-"systemName": "78m11",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.69",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-},
-"Ethernet26": {
-"lldpNeighborInfo": [
-{
-"systemCapabilities": {
-"bridge": false,
-"router": false,
-"wlanAccessPoint": false
-},
-"lastChangeTime": 1454516997.8857462,
-"neighborInterfaceInfo": {
-"portAndProtocolVlanEnabled": {},
-"linkAggregationStatus": "capableAndDisabled",
-"unknownTlvs": [],
-"interfaceIdType": "macAddress",
-"interfaceId": "000f.532e.ccc1",
-"interfaceDescription": "eth3",
-"autoNegCapability": "notCapable",
-"autoNegAdvertisedCapabilities": [
-"1000BASE-T (full-duplex)",
-"Other"
-],
-"protocolIdentityInfo": [],
-"portAndProtocolVlanSupported": {},
-"operMauType": "10GBASE-X",
-"vlanNames": {},
-"maxFrameSize": 0,
-"linkAggregationInterfaceId": 0,
-"unknownOrgDefinedTlvs": []
-},
-"neighborDiscoveryTime": 1454516997.8857462,
-"lastContactTime": 1454588268.7888572,
-"chassisId": "2c60.0cad.2fd0",
-"systemName": "78m10",
-"systemDescription": "Linux 3.18.22-cloudflare x86_64",
-"ttl": 120,
-"managementAddresses": [
-{
-"oidString": "",
-"interfaceNumType": "ifIndex",
-"interfaceNum": 5,
-"address": "192.168.8.63",
-"addressType": "ipv4"
-}
-],
-"chassisIdType": "macAddress"
-}
-]
-}
-}
+  "lldpNeighbors": {
+    "Ethernet8": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516710.5839026,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.ced1",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516710.5839026,
+          "lastContactTime": 1454588267.8133426,
+          "chassisId": "2c60.0cad.30de",
+          "systemName": "78m3",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.21",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet9": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516758.6997478,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f290",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516758.6997478,
+          "lastContactTime": 1454588266.8433216,
+          "chassisId": "2c60.0cad.2ed2",
+          "systemName": "78m4",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.27",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet12": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet2": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516399.4961276,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f181",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516399.4961276,
+          "lastContactTime": 1454588250.7714615,
+          "chassisId": "2c60.0cad.3034",
+          "systemName": "78m1",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.9",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet3": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454421670.8033395,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f1c0",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454421670.8033395,
+          "lastContactTime": 1454588270.694012,
+          "chassisId": "2c60.0cad.2f66",
+          "systemName": "ord78",
+          "systemDescription": "Linux 3.14.18-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.4",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet1": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516399.495588,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f180",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516399.495588,
+          "lastContactTime": 1454588250.7713106,
+          "chassisId": "2c60.0cad.3034",
+          "systemName": "78m1",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.9",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet6": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516818.1631715,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cc71",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516818.1631715,
+          "lastContactTime": 1454588266.8377957,
+          "chassisId": "2c60.0cad.300c",
+          "systemName": "78m2",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.15",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet7": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516710.5833964,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.ced0",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516710.5833964,
+          "lastContactTime": 1454588267.8131862,
+          "chassisId": "2c60.0cad.30de",
+          "systemName": "78m3",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.21",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet4": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454421701.859456,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f1c1",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454421701.859456,
+          "lastContactTime": 1454588270.694201,
+          "chassisId": "2c60.0cad.2f66",
+          "systemName": "ord78",
+          "systemDescription": "Linux 3.14.18-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.4",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet5": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516818.1625724,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cc70",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516818.1625724,
+          "lastContactTime": 1454588266.8375843,
+          "chassisId": "2c60.0cad.300c",
+          "systemName": "78m2",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.15",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet52/1": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet52/3": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet52/2": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet52/4": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet22": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516761.3589199,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.e161",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516761.3589199,
+          "lastContactTime": 1454588268.8432488,
+          "chassisId": "2c60.0cad.2fc4",
+          "systemName": "78m9",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.57",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet13": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516911.9732785,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cce0",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516911.9732785,
+          "lastContactTime": 1454588278.790144,
+          "chassisId": "2c60.0cad.2e6e",
+          "systemName": "78m5",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.33",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet50/4": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet50/3": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet50/2": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet50/1": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet51/4": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet51/2": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet51/3": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet51/1": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet38": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516710.6058156,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f641",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516710.6058156,
+          "lastContactTime": 1454588274.8154712,
+          "chassisId": "2c60.0cad.30da",
+          "systemName": "78m15",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.93",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet39": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516186.48703,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.5330.fed0",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516186.48703,
+          "lastContactTime": 1454588273.7741265,
+          "chassisId": "2c60.0cbc.0e7d",
+          "systemName": "78m16",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.99",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet18": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516739.4538176,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cbd1",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516739.4538176,
+          "lastContactTime": 1454588262.714813,
+          "chassisId": "2c60.0cad.2d72",
+          "systemName": "78m7",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.45",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet19": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454517053.0751758,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f130",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454517053.0751758,
+          "lastContactTime": 1454588273.9276395,
+          "chassisId": "2c60.0cad.3016",
+          "systemName": "78m8",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.51",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet32": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516326.560528,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cb71",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516326.560528,
+          "lastContactTime": 1454588250.852702,
+          "chassisId": "2c60.0cad.2f3e",
+          "systemName": "78m13",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.81",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet15": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516674.4163268,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cc60",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516674.4163268,
+          "lastContactTime": 1454588264.7876494,
+          "chassisId": "2c60.0cad.2d6e",
+          "systemName": "78m6",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.39",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet16": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516674.4168422,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cc61",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516674.4168422,
+          "lastContactTime": 1454588264.7878315,
+          "chassisId": "2c60.0cad.2d6e",
+          "systemName": "78m6",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.39",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet31": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516326.5600317,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cb70",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516326.5600317,
+          "lastContactTime": 1454588250.8525124,
+          "chassisId": "2c60.0cad.2f3e",
+          "systemName": "78m13",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.81",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet36": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet37": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516710.6054,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f640",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516710.6054,
+          "lastContactTime": 1454588274.815284,
+          "chassisId": "2c60.0cad.30da",
+          "systemName": "78m15",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.93",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet34": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516221.0539045,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cf11",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516221.0539045,
+          "lastContactTime": 1454588255.8004835,
+          "chassisId": "2c60.0cad.2f5e",
+          "systemName": "78m14",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.87",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet35": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet10": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516758.7002578,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f291",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516758.7002578,
+          "lastContactTime": 1454588266.8434055,
+          "chassisId": "2c60.0cad.2ed2",
+          "systemName": "78m4",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.27",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet33": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516221.053389,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cf10",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516221.053389,
+          "lastContactTime": 1454588255.8002849,
+          "chassisId": "2c60.0cad.2f5e",
+          "systemName": "78m14",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.87",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet14": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516911.9738097,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cce1",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516911.9738097,
+          "lastContactTime": 1454588278.7903469,
+          "chassisId": "2c60.0cad.2e6e",
+          "systemName": "78m5",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.33",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet49/4": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet30": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516754.7620492,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f091",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516754.7620492,
+          "lastContactTime": 1454588275.7998114,
+          "chassisId": "2c60.0cad.2fbc",
+          "systemName": "78m12",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.75",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Management1": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet17": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516739.453295,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cbd0",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516739.453295,
+          "lastContactTime": 1454588262.7146215,
+          "chassisId": "2c60.0cad.2d72",
+          "systemName": "78m7",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.45",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet48": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet47": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": true,
+            "router": true
+          },
+          "lastChangeTime": 1453191939.598909,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "local",
+            "interfaceId": "\"597\"",
+            "interfaceDescription": "To switch",
+            "autoNegCapability": "capableAndEnabled",
+            "autoNegAdvertisedCapabilities": [
+              "10BASE-T (half-duplex)",
+              "10BASE-T (full-duplex)",
+              "100BASE-TX (half-duplex)",
+              "100BASE-TX (full-duplex)",
+              "1000BASE-T (full-duplex)"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "Unknown",
+            "vlanNames": {
+              "100": "vlan-100",
+              "637": "vlan-637",
+              "900": "vlan-900"
+            },
+            "maxFrameSize": 1514,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": [
+              {
+                "ouiStr": "00-12-BB",
+                "subType": 1,
+                "tlvLines": [
+                  "00 0f 04"
+                ]
+              },
+              {
+                "ouiStr": "00-90-69",
+                "subType": 1,
+                "tlvLines": [
+                  "43 55 30 32 31 35 32 36 30 34 37 33"
+                ]
+              }
+            ]
+          },
+          "neighborDiscoveryTime": 1453191939.598909,
+          "lastContactTime": 1454588254.4154942,
+          "chassisId": "5c45.27b4.9000",
+          "systemName": "ms01.bru01",
+          "systemDescription": "Juniper Networks, Inc. ex2200-48t-4g , version 12.3R6.6 Build date: 2014-03-13 07:02:54 UTC ",
+          "ttl": 120,
+          "managementAddresses": [],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet49/1": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet45": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516722.0432456,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532b.cfe0",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516722.0432456,
+          "lastContactTime": 1454588268.8442051,
+          "chassisId": "2c60.0cbc.0dd1",
+          "systemName": "78m19",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.117",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet44": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516619.2276077,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.5327.0c21",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516619.2276077,
+          "lastContactTime": 1454588253.8570056,
+          "chassisId": "2c60.0cbc.0c9f",
+          "systemName": "78m18",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.111",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet43": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516619.227118,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.5327.0c20",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516619.227118,
+          "lastContactTime": 1454588253.856812,
+          "chassisId": "2c60.0cbc.0c9f",
+          "systemName": "78m18",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.111",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet42": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516299.4397647,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.5331.abc1",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516299.4397647,
+          "lastContactTime": 1454588252.772014,
+          "chassisId": "2c60.0cbc.0cb7",
+          "systemName": "78m17",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.105",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet41": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516299.4392633,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.5331.abc0",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516299.4392633,
+          "lastContactTime": 1454588252.7718499,
+          "chassisId": "2c60.0cbc.0cb7",
+          "systemName": "78m17",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.105",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet40": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516186.4875634,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.5330.fed1",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516186.4875634,
+          "lastContactTime": 1454588273.774319,
+          "chassisId": "2c60.0cbc.0e7d",
+          "systemName": "78m16",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.99",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet29": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516754.7615435,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f090",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516754.7615435,
+          "lastContactTime": 1454588275.7996252,
+          "chassisId": "2c60.0cad.2fbc",
+          "systemName": "78m12",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.75",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet28": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516256.0548964,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cb81",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516256.0548964,
+          "lastContactTime": 1454588251.7086487,
+          "chassisId": "2c60.0cad.2fa2",
+          "systemName": "78m11",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.69",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet11": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet49/3": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet46": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516722.0437684,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532b.cfe1",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516722.0437684,
+          "lastContactTime": 1454588268.8442929,
+          "chassisId": "2c60.0cbc.0dd1",
+          "systemName": "78m19",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.117",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet21": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516761.358385,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.e160",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516761.358385,
+          "lastContactTime": 1454588268.8430948,
+          "chassisId": "2c60.0cad.2fc4",
+          "systemName": "78m9",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.57",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet20": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454517053.0756881,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.f131",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454517053.0756881,
+          "lastContactTime": 1454588273.92781,
+          "chassisId": "2c60.0cad.3016",
+          "systemName": "78m8",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.51",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet23": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet49/2": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet25": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516997.885245,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.ccc0",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516997.885245,
+          "lastContactTime": 1454588268.788667,
+          "chassisId": "2c60.0cad.2fd0",
+          "systemName": "78m10",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.63",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet24": {
+      "lldpNeighborInfo": []
+    },
+    "Ethernet27": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516256.05438,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.cb80",
+            "interfaceDescription": "eth2",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516256.05438,
+          "lastContactTime": 1454588251.7084908,
+          "chassisId": "2c60.0cad.2fa2",
+          "systemName": "78m11",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.69",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    },
+    "Ethernet26": {
+      "lldpNeighborInfo": [
+        {
+          "systemCapabilities": {
+            "bridge": false,
+            "router": false,
+            "wlanAccessPoint": false
+          },
+          "lastChangeTime": 1454516997.8857462,
+          "neighborInterfaceInfo": {
+            "portAndProtocolVlanEnabled": {},
+            "linkAggregationStatus": "capableAndDisabled",
+            "unknownTlvs": [],
+            "interfaceIdType": "macAddress",
+            "interfaceId": "000f.532e.ccc1",
+            "interfaceDescription": "eth3",
+            "autoNegCapability": "notCapable",
+            "autoNegAdvertisedCapabilities": [
+              "1000BASE-T (full-duplex)",
+              "Other"
+            ],
+            "protocolIdentityInfo": [],
+            "portAndProtocolVlanSupported": {},
+            "operMauType": "10GBASE-X",
+            "vlanNames": {},
+            "maxFrameSize": 0,
+            "linkAggregationInterfaceId": 0,
+            "unknownOrgDefinedTlvs": []
+          },
+          "neighborDiscoveryTime": 1454516997.8857462,
+          "lastContactTime": 1454588268.7888572,
+          "chassisId": "2c60.0cad.2fd0",
+          "systemName": "78m10",
+          "systemDescription": "Linux 3.18.22-cloudflare x86_64",
+          "ttl": 120,
+          "managementAddresses": [
+            {
+              "oidString": "",
+              "interfaceNumType": "ifIndex",
+              "interfaceNum": 5,
+              "address": "192.168.8.63",
+              "addressType": "ipv4"
+            }
+          ],
+          "chassisIdType": "macAddress"
+        }
+      ]
+    }
+  }
 }
