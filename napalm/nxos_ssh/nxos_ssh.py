@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from __future__ import unicode_literals
-
 # import stdlib
 from builtins import super
 import re
@@ -27,7 +25,6 @@ from netaddr.core import AddrFormatError
 # import NAPALM Base
 from napalm.base import helpers
 from napalm.base.exceptions import CommandErrorException, ReplaceConfigException
-from napalm.base.utils import py23_compat
 from napalm.nxos import NXOSDriverBase
 
 # Easier to store these as constants
@@ -449,17 +446,20 @@ class NXOSSSHDriver(NXOSDriverBase):
         """
         return self.device.send_command(command)
 
-    def _send_command_list(self, commands):
+    def _send_command_list(self, commands, expect_string=None):
         """Wrapper for Netmiko's send_command method (for list of commands."""
         output = ""
         for command in commands:
             output += self.device.send_command(
-                command, strip_prompt=False, strip_command=False
+                command,
+                strip_prompt=False,
+                strip_command=False,
+                expect_string=expect_string,
             )
         return output
 
     def _send_config(self, commands):
-        if isinstance(commands, py23_compat.string_types):
+        if isinstance(commands, str):
             commands = (command for command in commands.splitlines() if command)
         return self.device.send_config_set(commands)
 
@@ -523,13 +523,15 @@ class NXOSSSHDriver(NXOSDriverBase):
             raise CommandErrorException(msg)
 
     def _load_cfg_from_checkpoint(self):
+
         commands = [
             "terminal dont-ask",
             "rollback running-config file {}".format(self.candidate_cfg),
             "no terminal dont-ask",
         ]
+
         try:
-            rollback_result = self._send_command_list(commands)
+            rollback_result = self._send_command_list(commands, expect_string=r"[#>]")
         finally:
             self.changed = True
         msg = rollback_result
@@ -538,10 +540,16 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def rollback(self):
         if self.changed:
-            command = "rollback running-config file {}".format(self.rollback_cfg)
-            result = self._send_command(command)
+            commands = [
+                "terminal dont-ask",
+                "rollback running-config file {}".format(self.rollback_cfg),
+                "no terminal dont-ask",
+            ]
+            result = self._send_command_list(commands, expect_string=r"[#>]")
             if "completed" not in result.lower():
                 raise ReplaceConfigException(result)
+            # If hostname changes ensure Netmiko state is updated properly
+            self._netmiko_device.set_base_prompt()
             self._copy_run_start()
             self.changed = False
 
@@ -573,15 +581,31 @@ class NXOSSSHDriver(NXOSDriverBase):
         show_int_status = self._send_command("show interface status")
         show_hostname = self._send_command("show hostname")
 
+        try:
+            show_inventory_table = self._get_command_table(
+                "show inventory | json", "TABLE_inv", "ROW_inv"
+            )
+            if isinstance(show_inventory_table, dict):
+                show_inventory_table = [show_inventory_table]
+
+            for row in show_inventory_table:
+                if row["name"] == '"Chassis"' or row["name"] == "Chassis":
+                    serial_number = row.get("serialnum", "")
+                    break
+        except ValueError:
+            show_inventory = self._send_command("show inventory")
+            find_regexp = r"^NAME:\s+\"(.*)\",.*\n^PID:.*SN:\s+(\w*)"
+            find = re.findall(find_regexp, show_inventory, re.MULTILINE)
+            for row in find:
+                if row[0] == "Chassis":
+                    serial_number = row[1]
+                    break
+
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
             if " uptime is " in line:
                 _, uptime_str = line.split(" uptime is ")
                 uptime = self.parse_uptime(uptime_str)
-
-            if "Processor Board ID" in line:
-                _, serial_number = line.split("Processor Board ID ")
-                serial_number = serial_number.strip()
 
             if "system: " in line or "NXOS: " in line:
                 line = line.strip()
@@ -630,10 +654,10 @@ class NXOSSSHDriver(NXOSDriverBase):
         return {
             "uptime": int(uptime),
             "vendor": vendor,
-            "os_version": py23_compat.text_type(os_version),
-            "serial_number": py23_compat.text_type(serial_number),
-            "model": py23_compat.text_type(model),
-            "hostname": py23_compat.text_type(hostname),
+            "os_version": str(os_version),
+            "serial_number": str(serial_number),
+            "model": str(model),
+            "hostname": str(hostname),
             "fqdn": fqdn,
             "interface_list": interface_list,
         }
@@ -760,7 +784,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         for command in commands:
             output = self._send_command(command)
-            cli_output[py23_compat.text_type(command)] = output
+            cli_output[str(command)] = output
         return cli_output
 
     def get_environment(self):
@@ -979,10 +1003,14 @@ class NXOSSSHDriver(NXOSDriverBase):
                 ip_address = line.split(",")[0].split()[2]
                 try:
                     prefix_len = int(line.split()[5].split("/")[1])
-                except ValueError:
+                except (ValueError, IndexError):
                     prefix_len = "N/A"
-                val = {"prefix_length": prefix_len}
-                v4_interfaces.setdefault(interface, {})[ip_address] = val
+
+                if ip_address == "none":
+                    v4_interfaces.setdefault(interface, {})
+                else:
+                    val = {"prefix_length": prefix_len}
+                    v4_interfaces.setdefault(interface, {})[ip_address] = val
 
         v6_interfaces = {}
         for line in output_v6.splitlines():
@@ -1013,6 +1041,10 @@ class NXOSSSHDriver(NXOSDriverBase):
                 prefix_len = int(prefix_len)
                 val = {"prefix_length": prefix_len}
                 v6_interfaces.setdefault(interface, {})[ip_address] = val
+            else:
+                # match the following format:
+                # IPv6 address: none
+                v6_interfaces.setdefault(interface, {})
 
         # Join data from intermediate dictionaries.
         for interface, data in v4_interfaces.items():
@@ -1285,10 +1317,12 @@ class NXOSSSHDriver(NXOSDriverBase):
                     bgp_attr["remote_as"] = 0  # 0? , locally sourced
         return bgp_attr
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
         """
         Only IPv4 supported, vrf aware, longer_prefixes parameter ready
         """
+        if longer:
+            raise NotImplementedError("Longer prefixes not yet supported for NXOS")
         longer_pref = ""  # longer_prefixes support, for future use
         vrf = ""
 
@@ -1403,34 +1437,34 @@ class NXOSSSHDriver(NXOSDriverBase):
             return snmp_information
 
         snmp_information = {
-            "contact": py23_compat.text_type(""),
-            "location": py23_compat.text_type(""),
+            "contact": str(""),
+            "location": str(""),
             "community": {},
-            "chassis_id": py23_compat.text_type(""),
+            "chassis_id": str(""),
         }
 
         for snmp_entry in snmp_config:
-            contact = py23_compat.text_type(snmp_entry.get("contact", ""))
+            contact = str(snmp_entry.get("contact", ""))
             if contact:
                 snmp_information["contact"] = contact
-            location = py23_compat.text_type(snmp_entry.get("location", ""))
+            location = str(snmp_entry.get("location", ""))
             if location:
                 snmp_information["location"] = location
 
-            community_name = py23_compat.text_type(snmp_entry.get("community", ""))
+            community_name = str(snmp_entry.get("community", ""))
             if not community_name:
                 continue
 
             if community_name not in snmp_information["community"].keys():
                 snmp_information["community"][community_name] = {
-                    "acl": py23_compat.text_type(snmp_entry.get("acl", "")),
-                    "mode": py23_compat.text_type(snmp_entry.get("mode", "").lower()),
+                    "acl": str(snmp_entry.get("acl", "")),
+                    "mode": str(snmp_entry.get("mode", "").lower()),
                 }
             else:
-                acl = py23_compat.text_type(snmp_entry.get("acl", ""))
+                acl = str(snmp_entry.get("acl", ""))
                 if acl:
                     snmp_information["community"][community_name]["acl"] = acl
-                mode = py23_compat.text_type(snmp_entry.get("mode", "").lower())
+                mode = str(snmp_entry.get("mode", "").lower())
                 if mode:
                     snmp_information["community"][community_name]["mode"] = mode
         return snmp_information
@@ -1456,7 +1490,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
             password = user.get("password", "")
             if password:
-                users[username]["password"] = py23_compat.text_type(password.strip())
+                users[username]["password"] = str(password.strip())
 
             level = 0
             role = user.get("role", "")
@@ -1474,5 +1508,23 @@ class NXOSSSHDriver(NXOSDriverBase):
             if sshkeytype and sshkeyvalue:
                 if sshkeytype not in ["ssh-rsa", "ssh-dsa"]:
                     continue
-                users[username]["sshkeys"].append(py23_compat.text_type(sshkeyvalue))
+                users[username]["sshkeys"].append(str(sshkeyvalue))
         return users
+
+    def get_vlans(self):
+        vlans = {}
+        command = "show vlan brief | json"
+        vlan_table_raw = self._get_command_table(
+            command, "TABLE_vlanbriefxbrief", "ROW_vlanbriefxbrief"
+        )
+        if isinstance(vlan_table_raw, dict):
+            vlan_table_raw = [vlan_table_raw]
+
+        for vlan in vlan_table_raw:
+            if "vlanshowplist-ifidx" not in vlan.keys():
+                vlan["vlanshowplist-ifidx"] = []
+            vlans[vlan["vlanshowbr-vlanid"]] = {
+                "name": vlan["vlanshowbr-vlanname"],
+                "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),
+            }
+        return vlans

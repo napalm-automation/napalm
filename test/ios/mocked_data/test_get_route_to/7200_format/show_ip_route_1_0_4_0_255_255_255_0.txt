@@ -1,0 +1,9 @@
+Routing entry for 1.0.4.0/24, supernet
+  Known via "bgp 65105", distance 20, metric 0, candidate default path
+  Tag 5610, type external
+  Last update from 1.2.3.4 2w0d ago
+  Routing Descriptor Blocks:
+  * 1.2.3.4, from 1.2.3.4, 2w0d ago
+      Route metric is 0, traffic share count is 1
+      AS Hops 1
+      Route tag 55610

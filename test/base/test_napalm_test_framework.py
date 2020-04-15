@@ -1,6 +1,3 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import unittest
 from napalm.base.base import NetworkDriver
 import napalm.base.test.base as ntb

@@ -1,0 +1,7 @@
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "msg": "nxos.domain.com \n"
+  },
+  "id": 1
+}
