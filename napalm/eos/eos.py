@@ -1029,11 +1029,6 @@ class EOSDriver(NetworkDriver):
         return ntp_stats
 
     def get_interfaces_ip(self, vrf=""):
-
-        if vrf:
-            msg = 'VRF support has not been added for this getter on this platform.'
-            raise NotImplementedError(msg)
-
         interfaces_ip = {}
 
         interfaces_ipv4_out = self.device.run_commands(["show ip interface"])[0][
@@ -1051,6 +1046,8 @@ class EOSDriver(NetworkDriver):
                 raise
 
         for interface_name, interface_details in interfaces_ipv4_out.items():
+            if vrf and interface_details.get("vrf", "") != vrf:
+                continue
             ipv4_list = []
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = {}
@@ -1089,6 +1086,8 @@ class EOSDriver(NetworkDriver):
                     }
 
         for interface_name, interface_details in interfaces_ipv6_out.items():
+            if vrf and interface_details.get("vrf", "") != vrf:
+                continue
             ipv6_list = []
             if interface_name not in interfaces_ip.keys():
                 interfaces_ip[interface_name] = {}
