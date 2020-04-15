@@ -1047,6 +1047,7 @@ class JunOSDriver(NetworkDriver):
             "local_address": str,
             "local_as": int,
             "remote_as": int,
+            "authentication_key": str,
             "import_policy": str,
             "export_policy": str,
             "inet_unicast_limit_prefix_limit": int,
@@ -1068,7 +1069,6 @@ class JunOSDriver(NetworkDriver):
         }
 
         _PEER_FIELDS_DATATYPE_MAP_ = {
-            "authentication_key": str,
             "route_reflector_client": bool,
             "nhs": bool,
         }
