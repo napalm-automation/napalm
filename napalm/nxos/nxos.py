@@ -804,7 +804,7 @@ class NXOSDriver(NXOSDriverBase):
         facts["model"] = show_version.get("chassis_id", "")
         facts["hostname"] = show_version.get("host_name", "")
         facts["os_version"] = show_version.get(
-            "sys_ver_str", show_version.get("rr_sys_ver", "")
+            "sys_ver_str", show_version.get("kickstart_ver_str", "")
         )
 
         uptime_days = show_version.get("kern_uptm_days", 0)
@@ -1485,6 +1485,8 @@ class NXOSDriver(NXOSDriverBase):
             vlan_table_raw = [vlan_table_raw]
 
         for vlan in vlan_table_raw:
+            if "vlanshowplist-ifidx" not in vlan.keys():
+                vlan["vlanshowplist-ifidx"] = []
             vlans[vlan["vlanshowbr-vlanid"]] = {
                 "name": vlan["vlanshowbr-vlanname"],
                 "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),
