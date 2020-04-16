@@ -8,7 +8,9 @@ base_interfaces = {
     "EO": "EOBC",
     "Ethernet": "Ethernet",
     "Eth": "Ethernet",
+    "eth": "Ethernet",
     "Et": "Ethernet",
+    "et": "Ethernet",
     "FastEthernet": "FastEthernet",
     "FastEth": "FastEthernet",
     "FastE": "FastEthernet",
@@ -82,6 +84,7 @@ base_interfaces = {
     "VLAN": "VLAN",
     "V": "VLAN",
     "Vl": "VLAN",
+    "Wlan-GigabitEthernet": "Wlan-GigabitEthernet",
 }
 
 reverse_mapping = {
@@ -107,4 +110,5 @@ reverse_mapping = {
     "Virtual-Access": "Vi",
     "Virtual-Template": "Vt",
     "VLAN": "Vl",
+    "Wlan-GigabitEthernet": "Wl-Gi",
 }
