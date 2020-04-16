@@ -31,6 +31,7 @@ then write the desired state using the same format the getter would retrieve it.
     - get_environment:
         memory:
           used_ram: '<15.0'
+          available_ram: '10.0<->20.0'
         cpu:
           0/RP0/CPU0
             '%usage': '<15.0'
@@ -93,7 +94,8 @@ A few notes:
       device has only those two interfaces.
     * We can also use comparison on the conditions of numerical validate. For example, if you want 
       to validate there that the ``cpu``and ``memory`` into ``get_environment`` are ``15%`` or less.
-      We can use writing comparison operators such as ``<15.0`` or ``>10.0`` in this case.
+      We can use writing comparison operators such as ``<15.0`` or ``>10.0`` in this case, or range
+      with the operator syntax of ``<->`` such as ``10.0<->20.0`` or ``10<->20``.
     * Some methods require extra arguments, for example ``ping``. You can pass arguments to those
       methods using the magic keyword ``_kwargs``. In addition, an optional keyword ``_name`` can
       be specified to override the name in the report. Useful for having a more descriptive report
