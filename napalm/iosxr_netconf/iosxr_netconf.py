@@ -18,6 +18,7 @@
 from __future__ import unicode_literals
 
 # import stdlib
+import re
 import copy
 import difflib
 
@@ -625,7 +626,167 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def get_environment(self):
         """Return environment details."""
-        return NotImplementedError
+        def env_ns_prefix():
+            """Return prefix for ENVMON model in router capabilities."""
+            for prefix in C.ENVMON_NAMESPACES:
+                for capability in self.device.server_capabilities:
+                    if C.ENVMON_NAMESPACES[prefix] in capability:
+                        return prefix
+            return None
+
+        environment_status = {}
+        environment_status["fans"] = {}
+        environment_status["temperature"] = {}
+        environment_status["power"] = {}
+        environment_status["cpu"] = {}
+        environment_status["memory"] = 0.0
+
+        router_model = self.get_facts().get("model")
+        if router_model not in C.PLAT_NO_ENVMON:
+            nsp = env_ns_prefix()
+            rpc_reply = self.device.get(filter=(
+                "subtree", C.ENVMON_RPC_REQ_FILTER[nsp])).xml
+
+            # Converts string to etree
+            result_tree = ETREE.fromstring(rpc_reply)
+
+            #
+            # FAN
+            #
+            fans = {}
+            fan_location_xpath = ".//{}:environment/{}:oper/{}:fan/\
+                {}:location".format(nsp, nsp, nsp, nsp)
+            for fan_location in result_tree.xpath(
+                    fan_location_xpath, namespaces=C.ENVMON_NAMESPACES):
+                fan_name = self._find_txt(fan_location, "./{}:location".format(nsp),
+                                          namespaces=C.ENVMON_NAMESPACES).lstrip('0/')
+                if "FT" in fan_name:
+                    fans[fan_name] = {"status": True}
+
+            environment_status["fans"] = fans
+
+            #
+            # POWER
+            #
+            power = {}
+            power_location_xpath = ".//{}:environment/{}:oper/{}:power/\
+                {}:location".format(nsp, nsp, nsp, nsp)
+            capacity = 0.0
+            for power_location in result_tree.xpath(
+                    power_location_xpath, namespaces=C.ENVMON_NAMESPACES):
+                power_location_name = self._find_txt(power_location, "./{}:location".format(nsp),
+                                                     namespaces=C.ENVMON_NAMESPACES)
+                if power_location_name.isdigit():
+                    capacity = float(self._find_txt(power_location, "./{}:pem_attributes/\
+                                                    {}:usable_power_capacity".format(nsp, nsp),
+                                                    namespaces=C.ENVMON_NAMESPACES))
+                    continue
+                if re.search(r"\d/PT\d", power_location_name) is not None or re.search(
+                        r"\d/PM\d", power_location_name) is not None:
+                    for pem_attr in power_location.xpath(
+                            "./{}:pem_attributes".format(nsp), namespaces=C.ENVMON_NAMESPACES):
+                        pem = self._find_txt(pem_attr, "./{}:pem".format(nsp),
+                                             namespaces=C.ENVMON_NAMESPACES)
+                        status = self._find_txt(pem_attr, "./{}:status".format(nsp),
+                                                namespaces=C.ENVMON_NAMESPACES)
+                        output_voltage = float(self._find_txt(pem_attr, "./{}:output_voltage".format(nsp),
+                                               default="0.0", namespaces=C.ENVMON_NAMESPACES))
+                        output_current = float(self._find_txt(pem_attr, "./{}:output_current".format(nsp),
+                                               default="0.0", namespaces=C.ENVMON_NAMESPACES))
+
+                        power[pem] = {"status": status == "OK",
+                                      "output": round(output_voltage*output_current, 2),
+                                      "capacity": capacity}
+
+            environment_status["power"] = power
+
+            #
+            # TEMPERATURE
+            #
+            temperature = {}
+            temp_location_xpath = ".//{}:environment/{}:oper/{}:temperatures/\
+                {}:location".format(nsp, nsp, nsp, nsp)
+            for temp_location in result_tree.xpath(
+                    temp_location_xpath, namespaces=C.ENVMON_NAMESPACES):
+                temp_location_name = self._find_txt(temp_location, "./{}:location".format(nsp),
+                                                     namespaces=C.ENVMON_NAMESPACES)
+                for sensor_attributes in temp_location.xpath(
+                        "./{}:sensor_attributes".format(nsp), namespaces=C.ENVMON_NAMESPACES):
+                    sensor_id = self._find_txt(sensor_attributes, "./{}:sensor_id".format(nsp),
+                                                         namespaces=C.ENVMON_NAMESPACES)
+                    if sensor_id == "Inlet":
+                        temp_value = float(self._find_txt(sensor_attributes, "./{}:value".format(nsp),
+                                                             namespaces=C.ENVMON_NAMESPACES))
+                        major_lo = float(self._find_txt(sensor_attributes, "./{}:major_lo".format(nsp),
+                                                             namespaces=C.ENVMON_NAMESPACES))
+                        major_hi = float(self._find_txt(sensor_attributes, "./{}:major_hi".format(nsp),
+                                                             namespaces=C.ENVMON_NAMESPACES))
+                        critical_lo = float(self._find_txt(sensor_attributes, "./{}:critical_lo".format(nsp),
+                                                             namespaces=C.ENVMON_NAMESPACES))
+                        critical_hi = float(self._find_txt(sensor_attributes, "./{}:critical_hi".format(nsp),
+                                                             namespaces=C.ENVMON_NAMESPACES))
+                        is_alert = (temp_value <= major_lo) or (temp_value >= major_hi)
+                        is_critical = (temp_value <= critical_lo) or (temp_value >= critical_hi)
+                        temperature[temp_location_name] = {
+                            "is_alert": is_alert,
+                            "temperature": temp_value,
+                            "is_critical": is_critical
+                        }
+                        break
+            environment_status["temperature"] = temperature
+
+        #
+        # CPU
+        #
+        cpu = {}
+        rpc_reply = self.device.get(filter=("subtree", C.ENV_SYS_MON_RPC_REQ_FILTER)).xml
+
+        # Converts string to etree
+        result_tree = ETREE.fromstring(rpc_reply)
+
+        for module in result_tree.xpath(
+                    ".//sys:system-monitoring/sys:cpu-utilization", namespaces=C.NS):
+            this_cpu = {}
+            this_cpu["%usage"] = napalm.base.helpers.convert(
+                float, self._find_txt(
+                    module, "./sys:total-cpu-five-minute", default="", namespaces=C.NS)
+            )
+            node_name = self._find_txt(module, "./sys:node-name", default="", namespaces=C.NS)
+            cpu[node_name] = this_cpu
+
+        environment_status["cpu"] = cpu
+
+        #
+        # Memory
+        #
+        rpc_reply = self.device.get(filter=("subtree",
+                                    C.ENV_MEM_RPC_REQ_FILTER)).xml
+        # Converts string to etree
+        result_tree = ETREE.fromstring(rpc_reply)
+
+        for node in result_tree.xpath(".//mem:memory-summary/mem:nodes/mem:node", namespaces=C.NS):
+            node_name = self._find_txt(node, "./mem:node-name", namespaces=C.NS)
+            slot = node_name.split("/")[1]
+            if (slot in ["RP0", "RSP0"]):
+                available_ram = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(
+                     node, "./mem:summary/mem:system-ram-memory", namespaces=C.NS),
+                    )
+                free_ram = napalm.base.helpers.convert(
+                    int,
+                    self._find_txt(node, "./mem:summary/\
+                     mem:free-physical-memory", namespaces=C.NS),
+                    )
+                if available_ram and free_ram:
+                    used_ram = available_ram - free_ram
+                    memory = {}
+                    memory["available_ram"] = available_ram
+                    memory["used_ram"] = used_ram
+                    environment_status["memory"] = memory
+                break  # we're only looking at one of the RSP's
+
+        return environment_status
 
     def get_lldp_neighbors(self):
         """Return LLDP neighbors details."""

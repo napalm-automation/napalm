@@ -40,6 +40,8 @@ NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
       'rib4': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv4-oper',
       'rib6': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv6-oper',
       'tr': 'http://cisco.com/ns/yang/Cisco-IOS-XR-traceroute-act',
+      'sys': 'http://cisco.com/ns/yang/Cisco-IOS-XR-wdsysmon-fd-oper',
+      'mem': 'http://cisco.com/ns/yang/Cisco-IOS-XR-nto-misc-oper',
       }
 
 # GET RPC to retrieve device facts
@@ -352,3 +354,49 @@ TRACEROUTE_RPC_REQ = '''
     {ttl_tag}{timeout_tag}
   </ipv{version}>
 </traceroute>'''
+
+# namespaces for XR environment monitoring native models
+ENVMON_NAMESPACES = {'sysadmin-asr9k-envmon-ui': "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-asr9k-envmon-ui",
+                     'sysadmin-envmon-ui': "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-envmon-ui",
+                     'sysadmin-fretta-envmon-ui': "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-fretta-envmon-ui",
+                     }
+
+# subtree filters to get environment details using GET RPC
+ENVMON_RPC_REQ_FILTER = {'sysadmin-asr9k-envmon-ui':
+                         '''<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-asr9k-envmon-ui">
+                               <oper>
+                                <temperatures/>
+                                <fan/>
+                                <power/>
+                               </oper>
+                            </environment>''',
+                         'sysadmin-envmon-ui':
+                         '''<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-envmon-ui">
+                               <oper>
+                                <temperatures/>
+                                <fan/>
+                                <power/>
+                               </oper>
+                            </environment>''',
+                         'sysadmin-fretta-envmon-ui':
+                         '''<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-fretta-envmon-ui">
+                               <oper>
+                                <temperatures/>
+                                <fan/>
+                                <power/>
+                               </oper>
+                            </environment>''',
+                         }
+
+# platform models without environment monitoring
+PLAT_NO_ENVMON = ['R-IOSXRV9000-CC']
+
+# subtree filter to get memory summary details using GET RPC
+ENV_MEM_RPC_REQ_FILTER = '''
+<memory-summary xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-nto-misc-oper"/>'''
+
+# subtree filter to get system monitoring details using GET RPC
+ENV_SYS_MON_RPC_REQ_FILTER = '''
+<system-monitoring xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-wdsysmon-fd-oper">
+ <cpu-utilization/>
+</system-monitoring>'''
