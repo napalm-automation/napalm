@@ -18,7 +18,9 @@ Start
   ^Neighbor\s+V -> Table
 
 Table
+  ^${NEIGHBOR} -> Continue
+  ^\s+${BGP_VER}\s+${REMOTE_AS}\s+${MSG_RECV}\s+${MSG_SENT}\s+${TBL_VER}\s+${IN_Q}\s+${OUT_Q}\s+${UP}\s+${PREFIX_RECV} -> Record Table
   ^${NEIGHBOR}\s+${BGP_VER}\s+${REMOTE_AS}\s+${MSG_RECV}\s+${MSG_SENT}\s+${TBL_VER}\s+${IN_Q}\s+${OUT_Q}\s+${UP}\s+${PREFIX_RECV} -> Record Table
-  ^\s* -> Clearall Start
+  ^$$ -> Clearall Start
 
 EOF
