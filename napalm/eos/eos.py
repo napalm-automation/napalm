@@ -807,9 +807,10 @@ class EOSDriver(NetworkDriver):
             if peer_group:
                 neighbor_dict.update(
                      {
-                         "nhs": peer_group["nhs"], 
+                         "nhs": peer_group["nhs"],
                          "remote_as":peer_group["remote_as"],
                          "local_address" : peer_group["local_address"],
+                         "route_reflector_client" : peer_group["route_reflector_client"]
                      }
                  )  # update non defaults from peer_group
             return neighbor_dict
