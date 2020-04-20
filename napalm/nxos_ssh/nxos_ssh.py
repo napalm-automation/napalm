@@ -120,7 +120,7 @@ def parse_intf_section(interface):
     else:
         # More standard is up, next line admin state is lines
         match = re.search(re_intf_name_state, interface)
-        intf_name = match.group("intf_name")
+        intf_name = helpers.canonical_interface_name(match.group("intf_name"))
         intf_state = match.group("intf_state").strip()
         is_up = True if intf_state == "up" else False
 
