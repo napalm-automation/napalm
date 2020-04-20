@@ -11,7 +11,7 @@
 	"static": false,
 	"active": true,
 	"vlan": 1,
-	"mac": "3333.2222.1111",
+	"mac": "33:33:22:22:11:11",
 	"interface": "GigabitEthernet0/1/1",
 	"moves": -1,
 	"last_move": -1.0
