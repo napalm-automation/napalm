@@ -714,7 +714,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         "./{}:sensor_attributes".format(nsp), namespaces=C.ENVMON_NAMESPACES):
                     sensor_id = self._find_txt(sensor_attributes, "./{}:sensor_id".format(nsp),
                                                          namespaces=C.ENVMON_NAMESPACES)
-                    if sensor_id == "Inlet":
+                    if sensor_id in ["Inlet", "Control Sensor"]:
                         temp_value = float(self._find_txt(sensor_attributes, "./{}:value".format(nsp),
                                                              namespaces=C.ENVMON_NAMESPACES))
                         major_lo = float(self._find_txt(sensor_attributes, "./{}:major_lo".format(nsp),
