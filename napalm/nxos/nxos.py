@@ -84,6 +84,7 @@ class NXOSDriverBase(NetworkDriver):
         self.candidate_cfg = "candidate_config.txt"
         self.rollback_cfg = "rollback_config.txt"
         self._dest_file_system = optional_args.pop("dest_file_system", "bootflash:")
+        self.force_no_enable = optional_args.get("force_no_enable", False)
         self.netmiko_optional_args = netmiko_args(optional_args)
         self.device = None
 
@@ -631,9 +632,13 @@ class NXOSDriverBase(NetworkDriver):
             find = re.findall(find_regexp, vls.strip())
             if find:
                 for i in range(int(find[0][1]), int(find[0][2]) + 1):
-                    vlans.append(find[0][0] + str(i))
+                    vlans.append(
+                        napalm.base.helpers.canonical_interface_name(
+                            find[0][0] + str(i)
+                        )
+                    )
             else:
-                vlans.append(vls.strip())
+                vlans.append(napalm.base.helpers.canonical_interface_name(vls.strip()))
         return vlans
 
 
@@ -804,7 +809,7 @@ class NXOSDriver(NXOSDriverBase):
         facts["model"] = show_version.get("chassis_id", "")
         facts["hostname"] = show_version.get("host_name", "")
         facts["os_version"] = show_version.get(
-            "sys_ver_str", show_version.get("rr_sys_ver", "")
+            "sys_ver_str", show_version.get("kickstart_ver_str", "")
         )
 
         uptime_days = show_version.get("kern_uptm_days", 0)
@@ -1485,6 +1490,8 @@ class NXOSDriver(NXOSDriverBase):
             vlan_table_raw = [vlan_table_raw]
 
         for vlan in vlan_table_raw:
+            if "vlanshowplist-ifidx" not in vlan.keys():
+                vlan["vlanshowplist-ifidx"] = []
             vlans[vlan["vlanshowbr-vlanid"]] = {
                 "name": vlan["vlanshowbr-vlanname"],
                 "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),

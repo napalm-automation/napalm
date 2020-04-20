@@ -544,16 +544,7 @@
     },
     "1115": {
         "name": "Vlan1115",
-        "interfaces": [
-            "Port-channel12",
-            "Port-channel100",
-            "Ethernet1/21",
-            "Ethernet1/22",
-            "Ethernet1/23",
-            "Ethernet1/24",
-            "Ethernet1/47",
-            "Ethernet1/48"
-        ]
+        "interfaces": [""]
     },
     "1116": {
         "name": "Vlan1116",
