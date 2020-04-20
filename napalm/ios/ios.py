@@ -39,6 +39,8 @@ from napalm.base.helpers import (
     canonical_interface_name,
     transform_lldp_capab,
     textfsm_extractor,
+    split_interface,
+    abbreviated_interface_name,
 )
 from napalm.base.netmiko_helpers import netmiko_args
 
@@ -154,6 +156,7 @@ class IOSDriver(NetworkDriver):
         self.platform = "ios"
         self.profile = [self.platform]
         self.use_canonical_interface = optional_args.get("canonical_int", False)
+        self.force_no_enable = optional_args.get("force_no_enable", False)
 
     def open(self):
         """Open a connection to the device."""
@@ -2114,6 +2117,14 @@ class IOSDriver(NetworkDriver):
                     match = re.search(r"(\d+) output errors", line)
                     counters[interface]["tx_errors"] = int(match.group(1))
                     counters[interface]["tx_discards"] = -1
+
+            interface_type, interface_number = split_interface(interface)
+            if interface_type in [
+                "HundredGigabitEthernet",
+                "FortyGigabitEthernet",
+                "TenGigabitEthernet",
+            ]:
+                interface = abbreviated_interface_name(interface)
             for line in sh_int_sum_cmd_out.splitlines():
                 if interface in line:
                     # Line is tabular output with columns
@@ -2128,6 +2139,7 @@ class IOSDriver(NetworkDriver):
                     )
                     match = re.search(regex, line)
                     if match:
+                        interface = canonical_interface_name(interface)
                         counters[interface]["rx_discards"] = int(match.group("IQD"))
                         counters[interface]["tx_discards"] = int(match.group("OQD"))
 
@@ -2451,9 +2463,7 @@ class IOSDriver(NetworkDriver):
         )  # 7 fields
         RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 6 fields
         RE_MACTABLE_6500_3 = r"^\s{51}\S+"  # Fill down prior
-        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(
-            VLAN_REGEX, MAC_REGEX
-        )  # Router field
+        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(VLAN_REGEX)  # Router field
         RE_MACTABLE_6500_5 = r"^R\s+N/A\s+{}.*Router".format(
             MAC_REGEX
         )  # Router skipped
@@ -3205,8 +3215,8 @@ class IOSDriver(NetworkDriver):
         if source:
             command += " source {}".format(source)
         if ttl:
-            if isinstance(ttl, int) and 0 <= timeout <= 255:
-                command += " ttl 0 {}".format(str(ttl))
+            if isinstance(ttl, int) and 0 <= ttl <= 255:
+                command += " ttl {}".format(str(ttl))
         if timeout:
             # Timeout should be an integer between 1 and 3600
             if isinstance(timeout, int) and 1 <= timeout <= 3600:
