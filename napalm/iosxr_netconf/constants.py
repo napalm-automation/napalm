@@ -56,8 +56,9 @@ FACTS_RPC_REQ = '''<get xmlns="urn:ietf:params:xml:ns:netconf:base:1.1">
       </interfaces>
     </interfaces>
     <inventory xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-invmgr-oper">
-      <racks>
-        <rack>
+      <entities>
+        <entity>
+          <name>Rack 0</name>
           <attributes>
             <inv-basic-bag>
               <software-revision/>
@@ -65,8 +66,8 @@ FACTS_RPC_REQ = '''<get xmlns="urn:ietf:params:xml:ns:netconf:base:1.1">
               <serial-number/>
             </inv-basic-bag>
           </attributes>
-        </rack>
-      </racks>
+        </entity>
+      </entities>
     </inventory>
   </filter>
 </get>'''

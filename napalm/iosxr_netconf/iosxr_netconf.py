@@ -249,7 +249,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         # Retrieves os version, model, serial number
         basic_info_tree = facts_rpc_reply_etree.xpath(
-                        ".//imo:inventory/imo:racks/imo:rack/imo:attributes/\
+                        ".//imo:inventory/imo:entities/imo:entity/imo:attributes/\
                         imo:inv-basic-bag", namespaces=C.NS)[0]
         os_version = napalm.base.helpers.convert(
             str,
