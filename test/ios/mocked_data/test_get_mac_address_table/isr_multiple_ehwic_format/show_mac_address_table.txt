@@ -1,0 +1,9 @@
+EHWIC: 0
+Destination Address	Address Type	VLAN	Destination Port
+-------------------	------------	----	-----------------
+1111.2222.3333		Dynamic      	  2   	GigabitEthernet0/0/1
+
+EHWIC: 1
+Destination Address	Address Type	VLAN	Destination Port
+-------------------	------------	----	-----------------
+3333.2222.1111		Dynamic      	   1	GigabitEthernet0/1/1
