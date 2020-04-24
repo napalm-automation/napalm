@@ -3,7 +3,7 @@ BGP neighbor is 2001:559::1,  remote AS 7922, external link
  Description: Comcast IPv6 Transit
  Inherits from template PEER-SESSION-AS7922 for session parameters
   BGP version 4, remote router ID 68.86.1.1
-  BGP state = Established, up for 12w2d
+  BGP state = Established, up for 12:22:20
   Last read 00:00:01, last write 00:00:35, hold time is 180, keepalive interval is 60 seconds
   Neighbor sessions:
     1 active, is not multisession capable (disabled)
