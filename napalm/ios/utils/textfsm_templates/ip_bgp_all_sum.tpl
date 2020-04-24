@@ -9,7 +9,7 @@ Value MSG_SENT (\d+)
 Value TBL_VER (\d+)
 Value IN_Q (\d+)
 Value OUT_Q (\d+)
-Value UP (\w+)
+Value UP (\S+)
 Value PREFIX_RECV (.*)
 
 Start
