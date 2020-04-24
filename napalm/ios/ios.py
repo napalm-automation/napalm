@@ -39,6 +39,8 @@ from napalm.base.helpers import (
     canonical_interface_name,
     transform_lldp_capab,
     textfsm_extractor,
+    split_interface,
+    abbreviated_interface_name,
 )
 from napalm.base.netmiko_helpers import netmiko_args
 
@@ -2103,6 +2105,14 @@ class IOSDriver(NetworkDriver):
                     match = re.search(r"(\d+) output errors", line)
                     counters[interface]["tx_errors"] = int(match.group(1))
                     counters[interface]["tx_discards"] = -1
+
+            interface_type, interface_number = split_interface(interface)
+            if interface_type in [
+                "HundredGigabitEthernet",
+                "FortyGigabitEthernet",
+                "TenGigabitEthernet",
+            ]:
+                interface = abbreviated_interface_name(interface)
             for line in sh_int_sum_cmd_out.splitlines():
                 if interface in line:
                     # Line is tabular output with columns
@@ -2117,6 +2127,7 @@ class IOSDriver(NetworkDriver):
                     )
                     match = re.search(regex, line)
                     if match:
+                        interface = canonical_interface_name(interface)
                         counters[interface]["rx_discards"] = int(match.group("IQD"))
                         counters[interface]["tx_discards"] = int(match.group("OQD"))
 
@@ -2621,6 +2632,14 @@ class IOSDriver(NetworkDriver):
             elif re.search(
                 r"Displaying entries from active supervisor:\s+\w+\s+\[\d\]:", line
             ):
+                continue
+            elif re.search(r"EHWIC:.*", line):
+                # Skip module - process_mac_fields doesn't care.
+                continue
+            elif re.search(
+                r"Destination Address.*Address.*Type.*VLAN.*Destination.*Port", line
+            ):
+                # If there are multiple modules, this line gets repeated for each module.
                 continue
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
