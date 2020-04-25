@@ -750,7 +750,6 @@ class EOSDriver(NetworkDriver):
             "local-v6-addr": "local_address",
             "local-as": "local_as",
             "next-hop-self": "nhs",
-            "route-reflector-client": "route_reflector_client",
             "import-policy": "import_policy",
             "export-policy": "export_policy",
             "passwd": "authentication_key",
@@ -812,7 +811,6 @@ class EOSDriver(NetworkDriver):
                         "nhs": peer_group["nhs"],
                         "remote_as": peer_group["remote_as"],
                         "local_address": peer_group["local_address"],
-                        "route_reflector_client": peer_group["route_reflector_client"],
                     }
                 )  # update non defaults from peer_group if using peer_group
 
