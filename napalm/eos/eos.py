@@ -815,7 +815,7 @@ class EOSDriver(NetworkDriver):
                         "route_reflector_client": peer_group["route_reflector_client"],
                     }
                 )  # update non defaults from peer_group if using peer_group
-            return neighbor_dict     
+            return neighbor_dict
 
         def parse_options(options, default_value=False):
 
