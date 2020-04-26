@@ -86,6 +86,7 @@ bgp_config_group = {
     "remove_private_as": bool,
     "prefix_limit": dict,
     "neighbors": dict,
+    "nhs": bool,
 }
 
 bgp_config_neighbor = {
