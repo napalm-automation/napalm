@@ -1,5 +1,5 @@
 
-BGP neighbor is 2001:559::1,  remote AS 7922, external link
+BGP neighbor is 2001:559::3,  remote AS 7922, external link
  Description: Comcast IPv6 Transit
  Inherits from template PEER-SESSION-AS7922 for session parameters
   BGP version 4, remote router ID 68.86.1.1
@@ -33,7 +33,7 @@ BGP neighbor is 2001:559::1,  remote AS 7922, external link
   Default minimum time between advertisement runs is 30 seconds
 
  For address family: IPv6 Unicast
-  Session: 2001:559::1
+  Session: 2001:559::3
   BGP table version 117061141, neighbor version 117061129/117061141
   Output queue size : 0
   Index 1, Advertise bit 0
@@ -76,7 +76,7 @@ BGP neighbor is 2001:559::1,  remote AS 7922, external link
 	  Refresh Start-of-RIB          0          0
 	  Refresh End-of-RIB            0          0
 
-  Address tracking is enabled, the RIB does have a route to 2001:559::1
+  Address tracking is enabled, the RIB does have a route to 2001:559::3
   Connections established 1; dropped 0
   Last reset never
   External BGP neighbor configured for connected checks (single-hop no-disable-connected-check)
@@ -87,7 +87,7 @@ BGP neighbor is 2001:559::1,  remote AS 7922, external link
 Connection state is ESTAB, I/O status: 1, unread input bytes: 0            
 Connection is ECN Disabled, Mininum incoming TTL 0, Outgoing TTL 1
 Local host: 2001:559::2, Local port: 21958
-Foreign host: 2001:559::1, Foreign port: 179
+Foreign host: 2001:559::3, Foreign port: 179
 Connection tableid (VRF): 0
 Maximum output segment queue size: 50
 
