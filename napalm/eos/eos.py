@@ -498,7 +498,7 @@ class EOSDriver(NetworkDriver):
                     peer_info = {
                         "is_up": peer_data["peerState"] == "Established",
                         "is_enabled": is_enabled,
-                        "uptime": int(time.time() - peer_data["upDownTime"]),
+                        "uptime": int(time.time() - float(peer_data["upDownTime"])),
                     }
                     bgp_counters[vrf]["peers"][napalm.base.helpers.ip(peer)] = peer_info
         lines = []
