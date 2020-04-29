@@ -1,0 +1,58 @@
+{
+	"TenGigabitEthernet0/0/0": {
+		"rx_unicast_packets": 0,
+		"rx_octets": 1748592,
+		"rx_broadcast_packets": 0,
+		"rx_multicast_packets": 0,
+		"rx_errors": 0,
+		"rx_discards": 0,
+		"tx_unicast_packets": 9297,
+		"tx_octets": 1355261,
+		"tx_broadcast_packets": -1,
+		"tx_multicast_packets": -1,
+		"tx_errors": 0,
+		"tx_discards": 0
+	},
+	"TenGigabitEthernet0/0/1": {
+		"rx_unicast_packets": 0,
+		"rx_octets": 1748592,
+		"rx_broadcast_packets": 0,
+		"rx_multicast_packets": 0,
+		"rx_errors": 0,
+		"rx_discards": 1,
+		"tx_unicast_packets": 9297,
+		"tx_octets": 1355261,
+		"tx_broadcast_packets": -1,
+		"tx_multicast_packets": -1,
+		"tx_errors": 0,
+		"tx_discards": 0
+	},
+	"FortyGigabitEthernet0/0/2": {
+		"rx_unicast_packets": 0,
+		"rx_octets": 1748592,
+		"rx_broadcast_packets": 0,
+		"rx_multicast_packets": 0,
+		"rx_errors": 0,
+		"rx_discards": 2,
+		"tx_unicast_packets": 9297,
+		"tx_octets": 1355261,
+		"tx_broadcast_packets": -1,
+		"tx_multicast_packets": -1,
+		"tx_errors": 0,
+		"tx_discards": 0
+	},
+	"HundredGigabitEthernet0/0/3": {
+		"rx_unicast_packets": 0,
+		"rx_octets": 1748592,
+		"rx_broadcast_packets": 0,
+		"rx_multicast_packets": 0,
+		"rx_errors": 0,
+		"rx_discards": 3,
+		"tx_unicast_packets": 9297,
+		"tx_octets": 1355261,
+		"tx_broadcast_packets": -1,
+		"tx_multicast_packets": -1,
+		"tx_errors": 0,
+		"tx_discards": 0
+	}
+}

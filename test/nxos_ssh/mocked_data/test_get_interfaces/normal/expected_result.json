@@ -1,5 +1,5 @@
 {
-    "mgmt0": {
+    "Management0": {
         "is_enabled": true, 
         "description": "", 
         "last_flapped": -1.0,
@@ -539,7 +539,7 @@
         "mtu": 1500,
         "speed": 1000
     },
-    "loopback55": {
+    "Loopback55": {
         "is_enabled": true,
         "description": "",
         "last_flapped": -1.0,
@@ -1322,7 +1322,7 @@
         "mtu": 1500,
         "speed": 1000
     },
-    "loopback0": {
+    "Loopback0": {
         "is_enabled": true,
         "description": "",
         "last_flapped": -1.0,
