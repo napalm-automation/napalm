@@ -67,6 +67,11 @@ get_facts:
         present: [Vlan5]
       nested: true
     os_version: {complies: true, nested: false}
+    uptime:
+      actual_value: 16676160
+      complies: false
+      expected_value: 17000000<->18000000
+      nested: false
 get_interfaces_ip:
   complies: true
   extra: []
@@ -127,4 +132,9 @@ get_environment:
             expected_value: <20.0
             complies: False
             nested: False
+          used_ram:
+            actual_value: 10.0
+            complies: false
+            expected_value: 90.0<->95.0
+            nested: false
       nested: True
