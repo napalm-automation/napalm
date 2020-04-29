@@ -15,6 +15,7 @@ get_facts:
     hostname: {complies: true, nested: false}
     interface_list: {complies: true, nested: true}
     os_version: {complies: true, nested: false}
+    uptime: {complies: true, nested: false}
 get_interfaces_ip:
   complies: true
   extra: []
