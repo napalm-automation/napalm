@@ -3376,6 +3376,16 @@ class IOSDriver(NetworkDriver):
         since IOS does not support candidate configuration.
         """
 
+        # The output of get_config should be directly usable by load_replace_candidate()
+        # IOS adds some extra, unneeded lines that should be filtered.
+        filter_strings = [r"^Building configuration.*$", r"^Current configuration :.*$"]
+
+        # Build the regex to be used in single re.sub using logical-or (pattern1|pattern2)
+        filter_pattern = r"("
+        for pattern in filter_strings:
+            filter_pattern += rf"{pattern}|"
+        filter_pattern += r")"
+
         configs = {"startup": "", "running": "", "candidate": ""}
         # IOS only supports "all" on "show run"
         run_full = " all" if full else ""
@@ -3383,12 +3393,14 @@ class IOSDriver(NetworkDriver):
         if retrieve in ("startup", "all"):
             command = "show startup-config"
             output = self._send_command(command)
-            configs["startup"] = output
+            output = re.sub(filter_pattern, "", output, flags=re.M)
+            configs["startup"] = output.strip()
 
         if retrieve in ("running", "all"):
             command = "show running-config{}".format(run_full)
             output = self._send_command(command)
-            configs["running"] = output
+            output = re.sub(filter_pattern, "", output, flags=re.M)
+            configs["running"] = output.strip()
 
         return configs
 
