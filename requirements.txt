@@ -8,7 +8,7 @@ jinja2
 netaddr
 pyYAML
 pyeapi>=0.8.2
-netmiko>=3.0.0
+netmiko>=3.1.0
 junos-eznc>=2.2.1
 ciscoconfparse
 scp
