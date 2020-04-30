@@ -41,6 +41,7 @@ from napalm.base.helpers import (
     textfsm_extractor,
     split_interface,
     abbreviated_interface_name,
+    generate_regex_or,
 )
 from napalm.base.netmiko_helpers import netmiko_args
 
@@ -3378,13 +3379,13 @@ class IOSDriver(NetworkDriver):
 
         # The output of get_config should be directly usable by load_replace_candidate()
         # IOS adds some extra, unneeded lines that should be filtered.
-        filter_strings = [r"^Building configuration.*$", r"^Current configuration :.*$"]
-
-        # Build the regex to be used in single re.sub using logical-or (pattern1|pattern2)
-        filter_pattern = r"("
-        for pattern in filter_strings:
-            filter_pattern += rf"{pattern}|"
-        filter_pattern += r")"
+        filter_strings = [
+            r"^Building configuration.*$",
+            r"^Current configuration :.*$",
+            r"^! Last configuration change at.*$",
+            r"^! NVRAM config last updated at.*$",
+        ]
+        filter_pattern = generate_regex_or(filter_strings)
 
         configs = {"startup": "", "running": "", "candidate": ""}
         # IOS only supports "all" on "show run"

@@ -42,6 +42,7 @@ from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.base.helpers import generate_regex_or
 from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.constants as c
 
@@ -515,16 +516,29 @@ class NXOSDriverBase(NetworkDriver):
         self._send_command_list(["terminal dont-ask"])
 
     def get_config(self, retrieve="all", full=False):
+
+        # NX-OS adds some extra, unneeded lines that should be filtered.
+        filter_strings = [
+            r"!Command: show .*$",
+            r"!Time:.*\d{4}\s*$",
+            r"Startup config saved at:.*$",
+        ]    
+        filter_pattern = generate_regex_or(filter_strings)
+
         config = {"startup": "", "running": "", "candidate": ""}  # default values
         # NX-OS only supports "all" on "show run"
         run_full = " all" if full else ""
 
         if retrieve.lower() in ("running", "all"):
             command = f"show running-config{run_full}"
-            config["running"] = str(self._send_command(command, raw_text=True))
+            output = self._send_command(command, raw_text=True)
+            output = re.sub(filter_pattern, "", output, flags=re.M)
+            config["running"] = output.strip()
         if retrieve.lower() in ("startup", "all"):
             command = "show startup-config"
-            config["startup"] = str(self._send_command(command, raw_text=True))
+            output = self._send_command(command, raw_text=True)
+            output = re.sub(filter_pattern, "", output, flags=re.M)
+            config["startup"] = output.strip()
         return config
 
     def get_lldp_neighbors(self):

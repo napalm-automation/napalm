@@ -5,6 +5,7 @@ import re
 import sys
 import itertools
 import logging
+from collections import Iterable
 
 # third party libs
 import jinja2
@@ -460,3 +461,23 @@ def transform_lldp_capab(capabilities):
         )
     else:
         return []
+
+def generate_regex_or(filters):
+    """
+    Build a regular expression logical-or from a list/tuple of regex patterns.
+
+    This allows a single regular expression operation to be used in contexts when a loop
+    and multiple patterns would otherwise be necessary.
+
+    For example, (pattern1|pattern2|pattern3)
+
+    Return the pattern.
+    """
+    if isinstance(filters, str) or not isinstance(filters, Iterable):
+        raise ValueError("filters argument must be an iterable, but can't be a string.")
+    
+    return_pattern = r"("
+    for pattern in filters:
+        return_pattern += rf"{pattern}|"
+    return_pattern += r")"
+    return return_pattern
