@@ -186,6 +186,7 @@ class IOSXR(object):
                 port=self.port,
                 username=self.username,
                 password=self.password,
+                global_cmd_verify=False,
                 **self.netmiko_kwargs
             )
             self.device.timeout = self.timeout
