@@ -35,6 +35,8 @@ BGP activity 3436532/2710503 prefixes, 19215241/17575537 paths, scan interval 60
 
 Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
 2001:559::1     4         7922 6944479  138054 116434201    0    0 12w2d       45646
+2001:559::3                                                                            
+                4         7922 6944479  138054 116434201    0    0 12:22:20       45646
 
 For address family: VPNv4 Unicast
 BGP router identifier 1.1.1.1, local AS number 1

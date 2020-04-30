@@ -408,7 +408,7 @@
         "bridge",
         "router"
       ],
-      "remote_port": "\"597\"",
+      "remote_port": "597",
       "parent_interface": "Ethernet47",
       "remote_system_capab": [
         "bridge",

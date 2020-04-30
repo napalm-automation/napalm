@@ -1,0 +1,265 @@
+{
+    "lldpNeighbors": {
+        "Ethernet23/1": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet1/1": {
+            "lldpNeighborInfo": [
+                {
+                    "systemCapabilities": {
+                        "bridge": true,
+                        "wlanAccessPoint": false,
+                        "router": true,
+                        "stationOnly": false
+                    },
+                    "lastChangeTime": 1584043134.2644186,
+                    "neighborInterfaceInfo": {
+                        "portAndProtocolVlanEnabled": {},
+                        "linkAggregationStatus": "capableAndEnabled",
+                        "unknownTlvs": [],
+                        "interfaceIdType": "macAddress",
+                        "interfaceId": "1ce7.1003.5413",
+                        "interfaceDescription": "eth0",
+                        "autoNegCapability": "capableAndEnabled",
+                        "autoNegAdvertisedCapabilities": [
+                            "1000BASE-X (full-duplex)",
+                            "Other"
+                        ],
+                        "protocolIdentityInfo": [],
+                        "portAndProtocolVlanSupported": {},
+                        "operMauType": "Unknown",
+                        "vlanNames": {},
+                        "linkAggregationInterfaceId": 4,
+                        "unknownOrgDefinedTlvs": []
+                    },
+                    "neighborDiscoveryTime": 1584043104.2394743,
+                    "lastContactTime": 1586942201.0405219,
+                    "chassisId": "1ce7.1003.5413",
+                    "systemName": "some-server",
+                    "systemDescription": "Ubuntu 18.04.3 LTS Linux 5.0.0-36-generic #39~18.04.1-Ubuntu SMP Tue Nov 12 11:09:50 UTC 2019 x86_64",
+                    "ttl": 120,
+                    "managementAddresses": [
+                        {
+                            "oidString": "",
+                            "interfaceNumType": "ifIndex",
+                            "interfaceNum": 4,
+                            "address": "10.0.0.1",
+                            "addressType": "ipv4"
+                        },
+                        {
+                            "oidString": "",
+                            "interfaceNumType": "ifIndex",
+                            "interfaceNum": 4,
+                            "address": "fe80::1",
+                            "addressType": "ipv6"
+                        }
+                    ],
+                    "chassisIdType": "macAddress"
+                }
+            ]
+        },
+        "Ethernet1/2": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet1/3": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet1/4": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet23/4": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet22/1": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet22/2": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet22/3": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet22/4": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet23/3": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet7/2": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet7/3": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet7/1": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet21/3": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet21/2": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet7/4": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet6/3": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet6/2": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet6/1": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet20/2": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet20/3": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet20/1": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet27/4": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet27/1": {
+            "lldpNeighborInfo": [
+                {
+                    "systemCapabilities": {
+                        "bridge": true,
+                        "router": true
+                    },
+                    "lastChangeTime": 1582799101.9668741,
+                    "neighborInterfaceInfo": {
+                        "portAndProtocolVlanEnabled": {},
+                        "linkAggregationStatus": "capableAndDisabled",
+                        "unknownTlvs": [],
+                        "interfaceIdType": "interfaceName",
+                        "interfaceId": "\"et-0/0/20\"",
+                        "interfaceDescription": "et-0/0/20",
+                        "autoNegCapability": "notCapable",
+                        "autoNegAdvertisedCapabilities": [],
+                        "maxFrameSize": 9192,
+                        "portAndProtocolVlanSupported": {},
+                        "operMauType": "Unknown",
+                        "medInfo": {
+                            "capabilities": {
+                                "deviceType": "networkConnectivity",
+                                "networkPolicy": true,
+                                "inventory": false,
+                                "capabilities": true,
+                                "extendedPd": false,
+                                "extendedPse": true,
+                                "location": true
+                            },
+                            "networkPolicies": []
+                        },
+                        "vlanNames": {},
+                        "protocolIdentityInfo": [],
+                        "linkAggregationInterfaceId": 0,
+                        "unknownOrgDefinedTlvs": [
+                            {
+                                "ouiStr": "00-90-69",
+                                "subType": 1,
+                                "tlvLines": [
+                                    "57 48 33 36 31 39 31 32 30 34 38 31"
+                                ]
+                            }
+                        ]
+                    },
+                    "neighborDiscoveryTime": 1582799101.9668741,
+                    "lastContactTime": 1586942203.153205,
+                    "chassisId": "fc66.1003.5413",
+                    "systemName": "some-switch",
+                    "systemDescription": "blah blih bleh",
+                    "ttl": 120,
+                    "managementAddresses": [
+                        {
+                            "oidString": "0.1.3.6.1.2.1.31.1.1.1.1.17",
+                            "interfaceNumType": "ifIndex",
+                            "interfaceNum": 17,
+                            "address": "10.0.0.1",
+                            "addressType": "ipv4"
+                        }
+                    ],
+                    "chassisIdType": "macAddress"
+                }
+            ]
+        },
+        "Ethernet27/3": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet27/2": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet26/4": {
+            "lldpNeighborInfo": []
+        },
+        "Ethernet26/1": {
+            "lldpNeighborInfo": [
+                {
+                    "systemCapabilities": {
+                        "bridge": true,
+                        "router": true
+                    },
+                    "lastChangeTime": 1582796476.2745652,
+                    "neighborInterfaceInfo": {
+                        "portAndProtocolVlanEnabled": {},
+                        "linkAggregationStatus": "capableAndDisabled",
+                        "unknownTlvs": [],
+                        "interfaceIdType": "interfaceName",
+                        "interfaceId": "\"et-0/0/20\"",
+                        "interfaceDescription": "et-0/0/20",
+                        "autoNegCapability": "notCapable",
+                        "autoNegAdvertisedCapabilities": [],
+                        "maxFrameSize": 9192,
+                        "portAndProtocolVlanSupported": {},
+                        "operMauType": "Unknown",
+                        "medInfo": {
+                            "capabilities": {
+                                "deviceType": "networkConnectivity",
+                                "networkPolicy": true,
+                                "inventory": false,
+                                "capabilities": true,
+                                "extendedPd": false,
+                                "extendedPse": true,
+                                "location": true
+                            },
+                            "networkPolicies": []
+                        },
+                        "vlanNames": {},
+                        "protocolIdentityInfo": [],
+                        "linkAggregationInterfaceId": 0,
+                        "unknownOrgDefinedTlvs": [
+                            {
+                                "ouiStr": "00-90-69",
+                                "subType": 1,
+                                "tlvLines": [
+                                    "57 48 33 36 31 39 31 32 30 32 33 35"
+                                ]
+                            }
+                        ]
+                    },
+                    "neighborDiscoveryTime": 1582796476.2745652,
+                    "lastContactTime": 1586942215.243252,
+                    "chassisId": "0443.1003.5413",
+                    "systemName": "some-other-switch",
+                    "systemDescription": "boom boom",
+                    "ttl": 120,
+                    "managementAddresses": [
+                        {
+                            "oidString": "0.1.3.6.1.2.1.31.1.1.1.1.17",
+                            "interfaceNumType": "ifIndex",
+                            "interfaceNum": 17,
+                            "address": "10.0.0.2",
+                            "addressType": "ipv4"
+                        }
+                    ],
+                    "chassisIdType": "macAddress"
+                }
+            ]
+        }
+    }
+}

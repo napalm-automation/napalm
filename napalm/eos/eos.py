@@ -498,7 +498,7 @@ class EOSDriver(NetworkDriver):
                     peer_info = {
                         "is_up": peer_data["peerState"] == "Established",
                         "is_enabled": is_enabled,
-                        "uptime": int(time.time() - peer_data["upDownTime"]),
+                        "uptime": int(time.time() - float(peer_data["upDownTime"])),
                     }
                     bgp_counters[vrf]["peers"][napalm.base.helpers.ip(peer)] = peer_info
         lines = []
@@ -679,7 +679,9 @@ class EOSDriver(NetworkDriver):
                 lldp_neighbors_out[interface].append(
                     {
                         "parent_interface": interface,  # no parent interfaces
-                        "remote_port": neighbor_interface_info.get("interfaceId", ""),
+                        "remote_port": neighbor_interface_info.get(
+                            "interfaceId", ""
+                        ).replace('"', ""),
                         "remote_port_description": neighbor_interface_info.get(
                             "interfaceDescription", ""
                         ),
