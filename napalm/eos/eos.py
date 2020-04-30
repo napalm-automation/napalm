@@ -530,11 +530,11 @@ class EOSDriver(NetworkDriver):
             v6_stats = re.match(self._RE_BGP_PREFIX, lines.pop(0))
             local_as = re.match(self._RE_BGP_LOCAL, lines.pop(0))
             data = {
-                "remote_as": int(neighbor_info.group("as")),
+                "remote_as": napalm.base.helpers.as_number(neighbor_info.group("as")),
                 "remote_id": napalm.base.helpers.ip(
                     get_re_group(rid_info, "rid", "0.0.0.0")
                 ),
-                "local_as": int(local_as.group("as")),
+                "local_as": napalm.base.helpers.as_number(local_as.group("as")),
                 "description": str(desc),
                 "address_family": {
                     "ipv4": {
@@ -871,7 +871,9 @@ class EOSDriver(NetworkDriver):
             default_value = False
             bgp_conf_line = bgp_conf_line.strip()
             if bgp_conf_line.startswith("router bgp"):
-                local_as = int(bgp_conf_line.replace("router bgp", "").strip())
+                local_as = napalm.base.helpers.as_number(
+                    (bgp_conf_line.replace("router bgp", "").strip())
+                )
                 continue
             if not (
                 bgp_conf_line.startswith("neighbor")
@@ -1262,7 +1264,7 @@ class EOSDriver(NetworkDriver):
                             )
 
                     vrf_details = vrf_cache.get(_vrf)
-                    local_as = vrf_details.get("asn")
+                    local_as = napalm.base.helpers.as_number(vrf_details.get("asn"))
                     bgp_routes = (
                         vrf_details.get("bgpRouteEntries", {})
                         .get(prefix, {})
@@ -1279,7 +1281,9 @@ class EOSDriver(NetworkDriver):
                         if as_path_type in ["Internal", "Local"]:
                             remote_as = local_as
                         else:
-                            remote_as = int(as_path.strip("()").split()[-1])
+                            remote_as = napalm.base.helpers.as_number(
+                                as_path.strip("()").split()[-1]
+                            )
                         remote_address = napalm.base.helpers.ip(
                             bgp_route_details.get("routeDetail", {})
                             .get("peerEntry", {})
