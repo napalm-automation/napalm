@@ -522,7 +522,7 @@ class NXOSDriverBase(NetworkDriver):
             r"!Command: show .*$",
             r"!Time:.*\d{4}\s*$",
             r"Startup config saved at:.*$",
-        ]    
+        ]
         filter_pattern = generate_regex_or(filter_strings)
 
         config = {"startup": "", "running": "", "candidate": ""}  # default values

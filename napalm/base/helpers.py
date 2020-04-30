@@ -47,7 +47,7 @@ def load_template(
     template_path=None,
     openconfig=False,
     jinja_filters={},
-    **template_vars
+    **template_vars,
 ):
     try:
         search_path = []
@@ -462,6 +462,7 @@ def transform_lldp_capab(capabilities):
     else:
         return []
 
+
 def generate_regex_or(filters):
     """
     Build a regular expression logical-or from a list/tuple of regex patterns.
@@ -475,7 +476,7 @@ def generate_regex_or(filters):
     """
     if isinstance(filters, str) or not isinstance(filters, Iterable):
         raise ValueError("filters argument must be an iterable, but can't be a string.")
-    
+
     return_pattern = r"("
     for pattern in filters:
         return_pattern += rf"{pattern}|"
