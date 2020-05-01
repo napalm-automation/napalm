@@ -2228,7 +2228,7 @@ class IOSXRDriver(NetworkDriver):
 
         return users
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
 
         config = {"startup": "", "running": "", "candidate": ""}  # default values
 
@@ -2250,5 +2250,10 @@ class IOSXRDriver(NetworkDriver):
             )
             candidate = re.sub(filter_pattern, "", candidate, flags=re.M)
             config["candidate"] = candidate
+
+        if sanitized:
+            return napalm.base.helpers.sanitize_configs(
+                config, C.CISCO_SANITIZE_FILTERS
+            )
 
         return config

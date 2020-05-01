@@ -522,6 +522,16 @@ class BaseTestGetters(object):
         return get_config
 
     @wrap_test_cases
+    def test_get_config_sanitized(self, test_case):
+        """Test get_config method."""
+        get_config = self.device.get_config(sanitized=True)
+
+        assert isinstance(get_config, dict)
+        assert helpers.test_model(models.config, get_config)
+
+        return get_config
+
+    @wrap_test_cases
     def test_get_network_instances(self, test_case):
         """Test get_network_instances method."""
         get_network_instances = self.device.get_network_instances()
