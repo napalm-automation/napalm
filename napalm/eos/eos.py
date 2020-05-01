@@ -85,25 +85,6 @@ class EOSDriver(NetworkDriver):
         re.VERBOSE,
     )
 
-    def _determine_syntax_version(self, ver_output):
-        """
-        Determine cli syntax version from "sh ver" output
-        Syntax versions:
-            1: all EOS versions before 4.23.0
-            2: all EOS version 4.23.0 and higher
-        :param ver_output: list of lines for "sh ver" command output
-        :return: int: cli version
-        """
-        regexp = re.compile(r"^Software image version:\s+(?P<version>\d+\.\d+\.\d+)")
-
-        for line in ver_output.split("\n"):
-            m = regexp.match(line)
-
-            if m and EOSVersion(m.group("version")) >= EOSVersion("4.23.0"):
-                return 2
-
-        return 1
-
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
         """
         Initialize EOS Driver.
@@ -181,8 +162,9 @@ class EOSDriver(NetworkDriver):
             # does not raise an Exception if unusable
 
             # let's try to determine if we need to use new EOS cli syntax
-            cli_version = self._determine_syntax_version(
-                self.device.run_commands(["show version"], encoding="text")[0]["output"]
+            sh_ver = self.device.run_commands(["show version"])
+            cli_version = (
+                2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
             )
 
             self.device.update_cli_version(cli_version)
