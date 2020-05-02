@@ -39,6 +39,9 @@ from napalm.base.helpers import (
     canonical_interface_name,
     transform_lldp_capab,
     textfsm_extractor,
+    split_interface,
+    abbreviated_interface_name,
+    generate_regex_or,
 )
 from napalm.base.netmiko_helpers import netmiko_args
 
@@ -154,6 +157,7 @@ class IOSDriver(NetworkDriver):
         self.platform = "ios"
         self.profile = [self.platform]
         self.use_canonical_interface = optional_args.get("canonical_int", False)
+        self.force_no_enable = optional_args.get("force_no_enable", False)
 
     def open(self):
         """Open a connection to the device."""
@@ -2102,6 +2106,14 @@ class IOSDriver(NetworkDriver):
                     match = re.search(r"(\d+) output errors", line)
                     counters[interface]["tx_errors"] = int(match.group(1))
                     counters[interface]["tx_discards"] = -1
+
+            interface_type, interface_number = split_interface(interface)
+            if interface_type in [
+                "HundredGigabitEthernet",
+                "FortyGigabitEthernet",
+                "TenGigabitEthernet",
+            ]:
+                interface = abbreviated_interface_name(interface)
             for line in sh_int_sum_cmd_out.splitlines():
                 if interface in line:
                     # Line is tabular output with columns
@@ -2116,6 +2128,7 @@ class IOSDriver(NetworkDriver):
                     )
                     match = re.search(regex, line)
                     if match:
+                        interface = canonical_interface_name(interface)
                         counters[interface]["rx_discards"] = int(match.group("IQD"))
                         counters[interface]["tx_discards"] = int(match.group("OQD"))
 
@@ -2358,9 +2371,17 @@ class IOSDriver(NetworkDriver):
                 return []
 
             elif len(line.split()) == 9:
-                address, ref_clock, st, when, poll, reach, delay, offset, disp = (
-                    line.split()
-                )
+                (
+                    address,
+                    ref_clock,
+                    st,
+                    when,
+                    poll,
+                    reach,
+                    delay,
+                    offset,
+                    disp,
+                ) = line.split()
                 address_regex = re.match(r"(\W*)([0-9.*]*)", address)
             try:
                 ntp_stats.append(
@@ -2431,9 +2452,7 @@ class IOSDriver(NetworkDriver):
         )  # 7 fields
         RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 6 fields
         RE_MACTABLE_6500_3 = r"^\s{51}\S+"  # Fill down prior
-        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(
-            VLAN_REGEX, MAC_REGEX
-        )  # Router field
+        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(VLAN_REGEX)  # Router field
         RE_MACTABLE_6500_5 = r"^R\s+N/A\s+{}.*Router".format(
             MAC_REGEX
         )  # Router skipped
@@ -2614,6 +2633,14 @@ class IOSDriver(NetworkDriver):
             elif re.search(
                 r"Displaying entries from active supervisor:\s+\w+\s+\[\d\]:", line
             ):
+                continue
+            elif re.search(r"EHWIC:.*", line):
+                # Skip module - process_mac_fields doesn't care.
+                continue
+            elif re.search(
+                r"Destination Address.*Address.*Type.*VLAN.*Destination.*Port", line
+            ):
+                # If there are multiple modules, this line gets repeated for each module.
                 continue
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
@@ -2819,7 +2846,7 @@ class IOSDriver(NetworkDriver):
                     bgp_attr["remote_as"] = napalm.base.helpers.as_number(bgpras)
         return bgp_attr
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
         """
         Only IPv4 is supported
         VRFs are supported
@@ -2853,6 +2880,9 @@ class IOSDriver(NetworkDriver):
             ]
         }
         """
+
+        if longer:
+            raise NotImplementedError("Longer prefixes not yet supported for IOS")
 
         output = []
         # Placeholder for vrf arg
@@ -2958,8 +2988,8 @@ class IOSDriver(NetworkDriver):
                                         destination, _vrf, nh, ip_version
                                     )
                                 nh_line_found = (
-                                    False
-                                )  # for next RT entry processing ...
+                                    False  # for next RT entry processing ...
+                                )
                                 routes[destination].append(route_entry)
         return routes
 
@@ -3182,8 +3212,8 @@ class IOSDriver(NetworkDriver):
         if source:
             command += " source {}".format(source)
         if ttl:
-            if isinstance(ttl, int) and 0 <= timeout <= 255:
-                command += " ttl 0 {}".format(str(ttl))
+            if isinstance(ttl, int) and 0 <= ttl <= 255:
+                command += " ttl {}".format(str(ttl))
         if timeout:
             # Timeout should be an integer between 1 and 3600
             if isinstance(timeout, int) and 1 <= timeout <= 3600:
@@ -3304,6 +3334,13 @@ class IOSDriver(NetworkDriver):
             "interfaces": {"interface": interface_dict},
         }
 
+        # No vrf is defined return default one
+        if len(sh_vrf_detail) == 0:
+            if name:
+                raise ValueError("No vrf is setup on router")
+            else:
+                return instances
+
         for vrf in sh_vrf_detail.split("\n\n"):
 
             first_part = vrf.split("Address family")[0]
@@ -3326,7 +3363,10 @@ class IOSDriver(NetworkDriver):
                 "state": {"route_distinguisher": RD},
                 "interfaces": {"interface": interfaces},
             }
-        return instances if not name else instances[name]
+        try:
+            return instances if not name else instances[name]
+        except AttributeError:
+            raise ValueError("The vrf %s does not exist" % name)
 
     def get_config(self, retrieve="all", full=False):
         """Implementation of get_config for IOS.
@@ -3337,6 +3377,16 @@ class IOSDriver(NetworkDriver):
         since IOS does not support candidate configuration.
         """
 
+        # The output of get_config should be directly usable by load_replace_candidate()
+        # IOS adds some extra, unneeded lines that should be filtered.
+        filter_strings = [
+            r"^Building configuration.*$",
+            r"^Current configuration :.*$",
+            r"^! Last configuration change at.*$",
+            r"^! NVRAM config last updated at.*$",
+        ]
+        filter_pattern = generate_regex_or(filter_strings)
+
         configs = {"startup": "", "running": "", "candidate": ""}
         # IOS only supports "all" on "show run"
         run_full = " all" if full else ""
@@ -3344,12 +3394,14 @@ class IOSDriver(NetworkDriver):
         if retrieve in ("startup", "all"):
             command = "show startup-config"
             output = self._send_command(command)
-            configs["startup"] = output
+            output = re.sub(filter_pattern, "", output, flags=re.M)
+            configs["startup"] = output.strip()
 
         if retrieve in ("running", "all"):
             command = "show running-config{}".format(run_full)
             output = self._send_command(command)
-            configs["running"] = output
+            output = re.sub(filter_pattern, "", output, flags=re.M)
+            configs["running"] = output.strip()
 
         return configs
 

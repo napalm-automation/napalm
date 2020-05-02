@@ -33,6 +33,7 @@ from jnpr.junos.exception import RpcError
 from jnpr.junos.exception import ConfigLoadError
 from jnpr.junos.exception import RpcTimeoutError
 from jnpr.junos.exception import ConnectTimeoutError
+from jnpr.junos.exception import ProbeError
 from jnpr.junos.exception import LockError as JnprLockError
 from jnpr.junos.exception import UnlockError as JnrpUnlockError
 
@@ -65,6 +66,7 @@ class JunOSDriver(NetworkDriver):
             * config_lock (True/False): lock configuration DB after the connection is established.
             * lock_disable (True/False): force configuration lock to be disabled (for external lock
                 management).
+            * config_private (True/False): juniper configure private command, no DB locking
             * port (int): custom port
             * key_file (string): SSH key file path
             * keepalive (int): Keepalive interval
@@ -86,10 +88,12 @@ class JunOSDriver(NetworkDriver):
         self.keepalive = optional_args.get("keepalive", 30)
         self.ssh_config_file = optional_args.get("ssh_config_file", None)
         self.ignore_warning = optional_args.get("ignore_warning", False)
+        self.auto_probe = optional_args.get("auto_probe", 0)
 
         # Define locking method
         self.lock_disable = optional_args.get("lock_disable", False)
         self.session_config_lock = optional_args.get("config_lock", False)
+        self.config_private = optional_args.get("config_private", False)
 
         # Junos driver specific options
         self.junos_config_database = optional_args.get(
@@ -120,9 +124,9 @@ class JunOSDriver(NetworkDriver):
     def open(self):
         """Open the connection with the device."""
         try:
-            self.device.open()
-        except ConnectTimeoutError as cte:
-            raise ConnectionException(cte.msg)
+            self.device.open(auto_probe=self.auto_probe)
+        except (ConnectTimeoutError, ProbeError) as cte:
+            raise ConnectionException(cte.msg) from cte
         self.device.timeout = self.timeout
         self.device._conn._session.transport.set_keepalive(self.keepalive)
         if hasattr(self.device, "cu"):
@@ -221,7 +225,11 @@ class JunOSDriver(NetworkDriver):
             with open(filename) as f:
                 configuration = f.read()
 
-        if not self.lock_disable and not self.session_config_lock:
+        if (
+            not self.lock_disable
+            and not self.session_config_lock
+            and not self.config_private
+        ):
             # if not locked during connection time, will try to lock
             self._lock()
 
@@ -230,6 +238,13 @@ class JunOSDriver(NetworkDriver):
 
             if fmt == "xml":
                 configuration = etree.XML(configuration)
+
+            if self.config_private:
+                try:
+                    self.device.rpc.open_configuration(private=True, normalize=True)
+                except RpcError as err:
+                    if str(err) == "uncommitted changes will be discarded on exit":
+                        pass
 
             self.device.cu.load(
                 configuration,
@@ -1598,12 +1613,15 @@ class JunOSDriver(NetworkDriver):
 
         return mac_address_table
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
         """Return route details to a specific destination, learned from a certain protocol."""
         routes = {}
 
         if not isinstance(destination, str):
             raise TypeError("Please specify a valid destination!")
+
+        if longer:
+            raise NotImplementedError("Longer prefixes not yet supported on JunOS")
 
         if protocol and isinstance(destination, str):
             protocol = protocol.lower()

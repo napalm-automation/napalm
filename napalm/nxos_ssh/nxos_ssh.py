@@ -120,7 +120,7 @@ def parse_intf_section(interface):
     else:
         # More standard is up, next line admin state is lines
         match = re.search(re_intf_name_state, interface)
-        intf_name = match.group("intf_name")
+        intf_name = helpers.canonical_interface_name(match.group("intf_name"))
         intf_state = match.group("intf_state").strip()
         is_up = True if intf_state == "up" else False
 
@@ -1317,10 +1317,12 @@ class NXOSSSHDriver(NXOSDriverBase):
                     bgp_attr["remote_as"] = 0  # 0? , locally sourced
         return bgp_attr
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
         """
         Only IPv4 supported, vrf aware, longer_prefixes parameter ready
         """
+        if longer:
+            raise NotImplementedError("Longer prefixes not yet supported for NXOS")
         longer_pref = ""  # longer_prefixes support, for future use
         vrf = ""
 
@@ -1519,6 +1521,8 @@ class NXOSSSHDriver(NXOSDriverBase):
             vlan_table_raw = [vlan_table_raw]
 
         for vlan in vlan_table_raw:
+            if "vlanshowplist-ifidx" not in vlan.keys():
+                vlan["vlanshowplist-ifidx"] = []
             vlans[vlan["vlanshowbr-vlanid"]] = {
                 "name": vlan["vlanshowbr-vlanname"],
                 "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),

@@ -94,8 +94,9 @@ class NetworkDriver(object):
         except NetMikoTimeoutException:
             raise ConnectionException("Cannot connect to {}".format(self.hostname))
 
-        # ensure in enable mode
-        self._netmiko_device.enable()
+        # ensure in enable mode if not force disable
+        if not self.force_no_enable:
+            self._netmiko_device.enable()
         return self._netmiko_device
 
     def _netmiko_close(self):
@@ -1003,7 +1004,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
 
         """
         Returns a dictionary of dictionaries containing details of all available routes to a
@@ -1011,6 +1012,7 @@ class NetworkDriver(object):
 
         :param destination: The destination prefix to be used when filtering the routes.
         :param protocol (optional): Retrieve the routes only for a specific protocol.
+        :param longer (optional): Retrieve more specific routes as well.
 
         Each inner dictionary contains the following fields:
 

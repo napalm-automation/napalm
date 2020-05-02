@@ -17,6 +17,7 @@
 import re
 import copy
 from collections import defaultdict
+import logging
 
 # import third party lib
 from lxml import etree as ETREE
@@ -38,6 +39,8 @@ from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.exceptions import CommandTimeoutException
+
+logger = logging.getLogger(__name__)
 
 
 class IOSXRDriver(NetworkDriver):
@@ -75,9 +78,11 @@ class IOSXRDriver(NetworkDriver):
         try:
             self.device.open()
         except ConnectError as conn_err:
+            logger.error(conn_err.args[0])
             raise ConnectionException(conn_err.args[0])
 
     def close(self):
+        logger.debug("Closed connection with device %s" % (self.hostname))
         self.device.close()
 
     def is_alive(self):
@@ -98,6 +103,7 @@ class IOSXRDriver(NetworkDriver):
         except InvalidInputError as e:
             self.pending_changes = False
             self.replace = False
+            logger.error(e.args[0])
             raise ReplaceConfigException(e.args[0])
 
     def load_merge_candidate(self, filename=None, config=None):
@@ -111,6 +117,7 @@ class IOSXRDriver(NetworkDriver):
         except InvalidInputError as e:
             self.pending_changes = False
             self.replace = False
+            logger.error(e.args[0])
             raise MergeConfigException(e.args[0])
 
     def compare_config(self):
@@ -446,6 +453,10 @@ class IOSXRDriver(NetworkDriver):
                         str, napalm.base.helpers.find_txt(neighbor, "Description")
                     )
                 except AttributeError:
+                    logger.debug(
+                        "No attribute 'description' for neighbor %s"
+                        % (this_neighbor["remote_as"])
+                    )
                     this_neighbor["description"] = ""
 
                 this_neighbor["is_enabled"] = (
@@ -865,6 +876,7 @@ class IOSXRDriver(NetworkDriver):
                     "{command}" took too long! Please adjust your params!'.format(
                     command=command
                 )
+                logger.error(str(cli_output))
                 raise CommandTimeoutException(str(cli_output))
 
         return cli_output
@@ -1626,12 +1638,15 @@ class IOSXRDriver(NetworkDriver):
 
         return mac_table
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
 
         routes = {}
 
         if not isinstance(destination, str):
             raise TypeError("Please specify a valid destination!")
+
+        if longer:
+            raise NotImplementedError("Longer prefixes not yet supported for IOS-XR")
 
         protocol = protocol.lower()
         if protocol == "direct":
@@ -1649,6 +1664,7 @@ class IOSXRDriver(NetworkDriver):
         try:
             ipv = IPAddress(network).version
         except AddrFormatError:
+            logger.error("Wrong destination IP Address format supplied to get_route_to")
             raise TypeError("Wrong destination IP Address!")
 
         if ipv == 6:
@@ -2082,6 +2098,11 @@ class IOSXRDriver(NetworkDriver):
         try:
             ipv = IPAddress(destination).version
         except AddrFormatError:
+            logger.error(
+                "Incorrect format of IP Address in traceroute \
+             with value provided:%s"
+                % (str(destination))
+            )
             return {"error": "Wrong destination IP Address!"}
 
         source_tag = ""
@@ -2214,13 +2235,20 @@ class IOSXRDriver(NetworkDriver):
         # IOS-XR only supports "all" on "show run"
         run_full = " all" if full else ""
 
+        filter_strings = [r"^Building configuration.*$", r"^!! IOS XR Configuration.*$"]
+        filter_pattern = napalm.base.helpers.generate_regex_or(filter_strings)
+
         if retrieve.lower() in ["running", "all"]:
-            config["running"] = str(
+            running = str(
                 self.device._execute_config_show(f"show running-config{run_full}")
             )
+            running = re.sub(filter_pattern, "", running, flags=re.M)
+            config["running"] = running
         if retrieve.lower() in ["candidate", "all"]:
-            config["candidate"] = str(
+            candidate = str(
                 self.device._execute_config_show("show configuration merge")
             )
+            candidate = re.sub(filter_pattern, "", candidate, flags=re.M)
+            config["candidate"] = candidate
 
         return config

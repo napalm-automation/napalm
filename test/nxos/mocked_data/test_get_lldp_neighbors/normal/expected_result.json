@@ -5,7 +5,7 @@
             "port": "Ethernet1/1"
         }
     ], 
-    "mgmt0": [
+    "Management0": [
         {
             "hostname": "PERIMETER.cisco.com", 
             "port": "Fa1/0/9"

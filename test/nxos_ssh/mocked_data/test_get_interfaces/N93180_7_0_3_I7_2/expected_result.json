@@ -98,7 +98,7 @@
 		"mtu": 1500,
 		"speed": 25000
 	},
-	"port-channel93": {
+	"Port-channel93": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -224,7 +224,7 @@
 		"mtu": 9216,
 		"speed": -1
 	},
-	"port-channel1": {
+	"Port-channel1": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -305,7 +305,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel34": {
+	"Port-channel34": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -314,7 +314,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel37": {
+	"Port-channel37": {
 		"is_enabled": false,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -323,7 +323,7 @@
 		"mtu": 9216,
 		"speed": 100
 	},
-	"port-channel30": {
+	"Port-channel30": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -341,7 +341,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel33": {
+	"Port-channel33": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -350,7 +350,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel20": {
+	"Port-channel20": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -377,7 +377,7 @@
 		"mtu": 1500,
 		"speed": 1000
 	},
-	"mgmt0": {
+	"Management0": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -458,7 +458,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel29": {
+	"Port-channel29": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -512,7 +512,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel23": {
+	"Port-channel23": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -521,7 +521,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel22": {
+	"Port-channel22": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -548,7 +548,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel26": {
+	"Port-channel26": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -557,7 +557,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel25": {
+	"Port-channel25": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -566,7 +566,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel24": {
+	"Port-channel24": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -575,7 +575,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel16": {
+	"Port-channel16": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -584,7 +584,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"loopback1": {
+	"Loopback1": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -629,7 +629,7 @@
 		"mtu": 1500,
 		"speed": 25000
 	},
-	"port-channel99": {
+	"Port-channel99": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -674,7 +674,7 @@
 		"mtu": 1500,
 		"speed": 25000
 	},
-	"port-channel92": {
+	"Port-channel92": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -692,7 +692,7 @@
 		"mtu": 1500,
 		"speed": 25000
 	},
-	"port-channel96": {
+	"Port-channel96": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -701,7 +701,7 @@
 		"mtu": 1500,
 		"speed": 1000
 	},
-	"port-channel97": {
+	"Port-channel97": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -710,7 +710,7 @@
 		"mtu": 1500,
 		"speed": 1000
 	},
-	"port-channel94": {
+	"Port-channel94": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -719,7 +719,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel95": {
+	"Port-channel95": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -728,7 +728,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel13": {
+	"Port-channel13": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -737,7 +737,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel10": {
+	"Port-channel10": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -746,7 +746,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel11": {
+	"Port-channel11": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -755,7 +755,7 @@
 		"mtu": 1500,
 		"speed": 100
 	},
-	"loopback0": {
+	"Loopback0": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -764,7 +764,7 @@
 		"mtu": 1500,
 		"speed": 8000
 	},
-	"port-channel17": {
+	"Port-channel17": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -773,7 +773,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel14": {
+	"Port-channel14": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -782,7 +782,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel15": {
+	"Port-channel15": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -791,7 +791,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel18": {
+	"Port-channel18": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -800,7 +800,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel19": {
+	"Port-channel19": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,
@@ -809,7 +809,7 @@
 		"mtu": 1500,
 		"speed": 10000
 	},
-	"port-channel21": {
+	"Port-channel21": {
 		"is_enabled": true,
 		"description": "*** LIBRE ***",
 		"last_flapped": -1.0,

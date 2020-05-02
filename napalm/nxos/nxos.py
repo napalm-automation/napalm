@@ -42,6 +42,7 @@ from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
+from napalm.base.helpers import generate_regex_or
 from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.constants as c
 
@@ -84,6 +85,7 @@ class NXOSDriverBase(NetworkDriver):
         self.candidate_cfg = "candidate_config.txt"
         self.rollback_cfg = "rollback_config.txt"
         self._dest_file_system = optional_args.pop("dest_file_system", "bootflash:")
+        self.force_no_enable = optional_args.get("force_no_enable", False)
         self.netmiko_optional_args = netmiko_args(optional_args)
         self.device = None
 
@@ -514,16 +516,29 @@ class NXOSDriverBase(NetworkDriver):
         self._send_command_list(["terminal dont-ask"])
 
     def get_config(self, retrieve="all", full=False):
+
+        # NX-OS adds some extra, unneeded lines that should be filtered.
+        filter_strings = [
+            r"!Command: show .*$",
+            r"!Time:.*\d{4}\s*$",
+            r"Startup config saved at:.*$",
+        ]
+        filter_pattern = generate_regex_or(filter_strings)
+
         config = {"startup": "", "running": "", "candidate": ""}  # default values
         # NX-OS only supports "all" on "show run"
         run_full = " all" if full else ""
 
         if retrieve.lower() in ("running", "all"):
             command = f"show running-config{run_full}"
-            config["running"] = str(self._send_command(command, raw_text=True))
+            output = self._send_command(command, raw_text=True)
+            output = re.sub(filter_pattern, "", output, flags=re.M)
+            config["running"] = output.strip()
         if retrieve.lower() in ("startup", "all"):
             command = "show startup-config"
-            config["startup"] = str(self._send_command(command, raw_text=True))
+            output = self._send_command(command, raw_text=True)
+            output = re.sub(filter_pattern, "", output, flags=re.M)
+            config["startup"] = output.strip()
         return config
 
     def get_lldp_neighbors(self):
@@ -631,9 +646,13 @@ class NXOSDriverBase(NetworkDriver):
             find = re.findall(find_regexp, vls.strip())
             if find:
                 for i in range(int(find[0][1]), int(find[0][2]) + 1):
-                    vlans.append(find[0][0] + str(i))
+                    vlans.append(
+                        napalm.base.helpers.canonical_interface_name(
+                            find[0][0] + str(i)
+                        )
+                    )
             else:
-                vlans.append(vls.strip())
+                vlans.append(napalm.base.helpers.canonical_interface_name(vls.strip()))
         return vlans
 
 
@@ -804,7 +823,7 @@ class NXOSDriver(NXOSDriverBase):
         facts["model"] = show_version.get("chassis_id", "")
         facts["hostname"] = show_version.get("host_name", "")
         facts["os_version"] = show_version.get(
-            "sys_ver_str", show_version.get("rr_sys_ver", "")
+            "sys_ver_str", show_version.get("kickstart_ver_str", "")
         )
 
         uptime_days = show_version.get("kern_uptm_days", 0)
@@ -1138,9 +1157,14 @@ class NXOSDriver(NXOSDriverBase):
                 )
 
         ipv6_command = "show ipv6 interface"
-        ipv6_interf_table_vrf = self._get_command_table(
-            ipv6_command, "TABLE_intf", "ROW_intf"
-        )
+        # If the switch doesn't run IPv6 or support it the show ipv6 interface
+        # command will throw an error so catch it and return the ipv4 addresses
+        try:
+            ipv6_interf_table_vrf = self._get_command_table(
+                ipv6_command, "TABLE_intf", "ROW_intf"
+            )
+        except napalm.nxapi_plumbing.errors.NXAPIPostError:
+            return interfaces_ip
 
         for interface in ipv6_interf_table_vrf:
             interface_name = str(interface.get("intf-name", ""))
@@ -1355,7 +1379,12 @@ class NXOSDriver(NXOSDriverBase):
     def get_environment(self):
         def _process_pdus(power_data):
             normalized = defaultdict(dict)
-            ps_info_table = power_data["TABLE_psinfo"]
+            # some nexus devices have keys postfixed with the shorthand device series name (ie n3k)
+            # ex. on a 9k, the key is TABLE_psinfo, but on a 3k it is TABLE_psinfo_n3k
+            ps_info_key = [
+                i for i in power_data.keys() if i.startswith("TABLE_psinfo")
+            ][0]
+            ps_info_table = power_data[ps_info_key]
             # Later version of nxos will have a list under TABLE_psinfo like
             # TABLE_psinfo : [{'ROW_psinfo': {...
             # and not have the psnum under the row
@@ -1378,17 +1407,28 @@ class NXOSDriver(NXOSDriverBase):
                     count += 1
                     tmp_table.append(tmp)
                 ps_info_table = {"ROW_psinfo": tmp_table}
-            for psinfo in ps_info_table["ROW_psinfo"]:
+            # some nexus devices have keys postfixed with the shorthand device series name (ie n3k)
+            # ex. on a 9k the key is ROW_psinfo, but on a 3k it is ROW_psinfo_n3k
+            ps_info_row_key = [
+                i for i in ps_info_table.keys() if i.startswith("ROW_psinfo")
+            ][0]
+            for psinfo in ps_info_table[ps_info_row_key]:
                 normalized[psinfo["psnum"]]["status"] = (
                     psinfo.get("ps_status", "ok") == "ok"
                 )
                 normalized[psinfo["psnum"]]["output"] = float(psinfo.get("watts", -1.0))
+                # Newer nxos versions provide the total capacity in the `tot_capa` key
+                if "tot_capa" in psinfo:
+                    normalized[psinfo["psnum"]]["capacity"] = float(
+                        psinfo["tot_capa"].split()[0]
+                    )
                 # The capacity of the power supply can be determined by the model
                 # ie N2200-PAC-400W = 400 watts
-                ps_model = psinfo.get("psmodel", "-1")
-                normalized[psinfo["psnum"]]["capacity"] = float(
-                    ps_model.split("-")[-1][:-1]
-                )
+                else:
+                    ps_model = psinfo.get("psmodel", "-1")
+                    normalized[psinfo["psnum"]]["capacity"] = float(
+                        ps_model.split("-")[-1][:-1]
+                    )
             return json.loads(json.dumps(normalized))
 
         def _process_fans(fan_data):
@@ -1464,6 +1504,8 @@ class NXOSDriver(NXOSDriverBase):
             vlan_table_raw = [vlan_table_raw]
 
         for vlan in vlan_table_raw:
+            if "vlanshowplist-ifidx" not in vlan.keys():
+                vlan["vlanshowplist-ifidx"] = []
             vlans[vlan["vlanshowbr-vlanid"]] = {
                 "name": vlan["vlanshowbr-vlanname"],
                 "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),
