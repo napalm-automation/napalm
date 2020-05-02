@@ -2235,13 +2235,20 @@ class IOSXRDriver(NetworkDriver):
         # IOS-XR only supports "all" on "show run"
         run_full = " all" if full else ""
 
+        filter_strings = [r"^Building configuration.*$", r"^!! IOS XR Configuration.*$"]
+        filter_pattern = napalm.base.helpers.generate_regex_or(filter_strings)
+
         if retrieve.lower() in ["running", "all"]:
-            config["running"] = str(
+            running = str(
                 self.device._execute_config_show(f"show running-config{run_full}")
             )
+            running = re.sub(filter_pattern, "", running, flags=re.M)
+            config["running"] = running
         if retrieve.lower() in ["candidate", "all"]:
-            config["candidate"] = str(
+            candidate = str(
                 self.device._execute_config_show("show configuration merge")
             )
+            candidate = re.sub(filter_pattern, "", candidate, flags=re.M)
+            config["candidate"] = candidate
 
         return config
