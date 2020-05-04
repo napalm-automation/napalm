@@ -80,6 +80,7 @@ LLDP_CAPAB_TRANFORM_TABLE = {
 CISCO_SANITIZE_FILTERS = {
     r"^(snmp-server community).*$": r"\1 <removed>",
     r"^(snmp-server host \S+( vrf \S+)?( version (1|2c|3))?)\s+\S+((\s+\S*)*)\s*$": r"\1 <removed> \5",  # noqa
+    r"^(snmp-server user \S+( \S+)? auth md5) \S+ (priv) \S+ (localizedkey( engineID \S+)?)\s*$": r"\1 <removed> \3 <removed> \4\5",  # noqa
     r"^(username .+ (password|secret) \d) .+$": r"\1 <removed>",
     r"^(enable (password|secret)( level \d+)? \d) .+$": r"\1 <removed>",
     r"^(\s+(?:password|secret)) (?:\d )?\S+$": r"\1 <removed>",
