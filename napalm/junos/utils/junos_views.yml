@@ -157,6 +157,14 @@ junos_environment_table:
   key: name
   view: junos_environment_view
 
+junos_environment_table_srx_cluster:
+  rpc: get-environment-information
+  args:
+    node: primary
+  item: multi-routing-engine-item/environment-information/environment-item
+  key: name
+  view: junos_environment_view
+
 junos_environment_view:
   fields:
     class: class
@@ -183,16 +191,33 @@ junos_routing_engine_table:
   key: slot
   view: junos_routing_engine_view
 
+junos_routing_engine_table_srx_cluster:
+  rpc: get-route-engine-information
+  args:
+    node: primary
+  item: multi-routing-engine-item/route-engine-information/route-engine
+  key: ../../re-name
+  view: junos_routing_engine_view
+
 junos_routing_engine_view:
   fields:
     cpu-idle: { cpu-idle: int }
-    memory-dram-size: memory-dram-size
-    memory-buffer-utilization : { memory-buffer-utilization: int }
+    memory-dram-size: memory-dram-size | memory-system-total
+    memory-buffer-utilization: { memory-buffer-utilization: int }
+    memory-system-total-used: { memory-system-total-used: int }
 
 junos_temperature_thresholds:
   rpc: get-temperature-threshold-information
   args:
   item: temperature-threshold
+  key: name
+  view: junos_temperature_thresholds_view
+
+junos_temperature_thresholds_srx_cluster:
+  rpc: get-temperature-threshold-information
+  args:
+    node: primary
+  item: multi-routing-engine-item/temperature-threshold-information/temperature-threshold
   key: name
   view: junos_temperature_thresholds_view
 
