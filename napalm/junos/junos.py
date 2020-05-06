@@ -2250,11 +2250,14 @@ class JunOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         rv = {"startup": "", "running": "", "candidate": ""}
 
         options = {"format": "text", "database": "candidate"}
-
+        sanitize_strings = {
+            r"^(\s+community\s+)\w+(\s+{.*)$": r"\1<removed>\2",
+            r'^(.*)"\$\d\$\S+"(;.*)$': r"\1<removed>\2",
+        }
         if retrieve in ("candidate", "all"):
             config = self.device.rpc.get_config(filter_xml=None, options=options)
             rv["candidate"] = str(config.text)
@@ -2262,6 +2265,10 @@ class JunOSDriver(NetworkDriver):
             options["database"] = "committed"
             config = self.device.rpc.get_config(filter_xml=None, options=options)
             rv["running"] = str(config.text)
+
+        if sanitized:
+            return napalm.base.helpers.sanitize_configs(rv, sanitize_strings)
+
         return rv
 
     def get_network_instances(self, name=""):

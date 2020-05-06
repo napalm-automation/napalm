@@ -1750,7 +1750,7 @@ class EOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         """get_config implementation for EOS."""
         get_startup = retrieve == "all" or retrieve == "startup"
         get_running = retrieve == "all" or retrieve == "running"
@@ -1760,18 +1760,29 @@ class EOSDriver(NetworkDriver):
 
         # EOS only supports "all" on "show run"
         run_full = " all" if full else ""
+        run_sanitized = " sanitized" if sanitized else ""
 
         if retrieve == "all":
-            commands = ["show startup-config", "show running-config{}".format(run_full)]
+            commands = [
+                "show startup-config",
+                "show running-config{0}{1}".format(run_full, run_sanitized),
+            ]
 
             if self.config_session:
                 commands.append(
-                    "show session-config named {}".format(self.config_session)
+                    "show session-config named {0}{1}".format(
+                        self.config_session, run_sanitized
+                    )
                 )
 
             output = self.device.run_commands(commands, encoding="text")
+            startup_cfg = str(output[0]["output"]) if get_startup else ""
+            if sanitized and startup_cfg:
+                startup_cfg = napalm.base.helpers.sanitize_config(
+                    startup_cfg, c.CISCO_SANITIZE_FILTERS
+                )
             return {
-                "startup": str(output[0]["output"]) if get_startup else "",
+                "startup": startup_cfg,
                 "running": str(output[1]["output"]) if get_running else "",
                 "candidate": str(output[2]["output"]) if get_candidate else "",
             }
