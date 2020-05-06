@@ -391,9 +391,20 @@ class JunOSDriver(NetworkDriver):
 
     def get_environment(self):
         """Return environment details."""
-        environment = junos_views.junos_environment_table(self.device)
-        routing_engine = junos_views.junos_routing_engine_table(self.device)
-        temperature_thresholds = junos_views.junos_temperature_thresholds(self.device)
+        if self.device.facts.get("srx_cluster", False):
+            environment = junos_views.junos_environment_table_srx_cluster(self.device)
+            routing_engine = junos_views.junos_routing_engine_table_srx_cluster(
+                self.device
+            )
+            temperature_thresholds = junos_views.junos_temperature_thresholds_srx_cluster(
+                self.device
+            )
+        else:
+            environment = junos_views.junos_environment_table(self.device)
+            routing_engine = junos_views.junos_routing_engine_table(self.device)
+            temperature_thresholds = junos_views.junos_temperature_thresholds(
+                self.device
+            )
         power_supplies = junos_views.junos_pem_table(self.device)
         environment.get()
         routing_engine.get()
@@ -546,15 +557,20 @@ class JunOSDriver(NetworkDriver):
                         if i.isdigit()
                     )
                 )
-            # Junos gives us RAM in %, so calculation has to be made.
-            # Sadly, bacause of this, results are not 100% accurate to the truth.
-            environment_data["memory"]["used_ram"] = int(
-                round(
-                    environment_data["memory"]["available_ram"]
-                    / 100.0
-                    * structured_routing_engine_data["memory-buffer-utilization"]
+            if not structured_routing_engine_data["memory-system-total-used"]:
+                # Junos gives us RAM in %, so calculation has to be made.
+                # Sadly, bacause of this, results are not 100% accurate to the truth.
+                environment_data["memory"]["used_ram"] = int(
+                    round(
+                        environment_data["memory"]["available_ram"]
+                        / 100.0
+                        * structured_routing_engine_data["memory-buffer-utilization"]
+                    )
                 )
-            )
+            else:
+                environment_data["memory"]["used_ram"] = structured_routing_engine_data[
+                    "memory-system-total-used"
+                ]
 
         return environment_data
 
@@ -2234,11 +2250,14 @@ class JunOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         rv = {"startup": "", "running": "", "candidate": ""}
 
         options = {"format": "text", "database": "candidate"}
-
+        sanitize_strings = {
+            r"^(\s+community\s+)\w+(\s+{.*)$": r"\1<removed>\2",
+            r'^(.*)"\$\d\$\S+"(;.*)$': r"\1<removed>\2",
+        }
         if retrieve in ("candidate", "all"):
             config = self.device.rpc.get_config(filter_xml=None, options=options)
             rv["candidate"] = str(config.text)
@@ -2246,6 +2265,10 @@ class JunOSDriver(NetworkDriver):
             options["database"] = "committed"
             config = self.device.rpc.get_config(filter_xml=None, options=options)
             rv["running"] = str(config.text)
+
+        if sanitized:
+            return napalm.base.helpers.sanitize_configs(rv, sanitize_strings)
+
         return rv
 
     def get_network_instances(self, name=""):

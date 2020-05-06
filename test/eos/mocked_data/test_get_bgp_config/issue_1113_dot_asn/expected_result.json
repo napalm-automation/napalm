@@ -1,0 +1,82 @@
+{
+  "IPv4-PEERS-GROUP-NAME": {
+    "type": "",
+    "multipath": false,
+    "apply_groups": [],
+    "remove_private_as": true,
+    "multihop_ttl": 0,
+    "remote_as": 0,
+    "local_address": "",
+    "local_as": 4266524237,
+    "description": "",
+    "import_policy": "reject-all",
+    "export_policy": "4-public-peer-anycast-out",
+    "prefix_limit": {},
+    "neighbors": {
+      "192.168.0.1": {
+        "description": "",
+        "remote_as": 32934,
+        "local_address": "",
+        "local_as": 4266524237,
+        "nhs": false,
+        "route_reflector_client": false,
+        "import_policy": "",
+        "export_policy": "",
+        "authentication_key": "",
+        "prefix_limit": {}
+      },
+      "172.17.17.1": {
+        "description": "",
+        "remote_as": 13414,
+        "local_address": "",
+        "local_as": 4266524237,
+        "nhs": false,
+        "route_reflector_client": false,
+        "import_policy": "",
+        "export_policy": "",
+        "authentication_key": "",
+        "prefix_limit": {}
+      }
+    }
+  },
+  "IPv6-PEERS-GROUP-NAME": {
+    "type": "",
+    "multipath": false,
+    "apply_groups": [],
+    "remove_private_as": true,
+    "multihop_ttl": 0,
+    "remote_as": 0,
+    "local_address": "",
+    "local_as": 4266524237,
+    "description": "",
+    "import_policy": "reject-all",
+    "export_policy": "reject-all",
+    "prefix_limit": {},
+    "neighbors": {
+      "2001:db8::0:1": {
+        "description": "",
+        "remote_as": 8403,
+        "local_address": "",
+        "local_as": 4266524237,
+        "nhs": false,
+        "route_reflector_client": false,
+        "import_policy": "",
+        "export_policy": "",
+        "authentication_key": "",
+        "prefix_limit": {}
+      },
+      "2001:db8::0:2": {
+        "description": "",
+        "remote_as": 54113,
+        "local_address": "",
+        "local_as": 4266524237,
+        "nhs": false,
+        "route_reflector_client": false,
+        "import_policy": "",
+        "export_policy": "",
+        "authentication_key": "",
+        "prefix_limit": {}
+      }
+    }
+  }
+}

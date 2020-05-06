@@ -482,3 +482,23 @@ def generate_regex_or(filters):
         return_pattern += rf"{pattern}|"
     return_pattern += r")"
     return return_pattern
+
+
+def sanitize_config(config, filters):
+    """
+    Given a list of filters, remove sensitive data from the provided config.
+    """
+    for filter_, replace in filters.items():
+        config = re.sub(filter_, replace, config, flags=re.M)
+    return config
+
+
+def sanitize_configs(configs, filters):
+    """
+    Apply sanitize_config on the dictionary of configs typically returned by
+    the get_config method.
+    """
+    for cfg_name, config in configs.items():
+        if config.strip():
+            configs[cfg_name] = sanitize_config(config, filters)
+    return configs

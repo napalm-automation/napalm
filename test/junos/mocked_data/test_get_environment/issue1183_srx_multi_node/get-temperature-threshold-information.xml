@@ -1,0 +1,27 @@
+<multi-routing-engine-results>
+    <multi-routing-engine-item>
+        <re-name>node0</re-name>
+        <temperature-threshold-information>
+            <temperature-threshold>
+                <name>Chassis default</name>
+                <fan-normal-speed>35</fan-normal-speed>
+                <fan-high-speed>56</fan-high-speed>
+                <bad-fan-yellow-alarm>40</bad-fan-yellow-alarm>
+                <bad-fan-red-alarm>65</bad-fan-red-alarm>
+                <yellow-alarm>60</yellow-alarm>
+                <red-alarm>75</red-alarm>
+                <fire-shutdown>100</fire-shutdown>
+            </temperature-threshold>
+            <temperature-threshold>
+                <name>Routing Engine</name>
+                <fan-normal-speed>35</fan-normal-speed>
+                <fan-high-speed>56</fan-high-speed>
+                <bad-fan-yellow-alarm>40</bad-fan-yellow-alarm>
+                <bad-fan-red-alarm>65</bad-fan-red-alarm>
+                <yellow-alarm>60</yellow-alarm>
+                <red-alarm>75</red-alarm>
+                <fire-shutdown>100</fire-shutdown>
+            </temperature-threshold>
+        </temperature-threshold-information>
+    </multi-routing-engine-item>
+</multi-routing-engine-results>
