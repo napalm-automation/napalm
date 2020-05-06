@@ -46,6 +46,8 @@ from napalm.base.exceptions import (
     CommandErrorException,
 )
 from napalm.eos.constants import LLDP_CAPAB_TRANFORM_TABLE
+from napalm.eos.pyeapi_syntax_wrapper import Node
+from napalm.eos.utils.versions import EOSVersion
 import napalm.base.constants as c
 
 # local modules
@@ -156,11 +158,16 @@ class EOSDriver(NetworkDriver):
             )
 
             if self.device is None:
-                self.device = pyeapi.client.Node(connection, enablepwd=self.enablepwd)
+                self.device = Node(connection, enablepwd=self.enablepwd)
             # does not raise an Exception if unusable
 
-            # let's try to run a very simple command
-            self.device.run_commands(["show clock"], encoding="text")
+            # let's try to determine if we need to use new EOS cli syntax
+            sh_ver = self.device.run_commands(["show version"])
+            cli_version = (
+                2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
+            )
+
+            self.device.update_cli_version(cli_version)
         except ConnectionError as ce:
             # and this is raised either if device not avaiable
             # either if HTTP(S) agent is not enabled
