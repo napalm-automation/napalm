@@ -6,6 +6,7 @@ Test base helpers.
 import os
 import sys
 import unittest
+import textwrap
 
 # third party libs
 try:
@@ -38,6 +39,7 @@ except ImportError:
 
 # NAPALM base
 import napalm.base.helpers
+import napalm.base.constants as C
 from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.exceptions
 from napalm.base.base import NetworkDriver
@@ -632,6 +634,44 @@ class TestBaseHelpers(unittest.TestCase):
         result_dict.pop("inline_transfer")
         result_dict.pop("transport")
         self.assertEqual(netmiko_args(test_case), result_dict)
+
+    def test_sanitized_config(self):
+        config = textwrap.dedent(
+            """\
+            !
+            version 15.5
+            service timestamps debug datetime msec
+            service timestamps log datetime msec
+            no platform punt-keepalive disable-kernel-core
+            platform console auto
+            !
+            hostname CSR1
+            enable secret 5 $1$asdiud2982fp2f
+            username root password 7 096f471a1a0a57213e2f2f19
+            !
+            redundancy
+            radius-server host 10.124.24.18 auth-port 1812\
+            acct-port 1813 key 7 09687b2a3245343b382f2b"""
+        )
+        expected = textwrap.dedent(
+            """\
+            !
+            version 15.5
+            service timestamps debug datetime msec
+            service timestamps log datetime msec
+            no platform punt-keepalive disable-kernel-core
+            platform console auto
+            !
+            hostname CSR1
+            enable secret 5 <removed>
+            username root password 7 <removed>
+            !
+            redundancy
+            radius-server host 10.124.24.18 auth-port 1812\
+            acct-port 1813 key 7 <removed>"""
+        )
+        ret = napalm.base.helpers.sanitize_config(config, C.CISCO_SANITIZE_FILTERS)
+        self.assertEqual(ret, expected)
 
 
 class FakeNetworkDriver(NetworkDriver):

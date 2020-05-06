@@ -515,7 +515,7 @@ class NXOSDriverBase(NetworkDriver):
     def _disable_confirmation(self):
         self._send_command_list(["terminal dont-ask"])
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
 
         # NX-OS adds some extra, unneeded lines that should be filtered.
         filter_strings = [
@@ -539,6 +539,12 @@ class NXOSDriverBase(NetworkDriver):
             output = self._send_command(command, raw_text=True)
             output = re.sub(filter_pattern, "", output, flags=re.M)
             config["startup"] = output.strip()
+
+        if sanitized:
+            return napalm.base.helpers.sanitize_configs(
+                config, c.CISCO_SANITIZE_FILTERS
+            )
+
         return config
 
     def get_lldp_neighbors(self):

@@ -1510,7 +1510,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         """
         Return the configuration of a device.
 
@@ -1518,6 +1518,7 @@ class NetworkDriver(object):
             retrieve(string): Which configuration type you want to populate, default is all of them.
                               The rest will be set to "".
             full(bool): Retrieve all the configuration. For instance, on ios, "sh run all".
+            sanitized(bool): Remove secret data. Default: ``False``.
 
         Returns:
           The object returned is a dictionary with a key for each configuration store:

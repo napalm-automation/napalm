@@ -42,6 +42,7 @@ from napalm.base.helpers import (
     split_interface,
     abbreviated_interface_name,
     generate_regex_or,
+    sanitize_configs,
 )
 from napalm.base.netmiko_helpers import netmiko_args
 
@@ -3368,7 +3369,7 @@ class IOSDriver(NetworkDriver):
         except AttributeError:
             raise ValueError("The vrf %s does not exist" % name)
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         """Implementation of get_config for IOS.
 
         Returns the startup or/and running configuration as dictionary.
@@ -3402,6 +3403,9 @@ class IOSDriver(NetworkDriver):
             output = self._send_command(command)
             output = re.sub(filter_pattern, "", output, flags=re.M)
             configs["running"] = output.strip()
+
+        if sanitized:
+            return sanitize_configs(configs, C.CISCO_SANITIZE_FILTERS)
 
         return configs
 
