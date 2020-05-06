@@ -53,6 +53,7 @@ class FakeJunOSDevice(BaseTestDouble):
         self._conn = FakeConnection(self.rpc)
         self.alternative_facts_file = "facts.yml"
         self.ON_JUNOS = True  # necessary for fake devices
+        self.hostname = "test"
         self.default_facts = {
             "domain": None,
             "hostname": "vsrx",
@@ -132,7 +133,6 @@ class FakeRPCObject:
         filename = "{item}{instance}.xml".format(item=self.item, instance=instance)
         filepathpath = self._device.find_file(filename)
         xml_string = self._device.read_txt_file(filepathpath)
-
         return lxml.etree.fromstring(xml_string)
 
     def get_config(self, get_cmd=None, filter_xml=None, options={}):

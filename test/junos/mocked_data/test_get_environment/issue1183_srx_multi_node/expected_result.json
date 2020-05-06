@@ -1,0 +1,49 @@
+{
+  "temperature": {
+    "Routing Engine": {
+      "temperature": 39,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "Routing Engine CPU": {
+      "temperature": 68,
+      "is_alert": true,
+      "is_critical": false
+    }
+  },
+  "fans": {
+    "SRX340 Chassis fan 0": {
+      "status": true
+    },
+    "SRX340 Chassis fan 1": {
+      "status": true
+    },
+    "SRX340 Chassis fan 2": {
+      "status": true
+    },
+    "SRX340 Chassis fan 3": {
+      "status": true
+    }
+  },
+  "power": {
+    "Power Supply 0": {
+      "capacity": -1,
+      "output": -1,
+      "status": true
+    },
+    "Power Supply 1": {
+      "capacity": -1,
+      "output": -1,
+      "status": true
+    }
+  },
+  "cpu": {
+    "node0": {
+      "%usage": 8
+    }
+  },
+  "memory": {
+    "available_ram": 4096,
+    "used_ram": 1311
+  }
+}
