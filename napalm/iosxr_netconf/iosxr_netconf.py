@@ -89,8 +89,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
     def close(self):
         """Close the connection."""
-        if self.locked:
-            self._unlock()
+        self._unlock()
         self.device.close_session()
 
     def _lock(self):
@@ -113,8 +112,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             with open(filename) as f:
                 configuration = f.read()
         self.pending_changes = True
-        if not self.lock_on_connect:
-            self._lock()
+        self._lock()
         return configuration
 
     def is_alive(self):
@@ -169,15 +167,13 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Commit configuration."""
         self.device.commit()
         self.pending_changes = False
-        if self.locked:
-            self._unlock()
+        self._unlock()
 
     def discard_config(self):
         """Discard changes."""
         self.device.discard_changes()
         self.pending_changes = False
-        if not self.lock_on_connect:
-            self._unlock()
+        self._unlock()
 
     def rollback(self):
         """Rollback to previous commit."""
