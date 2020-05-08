@@ -1,0 +1,16 @@
+{
+    "mgmt0": {
+        "rx_unicast_packets": 10039584,
+        "rx_octets": 860372462,
+        "rx_broadcast_packets": 10025891,
+        "rx_multicast_packets": 6,
+        "rx_errors": 0,
+        "rx_discards": 0,
+        "tx_unicast_packets": 309048,
+        "tx_octets": 110610635,
+        "tx_broadcast_packets": -1,
+        "tx_multicast_packets": -1,
+        "tx_errors": 0,
+        "tx_discards": 0
+    }
+}
