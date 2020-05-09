@@ -2129,9 +2129,17 @@ class IOSDriver(NetworkDriver):
                     )
                     match = re.search(regex, line)
                     if match:
-                        interface = canonical_interface_name(interface)
-                        counters[interface]["rx_discards"] = int(match.group("IQD"))
-                        counters[interface]["tx_discards"] = int(match.group("OQD"))
+                        can_interface = canonical_interface_name(interface)
+                        try:
+                            counters[can_interface]["rx_discards"] = int(
+                                match.group("IQD")
+                            )
+                            counters[can_interface]["tx_discards"] = int(
+                                match.group("OQD")
+                            )
+                        except KeyError:
+                            counters[interface]["rx_discards"] = int(match.group("IQD"))
+                            counters[interface]["tx_discards"] = int(match.group("OQD"))
 
         return counters
 
