@@ -51,7 +51,7 @@ class FakeIOSXRNETCONFDevice(BaseTestDouble):
     @property
     def server_capabilities(self):
         """Return mocked server capabilities for the current testcase."""
-        ns = {'nc': 'urn:ietf:params:xml:ns:netconf:base:1.0'}
+        ns = {"nc": "urn:ietf:params:xml:ns:netconf:base:1.0"}
         server_capabilities = []
         try:
             full_path = self.find_file("server_capabilities.xml")
@@ -61,7 +61,8 @@ class FakeIOSXRNETCONFDevice(BaseTestDouble):
             server_capabilities_str = self.read_txt_file(full_path)
             server_capabilities_etree = etree.fromstring(server_capabilities_str)
             for capability in server_capabilities_etree.xpath(
-                    ".//nc:capabilities/nc:capability", namespaces=ns):
+                ".//nc:capabilities/nc:capability", namespaces=ns
+            ):
                 server_capabilities.append(capability.text)
         return iter(server_capabilities)
 

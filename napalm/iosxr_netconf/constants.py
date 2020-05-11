@@ -20,32 +20,33 @@ from __future__ import unicode_literals
 from napalm.base.constants import *  # noqa
 
 # namespaces for XR native models
-NS = {'int': 'http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper',
-      'suo': 'http://cisco.com/ns/yang/Cisco-IOS-XR-shellutil-oper',
-      'imo': 'http://cisco.com/ns/yang/Cisco-IOS-XR-invmgr-oper',
-      'ntpc': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-cfg',
-      'ntp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-oper',
-      'lldp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ethernet-lldp-oper',
-      'bgp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-oper',
-      'bgpc': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-cfg',
-      'mac': 'http://cisco.com/ns/yang/Cisco-IOS-XR-l2vpn-oper',
-      'int4': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-io-oper',
-      'int6': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv6-ma-oper',
-      'snmp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-snmp-agent-cfg',
-      'usr': 'http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-locald-cfg',
-      'aaa': 'http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-lib-cfg',
-      'arp': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-arp-oper',
-      'prbc': 'http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-cfg',
-      'prb': 'http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-oper',
-      'rib4': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv4-oper',
-      'rib6': 'http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv6-oper',
-      'tr': 'http://cisco.com/ns/yang/Cisco-IOS-XR-traceroute-act',
-      'sys': 'http://cisco.com/ns/yang/Cisco-IOS-XR-wdsysmon-fd-oper',
-      'mem': 'http://cisco.com/ns/yang/Cisco-IOS-XR-nto-misc-oper',
-      }
+NS = {
+    "int": "http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper",
+    "suo": "http://cisco.com/ns/yang/Cisco-IOS-XR-shellutil-oper",
+    "imo": "http://cisco.com/ns/yang/Cisco-IOS-XR-invmgr-oper",
+    "ntpc": "http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-cfg",
+    "ntp": "http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-oper",
+    "lldp": "http://cisco.com/ns/yang/Cisco-IOS-XR-ethernet-lldp-oper",
+    "bgp": "http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-oper",
+    "bgpc": "http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-cfg",
+    "mac": "http://cisco.com/ns/yang/Cisco-IOS-XR-l2vpn-oper",
+    "int4": "http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-io-oper",
+    "int6": "http://cisco.com/ns/yang/Cisco-IOS-XR-ipv6-ma-oper",
+    "snmp": "http://cisco.com/ns/yang/Cisco-IOS-XR-snmp-agent-cfg",
+    "usr": "http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-locald-cfg",
+    "aaa": "http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-lib-cfg",
+    "arp": "http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-arp-oper",
+    "prbc": "http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-cfg",
+    "prb": "http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-oper",
+    "rib4": "http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv4-oper",
+    "rib6": "http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv6-oper",
+    "tr": "http://cisco.com/ns/yang/Cisco-IOS-XR-traceroute-act",
+    "sys": "http://cisco.com/ns/yang/Cisco-IOS-XR-wdsysmon-fd-oper",
+    "mem": "http://cisco.com/ns/yang/Cisco-IOS-XR-nto-misc-oper",
+}
 
 # GET RPC to retrieve device facts
-FACTS_RPC_REQ = '''<get xmlns="urn:ietf:params:xml:ns:netconf:base:1.1">
+FACTS_RPC_REQ = """<get xmlns="urn:ietf:params:xml:ns:netconf:base:1.1">
   <filter>
     <system-time xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-shellutil-oper"/>
     <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper">
@@ -70,10 +71,10 @@ FACTS_RPC_REQ = '''<get xmlns="urn:ietf:params:xml:ns:netconf:base:1.1">
       </entities>
     </inventory>
   </filter>
-</get>'''
+</get>"""
 
 # subtree filter to get interface state using GET RPC
-INT_RPC_REQ_FILTER = '''
+INT_RPC_REQ_FILTER = """
 <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper">
   <interfaces>
     <interface>
@@ -93,10 +94,10 @@ INT_RPC_REQ_FILTER = '''
       <mtu/>
     </interface>
   </interface-xr>
-</interfaces>'''
+</interfaces>"""
 
 # subtree filter to get interface counters using GET RPC
-INT_COUNTERS_RPC_REQ_FILTER = '''
+INT_COUNTERS_RPC_REQ_FILTER = """
 <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper">
   <interface-xr>
     <interface>
@@ -120,18 +121,18 @@ INT_COUNTERS_RPC_REQ_FILTER = '''
       </interface-statistics>
     </interface>
   </interface-xr>
-</interfaces>'''
+</interfaces>"""
 
 # subtree filter to get NTP peers and servers using GET CONFIG RPC
-NTP_RPC_REQ_FILTER = '''
+NTP_RPC_REQ_FILTER = """
 <ntp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-cfg">
   <peer-vrfs>
     <peer-vrf/>
   </peer-vrfs>
-</ntp>'''
+</ntp>"""
 
 # subtree filter to get NTP statistics using GET RPC
-NTP_STAT_RPC_REQ_FILTER = '''
+NTP_STAT_RPC_REQ_FILTER = """
 <ntp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ip-ntp-oper">
   <nodes>
     <node>
@@ -142,10 +143,10 @@ NTP_STAT_RPC_REQ_FILTER = '''
       </associations>
     </node>
   </nodes>
-</ntp>'''
+</ntp>"""
 
 # subtree filter to get LLDP neighbors and neighbors detail using GET RPC
-LLDP_RPC_REQ_FILTER = '''
+LLDP_RPC_REQ_FILTER = """
 <lldp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ethernet-lldp-oper">
   <nodes>
     <node>
@@ -158,10 +159,10 @@ LLDP_RPC_REQ_FILTER = '''
       </neighbors>
     </node>
   </nodes>
-</lldp>'''
+</lldp>"""
 
 # subtree filter to get BGP neighbors and neighbors detail using GET RPC
-BGP_NEIGHBOR_REQ_FILTER = '''
+BGP_NEIGHBOR_REQ_FILTER = """
 <bgp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-oper">
   <instances>
     <instance>
@@ -181,28 +182,28 @@ BGP_NEIGHBOR_REQ_FILTER = '''
       </instance-active>
     </instance>
   </instances>
-</bgp>'''
+</bgp>"""
 
 # subtree filter to get BGP configuration using GET CONFIG RPC
-BGP_CFG_RPC_REQ_FILTER = '''
+BGP_CFG_RPC_REQ_FILTER = """
 <bgp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-bgp-cfg">
   <instance>
     <instance-name>default</instance-name>
   </instance>
-</bgp>'''
+</bgp>"""
 
 # subtree filter to get MAC address table using GET RPC
-MAC_TABLE_RPC_REQ_FILTER = '''
+MAC_TABLE_RPC_REQ_FILTER = """
 <l2vpn-forwarding xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-l2vpn-oper">
   <nodes>
     <node>
       <l2fibmac-details/>
     </node>
   </nodes>
-</l2vpn-forwarding>'''
+</l2vpn-forwarding>"""
 
 # GET RPC to retrieve ipv4 and ipv6 addresses
-INT_IPV4_IPV6_RPC_REQ = '''
+INT_IPV4_IPV6_RPC_REQ = """
 <get xmlns="urn:ietf:params:xml:ns:netconf:base:1.1">
   <filter>
     <ipv4-network xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-io-oper">
@@ -236,28 +237,28 @@ INT_IPV4_IPV6_RPC_REQ = '''
       </nodes>
     </ipv6-network>
   </filter>
-</get>'''
+</get>"""
 
 # subtree filter to get SNMP configuration using GET CONFIG RPC
-SNMP_RPC_REQ_FILTER = '''
-<snmp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-snmp-agent-cfg"/>'''
+SNMP_RPC_REQ_FILTER = """
+<snmp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-snmp-agent-cfg"/>"""
 
 # subtree filter to get SNMP configuration using GET CONFIG RPC
-USERS_RPC_REQ_FILTER = '''
+USERS_RPC_REQ_FILTER = """
 <aaa xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-lib-cfg">
   <usernames xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-locald-cfg">
     <username/>
   </usernames>
-</aaa>'''
+</aaa>"""
 
 # RPC to rollback the last commit to the running configuration
-ROLLBACK_RPC_REQ = '''
+ROLLBACK_RPC_REQ = """
 <roll-back-configuration-last xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cfgmgr-rollback-act">
   <count>1</count>
-</roll-back-configuration-last>'''
+</roll-back-configuration-last>"""
 
 # subtree filter to get ARP table using GET RPC
-ARP_RPC_REQ_FILTER = '''
+ARP_RPC_REQ_FILTER = """
 <arp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ipv4-arp-oper">
   <nodes>
     <node>
@@ -266,26 +267,26 @@ ARP_RPC_REQ_FILTER = '''
       </entries>
     </node>
   </nodes>
-</arp>'''
+</arp>"""
 
 # subtree filter to get probe configuration using GET CONFIG RPC
-PROBE_CFG_RPC_REQ_FILTER = '''
+PROBE_CFG_RPC_REQ_FILTER = """
 <ipsla xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-cfg">
   <operation>
     <definitions/>
   </operation>
-</ipsla>'''
+</ipsla>"""
 
 # subtree filter to get probe results using GET RPC
-PROBE_OPER_RPC_REQ_FILTER = '''
+PROBE_OPER_RPC_REQ_FILTER = """
 <ipsla xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-man-ipsla-oper">
   <operation-data>
     <operations/>
   </operation-data>
-</ipsla>'''
+</ipsla>"""
 
 # subtree filter to get ipv6 address route using GET RPC
-ROUTE_IPV6_RPC_REQ_FILTER = '''
+ROUTE_IPV6_RPC_REQ_FILTER = """
 <ipv6-rib xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv6-oper">
   <vrfs>
     <vrf>
@@ -313,10 +314,10 @@ ROUTE_IPV6_RPC_REQ_FILTER = '''
       </afs>
     </vrf>
   </vrfs>
-</ipv6-rib>'''
+</ipv6-rib>"""
 
 # subtree filter to get ipv4 address route using GET RPC
-ROUTE_IPV4_RPC_REQ_FILTER = '''
+ROUTE_IPV4_RPC_REQ_FILTER = """
 <rib xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-ip-rib-ipv4-oper">
   <vrfs>
     <vrf>
@@ -344,60 +345,59 @@ ROUTE_IPV4_RPC_REQ_FILTER = '''
       </afs>
     </vrf>
   </vrfs>
-</rib>'''
+</rib>"""
 
 # GET RPC to retrieve trace route data
-TRACEROUTE_RPC_REQ = '''
+TRACEROUTE_RPC_REQ = """
 <traceroute xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-traceroute-act">
   <ipv{version}>
     <destination>{destination}</destination>
     {vrf_tag}{source_tag}
     {ttl_tag}{timeout_tag}
   </ipv{version}>
-</traceroute>'''
+</traceroute>"""
 
 # namespaces for XR environment monitoring native models
-ENVMON_NAMESPACES = {'sysadmin-asr9k-envmon-ui': "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-asr9k-envmon-ui",
-                     'sysadmin-envmon-ui': "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-envmon-ui",
-                     'sysadmin-fretta-envmon-ui': "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-fretta-envmon-ui",
-                     }
+ENVMON_NAMESPACES = {
+    "sysadmin-asr9k-envmon-ui": "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-asr9k-envmon-ui",
+    "sysadmin-envmon-ui": "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-envmon-ui",
+    "sysadmin-fretta-envmon-ui": "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-fretta-envmon-ui",
+}
 
 # subtree filters to get environment details using GET RPC
-ENVMON_RPC_REQ_FILTER = {'sysadmin-asr9k-envmon-ui':
-                         '''<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-asr9k-envmon-ui">
+ENVMON_RPC_REQ_FILTER = {
+    "sysadmin-asr9k-envmon-ui": """<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-asr9k-envmon-ui">
                                <oper>
                                 <temperatures/>
                                 <fan/>
                                 <power/>
                                </oper>
-                            </environment>''',
-                         'sysadmin-envmon-ui':
-                         '''<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-envmon-ui">
+                            </environment>""",
+    "sysadmin-envmon-ui": """<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-envmon-ui">
                                <oper>
                                 <temperatures/>
                                 <fan/>
                                 <power/>
                                </oper>
-                            </environment>''',
-                         'sysadmin-fretta-envmon-ui':
-                         '''<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-fretta-envmon-ui">
+                            </environment>""",
+    "sysadmin-fretta-envmon-ui": """<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-fretta-envmon-ui">
                                <oper>
                                 <temperatures/>
                                 <fan/>
                                 <power/>
                                </oper>
-                            </environment>''',
-                         }
+                            </environment>""",
+}
 
 # platform models without environment monitoring
-PLAT_NO_ENVMON = ['R-IOSXRV9000-CC']
+PLAT_NO_ENVMON = ["R-IOSXRV9000-CC"]
 
 # subtree filter to get memory summary details using GET RPC
-ENV_MEM_RPC_REQ_FILTER = '''
-<memory-summary xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-nto-misc-oper"/>'''
+ENV_MEM_RPC_REQ_FILTER = """
+<memory-summary xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-nto-misc-oper"/>"""
 
 # subtree filter to get system monitoring details using GET RPC
-ENV_SYS_MON_RPC_REQ_FILTER = '''
+ENV_SYS_MON_RPC_REQ_FILTER = """
 <system-monitoring xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-wdsysmon-fd-oper">
  <cpu-utilization/>
-</system-monitoring>'''
+</system-monitoring>"""
