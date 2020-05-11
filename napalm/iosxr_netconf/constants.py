@@ -358,29 +358,32 @@ TRACEROUTE_RPC_REQ = """
 </traceroute>"""
 
 # namespaces for XR environment monitoring native models
+ENVMON_NS_ASR9K = "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-asr9k-envmon-ui"
+ENVMON_NS_XR = "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-envmon-ui"
+ENVMON_NS_FRETTA = "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-fretta-envmon-ui"
 ENVMON_NAMESPACES = {
-    "sysadmin-asr9k-envmon-ui": "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-asr9k-envmon-ui",
-    "sysadmin-envmon-ui": "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-envmon-ui",
-    "sysadmin-fretta-envmon-ui": "http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-fretta-envmon-ui",
+    "sysadmin-asr9k-envmon-ui": f"{ENVMON_NS_ASR9K}",
+    "sysadmin-envmon-ui": f"{ENVMON_NS_XR}",
+    "sysadmin-fretta-envmon-ui": f"{ENVMON_NS_FRETTA}",
 }
 
 # subtree filters to get environment details using GET RPC
 ENVMON_RPC_REQ_FILTER = {
-    "sysadmin-asr9k-envmon-ui": """<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-asr9k-envmon-ui">
+    "sysadmin-asr9k-envmon-ui": f"""<environment xmlns="{ENVMON_NS_ASR9K}">
                                <oper>
                                 <temperatures/>
                                 <fan/>
                                 <power/>
                                </oper>
                             </environment>""",
-    "sysadmin-envmon-ui": """<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-envmon-ui">
+    "sysadmin-envmon-ui": f"""<environment xmlns="{ENVMON_NS_XR}">
                                <oper>
                                 <temperatures/>
                                 <fan/>
                                 <power/>
                                </oper>
                             </environment>""",
-    "sysadmin-fretta-envmon-ui": """<environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-fretta-envmon-ui">
+    "sysadmin-fretta-envmon-ui": f"""<environment xmlns="{ENVMON_NS_FRETTA}">
                                <oper>
                                 <temperatures/>
                                 <fan/>

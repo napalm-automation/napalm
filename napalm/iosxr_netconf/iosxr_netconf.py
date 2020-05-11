@@ -1091,7 +1091,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             if interface_name not in lldp_neighbors.keys():
                 lldp_neighbors[interface_name] = []
             lldp_neighbors[interface_name].append(
-                {"hostname": system_name, "port": port_id,}
+                {"hostname": system_name, "port": port_id}
             )
 
         return lldp_neighbors
