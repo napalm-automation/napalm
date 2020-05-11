@@ -753,21 +753,46 @@ class IOSDriver(NetworkDriver):
         output = re.sub(r"^Time source is .*$", "", output, flags=re.M)
         return output.strip()
 
+    def _is_vss(self):
+        """
+        Returns True if a Virtual Switching System (VSS) is setup
+        """
+        vss_re = re.compile("Switch mode[ ]+: Virtual Switch", re.M)
+        command = "show switch virtual"
+        output = self._send_command(command)
+
+        return bool(vss_re.search(output))
+
     def get_optics(self):
         command = "show interfaces transceiver"
         output = self._send_command(command)
+        is_vss = False
 
         # Check if router supports the command
         if "% Invalid input" in output:
             return {}
+        elif "% Incomplete command" in output:
+            if self._is_vss():
+                is_vss = True
+                command1 = "show interfaces transceiver switch 1"
+                command2 = "show interfaces transceiver switch 2"
+                output1 = self._send_command(command1)
+                output2 = self._send_command(command2)
 
         # Formatting data into return data structure
         optics_detail = {}
 
-        try:
-            split_output = re.split(r"^---------.*$", output, flags=re.M)[1]
-        except IndexError:
-            return {}
+        if is_vss:
+            try:
+                split_output = re.split(r"^---------.*$", output1, flags=re.M)[1]
+                split_output += re.split(r"^---------.*$", output2, flags=re.M)[1]
+            except IndexError:
+                return {}
+        else:
+            try:
+                split_output = re.split(r"^---------.*$", output, flags=re.M)[1]
+            except IndexError:
+                return {}
 
         split_output = split_output.strip()
 
