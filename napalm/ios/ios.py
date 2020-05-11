@@ -757,7 +757,7 @@ class IOSDriver(NetworkDriver):
         """
         Returns True if a Virtual Switching System (VSS) is setup
         """
-        vss_re = re.compile('Switch mode[ ]+: Virtual Switch', re.M)
+        vss_re = re.compile("Switch mode[ ]+: Virtual Switch", re.M)
         command = "show switch virtual"
         output = self._send_command(command)
 
