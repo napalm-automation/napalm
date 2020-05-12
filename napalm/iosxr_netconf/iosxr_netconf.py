@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import re
 import copy
 import difflib
+import logging
 
 # import third party lib
 from ncclient import manager
@@ -40,6 +41,7 @@ from napalm.base.exceptions import ConnectionException
 from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import ReplaceConfigException
 
+logger = logging.getLogger(__name__)
 
 class IOSXRNETCONFDriver(NetworkDriver):
     """IOS-XR NETCONF driver class: inherits NetworkDriver from napalm.base."""
@@ -86,10 +88,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
             if self.lock_on_connect:
                 self._lock()
         except Exception as conn_err:
+            logger.error(conn_err.args[0])
             raise ConnectionException(conn_err.args[0])
 
     def close(self):
         """Close the connection."""
+        logger.debug("Closed connection with device %s" % (self.hostname))
         self._unlock()
         self.device.close_session()
 
@@ -132,6 +136,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         except (RPCError, XMLSyntaxError) as e:
             self.pending_changes = False
             self.replace = False
+            logger.error(e.args[0])
             raise ReplaceConfigException(e)
 
     def load_merge_candidate(self, filename=None, config=None):
@@ -144,6 +149,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             )
         except (RPCError, XMLSyntaxError) as e:
             self.pending_changes = False
+            logger.error(e.args[0])
             raise MergeConfigException(e)
 
     def compare_config(self):
@@ -590,6 +596,10 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         ),
                     )
                 except AttributeError:
+                    logger.debug(
+                        "No attribute 'description' for neighbor %s"
+                        % (this_neighbor["remote_as"])
+                    )
                     this_neighbor["description"] = ""
 
                 this_neighbor["is_enabled"] = (
@@ -2318,6 +2328,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         try:
             ipv = IPAddress(network).version
         except AddrFormatError:
+            logger.error("Wrong destination IP Address format supplied to get_route_to")
             raise TypeError("Wrong destination IP Address!")
 
         if ipv == 6:
@@ -2787,6 +2798,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
         try:
             ipv = IPAddress(destination).version
         except AddrFormatError:
+            logger.error(
+                "Incorrect format of IP Address in traceroute \
+             with value provided:%s"
+                % (str(destination))
+            )
             return {"error": "Wrong destination IP Address!"}
 
         source_tag = ""
