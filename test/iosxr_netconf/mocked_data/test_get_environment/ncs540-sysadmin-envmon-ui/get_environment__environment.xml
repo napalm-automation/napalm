@@ -1,0 +1,462 @@
+<?xml version="1.0"?>
+<rpc-reply message-id="urn:uuid:01bec60f-e057-43c8-88bf-c5a3f1993920" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+ <data>
+  <environment xmlns="http://www.cisco.com/ns/yang/Cisco-IOS-XR-sysadmin-envmon-ui">
+   <oper>
+    <temperatures>
+     <location>
+      <location>0/RP0</location>
+      <loc_header>1</loc_header>
+      <print_header>true</print_header>
+      <sensor_attributes>
+       <sensor>0/RP0-Control Sensor</sensor>
+       <sensor_id>Control Sensor</sensor_id>
+       <alarm/>
+       <temperature_value>30</temperature_value>
+       <value>30</value>
+       <critical_lo>-40</critical_lo>
+       <major_lo>-35</major_lo>
+       <minor_lo>-30</minor_lo>
+       <minor_hi>63</minor_hi>
+       <major_hi>72</major_hi>
+       <critical_hi>80</critical_hi>
+      </sensor_attributes>
+      <sensor_attributes>
+       <sensor>0/RP0-PHY0 Temp Sensor</sensor>
+       <sensor_id>PHY0 Temp Sensor</sensor_id>
+       <alarm/>
+       <temperature_value>35</temperature_value>
+       <value>35</value>
+       <critical_lo>-40</critical_lo>
+       <major_lo>-35</major_lo>
+       <minor_lo>-30</minor_lo>
+       <minor_hi>100</minor_hi>
+       <major_hi>105</major_hi>
+       <critical_hi>110</critical_hi>
+      </sensor_attributes>
+      <sensor_attributes>
+       <sensor>0/RP0-PHY1 Temp Sensor</sensor>
+       <sensor_id>PHY1 Temp Sensor</sensor_id>
+       <alarm/>
+       <temperature_value>41</temperature_value>
+       <value>41</value>
+       <critical_lo>-40</critical_lo>
+       <major_lo>-35</major_lo>
+       <minor_lo>-30</minor_lo>
+       <minor_hi>100</minor_hi>
+       <major_hi>105</major_hi>
+       <critical_hi>110</critical_hi>
+      </sensor_attributes>
+      <sensor_attributes>
+       <sensor>0/RP0-PORT-side Sensor</sensor>
+       <sensor_id>PORT-side Sensor</sensor_id>
+       <alarm/>
+       <temperature_value>27</temperature_value>
+       <value>27</value>
+       <critical_lo>-40</critical_lo>
+       <major_lo>-35</major_lo>
+       <minor_lo>-30</minor_lo>
+       <minor_hi>100</minor_hi>
+       <major_hi>105</major_hi>
+       <critical_hi>110</critical_hi>
+      </sensor_attributes>
+      <sensor_attributes>
+       <sensor>0/RP0-Slice 0 Die Temp</sensor>
+       <sensor_id>Slice 0 Die Temp</sensor_id>
+       <alarm/>
+       <temperature_value>47</temperature_value>
+       <value>47</value>
+       <critical_lo>-40</critical_lo>
+       <major_lo>-35</major_lo>
+       <minor_lo>-30</minor_lo>
+       <minor_hi>115</minor_hi>
+       <major_hi>120</major_hi>
+       <critical_hi>125</critical_hi>
+      </sensor_attributes>
+      <sensor_attributes>
+       <sensor>0/RP0-Slice 0 TMP421 Temp</sensor>
+       <sensor_id>Slice 0 TMP421 Temp</sensor_id>
+       <alarm/>
+       <temperature_value>37</temperature_value>
+       <value>37</value>
+       <critical_lo>-40</critical_lo>
+       <major_lo>-35</major_lo>
+       <minor_lo>-30</minor_lo>
+       <minor_hi>115</minor_hi>
+       <major_hi>120</major_hi>
+       <critical_hi>125</critical_hi>
+      </sensor_attributes>
+      <sensor_attributes>
+       <sensor>0/RP0-CPU</sensor>
+       <sensor_id>CPU</sensor_id>
+       <alarm/>
+       <temperature_value>41</temperature_value>
+       <value>41</value>
+       <critical_lo>-40</critical_lo>
+       <major_lo>-35</major_lo>
+       <minor_lo>-30</minor_lo>
+       <minor_hi>90</minor_hi>
+       <major_hi>96</major_hi>
+       <critical_hi>102</critical_hi>
+      </sensor_attributes>
+      <sensor_attributes>
+       <sensor>0/RP0-FAN-side Sensor</sensor>
+       <sensor_id>FAN-side Sensor</sensor_id>
+       <alarm/>
+       <temperature_value>33</temperature_value>
+       <value>33</value>
+       <critical_lo>-40</critical_lo>
+       <major_lo>-35</major_lo>
+       <minor_lo>-30</minor_lo>
+       <minor_hi>100</minor_hi>
+       <major_hi>105</major_hi>
+       <critical_hi>110</critical_hi>
+      </sensor_attributes>
+     </location>
+     <location>
+      <location>0/PM0</location>
+      <loc_header>1</loc_header>
+      <sensor_attributes>
+       <sensor>0/PM0-Hotspot Temperature</sensor>
+       <sensor_id>Hotspot Temperature</sensor_id>
+       <alarm/>
+       <temperature_value>39</temperature_value>
+       <value>39</value>
+       <critical_lo>-30</critical_lo>
+       <major_lo>-20</major_lo>
+       <minor_lo>-10</minor_lo>
+       <minor_hi>60</minor_hi>
+       <major_hi>62</major_hi>
+       <critical_hi>65</critical_hi>
+      </sensor_attributes>
+     </location>
+     <location>
+      <location>0/PM1</location>
+      <loc_header>1</loc_header>
+      <sensor_attributes>
+       <sensor>0/PM1-Hotspot Temperature</sensor>
+       <sensor_id>Hotspot Temperature</sensor_id>
+       <alarm/>
+       <temperature_value>39</temperature_value>
+       <value>39</value>
+       <critical_lo>-30</critical_lo>
+       <major_lo>-20</major_lo>
+       <minor_lo>-10</minor_lo>
+       <minor_hi>60</minor_hi>
+       <major_hi>62</major_hi>
+       <critical_hi>65</critical_hi>
+      </sensor_attributes>
+     </location>
+    </temperatures>
+    <fan>
+     <location>
+      <location>0/FT0</location>
+      <print_header>true</print_header>
+      <loc_header>1</loc_header>
+      <fan_attributes>
+       <logical_slot>0/FT0-FAN_0 speed</logical_slot>
+       <print_fan_header>=====================================
+			Fan speed (rpm)
+Location     FRU Type           FAN_0
+-------------------------------------</print_fan_header>
+       <location>0/FT0</location>
+       <fru_PID>N540-FAN</fru_PID>
+       <fans_speed>4864</fans_speed>
+       <fan_header>0</fan_header>
+       <speed_space>1</speed_space>
+      </fan_attributes>
+     </location>
+     <location>
+      <location>0/FT1</location>
+      <loc_header>1</loc_header>
+      <fan_attributes>
+       <logical_slot>0/FT1-FAN_0 speed</logical_slot>
+       <print_fan_header>=====================================
+			Fan speed (rpm)
+Location     FRU Type           FAN_0
+-------------------------------------</print_fan_header>
+       <location>0/FT1</location>
+       <fru_PID>N540-FAN</fru_PID>
+       <fans_speed>4712</fans_speed>
+       <fan_header>0</fan_header>
+       <speed_space>1</speed_space>
+      </fan_attributes>
+     </location>
+     <location>
+      <location>0/FT2</location>
+      <loc_header>1</loc_header>
+      <fan_attributes>
+       <logical_slot>0/FT2-FAN_0 speed</logical_slot>
+       <print_fan_header>=====================================
+			Fan speed (rpm)
+Location     FRU Type           FAN_0
+-------------------------------------</print_fan_header>
+       <location>0/FT2</location>
+       <fru_PID>N540-FAN</fru_PID>
+       <fans_speed>4913</fans_speed>
+       <fan_header>0</fan_header>
+       <speed_space>1</speed_space>
+      </fan_attributes>
+     </location>
+     <location>
+      <location>0/FT3</location>
+      <loc_header>1</loc_header>
+      <fan_attributes>
+       <logical_slot>0/FT3-FAN_0 speed</logical_slot>
+       <print_fan_header>=====================================
+			Fan speed (rpm)
+Location     FRU Type           FAN_0
+-------------------------------------</print_fan_header>
+       <location>0/FT3</location>
+       <fru_PID>N540-FAN</fru_PID>
+       <fans_speed>4847</fans_speed>
+       <fan_header>1</fan_header>
+       <speed_space>1</speed_space>
+      </fan_attributes>
+     </location>
+     <location>
+      <location>0/PM0</location>
+      <loc_header>1</loc_header>
+      <fan_attributes>
+       <logical_slot>0/PM0-FAN_0 Speed</logical_slot>
+       <print_fan_header>=====================================
+			Fan speed (rpm)
+Location     FRU Type           FAN_0
+-------------------------------------</print_fan_header>
+       <location>0/PM0</location>
+       <fru_PID>N540-PWR400-A</fru_PID>
+       <fans_speed>3232</fans_speed>
+       <fan_header>1</fan_header>
+       <speed_space>1</speed_space>
+      </fan_attributes>
+     </location>
+     <location>
+      <location>0/PM1</location>
+      <loc_header>1</loc_header>
+      <fan_attributes>
+       <logical_slot>0/PM1-FAN_0 Speed</logical_slot>
+       <print_fan_header>=====================================
+			Fan speed (rpm)
+Location     FRU Type           FAN_0
+-------------------------------------</print_fan_header>
+       <location>0/PM1</location>
+       <fru_PID>N540-PWR400-A</fru_PID>
+       <fans_speed>3328</fans_speed>
+       <fan_header>0</fan_header>
+       <speed_space>1</speed_space>
+      </fan_attributes>
+     </location>
+    </fan>
+    <power>
+     <location>
+      <location>0</location>
+      <pem_attributes>
+       <pem>0</pem>
+       <pem_id>0</pem_id>
+       <card_type/>
+       <confgd_power_redundancy_mode>(Group 0 + Group 1)</confgd_power_redundancy_mode>
+       <usable_power_capacity>400</usable_power_capacity>
+       <protection_power_capacity>400</protection_power_capacity>
+       <power_resrv_and_alloc>330</power_resrv_and_alloc>
+       <system_power_used>102</system_power_used>
+       <system_power_input>165</system_power_input>
+       <power_level>1</power_level>
+       <output_header>0</output_header>
+       <output_footer>0</output_footer>
+       <ps_sum_footer>0</ps_sum_footer>
+      </pem_attributes>
+     </location>
+     <location>
+      <location>0/PM0</location>
+      <pem_attributes>
+       <pem>0/PM0</pem>
+       <pem_id>0/PM0</pem_id>
+       <card_type>0/PM0</card_type>
+       <ps_type>DONT KNOW</ps_type>
+       <shelf_num>0</shelf_num>
+       <supply_type>400W-AC</supply_type>
+       <input_voltage>206.0</input_voltage>
+       <input_current>0.4</input_current>
+       <output_voltage>12.70000000000000</output_voltage>
+       <output_current>3.900000000000000</output_current>
+       <status>OK</status>
+       <input_power_to_ps>82</input_power_to_ps>
+       <input_current_to_ps>0.4</input_current_to_ps>
+       <output_power_from_ps>50</output_power_from_ps>
+       <output_current_from_ps>3.900000000000000</output_current_from_ps>
+       <power_allocated>0</power_allocated>
+       <power_consumed>-</power_consumed>
+       <power_status/>
+       <power_level>2</power_level>
+       <output_header>5</output_header>
+       <output_footer>5</output_footer>
+       <ps_sum_footer>0</ps_sum_footer>
+      </pem_attributes>
+     </location>
+     <location>
+      <location>0/PM1</location>
+      <pem_attributes>
+       <pem>0/PM1</pem>
+       <pem_id>0/PM1</pem_id>
+       <card_type>0/PM1</card_type>
+       <ps_type>DONT KNOW</ps_type>
+       <shelf_num>1</shelf_num>
+       <supply_type>400W-AC</supply_type>
+       <input_voltage>206.5</input_voltage>
+       <input_current>0.4</input_current>
+       <output_voltage>12.70000000000000</output_voltage>
+       <output_current>4.100000000000000</output_current>
+       <status>OK</status>
+       <input_power_to_ps>83</input_power_to_ps>
+       <input_current_to_ps>0.4</input_current_to_ps>
+       <output_power_from_ps>52</output_power_from_ps>
+       <output_current_from_ps>4.100000000000000</output_current_from_ps>
+       <power_allocated>0</power_allocated>
+       <power_consumed>-</power_consumed>
+       <power_status/>
+       <power_level>2</power_level>
+       <output_header>5</output_header>
+       <output_footer>5</output_footer>
+       <ps_sum_footer>2</ps_sum_footer>
+      </pem_attributes>
+     </location>
+     <location>
+      <location>0/RP0</location>
+      <pem_attributes>
+       <pem>0-N540-24Z8Q2C-M</pem>
+       <pem_id>N540-24Z8Q2C-M</pem_id>
+       <card_type>0/RP0</card_type>
+       <ps_type>DONT KNOW</ps_type>
+       <shelf_num>0</shelf_num>
+       <supply_type/>
+       <input_voltage>0.0</input_voltage>
+       <input_current>0.0</input_current>
+       <output_voltage>0.000000000000000e+0</output_voltage>
+       <output_current>0.000000000000000e+0</output_current>
+       <status/>
+       <input_power_to_ps>82</input_power_to_ps>
+       <input_current_to_ps>0.4</input_current_to_ps>
+       <output_power_from_ps>50</output_power_from_ps>
+       <output_current_from_ps>3.900000000000000</output_current_from_ps>
+       <power_allocated>250</power_allocated>
+       <power_consumed>-</power_consumed>
+       <power_status>ON</power_status>
+       <power_level>3</power_level>
+       <output_header>3</output_header>
+       <output_footer>0</output_footer>
+       <ps_sum_footer>0</ps_sum_footer>
+      </pem_attributes>
+     </location>
+     <location>
+      <location>0/FT0</location>
+      <pem_attributes>
+       <pem>0-N540-FAN</pem>
+       <pem_id>N540-FAN</pem_id>
+       <card_type>0/FT0</card_type>
+       <ps_type>DONT KNOW</ps_type>
+       <shelf_num>0</shelf_num>
+       <supply_type/>
+       <input_voltage>0.0</input_voltage>
+       <input_current>0.0</input_current>
+       <output_voltage>0.000000000000000e+0</output_voltage>
+       <output_current>0.000000000000000e+0</output_current>
+       <status/>
+       <input_power_to_ps>82</input_power_to_ps>
+       <input_current_to_ps>0.4</input_current_to_ps>
+       <output_power_from_ps>50</output_power_from_ps>
+       <output_current_from_ps>3.900000000000000</output_current_from_ps>
+       <power_allocated>20</power_allocated>
+       <power_consumed>-</power_consumed>
+       <power_status>ON</power_status>
+       <power_level>3</power_level>
+       <output_header>0</output_header>
+       <output_footer>0</output_footer>
+       <ps_sum_footer>0</ps_sum_footer>
+      </pem_attributes>
+     </location>
+     <location>
+      <location>0/FT1</location>
+      <pem_attributes>
+       <pem>0-N540-FAN</pem>
+       <pem_id>N540-FAN</pem_id>
+       <card_type>0/FT1</card_type>
+       <ps_type>DONT KNOW</ps_type>
+       <shelf_num>0</shelf_num>
+       <supply_type/>
+       <input_voltage>0.0</input_voltage>
+       <input_current>0.0</input_current>
+       <output_voltage>0.000000000000000e+0</output_voltage>
+       <output_current>0.000000000000000e+0</output_current>
+       <status/>
+       <input_power_to_ps>82</input_power_to_ps>
+       <input_current_to_ps>0.4</input_current_to_ps>
+       <output_power_from_ps>50</output_power_from_ps>
+       <output_current_from_ps>3.900000000000000</output_current_from_ps>
+       <power_allocated>20</power_allocated>
+       <power_consumed>-</power_consumed>
+       <power_status>ON</power_status>
+       <power_level>3</power_level>
+       <output_header>0</output_header>
+       <output_footer>0</output_footer>
+       <ps_sum_footer>0</ps_sum_footer>
+      </pem_attributes>
+     </location>
+     <location>
+      <location>0/FT2</location>
+      <pem_attributes>
+       <pem>0-N540-FAN</pem>
+       <pem_id>N540-FAN</pem_id>
+       <card_type>0/FT2</card_type>
+       <ps_type>DONT KNOW</ps_type>
+       <shelf_num>0</shelf_num>
+       <supply_type/>
+       <input_voltage>0.0</input_voltage>
+       <input_current>0.0</input_current>
+       <output_voltage>0.000000000000000e+0</output_voltage>
+       <output_current>0.000000000000000e+0</output_current>
+       <status/>
+       <input_power_to_ps>82</input_power_to_ps>
+       <input_current_to_ps>0.4</input_current_to_ps>
+       <output_power_from_ps>50</output_power_from_ps>
+       <output_current_from_ps>3.900000000000000</output_current_from_ps>
+       <power_allocated>20</power_allocated>
+       <power_consumed>-</power_consumed>
+       <power_status>ON</power_status>
+       <power_level>3</power_level>
+       <output_header>0</output_header>
+       <output_footer>0</output_footer>
+       <ps_sum_footer>0</ps_sum_footer>
+      </pem_attributes>
+     </location>
+     <location>
+      <location>0/FT3</location>
+      <pem_attributes>
+       <pem>0-N540-FAN</pem>
+       <pem_id>N540-FAN</pem_id>
+       <card_type>0/FT3</card_type>
+       <ps_type>DONT KNOW</ps_type>
+       <shelf_num>0</shelf_num>
+       <supply_type/>
+       <input_voltage>0.0</input_voltage>
+       <input_current>0.0</input_current>
+       <output_voltage>0.000000000000000e+0</output_voltage>
+       <output_current>0.000000000000000e+0</output_current>
+       <status/>
+       <input_power_to_ps>82</input_power_to_ps>
+       <input_current_to_ps>0.4</input_current_to_ps>
+       <output_power_from_ps>50</output_power_from_ps>
+       <output_current_from_ps>3.900000000000000</output_current_from_ps>
+       <power_allocated>20</power_allocated>
+       <power_consumed>-</power_consumed>
+       <power_status>ON</power_status>
+       <power_level>3</power_level>
+       <output_header>0</output_header>
+       <output_footer>0</output_footer>
+       <ps_sum_footer>0</ps_sum_footer>
+      </pem_attributes>
+     </location>
+    </power>
+   </oper>
+  </environment>
+ </data>
+</rpc-reply>
