@@ -4,6 +4,9 @@ from setuptools import setup, find_packages
 with open("requirements.txt", "r") as fs:
     reqs = [r for r in fs.read().splitlines() if (len(r) > 0 and not r.startswith("#"))]
 
+with open("README.md", "r") as fs:
+    long_description = fs.read()
+
 
 __author__ = "David Barroso <dbarrosop@dravetech.com>"
 
@@ -15,6 +18,8 @@ setup(
     author="David Barroso, Kirk Byers, Mircea Ulinic",
     author_email="dbarrosop@dravetech.com, ping@mirceaulinic.net, ktbyers@twb-tech.com",
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     classifiers=[
         "Topic :: Utilities",
         "Programming Language :: Python",

@@ -129,6 +129,8 @@ Podcasts
 Authors
 =======
  * David Barroso ([dbarrosop@dravetech.com](mailto:dbarrosop@dravetech.com))
+ * Mircea Ulinic ([ping@mirceaulinic.net](mailto:ping@mirceaulinic.net))
+ * Kirk Byers ([ktbyers@twb-tech.com](mailto:ktbyers@twb-tech.com))
  * Elisa Jasinska ([elisa@bigwaveit.org](mailto:elisa@bigwaveit.org))
  * Many others, check the [contributors](https://github.com/napalm-automation/napalm/graphs/contributors) page for details.
 
@@ -136,7 +138,9 @@ Authors
 Thanks
 ======
 
-This project was founded by David Barroso as part of [Spotify][spotify] and Elisa Jasinska as part of [BigWave IT][bigwave]. Originally it was hosted by the [Spotify][spotify] organization but due to the many contributions received by third parties we agreed creating a dedicated organization for NAPALM and give a big thanks to [Spotify][spotify] for the support.
+This project is maintained by David Barroso, Mircea Ulinic, and Kirk Byers and a set of other contributors.
+
+Originally it was hosted by the [Spotify][spotify] organization but due to the many contributions received by third parties we agreed creating a dedicated organization for NAPALM and give a big thanks to [Spotify][spotify] for the support.
 
 [spotify]: http://www.spotify.com
 [bigwave]: http://bigwaveit.org/
