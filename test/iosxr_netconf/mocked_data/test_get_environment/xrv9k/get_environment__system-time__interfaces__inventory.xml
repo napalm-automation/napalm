@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<rpc-reply message-id="urn:uuid:2fd7ce09-eb54-4dda-bbb6-99db5dbec001" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+ <data>
+  <system-time xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-shellutil-oper">
+   <clock>
+    <year>2020</year>
+    <month>4</month>
+    <day>14</day>
+    <hour>0</hour>
+    <minute>40</minute>
+    <second>38</second>
+    <millisecond>464</millisecond>
+    <wday>2</wday>
+    <time-zone>UTC</time-zone>
+    <time-source>calendar</time-source>
+   </clock>
+   <uptime>
+    <host-name>domingo</host-name>
+    <uptime>11393</uptime>
+   </uptime>
+  </system-time>
+  <interfaces xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-pfi-im-cmd-oper">
+   <interfaces>
+    <interface>
+     <interface-name>GigabitEthernet0/0/0/0</interface-name>
+    </interface>
+    <interface>
+     <interface-name>GigabitEthernet0/0/0/1</interface-name>
+    </interface>
+    <interface>
+     <interface-name>Loopback0</interface-name>
+    </interface>
+    <interface>
+     <interface-name>MgmtEth0/RP0/CPU0/0</interface-name>
+    </interface>
+    <interface>
+     <interface-name>Null0</interface-name>
+    </interface>
+   </interfaces>
+  </interfaces>
+  <inventory xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-invmgr-oper">
+   <entities>
+    <entity>
+     <name>Rack 0</name>
+     <attributes>
+      <inv-basic-bag>
+       <software-revision>6.3.2</software-revision>
+       <serial-number>0D1FDCA5761</serial-number>
+       <model-name>R-IOSXRV9000-CC</model-name>
+      </inv-basic-bag>
+     </attributes>
+    </entity>
+   </entities>
+  </inventory>
+ </data>
+</rpc-reply>

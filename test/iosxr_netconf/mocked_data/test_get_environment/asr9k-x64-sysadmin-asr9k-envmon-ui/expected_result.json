@@ -1,0 +1,118 @@
+{
+    "cpu": {
+        "0/0/CPU0": {
+            "%usage": 2.0
+        },
+        "0/1/CPU0": {
+            "%usage": 2.0
+        },
+        "0/2/CPU0": {
+            "%usage": 2.0
+        },
+        "0/3/CPU0": {
+            "%usage": 1.0
+        },
+        "0/RSP0/CPU0": {
+            "%usage": 1.0
+        },
+        "0/RSP1/CPU0": {
+            "%usage": 1.0
+        }
+    },
+    "fans": {
+        "FT0": {
+            "status": true
+        },
+        "FT1": {
+            "status": true
+        }
+    },
+    "memory": {
+        "available_ram": 36829560832,
+        "used_ram": 7392606208
+    },
+    "power": {
+        "0/PT0-PM0": {
+            "capacity": 6000.0,
+            "output": 2015.36,
+            "status": true
+        },
+        "0/PT0-PM1": {
+            "capacity": 6000.0,
+            "output": 1892.08,
+            "status": true
+        },
+        "0/PT0-PM2": {
+            "capacity": 6000.0,
+            "output": 0.0,
+            "status": false
+        }
+    },
+    "temperature": {
+        "0/0": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 26.0
+        },
+        "0/1": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 31.0
+        },
+        "0/2": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 36.0
+        },
+        "0/3": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 27.0
+        },
+        "0/FC0": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 23.0
+        },
+        "0/FC1": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 23.0
+        },
+        "0/FC2": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 23.0
+        },
+        "0/FC3": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 25.0
+        },
+        "0/FC4": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 25.0
+        },
+        "0/FT0": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 30.0
+        },
+        "0/FT1": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 34.0
+        },
+        "0/RSP0": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 28.0
+        },
+        "0/RSP1": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 25.0
+        }
+    }
+}
