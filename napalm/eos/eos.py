@@ -129,6 +129,7 @@ class EOSDriver(NetworkDriver):
         transport = optional_args.get(
             "transport", optional_args.get("eos_transport", "https")
         )
+        self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
         try:
             self.transport_class = pyeapi.client.TRANSPORTS[transport]
         except KeyError:
@@ -285,9 +286,13 @@ class EOSDriver(NetworkDriver):
 
         try:
             if self.eos_autoComplete is not None:
-                self.device.run_commands(commands, autoComplete=self.eos_autoComplete)
+                self.device.run_commands(
+                    commands,
+                    autoComplete=self.eos_autoComplete,
+                    fn0039_transform=self.fn0039_config,
+                )
             else:
-                self.device.run_commands(commands)
+                self.device.run_commands(commands, fn0039_transform=self.fn0039_config)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             msg = str(e)
