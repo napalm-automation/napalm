@@ -1562,7 +1562,6 @@ class NXOSSSHDriver(NXOSDriverBase):
         port_ts_l = port_ts_re.findall(output)
 
         for port_ts in port_ts_l:
-            # print(port_ts)
             port = port_re.search(port_ts).group(1)
             if "transceiver is not present" in port_ts:
                 continue
@@ -1573,7 +1572,6 @@ class NXOSSSHDriver(NXOSDriverBase):
             vendor_rev = vendor_rev_re.search(port_ts).group(1)
             serial_no = serial_no_re.search(port_ts).group(1)
             type_s = type_no_re.search(port_ts).group(1)
-            # print(type_s)
             state = {
                 "vendor": vendor.strip(),
                 "vendor_part": vendor_part.strip(),
@@ -1633,6 +1631,5 @@ class NXOSSSHDriver(NXOSDriverBase):
 
             port_detail["state"] = state
             optics_detail[port] = port_detail
-            # print(port_detail)
 
         return optics_detail
