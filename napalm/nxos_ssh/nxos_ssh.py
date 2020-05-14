@@ -1563,7 +1563,10 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         for port_ts in port_ts_l:
             port = port_re.search(port_ts).group(1)
+            # No transceiver is present in those case
             if "transceiver is not present" in port_ts:
+                continue
+            if "transceiver is not applicable" in port_ts:
                 continue
             port_detail = {"physical_channels": {"channel": []}}
             # No metric present
