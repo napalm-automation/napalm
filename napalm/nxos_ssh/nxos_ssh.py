@@ -444,7 +444,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         raw_text argument is not used and is for code sharing with NX-API.
         """
-        return self.device.send_command(command)
+        return self.device.send_command(command, max_loops=1000)
 
     def _send_command_list(self, commands, expect_string=None):
         """Wrapper for Netmiko's send_command method (for list of commands."""
