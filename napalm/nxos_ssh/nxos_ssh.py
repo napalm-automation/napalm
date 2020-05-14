@@ -506,7 +506,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 return {"is_alive": False}
             else:
                 # Try sending ASCII null byte to maintain the connection alive
-                self._send_command(null, command_verify=False)
+                self._send_command(null, cmd_verify=False)
         except (socket.error, EOFError):
             # If unable to send, we can tell for sure that the connection is unusable,
             # hence return False.
