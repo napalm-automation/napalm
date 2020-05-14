@@ -430,15 +430,15 @@ class NXOSSSHDriver(NXOSDriverBase):
         )
         self.platform = "nxos_ssh"
         self.connector_type_map = {
-            '1000base-LH': 'LC_CONNECTOR',
-            '1000base-SX': 'LC_CONNECTOR',
-            '1000base-T': 'Unknown',
-            '10Gbase-LR': 'LC_CONNECTOR',
-            '10Gbase-SR': 'LC_CONNECTOR',
-            'SFP-H10GB-CU1M': 'DAC_CONNECTOR',
-            'SFP-H10GB-CU1.45M': 'DAC_CONNECTOR',
-            'SFP-H10GB-CU3M': 'DAC_CONNECTOR',
-            'SFP-H10GB-CU3.45M': 'DAC_CONNECTOR',
+            "1000base-LH": "LC_CONNECTOR",
+            "1000base-SX": "LC_CONNECTOR",
+            "1000base-T": "Unknown",
+            "10Gbase-LR": "LC_CONNECTOR",
+            "10Gbase-SR": "LC_CONNECTOR",
+            "SFP-H10GB-CU1M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU1.45M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU3M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU3.45M": "DAC_CONNECTOR",
         }
 
     def open(self):
@@ -1548,23 +1548,23 @@ class NXOSSSHDriver(NXOSDriverBase):
         optics_detail = {}
 
         # Extraction Regexps
-        port_ts_re = re.compile(r'^Ether.*?(?=\nEther|\Z)', re.M | re.DOTALL)
-        port_re = re.compile(r'^(Ether.*)[ ]*?$', re.M)
-        vendor_re = re.compile('name is (.*)$', re.M)
-        vendor_part_re = re.compile('part number is (.*)$', re.M)
-        vendor_rev_re = re.compile('revision is (.*)$', re.M)
-        serial_no_re = re.compile('serial number is (.*)$', re.M)
-        type_no_re = re.compile('type is (.*)$', re.M)
-        rx_instant_re = re.compile(r'Rx Power[ ]+(?:(.*?)[ ]+dBm|(N.A))', re.M)
-        tx_instant_re = re.compile(r'Tx Power[ ]+(?:(.*?)[ ]+dBm|(N.A))', re.M)
-        current_instant_re = re.compile(r'Current[ ]+(.*?)[ ]+mA', re.M)
+        port_ts_re = re.compile(r"^Ether.*?(?=\nEther|\Z)", re.M | re.DOTALL)
+        port_re = re.compile(r"^(Ether.*)[ ]*?$", re.M)
+        vendor_re = re.compile("name is (.*)$", re.M)
+        vendor_part_re = re.compile("part number is (.*)$", re.M)
+        vendor_rev_re = re.compile("revision is (.*)$", re.M)
+        serial_no_re = re.compile("serial number is (.*)$", re.M)
+        type_no_re = re.compile("type is (.*)$", re.M)
+        rx_instant_re = re.compile(r"Rx Power[ ]+(?:(.*?)[ ]+dBm|(N.A))", re.M)
+        tx_instant_re = re.compile(r"Tx Power[ ]+(?:(.*?)[ ]+dBm|(N.A))", re.M)
+        current_instant_re = re.compile(r"Current[ ]+(.*?)[ ]+mA", re.M)
 
         port_ts_l = port_ts_re.findall(output)
 
         for port_ts in port_ts_l:
             # print(port_ts)
             port = port_re.search(port_ts).group(1)
-            if 'transceiver is not present' in port_ts:
+            if "transceiver is not present" in port_ts:
                 continue
             port_detail = {"physical_channels": {"channel": []}}
             # No metric present
@@ -1575,12 +1575,11 @@ class NXOSSSHDriver(NXOSDriverBase):
             type_s = type_no_re.search(port_ts).group(1)
             # print(type_s)
             state = {
-                'vendor': vendor.strip(),
-                'vendor_part': vendor_part.strip(),
-                'vendor_rev': vendor_rev.strip(),
-                'serial_no': serial_no.strip(),
-                'connector_type': self.connector_type_map.get(type_s,
-                                                              "Unknown")
+                "vendor": vendor.strip(),
+                "vendor_part": vendor_part.strip(),
+                "vendor_rev": vendor_rev.strip(),
+                "serial_no": serial_no.strip(),
+                "connector_type": self.connector_type_map.get(type_s, "Unknown"),
             }
             if "DOM is not supported" not in port_ts:
                 res = rx_instant_re.search(port_ts)
@@ -1607,13 +1606,17 @@ class NXOSSSHDriver(NXOSDriverBase):
                     "index": 0,
                     "state": {
                         "input_power": {
-                            "instant": (float(input_power) if "input_power" else -100.0),
+                            "instant": (
+                                float(input_power) if "input_power" else -100.0
+                            ),
                             "avg": -100.0,
                             "min": -100.0,
                             "max": -100.0,
                         },
                         "output_power": {
-                            "instant": (float(output_power) if "output_power" else -100.0),
+                            "instant": (
+                                float(output_power) if "output_power" else -100.0
+                            ),
                             "avg": -100.0,
                             "min": -100.0,
                             "max": -100.0,
@@ -1628,7 +1631,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 }
                 port_detail["physical_channels"]["channel"].append(optic_states)
 
-            port_detail['state'] = state
+            port_detail["state"] = state
             optics_detail[port] = port_detail
             # print(port_detail)
 
