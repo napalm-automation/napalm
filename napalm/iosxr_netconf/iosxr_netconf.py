@@ -576,18 +576,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         neighbor, "./bgp:router-id", default="", namespaces=C.NS
                     ),
                 )
-
-                if (
-                    self._find_txt(
-                        neighbor,
-                        "./bgp:connection-admin-status",
-                        default="",
-                        namespaces=C.NS,
-                    )
-                    == "1"
-                ):
-                    this_neighbor["is_enabled"] = True
-
                 try:
                     this_neighbor["description"] = napalm.base.helpers.convert(
                         str,
@@ -602,16 +590,15 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     )
                     this_neighbor["description"] = ""
 
-                this_neighbor["is_enabled"] = (
+                this_neighbor["is_enabled"] = not (
                     self._find_txt(
                         neighbor,
-                        "./bgp:connection-admin-status",
+                        "./bgp:is-administratively-shut-down",
                         default="",
                         namespaces=C.NS,
                     )
-                    == "1"
+                    == "true"
                 )
-
                 if (
                     str(
                         self._find_txt(
