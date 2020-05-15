@@ -133,6 +133,13 @@ ____________________________________
 * :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`use_keys` (ios, iosxr, nxos_ssh) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
 * :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
+* :code:`eos_fn0039_config` (eos) - Transform old style configuration to the new 
+  style, available beginning with EOS release 4.23.0, as per FN 0039. Beware 
+  that enabling this option will change the configuration you're loading 
+  through NAPALM. Default: ``False`` (won't change your configuration 
+  commands).
+
+  .. versionadded:: 3.0.1
 
 The transport argument
 ______________________
