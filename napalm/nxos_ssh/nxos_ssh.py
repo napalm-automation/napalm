@@ -1555,9 +1555,9 @@ class NXOSSSHDriver(NXOSDriverBase):
         vendor_rev_re = re.compile("revision is (.*)$", re.M)
         serial_no_re = re.compile("serial number is (.*)$", re.M)
         type_no_re = re.compile("type is (.*)$", re.M)
-        rx_instant_re = re.compile(r"Rx Power[ ]+(?:(.*?)[ ]+dBm|(N.A))", re.M)
-        tx_instant_re = re.compile(r"Tx Power[ ]+(?:(.*?)[ ]+dBm|(N.A))", re.M)
-        current_instant_re = re.compile(r"Current[ ]+(.*?)[ ]+mA", re.M)
+        rx_instant_re = re.compile(r"Rx Power[ ]+(?:(\S+?)[ ]+dBm|(N.A))", re.M)
+        tx_instant_re = re.compile(r"Tx Power[ ]+(?:(\S+?)[ ]+dBm|(N.A))", re.M)
+        current_instant_re = re.compile(r"Current[ ]+(?:(\S+?)[ ]+mA|(N.A))", re.M)
 
         port_ts_l = port_ts_re.findall(output)
 
@@ -1587,7 +1587,8 @@ class NXOSSSHDriver(NXOSDriverBase):
                 input_power = res.group(1) or res.group(2)
                 res = tx_instant_re.search(port_ts)
                 output_power = res.group(1) or res.group(2)
-                current = current_instant_re.search(port_ts).group(1)
+                res = current_instant_re.search(port_ts)
+                current = res.group(1) or res.group(2)
 
                 # If interface is shutdown it returns "N/A" as output power
                 # or "N/A" as input power
@@ -1600,6 +1601,10 @@ class NXOSSSHDriver(NXOSDriverBase):
                     float(input_power)
                 except ValueError:
                     input_power = -100.0
+                try:
+                    float(current)
+                except ValueError:
+                    current = -100.0
 
                 # Defaulting avg, min, max values to -100.0 since device does not
                 # return these values
