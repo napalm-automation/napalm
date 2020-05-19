@@ -811,7 +811,7 @@ class IOSDriver(NetworkDriver):
                 input_power = split_list[4]
             elif len(split_list) >= 6:
                 int_brief = split_list[0]
-            #    current = split_list[3]
+                current = split_list[3]
                 output_power = split_list[4]
                 input_power = split_list[5]
 
