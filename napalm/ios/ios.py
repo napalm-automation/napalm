@@ -799,7 +799,7 @@ class IOSDriver(NetworkDriver):
         for optics_entry in split_output.splitlines():
             # Example, Te1/0/1      34.6       3.29      -2.0      -3.5
             try:
-                optics_entry = optics_entry.strip('-')
+                optics_entry = optics_entry.strip("-")
                 split_list = optics_entry.split()
             except ValueError:
                 return {}
