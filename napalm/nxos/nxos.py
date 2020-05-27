@@ -963,9 +963,7 @@ class NXOSDriver(NXOSDriverBase):
 
                 for neighbor_dict in neighbors_list:
                     neighborid = napalm.base.helpers.ip(neighbor_dict["neighborid"])
-                    remoteas = as_number(
-                        neighbor_dict["neighboras"]
-                    )
+                    remoteas = as_number(neighbor_dict["neighboras"])
                     state = str(neighbor_dict["state"])
 
                     bgp_state = bgp_state_dict[state]
