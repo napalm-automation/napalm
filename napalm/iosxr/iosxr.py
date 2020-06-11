@@ -128,7 +128,11 @@ class IOSXRDriver(NetworkDriver):
         else:
             return self.device.compare_config().strip()
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", confirm_timeout=None):
+        if confirm_timeout is not None:
+            raise NotImplementedError(
+                "Commit confirmation timer is not implemented on this platform"
+            )
         commit_args = {"comment": message} if message else {}
         if self.replace:
             self.device.commit_replace_config(**commit_args)

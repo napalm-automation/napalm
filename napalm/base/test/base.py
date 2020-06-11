@@ -153,6 +153,62 @@ class TestConfigNetworkDriver(object):
         self.device.discard_config()
         self.assertTrue(diff != "")
 
+    def test_replacing_and_committing_config_with_confirm(self):
+        try:
+            self.device.load_replace_candidate(
+                filename="%s/new_good.conf" % self.vendor
+            )
+            self.device.commit_config(confirmed=10)
+            self.device.commit_confirm()
+        except NotImplementedError:
+            raise SkipTest()
+
+        # The diff should be empty as the configuration has been committed already
+        diff = self.device.compare_config()
+
+        # Reverting changes
+        self.device.load_replace_candidate(filename="%s/initial.conf" % self.vendor)
+        self.device.commit_config()
+
+        self.assertEqual(len(diff), 0)
+
+    def test_replacing_and_commit_config_with_confirm_and_revert(self):
+        try:
+            self.device.load_replace_candidate(
+                filename="%s/new_good.conf" % self.vendor
+            )
+            self.device.commit_config(confirmed=10)
+            self.device.commit_revert()
+        except NotImplementedError:
+            raise SkipTest()
+
+        # Load original config which should be our reverted stated
+        self.device.load_replace_candidate(filename="%s/initial.conf" % self.vendor)
+
+        # The diff should be empty as the commit was aborted
+        diff = self.device.compare_config()
+
+        self.assertEqual(len(diff), 0)
+
+    def test_commit_config_with_confirm_for_pending_commit(self):
+        try:
+            self.device.load_replace_candidate(
+                filename="%s/new_good.conf" % self.vendor
+            )
+            self.device.commit_config(confirmed=10)
+            self.assertTrue(self.device.has_pending_commit())
+            self.device.commit_revert()
+        except NotImplementedError:
+            raise SkipTest()
+
+        # Load original config which should be our reverted stated
+        self.device.load_replace_candidate(filename="%s/initial.conf" % self.vendor)
+
+        # The diff should be empty as the commit was aborted
+        diff = self.device.compare_config()
+
+        self.assertEqual(len(diff), 0)
+
 
 class TestGettersNetworkDriver(object):
     @staticmethod
