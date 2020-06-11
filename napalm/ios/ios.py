@@ -499,12 +499,16 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", confirm_timeout=None):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """
+        if confirm_timeout is not None:
+            raise NotImplementedError(
+                "Commit confirmation timer is not implemented on this platform"
+            )
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
