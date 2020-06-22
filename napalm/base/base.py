@@ -94,9 +94,13 @@ class NetworkDriver(object):
         except NetMikoTimeoutException:
             raise ConnectionException("Cannot connect to {}".format(self.hostname))
 
-        # ensure in enable mode if not force disable
-        if not self.force_no_enable:
-            self._netmiko_device.enable()
+        # Ensure in enable mode if not force disable for device types that support enable
+        # mode (currently, Cisco ios and nxos)
+        enable_device_types = ['cisco_ios_telnet','cisco_ios', 'cisco_nxos']
+        if device_type in enable_device_types:
+            if not self.force_no_enable:
+                self._netmiko_device.enable()
+
         return self._netmiko_device
 
     def _netmiko_close(self):
