@@ -100,6 +100,8 @@ class NetworkDriver(object):
         if device_type in enable_device_types:
             if not self.force_no_enable:
                 self._netmiko_device.enable()
+        else:
+            self._netmiko_device.enable()
 
         return self._netmiko_device
 
