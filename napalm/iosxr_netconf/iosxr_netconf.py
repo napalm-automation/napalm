@@ -2987,4 +2987,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
             config["running"] = str(self.device.get_config(source="running").xml)
         if retrieve.lower() in ["candidate", "all"]:
             config["candidate"] = str(self.device.get_config(source="candidate").xml)
+        parser = ETREE.XMLParser(remove_blank_text=True)
+        # Validate XML config strings and remove rpc-reply tag
+        for datastore in config:
+            if config[datastore] != "":
+                config[datastore] = ETREE.tostring(
+                      ETREE.XML(config[datastore], parser=parser)[0], pretty_print=True,
+                      encoding='unicode')
         return config
