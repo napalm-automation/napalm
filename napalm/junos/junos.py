@@ -429,6 +429,9 @@ class JunOSDriver(NetworkDriver):
                 structured_object_data["class"] = current_class
 
             if structured_object_data["class"] == "Power":
+                # Make sure naming is consistent
+                sensor_object = sensor_object.replace("PEM", "Power Supply")
+                
                 # Create a dict for the 'power' key
                 try:
                     environment_data["power"][sensor_object] = {}
