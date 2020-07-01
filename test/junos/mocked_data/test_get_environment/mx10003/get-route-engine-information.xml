@@ -1,0 +1,63 @@
+<route-engine-information>
+    <route-engine>
+        <slot>0</slot>
+        <mastership-state>master</mastership-state>
+        <mastership-priority>master (default)</mastership-priority>
+        <status>OK</status>
+        <temperature celsius="39">39 degrees C / 102 degrees F</temperature>
+        <cpu-temperature celsius="40">40 degrees C / 104 degrees F</cpu-temperature>
+        <memory-dram-size>49106 MB</memory-dram-size>
+        <memory-installed-size>(49152 MB installed)</memory-installed-size>
+        <memory-buffer-utilization>50</memory-buffer-utilization>
+        <cpu-user>2</cpu-user>
+        <cpu-background>0</cpu-background>
+        <cpu-system>3</cpu-system>
+        <cpu-interrupt>1</cpu-interrupt>
+        <cpu-idle>95</cpu-idle>
+        <cpu-user1>2</cpu-user1>
+        <cpu-background1>0</cpu-background1>
+        <cpu-system1>2</cpu-system1>
+        <cpu-interrupt1>1</cpu-interrupt1>
+        <cpu-idle1>95</cpu-idle1>
+        <cpu-user2>2</cpu-user2>
+        <cpu-background2>0</cpu-background2>
+        <cpu-system2>2</cpu-system2>
+        <cpu-interrupt2>1</cpu-interrupt2>
+        <cpu-idle2>95</cpu-idle2>
+        <cpu-user3>2</cpu-user3>
+        <cpu-background3>0</cpu-background3>
+        <cpu-system3>2</cpu-system3>
+        <cpu-interrupt3>1</cpu-interrupt3>
+        <cpu-idle3>95</cpu-idle3>
+        <model>RE-S-1600x8</model>
+        <start-time seconds="1573239583">2019-11-08 19:59:43 CET</start-time>
+        <up-time seconds="20360313">235 days, 15 hours, 38 minutes, 33 seconds</up-time>
+        <last-reboot-reason>0x2000:hypervisor reboot</last-reboot-reason>
+        <load-average-one>0.22</load-average-one>
+        <load-average-five>0.30</load-average-five>
+        <load-average-fifteen>0.35</load-average-fifteen>
+    </route-engine>
+    <route-engine>
+        <slot>1</slot>
+        <mastership-state>backup</mastership-state>
+        <mastership-priority>backup (default)</mastership-priority>
+        <status>OK</status>
+        <temperature celsius="39">39 degrees C / 102 degrees F</temperature>
+        <cpu-temperature celsius="39">39 degrees C / 102 degrees F</cpu-temperature>
+        <memory-dram-size>49106 MB</memory-dram-size>
+        <memory-installed-size>(49152 MB installed)</memory-installed-size>
+        <memory-buffer-utilization>7</memory-buffer-utilization>
+        <cpu-user>1</cpu-user>
+        <cpu-background>0</cpu-background>
+        <cpu-system>1</cpu-system>
+        <cpu-interrupt>0</cpu-interrupt>
+        <cpu-idle>99</cpu-idle>
+        <model>RE-S-1600x8</model>
+        <start-time seconds="1573240662">2019-11-08 20:17:42 CET</start-time>
+        <up-time seconds="20359219">235 days, 15 hours, 20 minutes, 19 seconds</up-time>
+        <last-reboot-reason>0x2000:hypervisor reboot</last-reboot-reason>
+        <load-average-one>0.26</load-average-one>
+        <load-average-five>0.21</load-average-five>
+        <load-average-fifteen>0.17</load-average-fifteen>
+    </route-engine>
+</route-engine-information>
