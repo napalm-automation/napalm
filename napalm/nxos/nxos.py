@@ -43,6 +43,7 @@ from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.helpers import generate_regex_or
+from napalm.base.helpers import as_number
 from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.constants as c
 
@@ -962,9 +963,7 @@ class NXOSDriver(NXOSDriverBase):
 
                 for neighbor_dict in neighbors_list:
                     neighborid = napalm.base.helpers.ip(neighbor_dict["neighborid"])
-                    remoteas = napalm.base.helpers.as_number(
-                        neighbor_dict["neighboras"]
-                    )
+                    remoteas = as_number(neighbor_dict["neighboras"])
                     state = str(neighbor_dict["state"])
 
                     bgp_state = bgp_state_dict[state]
@@ -972,7 +971,7 @@ class NXOSDriver(NXOSDriverBase):
                     safi_name = afid_dict[int(saf_dict["safi"])]
 
                     result_peer_dict = {
-                        "local_as": int(vrf_dict["vrf-local-as"]),
+                        "local_as": as_number(vrf_dict["vrf-local-as"]),
                         "remote_as": remoteas,
                         "remote_id": neighborid,
                         "is_enabled": bgp_state["is_enabled"],
