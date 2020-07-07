@@ -576,18 +576,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         neighbor, "./bgp:router-id", default="", namespaces=C.NS
                     ),
                 )
-
-                if (
-                    self._find_txt(
-                        neighbor,
-                        "./bgp:connection-admin-status",
-                        default="",
-                        namespaces=C.NS,
-                    )
-                    == "1"
-                ):
-                    this_neighbor["is_enabled"] = True
-
                 try:
                     this_neighbor["description"] = napalm.base.helpers.convert(
                         str,
@@ -602,16 +590,15 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     )
                     this_neighbor["description"] = ""
 
-                this_neighbor["is_enabled"] = (
+                this_neighbor["is_enabled"] = not (
                     self._find_txt(
                         neighbor,
-                        "./bgp:connection-admin-status",
+                        "./bgp:is-administratively-shut-down",
                         default="",
                         namespaces=C.NS,
                     )
-                    == "1"
+                    == "true"
                 )
-
                 if (
                     str(
                         self._find_txt(
@@ -1278,7 +1265,17 @@ class IOSXRNETCONFDriver(NetworkDriver):
             description = self._find_txt(
                 bgp_neighbor, "./bgpc:description", default="", namespaces=C.NS
             )
-            peer_as = napalm.base.helpers.convert(
+            peer_as_x = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    bgp_neighbor,
+                    "./bgpc:remote-as/bgpc:as-xx",
+                    default="",
+                    namespaces=C.NS,
+                ),
+                0,
+            )
+            peer_as_y = napalm.base.helpers.convert(
                 int,
                 self._find_txt(
                     bgp_neighbor,
@@ -1288,7 +1285,18 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 0,
             )
-            local_as = napalm.base.helpers.convert(
+            peer_as = peer_as_x * 65536 + peer_as_y
+            local_as_x = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    bgp_neighbor,
+                    "./bgpc:local-as/bgpc:as-xx",
+                    default="",
+                    namespaces=C.NS,
+                ),
+                0,
+            )
+            local_as_y = napalm.base.helpers.convert(
                 int,
                 self._find_txt(
                     bgp_neighbor,
@@ -1298,6 +1306,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 0,
             )
+            local_as = local_as_x * 65536 + local_as_y
             af_table = self._find_txt(
                 bgp_neighbor,
                 "./bgpc:neighbor-afs/bgpc:neighbor-af/bgpc:af-name",
@@ -1423,7 +1432,17 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 )
                 == "true"
             )
-            peer_as = napalm.base.helpers.convert(
+            peer_as_x = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    bgp_group,
+                    "./bgpc:remote-as/bgpc:as-xx",
+                    default="",
+                    namespaces=C.NS,
+                ),
+                0,
+            )
+            peer_as_y = napalm.base.helpers.convert(
                 int,
                 self._find_txt(
                     bgp_group,
@@ -1433,13 +1452,28 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 ),
                 0,
             )
-            local_as = napalm.base.helpers.convert(
+            peer_as = peer_as_x * 65536 + peer_as_y
+            local_as_x = napalm.base.helpers.convert(
                 int,
                 self._find_txt(
-                    bgp_group, "./bgpc:local-as/bgpc:as-yy", default="", namespaces=C.NS
+                    bgp_group,
+                    "./bgpc:local-as/bgpc:as-xx",
+                    default="",
+                    namespaces=C.NS,
                 ),
                 0,
             )
+            local_as_y = napalm.base.helpers.convert(
+                int,
+                self._find_txt(
+                    bgp_group,
+                    "./bgpc:local-as/bgpc:as-yy",
+                    default="",
+                    namespaces=C.NS,
+                ),
+                0,
+            )
+            local_as = local_as_x * 65536 + local_as_y
             multihop_ttl = napalm.base.helpers.convert(
                 int,
                 self._find_txt(
@@ -2953,4 +2987,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
             config["running"] = str(self.device.get_config(source="running").xml)
         if retrieve.lower() in ["candidate", "all"]:
             config["candidate"] = str(self.device.get_config(source="candidate").xml)
+        parser = ETREE.XMLParser(remove_blank_text=True)
+        # Validate XML config strings and remove rpc-reply tag
+        for datastore in config:
+            if config[datastore] != "":
+                config[datastore] = ETREE.tostring(
+                      ETREE.XML(config[datastore], parser=parser)[0], pretty_print=True,
+                      encoding='unicode')
         return config
