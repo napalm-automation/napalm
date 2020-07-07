@@ -248,7 +248,7 @@ def textfsm_extractor(cls, template_name, raw_text):
 def find_txt(xml_tree, path, default="", namespaces=None):
     """
     Extracts the text value from an XML tree, using XPath.
-    In case of error, will return a default value.
+    In case of error or text element unavailability, will return a default value.
 
     :param xml_tree:   the XML Tree object. Assumed is <type 'lxml.etree._Element'>.
     :param path:       XPath to be applied, in order to extract the desired data.
@@ -265,7 +265,10 @@ def find_txt(xml_tree, path, default="", namespaces=None):
         if xpath_length and xpath_applied[0] is not None:
             xpath_result = xpath_applied[0]
             if isinstance(xpath_result, type(xml_tree)):
-                value = xpath_result.text.strip()
+                if xpath_result.text:
+                    value = xpath_result.text.strip()
+                else:
+                    value = default
             else:
                 value = xpath_result
         else:
@@ -482,3 +485,23 @@ def generate_regex_or(filters):
         return_pattern += rf"{pattern}|"
     return_pattern += r")"
     return return_pattern
+
+
+def sanitize_config(config, filters):
+    """
+    Given a list of filters, remove sensitive data from the provided config.
+    """
+    for filter_, replace in filters.items():
+        config = re.sub(filter_, replace, config, flags=re.M)
+    return config
+
+
+def sanitize_configs(configs, filters):
+    """
+    Apply sanitize_config on the dictionary of configs typically returned by
+    the get_config method.
+    """
+    for cfg_name, config in configs.items():
+        if config.strip():
+            configs[cfg_name] = sanitize_config(config, filters)
+    return configs

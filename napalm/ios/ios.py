@@ -42,6 +42,7 @@ from napalm.base.helpers import (
     split_interface,
     abbreviated_interface_name,
     generate_regex_or,
+    sanitize_configs,
 )
 from napalm.base.netmiko_helpers import netmiko_args
 
@@ -752,21 +753,46 @@ class IOSDriver(NetworkDriver):
         output = re.sub(r"^Time source is .*$", "", output, flags=re.M)
         return output.strip()
 
+    def _is_vss(self):
+        """
+        Returns True if a Virtual Switching System (VSS) is setup
+        """
+        vss_re = re.compile("Switch mode[ ]+: Virtual Switch", re.M)
+        command = "show switch virtual"
+        output = self._send_command(command)
+
+        return bool(vss_re.search(output))
+
     def get_optics(self):
         command = "show interfaces transceiver"
         output = self._send_command(command)
+        is_vss = False
 
         # Check if router supports the command
         if "% Invalid input" in output:
             return {}
+        elif "% Incomplete command" in output:
+            if self._is_vss():
+                is_vss = True
+                command1 = "show interfaces transceiver switch 1"
+                command2 = "show interfaces transceiver switch 2"
+                output1 = self._send_command(command1)
+                output2 = self._send_command(command2)
 
         # Formatting data into return data structure
         optics_detail = {}
 
-        try:
-            split_output = re.split(r"^---------.*$", output, flags=re.M)[1]
-        except IndexError:
-            return {}
+        if is_vss:
+            try:
+                split_output = re.split(r"^---------.*$", output1, flags=re.M)[1]
+                split_output += re.split(r"^---------.*$", output2, flags=re.M)[1]
+            except IndexError:
+                return {}
+        else:
+            try:
+                split_output = re.split(r"^---------.*$", output, flags=re.M)[1]
+            except IndexError:
+                return {}
 
         split_output = split_output.strip()
 
@@ -785,12 +811,17 @@ class IOSDriver(NetworkDriver):
 
             port_detail = {"physical_channels": {"channel": []}}
 
-            # If interface is shutdown it returns "N/A" as output power.
+            # If interface is shutdown it returns "N/A" as output power
+            # or "N/A" as input power
             # Converting that to -100.0 float
             try:
                 float(output_power)
             except ValueError:
                 output_power = -100.0
+            try:
+                float(input_power)
+            except ValueError:
+                input_power = -100.0
 
             # Defaulting avg, min, max values to -100.0 since device does not
             # return these values
@@ -2128,9 +2159,17 @@ class IOSDriver(NetworkDriver):
                     )
                     match = re.search(regex, line)
                     if match:
-                        interface = canonical_interface_name(interface)
-                        counters[interface]["rx_discards"] = int(match.group("IQD"))
-                        counters[interface]["tx_discards"] = int(match.group("OQD"))
+                        can_interface = canonical_interface_name(interface)
+                        try:
+                            counters[can_interface]["rx_discards"] = int(
+                                match.group("IQD")
+                            )
+                            counters[can_interface]["tx_discards"] = int(
+                                match.group("OQD")
+                            )
+                        except KeyError:
+                            counters[interface]["rx_discards"] = int(match.group("IQD"))
+                            counters[interface]["tx_discards"] = int(match.group("OQD"))
 
         return counters
 
@@ -3368,7 +3407,7 @@ class IOSDriver(NetworkDriver):
         except AttributeError:
             raise ValueError("The vrf %s does not exist" % name)
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         """Implementation of get_config for IOS.
 
         Returns the startup or/and running configuration as dictionary.
@@ -3402,6 +3441,9 @@ class IOSDriver(NetworkDriver):
             output = self._send_command(command)
             output = re.sub(filter_pattern, "", output, flags=re.M)
             configs["running"] = output.strip()
+
+        if sanitized:
+            return sanitize_configs(configs, C.CISCO_SANITIZE_FILTERS)
 
         return configs
 

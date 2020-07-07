@@ -43,6 +43,7 @@ from napalm.base.exceptions import MergeConfigException
 from napalm.base.exceptions import CommandErrorException
 from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.helpers import generate_regex_or
+from napalm.base.helpers import as_number
 from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.constants as c
 
@@ -515,7 +516,7 @@ class NXOSDriverBase(NetworkDriver):
     def _disable_confirmation(self):
         self._send_command_list(["terminal dont-ask"])
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
 
         # NX-OS adds some extra, unneeded lines that should be filtered.
         filter_strings = [
@@ -539,6 +540,12 @@ class NXOSDriverBase(NetworkDriver):
             output = self._send_command(command, raw_text=True)
             output = re.sub(filter_pattern, "", output, flags=re.M)
             config["startup"] = output.strip()
+
+        if sanitized:
+            return napalm.base.helpers.sanitize_configs(
+                config, c.CISCO_SANITIZE_FILTERS
+            )
+
         return config
 
     def get_lldp_neighbors(self):
@@ -956,9 +963,7 @@ class NXOSDriver(NXOSDriverBase):
 
                 for neighbor_dict in neighbors_list:
                     neighborid = napalm.base.helpers.ip(neighbor_dict["neighborid"])
-                    remoteas = napalm.base.helpers.as_number(
-                        neighbor_dict["neighboras"]
-                    )
+                    remoteas = as_number(neighbor_dict["neighboras"])
                     state = str(neighbor_dict["state"])
 
                     bgp_state = bgp_state_dict[state]
@@ -966,7 +971,7 @@ class NXOSDriver(NXOSDriverBase):
                     safi_name = afid_dict[int(saf_dict["safi"])]
 
                     result_peer_dict = {
-                        "local_as": int(vrf_dict["vrf-local-as"]),
+                        "local_as": as_number(vrf_dict["vrf-local-as"]),
                         "remote_as": remoteas,
                         "remote_id": neighborid,
                         "is_enabled": bgp_state["is_enabled"],

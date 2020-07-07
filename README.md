@@ -1,4 +1,5 @@
 [![PyPI](https://img.shields.io/pypi/v/napalm.svg)](https://pypi.python.org/pypi/napalm)
+[![PyPI versions](https://img.shields.io/pypi/pyversions/napalm.svg)](https://pypi.python.org/pypi/napalm)
 [![Build Status](https://travis-ci.org/napalm-automation/napalm.svg?branch=master)](https://travis-ci.org/napalm-automation/napalm)
 [![Coverage Status](https://coveralls.io/repos/github/napalm-automation/napalm/badge.svg)](https://coveralls.io/github/napalm-automation/napalm)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
@@ -30,6 +31,9 @@ Install
 ```
 pip install napalm
 ```
+
+*Note*: Beginning with release 3.0.0 and later, NAPALM offers support for
+Python 3.6+ only.
 
 
 Upgrading
@@ -129,6 +133,8 @@ Podcasts
 Authors
 =======
  * David Barroso ([dbarrosop@dravetech.com](mailto:dbarrosop@dravetech.com))
+ * Mircea Ulinic ([ping@mirceaulinic.net](mailto:ping@mirceaulinic.net))
+ * Kirk Byers ([ktbyers@twb-tech.com](mailto:ktbyers@twb-tech.com))
  * Elisa Jasinska ([elisa@bigwaveit.org](mailto:elisa@bigwaveit.org))
  * Many others, check the [contributors](https://github.com/napalm-automation/napalm/graphs/contributors) page for details.
 
@@ -136,7 +142,9 @@ Authors
 Thanks
 ======
 
-This project was founded by David Barroso as part of [Spotify][spotify] and Elisa Jasinska as part of [BigWave IT][bigwave]. Originally it was hosted by the [Spotify][spotify] organization but due to the many contributions received by third parties we agreed creating a dedicated organization for NAPALM and give a big thanks to [Spotify][spotify] for the support.
+This project is maintained by David Barroso, Mircea Ulinic, and Kirk Byers and a set of other contributors.
+
+Originally it was hosted by the [Spotify][spotify] organization but due to the many contributions received by third parties we agreed creating a dedicated organization for NAPALM and give a big thanks to [Spotify][spotify] for the support.
 
 [spotify]: http://www.spotify.com
 [bigwave]: http://bigwaveit.org/

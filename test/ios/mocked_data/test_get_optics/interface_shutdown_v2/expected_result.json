@@ -1,0 +1,669 @@
+{
+    "TenGigabitEthernet3/2": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -1.9,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 38.1,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "GigabitEthernet5/6": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -4.9,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 10.7,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "GigabitEthernet5/12": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -5.0,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 10.6,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "GigabitEthernet5/17": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -5.5,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 17.0,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "GigabitEthernet5/31": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -6.2,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 15.5,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "GigabitEthernet5/45": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -100.0,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 0.0,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "GigabitEthernet5/47": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -6.0,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 12.2,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/2": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -2.0,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 8.0,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/10": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -2.3,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 5.9,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/12": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -1.8,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 42.0,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/14": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -1.9,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 39.5,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/16": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -1.7,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 39.4,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/17": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -3.3,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 5.6,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/19": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -2.6,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 8.1,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/20": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -2.5,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 6.7,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/21": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -2.5,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 8.4,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/22": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -2.4,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 6.3,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/23": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -1.7,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 8.0,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/24": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -2.2,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 8.4,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/25": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -2.2,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 5.5,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/27": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -2.5,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 7.9,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "TenGigabitEthernet7/29": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": -1.9,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 8.2,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "FortyGigabitEthernet7/33": {
+        "physical_channels": {
+            "channel": [
+                {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": 0.9,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "output_power": {
+                            "instant": 36.6,
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0
+                        },
+                        "laser_bias_current": {
+                            "instant": 0.0,
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

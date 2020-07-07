@@ -438,13 +438,13 @@ class NXOSSSHDriver(NXOSDriverBase):
     def close(self):
         self._netmiko_close()
 
-    def _send_command(self, command, raw_text=False):
+    def _send_command(self, command, raw_text=False, cmd_verify=True):
         """
         Wrapper for Netmiko's send_command method.
 
         raw_text argument is not used and is for code sharing with NX-API.
         """
-        return self.device.send_command(command)
+        return self.device.send_command(command, cmd_verify=cmd_verify)
 
     def _send_command_list(self, commands, expect_string=None):
         """Wrapper for Netmiko's send_command method (for list of commands."""
@@ -506,7 +506,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 return {"is_alive": False}
             else:
                 # Try sending ASCII null byte to maintain the connection alive
-                self._send_command(null)
+                self._send_command(null, cmd_verify=False)
         except (socket.error, EOFError):
             # If unable to send, we can tell for sure that the connection is unusable,
             # hence return False.

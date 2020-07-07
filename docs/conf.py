@@ -303,6 +303,7 @@ METHOD_ALIASES = {
     "get_config_filtered": "get_config",
     "get_arp_table_with_vrf": "get_arp_table",
     "get_route_to_longer": "get_route_to",
+    "get_config_sanitized": "get_config",
 }
 
 
