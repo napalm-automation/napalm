@@ -133,6 +133,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Open the candidate config and replace."""
         self.replace = True
         configuration = self._load_config(filename=filename, config=config)
+        if self.config_encoding == "cli":
+            configuration = '<config><cli xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-cfg">' \
+                                + configuration + "</cli></config>"
         configuration = "<source>" + configuration + "</source>"
         try:
             self.device.copy_config(source=configuration, target="candidate")
