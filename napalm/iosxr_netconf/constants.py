@@ -404,3 +404,6 @@ ENV_SYS_MON_RPC_REQ_FILTER = """
 <system-monitoring xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-wdsysmon-fd-oper">
  <cpu-utilization/>
 </system-monitoring>"""
+
+# possible encoding values for optional argument "config_encoding"
+CONFIG_ENCODINGS = ["cli", "xml"]

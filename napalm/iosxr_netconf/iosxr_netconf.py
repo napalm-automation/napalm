@@ -69,6 +69,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self.port = optional_args.get("port", 830)
         self.lock_on_connect = optional_args.get("config_lock", False)
         self.key_file = optional_args.get("key_file", None)
+        self.config_encoding = optional_args.get("config_encoding", "cli")
+        if self.config_encoding not in C.CONFIG_ENCODINGS:
+            raise ValueError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
 
         self.platform = "iosxr"
         self.device = None
