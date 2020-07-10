@@ -405,5 +405,9 @@ ENV_SYS_MON_RPC_REQ_FILTER = """
  <cpu-utilization/>
 </system-monitoring>"""
 
+# subtree filter to get CLI configuration using GET-CONFIG RPC
+CLI_CONFIG_RPC_REQ_FILTER = """
+<cli xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-cfg"/>"""
+
 # possible encoding values for optional argument "config_encoding"
 CONFIG_ENCODINGS = ["cli", "xml"]
