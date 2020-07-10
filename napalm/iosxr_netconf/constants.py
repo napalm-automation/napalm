@@ -409,5 +409,9 @@ ENV_SYS_MON_RPC_REQ_FILTER = """
 CLI_CONFIG_RPC_REQ_FILTER = """
 <cli xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-cfg"/>"""
 
+# RPC to get CLI configuration differences
+CLI_DIFF_RPC_REQ = """
+<get-cli-config-diff xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-diff-act"/>"""
+
 # possible encoding values for optional argument "config_encoding"
 CONFIG_ENCODINGS = ["cli", "xml"]

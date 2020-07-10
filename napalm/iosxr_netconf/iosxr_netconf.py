@@ -161,27 +161,32 @@ class IOSXRNETCONFDriver(NetworkDriver):
             logger.error(e.args[0])
             raise MergeConfigException(e)
 
-    def compare_config(self):
+    def compare_config(self, encoding="cli"):
         """Compare candidate config with running."""
-        if not self.pending_changes:
-            return ""
-        else:
-            diff = ""
-            run_conf = self.device.get_config("running").xml
-            can_conf = self.device.get_config("candidate").xml
-            # Remove rpc-reply and data tag then reformat XML before doing the diff
+        diff = ""
+        if encoding not in C.CLI_DIFF_RPC_REQ:
+            raise NotImplementedError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
+
+        if self.pending_changes:
             parser = ETREE.XMLParser(remove_blank_text=True)
-            run_conf = ETREE.tostring(
-                ETREE.XML(run_conf, parser=parser)[0], pretty_print=True
-            ).decode()
-            can_conf = ETREE.tostring(
-                ETREE.XML(can_conf, parser=parser)[0], pretty_print=True
-            ).decode()
-            for line in difflib.unified_diff(
-                run_conf.splitlines(1), can_conf.splitlines(1)
-            ):
-                diff += line
-            return diff
+            if encoding == "cli":
+                diff = self.device.dispatch(to_ele(C.CLI_DIFF_RPC_REQ)).xml
+                diff = ETREE.XML(diff, parser=parser)[0].text.strip()
+            elif encoding == "xml":
+                run_conf = self.device.get_config("running").xml
+                can_conf = self.device.get_config("candidate").xml
+                run_conf = ETREE.tostring(
+                    ETREE.XML(run_conf, parser=parser)[0], pretty_print=True
+                ).decode()
+                can_conf = ETREE.tostring(
+                    ETREE.XML(can_conf, parser=parser)[0], pretty_print=True
+                ).decode()
+                for line in difflib.unified_diff(
+                    run_conf.splitlines(1), can_conf.splitlines(1)
+                ):
+                    diff += line
+
+        return diff
 
     def commit_config(self, message=""):
         """Commit configuration."""
