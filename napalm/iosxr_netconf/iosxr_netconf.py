@@ -124,6 +124,23 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self._lock()
         return configuration
 
+    def _filter_config_tree(self, tree, module_set):
+        """Return filtered config etree based on YANG module set."""
+        if module_set == "XR-only":
+            for subtree in tree:
+                if not self._is_xr_config(subtree.tag[1:].split("}")[0]):
+                    tree.remove(subtree)
+        return tree
+
+    def _is_xr_config(self, namespace):
+        """Return True if config subtree contain openconfig or unified model namespaces."""
+        if namespace.startswith(
+            "http://cisco.com/ns/yang/Cisco-IOS-XR-"
+        ) and not namespace.startswith("http://cisco.com/ns/yang/Cisco-IOS-XR-um-"):
+            return True
+
+        return False
+
     def is_alive(self):
         """Return flag with the state of the connection."""
         if self.device is None:
@@ -185,10 +202,16 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 run_conf = self.device.get_config("running").xml
                 can_conf = self.device.get_config("candidate").xml
                 run_conf = ETREE.tostring(
-                    ETREE.XML(run_conf, parser=parser)[0], pretty_print=True
+                    self._filter_config_tree(
+                        ETREE.XML(run_conf, parser=parser)[0], "XR-only"
+                    ),
+                    pretty_print=True,
                 ).decode()
                 can_conf = ETREE.tostring(
-                    ETREE.XML(can_conf, parser=parser)[0], pretty_print=True
+                    self._filter_config_tree(
+                        ETREE.XML(can_conf, parser=parser)[0], "XR-only"
+                    ),
+                    pretty_print=True,
                 ).decode()
                 for line in difflib.unified_diff(
                     run_conf.splitlines(1), can_conf.splitlines(1)
@@ -3035,7 +3058,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         config[datastore] = ""
                 else:
                     config[datastore] = ETREE.tostring(
-                        ETREE.XML(config[datastore], parser=parser)[0],
+                        self._filter_config_tree(
+                            ETREE.XML(config[datastore], parser=parser)[0], "XR-only"
+                        ),
                         pretty_print=True,
                         encoding="unicode",
                     )
