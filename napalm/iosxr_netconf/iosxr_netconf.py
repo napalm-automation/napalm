@@ -43,6 +43,7 @@ from napalm.base.exceptions import ReplaceConfigException
 
 logger = logging.getLogger(__name__)
 
+
 class IOSXRNETCONFDriver(NetworkDriver):
     """IOS-XR NETCONF driver class: inherits NetworkDriver from napalm.base."""
 
@@ -134,8 +135,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self.replace = True
         configuration = self._load_config(filename=filename, config=config)
         if self.config_encoding == "cli":
-            configuration = '<config><cli xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-cfg">' \
-                                + configuration + "</cli></config>"
+            configuration = (
+                '<config><cli xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-cfg">'
+                + configuration
+                + "</cli></config>"
+            )
         configuration = "<source>" + configuration + "</source>"
         try:
             self.device.copy_config(source=configuration, target="candidate")
@@ -150,8 +154,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self.replace = False
         configuration = self._load_config(filename=filename, config=config)
         if self.config_encoding == "cli":
-            configuration = '<config><cli xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-cfg">' \
-                                + configuration + "</cli></config>"
+            configuration = (
+                '<config><cli xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-cfg">'
+                + configuration
+                + "</cli></config>"
+            )
         try:
             self.device.edit_config(
                 config=configuration, error_option="rollback-on-error"
@@ -165,7 +172,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Compare candidate config with running."""
         diff = ""
         if encoding not in C.CLI_DIFF_RPC_REQ:
-            raise NotImplementedError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
+            raise NotImplementedError(
+                f"config encoding must be one of {C.CONFIG_ENCODINGS}"
+            )
 
         if self.pending_changes:
             parser = ETREE.XMLParser(remove_blank_text=True)
@@ -3001,12 +3010,18 @@ class IOSXRNETCONFDriver(NetworkDriver):
         elif encoding == "xml":
             subtree_filter = None
         else:
-            raise NotImplementedError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
+            raise NotImplementedError(
+                f"config encoding must be one of {C.CONFIG_ENCODINGS}"
+            )
 
         if retrieve.lower() in ["running", "all"]:
-            config["running"] = str(self.device.get_config(source="running", filter=subtree_filter).xml)
+            config["running"] = str(
+                self.device.get_config(source="running", filter=subtree_filter).xml
+            )
         if retrieve.lower() in ["candidate", "all"]:
-            config["candidate"] = str(self.device.get_config(source="candidate", filter=subtree_filter).xml)
+            config["candidate"] = str(
+                self.device.get_config(source="candidate", filter=subtree_filter).xml
+            )
 
         parser = ETREE.XMLParser(remove_blank_text=True)
         # Validate XML config strings and remove rpc-reply tag
@@ -3020,6 +3035,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         config[datastore] = ""
                 else:
                     config[datastore] = ETREE.tostring(
-                          ETREE.XML(config[datastore], parser=parser)[0], pretty_print=True,
-                          encoding='unicode')
+                        ETREE.XML(config[datastore], parser=parser)[0],
+                        pretty_print=True,
+                        encoding="unicode",
+                    )
         return config
