@@ -76,6 +76,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         self.platform = "iosxr"
         self.device = None
+        self.module_set_ns = []
 
     def open(self):
         """Open the connection with the device."""
@@ -94,6 +95,26 @@ class IOSXRNETCONFDriver(NetworkDriver):
         except Exception as conn_err:
             logger.error(conn_err.args[0])
             raise ConnectionException(conn_err.args[0])
+
+        # Retrieve module-set namespaces based on yang library model
+        for capability in self.device.server_capabilities:
+            if C.NS["ylib"] in capability:
+                rpc_reply = self.device.get(
+                    filter=(
+                        "subtree",
+                        C.YANG_LIB_RPC_REQ_FILTER.format(module_set=C.MODULE_SET),
+                    )
+                ).xml
+                # Converts string to tree
+                rpc_reply_etree = ETREE.fromstring(rpc_reply)
+
+                # Retrieves namespaces
+                module_set_tree = rpc_reply_etree.xpath(
+                    ".//ylib:yang-library/ylib:module-set/ylib:module/ylib:namespace",
+                    namespaces=C.NS,
+                )
+                self.module_set_ns = [n.text for n in module_set_tree]
+                break
 
     def close(self):
         """Close the connection."""
@@ -124,22 +145,13 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self._lock()
         return configuration
 
-    def _filter_config_tree(self, tree, module_set):
+    def _filter_config_tree(self, tree):
         """Return filtered config etree based on YANG module set."""
-        if module_set == "XR-only":
+        if self.module_set_ns:
             for subtree in tree:
-                if not self._is_xr_config(subtree.tag[1:].split("}")[0]):
+                if subtree.tag[1:].split("}")[0] not in self.module_set_ns:
                     tree.remove(subtree)
         return tree
-
-    def _is_xr_config(self, namespace):
-        """Return True if config subtree contain openconfig or unified model namespaces."""
-        if namespace.startswith(
-            "http://cisco.com/ns/yang/Cisco-IOS-XR-"
-        ) and not namespace.startswith("http://cisco.com/ns/yang/Cisco-IOS-XR-um-"):
-            return True
-
-        return False
 
     def is_alive(self):
         """Return flag with the state of the connection."""
@@ -202,15 +214,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 run_conf = self.device.get_config("running").xml
                 can_conf = self.device.get_config("candidate").xml
                 run_conf = ETREE.tostring(
-                    self._filter_config_tree(
-                        ETREE.XML(run_conf, parser=parser)[0], "XR-only"
-                    ),
+                    self._filter_config_tree(ETREE.XML(run_conf, parser=parser)[0]),
                     pretty_print=True,
                 ).decode()
                 can_conf = ETREE.tostring(
-                    self._filter_config_tree(
-                        ETREE.XML(can_conf, parser=parser)[0], "XR-only"
-                    ),
+                    self._filter_config_tree(ETREE.XML(can_conf, parser=parser)[0]),
                     pretty_print=True,
                 ).decode()
                 for line in difflib.unified_diff(
@@ -3059,7 +3067,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 else:
                     config[datastore] = ETREE.tostring(
                         self._filter_config_tree(
-                            ETREE.XML(config[datastore], parser=parser)[0], "XR-only"
+                            ETREE.XML(config[datastore], parser=parser)[0]
                         ),
                         pretty_print=True,
                         encoding="unicode",
