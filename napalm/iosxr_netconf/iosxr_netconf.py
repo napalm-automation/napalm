@@ -43,6 +43,7 @@ from napalm.base.exceptions import ReplaceConfigException
 
 logger = logging.getLogger(__name__)
 
+
 class IOSXRNETCONFDriver(NetworkDriver):
     """IOS-XR NETCONF driver class: inherits NetworkDriver from napalm.base."""
 
@@ -69,6 +70,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self.port = optional_args.get("port", 830)
         self.lock_on_connect = optional_args.get("config_lock", False)
         self.key_file = optional_args.get("key_file", None)
+        self.config_encoding = optional_args.get("config_encoding", "cli")
+        if self.config_encoding not in C.CONFIG_ENCODINGS:
+            raise ValueError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
 
         self.platform = "iosxr"
         self.device = None
@@ -130,6 +134,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Open the candidate config and replace."""
         self.replace = True
         configuration = self._load_config(filename=filename, config=config)
+        if self.config_encoding == "cli":
+            configuration = (
+                '<config><cli xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-cfg">'
+                + configuration
+                + "</cli></config>"
+            )
         configuration = "<source>" + configuration + "</source>"
         try:
             self.device.copy_config(source=configuration, target="candidate")
@@ -143,6 +153,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Open the candidate config and merge."""
         self.replace = False
         configuration = self._load_config(filename=filename, config=config)
+        if self.config_encoding == "cli":
+            configuration = (
+                '<config><cli xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-cfg">'
+                + configuration
+                + "</cli></config>"
+            )
         try:
             self.device.edit_config(
                 config=configuration, error_option="rollback-on-error"
@@ -152,27 +168,34 @@ class IOSXRNETCONFDriver(NetworkDriver):
             logger.error(e.args[0])
             raise MergeConfigException(e)
 
-    def compare_config(self):
+    def compare_config(self, encoding="cli"):
         """Compare candidate config with running."""
-        if not self.pending_changes:
-            return ""
-        else:
-            diff = ""
-            run_conf = self.device.get_config("running").xml
-            can_conf = self.device.get_config("candidate").xml
-            # Remove rpc-reply and data tag then reformat XML before doing the diff
+        diff = ""
+        if encoding not in C.CLI_DIFF_RPC_REQ:
+            raise NotImplementedError(
+                f"config encoding must be one of {C.CONFIG_ENCODINGS}"
+            )
+
+        if self.pending_changes:
             parser = ETREE.XMLParser(remove_blank_text=True)
-            run_conf = ETREE.tostring(
-                ETREE.XML(run_conf, parser=parser)[0], pretty_print=True
-            ).decode()
-            can_conf = ETREE.tostring(
-                ETREE.XML(can_conf, parser=parser)[0], pretty_print=True
-            ).decode()
-            for line in difflib.unified_diff(
-                run_conf.splitlines(1), can_conf.splitlines(1)
-            ):
-                diff += line
-            return diff
+            if encoding == "cli":
+                diff = self.device.dispatch(to_ele(C.CLI_DIFF_RPC_REQ)).xml
+                diff = ETREE.XML(diff, parser=parser)[0].text.strip()
+            elif encoding == "xml":
+                run_conf = self.device.get_config("running").xml
+                can_conf = self.device.get_config("candidate").xml
+                run_conf = ETREE.tostring(
+                    ETREE.XML(run_conf, parser=parser)[0], pretty_print=True
+                ).decode()
+                can_conf = ETREE.tostring(
+                    ETREE.XML(can_conf, parser=parser)[0], pretty_print=True
+                ).decode()
+                for line in difflib.unified_diff(
+                    run_conf.splitlines(1), can_conf.splitlines(1)
+                ):
+                    diff += line
+
+        return diff
 
     def commit_config(self, message=""):
         """Commit configuration."""
@@ -2976,22 +2999,44 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         return users
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, encoding="cli"):
         """Return device configuration."""
         # NOTE: 'full' argument ignored. 'with-default' capability not supported.
 
         # default values
         config = {"startup": "", "running": "", "candidate": ""}
+        if encoding == "cli":
+            subtree_filter = ("subtree", C.CLI_CONFIG_RPC_REQ_FILTER)
+        elif encoding == "xml":
+            subtree_filter = None
+        else:
+            raise NotImplementedError(
+                f"config encoding must be one of {C.CONFIG_ENCODINGS}"
+            )
 
         if retrieve.lower() in ["running", "all"]:
-            config["running"] = str(self.device.get_config(source="running").xml)
+            config["running"] = str(
+                self.device.get_config(source="running", filter=subtree_filter).xml
+            )
         if retrieve.lower() in ["candidate", "all"]:
-            config["candidate"] = str(self.device.get_config(source="candidate").xml)
+            config["candidate"] = str(
+                self.device.get_config(source="candidate", filter=subtree_filter).xml
+            )
+
         parser = ETREE.XMLParser(remove_blank_text=True)
         # Validate XML config strings and remove rpc-reply tag
         for datastore in config:
             if config[datastore] != "":
-                config[datastore] = ETREE.tostring(
-                      ETREE.XML(config[datastore], parser=parser)[0], pretty_print=True,
-                      encoding='unicode')
+                if encoding == "cli":
+                    cli_tree = ETREE.XML(config[datastore], parser=parser)[0]
+                    if cli_tree:
+                        config[datastore] = cli_tree[0].text.strip()
+                    else:
+                        config[datastore] = ""
+                else:
+                    config[datastore] = ETREE.tostring(
+                        ETREE.XML(config[datastore], parser=parser)[0],
+                        pretty_print=True,
+                        encoding="unicode",
+                    )
         return config
