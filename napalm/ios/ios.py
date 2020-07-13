@@ -3111,7 +3111,7 @@ class IOSDriver(NetworkDriver):
         """
         username_regex = (
             r"^username\s+(?P<username>\S+)\s+(?:privilege\s+(?P<priv_level>\S+)"
-            r"\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
+            r"\s+)?(?:(password|secret) \d+\s+(?P<pwd_hash>\S+))?$"
         )
         pub_keychain_regex = (
             r"^\s+username\s+(?P<username>\S+)(?P<keys>(?:\n\s+key-hash\s+"
@@ -3120,6 +3120,9 @@ class IOSDriver(NetworkDriver):
         users = {}
         command = "show run | section username"
         output = self._send_command(command)
+        if "Invalid input detected" in output:
+            command = "show run | include username"
+            output = self._send_command(command)
         for match in re.finditer(username_regex, output, re.M):
             users[match.groupdict()["username"]] = {
                 "level": int(match.groupdict()["priv_level"])
