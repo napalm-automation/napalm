@@ -223,33 +223,44 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def commit_config(self, message="", confirm_timeout=None):
+    def commit_config(self, message="", commit_confirm=False, confirm_timeout=600):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
 
+        OS driver implementations that choose to support commit confirmation timers should cause
+        self.has_pending_commit to return True when a commit with rollback timer is in progress.
+        Implementations should raise an exception if commit_config is called multiple times while a
+        confirmation timer is pending.
+
         :param message: Optional - configuration session commit message
         :type message: str
+        :param commit_confirm: Optional - enable a commit confirmation timer
+        :type commit_confirm: bool
         :param confirm_timeout: Optional - The # of seconds before the configuration must be
-        confirmed via the commit_confirm method before OS reverts back to the original configuration
+        confirmed via the confirm_commit method before OS reverts back to the original
+        configuration.  Driver implementations should use a default value of 600 seconds if this is
+        implemented for a target OS.
         :type confirm_timeout: int
         """
         raise NotImplementedError
 
-    def commit_confirm(self):
+    def confirm_commit(self):
         """
-        Confirm the changes requested via commit_config if a confirm_timeout is set
+        Confirm the changes requested via commit_config when commit_confirm=True.
+        Should cause self.has_pending_commit to return False when done
         """
         raise NotImplementedError
 
-    def commit_confirm_revert(self):
+    def confirm_commit_revert(self):
         """
-        Immediately abort/revert the commit without waiting for the confirm_timeout to expire
+        Immediately abort/revert the commit without waiting for the confirm_timeout to expire.
+        Should cause self.has_pending_commi to return False when done
         """
         raise NotImplementedError
 
     def has_pending_commit(self):
         """
-        :return A boolean indicating if a pending commit exists
+        :return A boolean indicating if a pending commit exists when using a commit_confirm timer
         """
         raise NotImplementedError
 

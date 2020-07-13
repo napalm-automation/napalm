@@ -214,10 +214,10 @@ class NXOSDriverBase(NetworkDriver):
             return diff
         return ""
 
-    def commit_config(self, message="", confirm_timeout=None):
-        if confirm_timeout is not None:
-                "Commit confirmation timer is not implemented on this platform"
+    def commit_config(self, message="", commit_confirm=False, confirm_timeout=600):
+        if commit_confirm is True:
             raise NotImplementedError(
+                "Commit confirmation timer is not implemented on this platform"
             )
         if message:
             raise NotImplementedError(
