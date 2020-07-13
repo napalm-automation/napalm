@@ -321,12 +321,12 @@ class EOSDriver(NetworkDriver):
 
             return result.strip()
 
-    def commit_config(self, message="", confirm_timeout=None):
+    def commit_config(self, message="", commit_confirm=False, confirm_timeout=600):
         """Implementation of NAPALM method commit_config."""
 
         if not self.lock_disable:
             self._lock()
-        if confirm_timeout is not None:
+        if commit_confirm is True:
             raise NotImplementedError(
                 "Commit confirmation timer is not implemented on this platform"
             )
