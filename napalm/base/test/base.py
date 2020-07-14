@@ -158,8 +158,8 @@ class TestConfigNetworkDriver(object):
             self.device.load_replace_candidate(
                 filename="%s/new_good.conf" % self.vendor
             )
-            self.device.commit_config(confirmed=10)
-            self.device.commit_confirm()
+            self.device.commit_config(commit_confirm=True, confirm_timeout=600)
+            self.device.confirm_commit()
         except NotImplementedError:
             raise SkipTest()
 
@@ -177,7 +177,7 @@ class TestConfigNetworkDriver(object):
             self.device.load_replace_candidate(
                 filename="%s/new_good.conf" % self.vendor
             )
-            self.device.commit_config(confirmed=10)
+            self.device.commit_config(commit_confirm=True, confirm_timeout=600)
             self.device.commit_revert()
         except NotImplementedError:
             raise SkipTest()
@@ -195,9 +195,27 @@ class TestConfigNetworkDriver(object):
             self.device.load_replace_candidate(
                 filename="%s/new_good.conf" % self.vendor
             )
-            self.device.commit_config(confirmed=10)
+            self.device.commit_config(commit_confirm=True, confirm_timeout=600)
             self.assertTrue(self.device.has_pending_commit())
             self.device.commit_revert()
+        except NotImplementedError:
+            raise SkipTest()
+
+        # Load original config which should be our reverted stated
+        self.device.load_replace_candidate(filename="%s/initial.conf" % self.vendor)
+
+        # The diff should be empty as the commit was aborted
+        diff = self.device.compare_config()
+
+        self.assertEqual(len(diff), 0)
+
+    def test_commit_config_with_confirm_timeout_and_confirm_revert(self):
+        try:
+            self.device.load_replace_candidate(
+                filename="%s/new_good.conf" % self.vendor
+            )
+            self.device.commit_config(commit_confirm=True, confirm_timeout=600)
+            self.commit_confirm_revert()
         except NotImplementedError:
             raise SkipTest()
 
