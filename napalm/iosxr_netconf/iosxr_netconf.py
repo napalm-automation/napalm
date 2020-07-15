@@ -148,10 +148,28 @@ class IOSXRNETCONFDriver(NetworkDriver):
     def _filter_config_tree(self, tree):
         """Return filtered config etree based on YANG module set."""
         if self.module_set_ns:
-            for subtree in tree:
-                if subtree.tag[1:].split("}")[0] not in self.module_set_ns:
-                    tree.remove(subtree)
+            def unexpected(n): return n not in self.module_set_ns
+        else:
+            def unexpected(n): return n.startswith("http://openconfig.net/yang")
+        for subtree in tree:
+            if unexpected(subtree.tag[1:].split("}")[0]):
+                tree.remove(subtree)
+
         return tree
+
+    def _unexpected_modules(self, tree):
+        """Return list of unexpected modules based on YANG module set."""
+        modules = []
+        if self.module_set_ns:
+            def unexpected(n): return n not in self.module_set_ns
+        else:
+            def unexpected(n): return n.startswith("http://openconfig.net/yang")
+        for subtree in tree:
+            namespace = subtree.tag[1:].split("}")[0]
+            if unexpected(namespace):
+                modules.append(namespace)
+
+        return modules
 
     def is_alive(self):
         """Return flag with the state of the connection."""
@@ -169,6 +187,16 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 + configuration
                 + "</cli></config>"
             )
+        elif self.config_encoding == "xml":
+            parser = ETREE.XMLParser(remove_blank_text=True)
+            unexpected_modules = self._unexpected_modules(
+                ETREE.XML(configuration, parser=parser)
+            )
+            if unexpected_modules:
+                raise ReplaceConfigException(
+                    f'{C.INVALID_MODEL_REFERENCE} ({", ".join(unexpected_modules)})'
+                )
+
         configuration = "<source>" + configuration + "</source>"
         try:
             self.device.copy_config(source=configuration, target="candidate")
@@ -188,6 +216,16 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 + configuration
                 + "</cli></config>"
             )
+        elif self.config_encoding == "xml":
+            parser = ETREE.XMLParser(remove_blank_text=True)
+            unexpected_modules = self._unexpected_modules(
+                ETREE.XML(configuration, parser=parser)
+            )
+            if unexpected_modules:
+                raise MergeConfigException(
+                    f'{C.INVALID_MODEL_REFERENCE} ({", ".join(unexpected_modules)})'
+                )
+
         try:
             self.device.edit_config(
                 config=configuration, error_option="rollback-on-error"
