@@ -1,0 +1,698 @@
+Ethernet1/1
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-TYCO      
+    part number is 1-2053783-2     
+    revision is T   
+    serial number is TED1842B14Q     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/2
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9520      
+    revision is 09  
+    serial number is MOC1843A2BG     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/3
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-TYCO      
+    part number is 1-2053783-2     
+    revision is T   
+    serial number is TED1841B92L     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/4
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-TYCO      
+    part number is 1-2053783-2     
+    revision is T   
+    serial number is TED1842B14W     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/5
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-TYCO      
+    part number is 1-2053783-2     
+    revision is T   
+    serial number is TED1841B3SN     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/6
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9520      
+    revision is 09  
+    serial number is MOC1846A1WH     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/7
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9520      
+    revision is 09  
+    serial number is MOC1843A2BZ     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/8
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9520      
+    revision is 09  
+    serial number is MOC1843A2AN     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/9
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9520      
+    revision is 09  
+    serial number is MOC1846A17G     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/10
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9520      
+    revision is 09  
+    serial number is MOC1846A1JA     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/11
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9520      
+    revision is 09  
+    serial number is MOC1843A2BC     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/12
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9520      
+    revision is 09  
+    serial number is MOC1846A0QS     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/13
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-TYCO      
+    part number is 1-2053783-2     
+    revision is T   
+    serial number is TED1842B19F     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/14
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-TYCO      
+    part number is 1-2053783-2     
+    revision is T   
+    serial number is TED1842B186     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/15
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-TYCO      
+    part number is 1-2053783-2     
+    revision is T   
+    serial number is TED1841B90A     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/16
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-TYCO      
+    part number is 1-2053783-2     
+    revision is T   
+    serial number is TED1842B155     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/17
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9520      
+    revision is 09  
+    serial number is MOC1939A7FT     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/18
+    transceiver is not present
+
+Ethernet1/19
+    transceiver is not present
+
+Ethernet1/20
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9520      
+    revision is 09  
+    serial number is MOC1939A80T     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/21
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9520      
+    revision is 09  
+    serial number is MOC1939A7W5     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/22
+    transceiver is present
+    type is 1000base-LH
+    name is CISCO-FINISAR   
+    part number is FTLF1318P2BCL   
+    revision is A0  
+    serial number is FNS15420WYA     
+    nominal bitrate is 1300 MBit/sec
+    Link length supported for 9/125um fiber is 10 km
+    cisco id is 3
+    cisco extended id number is 4
+
+           SFP Detail Diagnostics Information (external calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature    0.00 C         0.00 C      0.00 C      0.00 C        0.00 C
+  Voltage        0.00 V         0.00 V      0.00 V      0.00 V        0.00 V
+  Current        0.00 mA        0.00 mA     0.00 mA     0.00 mA       0.00 mA
+  Tx Power        N/A            N/A         N/A         N/A           N/A
+  Rx Power        N/A            N/A         N/A         N/A           N/A
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Ethernet1/23
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-LOROM     
+    part number is LRHSPB54D030    
+    revision is B2  
+    serial number is LRM20178056     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/24
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-LOROM     
+    part number is LRHSPB54D030    
+    revision is B2  
+    serial number is LRM201780W1     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/25
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-LOROM     
+    part number is LRHSPB54D030    
+    revision is B2  
+    serial number is LRM2017R011     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/26
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-LOROM     
+    part number is LRHSPB54D030    
+    revision is B2  
+    serial number is LRM2017R00T     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/27
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-LOROM     
+    part number is LRHSPB54D030    
+    revision is B2  
+    serial number is LRM201780CS     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/28
+    transceiver is present
+    type is 1000base-T
+    name is CISCO-AVAGO     
+    part number is ABCU-5710RZ-CS4 
+    revision is     
+    serial number is AGM1438228E     
+    nominal bitrate is 1300 MBit/sec
+    Link length supported for copper is 100.255 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/29
+    transceiver is present
+    type is 1000base-T
+    name is CISCO-AVAGO     
+    part number is ABCU-5710RZ-CS4B
+    revision is 2   
+    serial number is AGM155029P2     
+    nominal bitrate is 1300 MBit/sec
+    Link length supported for copper is 100.255 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/30
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-JPC       
+    part number is P3410UB03000-1  
+    revision is A0  
+    serial number is JPC221402D8     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/31
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-JPC       
+    part number is P3410UB03000-1  
+    revision is A0  
+    serial number is JPC22140098     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/32
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-JPC       
+    part number is P3410UB03000-1  
+    revision is A0  
+    serial number is JPC221404J0     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/33
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-JPC       
+    part number is P3410UB03000-1  
+    revision is A0  
+    serial number is JPC2214009K     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/34
+    transceiver is present
+    type is 1000base-T
+    name is CISCO-AVAGO     
+    part number is ABCU-5710RZ-CS4 
+    revision is     
+    serial number is AGM133123B4     
+    nominal bitrate is 1300 MBit/sec
+    Link length supported for copper is 100.255 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/35
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-JPC       
+    part number is P3410UB03000-1  
+    revision is A0  
+    serial number is JPC221404FY     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/36
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-JPC       
+    part number is P3410UB03000-1  
+    revision is A0  
+    serial number is JPC221405JM     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/37
+    transceiver is not present
+
+Ethernet1/38
+    transceiver is present
+    type is 1000base-SX
+    name is CISCO-FINISAR   
+    part number is FTLF8519P2BCL-C4
+    revision is A   
+    serial number is FNS13490F31     
+    nominal bitrate is 1300 MBit/sec
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/39
+    transceiver is present
+    type is 1000base-LH
+    name is CISCO           
+    part number is FTLF1318P3BTL-CS
+    revision is A   
+    serial number is FNS1906107E     
+    nominal bitrate is 1300 MBit/sec
+    Link length supported for 9/125um fiber is 10 km
+    cisco id is 3
+    cisco extended id number is 4
+
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   27.31 C        90.00 C    -45.00 C     85.00 C      -40.00 C
+  Voltage        3.20 V         3.79 V      2.70 V      3.70 V        2.79 V
+  Current        0.00 mA   -  100.00 mA     0.00 mA    90.00 mA       0.10 mA
+  Tx Power        N/A     --   -1.99 dBm  -10.00 dBm   -3.00 dBm     -9.03 dBm
+  Rx Power        N/A     --    0.99 dBm  -26.98 dBm    0.00 dBm    -25.22 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Ethernet1/40
+    transceiver is present
+    type is 1000base-LH
+    name is CISCO           
+    part number is FTLF1318P3BTL-CS
+    revision is A   
+    serial number is FNS1906106H     
+    nominal bitrate is 1300 MBit/sec
+    Link length supported for 9/125um fiber is 10 km
+    cisco id is 3
+    cisco extended id number is 4
+
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   26.46 C        90.00 C    -45.00 C     85.00 C      -40.00 C
+  Voltage        3.20 V         3.79 V      2.70 V      3.70 V        2.79 V
+  Current        0.00 mA   -  100.00 mA     0.00 mA    90.00 mA       0.10 mA
+  Tx Power        N/A     --   -1.99 dBm  -10.00 dBm   -3.00 dBm     -9.03 dBm
+  Rx Power        N/A     --    0.99 dBm  -26.98 dBm    0.00 dBm    -25.22 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Ethernet1/41
+    transceiver is present
+    type is 10Gbase-SR
+    name is CISCO-FINISAR   
+    part number is FTLX8571D3BCL-C2
+    revision is     
+    serial number is FNS17040H79     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for 50/125um OM2 fiber is 82 m
+    Link length supported for 50/125um OM3 fiber is 300 m
+    cisco id is 3
+    cisco extended id number is 4
+
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   40.82 C        90.00 C     -5.00 C     85.00 C        0.00 C
+  Voltage        3.17 V         3.79 V      2.70 V      3.70 V        2.79 V
+  Current        0.01 mA      100.00 mA     0.00 mA    90.00 mA       0.10 mA
+  Tx Power        N/A           0.00 dBm   -7.01 dBm   -1.00 dBm     -6.00 dBm
+  Rx Power        N/A     --    0.00 dBm  -20.00 dBm   -1.00 dBm    -19.20 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Ethernet1/42
+    transceiver is present
+    type is 1000base-SX
+    name is CISCO-FINISAR   
+    part number is FTLF8519P2BCL-C4
+    revision is A   
+    serial number is FNS13300AG7     
+    nominal bitrate is 1300 MBit/sec
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/43
+    transceiver is present
+    type is 10Gbase-LR
+    name is CISCO           
+    part number is FTLX1474D3BCL-CS
+    revision is A   
+    serial number is FNS170605JQ     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for 9/125um fiber is 10 km
+    cisco id is 3
+    cisco extended id number is 4
+
+           SFP Detail Diagnostics Information (internal calibration)
+  ----------------------------------------------------------------------------
+                Current              Alarms                  Warnings
+                Measurement     High        Low         High          Low
+  ----------------------------------------------------------------------------
+  Temperature   38.37 C        95.00 C    -50.00 C     85.00 C      -40.00 C
+  Voltage        3.21 V         3.63 V      2.97 V      3.46 V        3.13 V
+  Current       41.98 mA       85.00 mA    15.00 mA    80.00 mA      20.00 mA
+  Tx Power       -1.72 dBm       2.49 dBm  -10.22 dBm    0.49 dBm     -8.21 dBm
+  Rx Power       -2.91 dBm       2.49 dBm  -16.57 dBm    0.49 dBm    -14.43 dBm
+  Transmit Fault Count = 0
+  ----------------------------------------------------------------------------
+  Note: ++  high-alarm; +  high-warning; --  low-alarm; -  low-warning
+
+Ethernet1/44
+    transceiver is present
+    type is SFP-H10GB-CU3.45M
+    name is CISCO-LOROM     
+    part number is LRHSPB54D030    
+    revision is B2  
+    serial number is LRM201780AT     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 3.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/45
+    transceiver is present
+    type is SFP-H10GB-CU1.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9519      
+    revision is 09  
+    serial number is MOC1828AFF0     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 1.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/46
+    transceiver is present
+    type is SFP-H10GB-CU1.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9519      
+    revision is 09  
+    serial number is MOC1828AFGH     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 1.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/47
+    transceiver is present
+    type is SFP-H10GB-CU1.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9519      
+    revision is 09  
+    serial number is MOC1847A3AU     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 1.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+
+Ethernet1/48
+    transceiver is present
+    type is SFP-H10GB-CU1.45M
+    name is CISCO-MOLEX     
+    part number is 74752-9519      
+    revision is 09  
+    serial number is MOC1829A0G5     
+    nominal bitrate is 10300 MBit/sec
+    Link length supported for copper is 1.45 m
+    cisco id is 3
+    cisco extended id number is 4
+
+DOM is not supported
+

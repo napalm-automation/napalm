@@ -1,0 +1,283 @@
+{
+  "temperature": {
+    "CB 0 Exhaust Temp Sensor": {
+      "temperature": 36.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "CB 0 Inlet Temp Sensor": {
+      "temperature": 30.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "CB 0 CPU DIE Temp Sensor": {
+      "temperature": 40.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "CB 1 Exhaust Temp Sensor": {
+      "temperature": 36.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "CB 1 Inlet Temp Sensor": {
+      "temperature": 29.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "CB 1 CPU DIE Temp Sensor": {
+      "temperature": 40.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 Intake Temp Sensor": {
+      "temperature": 27.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 Exhaust-A Temp Sensor": {
+      "temperature": 53.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 Exhaust-B Temp Sensor": {
+      "temperature": 47.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA0 Chip": {
+      "temperature": 54.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA0-XR0 Chip": {
+      "temperature": 57.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA0-XR1 Chip": {
+      "temperature": 59.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA1 Chip": {
+      "temperature": 61.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA1-XR0 Chip": {
+      "temperature": 64.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA1-XR1 Chip": {
+      "temperature": 65.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA2 Chip": {
+      "temperature": 46.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA2-XR0 Chip": {
+      "temperature": 48.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA2-XR1 Chip": {
+      "temperature": 51.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 PF Chip": {
+      "temperature": 64.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA0_HMC0 Logic die": {
+      "temperature": 69.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA0_HMC0 DRAM botm": {
+      "temperature": 66.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA0_HMC1 Logic die": {
+      "temperature": 70.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA0_HMC1 DRAM botm": {
+      "temperature": 67.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA0_HMC2 Logic die": {
+      "temperature": 69.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA0_HMC2 DRAM botm": {
+      "temperature": 66.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA1_HMC0 Logic die": {
+      "temperature": 76.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA1_HMC0 DRAM botm": {
+      "temperature": 73.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA1_HMC1 Logic die": {
+      "temperature": 75.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA1_HMC1 DRAM botm": {
+      "temperature": 72.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA1_HMC2 Logic die": {
+      "temperature": 76.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA1_HMC2 DRAM botm": {
+      "temperature": 73.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA2_HMC0 Logic die": {
+      "temperature": 53.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA2_HMC0 DRAM botm": {
+      "temperature": 50.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA2_HMC1 Logic die": {
+      "temperature": 58.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA2_HMC1 DRAM botm": {
+      "temperature": 55.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA2_HMC2 Logic die": {
+      "temperature": 59.0,
+      "is_alert": false,
+      "is_critical": false
+    },
+    "FPC 1 EA2_HMC2 DRAM botm": {
+      "temperature": 56.0,
+      "is_alert": false,
+      "is_critical": false
+    }
+  },
+  "power": {
+    "Power Supply 0": {
+      "capacity": 1600.0,
+      "output": 180.0,
+      "status": true
+    },
+    "Power Supply 1": {
+      "capacity": 1600.0,
+      "output": 252.0,
+      "status": true
+    },
+    "Power Supply 2": {
+      "capacity": 1600.0,
+      "output": 24.0,
+      "status": true
+    },
+    "Power Supply 3": {
+      "capacity": 1600.0,
+      "output": 24.0,
+      "status": true
+    },
+    "Power Supply 4": {
+      "capacity": 1600.0,
+      "output": 264.0,
+      "status": true
+    },
+    "Power Supply 5": {
+      "capacity": 1600.0,
+      "output": 24.0,
+      "status": true
+    }
+  },
+  "fans": {
+    "Fan Tray 0 Fan 0": {
+      "status": true
+    },
+    "Fan Tray 0 Fan 1": {
+      "status": true
+    },
+    "Fan Tray 0 Fan 2": {
+      "status": true
+    },
+    "Fan Tray 0 Fan 3": {
+      "status": true
+    },
+    "Fan Tray 1 Fan 0": {
+      "status": true
+    },
+    "Fan Tray 1 Fan 1": {
+      "status": true
+    },
+    "Fan Tray 1 Fan 2": {
+      "status": true
+    },
+    "Fan Tray 1 Fan 3": {
+      "status": true
+    },
+    "Fan Tray 2 Fan 0": {
+      "status": true
+    },
+    "Fan Tray 2 Fan 1": {
+      "status": true
+    },
+    "Fan Tray 2 Fan 2": {
+      "status": true
+    },
+    "Fan Tray 2 Fan 3": {
+      "status": true
+    },
+    "Fan Tray 3 Fan 0": {
+      "status": true
+    },
+    "Fan Tray 3 Fan 1": {
+      "status": true
+    },
+    "Fan Tray 3 Fan 2": {
+      "status": true
+    },
+    "Fan Tray 3 Fan 3": {
+      "status": true
+    }
+  },
+  "cpu": {
+    "0": {
+      "%usage": 5.0
+    },
+    "1": {
+      "%usage": 1.0
+    }
+  },
+  "memory": {
+    "available_ram": 49106,
+    "used_ram": 3437
+  }
+}
