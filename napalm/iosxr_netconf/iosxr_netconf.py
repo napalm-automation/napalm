@@ -76,6 +76,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         self.platform = "iosxr"
         self.device = None
+        self.module_set_ns = []
 
     def open(self):
         """Open the connection with the device."""
@@ -94,6 +95,26 @@ class IOSXRNETCONFDriver(NetworkDriver):
         except Exception as conn_err:
             logger.error(conn_err.args[0])
             raise ConnectionException(conn_err.args[0])
+
+        # Retrieve module-set namespaces based on yang library model
+        for capability in self.device.server_capabilities:
+            if C.NS["ylib"] in capability:
+                rpc_reply = self.device.get(
+                    filter=(
+                        "subtree",
+                        C.YANG_LIB_RPC_REQ_FILTER.format(module_set=C.MODULE_SET),
+                    )
+                ).xml
+                # Converts string to tree
+                rpc_reply_etree = ETREE.fromstring(rpc_reply)
+
+                # Retrieves namespaces
+                module_set_tree = rpc_reply_etree.xpath(
+                    ".//ylib:yang-library/ylib:module-set/ylib:module/ylib:namespace",
+                    namespaces=C.NS,
+                )
+                self.module_set_ns = [n.text for n in module_set_tree]
+                break
 
     def close(self):
         """Close the connection."""
@@ -124,6 +145,44 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self._lock()
         return configuration
 
+    def _filter_config_tree(self, tree):
+        """Return filtered config etree based on YANG module set."""
+        if self.module_set_ns:
+
+            def unexpected(n):
+                return n not in self.module_set_ns
+
+        else:
+
+            def unexpected(n):
+                return n.startswith("http://openconfig.net/yang")
+
+        for subtree in tree:
+            if unexpected(subtree.tag[1:].split("}")[0]):
+                tree.remove(subtree)
+
+        return tree
+
+    def _unexpected_modules(self, tree):
+        """Return list of unexpected modules based on YANG module set."""
+        modules = []
+        if self.module_set_ns:
+
+            def unexpected(n):
+                return n not in self.module_set_ns
+
+        else:
+
+            def unexpected(n):
+                return n.startswith("http://openconfig.net/yang")
+
+        for subtree in tree:
+            namespace = subtree.tag[1:].split("}")[0]
+            if unexpected(namespace):
+                modules.append(namespace)
+
+        return modules
+
     def is_alive(self):
         """Return flag with the state of the connection."""
         if self.device is None:
@@ -140,6 +199,16 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 + configuration
                 + "</cli></config>"
             )
+        elif self.config_encoding == "xml":
+            parser = ETREE.XMLParser(remove_blank_text=True)
+            unexpected_modules = self._unexpected_modules(
+                ETREE.XML(configuration, parser=parser)
+            )
+            if unexpected_modules:
+                raise ReplaceConfigException(
+                    f'{C.INVALID_MODEL_REFERENCE} ({", ".join(unexpected_modules)})'
+                )
+
         configuration = "<source>" + configuration + "</source>"
         try:
             self.device.copy_config(source=configuration, target="candidate")
@@ -159,6 +228,16 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 + configuration
                 + "</cli></config>"
             )
+        elif self.config_encoding == "xml":
+            parser = ETREE.XMLParser(remove_blank_text=True)
+            unexpected_modules = self._unexpected_modules(
+                ETREE.XML(configuration, parser=parser)
+            )
+            if unexpected_modules:
+                raise MergeConfigException(
+                    f'{C.INVALID_MODEL_REFERENCE} ({", ".join(unexpected_modules)})'
+                )
+
         try:
             self.device.edit_config(
                 config=configuration, error_option="rollback-on-error"
@@ -185,10 +264,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 run_conf = self.device.get_config("running").xml
                 can_conf = self.device.get_config("candidate").xml
                 run_conf = ETREE.tostring(
-                    ETREE.XML(run_conf, parser=parser)[0], pretty_print=True
+                    self._filter_config_tree(ETREE.XML(run_conf, parser=parser)[0]),
+                    pretty_print=True,
                 ).decode()
                 can_conf = ETREE.tostring(
-                    ETREE.XML(can_conf, parser=parser)[0], pretty_print=True
+                    self._filter_config_tree(ETREE.XML(can_conf, parser=parser)[0]),
+                    pretty_print=True,
                 ).decode()
                 for line in difflib.unified_diff(
                     run_conf.splitlines(1), can_conf.splitlines(1)
@@ -3035,7 +3116,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         config[datastore] = ""
                 else:
                     config[datastore] = ETREE.tostring(
-                        ETREE.XML(config[datastore], parser=parser)[0],
+                        self._filter_config_tree(
+                            ETREE.XML(config[datastore], parser=parser)[0]
+                        ),
                         pretty_print=True,
                         encoding="unicode",
                     )

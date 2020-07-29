@@ -43,6 +43,7 @@ NS = {
     "tr": "http://cisco.com/ns/yang/Cisco-IOS-XR-traceroute-act",
     "sys": "http://cisco.com/ns/yang/Cisco-IOS-XR-wdsysmon-fd-oper",
     "mem": "http://cisco.com/ns/yang/Cisco-IOS-XR-nto-misc-oper",
+    "ylib": "urn:ietf:params:xml:ns:yang:ietf-yang-library",
 }
 
 # GET RPC to retrieve device facts
@@ -413,5 +414,22 @@ CLI_CONFIG_RPC_REQ_FILTER = """
 CLI_DIFF_RPC_REQ = """
 <get-cli-config-diff xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-diff-act"/>"""
 
+# RPC filter to get module namespaces for a module-set using GET RPC
+YANG_LIB_RPC_REQ_FILTER = """
+<yang-library xmlns="urn:ietf:params:xml:ns:yang:ietf-yang-library">
+  <module-set>
+    <name>{module_set}</name>
+    <module>
+       <namespace/>
+    </module>
+  </module-set>
+</yang-library>"""
+
 # possible encoding values for optional argument "config_encoding"
 CONFIG_ENCODINGS = ["cli", "xml"]
+
+# module-set to be used by configuration methods
+MODULE_SET = "XR-only"
+
+# Exception Messages
+INVALID_MODEL_REFERENCE = "Unexpected YANG model reference in config"
