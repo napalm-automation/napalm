@@ -1641,3 +1641,100 @@ class NXOSSSHDriver(NXOSDriverBase):
             optics_detail[port] = port_detail
 
         return optics_detail
+
+    def get_interfaces_counters(self):
+        """
+        Return interface counters and errors.
+
+        'tx_errors': int,
+        'rx_errors': int,
+        'tx_discards': int,
+        'rx_discards': int,
+        'tx_octets': int,
+        'rx_octets': int,
+        'tx_unicast_packets': int,
+        'rx_unicast_packets': int,
+        'tx_multicast_packets': int,
+        'rx_multicast_packets': int,
+        'tx_broadcast_packets': int,
+        'rx_broadcast_packets': int,
+        """
+        if_mapping = {
+            'eth': {
+                'regexp': re.compile('(Ether|port-channel).*'),
+                'mapping': {
+                    'tx_errors': 'eth_xmit_err',
+                    'rx_errors': 'eth_rcv_err',
+                    'tx_discards': 'eth_outdisc',
+                    'rx_discards': None,
+                    'tx_octets': "eth_outbytes",
+                    'rx_octets': "eth_inbytes",
+                    'tx_unicast_packets': "eth_outucast",
+                    'rx_unicast_packets': "eth_inucast",
+                    'tx_multicast_packets': "eth_outmcast",
+                    'rx_multicast_packets': "eth_inmcast",
+                    'tx_broadcast_packets': "eth_outbcast",
+                    'rx_broadcast_packets': "eth_inbcast",
+                }
+            },
+            'mgmt': {
+                'regexp': re.compile('mgm.*'),
+                'mapping': {
+                    'tx_errors': None,
+                    'rx_errors': None,
+                    'tx_discards': None,
+                    'rx_discards': None,
+                    'tx_octets': "mgmt_out_bytes",
+                    'rx_octets': "mgmt_in_bytes",
+                    'tx_unicast_packets': None,
+                    'rx_unicast_packets': None,
+                    'tx_multicast_packets': "mgmt_out_mcast",
+                    'rx_multicast_packets': "mgmt_in_mcast",
+                    'tx_broadcast_packets': None,
+                    'rx_broadcast_packets': None,
+                }
+            }
+        }
+        command = "show interface counters detailed | json"
+        command_error = "show interface counters errors | json"
+        counters_table_raw = self._get_command_table(
+            command, "TABLE_interface", "ROW_interface"
+        )
+        counters_error_table_raw = self._get_command_table(
+            command_error, "TABLE_interface", "ROW_interface"
+        )
+        all_stats_d = {}
+        for row in counters_table_raw:
+            if_counter = {}
+            interface = "Unkown"
+            # loop through regexp to find mapping
+            for if_v in if_mapping:
+                my_re = if_mapping[if_v]['regexp']
+                re_match = my_re.match(row['interface'])
+                if re_match:
+                    interface = re_match.group()
+                    map_d = if_mapping[if_v]['mapping']
+                    for k, v in map_d.items():
+                        if_counter[k] = row[v] if v in row else 0
+                    all_stats_d[interface] = if_counter
+                    break
+
+        for row in counters_error_table_raw:
+            if_counter = {}
+            interface = "Unkown"
+            # loop through regexp to find mapping
+            for if_v in if_mapping:
+                my_re = if_mapping[if_v]['regexp']
+                re_match = my_re.match(row['interface'])
+                if re_match:
+                    interface = re_match.group()
+                    map_d = if_mapping[if_v]['mapping']
+                    for k, v in map_d.items():
+                        if v in row:
+                            if_counter[k] = row[v]
+                    all_stats_d[interface].update(if_counter)
+                    break
+
+        return all_stats_d
+
+        # print(counters_table_raw)
