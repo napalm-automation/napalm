@@ -1661,12 +1661,12 @@ class NXOSSSHDriver(NXOSDriverBase):
         """
         if_mapping = {
             'eth': {
-                'regexp': re.compile('(Ether|port-channel).*'),
+                'regexp': re.compile('^(Ether|port-channel).*'),
                 'mapping': {
-                    'tx_errors': 'eth_xmit_err',
-                    'rx_errors': 'eth_rcv_err',
-                    'tx_discards': 'eth_outdisc',
-                    'rx_discards': 'eth_undersize',
+                    'tx_errors': 'eth_outerr',
+                    'rx_errors': 'eth_inerr',
+                    'tx_discards': 'eth_outdiscard',
+                    'rx_discards': 'eth_indiscard',
                     'tx_octets': "eth_outbytes",
                     'rx_octets': "eth_inbytes",
                     'tx_unicast_packets': "eth_outucast",
@@ -1696,17 +1696,19 @@ class NXOSSSHDriver(NXOSDriverBase):
             }
         }
         command = "show interface counters detailed | json"
-        command_error = "show interface counters errors | json"
+        # To retrieve discards
+        command_interface = "show interface | json"
         counters_table_raw = self._get_command_table(
             command, "TABLE_interface", "ROW_interface"
         )
-        counters_error_table_raw = self._get_command_table(
-            command_error, "TABLE_interface", "ROW_interface"
+        counters_interface_table_raw = self._get_command_table(
+            command_interface, "TABLE_interface", "ROW_interface"
         )
         all_stats_d = {}
-        for row in counters_table_raw:
+        # Start with show interface as all interfaces
+        # Are surely listed
+        for row in counters_interface_table_raw:
             if_counter = {}
-            interface = "Unkown"
             # loop through regexp to find mapping
             for if_v in if_mapping:
                 my_re = if_mapping[if_v]['regexp']
@@ -1718,10 +1720,10 @@ class NXOSSSHDriver(NXOSDriverBase):
                         if_counter[k] = row[v] if v in row else 0
                     all_stats_d[interface] = if_counter
                     break
+        print(all_stats_d)
 
-        for row in counters_error_table_raw:
+        for row in counters_table_raw:
             if_counter = {}
-            interface = "Unkown"
             # loop through regexp to find mapping
             for if_v in if_mapping:
                 my_re = if_mapping[if_v]['regexp']
