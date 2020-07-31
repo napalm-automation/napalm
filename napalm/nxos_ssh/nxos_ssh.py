@@ -1666,7 +1666,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                     'tx_errors': 'eth_xmit_err',
                     'rx_errors': 'eth_rcv_err',
                     'tx_discards': 'eth_outdisc',
-                    'rx_discards': None,
+                    'rx_discards': 'eth_undersize',
                     'tx_octets': "eth_outbytes",
                     'rx_octets': "eth_inbytes",
                     'tx_unicast_packets': "eth_outucast",
