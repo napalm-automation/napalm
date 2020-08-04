@@ -25,7 +25,7 @@ class Node(pyeapi.client.Node):
         """
         self.cli_version = version
 
-    def run_commands(self, commands, **kwargs):
+    def run_commands(self, commands, *args, **kwargs):
         """
         Run commands wrapper
         :param commands: list of commands
@@ -39,4 +39,4 @@ class Node(pyeapi.client.Node):
             else:
                 commands = [cli_convert(cmd, self.cli_version) for cmd in commands]
 
-        return super(Node, self).run_commands(commands, **kwargs)
+        return super(Node, self).run_commands(commands, *args, **kwargs)
