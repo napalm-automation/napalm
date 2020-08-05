@@ -2766,7 +2766,7 @@ class IOSDriver(NetworkDriver):
 
         search_re_dict = {
             "aspath": {
-                "re": r"[^|\\n][ ]{2}([\d\(\)]([\d\(\) ])*)",
+                "re": r"[^|\\n][ ]{2}([\d\(\)]([\d\(\) ])*|Local)",
                 "group": 1,
                 "default": "",
             },
