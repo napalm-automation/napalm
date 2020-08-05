@@ -1,63 +1,78 @@
 {
+    "default":{
+       "interfaces":{
+          "interface":{
+             "GigabitEthernet0/0/0":{
+
+             },
+             "Gi0/0/0.152":{
+
+             },
+             "GigabitEthernet0/0/2":{
+
+             },
+             "Gi0/0/0.1774":{
+
+             },
+             "GigabitEthernet0/0/4":{
+
+             },
+             "Gi0/0/0.1772":{
+
+             },
+             "GigabitEthernet0/0/3":{
+
+             },
+             "Gi0/0/0.154":{
+
+             },
+             "GigabitEthernet0/0/1":{
+
+             },
+             "GigabitEthernet0":{
+
+             },
+             "Gi0/0/0.1776":{
+
+             },
+             "Gi0/0/0.600":{
+
+             },
+             "Loopback2":{
+
+             }
+          }
+       },
+       "state":{
+          "route_distinguisher":""
+       },
+       "type":"DEFAULT_INSTANCE",
+       "name":"default"
+    },
     "Mgmt-intf":{
-       "name":"Mgmt-intf",
-       "type":"L3VRF",
-       "state":{
-          "route_distinguisher":"<not set>"
-       },
        "interfaces":{
-          "Gi0":{
+          "interface":{
+             "Gi0":{
+
+             }
+          }
+       },
+       "state":{
+          "route_distinguisher":""
+       },
+       "type":"L3VRF",
+       "name":"Mgmt-intf"
+    },
+    "opsnet":{
+       "interfaces":{
+          "interface":{
 
           }
-       }
-    },
-    "Aut622":{
-       "name":"Aut622",
-       "type":"L3VRF",
-       "state":{
-          "route_distinguisher":"65421:224"
        },
-       "interfaces":{
-          "Te2/0/0.622":{
-
-          },
-          "Lo622":{
-
-          }
-       }
-    },
-    "mipepa33":{
-       "name":"mipepa33",
-       "type":"L3VRF",
        "state":{
-          "route_distinguisher":"65421:942133"
+          "route_distinguisher":"10283:1021312690"
        },
-       "interfaces":{
-          "Lo199":{
-
-          },
-          "Te2/0/0.1919":{
-
-          },
-          "Tu0":{
-
-          },
-          "Tu4":{
-
-          },
-          "Tu6":{
-
-          }
-       }
-    },
-    "vrf101":{
-       "name":"vrf101",
        "type":"L3VRF",
-       "state":{
-          "route_distinguisher":"65421:55101"
-       },
-       "interfaces":{
-
-       }
+       "name":"opsnet"
     }
  }
