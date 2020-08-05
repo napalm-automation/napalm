@@ -1,78 +1,51 @@
 {
-   "default":{
-      "interfaces":{
-         "interface":{
-            "GigabitEthernet0/0/0":{
-
-            },
-            "Gi0/0/0.152":{
-
-            },
-            "GigabitEthernet0/0/2":{
-
-            },
-            "Gi0/0/0.1774":{
-
-            },
-            "GigabitEthernet0/0/4":{
-
-            },
-            "Gi0/0/0.1772":{
-
-            },
-            "GigabitEthernet0/0/3":{
-
-            },
-            "Gi0/0/0.154":{
-
-            },
-            "GigabitEthernet0/0/1":{
-
-            },
-            "GigabitEthernet0":{
-
-            },
-            "Gi0/0/0.1776":{
-
-            },
-            "Gi0/0/0.600":{
-
-            },
-            "Loopback2":{
-
-            }
-         }
-      },
-      "state":{
-         "route_distinguisher":""
-      },
-      "type":"DEFAULT_INSTANCE",
-      "name":"default"
+   "default": {
+       "name": "default",
+       "type": "DEFAULT_INSTANCE",
+       "state": {
+           "route_distinguisher": ""
+       },
+       "interfaces": {
+           "interface": {
+               "Ethernet0/0": {},
+               "Ethernet0/2": {},
+               "Ethernet0/3": {},
+               "Ethernet1/0": {},
+               "Ethernet1/1": {},
+               "Ethernet1/2": {},
+               "Serial2/0": {},
+               "Serial2/1": {},
+               "Serial2/2": {},
+               "Serial2/3": {},
+               "Serial3/0": {},
+               "Serial3/1": {},
+               "Serial3/2": {},
+               "Serial3/3": {}
+           }
+       }
    },
-   "Mgmt-intf":{
-      "interfaces":{
-         "interface":{
-            "Gi0":{
-
-            }
-         }
-      },
-      "state":{
-         "route_distinguisher":""
-      },
-      "type":"L3VRF",
-      "name":"Mgmt-intf"
+   "CustA": {
+       "name": "CustA",
+       "type": "L3VRF",
+       "state": {
+           "route_distinguisher": "2:2"
+       },
+       "interfaces": {
+           "interface": {
+               "Ethernet0/1": {}
+           }
+       }
    },
-   "opsnet":{
-      "interfaces":{
-         "interface":{
-
-         }
-      },
-      "state":{
-         "route_distinguisher":"10283:1021312690"
-      },
-      "type":"L3VRF",
-      "name":"opsnet"
+   "mgmt": {
+       "name": "mgmt",
+       "type": "L3VRF",
+       "state": {
+           "route_distinguisher": "100:100"
+       },
+       "interfaces": {
+           "interface": {
+               "Ethernet1/3": {}
+           }
+       }
    }
 }

@@ -4,6 +4,8 @@ import os
 import re
 import sys
 import itertools
+import logging
+from collections import Iterable
 
 # third party libs
 import jinja2
@@ -19,10 +21,15 @@ from napalm.base import constants
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
 from napalm.base.canonical_map import base_interfaces, reverse_mapping
 
+# -------------------------------------------------------------------
+# Functional Global
+# -------------------------------------------------------------------
+logger = logging.getLogger(__name__)
 
-# ----------------------------------------------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------
 # helper classes -- will not be exported
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 class _MACFormat(mac_unix):
     pass
 
@@ -30,9 +37,9 @@ class _MACFormat(mac_unix):
 _MACFormat.word_fmt = "%.2X"
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 # callable helpers
-# ----------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
 def load_template(
     cls,
     template_name,
@@ -40,7 +47,7 @@ def load_template(
     template_path=None,
     openconfig=False,
     jinja_filters={},
-    **template_vars
+    **template_vars,
 ):
     try:
         search_path = []
@@ -155,12 +162,19 @@ def regex_find_txt(pattern, text, default=""):
     value = re.findall(pattern, text)
     try:
         if not value:
-            raise Exception
+            logger.error("No Regex match found for pattern: %s" % (str(pattern)))
+            raise Exception("No Regex match found for pattern: %s" % (str(pattern)))
         if not isinstance(value, type(default)):
             if isinstance(value, list) and len(value) == 1:
                 value = value[0]
             value = type(default)(value)
-    except Exception:  # in case of any exception, returns default
+    except Exception as regexFindTxtErr01:  # in case of any exception, returns default
+        logger.error(
+            'errorCode="regexFindTxtErr01" in napalm.base.helpers with systemMessage="%s"\
+                 message="Error while attempting to find regex pattern, \
+                      default to empty string"'
+            % (regexFindTxtErr01)
+        )
         value = default
     return value
 
@@ -203,9 +217,21 @@ def textfsm_extractor(cls, template_name, raw_text):
                     textfsm_data.append(entry)
 
                 return textfsm_data
-        except IOError:  # Template not present in this class
+        except IOError as textfsmExtractorErr01:  # Template not present in this class
+            logger.error(
+                'errorCode="textfsmExtractorErr01" in napalm.base.helpers with systemMessage="%s"\
+                message="Error while attempting to apply a textfsm template to  \
+                format the output returned from the device,\
+                continuing loop..."'
+                % (textfsmExtractorErr01)
+            )
             continue  # Continue up the MRO
         except textfsm.TextFSMTemplateError as tfte:
+            logging.error(
+                "Wrong format of TextFSM template {template_name}: {error}".format(
+                    template_name=template_name, error=str(tfte)
+                )
+            )
             raise napalm.base.exceptions.TemplateRenderException(
                 "Wrong format of TextFSM template {template_name}: {error}".format(
                     template_name=template_name, error=str(tfte)
@@ -219,26 +245,41 @@ def textfsm_extractor(cls, template_name, raw_text):
     )
 
 
-def find_txt(xml_tree, path, default=""):
+def find_txt(xml_tree, path, default="", namespaces=None):
     """
     Extracts the text value from an XML tree, using XPath.
-    In case of error, will return a default value.
+    In case of error or text element unavailability, will return a default value.
 
-    :param xml_tree: the XML Tree object. Assumed is <type 'lxml.etree._Element'>.
-    :param path:     XPath to be applied, in order to extract the desired data.
-    :param default:  Value to be returned in case of error.
+    :param xml_tree:   the XML Tree object. Assumed is <type 'lxml.etree._Element'>.
+    :param path:       XPath to be applied, in order to extract the desired data.
+    :param default:    Value to be returned in case of error.
+    :param namespaces: prefix-namespace mappings to process XPath
     :return: a str value.
     """
     value = ""
     try:
-        xpath_applied = xml_tree.xpath(path)  # will consider the first match only
-        if len(xpath_applied) and xpath_applied[0] is not None:
+        xpath_applied = xml_tree.xpath(
+            path, namespaces=namespaces
+        )  # will consider the first match only
+        xpath_length = len(xpath_applied)  # get a count of items in XML tree
+        if xpath_length and xpath_applied[0] is not None:
             xpath_result = xpath_applied[0]
             if isinstance(xpath_result, type(xml_tree)):
-                value = xpath_result.text.strip()
+                if xpath_result.text:
+                    value = xpath_result.text.strip()
+                else:
+                    value = default
             else:
                 value = xpath_result
-    except Exception:  # in case of any exception, returns default
+        else:
+            if xpath_applied == "":
+                logger.debug(
+                    "Unable to find the specified-text-element/XML path: %s in  \
+                        the XML tree provided. Total Items in XML tree: %d "
+                    % (path, xpath_length)
+                )
+    except Exception as findTxtErr01:  # in case of any exception, returns default
+        logger.error(findTxtErr01)
         value = default
     return str(value)
 
@@ -423,3 +464,44 @@ def transform_lldp_capab(capabilities):
         )
     else:
         return []
+
+
+def generate_regex_or(filters):
+    """
+    Build a regular expression logical-or from a list/tuple of regex patterns.
+
+    This allows a single regular expression operation to be used in contexts when a loop
+    and multiple patterns would otherwise be necessary.
+
+    For example, (pattern1|pattern2|pattern3)
+
+    Return the pattern.
+    """
+    if isinstance(filters, str) or not isinstance(filters, Iterable):
+        raise ValueError("filters argument must be an iterable, but can't be a string.")
+
+    return_pattern = r"("
+    for pattern in filters:
+        return_pattern += rf"{pattern}|"
+    return_pattern += r")"
+    return return_pattern
+
+
+def sanitize_config(config, filters):
+    """
+    Given a list of filters, remove sensitive data from the provided config.
+    """
+    for filter_, replace in filters.items():
+        config = re.sub(filter_, replace, config, flags=re.M)
+    return config
+
+
+def sanitize_configs(configs, filters):
+    """
+    Apply sanitize_config on the dictionary of configs typically returned by
+    the get_config method.
+    """
+    for cfg_name, config in configs.items():
+        if config.strip():
+            configs[cfg_name] = sanitize_config(config, filters)
+    return configs

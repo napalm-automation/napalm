@@ -66,6 +66,7 @@ class JunOSDriver(NetworkDriver):
             * config_lock (True/False): lock configuration DB after the connection is established.
             * lock_disable (True/False): force configuration lock to be disabled (for external lock
                 management).
+            * config_private (True/False): juniper configure private command, no DB locking
             * port (int): custom port
             * key_file (string): SSH key file path
             * keepalive (int): Keepalive interval
@@ -92,6 +93,7 @@ class JunOSDriver(NetworkDriver):
         # Define locking method
         self.lock_disable = optional_args.get("lock_disable", False)
         self.session_config_lock = optional_args.get("config_lock", False)
+        self.config_private = optional_args.get("config_private", False)
 
         # Junos driver specific options
         self.junos_config_database = optional_args.get(
@@ -223,7 +225,11 @@ class JunOSDriver(NetworkDriver):
             with open(filename) as f:
                 configuration = f.read()
 
-        if not self.lock_disable and not self.session_config_lock:
+        if (
+            not self.lock_disable
+            and not self.session_config_lock
+            and not self.config_private
+        ):
             # if not locked during connection time, will try to lock
             self._lock()
 
@@ -232,6 +238,13 @@ class JunOSDriver(NetworkDriver):
 
             if fmt == "xml":
                 configuration = etree.XML(configuration)
+
+            if self.config_private:
+                try:
+                    self.device.rpc.open_configuration(private=True, normalize=True)
+                except RpcError as err:
+                    if str(err) == "uncommitted changes will be discarded on exit":
+                        pass
 
             self.device.cu.load(
                 configuration,
@@ -270,12 +283,16 @@ class JunOSDriver(NetworkDriver):
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
         if not self.lock_disable and not self.session_config_lock:
             self._unlock()
+        if self.config_private:
+            self.device.rpc.close_configuration()
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
         self.device.cu.rollback(rb_id=0)
         if not self.lock_disable and not self.session_config_lock:
             self._unlock()
+        if self.config_private:
+            self.device.rpc.close_configuration()
 
     def rollback(self):
         """Rollback to previous commit."""
@@ -378,9 +395,20 @@ class JunOSDriver(NetworkDriver):
 
     def get_environment(self):
         """Return environment details."""
-        environment = junos_views.junos_environment_table(self.device)
-        routing_engine = junos_views.junos_routing_engine_table(self.device)
-        temperature_thresholds = junos_views.junos_temperature_thresholds(self.device)
+        if self.device.facts.get("srx_cluster", False):
+            environment = junos_views.junos_environment_table_srx_cluster(self.device)
+            routing_engine = junos_views.junos_routing_engine_table_srx_cluster(
+                self.device
+            )
+            temperature_thresholds = junos_views.junos_temperature_thresholds_srx_cluster(
+                self.device
+            )
+        else:
+            environment = junos_views.junos_environment_table(self.device)
+            routing_engine = junos_views.junos_routing_engine_table(self.device)
+            temperature_thresholds = junos_views.junos_temperature_thresholds(
+                self.device
+            )
         power_supplies = junos_views.junos_pem_table(self.device)
         environment.get()
         routing_engine.get()
@@ -401,6 +429,9 @@ class JunOSDriver(NetworkDriver):
                 structured_object_data["class"] = current_class
 
             if structured_object_data["class"] == "Power":
+                # Make sure naming is consistent
+                sensor_object = sensor_object.replace("PEM", "Power Supply")
+
                 # Create a dict for the 'power' key
                 try:
                     environment_data["power"][sensor_object] = {}
@@ -533,15 +564,20 @@ class JunOSDriver(NetworkDriver):
                         if i.isdigit()
                     )
                 )
-            # Junos gives us RAM in %, so calculation has to be made.
-            # Sadly, bacause of this, results are not 100% accurate to the truth.
-            environment_data["memory"]["used_ram"] = int(
-                round(
-                    environment_data["memory"]["available_ram"]
-                    / 100.0
-                    * structured_routing_engine_data["memory-buffer-utilization"]
+            if not structured_routing_engine_data["memory-system-total-used"]:
+                # Junos gives us RAM in %, so calculation has to be made.
+                # Sadly, bacause of this, results are not 100% accurate to the truth.
+                environment_data["memory"]["used_ram"] = int(
+                    round(
+                        environment_data["memory"]["available_ram"]
+                        / 100.0
+                        * structured_routing_engine_data["memory-buffer-utilization"]
+                    )
                 )
-            )
+            else:
+                environment_data["memory"]["used_ram"] = structured_routing_engine_data[
+                    "memory-system-total-used"
+                ]
 
         return environment_data
 
@@ -2221,11 +2257,14 @@ class JunOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         rv = {"startup": "", "running": "", "candidate": ""}
 
         options = {"format": "text", "database": "candidate"}
-
+        sanitize_strings = {
+            r"^(\s+community\s+)\w+(\s+{.*)$": r"\1<removed>\2",
+            r'^(.*)"\$\d\$\S+"(;.*)$': r"\1<removed>\2",
+        }
         if retrieve in ("candidate", "all"):
             config = self.device.rpc.get_config(filter_xml=None, options=options)
             rv["candidate"] = str(config.text)
@@ -2233,6 +2272,10 @@ class JunOSDriver(NetworkDriver):
             options["database"] = "committed"
             config = self.device.rpc.get_config(filter_xml=None, options=options)
             rv["running"] = str(config.text)
+
+        if sanitized:
+            return napalm.base.helpers.sanitize_configs(rv, sanitize_strings)
+
         return rv
 
     def get_network_instances(self, name=""):

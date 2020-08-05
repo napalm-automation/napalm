@@ -94,8 +94,14 @@ class NetworkDriver(object):
         except NetMikoTimeoutException:
             raise ConnectionException("Cannot connect to {}".format(self.hostname))
 
-        # ensure in enable mode
-        self._netmiko_device.enable()
+        # Disable enable mode if force_no_enable is true (for NAPALM drivers
+        # that support force_no_enable)
+        try:
+            if not self.force_no_enable:
+                self._netmiko_device.enable()
+        except AttributeError:
+            self._netmiko_device.enable()
+
         return self._netmiko_device
 
     def _netmiko_close(self):
@@ -1509,7 +1515,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         """
         Return the configuration of a device.
 
@@ -1517,6 +1523,7 @@ class NetworkDriver(object):
             retrieve(string): Which configuration type you want to populate, default is all of them.
                               The rest will be set to "".
             full(bool): Retrieve all the configuration. For instance, on ios, "sh run all".
+            sanitized(bool): Remove secret data. Default: ``False``.
 
         Returns:
           The object returned is a dictionary with a key for each configuration store:

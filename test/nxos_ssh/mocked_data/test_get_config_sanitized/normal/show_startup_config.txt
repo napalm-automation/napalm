@@ -1,0 +1,676 @@
+!Command: show startup-config
+!Time: Sun Aug  6 17:36:54 2017
+!Startup config saved at: Sun Aug  6 15:32:43 2017
+version 7.3(1)D1(1)
+power redundancy-mode redundant
+license grace-period
+hostname nxos1
+vdc nxos1 id 1
+  limit-resource module-type m1 m1xl m2xl f2e 
+  allocate interface Ethernet2/1-48
+  allocate interface Ethernet3/1-48
+  allocate interface Ethernet4/1-48
+  limit-resource vlan minimum 16 maximum 4094
+  limit-resource vrf minimum 2 maximum 4096
+  limit-resource port-channel minimum 0 maximum 768
+  limit-resource u4route-mem minimum 96 maximum 96
+  limit-resource u6route-mem minimum 24 maximum 24
+  limit-resource m4route-mem minimum 58 maximum 58
+  limit-resource m6route-mem minimum 8 maximum 8
+feature telnet
+feature scp-server
+cfs eth distribute
+feature bgp
+feature interface-vlan
+feature hsrp
+feature vpc
+feature lldp
+feature nxapi
+username admin password 5 $5$aH4ttsPk$kNH7qXBaegskBUekuymPzaL5Q0Vh/mQVSdw4tQ0AcU7  role network-admin
+username pyclass password 5 $5$tGpa9bmJ$7I3Bg.0yqiweZ09vmj.gb7Q2antjGVs9J0nWSawvP/4  role network-admin
+username pyclass passphrase  lifetime 99999 warntime 14 gracetime 3
+no password strength-check
+ip domain-lookup
+ip domain-name madeupdomain.com
+ip name-server 8.8.8.8 8.8.4.4
+vlan dot1Q tag native
+system default switchport
+system jumbomtu 0
+no logging event trunk-status enable
+copp profile strict
+snmp-server contact Test
+snmp-server location Test
+snmp-server user pyclass network-admin auth md5 0xd1e3bf7019f3a9c3ee4dccd381f0e4f3 priv 0xd1e3bf7019f3a9c3ee4dccd381f0e4f3 localizedkey
+snmp-server user admin auth md5 0x9e902c388e9b4c616e7c7c98d1079325 priv 0x9e902c388e9b4c616e7c7c98d1079325 localizedkey engineID 128:0:0:9:3:0:12:41:209:213:60
+rmon event 1 log description FATAL(1) owner PMON@FATAL
+rmon event 2 log description CRITICAL(2) owner PMON@CRITICAL
+rmon event 3 log description ERROR(3) owner PMON@ERROR
+rmon event 4 log description WARNING(4) owner PMON@WARNING
+rmon event 5 log description INFORMATION(5) owner PMON@INFO
+snmp-server enable traps link
+snmp-server community networktocode group network-operator
+ntp server 130.126.24.24
+ntp server 152.2.21.1
+vlan 1,301-304,550-552,559
+vlan 301
+  name BLUE_DIAMOND
+vlan 302
+  name RED_DIAMOND
+vlan 303
+  name GREEN_DIAMOND
+vlan 304
+  name YELLOW_DIAMOND
+vlan 550
+  name BLACK
+vlan 551
+  name ORANGE
+vlan 552
+  name PINK
+vlan 559
+  name BROWN
+vrf context management
+  ip route 0.0.0.0/0 10.0.0.2
+interface mgmt0
+  vrf member management
+  ip address 10.0.0.71/24
+interface Vlan1
+interface Ethernet2/1
+  no switchport
+  mac-address 2cc2.605e.5de8
+  ip address 10.10.10.10/24
+  no shutdown
+interface Ethernet2/2
+  no switchport
+  mac-address 2cc2.605e.5de8
+  ip address 10.100.100.1/24
+  ipv6 address 2001::db8:1010:200c:1/64
+  no shutdown
+interface Ethernet2/3
+  no switchport
+  mac-address 2cc2.605e.5de8
+  no shutdown
+interface Ethernet2/4
+  no switchport
+  mac-address 2cc2.605e.5de8
+  ip address 10.100.17.1/24
+  no shutdown
+interface Ethernet2/5
+  no switchport
+  mac-address 2cc2.605e.5de8
+  no shutdown
+interface Ethernet2/6
+  no switchport
+  mac-address 2cc2.605e.5de8
+  no shutdown
+interface Ethernet2/7
+  no switchport
+  mac-address 2cc2.605e.5de8
+  no shutdown
+interface Ethernet2/8
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/9
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/10
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/11
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/12
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/13
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/14
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/15
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/16
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/17
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/18
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/19
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/20
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/21
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/22
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/23
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/24
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/25
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/26
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/27
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/28
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/29
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/30
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/31
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/32
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/33
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/34
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/35
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/36
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/37
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/38
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/39
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/40
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/41
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/42
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/43
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/44
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/45
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/46
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/47
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet2/48
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/1
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/2
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/3
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/4
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/5
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/6
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/7
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/8
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/9
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/10
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/11
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/12
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/13
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/14
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/15
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/16
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/17
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/18
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/19
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/20
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/21
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/22
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/23
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/24
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/25
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/26
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/27
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/28
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/29
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/30
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/31
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/32
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/33
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/34
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/35
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/36
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/37
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/38
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/39
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/40
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/41
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/42
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/43
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/44
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/45
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/46
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/47
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet3/48
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/1
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/2
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/3
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/4
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/5
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/6
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/7
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/8
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/9
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/10
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/11
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/12
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/13
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/14
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/15
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/16
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/17
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/18
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/19
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/20
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/21
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/22
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/23
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/24
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/25
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/26
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/27
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/28
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/29
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/30
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/31
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/32
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/33
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/34
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/35
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/36
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/37
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/38
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/39
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/40
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/41
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/42
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/43
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/44
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/45
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/46
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/47
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface Ethernet4/48
+  shutdown
+  no switchport
+  mac-address 2cc2.605e.5de8
+interface loopback0
+  ip address 1.1.2.225/32
+  ipv6 address 2001:db8::225/64
+interface loopback55
+  ip address 1.1.1.37/24
+  ipv6 address 2001:db8::37/32
+line console
+line vty
+boot kickstart bootflash://sup-1/titanium-d1-kickstart.7.3.1.D1.0.10.bin
+boot system bootflash://sup-1/titanium-d1.7.3.1.D1.0.10.bin 
+router bgp 22
+  neighbor 10.100.17.2 remote-as 22
+    address-family ipv4 unicast
+no system default switchport shutdown
+nxapi https port 8443
+nxapi sandbox
+logging module 4
+logging monitor 4
+no logging console
+logging history size 400

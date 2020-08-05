@@ -1,0 +1,14 @@
+
+ *: interface is up
+ IHQ: pkts in input hold queue     IQD: pkts dropped from input queue
+ OHQ: pkts in output hold queue    OQD: pkts dropped from output queue
+ RXBS: rx rate (bits/sec)          RXPS: rx rate (pkts/sec)
+ TXBS: tx rate (bits/sec)          TXPS: tx rate (pkts/sec)
+ TRTL: throttle count
+
+  Interface                   IHQ       IQD       OHQ       OQD      RXBS      RXPS      TXBS      TXPS      TRTL
+-----------------------------------------------------------------------------------------------------------------
+* Te0/0/0                      0         0         0         0         0         0         0         0         0
+  Te0/0/1                      0         1         0         0         0         0         0         0         0
+  Fo0/0/2                      0         2         0         0         0         0         0         0         0
+  Hu0/0/3                      0         3         0         0         0         0         0         0         0
