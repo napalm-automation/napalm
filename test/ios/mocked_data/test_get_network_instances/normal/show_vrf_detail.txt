@@ -1,33 +1,17 @@
-VRF CustA (VRF Id = 1); default RD 2:2; default VPNID <not set>
-  New CLI format, supports multiple address-families
-  Flags: 0x180C
-  Interfaces:
-    Et0/1
-Address family ipv4 unicast (Table ID = 0x1):
-  Flags: 0x0
-  No Export VPN route-target communities
-  No Import VPN route-target communities
-  No import route-map
-  No global export route-map
-  No export route-map
-  VRF label distribution protocol: not configured
-  VRF label allocation mode: per-prefix
-Address family ipv6 unicast not active
-Address family ipv4 multicast not active
+Load for five secs: 0%/0%; one minute: 1%; five minutes: 1%
+Time source is NTP, 09:30:03.851 DST Wed Nov 8 2017
 
-VRF mgmt (VRF Id = 2); default RD 100:100; default VPNID <not set>
-  New CLI format, supports multiple address-families
-  Flags: 0x180C
-  Interfaces:
-    Et1/3
-Address family ipv4 unicast (Table ID = 0x2):
-  Flags: 0x0
-  No Export VPN route-target communities
-  No Import VPN route-target communities
-  No import route-map
-  No global export route-map
-  No export route-map
-  VRF label distribution protocol: not configured
-  VRF label allocation mode: per-prefix
-Address family ipv6 unicast not active
-Address family ipv4 multicast not active
+Interface              IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0/0   unassigned      YES NVRAM  up                    up
+Gi0/0/0.152            192.168.241.21  YES NVRAM  up                    up
+Gi0/0/0.154            192.168.241.30  YES NVRAM  up                    up
+Gi0/0/0.600            192.168.241.141 YES NVRAM  up                    up
+Gi0/0/0.1772           120.177.177.1   YES NVRAM  up                    up
+Gi0/0/0.1774           101.177.177.1   YES NVRAM  up                    up
+Gi0/0/0.1776           100.177.177.1   YES NVRAM  up                    up
+GigabitEthernet0/0/1   unassigned      YES NVRAM  administratively down down
+GigabitEthernet0/0/2   unassigned      YES NVRAM  administratively down down
+GigabitEthernet0/0/3   unassigned      YES NVRAM  administratively down down
+GigabitEthernet0/0/4   unassigned      YES NVRAM  administratively down down
+GigabitEthernet0       192.168.243.80  YES NVRAM  up                    up
+Loopback2              192.168.242.152 YES NVRAM  up                    up
