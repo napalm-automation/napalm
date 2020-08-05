@@ -1,0 +1,8 @@
+BGP routing table entry for 2:2:10.50.50.0/23, version 2
+Paths: (1 available, best #1, table CustA)
+  Not advertised to any peer
+  Refresh Epoch 1
+  Local
+    169.254.255.1 (via vrf CustA) from 169.254.255.1 (1.1.1.1)
+      Origin IGP, metric 0, localpref 100, valid, internal, best
+      rx pathid: 0, tx pathid: 0x0

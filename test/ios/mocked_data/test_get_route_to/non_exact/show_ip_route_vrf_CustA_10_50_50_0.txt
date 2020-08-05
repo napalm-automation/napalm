@@ -1,0 +1,10 @@
+
+Routing Table: CustA
+Routing entry for 10.50.50.0/23
+  Known via "bgp 1", distance 200, metric 0, type internal
+  Last update from 169.254.255.1 00:01:48 ago
+  Routing Descriptor Blocks:
+  * 169.254.255.1, from 169.254.255.1, 00:01:48 ago
+      Route metric is 0, traffic share count is 1
+      AS Hops 0
+      MPLS label: none
