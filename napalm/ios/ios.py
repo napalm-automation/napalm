@@ -3395,9 +3395,6 @@ class IOSDriver(NetworkDriver):
 
             first_part = vrf.split("Address family")[0]
 
-            if not first_part:
-                return instances
-
             # retrieve the name of the VRF and the Route Distinguisher
             vrf_name, RD = re.match(r"^VRF (\S+).*RD (.*);", first_part).groups()
             if RD == "<not set>":
