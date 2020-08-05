@@ -1,0 +1,21 @@
+Interface              IP-Address      OK? Method Status                Protocol
+Ethernet0/0            172.29.29.220   YES manual up                    up
+Ethernet0/1            unassigned      YES unset  up                    up
+Ethernet0/2            unassigned      YES unset  up                    up
+Ethernet0/3            unassigned      YES unset  up                    up
+Ethernet1/0            unassigned      YES unset  up                    up
+Ethernet1/1            unassigned      YES unset  up                    up
+Ethernet1/2            unassigned      YES unset  up                    up
+Ethernet1/3            unassigned      YES unset  up                    up
+Ethernet2/0            unassigned      YES unset  up                    up
+Ethernet2/1            unassigned      YES unset  up                    up
+Ethernet2/2            unassigned      YES unset  up                    up
+Ethernet2/3            unassigned      YES unset  up                    up
+Ethernet3/0            unassigned      YES unset  up                    up
+Ethernet3/1            unassigned      YES unset  up                    up
+Ethernet3/2            unassigned      YES unset  up                    up
+Ethernet3/3            unassigned      YES unset  up                    up
+Vlan1                  unassigned      YES unset  administratively down down
+Vlan2                  2.2.2.2         YES manual up                    up
+Vlan3                  3.3.3.3         YES manual up                    up
+Vlan4                  4.4.4.4         YES manual up                    up

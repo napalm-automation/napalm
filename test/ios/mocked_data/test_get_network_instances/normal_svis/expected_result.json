@@ -1,0 +1,66 @@
+{
+   "default": {
+      "name": "default",
+      "type": "DEFAULT_INSTANCE",
+      "state": {
+         "route_distinguisher": ""
+      },
+      "interfaces": {
+         "interface": {
+            "Ethernet0/0": {},
+            "Ethernet0/1": {},
+            "Ethernet0/2": {},
+            "Ethernet0/3": {},
+            "Ethernet1/0": {},
+            "Ethernet1/1": {},
+            "Ethernet1/2": {},
+            "Ethernet1/3": {},
+            "Ethernet2/0": {},
+            "Ethernet2/1": {},
+            "Ethernet2/2": {},
+            "Ethernet2/3": {},
+            "Ethernet3/0": {},
+            "Ethernet3/1": {},
+            "Ethernet3/2": {},
+            "Ethernet3/3": {},
+            "Vlan1": {}
+         }
+      }
+   },
+   "CustA": {
+      "name": "CustA",
+      "type": "L3VRF",
+      "state": {
+         "route_distinguisher": "1:1"
+      },
+      "interfaces": {
+         "interface": {
+            "Vlan2": {}
+         }
+      }
+   },
+   "CustB": {
+      "name": "CustB",
+      "type": "L3VRF",
+      "state": {
+         "route_distinguisher": "2:2"
+      },
+      "interfaces": {
+         "interface": {
+            "Vlan3": {}
+         }
+      }
+   },
+   "CustC": {
+      "name": "CustC",
+      "type": "L3VRF",
+      "state": {
+         "route_distinguisher": "3:3"
+      },
+      "interfaces": {
+         "interface": {
+            "Vlan4": {}
+         }
+      }
+   }
+}
