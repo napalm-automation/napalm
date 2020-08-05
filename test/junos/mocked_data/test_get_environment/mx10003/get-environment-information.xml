@@ -1,0 +1,325 @@
+<environment-information>
+    <environment-item>
+        <name>CB 0 Exhaust Temp Sensor</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="36">36 degrees C / 96 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>CB 0 Inlet Temp Sensor</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="30">30 degrees C / 86 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>CB 0 CPU DIE Temp Sensor</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>CB 1 Exhaust Temp Sensor</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="36">36 degrees C / 96 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>CB 1 Inlet Temp Sensor</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="29">29 degrees C / 84 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>CB 1 CPU DIE Temp Sensor</name>
+        <class>Temp</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 Intake Temp Sensor</name>
+        <status>OK</status>
+        <temperature celsius="27">27 degrees C / 80 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 Exhaust-A Temp Sensor</name>
+        <status>OK</status>
+        <temperature celsius="53">53 degrees C / 127 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 Exhaust-B Temp Sensor</name>
+        <status>OK</status>
+        <temperature celsius="47">47 degrees C / 116 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA0 Chip</name>
+        <status>OK</status>
+        <temperature celsius="54">54 degrees C / 129 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA0-XR0 Chip</name>
+        <status>OK</status>
+        <temperature celsius="57">57 degrees C / 134 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA0-XR1 Chip</name>
+        <status>OK</status>
+        <temperature celsius="59">59 degrees C / 138 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA1 Chip</name>
+        <status>OK</status>
+        <temperature celsius="61">61 degrees C / 141 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA1-XR0 Chip</name>
+        <status>OK</status>
+        <temperature celsius="64">64 degrees C / 147 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA1-XR1 Chip</name>
+        <status>OK</status>
+        <temperature celsius="65">65 degrees C / 149 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA2 Chip</name>
+        <status>OK</status>
+        <temperature celsius="46">46 degrees C / 114 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA2-XR0 Chip</name>
+        <status>OK</status>
+        <temperature celsius="48">48 degrees C / 118 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA2-XR1 Chip</name>
+        <status>OK</status>
+        <temperature celsius="51">51 degrees C / 123 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 PF Chip</name>
+        <status>OK</status>
+        <temperature celsius="64">64 degrees C / 147 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA0_HMC0 Logic die</name>
+        <status>OK</status>
+        <temperature celsius="69">69 degrees C / 156 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA0_HMC0 DRAM botm</name>
+        <status>OK</status>
+        <temperature celsius="66">66 degrees C / 150 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA0_HMC1 Logic die</name>
+        <status>OK</status>
+        <temperature celsius="70">70 degrees C / 158 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA0_HMC1 DRAM botm</name>
+        <status>OK</status>
+        <temperature celsius="67">67 degrees C / 152 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA0_HMC2 Logic die</name>
+        <status>OK</status>
+        <temperature celsius="69">69 degrees C / 156 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA0_HMC2 DRAM botm</name>
+        <status>OK</status>
+        <temperature celsius="66">66 degrees C / 150 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA1_HMC0 Logic die</name>
+        <status>OK</status>
+        <temperature celsius="76">76 degrees C / 168 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA1_HMC0 DRAM botm</name>
+        <status>OK</status>
+        <temperature celsius="73">73 degrees C / 163 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA1_HMC1 Logic die</name>
+        <status>OK</status>
+        <temperature celsius="75">75 degrees C / 167 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA1_HMC1 DRAM botm</name>
+        <status>OK</status>
+        <temperature celsius="72">72 degrees C / 161 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA1_HMC2 Logic die</name>
+        <status>OK</status>
+        <temperature celsius="76">76 degrees C / 168 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA1_HMC2 DRAM botm</name>
+        <status>OK</status>
+        <temperature celsius="73">73 degrees C / 163 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA2_HMC0 Logic die</name>
+        <status>OK</status>
+        <temperature celsius="53">53 degrees C / 127 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA2_HMC0 DRAM botm</name>
+        <status>OK</status>
+        <temperature celsius="50">50 degrees C / 122 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA2_HMC1 Logic die</name>
+        <status>OK</status>
+        <temperature celsius="58">58 degrees C / 136 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA2_HMC1 DRAM botm</name>
+        <status>OK</status>
+        <temperature celsius="55">55 degrees C / 131 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA2_HMC2 Logic die</name>
+        <status>OK</status>
+        <temperature celsius="59">59 degrees C / 138 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>FPC 1 EA2_HMC2 DRAM botm</name>
+        <status>OK</status>
+        <temperature celsius="56">56 degrees C / 132 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>PEM 0</name>
+        <class>Power</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>PEM 1</name>
+        <class>Power</class>
+        <status>OK</status>
+        <temperature celsius="41">41 degrees C / 105 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>PEM 2</name>
+        <class>Power</class>
+        <status>OK</status>
+        <temperature celsius="35">35 degrees C / 95 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>PEM 3</name>
+        <class>Power</class>
+        <status>OK</status>
+        <temperature celsius="36">36 degrees C / 96 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>PEM 4</name>
+        <class>Power</class>
+        <status>OK</status>
+        <temperature celsius="40">40 degrees C / 104 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>PEM 5</name>
+        <class>Power</class>
+        <status>OK</status>
+        <temperature celsius="37">37 degrees C / 98 degrees F</temperature>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 0 Fan 0</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 0 Fan 1</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 0 Fan 2</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 0 Fan 3</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 1 Fan 0</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 1 Fan 1</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 1 Fan 2</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 1 Fan 3</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 2 Fan 0</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 2 Fan 1</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 2 Fan 2</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 2 Fan 3</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 3 Fan 0</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 3 Fan 1</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 3 Fan 2</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+    <environment-item>
+        <name>Fan Tray 3 Fan 3</name>
+        <class>Fans</class>
+        <status>OK</status>
+        <comment>Spinning at normal speed</comment>
+    </environment-item>
+</environment-information>

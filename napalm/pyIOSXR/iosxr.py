@@ -26,8 +26,10 @@ Contributors fooelisa, mirceaulinic, et all
 import re
 import time
 import difflib
+import logging
 from threading import Lock
 from xml.sax.saxutils import escape as escape_xml
+
 
 # third party lib
 from lxml import etree as ET
@@ -45,6 +47,8 @@ from napalm.pyIOSXR.exceptions import TimeoutError
 from napalm.pyIOSXR.exceptions import IteratorIDError
 from napalm.pyIOSXR.exceptions import InvalidInputError
 from napalm.pyIOSXR.exceptions import InvalidXMLResponse
+
+logger = logging.getLogger(__name__)
 
 
 class IOSXR(object):
@@ -160,10 +164,13 @@ class IOSXR(object):
         """
         # ~~~ hack: ~~~
         if not self.is_alive():
+            logger.debug("Force closing tunnel before making RPC Call")
             self.close()  # force close for safety
             self.open()  # reopen
+            logger.debug("Re-opening tunnel before making RPC Call")
         # ~~~ end hack ~~~
         result = self._execute_rpc(rpc_command)
+        logger.debug(result)
         return ET.tostring(result)
 
     def open(self):
@@ -179,13 +186,16 @@ class IOSXR(object):
                 port=self.port,
                 username=self.username,
                 password=self.password,
+                global_cmd_verify=False,
                 **self.netmiko_kwargs
             )
             self.device.timeout = self.timeout
             self._xml_agent_alive = True  # successfully open thus alive
         except NetMikoTimeoutException as t_err:
+            logger.error(t_err.args[0])
             raise ConnectError(t_err.args[0])
         except NetMikoAuthenticationException as au_err:
+            logger.error(au_err.args[0])
             raise ConnectError(au_err.args[0])
 
         self._cli_prompt = self.device.find_prompt()  # get the prompt
@@ -419,12 +429,14 @@ class IOSXR(object):
             root = ET.fromstring(str.encode(response))
         except ET.XMLSyntaxError:
             if 'IteratorID="' in response:
+                logger.error(self._ITERATOR_ID_ERROR_MSG)
                 raise IteratorIDError(self._ITERATOR_ID_ERROR_MSG, self)
             raise InvalidXMLResponse(
                 "Unable to process the XML Response from the device!", self
             )
 
         if "IteratorID" in root.attrib:
+            logger.error(self._ITERATOR_ID_ERROR_MSG)
             raise IteratorIDError(self._ITERATOR_ID_ERROR_MSG, self)
 
         childs = [x.tag for x in list(root)]
@@ -465,6 +477,7 @@ class IOSXR(object):
                 error_msg = root.get("ErrorMsg") or ""
 
             error_msg += "\nOriginal call was: %s" % xml_rpc_command
+            logger.error(error_msg)
             raise XMLCLIError(error_msg, self)
 
         if "CLI" in childs:
@@ -476,6 +489,7 @@ class IOSXR(object):
             if output is None:
                 output = ""
             elif "Invalid input detected" in output:
+                logger.error("Invalid input entered:\n%s" % (output))
                 raise InvalidInputError("Invalid input entered:\n%s" % output, self)
 
         return root

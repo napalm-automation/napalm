@@ -46,6 +46,8 @@ from napalm.base.exceptions import (
     CommandErrorException,
 )
 from napalm.eos.constants import LLDP_CAPAB_TRANFORM_TABLE
+from napalm.eos.pyeapi_syntax_wrapper import Node
+from napalm.eos.utils.versions import EOSVersion
 import napalm.base.constants as c
 
 # local modules
@@ -127,6 +129,7 @@ class EOSDriver(NetworkDriver):
         transport = optional_args.get(
             "transport", optional_args.get("eos_transport", "https")
         )
+        self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
         try:
             self.transport_class = pyeapi.client.TRANSPORTS[transport]
         except KeyError:
@@ -156,11 +159,16 @@ class EOSDriver(NetworkDriver):
             )
 
             if self.device is None:
-                self.device = pyeapi.client.Node(connection, enablepwd=self.enablepwd)
+                self.device = Node(connection, enablepwd=self.enablepwd)
             # does not raise an Exception if unusable
 
-            # let's try to run a very simple command
-            self.device.run_commands(["show clock"], encoding="text")
+            # let's try to determine if we need to use new EOS cli syntax
+            sh_ver = self.device.run_commands(["show version"])
+            cli_version = (
+                2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
+            )
+
+            self.device.update_cli_version(cli_version)
         except ConnectionError as ce:
             # and this is raised either if device not avaiable
             # either if HTTP(S) agent is not enabled
@@ -278,9 +286,13 @@ class EOSDriver(NetworkDriver):
 
         try:
             if self.eos_autoComplete is not None:
-                self.device.run_commands(commands, autoComplete=self.eos_autoComplete)
+                self.device.run_commands(
+                    commands,
+                    autoComplete=self.eos_autoComplete,
+                    fn0039_transform=self.fn0039_config,
+                )
             else:
-                self.device.run_commands(commands)
+                self.device.run_commands(commands, fn0039_transform=self.fn0039_config)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             msg = str(e)
@@ -498,7 +510,7 @@ class EOSDriver(NetworkDriver):
                     peer_info = {
                         "is_up": peer_data["peerState"] == "Established",
                         "is_enabled": is_enabled,
-                        "uptime": int(time.time() - peer_data["upDownTime"]),
+                        "uptime": int(time.time() - float(peer_data["upDownTime"])),
                     }
                     bgp_counters[vrf]["peers"][napalm.base.helpers.ip(peer)] = peer_info
         lines = []
@@ -530,11 +542,11 @@ class EOSDriver(NetworkDriver):
             v6_stats = re.match(self._RE_BGP_PREFIX, lines.pop(0))
             local_as = re.match(self._RE_BGP_LOCAL, lines.pop(0))
             data = {
-                "remote_as": int(neighbor_info.group("as")),
+                "remote_as": napalm.base.helpers.as_number(neighbor_info.group("as")),
                 "remote_id": napalm.base.helpers.ip(
                     get_re_group(rid_info, "rid", "0.0.0.0")
                 ),
-                "local_as": int(local_as.group("as")),
+                "local_as": napalm.base.helpers.as_number(local_as.group("as")),
                 "description": str(desc),
                 "address_family": {
                     "ipv4": {
@@ -679,7 +691,9 @@ class EOSDriver(NetworkDriver):
                 lldp_neighbors_out[interface].append(
                     {
                         "parent_interface": interface,  # no parent interfaces
-                        "remote_port": neighbor_interface_info.get("interfaceId", ""),
+                        "remote_port": neighbor_interface_info.get(
+                            "interfaceId", ""
+                        ).replace('"', ""),
                         "remote_port_description": neighbor_interface_info.get(
                             "interfaceDescription", ""
                         ),
@@ -869,7 +883,9 @@ class EOSDriver(NetworkDriver):
             default_value = False
             bgp_conf_line = bgp_conf_line.strip()
             if bgp_conf_line.startswith("router bgp"):
-                local_as = int(bgp_conf_line.replace("router bgp", "").strip())
+                local_as = napalm.base.helpers.as_number(
+                    (bgp_conf_line.replace("router bgp", "").strip())
+                )
                 continue
             if not (
                 bgp_conf_line.startswith("neighbor")
@@ -1260,7 +1276,7 @@ class EOSDriver(NetworkDriver):
                             )
 
                     vrf_details = vrf_cache.get(_vrf)
-                    local_as = vrf_details.get("asn")
+                    local_as = napalm.base.helpers.as_number(vrf_details.get("asn"))
                     bgp_routes = (
                         vrf_details.get("bgpRouteEntries", {})
                         .get(prefix, {})
@@ -1277,7 +1293,9 @@ class EOSDriver(NetworkDriver):
                         if as_path_type in ["Internal", "Local"]:
                             remote_as = local_as
                         else:
-                            remote_as = int(as_path.strip("()").split()[-1])
+                            remote_as = napalm.base.helpers.as_number(
+                                as_path.strip("()").split()[-1]
+                            )
                         remote_address = napalm.base.helpers.ip(
                             bgp_route_details.get("routeDetail", {})
                             .get("peerEntry", {})
@@ -1748,7 +1766,7 @@ class EOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all", full=False):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         """get_config implementation for EOS."""
         get_startup = retrieve == "all" or retrieve == "startup"
         get_running = retrieve == "all" or retrieve == "running"
@@ -1758,18 +1776,29 @@ class EOSDriver(NetworkDriver):
 
         # EOS only supports "all" on "show run"
         run_full = " all" if full else ""
+        run_sanitized = " sanitized" if sanitized else ""
 
         if retrieve == "all":
-            commands = ["show startup-config", "show running-config{}".format(run_full)]
+            commands = [
+                "show startup-config",
+                "show running-config{0}{1}".format(run_full, run_sanitized),
+            ]
 
             if self.config_session:
                 commands.append(
-                    "show session-config named {}".format(self.config_session)
+                    "show session-config named {0}{1}".format(
+                        self.config_session, run_sanitized
+                    )
                 )
 
             output = self.device.run_commands(commands, encoding="text")
+            startup_cfg = str(output[0]["output"]) if get_startup else ""
+            if sanitized and startup_cfg:
+                startup_cfg = napalm.base.helpers.sanitize_config(
+                    startup_cfg, c.CISCO_SANITIZE_FILTERS
+                )
             return {
-                "startup": str(output[0]["output"]) if get_startup else "",
+                "startup": startup_cfg,
                 "running": str(output[1]["output"]) if get_running else "",
                 "candidate": str(output[2]["output"]) if get_candidate else "",
             }

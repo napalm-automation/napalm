@@ -1,17 +1,21 @@
 Installation
 ============
 
-
 Full installation
 -----------------
 
 You can install napalm with pip:
 
 .. code-block:: bash
-    
+
     pip install napalm
 
-That will install all the drivers currently available.
+That will install all the core drivers currently available.
+
+.. note::
+
+    Beginning with release 3.0.0 and later, NAPALM offers support for Python
+    3.6+ only.
 
 
 OS Package Managers

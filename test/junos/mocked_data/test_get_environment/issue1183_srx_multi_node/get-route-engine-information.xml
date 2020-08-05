@@ -1,0 +1,34 @@
+<multi-routing-engine-results>
+    <multi-routing-engine-item>
+        <re-name>node0</re-name>
+        <route-engine-information>
+            <route-engine>
+                <status>OK</status>
+                <temperature celsius="35">35 degrees C / 95 degrees F</temperature>
+                <cpu-temperature celsius="63">63 degrees C / 145 degrees F</cpu-temperature>
+                <memory-system-total>4096</memory-system-total>
+                <memory-system-total-used>1311</memory-system-total-used>
+                <memory-system-total-util>32</memory-system-total-util>
+                <memory-control-plane>2624</memory-control-plane>
+                <memory-control-plane-used>682</memory-control-plane-used>
+                <memory-control-plane-util>26</memory-control-plane-util>
+                <memory-data-plane>1472</memory-data-plane>
+                <memory-data-plane-used>618</memory-data-plane-used>
+                <memory-data-plane-util>42</memory-data-plane-util>
+                <cpu-user>6</cpu-user>
+                <cpu-background>0</cpu-background>
+                <cpu-system>2</cpu-system>
+                <cpu-interrupt>0</cpu-interrupt>
+                <cpu-idle>92</cpu-idle>
+                <model>RE-SRX345-DUAL-AC</model>
+                <serial-number>DS1319AF0037</serial-number>
+                <start-time seconds="1584485864">2020-03-17 22:57:44 UTC</start-time>
+                <up-time seconds="3626317">41 days, 23 hours, 18 minutes, 37 seconds</up-time>
+                <last-reboot-reason>0x1:power cycle/failure </last-reboot-reason>
+                <load-average-one>0.19</load-average-one>
+                <load-average-five>0.09</load-average-five>
+                <load-average-fifteen>0.02</load-average-fifteen>
+            </route-engine>
+        </route-engine-information>
+    </multi-routing-engine-item>
+</multi-routing-engine-results>
