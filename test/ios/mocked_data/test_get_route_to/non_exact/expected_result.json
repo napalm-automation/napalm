@@ -3,7 +3,7 @@
         {
             "protocol": "bgp",
             "outgoing_interface": "",
-            "age": 722,
+            "age": 387,
             "current_active": true,
             "routing_table": "CustA",
             "last_active": true,
@@ -25,7 +25,7 @@
         {
             "protocol": "bgp",
             "outgoing_interface": "",
-            "age": 722,
+            "age": 387,
             "current_active": true,
             "routing_table": "CustB",
             "last_active": true,
@@ -41,13 +41,11 @@
             "selected_next_hop": true,
             "inactive_reason": "",
             "preference": 0
-        }
-    ],
-    "10.50.0.0/16": [
+        },
         {
             "protocol": "bgp",
             "outgoing_interface": "",
-            "age": 22,
+            "age": 377,
             "current_active": true,
             "routing_table": "default",
             "last_active": true,
