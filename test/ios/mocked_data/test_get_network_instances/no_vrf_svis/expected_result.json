@@ -23,42 +23,9 @@
             "Ethernet3/1": {},
             "Ethernet3/2": {},
             "Ethernet3/3": {},
-            "Vlan1": {}
-         }
-      }
-   },
-   "CustA": {
-      "name": "CustA",
-      "type": "L3VRF",
-      "state": {
-         "route_distinguisher": "1:1"
-      },
-      "interfaces": {
-         "interface": {
-            "Vlan2": {}
-         }
-      }
-   },
-   "CustB": {
-      "name": "CustB",
-      "type": "L3VRF",
-      "state": {
-         "route_distinguisher": "2:2"
-      },
-      "interfaces": {
-         "interface": {
-            "Vlan3": {}
-         }
-      }
-   },
-   "CustC": {
-      "name": "CustC",
-      "type": "L3VRF",
-      "state": {
-         "route_distinguisher": "3:3"
-      },
-      "interfaces": {
-         "interface": {
+            "Vlan1": {},
+            "Vlan2": {},
+            "Vlan3": {},
             "Vlan4": {}
          }
       }
