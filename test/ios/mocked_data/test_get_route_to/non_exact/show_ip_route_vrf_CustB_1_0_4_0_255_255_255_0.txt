@@ -1,6 +1,6 @@
 
 Routing Table: CustB
-Routing entry for 10.50.50.0/24
+Routing entry for 1.0.4.0/24
   Known via "bgp 1", distance 200, metric 0, type internal
   Last update from 169.254.255.1 00:01:38 ago
   Routing Descriptor Blocks:

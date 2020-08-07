@@ -1,4 +1,4 @@
-Routing entry for 10.50.50.0/24
+Routing entry for 1.0.4.0/24
   Known via "bgp 1", distance 20, metric 0
   Tag 3, type external
   Last update from 200.200.200.1 00:01:02 ago

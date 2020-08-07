@@ -1,4 +1,4 @@
-BGP routing table entry for 10.50.50.0/24, version 2
+BGP routing table entry for 1.0.4.0/24, version 2
 Paths: (1 available, best #1, table default)
   Advertised to update-groups:
      2

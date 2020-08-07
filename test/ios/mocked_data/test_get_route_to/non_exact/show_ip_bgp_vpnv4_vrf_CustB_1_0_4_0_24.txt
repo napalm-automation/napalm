@@ -1,4 +1,4 @@
-BGP routing table entry for 3:3:10.50.50.0/24, version 3
+BGP routing table entry for 3:3:1.0.4.0/24, version 3
 Paths: (1 available, best #1, table CustB)
   Not advertised to any peer
   Refresh Epoch 1

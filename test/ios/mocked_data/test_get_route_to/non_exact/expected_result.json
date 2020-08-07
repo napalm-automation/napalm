@@ -1,31 +1,9 @@
 {
-    "10.50.50.0/23": [
+    "1.0.4.0/24": [
         {
             "protocol": "bgp",
             "outgoing_interface": "",
-            "age": 387,
-            "current_active": true,
-            "routing_table": "CustA",
-            "last_active": true,
-            "protocol_attributes": {
-                "as_path": "Local",
-                "remote_address": "169.254.255.1",
-                "communities": [],
-                "local_preference": 100,
-                "local_as": 1,
-                "remote_as": 1
-            },
-            "next_hop": "169.254.255.1",
-            "selected_next_hop": true,
-            "inactive_reason": "",
-            "preference": 0
-        }
-    ],
-    "10.50.50.0/24": [
-        {
-            "protocol": "bgp",
-            "outgoing_interface": "",
-            "age": 387,
+            "age": 98,
             "current_active": true,
             "routing_table": "CustB",
             "last_active": true,
@@ -45,7 +23,7 @@
         {
             "protocol": "bgp",
             "outgoing_interface": "",
-            "age": 377,
+            "age": 62,
             "current_active": true,
             "routing_table": "default",
             "last_active": true,
