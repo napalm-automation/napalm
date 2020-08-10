@@ -281,7 +281,7 @@ class JunOSDriver(NetworkDriver):
         """Commit configuration."""
         if commit_confirm is True:
             raise NotImplementedError(
-                "Commit confirmation timer is not implemented on this platform"
+                "Commit confirm has not been implemented on this platform"
             )
         commit_args = {"comment": message} if message else {}
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)

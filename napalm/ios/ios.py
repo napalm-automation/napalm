@@ -507,12 +507,13 @@ class IOSDriver(NetworkDriver):
         """
         if commit_confirm is True:
             raise NotImplementedError(
-                "Commit confirmation timer is not implemented on this platform"
+                "Commit confirm has not been implemented on this platform"
             )
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
             )
+
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
