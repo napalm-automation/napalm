@@ -1701,7 +1701,8 @@ class IOSXRDriver(NetworkDriver):
             routes_tree = ETREE.fromstring(
                 self.device.make_rpc_call(route_info_rpc_command)
             )
-        except:
+        except Exception:
+            pass
             # Some versions of IOS-XR use IP_RIBRouteTableName instead of IP_RIBRoute.
             # If IP_RIBRoute throws an exception, try again with IP_RIBRouteTableName
             # and have subsequent get_route_to calls use that.
