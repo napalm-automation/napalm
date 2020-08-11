@@ -41,6 +41,7 @@ from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.exceptions import CommandTimeoutException
 
 logger = logging.getLogger(__name__)
+IP_RIBRoute = "IP_RIBRoute"
 
 
 class IOSXRDriver(NetworkDriver):
@@ -1641,6 +1642,7 @@ class IOSXRDriver(NetworkDriver):
     def get_route_to(self, destination="", protocol="", longer=False):
 
         routes = {}
+        global IP_RIBRoute
 
         if not isinstance(destination, str):
             raise TypeError("Please specify a valid destination!")
@@ -1672,32 +1674,43 @@ class IOSXRDriver(NetworkDriver):
                 "<Get><Operational><IPV6_RIB><VRFTable><VRF><Naming><VRFName>"
                 "default</VRFName></Naming><AFTable><AF><Naming><AFName>IPv6</AFName></Naming>"
                 "<SAFTable>"
-                "<SAF><Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><IP_RIBRoute>"
+                "<SAF><Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><{ipribroute}>"
                 "<Naming>"
                 "<RouteTableName>default</RouteTableName></Naming><RouteTable><Route><Naming>"
                 "<Address>"
-                "{network}</Address>{prefix}</Naming></Route></RouteTable></IP_RIBRoute>"
+                "{network}</Address>{prefix}</Naming></Route></RouteTable></{ipribroute}>"
                 "</IP_RIBRouteTable></SAF></SAFTable></AF></AFTable></VRF></VRFTable></IPV6_RIB>"
                 "</Operational></Get>"
-            ).format(network=network, prefix=prefix_tag)
+            ).format(network=network, prefix=prefix_tag, ipribroute=IP_RIBRoute)
         else:
             route_info_rpc_command = (
                 "<Get><Operational><RIB><VRFTable><VRF><Naming><VRFName>"
                 "default"
                 "</VRFName></Naming><AFTable><AF><Naming><AFName>IPv4</AFName></Naming>"
                 "<SAFTable><SAF>"
-                "<Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><IP_RIBRoute>"
+                "<Naming><SAFName>Unicast</SAFName></Naming><IP_RIBRouteTable><{ipribroute}>"
                 "<Naming>"
                 "<RouteTableName>default</RouteTableName></Naming><RouteTable><Route><Naming>"
                 "<Address>"
-                "{network}</Address>{prefix}</Naming></Route></RouteTable></IP_RIBRoute>"
+                "{network}</Address>{prefix}</Naming></Route></RouteTable></{ipribroute}>"
                 "</IP_RIBRouteTable>"
                 "</SAF></SAFTable></AF></AFTable></VRF></VRFTable></RIB></Operational></Get>"
-            ).format(network=network, prefix=prefix_tag)
+            ).format(network=network, prefix=prefix_tag, ipribroute=IP_RIBRoute)
 
-        routes_tree = ETREE.fromstring(
-            self.device.make_rpc_call(route_info_rpc_command)
-        )
+        try:
+            routes_tree = ETREE.fromstring(
+                self.device.make_rpc_call(route_info_rpc_command)
+            )
+        except:
+            # Some versions of IOS-XR use IP_RIBRouteTableName instead of IP_RIBRoute.
+            # If IP_RIBRoute throws an exception, try again with IP_RIBRouteTableName
+            # and have subsequent get_route_to calls use that.
+            IP_RIBRoute = "IP_RIBRouteTableName"
+            route_info_rpc_command = route_info_rpc_command.replace("IP_RIBRoute>", "{ipribroute}>"
+                                    .format(ipribroute=IP_RIBRoute))
+            routes_tree = ETREE.fromstring(
+                self.device.make_rpc_call(route_info_rpc_command)
+            )
 
         for route in routes_tree.xpath(".//Route"):
             route_protocol = napalm.base.helpers.convert(
