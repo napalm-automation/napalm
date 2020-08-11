@@ -1708,8 +1708,8 @@ class IOSXRDriver(NetworkDriver):
             # and have subsequent get_route_to calls use that.
             IP_RIBRoute = "IP_RIBRouteTableName"
             route_info_rpc_command = route_info_rpc_command.replace(
-                                        "IP_RIBRoute>", "{ipribroute}>"
-                                        .format(ipribroute=IP_RIBRoute))
+                "IP_RIBRoute>", "{ipribroute}>".format(ipribroute=IP_RIBRoute)
+            )
             routes_tree = ETREE.fromstring(
                 self.device.make_rpc_call(route_info_rpc_command)
             )
