@@ -499,15 +499,15 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self, message="", commit_confirm=False, confirm_timeout=600):
+    def commit_config(self, message="", revert_in=None):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """
-        if commit_confirm is True:
+        if revert_in is not None:
             raise NotImplementedError(
-                "Commit confirm has not been implemented on this platform"
+                "Commit confirm has not been implemented on this platform."
             )
         if message:
             raise NotImplementedError(

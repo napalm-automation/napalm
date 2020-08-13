@@ -223,7 +223,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def commit_config(self, message="", commit_confirm=False, confirm_timeout=600):
+    def commit_config(self, message="", revert_in=None):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
 
@@ -235,13 +235,9 @@ class NetworkDriver(object):
 
         :param message: Optional - configuration session commit message
         :type message: str
-        :param commit_confirm: Optional - the commit must be confirmed using the 'confirm_commit()'
-        method with confirm_timeout time (or the changes will be rolled back).
-        :type commit_confirm: bool
-        :param confirm_timeout: Optional - number of seconds before the configuration will be
-        rolled back (when using 'commit_confirm=True'). Drivers should use a default value of
-        600 seconds.
-        :type confirm_timeout: int
+        :param revert_in: Optional - number of seconds before the configuration will be
+        rolled back using a commit confirm mechanism.
+        :type revert_in: int|None
         """
         raise NotImplementedError
 
@@ -268,6 +264,8 @@ class NetworkDriver(object):
     def rollback(self):
         """
         If changes were made, revert changes to the original state.
+
+        If commit confirm is in process, rollback changes and clear has_pending_commit.
         """
         raise NotImplementedError
 

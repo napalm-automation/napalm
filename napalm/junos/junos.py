@@ -277,11 +277,11 @@ class JunOSDriver(NetworkDriver):
         else:
             return diff.strip()
 
-    def commit_config(self, message="", commit_confirm=False, confirm_timeout=600):
+    def commit_config(self, message="", revert_in=None):
         """Commit configuration."""
-        if commit_confirm is True:
+        if revert_in is not None:
             raise NotImplementedError(
-                "Commit confirm has not been implemented on this platform"
+                "Commit confirm has not been implemented on this platform."
             )
         commit_args = {"comment": message} if message else {}
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
