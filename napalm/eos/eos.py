@@ -39,6 +39,7 @@ import napalm.base.helpers
 from napalm.base.base import NetworkDriver
 from napalm.base.utils import string_parsers
 from napalm.base.exceptions import (
+    CommitError,
     ConnectionException,
     MergeConfigException,
     ReplaceConfigException,
@@ -191,6 +192,14 @@ class EOSDriver(NetworkDriver):
         ]:
             raise SessionLockedException("Session is already in use")
 
+    def _get_commit_confirm_session(self):
+        """Return the session name of a pending commit timer"""
+        sess = self.device.run_commands(["show configuration sessions"])[0]["sessions"]
+        try:
+            return [k for k, v in sess.items() if v["state"] == "pendingCommitTimer"][0]
+        except IndexError:
+            return None
+
     @staticmethod
     def _multiline_convert(config, start="banner login", end="EOF", depth=1):
         """Converts running-config HEREDOC into EAPI JSON dict"""
@@ -321,7 +330,7 @@ class EOSDriver(NetworkDriver):
 
             return result.strip()
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """Implementation of NAPALM method commit_config."""
 
         if not self.lock_disable:
@@ -330,15 +339,45 @@ class EOSDriver(NetworkDriver):
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
             )
-        commands = [
-            "copy startup-config flash:rollback-0",
-            "configure session {}".format(self.config_session),
-            "commit",
-            "write memory",
-        ]
+        if revert_in is not None:
+            commands = [
+                "configure session {}".format(self.config_session),
+                "commit timer {}".format(
+                    time.strftime("%H:%M:%S", time.gmtime(revert_in))
+                ),
+                "copy session-config startup-config",
+            ]
+        else:
+            commands = [
+                "copy startup-config flash:rollback-0",
+                "configure session {}".format(self.config_session),
+                "commit",
+                "write memory",
+            ]
 
         self.device.run_commands(commands)
         self.config_session = None
+
+    def has_pending_commit(self):
+        """
+        :return Boolean indicating if a commit_config that needs confirmed is in process.
+        """
+        if self._get_commit_confirm_session():
+            return True
+        return False
+
+    def confirm_commit(self):
+        """Implementation of the NAPALM method confirm_commit."""
+        pendingSession = self._get_commit_confirm_session()
+        if pendingSession:
+            commands = [
+                "configure session {} commit".format(pendingSession),
+                "write memory",
+            ]
+            self.device.run_commands(commands)
+            self.config_session = None
+        else:
+            raise CommitError("No pending session to confirm")
 
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
@@ -349,8 +388,16 @@ class EOSDriver(NetworkDriver):
 
     def rollback(self):
         """Implementation of NAPALM method rollback."""
-        commands = ["configure replace flash:rollback-0", "write memory"]
+        pendingSession = self._get_commit_confirm_session()
+        if pendingSession:
+            commands = [
+                "configure session {} abort".format(pendingSession),
+                "write memory",
+            ]
+        else:
+            commands = ["configure replace flash:rollback-0", "write memory"]
         self.device.run_commands(commands)
+        self.config_session = None
 
     def get_facts(self):
         """Implementation of NAPALM method get_facts."""
