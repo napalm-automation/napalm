@@ -88,6 +88,7 @@ RE_VRF_ADVAN = re.compile(r"[ ]{2}(\S+)[ ]+[<> a-z:\d]+[ ]+([a-z\d,]+)")
 RE_BGP_REMOTE_AS = re.compile(r"remote AS (" + ASN_REGEX + r")")
 RE_BGP_AS_PATH = re.compile(r"^[ ]{2}([\d\(]([\d\) ]+)|Local)")
 
+RE_RP_ROUTE = re.compile(r"Routing entry for (" + IP_ADDR_REGEX + r"\/\d+)")
 RE_RP_FROM = re.compile(r"Known via \"([a-z]+)[ \"]")
 RE_RP_VIA = re.compile(r"via (\S+)")
 RE_RP_METRIC = re.compile(r"[ ]+Route metric is (\d+)")
@@ -2773,7 +2774,7 @@ class IOSDriver(NetworkDriver):
 
         search_re_dict = {
             "aspath": {
-                "re": r"[^|\\n][ ]{2}([\d\(\)]([\d\(\) ])*)",
+                "re": r"[^|\\n][ ]{2}([\d\(\)]([\d\(\) ])*|Local)",
                 "group": 1,
                 "default": "",
             },
@@ -2947,8 +2948,11 @@ class IOSDriver(NetworkDriver):
             vrfs.append("default")  # global VRF
             ipnet_dest = IPNetwork(destination)
             prefix = str(ipnet_dest.network)
-            netmask = str(ipnet_dest.netmask)
-            routes = {destination: []}
+            netmask = ""
+            routes = {}
+            if "/" in destination:
+                netmask = str(ipnet_dest.netmask)
+                routes = {destination: []}
             commands = []
             for _vrf in vrfs:
                 if _vrf == "default":
@@ -2969,6 +2973,14 @@ class IOSDriver(NetworkDriver):
             for (outitem, _vrf) in zip(output, vrfs):  # for all VRFs
                 route_proto_regex = RE_RP_FROM.search(outitem)
                 if route_proto_regex:
+                    route_match = destination
+                    if netmask == "":
+                        # Get the matching route for a non-exact lookup
+                        route_match_regex = RE_RP_ROUTE.search(outitem)
+                        if route_match_regex:
+                            route_match = route_match_regex.group(1)
+                            if route_match not in routes:
+                                routes[route_match] = []
                     # routing protocol name (bgp, ospf, ...)
                     route_proto = route_proto_regex.group(1)
                     rdb = outitem.split("Routing Descriptor Blocks:")
@@ -3035,9 +3047,9 @@ class IOSDriver(NetworkDriver):
                                         destination, _vrf, nh, ip_version
                                     )
                                 nh_line_found = (
-                                    False  # for next RT entry processing ...
-                                )
-                                routes[destination].append(route_entry)
+                                    False
+                                )  # for next RT entry processing ...
+                                routes[route_match].append(route_entry)
         return routes
 
     def get_snmp_information(self):
@@ -3405,7 +3417,14 @@ class IOSDriver(NetworkDriver):
             if "No interfaces" in first_part:
                 interfaces = {}
             else:
-                interfaces = {itf: {} for itf in if_regex.group(1).split()}
+                interfaces = {
+                    canonical_interface_name(itf, {"Vl": "Vlan"}): {}
+                    for itf in if_regex.group(1).split()
+                }
+
+            # remove interfaces in the VRF from the default VRF
+            for item in interfaces:
+                del instances["default"]["interfaces"]["interface"][item]
 
             instances[vrf_name] = {
                 "name": vrf_name,
