@@ -429,6 +429,17 @@ class NXOSSSHDriver(NXOSDriverBase):
             hostname, username, password, timeout=timeout, optional_args=optional_args
         )
         self.platform = "nxos_ssh"
+        self.connector_type_map = {
+            "1000base-LH": "LC_CONNECTOR",
+            "1000base-SX": "LC_CONNECTOR",
+            "1000base-T": "Unknown",
+            "10Gbase-LR": "LC_CONNECTOR",
+            "10Gbase-SR": "LC_CONNECTOR",
+            "SFP-H10GB-CU1M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU1.45M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU3M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU3.45M": "DAC_CONNECTOR",
+        }
 
     def open(self):
         self.device = self._netmiko_open(
@@ -1528,3 +1539,105 @@ class NXOSSSHDriver(NXOSDriverBase):
                 "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),
             }
         return vlans
+
+    def get_optics(self):
+        command = "show interface transceiver details"
+        output = self._send_command(command)
+
+        # Formatting data into return data structure
+        optics_detail = {}
+
+        # Extraction Regexps
+        port_ts_re = re.compile(r"^Ether.*?(?=\nEther|\Z)", re.M | re.DOTALL)
+        port_re = re.compile(r"^(Ether.*)[ ]*?$", re.M)
+        vendor_re = re.compile("name is (.*)$", re.M)
+        vendor_part_re = re.compile("part number is (.*)$", re.M)
+        vendor_rev_re = re.compile("revision is (.*)$", re.M)
+        serial_no_re = re.compile("serial number is (.*)$", re.M)
+        type_no_re = re.compile("type is (.*)$", re.M)
+        rx_instant_re = re.compile(r"Rx Power[ ]+(?:(\S+?)[ ]+dBm|(N.A))", re.M)
+        tx_instant_re = re.compile(r"Tx Power[ ]+(?:(\S+?)[ ]+dBm|(N.A))", re.M)
+        current_instant_re = re.compile(r"Current[ ]+(?:(\S+?)[ ]+mA|(N.A))", re.M)
+
+        port_ts_l = port_ts_re.findall(output)
+
+        for port_ts in port_ts_l:
+            port = port_re.search(port_ts).group(1)
+            # No transceiver is present in those case
+            if "transceiver is not present" in port_ts:
+                continue
+            if "transceiver is not applicable" in port_ts:
+                continue
+            port_detail = {"physical_channels": {"channel": []}}
+            # No metric present
+            vendor = vendor_re.search(port_ts).group(1)
+            vendor_part = vendor_part_re.search(port_ts).group(1)
+            vendor_rev = vendor_rev_re.search(port_ts).group(1)
+            serial_no = serial_no_re.search(port_ts).group(1)
+            type_s = type_no_re.search(port_ts).group(1)
+            state = {
+                "vendor": vendor.strip(),
+                "vendor_part": vendor_part.strip(),
+                "vendor_rev": vendor_rev.strip(),
+                "serial_no": serial_no.strip(),
+                "connector_type": self.connector_type_map.get(type_s, "Unknown"),
+            }
+            if "DOM is not supported" not in port_ts:
+                res = rx_instant_re.search(port_ts)
+                input_power = res.group(1) or res.group(2)
+                res = tx_instant_re.search(port_ts)
+                output_power = res.group(1) or res.group(2)
+                res = current_instant_re.search(port_ts)
+                current = res.group(1) or res.group(2)
+
+                # If interface is shutdown it returns "N/A" as output power
+                # or "N/A" as input power
+                # Converting that to -100.0 float
+                try:
+                    float(output_power)
+                except ValueError:
+                    output_power = -100.0
+                try:
+                    float(input_power)
+                except ValueError:
+                    input_power = -100.0
+                try:
+                    float(current)
+                except ValueError:
+                    current = -100.0
+
+                # Defaulting avg, min, max values to -100.0 since device does not
+                # return these values
+                optic_states = {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": (
+                                float(input_power) if "input_power" else -100.0
+                            ),
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0,
+                        },
+                        "output_power": {
+                            "instant": (
+                                float(output_power) if "output_power" else -100.0
+                            ),
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0,
+                        },
+                        "laser_bias_current": {
+                            "instant": (float(current) if "current" else -100.0),
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0,
+                        },
+                    },
+                }
+                port_detail["physical_channels"]["channel"].append(optic_states)
+
+            port_detail["state"] = state
+            optics_detail[port] = port_detail
+
+        return optics_detail

@@ -800,13 +800,21 @@ class IOSDriver(NetworkDriver):
         for optics_entry in split_output.splitlines():
             # Example, Te1/0/1      34.6       3.29      -2.0      -3.5
             try:
+                optics_entry = optics_entry.strip("-")
                 split_list = optics_entry.split()
             except ValueError:
                 return {}
 
-            int_brief = split_list[0]
-            output_power = split_list[3]
-            input_power = split_list[4]
+            current = 0
+            if len(split_list) == 5:
+                int_brief = split_list[0]
+                output_power = split_list[3]
+                input_power = split_list[4]
+            elif len(split_list) >= 6:
+                int_brief = split_list[0]
+                current = split_list[3]
+                output_power = split_list[4]
+                input_power = split_list[5]
 
             port = canonical_interface_name(int_brief)
 
@@ -842,7 +850,7 @@ class IOSDriver(NetworkDriver):
                         "max": -100.0,
                     },
                     "laser_bias_current": {
-                        "instant": 0.0,
+                        "instant": (float(current) if "current" else -100.0),
                         "avg": 0.0,
                         "min": 0.0,
                         "max": 0.0,
@@ -3115,7 +3123,7 @@ class IOSDriver(NetworkDriver):
         """
         username_regex = (
             r"^username\s+(?P<username>\S+)\s+(?:privilege\s+(?P<priv_level>\S+)"
-            r"\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
+            r"\s+)?(?:(password|secret) \d+\s+(?P<pwd_hash>\S+))?$"
         )
         pub_keychain_regex = (
             r"^\s+username\s+(?P<username>\S+)(?P<keys>(?:\n\s+key-hash\s+"
@@ -3124,6 +3132,9 @@ class IOSDriver(NetworkDriver):
         users = {}
         command = "show run | section username"
         output = self._send_command(command)
+        if "Invalid input detected" in output:
+            command = "show run | include username"
+            output = self._send_command(command)
         for match in re.finditer(username_regex, output, re.M):
             users[match.groupdict()["username"]] = {
                 "level": int(match.groupdict()["priv_level"])
@@ -3406,7 +3417,14 @@ class IOSDriver(NetworkDriver):
             if "No interfaces" in first_part:
                 interfaces = {}
             else:
-                interfaces = {itf: {} for itf in if_regex.group(1).split()}
+                interfaces = {
+                    canonical_interface_name(itf, {"Vl": "Vlan"}): {}
+                    for itf in if_regex.group(1).split()
+                }
+
+            # remove interfaces in the VRF from the default VRF
+            for item in interfaces:
+                del instances["default"]["interfaces"]["interface"][item]
 
             instances[vrf_name] = {
                 "name": vrf_name,
