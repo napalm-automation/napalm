@@ -966,7 +966,7 @@ class EOSDriver(NetworkDriver):
             interface = str(neighbor.get("interface"))
             mac_raw = neighbor.get("hwAddress")
             ip = str(neighbor.get("address"))
-            age = float(neighbor.get("age"))
+            age = float(neighbor.get("age", -1.0))
             arp_table.append(
                 {
                     "interface": interface,

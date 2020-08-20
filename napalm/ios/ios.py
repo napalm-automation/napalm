@@ -2323,7 +2323,7 @@ class IOSDriver(NetworkDriver):
 
             try:
                 if age == "-":
-                    age = 0
+                    age = -1
                 age = float(age)
             except ValueError:
                 raise ValueError("Unable to convert age value to float: {}".format(age))
