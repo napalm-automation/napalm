@@ -1,0 +1,3 @@
+  Name                             Default RD            Protocols   Interfaces
+  CustA                            2:2                   ipv4        Et0/1
+  CustB                            3:3                   ipv4        Et0/2
