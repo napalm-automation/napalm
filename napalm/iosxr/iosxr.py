@@ -1402,7 +1402,7 @@ class IOSXRDriver(NetworkDriver):
                 str, napalm.base.helpers.find_txt(arp_entry, ".//Address")
             )
             age = napalm.base.helpers.convert(
-                float, napalm.base.helpers.find_txt(arp_entry, ".//Age"), 0.0
+                float, napalm.base.helpers.find_txt(arp_entry, ".//Age"), -1.0
             )
             mac_raw = napalm.base.helpers.find_txt(arp_entry, ".//HardwareAddress")
 
