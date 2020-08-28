@@ -3047,8 +3047,8 @@ class IOSDriver(NetworkDriver):
                                         destination, _vrf, nh, ip_version
                                     )
                                 nh_line_found = (
-                                    False
-                                )  # for next RT entry processing ...
+                                    False  # for next RT entry processing ...
+                                )
                                 routes[route_match].append(route_entry)
         return routes
 

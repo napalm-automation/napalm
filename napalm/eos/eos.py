@@ -1990,3 +1990,16 @@ class EOSDriver(NetworkDriver):
                     )
             ping_dict["success"].update({"results": results_array})
         return ping_dict
+
+    def get_vlans(self):
+        command = ["show vlan"]
+        output = self.device.run_commands(command, encoding="json")[0]["vlans"]
+
+        vlans = {}
+        for vlan, vlan_config in output.items():
+            vlans[vlan] = {
+                "name": vlan_config["name"],
+                "interfaces": list(vlan_config["interfaces"].keys()),
+            }
+
+        return vlans
