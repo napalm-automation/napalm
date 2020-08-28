@@ -1,4 +1,4 @@
-black==19.10b0
+black==20.8b1
 coveralls==2.1.2
 ddt==1.4.1
 flake8-import-order==0.18.1
