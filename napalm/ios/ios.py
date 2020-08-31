@@ -2699,16 +2699,16 @@ class IOSDriver(NetworkDriver):
         probes = {}
         probes_regex = (
             r"ip\s+sla\s+(?P<id>\d+)\n"
-            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*"
+            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*)\n.*"
             r"\s+tag\s+(?P<name>\S+)\n.*"
-            r"\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*"
-            r"\s+frequency\s+(?P<interval>\d+)$"
+            r"\s+frequency\s+(?P<interval>\d+)\n.*"
+            r"\s+history\s+buckets-kept\s+(?P<probe_count>\d+)$"
         )
         probe_args = {
             "icmp-echo": r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
         }
         probe_type_map = {"icmp-echo": "icmp-ping"}
-        command = "show run | include ip sla [0-9]"
+        command = "show run | section ip sla [0-9]"
         output = self._send_command(command)
         for match in re.finditer(probes_regex, output, re.M):
             probe = match.groupdict()
