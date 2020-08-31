@@ -2697,18 +2697,22 @@ class IOSDriver(NetworkDriver):
 
     def get_probes_config(self):
         probes = {}
+
         probes_regex = (
             r"ip\s+sla\s+(?P<id>\d+)\n"
-            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*"
-            r"\s+tag\s+(?P<name>\S+)\n.*"
-            r"\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*"
-            r"\s+frequency\s+(?P<interval>\d+)$"
+            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*)\n"
+            r"\s+tag\s+(?P<name>[\S ]+)\n"
+            r"(\s+.*\n)*"
+            r"((\s+frequency\s+(?P<interval0>\d+)\n(\s+.*\n)*\s+history"
+            r"\s+buckets-kept\s+(?P<probe_count0>\d+))|(\s+history\s+buckets-kept"
+            r"\s+(?P<probe_count1>\d+)\n.*\s+frequency\s+(?P<interval1>\d+)))"
         )
+
         probe_args = {
             "icmp-echo": r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
         }
         probe_type_map = {"icmp-echo": "icmp-ping"}
-        command = "show run | include ip sla [0-9]"
+        command = "show run | section ip sla [0-9]"
         output = self._send_command(command)
         for match in re.finditer(probes_regex, output, re.M):
             probe = match.groupdict()
@@ -2724,8 +2728,8 @@ class IOSDriver(NetworkDriver):
                     "probe_type": probe_type_map[probe["probe_type"]],
                     "target": probe_data["target"],
                     "source": probe_data["source"],
-                    "probe_count": int(probe["probe_count"]),
-                    "test_interval": int(probe["interval"]),
+                    "probe_count": int(probe["probe_count0"] or probe["probe_count1"]),
+                    "test_interval": int(probe["interval0"] or probe["interval1"]),
                 }
             }
 
@@ -3047,8 +3051,8 @@ class IOSDriver(NetworkDriver):
                                         destination, _vrf, nh, ip_version
                                     )
                                 nh_line_found = (
-                                    False
-                                )  # for next RT entry processing ...
+                                    False  # for next RT entry processing ...
+                                )
                                 routes[route_match].append(route_entry)
         return routes
 

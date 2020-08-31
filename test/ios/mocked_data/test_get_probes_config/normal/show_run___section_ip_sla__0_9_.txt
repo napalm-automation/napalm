@@ -12,3 +12,9 @@ ip sla 2
  history buckets-kept 20
  timeout 2000
  frequency 3
+ip sla 3
+ icmp-echo 9.9.9.9 source-interface GigabitEthernet11
+ tag quad9
+ frequency 15
+ history lives-kept 1
+ history buckets-kept 60
