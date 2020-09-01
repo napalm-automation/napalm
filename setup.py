@@ -18,10 +18,12 @@ setup(
     author="David Barroso, Kirk Byers, Mircea Ulinic",
     author_email="dbarrosop@dravetech.com, ping@mirceaulinic.net, ktbyers@twb-tech.com",
     description="Network Automation and Programmability Abstraction Layer with Multivendor support",
+    license="Apache 2.0",
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[
         "Topic :: Utilities",
+        "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
