@@ -1717,7 +1717,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                     interface = re_match.group()
                     map_d = if_mapping[if_v]['mapping']
                     for k, v in map_d.items():
-                        if_counter[k] = row[v] if v in row else 0
+                        if_counter[k] = int(row[v]) if v in row else 0
                     all_stats_d[interface] = if_counter
                     break
         print(all_stats_d)
@@ -1733,7 +1733,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                     map_d = if_mapping[if_v]['mapping']
                     for k, v in map_d.items():
                         if v in row:
-                            if_counter[k] = row[v]
+                            if_counter[k] = int(row[v])
                     all_stats_d[interface].update(if_counter)
                     break
 
