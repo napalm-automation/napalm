@@ -1660,40 +1660,40 @@ class NXOSSSHDriver(NXOSDriverBase):
         'rx_broadcast_packets': int,
         """
         if_mapping = {
-            'eth': {
-                'regexp': re.compile('^(Ether|port-channel).*'),
-                'mapping': {
-                    'tx_errors': 'eth_outerr',
-                    'rx_errors': 'eth_inerr',
-                    'tx_discards': 'eth_outdiscard',
-                    'rx_discards': 'eth_indiscard',
-                    'tx_octets': "eth_outbytes",
-                    'rx_octets': "eth_inbytes",
-                    'tx_unicast_packets': "eth_outucast",
-                    'rx_unicast_packets': "eth_inucast",
-                    'tx_multicast_packets': "eth_outmcast",
-                    'rx_multicast_packets': "eth_inmcast",
-                    'tx_broadcast_packets': "eth_outbcast",
-                    'rx_broadcast_packets': "eth_inbcast",
-                }
+            "eth": {
+                "regexp": re.compile("^(Ether|port-channel).*"),
+                "mapping": {
+                    "tx_errors": "eth_outerr",
+                    "rx_errors": "eth_inerr",
+                    "tx_discards": "eth_outdiscard",
+                    "rx_discards": "eth_indiscard",
+                    "tx_octets": "eth_outbytes",
+                    "rx_octets": "eth_inbytes",
+                    "tx_unicast_packets": "eth_outucast",
+                    "rx_unicast_packets": "eth_inucast",
+                    "tx_multicast_packets": "eth_outmcast",
+                    "rx_multicast_packets": "eth_inmcast",
+                    "tx_broadcast_packets": "eth_outbcast",
+                    "rx_broadcast_packets": "eth_inbcast",
+                },
             },
-            'mgmt': {
-                'regexp': re.compile('mgm.*'),
-                'mapping': {
-                    'tx_errors': None,
-                    'rx_errors': None,
-                    'tx_discards': None,
-                    'rx_discards': None,
-                    'tx_octets': "mgmt_out_bytes",
-                    'rx_octets': "mgmt_in_bytes",
-                    'tx_unicast_packets': None,
-                    'rx_unicast_packets': None,
-                    'tx_multicast_packets': "mgmt_out_mcast",
-                    'rx_multicast_packets': "mgmt_in_mcast",
-                    'tx_broadcast_packets': None,
-                    'rx_broadcast_packets': None,
-                }
-            }
+            "mgmt": {
+                "regexp": re.compile("mgm.*"),
+                "mapping": {
+                    "tx_errors": None,
+                    "rx_errors": None,
+                    "tx_discards": None,
+                    "rx_discards": None,
+                    "tx_octets": "mgmt_out_bytes",
+                    "rx_octets": "mgmt_in_bytes",
+                    "tx_unicast_packets": None,
+                    "rx_unicast_packets": None,
+                    "tx_multicast_packets": "mgmt_out_mcast",
+                    "rx_multicast_packets": "mgmt_in_mcast",
+                    "tx_broadcast_packets": None,
+                    "rx_broadcast_packets": None,
+                },
+            },
         }
         command = "show interface counters detailed | json"
         # To retrieve discards
@@ -1711,11 +1711,11 @@ class NXOSSSHDriver(NXOSDriverBase):
             if_counter = {}
             # loop through regexp to find mapping
             for if_v in if_mapping:
-                my_re = if_mapping[if_v]['regexp']
-                re_match = my_re.match(row['interface'])
+                my_re = if_mapping[if_v]["regexp"]
+                re_match = my_re.match(row["interface"])
                 if re_match:
                     interface = re_match.group()
-                    map_d = if_mapping[if_v]['mapping']
+                    map_d = if_mapping[if_v]["mapping"]
                     for k, v in map_d.items():
                         if_counter[k] = int(row[v]) if v in row else 0
                     all_stats_d[interface] = if_counter
@@ -1726,11 +1726,11 @@ class NXOSSSHDriver(NXOSDriverBase):
             if_counter = {}
             # loop through regexp to find mapping
             for if_v in if_mapping:
-                my_re = if_mapping[if_v]['regexp']
-                re_match = my_re.match(row['interface'])
+                my_re = if_mapping[if_v]["regexp"]
+                re_match = my_re.match(row["interface"])
                 if re_match:
                     interface = re_match.group()
-                    map_d = if_mapping[if_v]['mapping']
+                    map_d = if_mapping[if_v]["mapping"]
                     for k, v in map_d.items():
                         if v in row:
                             if_counter[k] = int(row[v])
