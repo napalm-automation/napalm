@@ -1738,5 +1738,3 @@ class NXOSSSHDriver(NXOSDriverBase):
                     break
 
         return all_stats_d
-
-        # print(counters_table_raw)
