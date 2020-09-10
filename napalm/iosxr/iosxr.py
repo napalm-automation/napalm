@@ -1170,13 +1170,13 @@ class IOSXRDriver(NetworkDriver):
             vrf_keepalive = napalm.base.helpers.convert(
                 int,
                 napalm.base.helpers.find_txt(
-                    instance_active_list, "GlobalProcessInfo/VRF/KeepAliveTime"
+                    vrf_tree, "GlobalProcessInfo/VRF/KeepAliveTime"
                 ),
             )
             vrf_holdtime = napalm.base.helpers.convert(
                 int,
                 napalm.base.helpers.find_txt(
-                    instance_active_list, "GlobalProcessInfo/VRF/HoldTime"
+                    vrf_tree, "GlobalProcessInfo/VRF/HoldTime"
                 ),
             )
             if vrf_name not in bgp_neighbors_detail.keys():
