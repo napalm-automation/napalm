@@ -223,9 +223,35 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
+
+        NAPALM drivers that support 'commit confirm' should cause self.has_pending_commit
+        to return True when a 'commit confirm' is in progress.
+
+        Implementations should raise an exception if commit_config is called multiple times while a
+        'commit confirm' is pending.
+
+        :param message: Optional - configuration session commit message
+        :type message: str
+        :param revert_in: Optional - number of seconds before the configuration will be
+        rolled back using a commit confirm mechanism.
+        :type revert_in: int|None
+        """
+        raise NotImplementedError
+
+    def confirm_commit(self):
+        """
+        Confirm the changes requested via commit_config when commit_confirm=True.
+
+        Should cause self.has_pending_commit to return False when done.
+        """
+        raise NotImplementedError
+
+    def has_pending_commit(self):
+        """
+        :return Boolean indicating if a commit_config that needs confirmed is in process.
         """
         raise NotImplementedError
 
@@ -238,6 +264,8 @@ class NetworkDriver(object):
     def rollback(self):
         """
         If changes were made, revert changes to the original state.
+
+        If commit confirm is in process, rollback changes and clear has_pending_commit.
         """
         raise NotImplementedError
 

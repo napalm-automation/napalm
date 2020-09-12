@@ -500,16 +500,21 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
             )
+
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
