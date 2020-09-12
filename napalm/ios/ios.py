@@ -88,6 +88,7 @@ RE_VRF_ADVAN = re.compile(r"[ ]{2}(\S+)[ ]+[<> a-z:\d]+[ ]+([a-z\d,]+)")
 RE_BGP_REMOTE_AS = re.compile(r"remote AS (" + ASN_REGEX + r")")
 RE_BGP_AS_PATH = re.compile(r"^[ ]{2}([\d\(]([\d\) ]+)|Local)")
 
+RE_RP_ROUTE = re.compile(r"Routing entry for (" + IP_ADDR_REGEX + r"\/\d+)")
 RE_RP_FROM = re.compile(r"Known via \"([a-z]+)[ \"]")
 RE_RP_VIA = re.compile(r"via (\S+)")
 RE_RP_METRIC = re.compile(r"[ ]+Route metric is (\d+)")
@@ -2322,7 +2323,7 @@ class IOSDriver(NetworkDriver):
 
             try:
                 if age == "-":
-                    age = 0
+                    age = -1
                 age = float(age)
             except ValueError:
                 raise ValueError("Unable to convert age value to float: {}".format(age))
@@ -2696,18 +2697,22 @@ class IOSDriver(NetworkDriver):
 
     def get_probes_config(self):
         probes = {}
+
         probes_regex = (
             r"ip\s+sla\s+(?P<id>\d+)\n"
-            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*"
-            r"\s+tag\s+(?P<name>\S+)\n.*"
-            r"\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*"
-            r"\s+frequency\s+(?P<interval>\d+)$"
+            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*)\n"
+            r"\s+tag\s+(?P<name>[\S ]+)\n"
+            r"(\s+.*\n)*"
+            r"((\s+frequency\s+(?P<interval0>\d+)\n(\s+.*\n)*\s+history"
+            r"\s+buckets-kept\s+(?P<probe_count0>\d+))|(\s+history\s+buckets-kept"
+            r"\s+(?P<probe_count1>\d+)\n.*\s+frequency\s+(?P<interval1>\d+)))"
         )
+
         probe_args = {
             "icmp-echo": r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
         }
         probe_type_map = {"icmp-echo": "icmp-ping"}
-        command = "show run | include ip sla [0-9]"
+        command = "show run | section ip sla [0-9]"
         output = self._send_command(command)
         for match in re.finditer(probes_regex, output, re.M):
             probe = match.groupdict()
@@ -2723,8 +2728,8 @@ class IOSDriver(NetworkDriver):
                     "probe_type": probe_type_map[probe["probe_type"]],
                     "target": probe_data["target"],
                     "source": probe_data["source"],
-                    "probe_count": int(probe["probe_count"]),
-                    "test_interval": int(probe["interval"]),
+                    "probe_count": int(probe["probe_count0"] or probe["probe_count1"]),
+                    "test_interval": int(probe["interval0"] or probe["interval1"]),
                 }
             }
 
@@ -2773,7 +2778,7 @@ class IOSDriver(NetworkDriver):
 
         search_re_dict = {
             "aspath": {
-                "re": r"[^|\\n][ ]{2}([\d\(\)]([\d\(\) ])*)",
+                "re": r"[^|\\n][ ]{2}([\d\(\)]([\d\(\) ])*|Local)",
                 "group": 1,
                 "default": "",
             },
@@ -2947,8 +2952,11 @@ class IOSDriver(NetworkDriver):
             vrfs.append("default")  # global VRF
             ipnet_dest = IPNetwork(destination)
             prefix = str(ipnet_dest.network)
-            netmask = str(ipnet_dest.netmask)
-            routes = {destination: []}
+            netmask = ""
+            routes = {}
+            if "/" in destination:
+                netmask = str(ipnet_dest.netmask)
+                routes = {destination: []}
             commands = []
             for _vrf in vrfs:
                 if _vrf == "default":
@@ -2969,6 +2977,14 @@ class IOSDriver(NetworkDriver):
             for (outitem, _vrf) in zip(output, vrfs):  # for all VRFs
                 route_proto_regex = RE_RP_FROM.search(outitem)
                 if route_proto_regex:
+                    route_match = destination
+                    if netmask == "":
+                        # Get the matching route for a non-exact lookup
+                        route_match_regex = RE_RP_ROUTE.search(outitem)
+                        if route_match_regex:
+                            route_match = route_match_regex.group(1)
+                            if route_match not in routes:
+                                routes[route_match] = []
                     # routing protocol name (bgp, ospf, ...)
                     route_proto = route_proto_regex.group(1)
                     rdb = outitem.split("Routing Descriptor Blocks:")
@@ -3037,7 +3053,7 @@ class IOSDriver(NetworkDriver):
                                 nh_line_found = (
                                     False  # for next RT entry processing ...
                                 )
-                                routes[destination].append(route_entry)
+                                routes[route_match].append(route_entry)
         return routes
 
     def get_snmp_information(self):

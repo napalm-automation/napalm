@@ -1013,7 +1013,7 @@ class EOSDriver(NetworkDriver):
             interface = str(neighbor.get("interface"))
             mac_raw = neighbor.get("hwAddress")
             ip = str(neighbor.get("address"))
-            age = float(neighbor.get("age"))
+            age = float(neighbor.get("age", -1.0))
             arp_table.append(
                 {
                     "interface": interface,
@@ -2037,3 +2037,16 @@ class EOSDriver(NetworkDriver):
                     )
             ping_dict["success"].update({"results": results_array})
         return ping_dict
+
+    def get_vlans(self):
+        command = ["show vlan"]
+        output = self.device.run_commands(command, encoding="json")[0]["vlans"]
+
+        vlans = {}
+        for vlan, vlan_config in output.items():
+            vlans[vlan] = {
+                "name": vlan_config["name"],
+                "interfaces": list(vlan_config["interfaces"].keys()),
+            }
+
+        return vlans
