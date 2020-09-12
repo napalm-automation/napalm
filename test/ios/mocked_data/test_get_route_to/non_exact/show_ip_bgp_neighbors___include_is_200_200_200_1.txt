@@ -1,0 +1,1 @@
+BGP neighbor is 200.200.200.1,  remote AS 3,  local AS 2 no-prepend replace-as, external link
