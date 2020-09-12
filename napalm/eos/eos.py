@@ -194,9 +194,18 @@ class EOSDriver(NetworkDriver):
 
     def _get_commit_confirm_session(self):
         """Return the session name of a pending commit timer"""
-        sess = self.device.run_commands(["show configuration sessions"])[0]["sessions"]
+        config_sessions = self.device.run_commands(["show configuration sessions"])
+        # Still returns all of the configuration sessions (original data-struct was just a list)
+        config_sessions = config_sessions[0]["sessions"]
+        for session_name, session_dict in config_sessions.items():
+            if "pendingCommitTimer" in session_dict["state"]:
+                return True
+        import ipdb; ipdb.set_trace()
         try:
-            return [k for k, v in sess.items() if v["state"] == "pendingCommitTimer"][0]
+            return [
+                k 
+                for k, v in config_sessions.items() 
+                if v["state"] == "pendingCommitTimer"][0]
         except IndexError:
             return None
 
@@ -335,22 +344,21 @@ class EOSDriver(NetworkDriver):
 
         if not self.lock_disable:
             self._lock()
-        if revert_in is not None:
-            raise NotImplementedError(
-                "Commit confirm has not been implemented on this platform."
-            )
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
             )
+
         if revert_in is not None:
             commands = [
+                "copy startup-config flash:rollback-0",
                 "configure session {}".format(self.config_session),
                 "commit timer {}".format(
                     time.strftime("%H:%M:%S", time.gmtime(revert_in))
                 ),
-                "copy session-config startup-config",
+                # "copy session-config startup-config",
             ]
+            self.device.run_commands(commands)
         else:
             commands = [
                 "copy startup-config flash:rollback-0",
@@ -358,29 +366,39 @@ class EOSDriver(NetworkDriver):
                 "commit",
                 "write memory",
             ]
-
-        self.device.run_commands(commands)
-        self.config_session = None
+            self.device.run_commands(commands)
+            self.config_session = None
 
     def has_pending_commit(self):
         """
-        :return Boolean indicating if a commit_config that needs confirmed is in process.
+        Boolean indicating if there is a commit-confirm in process.
+
+        FIX - matches on ANY pending commit not just our commit session
         """
-        if self._get_commit_confirm_session():
-            return True
+        config_sessions = self.device.run_commands(["show configuration sessions"])
+        # Still returns all of the configuration sessions (original data-struct was just a list)
+        config_sessions = config_sessions[0]["sessions"]
+        for session_name, session_dict in config_sessions.items():
+            if "pendingCommitTimer" in session_dict["state"]:
+                return True
         return False
 
     def confirm_commit(self):
-        """Implementation of the NAPALM method confirm_commit."""
-        pendingSession = self._get_commit_confirm_session()
-        if pendingSession:
+        """
+        Implementation of the NAPALM method confirm_commit.
+
+        FIX: currently has_pending_commit() returns True if any Pending-commit confirm
+
+        """
+        if self.has_pending_commit():
             commands = [
-                "configure session {} commit".format(pendingSession),
+                "configure session {} commit".format(self.config_session),
                 "write memory",
             ]
             self.device.run_commands(commands)
             self.config_session = None
         else:
+            # FIX: Do we want this exception
             raise CommitError("No pending session to confirm")
 
     def discard_config(self):
@@ -392,8 +410,8 @@ class EOSDriver(NetworkDriver):
 
     def rollback(self):
         """Implementation of NAPALM method rollback."""
-        pendingSession = self._get_commit_confirm_session()
-        if pendingSession:
+        pending_session = self._get_commit_confirm_session()
+        if pending_session:
             commands = [
                 "configure session {} abort".format(pendingSession),
                 "write memory",
