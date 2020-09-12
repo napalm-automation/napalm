@@ -321,11 +321,15 @@ class EOSDriver(NetworkDriver):
 
             return result.strip()
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """Implementation of NAPALM method commit_config."""
 
         if not self.lock_disable:
             self._lock()
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"

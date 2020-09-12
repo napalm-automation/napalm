@@ -214,7 +214,11 @@ class NXOSDriverBase(NetworkDriver):
             return diff
         return ""
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
