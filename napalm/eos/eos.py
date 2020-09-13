@@ -192,7 +192,6 @@ class EOSDriver(NetworkDriver):
         ]:
             raise SessionLockedException("Session is already in use")
 
-
     def _get_pending_commits(self):
         """
         Return a dictionary of configuration sessions with pending commit confirms and
@@ -201,7 +200,9 @@ class EOSDriver(NetworkDriver):
         Example:
         {'napalm_607123': 522}
         """
-        config_sessions = self.device.run_commands(["show configuration sessions detail"])
+        config_sessions = self.device.run_commands(
+            ["show configuration sessions detail"]
+        )
         # Still returns all of the configuration sessions (original data-struct was just a list)
         config_sessions = config_sessions[0]["sessions"]
 
@@ -223,7 +224,6 @@ class EOSDriver(NetworkDriver):
                     pending_commits[session_name] = round(confirm_by_seconds)
 
         return pending_commits
-        
 
     @staticmethod
     def _multiline_convert(config, start="banner login", end="EOF", depth=1):
@@ -368,7 +368,7 @@ class EOSDriver(NetworkDriver):
         if revert_in is not None:
             if self.has_pending_commit():
                 raise CommitError("Pending commit confirm already in process!")
-          
+
             commands = [
                 "copy startup-config flash:rollback-0",
                 "configure session {}".format(self.config_session),
