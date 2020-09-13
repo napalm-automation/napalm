@@ -192,22 +192,38 @@ class EOSDriver(NetworkDriver):
         ]:
             raise SessionLockedException("Session is already in use")
 
-    def _get_commit_confirm_session(self):
-        """Return the session name of a pending commit timer"""
-        config_sessions = self.device.run_commands(["show configuration sessions"])
+
+    def _get_pending_commits(self):
+        """
+        Return a dictionary of configuration sessions with pending commit confirms and
+        corresponding time when confirm needs to happen by (rounded to nearest second).
+
+        Example:
+        {'napalm_607123': 522}
+        """
+        config_sessions = self.device.run_commands(["show configuration sessions detail"])
         # Still returns all of the configuration sessions (original data-struct was just a list)
         config_sessions = config_sessions[0]["sessions"]
+
+        # Arista reports the commitBy time relative to uptime of the box... :-(
+        uptime = self.device.run_commands(["show version"])
+        uptime = uptime[0].get("uptime", -1)
+
+        pending_commits = {}
         for session_name, session_dict in config_sessions.items():
             if "pendingCommitTimer" in session_dict["state"]:
-                return True
-        import ipdb; ipdb.set_trace()
-        try:
-            return [
-                k 
-                for k, v in config_sessions.items() 
-                if v["state"] == "pendingCommitTimer"][0]
-        except IndexError:
-            return None
+                commit_by = session_dict.get("commitBy", -1)
+                # Set to -1 if something went wrong in the calculation.
+                if commit_by == -1 or uptime == -1:
+                    pending_commits[session_name] = -1
+                elif uptime >= commit_by:
+                    pending_commits[session_name] = -1
+                else:
+                    confirm_by_seconds = commit_by - uptime
+                    pending_commits[session_name] = round(confirm_by_seconds)
+
+        return pending_commits
+        
 
     @staticmethod
     def _multiline_convert(config, start="banner login", end="EOF", depth=1):
@@ -350,13 +366,15 @@ class EOSDriver(NetworkDriver):
             )
 
         if revert_in is not None:
+            if self.has_pending_commit():
+                raise CommitError("Pending commit confirm already in process!")
+          
             commands = [
                 "copy startup-config flash:rollback-0",
                 "configure session {}".format(self.config_session),
                 "commit timer {}".format(
                     time.strftime("%H:%M:%S", time.gmtime(revert_in))
                 ),
-                # "copy session-config startup-config",
             ]
             self.device.run_commands(commands)
         else:
@@ -370,27 +388,16 @@ class EOSDriver(NetworkDriver):
             self.config_session = None
 
     def has_pending_commit(self):
-        """
-        Boolean indicating if there is a commit-confirm in process.
-
-        FIX - matches on ANY pending commit not just our commit session
-        """
-        config_sessions = self.device.run_commands(["show configuration sessions"])
-        # Still returns all of the configuration sessions (original data-struct was just a list)
-        config_sessions = config_sessions[0]["sessions"]
-        for session_name, session_dict in config_sessions.items():
-            if "pendingCommitTimer" in session_dict["state"]:
-                return True
-        return False
+        """Boolean indicating if there is a commit-confirm in process."""
+        pending_commits = self._get_pending_commits()
+        # pending_commits will return an empty dict, if there are no commit-confirms pending.
+        return bool(pending_commits)
 
     def confirm_commit(self):
-        """
-        Implementation of the NAPALM method confirm_commit.
-
-        FIX: currently has_pending_commit() returns True if any Pending-commit confirm
-
-        """
-        if self.has_pending_commit():
+        """Send final commit to confirm an in-proces commit that requires confirmation."""
+        pending_commits = self._get_pending_commits()
+        # The specific 'config_session' must show up as a pending commit.
+        if pending_commits.get("self.config_session"):
             commands = [
                 "configure session {} commit".format(self.config_session),
                 "write memory",
@@ -398,8 +405,7 @@ class EOSDriver(NetworkDriver):
             self.device.run_commands(commands)
             self.config_session = None
         else:
-            # FIX: Do we want this exception
-            raise CommitError("No pending session to confirm")
+            raise CommitError("No pending commit-confirm found!")
 
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
