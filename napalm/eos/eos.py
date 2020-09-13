@@ -397,7 +397,7 @@ class EOSDriver(NetworkDriver):
         """Send final commit to confirm an in-proces commit that requires confirmation."""
         pending_commits = self._get_pending_commits()
         # The specific 'config_session' must show up as a pending commit.
-        if pending_commits.get("self.config_session"):
+        if pending_commits.get(self.config_session):
             commands = [
                 "configure session {} commit".format(self.config_session),
                 "write memory",
@@ -416,14 +416,24 @@ class EOSDriver(NetworkDriver):
 
     def rollback(self):
         """Implementation of NAPALM method rollback."""
-        pending_session = self._get_commit_confirm_session()
-        if pending_session:
-            commands = [
-                "configure session {} abort".format(pendingSession),
-                "write memory",
-            ]
+
+        # Commit-confirm check and abort
+        pending_commits = self._get_pending_commits()
+        if pending_commits:
+            # Make sure pending commit matches self.config_session
+            if pending_commits.get(self.config_session):
+                commands = [
+                    "configure session {} abort".format(self.config_session),
+                    "write memory",
+                ]
+            else:
+                msg = "Current config session not found as pending commit-confirm"
+                raise CommitError(msg)
+
+        # Standard rollback
         else:
             commands = ["configure replace flash:rollback-0", "write memory"]
+
         self.device.run_commands(commands)
         self.config_session = None
 
