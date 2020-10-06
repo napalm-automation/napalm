@@ -2674,7 +2674,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 test_interval = napalm.base.helpers.convert(
                     int,
                     self._find_txt(
-                        operation, "./prbc:frequency", default="", namespaces=C.NS
+                        operation, "./prbc:frequency", default="0", namespaces=C.NS
                     ),
                 )
                 probe_count = napalm.base.helpers.convert(
@@ -2682,7 +2682,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     self._find_txt(
                         operation,
                         "./prbc:history/prbc:buckets",
-                        default="",
+                        default="0",
                         namespaces=C.NS,
                     ),
                 )
@@ -2742,7 +2742,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:specific-stats/prb:op-type",
                     default="",
                     namespaces=C.NS,
-                )
+                ),
+                "",
             )
             probe_count = (
                 probes_config.get(probe_name).get(test_name, {}).get("probe_count", 0)
@@ -2773,7 +2774,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 for return_code in return_codes
             ]
 
-            last_test_loss = 0.0
+            last_test_loss = 0
             if len(return_codes):
                 last_test_loss = napalm.base.helpers.convert(
                     int,
@@ -2792,7 +2793,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:distributed/prb:target/prb:distribution-intervals/\
                     prb:distribution-interval/prb:common-stats/\
                     prb:sum2-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2804,7 +2805,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:distributed/prb:target/prb:distribution-intervals/\
                     prb:distribution-interval/prb:common-stats/\
                     prb:update-count",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2822,7 +2823,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     probe,
                     "./prb:statistics/prb:latest/prb:target/\
                     prb:common-stats/prb:min-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2832,7 +2833,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     probe,
                     "./prb:statistics/prb:latest/prb:target/\
                     prb:common-stats/prb:max-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2842,7 +2843,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     probe,
                     "./prb:statistics/prb:latest/prb:target/\
                     prb:common-stats/prb:sum-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2852,7 +2853,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     probe,
                     ".//prb:statistics/prb:latest/prb:target/\
                     prb:common-stats/prb:update-count",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2867,7 +2868,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:distributed/prb:target/prb:distribution-intervals/\
                     prb:distribution-interval/prb:common-stats/\
                     prb:min-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2879,7 +2880,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:distributed/prb:target/prb:distribution-intervals/\
                     prb:distribution-interval/prb:common-stats/\
                     prb:max-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2891,7 +2892,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:distributed/prb:target/prb:distribution-intervals/\
                     prb:distribution-interval/prb:common-stats/\
                     prb:sum-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
