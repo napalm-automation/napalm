@@ -1,0 +1,102 @@
+{
+    "10": {
+        "icmp-echo-172.16.255.3": {
+            "current_test_avg_delay": 0.0,
+            "current_test_max_delay": 0.0,
+            "current_test_min_delay": 0.0,
+            "global_test_avg_delay": 2.2333333333333334,
+            "global_test_max_delay": 3.0,
+            "global_test_min_delay": 2.0,
+            "last_test_avg_delay": 1.0,
+            "last_test_loss": 0,
+            "last_test_max_delay": 1.0,
+            "last_test_min_delay": 1.0,
+            "probe_count": 16,
+            "probe_type": "icmp-ping",
+            "round_trip_jitter": -2.273030282830976,
+            "rtt": 0.0,
+            "source": "172.16.255.2",
+            "target": ""
+        }
+    },
+    "20": {
+        "udp-echo-172.16.255.1": {
+            "current_test_avg_delay": 0.0,
+            "current_test_max_delay": 0.0,
+            "current_test_min_delay": 0.0,
+            "global_test_avg_delay": 2.55,
+            "global_test_max_delay": 6.0,
+            "global_test_min_delay": 1.0,
+            "last_test_avg_delay": 2.0,
+            "last_test_loss": 0,
+            "last_test_max_delay": 2.0,
+            "last_test_min_delay": 2.0,
+            "probe_count": 16,
+            "probe_type": "udp-ping",
+            "round_trip_jitter": -2.6236107434856515,
+            "rtt": 0.0,
+            "source": "172.16.255.2",
+            "target": ""
+        }
+    },
+    "30": {
+        "icmp-path-jitter-172.16.255.3": {
+            "current_test_avg_delay": 0.0,
+            "current_test_max_delay": 0.0,
+            "current_test_min_delay": 0.0,
+            "global_test_avg_delay": 0.0,
+            "global_test_max_delay": 0.0,
+            "global_test_min_delay": 0.0,
+            "last_test_avg_delay": 0.0,
+            "last_test_loss": 0,
+            "last_test_max_delay": 0.0,
+            "last_test_min_delay": 0.0,
+            "probe_count": 0,
+            "probe_type": "",
+            "round_trip_jitter": 0.0,
+            "rtt": 0.0,
+            "source": "172.16.255.2",
+            "target": ""
+        }
+    },
+    "40": {
+        "udp-jitter-172.16.255.1": {
+            "current_test_avg_delay": 0.0,
+            "current_test_max_delay": 0.0,
+            "current_test_min_delay": 0.0,
+            "global_test_avg_delay": 22.658333333333335,
+            "global_test_max_delay": 9.0,
+            "global_test_min_delay": 1.0,
+            "last_test_avg_delay": 24.0,
+            "last_test_loss": 0,
+            "last_test_max_delay": 3.0,
+            "last_test_min_delay": 2.0,
+            "probe_count": 0,
+            "probe_type": "udp-ping-timestamp",
+            "round_trip_jitter": -7.371680043698768,
+            "rtt": 0.0,
+            "source": "172.16.255.2",
+            "target": ""
+        }
+    },
+    "50": {
+        "icmp-path-echo-172.16.255.3": {
+            "current_test_avg_delay": 0.0,
+            "current_test_max_delay": 0.0,
+            "current_test_min_delay": 0.0,
+            "global_test_avg_delay": 0.0,
+            "global_test_max_delay": 0.0,
+            "global_test_min_delay": 0.0,
+            "last_test_avg_delay": 0.0,
+            "last_test_loss": 0,
+            "last_test_max_delay": 0.0,
+            "last_test_min_delay": 0.0,
+            "probe_count": 16,
+            "probe_type": "",
+            "round_trip_jitter": 0.0,
+            "rtt": 0.0,
+            "source": "172.16.255.2",
+            "target": ""
+        }
+    }
+}
