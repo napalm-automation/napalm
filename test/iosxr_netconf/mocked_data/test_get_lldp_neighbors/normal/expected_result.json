@@ -1,0 +1,18 @@
+{
+    "TenGigE0/0/0/2": [
+        {
+            "hostname": "302",
+            "port": "TenGigE0/0/0/2"
+        },
+        {
+            "hostname": "302",
+            "port": "Bundle-Ether1"
+        }
+    ],
+    "TenGigE0/0/0/8": [
+        {
+            "hostname": "r312",
+            "port": "TenGigE0/0/0/39"
+        }
+    ]
+}
