@@ -84,12 +84,12 @@ class FakeIOSXRNETCONFDevice(BaseTestDouble):
                 # Split the namespace with "/" and select the 5th element of the list.
                 # 5th element contain yang model name.
                 # Remove first 13 characters from model name i.e. ('Cisco-IOS-XR')
-                suffix = child.tag.split('/')[5][13:]
+                suffix = child.tag.split("/")[5][13:]
                 if rpc_req_ele != "":
                     rpc_req_ele += "__"
                 rpc_req_ele += str.join("_", suffix.split("}"))
         else:
-            suffix = rpc_command.tag.split('/')[5][13:]
+            suffix = rpc_command.tag.split("/")[5][13:]
             rpc_req_ele = str.join("_", suffix.split("}"))
 
         return FakeRPCReply(self.find_mocked_data_file(rpc_req_ele))
@@ -98,7 +98,7 @@ class FakeIOSXRNETCONFDevice(BaseTestDouble):
         # Split the namespace with "/" and select the 5th element of the list.
         # 5th element contain yang model name.
         # Remove first 13 characters from model name i.e. ('Cisco-IOS-XR')
-        suffix = etree.fromstring(filter[1]).tag.split('/')[5][13:]
+        suffix = etree.fromstring(filter[1]).tag.split("/")[5][13:]
         rpc_req_ele = str.join("_", suffix.split("}"))
         return FakeRPCReply(self.find_mocked_data_file(rpc_req_ele))
 
@@ -106,7 +106,7 @@ class FakeIOSXRNETCONFDevice(BaseTestDouble):
         # Split the namespace with "/" and select the 5th element of the list.
         # 5th element contain yang model name.
         # Remove first 13 characters from model name i.e. ('Cisco-IOS-XR')
-        suffix = etree.fromstring(filter[1]).tag.split('/')[5][13:]
+        suffix = etree.fromstring(filter[1]).tag.split("/")[5][13:]
         rpc_req_ele = f"{str.join('_', suffix.split('}'))}__{source}"
         return FakeRPCReply(self.find_mocked_data_file(rpc_req_ele))
 
