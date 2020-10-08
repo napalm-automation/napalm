@@ -1720,7 +1720,6 @@ class NXOSSSHDriver(NXOSDriverBase):
                         if_counter[k] = int(row[v]) if v in row else 0
                     all_stats_d[interface] = if_counter
                     break
-        print(all_stats_d)
 
         for row in counters_table_raw:
             if_counter = {}
