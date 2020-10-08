@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<rpc-reply message-id="urn:uuid:a72fa4a6-8b59-4cdb-a7da-25dd0ed66bee" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+ <data>
+  <cli xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-cfg">
+!! IOS XR Configuration 7.3.1.24I
+!! Last configuration change at Fri Oct  2 23:27:33 2020 by admin
+!
+hostname carreras
+service timestamps log datetime msec
+service timestamps debug datetime msec
+logging events link-status software-interfaces
+username admin
+ group root-lr
+ group cisco-support
+ secret 10 $6$050VHVEs22C/H...$/BJjVHfsbTLuSrmR4Txrf0LRSwwgEQCvLngcJsjZZaCVoNyt1LUCSx8ZgMJ1Y1PRwOQXGixLT6atgqtKVso8Y/
+!
+grpc
+ no-tls
+!
+tpa
+ vrf default
+  address-family ipv4
+   default-route mgmt
+  !
+ !
+!
+line default
+ exec-timeout 0 0
+!
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+netconf-yang agent
+ ssh
+!
+interface Loopback0
+ ipv4 address 172.16.255.101 255.255.255.255
+ ipv6 address 2001:db8::ff:101/128
+!
+interface MgmtEth0/RP0/CPU0/0
+ description *** MANAGEMENT INTERFACE ***
+ ipv4 address 10.30.110.85 255.255.254.0
+!
+interface GigabitEthernet0/0/0/0
+ description CONNECTS TO LER2 (g0/0/0/1)
+ ipv4 address 172.16.0.3 255.255.255.254
+ ipv6 address 2001:db8::3/127
+!
+interface GigabitEthernet0/0/0/1
+ description CONNECTS TO LER1 (g0/0/0/0)
+ ipv4 address 172.16.0.4 255.255.255.254
+ ipv6 address 2001:db8::4/127
+!
+router static
+ address-family ipv4 unicast
+  0.0.0.0/0 10.30.110.65
+ !
+!
+router isis DEFAULT
+ is-type level-2-only
+ net 49.0001.0000.00ff.0101.00
+ address-family ipv4 unicast
+  metric-style wide
+  mpls traffic-eng level-2-only
+  mpls traffic-eng router-id Loopback0
+ !
+ address-family ipv6 unicast
+  metric-style wide
+ !
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/0
+  point-to-point
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  point-to-point
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+!
+rsvp
+ interface GigabitEthernet0/0/0/0
+  bandwidth percentage 100
+ !
+ interface GigabitEthernet0/0/0/1
+  bandwidth percentage 100
+ !
+!
+mpls traffic-eng
+ interface GigabitEthernet0/0/0/0
+ !
+ interface GigabitEthernet0/0/0/1
+ !
+!
+ssh server v2
+ssh server netconf vrf default
+end
+
+</cli>
+ </data>
+</rpc-reply>
