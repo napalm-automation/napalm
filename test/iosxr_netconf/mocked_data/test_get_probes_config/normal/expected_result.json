@@ -1,0 +1,47 @@
+{
+    "10": {
+        "icmp-echo-172.16.255.3": {
+            "probe_count": 16,
+            "probe_type": "icmp-ping",
+            "source": "172.16.255.2",
+            "target": "172.16.255.3",
+            "test_interval": 30
+        }
+    },
+    "20": {
+        "udp-echo-172.16.255.1": {
+            "probe_count": 16,
+            "probe_type": "udp-ping",
+            "source": "172.16.255.2",
+            "target": "172.16.255.1",
+            "test_interval": 30
+        }
+    },
+    "30": {
+        "icmp-path-jitter-172.16.255.3": {
+            "probe_count": 0,
+            "probe_type": "",
+            "source": "172.16.255.2",
+            "target": "172.16.255.3",
+            "test_interval": 30
+        }
+    },
+    "40": {
+        "udp-jitter-172.16.255.1": {
+            "probe_count": 0,
+            "probe_type": "udp-ping-timestamp",
+            "source": "172.16.255.2",
+            "target": "172.16.255.1",
+            "test_interval": 30
+        }
+    },
+    "50": {
+        "icmp-path-echo-172.16.255.3": {
+            "probe_count": 16,
+            "probe_type": "",
+            "source": "172.16.255.2",
+            "target": "172.16.255.3",
+            "test_interval": 30
+        }
+    }
+}

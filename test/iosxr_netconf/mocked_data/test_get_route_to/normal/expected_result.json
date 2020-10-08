@@ -1,0 +1,17 @@
+{
+    "1.0.4.0/24": [
+        {
+            "age": 1543,
+            "current_active": true,
+            "inactive_reason": "",
+            "last_active": false,
+            "next_hop": "172.16.255.3",
+            "outgoing_interface": "",
+            "preference": 12,
+            "protocol": "bgp",
+            "protocol_attributes": {},
+            "routing_table": "default",
+            "selected_next_hop": false
+        }
+    ]
+}

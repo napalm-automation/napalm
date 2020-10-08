@@ -242,7 +242,10 @@ INT_IPV4_IPV6_RPC_REQ = """
 
 # subtree filter to get SNMP configuration using GET CONFIG RPC
 SNMP_RPC_REQ_FILTER = """
-<snmp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-snmp-agent-cfg"/>"""
+<snmp xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-snmp-agent-cfg">
+  <administration/>
+  <system/>
+</snmp>"""
 
 # subtree filter to get SNMP configuration using GET CONFIG RPC
 USERS_RPC_REQ_FILTER = """
