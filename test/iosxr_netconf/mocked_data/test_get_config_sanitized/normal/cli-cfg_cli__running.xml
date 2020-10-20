@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<rpc-reply message-id="urn:uuid:de925fb1-e3d1-40d1-837c-c618bb62c1eb" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+ <data>
+  <cli xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-cli-cfg">
+!! IOS XR Configuration 6.7.1
+!! Last configuration change at Thu Oct  8 06:29:40 2020 by admin
+!
+hostname asr9000-h07-2
+service timestamps log datetime msec
+service timestamps debug datetime msec
+username admin
+ group root-system
+ group cisco-support
+ secret 5 $1$DPTg$5iBzqAsx43/5XfWPUulnr/
+!
+line default
+ exec-timeout 0 0
+!
+call-home
+ service active
+ contact smart-licensing
+ profile CiscoTAC-1
+  active
+  destination transport-method http
+ !
+!
+netconf-yang agent
+ ssh
+!
+interface Loopback0
+ ipv4 address 172.16.255.101 255.255.255.255
+ ipv6 address 2001:db8::ff:101/128
+!
+interface MgmtEth0/RSP0/CPU0/0
+ ipv4 address 172.30.2.11 255.255.255.0
+!
+interface MgmtEth0/RSP0/CPU0/1
+ shutdown
+!
+interface MgmtEth0/RSP1/CPU0/0
+ shutdown
+!
+interface MgmtEth0/RSP1/CPU0/1
+ shutdown
+!
+interface GigabitEthernet0/0/0/0
+ description CONNECTS TO LER2 (g0/0/0/1)
+ ipv4 address 172.16.0.3 255.255.255.254
+ ipv6 address 2001:db8::3/127
+ shutdown
+!
+interface GigabitEthernet0/0/0/1
+ description CONNECTS TO LER1 (g0/0/0/0)
+ ipv4 address 172.16.0.4 255.255.255.254
+ ipv6 address 2001:db8::4/127
+ shutdown
+!
+interface GigabitEthernet0/0/0/2
+ shutdown
+!
+interface GigabitEthernet0/0/0/3
+ shutdown
+!
+interface GigabitEthernet0/0/0/4
+ shutdown
+!
+interface GigabitEthernet0/0/0/5
+ shutdown
+!
+interface GigabitEthernet0/0/0/6
+ shutdown
+!
+interface GigabitEthernet0/0/0/7
+ shutdown
+!
+interface GigabitEthernet0/0/0/8
+ shutdown
+!
+interface GigabitEthernet0/0/0/9
+ shutdown
+!
+interface GigabitEthernet0/0/0/10
+ shutdown
+!
+interface GigabitEthernet0/0/0/11
+ shutdown
+!
+interface GigabitEthernet0/0/0/12
+ shutdown
+!
+interface GigabitEthernet0/0/0/13
+ shutdown
+!
+interface GigabitEthernet0/0/0/14
+ shutdown
+!
+interface GigabitEthernet0/0/0/15
+ shutdown
+!
+interface GigabitEthernet0/0/0/16
+ shutdown
+!
+interface GigabitEthernet0/0/0/17
+ shutdown
+!
+interface GigabitEthernet0/0/0/18
+ shutdown
+!
+interface GigabitEthernet0/0/0/19
+ shutdown
+!
+interface TenGigE0/0/1/0
+ shutdown
+!
+interface TenGigE0/0/1/1
+ shutdown
+!
+interface TenGigE0/0/1/2
+ shutdown
+!
+interface TenGigE0/0/1/3
+ shutdown
+!
+interface PTP0/RSP0/CPU0/0
+ shutdown
+!
+router static
+ address-family ipv4 unicast
+  0.0.0.0/0 172.30.2.1
+ !
+!
+router isis DEFAULT
+ is-type level-2-only
+ net 49.0001.0000.00ff.0101.00
+ address-family ipv4 unicast
+  metric-style wide
+  mpls traffic-eng level-2-only
+  mpls traffic-eng router-id Loopback0
+ !
+ address-family ipv6 unicast
+  metric-style wide
+ !
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/0
+  point-to-point
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  point-to-point
+  address-family ipv4 unicast
+  !
+  address-family ipv6 unicast
+  !
+ !
+!
+rsvp
+ interface GigabitEthernet0/0/0/0
+  bandwidth percentage 100
+ !
+ interface GigabitEthernet0/0/0/1
+  bandwidth percentage 100
+ !
+!
+mpls traffic-eng
+ interface GigabitEthernet0/0/0/0
+ !
+ interface GigabitEthernet0/0/0/1
+ !
+!
+ssh server v2
+ssh server netconf vrf default
+end
+
+</cli>
+ </data>
+</rpc-reply>
