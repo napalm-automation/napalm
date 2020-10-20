@@ -3081,7 +3081,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         return users
 
-    def get_config(self, retrieve="all", full=False, encoding="cli"):
+    def get_config(self, retrieve="all", full=False, sanitized=False, encoding="cli"):
         """Return device configuration."""
         # NOTE: 'full' argument ignored. 'with-default' capability not supported.
 
@@ -3123,4 +3123,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         pretty_print=True,
                         encoding="unicode",
                     )
+        if sanitized and encoding == "cli":
+            return napalm.base.helpers.sanitize_configs(
+                config, C.CISCO_SANITIZE_FILTERS
+            )
         return config
