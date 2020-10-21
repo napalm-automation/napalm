@@ -17,7 +17,7 @@
             "remote_system_name": "n9k2.ntc.com"
         }
     ], 
-    "mgmt0": [
+    "Management0": [
         {
             "remote_port_description": "FastEthernet1/0/9", 
             "remote_port": "Fa1/0/9",

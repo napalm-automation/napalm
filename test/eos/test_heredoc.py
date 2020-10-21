@@ -57,7 +57,9 @@ class TestConfigMangling(object):
             "idle-timeout 15",
         ]
 
-        self.device.device.run_commands.assert_called_with(expected_result)
+        self.device.device.run_commands.assert_called_with(
+            expected_result, fn0039_transform=False
+        )
 
     def test_mode_comment(self):
         raw_config = dedent(
@@ -108,7 +110,9 @@ class TestConfigMangling(object):
             "permit host 192.0.2.3",
         ]
 
-        self.device.device.run_commands.assert_called_with(expected_result)
+        self.device.device.run_commands.assert_called_with(
+            expected_result, fn0039_transform=False
+        )
 
     def test_heredoc_with_bangs(self):
 
@@ -145,4 +149,6 @@ class TestConfigMangling(object):
             "idle-timeout 15",
         ]
 
-        self.device.device.run_commands.assert_called_with(expected_result)
+        self.device.device.run_commands.assert_called_with(
+            expected_result, fn0039_transform=False
+        )

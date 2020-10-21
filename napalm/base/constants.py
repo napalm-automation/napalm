@@ -1,7 +1,5 @@
 """Constants to be used across NAPALM drivers."""
 
-from __future__ import unicode_literals
-
 CONFIG_LOCK = True  # must be changed soon!
 TIMEOUT = 60  # seconds
 
@@ -66,7 +64,7 @@ NETMIKO_MAP = {
     "nxos_ssh": "cisco_nxos",
     "iosxr": "cisco_iosxr",
     "eos": "arista_eos",
-    "junos": "juniper_eos",
+    "junos": "juniper_junos",
 }
 LLDP_CAPAB_TRANFORM_TABLE = {
     "o": "other",
@@ -77,4 +75,26 @@ LLDP_CAPAB_TRANFORM_TABLE = {
     "t": "telephone",
     "c": "docsis-cable-device",
     "s": "station",
+}
+
+CISCO_SANITIZE_FILTERS = {
+    r"^(snmp-server community).*$": r"\1 <removed>",
+    r"^(snmp-server host \S+( vrf \S+)?( version (1|2c|3))?)\s+\S+((\s+\S*)*)\s*$": r"\1 <removed> \5",  # noqa
+    r"^(snmp-server user \S+( \S+)? auth md5) \S+ (priv) \S+ (localizedkey( engineID \S+)?)\s*$": r"\1 <removed> \3 <removed> \4\5",  # noqa
+    r"^(username .+ (password|secret) \d) .+$": r"\1 <removed>",
+    r"^(enable (password|secret)( level \d+)? \d) .+$": r"\1 <removed>",
+    r"^(\s+(?:password|secret)) (?:\d )?\S+$": r"\1 <removed>",
+    r"^(.*wpa-psk ascii \d) (\S+)$": r"\1 <removed>",
+    r"^(.*key 7) (\d.+)$": r"\1 <removed>",
+    r"^(tacacs-server (.+ )?key) .+$": r"\1 <removed>",
+    r"^(crypto isakmp key) (\S+) (.*)$": r"\1 <removed> \3",
+    r"^(\s+ip ospf message-digest-key \d+ md5) .+$": r"\1 <removed>",
+    r"^(\s+ip ospf authentication-key) .+$": r"\1 <removed>",
+    r"^(\s+neighbor \S+ password) .+$": r"\1 <removed>",
+    r"^(\s+vrrp \d+ authentication text) .+$": r"\1 <removed>",
+    r"^(\s+standby \d+ authentication) .{1,8}$": r"\1 <removed>",
+    r"^(\s+standby \d+ authentication md5 key-string) .+?( timeout \d+)?$": r"\1 <removed> \2",
+    r"^(\s+key-string) .+$": r"\1 <removed>",
+    r"^((tacacs|radius) server [^\n]+\n(\s+[^\n]+\n)*\s+key) [^\n]+$": r"\1 <removed>",
+    r"^(\s+ppp (chap|pap) password \d) .+$": r"\1 <removed>",
 }

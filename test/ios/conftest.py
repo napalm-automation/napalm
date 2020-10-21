@@ -1,15 +1,10 @@
 """Test fixtures."""
-from __future__ import print_function
-from __future__ import unicode_literals
-
 from builtins import super
 
 import pytest
 from napalm.base.test import conftest as parent_conftest
 
 from napalm.base.test.double import BaseTestDouble
-from napalm.base.utils import py23_compat
-
 from napalm.ios import ios
 
 
@@ -60,7 +55,7 @@ class FakeIOSDevice(BaseTestDouble):
         filename = "{}.txt".format(self.sanitize_text(command))
         full_path = self.find_file(filename)
         result = self.read_txt_file(full_path)
-        return py23_compat.text_type(result)
+        return str(result)
 
     def disconnect(self):
         pass

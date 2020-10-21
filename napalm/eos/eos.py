@@ -17,12 +17,11 @@ Napalm driver for Arista EOS.
 
 Read napalm.readthedocs.org for more information.
 """
-from __future__ import print_function
-from __future__ import unicode_literals
 
 # std libs
 import re
 import time
+import inspect
 
 from datetime import datetime
 from collections import defaultdict
@@ -33,14 +32,14 @@ from netaddr.core import AddrFormatError
 
 # third party libs
 import pyeapi
-from pyeapi.eapilib import ConnectionError
+from pyeapi.eapilib import ConnectionError, CommandError
 
 # NAPALM base
 import napalm.base.helpers
 from napalm.base.base import NetworkDriver
 from napalm.base.utils import string_parsers
-from napalm.base.utils import py23_compat
 from napalm.base.exceptions import (
+    CommitError,
     ConnectionException,
     MergeConfigException,
     ReplaceConfigException,
@@ -48,6 +47,8 @@ from napalm.base.exceptions import (
     CommandErrorException,
 )
 from napalm.eos.constants import LLDP_CAPAB_TRANFORM_TABLE
+from napalm.eos.pyeapi_syntax_wrapper import Node
+from napalm.eos.utils.versions import EOSVersion
 import napalm.base.constants as c
 
 # local modules
@@ -86,7 +87,26 @@ class EOSDriver(NetworkDriver):
     )
 
     def __init__(self, hostname, username, password, timeout=60, optional_args=None):
-        """Constructor."""
+        """
+        Initialize EOS Driver.
+
+        Optional args:
+            * lock_disable (True/False): force configuration lock to be disabled (for external lock
+                management).
+            * enable_password (True/False): Enable password for privilege elevation
+            * eos_autoComplete (True/False): Allow for shortening of cli commands
+            * transport (string): pyeapi transport, defaults to eos_transport if set
+                - socket
+                - http_local
+                - http
+                - https
+                - https_certs
+                (from: https://github.com/arista-eosplus/pyeapi/blob/develop/pyeapi/client.py#L115)
+                transport is the preferred method
+            * eos_transport (string): pyeapi transport, defaults to https
+                eos_transport for backwards compatibility
+
+        """
         self.device = None
         self.hostname = hostname
         self.username = username
@@ -101,21 +121,26 @@ class EOSDriver(NetworkDriver):
         self._process_optional_args(optional_args or {})
 
     def _process_optional_args(self, optional_args):
+        # Define locking method
+        self.lock_disable = optional_args.get("lock_disable", False)
+
         self.enablepwd = optional_args.pop("enable_password", "")
         self.eos_autoComplete = optional_args.pop("eos_autoComplete", None)
         # eos_transport is there for backwards compatibility, transport is the preferred method
         transport = optional_args.get(
             "transport", optional_args.get("eos_transport", "https")
         )
+        self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
         try:
             self.transport_class = pyeapi.client.TRANSPORTS[transport]
         except KeyError:
             raise ConnectionException("Unknown transport: {}".format(self.transport))
-        init_args = py23_compat.argspec(self.transport_class.__init__)[0]
+        init_args = inspect.getfullargspec(self.transport_class.__init__)[0]
+
         init_args.pop(0)  # Remove "self"
         init_args.append("enforce_verification")  # Not an arg for unknown reason
 
-        filter_args = ["host", "username", "password", "timeout"]
+        filter_args = ["host", "username", "password", "timeout", "lock_disable"]
 
         self.eapi_kwargs = {
             k: v
@@ -135,16 +160,21 @@ class EOSDriver(NetworkDriver):
             )
 
             if self.device is None:
-                self.device = pyeapi.client.Node(connection, enablepwd=self.enablepwd)
+                self.device = Node(connection, enablepwd=self.enablepwd)
             # does not raise an Exception if unusable
 
-            # let's try to run a very simple command
-            self.device.run_commands(["show clock"], encoding="text")
+            # let's try to determine if we need to use new EOS cli syntax
+            sh_ver = self.device.run_commands(["show version"])
+            cli_version = (
+                2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
+            )
+
+            self.device.update_cli_version(cli_version)
         except ConnectionError as ce:
             # and this is raised either if device not avaiable
             # either if HTTP(S) agent is not enabled
             # show management api http-commands
-            raise ConnectionException(py23_compat.text_type(ce))
+            raise ConnectionException(str(ce))
 
     def close(self):
         """Implementation of NAPALM method close."""
@@ -154,8 +184,6 @@ class EOSDriver(NetworkDriver):
         return {"is_alive": True}  # always true as eAPI is HTTP-based
 
     def _lock(self):
-        if self.config_session is None:
-            self.config_session = "napalm_{}".format(datetime.now().microsecond)
         sess = self.device.run_commands(["show configuration sessions"])[0]["sessions"]
         if [
             k
@@ -163,6 +191,39 @@ class EOSDriver(NetworkDriver):
             if v["state"] == "pending" and k != self.config_session
         ]:
             raise SessionLockedException("Session is already in use")
+
+    def _get_pending_commits(self):
+        """
+        Return a dictionary of configuration sessions with pending commit confirms and
+        corresponding time when confirm needs to happen by (rounded to nearest second).
+
+        Example:
+        {'napalm_607123': 522}
+        """
+        config_sessions = self.device.run_commands(
+            ["show configuration sessions detail"]
+        )
+        # Still returns all of the configuration sessions (original data-struct was just a list)
+        config_sessions = config_sessions[0]["sessions"]
+
+        # Arista reports the commitBy time relative to uptime of the box... :-(
+        uptime = self.device.run_commands(["show version"])
+        uptime = uptime[0].get("uptime", -1)
+
+        pending_commits = {}
+        for session_name, session_dict in config_sessions.items():
+            if "pendingCommitTimer" in session_dict["state"]:
+                commit_by = session_dict.get("commitBy", -1)
+                # Set to -1 if something went wrong in the calculation.
+                if commit_by == -1 or uptime == -1:
+                    pending_commits[session_name] = -1
+                elif uptime >= commit_by:
+                    pending_commits[session_name] = -1
+                else:
+                    confirm_by_seconds = commit_by - uptime
+                    pending_commits[session_name] = round(confirm_by_seconds)
+
+        return pending_commits
 
     @staticmethod
     def _multiline_convert(config, start="banner login", end="EOF", depth=1):
@@ -202,9 +263,7 @@ class EOSDriver(NetworkDriver):
         comment_count = 0
         for idx, element in enumerate(commands):
             # Check first for stringiness, as we may have dicts in the command list already
-            if isinstance(element, py23_compat.string_types) and element.startswith(
-                "!!"
-            ):
+            if isinstance(element, str) and element.startswith("!!"):
                 comment_count += 1
                 continue
             else:
@@ -227,9 +286,10 @@ class EOSDriver(NetworkDriver):
         return ret
 
     def _load_config(self, filename=None, config=None, replace=True):
-        commands = []
+        if self.config_session is None:
+            self.config_session = "napalm_{}".format(datetime.now().microsecond)
 
-        self._lock()
+        commands = []
         commands.append("configure session {}".format(self.config_session))
         if replace:
             commands.append("rollback clean-config")
@@ -260,12 +320,16 @@ class EOSDriver(NetworkDriver):
 
         try:
             if self.eos_autoComplete is not None:
-                self.device.run_commands(commands, autoComplete=self.eos_autoComplete)
+                self.device.run_commands(
+                    commands,
+                    autoComplete=self.eos_autoComplete,
+                    fn0039_transform=self.fn0039_config,
+                )
             else:
-                self.device.run_commands(commands)
+                self.device.run_commands(commands, fn0039_transform=self.fn0039_config)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
-            msg = py23_compat.text_type(e)
+            msg = str(e)
             if replace:
                 raise ReplaceConfigException(msg)
             else:
@@ -291,21 +355,61 @@ class EOSDriver(NetworkDriver):
 
             return result.strip()
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """Implementation of NAPALM method commit_config."""
+
+        if not self.lock_disable:
+            self._lock()
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
             )
-        commands = [
-            "copy startup-config flash:rollback-0",
-            "configure session {}".format(self.config_session),
-            "commit",
-            "write memory",
-        ]
 
-        self.device.run_commands(commands)
-        self.config_session = None
+        if revert_in is not None:
+            if self.has_pending_commit():
+                raise CommitError("Pending commit confirm already in process!")
+
+            commands = [
+                "copy startup-config flash:rollback-0",
+                "configure session {}".format(self.config_session),
+                "commit timer {}".format(
+                    time.strftime("%H:%M:%S", time.gmtime(revert_in))
+                ),
+            ]
+            self.device.run_commands(commands)
+        else:
+            commands = [
+                "copy startup-config flash:rollback-0",
+                "configure session {}".format(self.config_session),
+                "commit",
+                "write memory",
+            ]
+            self.device.run_commands(commands)
+            self.config_session = None
+
+    def has_pending_commit(self):
+        """Boolean indicating if there is a commit-confirm in process."""
+        pending_commits = self._get_pending_commits()
+        # pending_commits will return an empty dict, if there are no commit-confirms pending.
+        return bool(pending_commits)
+
+    def confirm_commit(self):
+        """Send final commit to confirm an in-proces commit that requires confirmation."""
+        pending_commits = self._get_pending_commits()
+        # The specific 'config_session' must show up as a pending commit.
+        if pending_commits.get(self.config_session):
+            commands = [
+                "configure session {} commit".format(self.config_session),
+                "write memory",
+            ]
+            self.device.run_commands(commands)
+            self.config_session = None
+        else:
+            raise CommitError("No pending commit-confirm found!")
 
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
@@ -316,8 +420,26 @@ class EOSDriver(NetworkDriver):
 
     def rollback(self):
         """Implementation of NAPALM method rollback."""
-        commands = ["configure replace flash:rollback-0", "write memory"]
+
+        # Commit-confirm check and abort
+        pending_commits = self._get_pending_commits()
+        if pending_commits:
+            # Make sure pending commit matches self.config_session
+            if pending_commits.get(self.config_session):
+                commands = [
+                    "configure session {} abort".format(self.config_session),
+                    "write memory",
+                ]
+            else:
+                msg = "Current config session not found as pending commit-confirm"
+                raise CommitError(msg)
+
+        # Standard rollback
+        else:
+            commands = ["configure replace flash:rollback-0", "write memory"]
+
         self.device.run_commands(commands)
+        self.config_session = None
 
     def get_facts(self):
         """Implementation of NAPALM method get_facts."""
@@ -477,7 +599,7 @@ class EOSDriver(NetworkDriver):
                     peer_info = {
                         "is_up": peer_data["peerState"] == "Established",
                         "is_enabled": is_enabled,
-                        "uptime": int(time.time() - peer_data["upDownTime"]),
+                        "uptime": int(time.time() - float(peer_data["upDownTime"])),
                     }
                     bgp_counters[vrf]["peers"][napalm.base.helpers.ip(peer)] = peer_info
         lines = []
@@ -509,12 +631,12 @@ class EOSDriver(NetworkDriver):
             v6_stats = re.match(self._RE_BGP_PREFIX, lines.pop(0))
             local_as = re.match(self._RE_BGP_LOCAL, lines.pop(0))
             data = {
-                "remote_as": int(neighbor_info.group("as")),
+                "remote_as": napalm.base.helpers.as_number(neighbor_info.group("as")),
                 "remote_id": napalm.base.helpers.ip(
                     get_re_group(rid_info, "rid", "0.0.0.0")
                 ),
-                "local_as": int(local_as.group("as")),
-                "description": py23_compat.text_type(desc),
+                "local_as": napalm.base.helpers.as_number(local_as.group("as")),
+                "description": str(desc),
                 "address_family": {
                     "ipv4": {
                         "sent_prefixes": int(get_re_group(v4_stats, "sent", -1)),
@@ -658,7 +780,9 @@ class EOSDriver(NetworkDriver):
                 lldp_neighbors_out[interface].append(
                     {
                         "parent_interface": interface,  # no parent interfaces
-                        "remote_port": neighbor_interface_info.get("interfaceId", ""),
+                        "remote_port": neighbor_interface_info.get(
+                            "interfaceId", ""
+                        ).replace('"', ""),
                         "remote_port_description": neighbor_interface_info.get(
                             "interfaceDescription", ""
                         ),
@@ -681,23 +805,23 @@ class EOSDriver(NetworkDriver):
 
         for command in commands:
             try:
-                cli_output[py23_compat.text_type(command)] = self.device.run_commands(
+                cli_output[str(command)] = self.device.run_commands(
                     [command], encoding="text"
                 )[0].get("output")
                 # not quite fair to not exploit rum_commands
                 # but at least can have better control to point to wrong command in case of failure
             except pyeapi.eapilib.CommandError:
                 # for sure this command failed
-                cli_output[
-                    py23_compat.text_type(command)
-                ] = 'Invalid command: "{cmd}"'.format(cmd=command)
+                cli_output[str(command)] = 'Invalid command: "{cmd}"'.format(
+                    cmd=command
+                )
                 raise CommandErrorException(str(cli_output))
             except Exception as e:
                 # something bad happened
                 msg = 'Unable to execute command "{cmd}": {err}'.format(
                     cmd=command, err=e
                 )
-                cli_output[py23_compat.text_type(command)] = msg
+                cli_output[str(command)] = msg
                 raise CommandErrorException(str(cli_output))
 
         return cli_output
@@ -740,23 +864,23 @@ class EOSDriver(NetworkDriver):
             # and cast the values
             "remote-as": int,
             "ebgp-multihop": int,
-            "local-v4-addr": py23_compat.text_type,
-            "local-v6-addr": py23_compat.text_type,
+            "local-v4-addr": str,
+            "local-v6-addr": str,
             "local-as": int,
             "remove-private-as": bool,
             "next-hop-self": bool,
-            "description": py23_compat.text_type,
+            "description": str,
             "route-reflector-client": bool,
-            "password": py23_compat.text_type,
-            "route-map": py23_compat.text_type,
+            "password": str,
+            "route-map": str,
             "apply-groups": list,
-            "type": py23_compat.text_type,
-            "import-policy": py23_compat.text_type,
-            "export-policy": py23_compat.text_type,
+            "type": str,
+            "import-policy": str,
+            "export-policy": str,
             "multipath": bool,
         }
 
-        _DATATYPE_DEFAULT_ = {py23_compat.text_type: "", int: 0, bool: False, list: []}
+        _DATATYPE_DEFAULT_ = {str: "", int: 0, bool: False, list: []}
 
         def default_group_dict(local_as):
             group_dict = {}
@@ -812,7 +936,7 @@ class EOSDriver(NetworkDriver):
                 # do not respect the pattern neighbor [IP_ADDRESS] [PROPERTY] [VALUE]
                 # or need special output (e.g.: maximum-routes)
                 if config_property == "password":
-                    return {"authentication_key": py23_compat.text_type(options[2])}
+                    return {"authentication_key": str(options[2])}
                     # returns the MD5 password
                 if config_property == "route-map":
                     direction = None
@@ -848,7 +972,9 @@ class EOSDriver(NetworkDriver):
             default_value = False
             bgp_conf_line = bgp_conf_line.strip()
             if bgp_conf_line.startswith("router bgp"):
-                local_as = int(bgp_conf_line.replace("router bgp", "").strip())
+                local_as = napalm.base.helpers.as_number(
+                    (bgp_conf_line.replace("router bgp", "").strip())
+                )
                 continue
             if not (
                 bgp_conf_line.startswith("neighbor")
@@ -861,7 +987,7 @@ class EOSDriver(NetworkDriver):
                 "neighbor ", ""
             )
             bgp_conf_line_details = bgp_conf_line.split()
-            group_or_neighbor = py23_compat.text_type(bgp_conf_line_details[0])
+            group_or_neighbor = str(bgp_conf_line_details[0])
             options = bgp_conf_line_details[1:]
             try:
                 # will try to parse the neighbor name
@@ -926,10 +1052,10 @@ class EOSDriver(NetworkDriver):
             return []
 
         for neighbor in ipv4_neighbors:
-            interface = py23_compat.text_type(neighbor.get("interface"))
+            interface = str(neighbor.get("interface"))
             mac_raw = neighbor.get("hwAddress")
-            ip = py23_compat.text_type(neighbor.get("address"))
-            age = float(neighbor.get("age"))
+            ip = str(neighbor.get("address"))
+            age = float(neighbor.get("age", -1.0))
             arp_table.append(
                 {
                     "interface": interface,
@@ -953,7 +1079,7 @@ class EOSDriver(NetworkDriver):
         )
 
         return {
-            py23_compat.text_type(ntp_peer.get("ntppeer")): {}
+            str(ntp_peer.get("ntppeer")): {}
             for ntp_peer in ntp_config
             if ntp_peer.get("ntppeer", "")
         }
@@ -989,12 +1115,12 @@ class EOSDriver(NetworkDriver):
             try:
                 ntp_stats.append(
                     {
-                        "remote": py23_compat.text_type(line_groups[1]),
+                        "remote": str(line_groups[1]),
                         "synchronized": (line_groups[0] == "*"),
-                        "referenceid": py23_compat.text_type(line_groups[2]),
+                        "referenceid": str(line_groups[2]),
                         "stratum": int(line_groups[3]),
-                        "type": py23_compat.text_type(line_groups[4]),
-                        "when": py23_compat.text_type(line_groups[5]),
+                        "type": str(line_groups[4]),
+                        "when": str(line_groups[5]),
                         "hostpoll": int(line_groups[6]),
                         "reachability": int(line_groups[7]),
                         "delay": float(line_groups[8]),
@@ -1019,7 +1145,7 @@ class EOSDriver(NetworkDriver):
                 "interfaces"
             ]
         except pyeapi.eapilib.CommandError as e:
-            msg = py23_compat.text_type(e)
+            msg = str(e)
             if "No IPv6 configured interfaces" in msg:
                 interfaces_ipv6_out = {}
             else:
@@ -1139,7 +1265,7 @@ class EOSDriver(NetworkDriver):
 
         return mac_table
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
         routes = {}
 
         # Placeholder for vrf arg
@@ -1162,12 +1288,17 @@ class EOSDriver(NetworkDriver):
         commands = []
         for _vrf in vrfs:
             commands.append(
-                "show ip{ipv} route vrf {_vrf} {destination} {protocol} detail".format(
-                    ipv=ipv, _vrf=_vrf, destination=destination, protocol=protocol
+                "show ip{ipv} route vrf {_vrf} {destination} {longer} {protocol} detail".format(
+                    ipv=ipv,
+                    _vrf=_vrf,
+                    destination=destination,
+                    longer="longer-prefixes" if longer else "",
+                    protocol=protocol,
                 )
             )
 
         commands_output = self.device.run_commands(commands)
+        vrf_cache = {}
 
         for _vrf, command_output in zip(vrfs, commands_output):
             if ipv == "v6":
@@ -1202,15 +1333,39 @@ class EOSDriver(NetworkDriver):
                         nexthop_ip = napalm.base.helpers.ip(next_hop.get("nexthopAddr"))
                         nexthop_interface_map[nexthop_ip] = next_hop.get("interface")
                     metric = route_details.get("metric")
-                    command = "show ip{ipv} bgp {destination} detail vrf {_vrf}".format(
-                        ipv=ipv, destination=prefix, _vrf=_vrf
-                    )
-                    vrf_details = (
-                        self.device.run_commands([command])[0]
-                        .get("vrfs", {})
-                        .get(_vrf, {})
-                    )
-                    local_as = vrf_details.get("asn")
+                    if _vrf not in vrf_cache.keys():
+                        try:
+                            command = "show ip{ipv} bgp {dest} {longer} detail vrf {_vrf}".format(
+                                ipv=ipv,
+                                dest=destination,
+                                longer="longer-prefixes" if longer else "",
+                                _vrf=_vrf,
+                            )
+                            vrf_cache.update(
+                                {
+                                    _vrf: self.device.run_commands([command])[0]
+                                    .get("vrfs", {})
+                                    .get(_vrf, {})
+                                }
+                            )
+                        except CommandError:
+                            # Newer EOS can't mix longer-prefix and detail
+                            command = "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
+                                ipv=ipv,
+                                dest=destination,
+                                longer="longer-prefixes" if longer else "",
+                                _vrf=_vrf,
+                            )
+                            vrf_cache.update(
+                                {
+                                    _vrf: self.device.run_commands([command])[0]
+                                    .get("vrfs", {})
+                                    .get(_vrf, {})
+                                }
+                            )
+
+                    vrf_details = vrf_cache.get(_vrf)
+                    local_as = napalm.base.helpers.as_number(vrf_details.get("asn"))
                     bgp_routes = (
                         vrf_details.get("bgpRouteEntries", {})
                         .get(prefix, {})
@@ -1221,7 +1376,15 @@ class EOSDriver(NetworkDriver):
                         as_path = bgp_route_details.get("asPathEntry", {}).get(
                             "asPath", ""
                         )
-                        remote_as = int(as_path.strip("()").split()[-1])
+                        as_path_type = bgp_route_details.get("asPathEntry", {}).get(
+                            "asPathType", ""
+                        )
+                        if as_path_type in ["Internal", "Local"]:
+                            remote_as = local_as
+                        else:
+                            remote_as = napalm.base.helpers.as_number(
+                                as_path.strip("()").split()[-1]
+                            )
                         remote_address = napalm.base.helpers.ip(
                             bgp_route_details.get("routeDetail", {})
                             .get("peerEntry", {})
@@ -1317,8 +1480,8 @@ class EOSDriver(NetworkDriver):
             if match:
                 matches = match.groupdict("")
                 snmp_dict["community"][match.group("community")] = {
-                    "acl": py23_compat.text_type(matches["v4_acl"]),
-                    "mode": py23_compat.text_type(matches["access"]),
+                    "acl": str(matches["v4_acl"]),
+                    "mode": str(matches["access"]),
                 }
 
         return snmp_dict
@@ -1326,9 +1489,9 @@ class EOSDriver(NetworkDriver):
     def get_users(self):
         def _sshkey_type(sshkey):
             if sshkey.startswith("ssh-rsa"):
-                return "ssh_rsa", py23_compat.text_type(sshkey)
+                return "ssh_rsa", str(sshkey)
             elif sshkey.startswith("ssh-dss"):
-                return "ssh_dsa", py23_compat.text_type(sshkey)
+                return "ssh_dsa", str(sshkey)
             return "ssh_rsa", ""
 
         users = {}
@@ -1347,7 +1510,7 @@ class EOSDriver(NetworkDriver):
             user_details.update(
                 {
                     "level": user_details.pop("privLevel", 0),
-                    "password": py23_compat.text_type(user_details.pop("secret", "")),
+                    "password": str(user_details.pop("secret", "")),
                     "sshkeys": sshkey_list,
                 }
             )
@@ -1463,8 +1626,8 @@ class EOSDriver(NetworkDriver):
                     host_name = "*"
                     ip_address = "*"
                 traceroute_result["success"][hop_index]["probes"][probe_index + 1] = {
-                    "host_name": py23_compat.text_type(host_name),
-                    "ip_address": py23_compat.text_type(ip_address),
+                    "host_name": str(host_name),
+                    "ip_address": str(ip_address),
                     "rtt": rtt,
                 }
                 previous_probe_host_name = host_name
@@ -1533,23 +1696,23 @@ class EOSDriver(NetworkDriver):
 
                 # Conforming with the datatypes defined by the base class
                 item["export_policy"] = napalm.base.helpers.convert(
-                    py23_compat.text_type, item["export_policy"]
+                    str, item["export_policy"]
                 )
                 item["last_event"] = napalm.base.helpers.convert(
-                    py23_compat.text_type, item["last_event"]
+                    str, item["last_event"]
                 )
                 item["remote_address"] = napalm.base.helpers.ip(item["remote_address"])
                 item["previous_connection_state"] = napalm.base.helpers.convert(
-                    py23_compat.text_type, item["previous_connection_state"]
+                    str, item["previous_connection_state"]
                 )
                 item["import_policy"] = napalm.base.helpers.convert(
-                    py23_compat.text_type, item["import_policy"]
+                    str, item["import_policy"]
                 )
                 item["connection_state"] = napalm.base.helpers.convert(
-                    py23_compat.text_type, item["connection_state"]
+                    str, item["connection_state"]
                 )
                 item["routing_table"] = napalm.base.helpers.convert(
-                    py23_compat.text_type, item["routing_table"]
+                    str, item["routing_table"]
                 )
                 item["router_id"] = napalm.base.helpers.ip(item["router_id"])
                 item["local_address"] = napalm.base.helpers.convert(
@@ -1692,7 +1855,7 @@ class EOSDriver(NetworkDriver):
 
         return optics_detail
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         """get_config implementation for EOS."""
         get_startup = retrieve == "all" or retrieve == "startup"
         get_running = retrieve == "all" or retrieve == "running"
@@ -1700,46 +1863,49 @@ class EOSDriver(NetworkDriver):
             retrieve == "all" or retrieve == "candidate"
         ) and self.config_session
 
+        # EOS only supports "all" on "show run"
+        run_full = " all" if full else ""
+        run_sanitized = " sanitized" if sanitized else ""
+
         if retrieve == "all":
-            commands = ["show startup-config", "show running-config"]
+            commands = [
+                "show startup-config",
+                "show running-config{0}{1}".format(run_full, run_sanitized),
+            ]
 
             if self.config_session:
                 commands.append(
-                    "show session-config named {}".format(self.config_session)
+                    "show session-config named {0}{1}".format(
+                        self.config_session, run_sanitized
+                    )
                 )
 
             output = self.device.run_commands(commands, encoding="text")
+            startup_cfg = str(output[0]["output"]) if get_startup else ""
+            if sanitized and startup_cfg:
+                startup_cfg = napalm.base.helpers.sanitize_config(
+                    startup_cfg, c.CISCO_SANITIZE_FILTERS
+                )
             return {
-                "startup": py23_compat.text_type(output[0]["output"])
-                if get_startup
-                else "",
-                "running": py23_compat.text_type(output[1]["output"])
-                if get_running
-                else "",
-                "candidate": py23_compat.text_type(output[2]["output"])
-                if get_candidate
-                else "",
+                "startup": startup_cfg,
+                "running": str(output[1]["output"]) if get_running else "",
+                "candidate": str(output[2]["output"]) if get_candidate else "",
             }
         elif get_startup or get_running:
-            commands = ["show {}-config".format(retrieve)]
+            if retrieve == "running":
+                commands = ["show {}-config{}".format(retrieve, run_full)]
+            elif retrieve == "startup":
+                commands = ["show {}-config".format(retrieve)]
             output = self.device.run_commands(commands, encoding="text")
             return {
-                "startup": py23_compat.text_type(output[0]["output"])
-                if get_startup
-                else "",
-                "running": py23_compat.text_type(output[0]["output"])
-                if get_running
-                else "",
+                "startup": str(output[0]["output"]) if get_startup else "",
+                "running": str(output[0]["output"]) if get_running else "",
                 "candidate": "",
             }
         elif get_candidate:
             commands = ["show session-config named {}".format(self.config_session)]
             output = self.device.run_commands(commands, encoding="text")
-            return {
-                "startup": "",
-                "running": "",
-                "candidate": py23_compat.text_type(output[0]["output"]),
-            }
+            return {"startup": "", "running": "", "candidate": str(output[0]["output"])}
         elif retrieve == "candidate":
             # If we get here it means that we want the candidate but there is none.
             return {"startup": "", "running": "", "candidate": ""}
@@ -1761,7 +1927,7 @@ class EOSDriver(NetworkDriver):
     def _get_vrfs(self):
         output = self._show_vrf()
 
-        vrfs = [py23_compat.text_type(vrf["name"]) for vrf in output]
+        vrfs = [str(vrf["name"]) for vrf in output]
 
         vrfs.append("default")
 
@@ -1780,19 +1946,17 @@ class EOSDriver(NetworkDriver):
             ):
                 vrf["route_distinguisher"] = ""
             else:
-                vrf["route_distinguisher"] = py23_compat.text_type(
-                    vrf["route_distinguisher"]
-                )
+                vrf["route_distinguisher"] = str(vrf["route_distinguisher"])
             interfaces = {}
             for interface_raw in vrf.get("interfaces", []):
                 interface = interface_raw.split(",")
                 for line in interface:
                     if line.strip() != "":
-                        interfaces[py23_compat.text_type(line.strip())] = {}
-                        all_vrf_interfaces[py23_compat.text_type(line.strip())] = {}
+                        interfaces[str(line.strip())] = {}
+                        all_vrf_interfaces[str(line.strip())] = {}
 
-            vrfs[py23_compat.text_type(vrf["name"])] = {
-                "name": py23_compat.text_type(vrf["name"]),
+            vrfs[str(vrf["name"])] = {
+                "name": str(vrf["name"]),
                 "type": "L3VRF",
                 "state": {"route_distinguisher": vrf["route_distinguisher"]},
                 "interfaces": {"interface": interfaces},
@@ -1811,7 +1975,7 @@ class EOSDriver(NetworkDriver):
 
         if name:
             if name in vrfs:
-                return {py23_compat.text_type(name): vrfs[name]}
+                return {str(name): vrfs[name]}
             return {}
         else:
             return vrfs
@@ -1878,44 +2042,25 @@ class EOSDriver(NetworkDriver):
                     if "Unreachable" in line:
                         if "(" in fields[2]:
                             results_array.append(
-                                {
-                                    "ip_address": py23_compat.text_type(
-                                        fields[2][1:-1]
-                                    ),
-                                    "rtt": 0.0,
-                                }
+                                {"ip_address": str(fields[2][1:-1]), "rtt": 0.0}
                             )
                         else:
                             results_array.append(
-                                {
-                                    "ip_address": py23_compat.text_type(fields[1]),
-                                    "rtt": 0.0,
-                                }
+                                {"ip_address": str(fields[1]), "rtt": 0.0}
                             )
                     elif "truncated" in line:
                         if "(" in fields[4]:
                             results_array.append(
-                                {
-                                    "ip_address": py23_compat.text_type(
-                                        fields[4][1:-2]
-                                    ),
-                                    "rtt": 0.0,
-                                }
+                                {"ip_address": str(fields[4][1:-2]), "rtt": 0.0}
                             )
                         else:
                             results_array.append(
-                                {
-                                    "ip_address": py23_compat.text_type(fields[3][:-1]),
-                                    "rtt": 0.0,
-                                }
+                                {"ip_address": str(fields[3][:-1]), "rtt": 0.0}
                             )
                     elif fields[1] == "bytes":
                         m = fields[6][5:]
                         results_array.append(
-                            {
-                                "ip_address": py23_compat.text_type(fields[3][:-1]),
-                                "rtt": float(m),
-                            }
+                            {"ip_address": str(fields[3][:-1]), "rtt": float(m)}
                         )
                 elif "packets transmitted" in line:
                     ping_dict["success"]["probes_sent"] = int(fields[0])
@@ -1934,3 +2079,16 @@ class EOSDriver(NetworkDriver):
                     )
             ping_dict["success"].update({"results": results_array})
         return ping_dict
+
+    def get_vlans(self):
+        command = ["show vlan"]
+        output = self.device.run_commands(command, encoding="json")[0]["vlans"]
+
+        vlans = {}
+        for vlan, vlan_config in output.items():
+            vlans[vlan] = {
+                "name": vlan_config["name"],
+                "interfaces": list(vlan_config["interfaces"].keys()),
+            }
+
+        return vlans

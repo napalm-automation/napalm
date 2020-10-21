@@ -1,0 +1,52 @@
+<multi-routing-engine-results>
+    <multi-routing-engine-item>
+        <re-name>node0</re-name>
+        <environment-information>
+            <environment-item>
+                <name>Routing Engine</name>
+                <class>Temp</class>
+                <status>OK</status>
+                <temperature celsius="39">39 degrees C / 102 degrees F</temperature>
+            </environment-item>
+            <environment-item>
+                <name>Routing Engine CPU</name>
+                <status>OK</status>
+                <temperature celsius="68">68 degrees C / 154 degrees F</temperature>
+            </environment-item>
+            <environment-item>
+                <name>SRX340 Chassis fan 0</name>
+                <class>Fans</class>
+                <status>OK</status>
+                <comment>Spinning at normal speed</comment>
+            </environment-item>
+            <environment-item>
+                <name>SRX340 Chassis fan 1</name>
+                <class>Fans</class>
+                <status>OK</status>
+                <comment>Spinning at normal speed</comment>
+            </environment-item>
+            <environment-item>
+                <name>SRX340 Chassis fan 2</name>
+                <class>Fans</class>
+                <status>OK</status>
+                <comment>Spinning at normal speed</comment>
+            </environment-item>
+            <environment-item>
+                <name>SRX340 Chassis fan 3</name>
+                <class>Fans</class>
+                <status>OK</status>
+                <comment>Spinning at normal speed</comment>
+            </environment-item>
+            <environment-item>
+                <name>Power Supply 0</name>
+                <class>Power</class>
+                <status>OK</status>
+            </environment-item>
+            <environment-item>
+                <name>Power Supply 1</name>
+                <class>Power</class>
+                <status>OK</status>
+            </environment-item>
+        </environment-information>
+    </multi-routing-engine-item>
+</multi-routing-engine-results>

@@ -11,18 +11,10 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-
-# Python3 support
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import difflib
 from napalm.base import exceptions
 from napalm.base.test import models
 from unittest import SkipTest
-
-# text_type is 'unicode' for py2 and 'str' for py3
-from napalm.base.utils.py23_compat import text_type
 
 
 class TestConfigNetworkDriver(object):
@@ -292,9 +284,9 @@ class TestGettersNetworkDriver(object):
             print("global is not part of the returned vrfs")
         else:
             for vrf, vrf_data in get_bgp_neighbors.items():
-                result = result and isinstance(vrf_data["router_id"], text_type)
+                result = result and isinstance(vrf_data["router_id"], str)
                 if not result:
-                    print("router_id is not {}".format(text_type))
+                    print("router_id is not {}".format(str))
 
                 for peer, peer_data in vrf_data["peers"].items():
                     result = result and self._test_model(models.peer, peer_data)
@@ -344,7 +336,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_bgp_neighbors_detail) > 0
 
         for vrf, vrf_ases in get_bgp_neighbors_detail.items():
-            result = result and isinstance(vrf, text_type)
+            result = result and isinstance(vrf, str)
             for remote_as, neighbor_list in vrf_ases.items():
                 result = result and isinstance(remote_as, int)
                 for neighbor in neighbor_list:
@@ -384,7 +376,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_ntp_peers) > 0
 
         for peer, peer_details in get_ntp_peers.items():
-            result = result and isinstance(peer, text_type)
+            result = result and isinstance(peer, str)
             result = result and self._test_model(models.ntp_peer, peer_details)
 
         self.assertTrue(result)
@@ -398,7 +390,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_ntp_servers) > 0
 
         for server, server_details in get_ntp_servers.items():
-            result = result and isinstance(server, text_type)
+            result = result and isinstance(server, str)
             result = result and self._test_model(models.ntp_server, server_details)
 
         self.assertTrue(result)
@@ -564,7 +556,7 @@ class TestGettersNetworkDriver(object):
         assert isinstance(get_optics, dict)
 
         for iface, iface_data in get_optics.items():
-            assert isinstance(iface, text_type)
+            assert isinstance(iface, str)
             for channel in iface_data["physical_channels"]["channel"]:
                 assert len(channel) == 2
                 assert isinstance(channel["index"], int)
@@ -628,5 +620,17 @@ class TestGettersNetworkDriver(object):
 
         for entry in get_ipv6_neighbors_table:
             result = result and self._test_model(models.ipv6_neighbor, entry)
+
+        self.assertTrue(result)
+
+    def test_get_vlans(self):
+        try:
+            get_vlans = self.device.get_vlans()
+        except NotImplementedError:
+            raise SkipTest()
+        result = len(get_vlans) > 0
+
+        for vlan, vlan_data in get_vlans.items():
+            result = result and self._test_model(models.vlan, vlan_data)
 
         self.assertTrue(result)

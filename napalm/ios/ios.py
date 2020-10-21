@@ -12,10 +12,6 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import copy
 import functools
 import os
@@ -26,6 +22,8 @@ import tempfile
 import uuid
 from collections import defaultdict
 
+from netaddr import IPNetwork
+from netaddr.core import AddrFormatError
 from netmiko import FileTransfer, InLineTransfer
 
 import napalm.base.constants as C
@@ -41,9 +39,12 @@ from napalm.base.helpers import (
     canonical_interface_name,
     transform_lldp_capab,
     textfsm_extractor,
+    split_interface,
+    abbreviated_interface_name,
+    generate_regex_or,
+    sanitize_configs,
 )
 from napalm.base.netmiko_helpers import netmiko_args
-from napalm.base.utils import py23_compat
 
 # Easier to store these as constants
 HOUR_SECONDS = 3600
@@ -74,6 +75,23 @@ RE_MAC = re.compile(r"{}".format(MAC_REGEX))
 
 # Period needed for 32-bit AS Numbers
 ASN_REGEX = r"[\d\.]+"
+
+RE_IP_ROUTE_VIA_REGEX = re.compile(
+    r"[ ]{2}([*| ])[ ](?P<ip>" + IP_ADDR_REGEX + r")"
+    r"( [\(\)a-z\d\.]+)?(, from " + IP_ADDR_REGEX + r", "
+    r"(?P<age>[\ddhwy:]+) ago)?(, via (?P<via>\S+))?"
+)
+
+RE_VRF_SIMPLE = re.compile(r"[ ]{2}(\S+)")
+RE_VRF_ADVAN = re.compile(r"[ ]{2}(\S+)[ ]+[<> a-z:\d]+[ ]+([a-z\d,]+)")
+
+RE_BGP_REMOTE_AS = re.compile(r"remote AS (" + ASN_REGEX + r")")
+RE_BGP_AS_PATH = re.compile(r"^[ ]{2}([\d\(]([\d\) ]+)|Local)")
+
+RE_RP_ROUTE = re.compile(r"Routing entry for (" + IP_ADDR_REGEX + r"\/\d+)")
+RE_RP_FROM = re.compile(r"Known via \"([a-z]+)[ \"]")
+RE_RP_VIA = re.compile(r"via (\S+)")
+RE_RP_METRIC = re.compile(r"[ ]+Route metric is (\d+)")
 
 IOS_COMMANDS = {
     "show_mac_address": ["show mac-address-table", "show mac address-table"]
@@ -141,6 +159,7 @@ class IOSDriver(NetworkDriver):
         self.platform = "ios"
         self.profile = [self.platform]
         self.use_canonical_interface = optional_args.get("canonical_int", False)
+        self.force_no_enable = optional_args.get("force_no_enable", False)
 
     def open(self):
         """Open a connection to the device."""
@@ -219,7 +238,7 @@ class IOSDriver(NetworkDriver):
     def _create_tmp_file(config):
         """Write temp file and for use with inline config and SCP."""
         tmp_dir = tempfile.gettempdir()
-        rand_fname = py23_compat.text_type(uuid.uuid4())
+        rand_fname = str(uuid.uuid4())
         filename = os.path.join(tmp_dir, rand_fname)
         with open(filename, "wt") as fobj:
             fobj.write(config)
@@ -481,16 +500,21 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
             )
+
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
@@ -557,7 +581,7 @@ class IOSDriver(NetworkDriver):
         if not self._check_file_exists(cfg_file):
             raise ReplaceConfigException("Rollback config file does not exist")
         cmd = "configure replace {} force".format(cfg_file)
-        self.device.send_command_expect(cmd)
+        self._commit_handler(cmd)
 
         # After a rollback - we no longer know whether this is configured or not.
         self.prompt_quiet_configured = None
@@ -735,45 +759,83 @@ class IOSDriver(NetworkDriver):
         output = re.sub(r"^Time source is .*$", "", output, flags=re.M)
         return output.strip()
 
+    def _is_vss(self):
+        """
+        Returns True if a Virtual Switching System (VSS) is setup
+        """
+        vss_re = re.compile("Switch mode[ ]+: Virtual Switch", re.M)
+        command = "show switch virtual"
+        output = self._send_command(command)
+
+        return bool(vss_re.search(output))
+
     def get_optics(self):
         command = "show interfaces transceiver"
         output = self._send_command(command)
+        is_vss = False
 
         # Check if router supports the command
         if "% Invalid input" in output:
             return {}
+        elif "% Incomplete command" in output:
+            if self._is_vss():
+                is_vss = True
+                command1 = "show interfaces transceiver switch 1"
+                command2 = "show interfaces transceiver switch 2"
+                output1 = self._send_command(command1)
+                output2 = self._send_command(command2)
 
         # Formatting data into return data structure
         optics_detail = {}
 
-        try:
-            split_output = re.split(r"^---------.*$", output, flags=re.M)[1]
-        except IndexError:
-            return {}
+        if is_vss:
+            try:
+                split_output = re.split(r"^---------.*$", output1, flags=re.M)[1]
+                split_output += re.split(r"^---------.*$", output2, flags=re.M)[1]
+            except IndexError:
+                return {}
+        else:
+            try:
+                split_output = re.split(r"^---------.*$", output, flags=re.M)[1]
+            except IndexError:
+                return {}
 
         split_output = split_output.strip()
 
         for optics_entry in split_output.splitlines():
             # Example, Te1/0/1      34.6       3.29      -2.0      -3.5
             try:
+                optics_entry = optics_entry.strip("-")
                 split_list = optics_entry.split()
             except ValueError:
                 return {}
 
-            int_brief = split_list[0]
-            output_power = split_list[3]
-            input_power = split_list[4]
+            current = 0
+            if len(split_list) == 5:
+                int_brief = split_list[0]
+                output_power = split_list[3]
+                input_power = split_list[4]
+            elif len(split_list) >= 6:
+                int_brief = split_list[0]
+                current = split_list[3]
+                output_power = split_list[4]
+                input_power = split_list[5]
 
             port = canonical_interface_name(int_brief)
 
             port_detail = {"physical_channels": {"channel": []}}
 
-            # If interface is shutdown it returns "N/A" as output power.
+            # If interface is shutdown it returns "N/A" as output power
+            # or "N/A" as input power
             # Converting that to -100.0 float
             try:
                 float(output_power)
             except ValueError:
                 output_power = -100.0
+            try:
+                float(input_power)
+            except ValueError:
+                input_power = -100.0
 
             # Defaulting avg, min, max values to -100.0 since device does not
             # return these values
@@ -793,7 +855,7 @@ class IOSDriver(NetworkDriver):
                         "max": -100.0,
                     },
                     "laser_bias_current": {
-                        "instant": 0.0,
+                        "instant": (float(current) if "current" else -100.0),
                         "avg": 0.0,
                         "min": 0.0,
                         "max": 0.0,
@@ -965,6 +1027,8 @@ class IOSDriver(NetworkDriver):
 
         # interface_list filter
         interface_list = []
+        # Cisco adds a message "Any interface listed with OK..." in certain situations
+        show_ip_int_br = re.split(r"Any interface listed with.*", show_ip_int_br)[-1]
         show_ip_int_br = show_ip_int_br.strip()
         for line in show_ip_int_br.splitlines():
             if "Interface " in line:
@@ -975,10 +1039,10 @@ class IOSDriver(NetworkDriver):
         return {
             "uptime": uptime,
             "vendor": vendor,
-            "os_version": py23_compat.text_type(os_version),
-            "serial_number": py23_compat.text_type(serial_number),
-            "model": py23_compat.text_type(model),
-            "hostname": py23_compat.text_type(hostname),
+            "os_version": str(os_version),
+            "serial_number": str(serial_number),
+            "model": str(model),
+            "hostname": str(hostname),
             "fqdn": fqdn,
             "interface_list": interface_list,
         }
@@ -1463,31 +1527,54 @@ class IOSDriver(NetworkDriver):
     def get_bgp_neighbors(self):
         """BGP neighbor information.
 
-        Currently no VRF support. Supports both IPv4 and IPv6.
+        Supports both IPv4 and IPv6. vrf aware
         """
-        supported_afi = ["ipv4", "ipv6"]
+        supported_afi = [
+            "ipv4 unicast",
+            "ipv4 multicast",
+            "ipv6 unicast",
+            "ipv6 multicast",
+            "vpnv4 unicast",
+            "vpnv6 unicast",
+            "ipv4 mdt",
+        ]
 
         bgp_neighbor_data = dict()
-        bgp_neighbor_data["global"] = {}
-
+        # vrfs where bgp is configured
+        bgp_config_vrfs = []
         # get summary output from device
         cmd_bgp_all_sum = "show bgp all summary"
         summary_output = self._send_command(cmd_bgp_all_sum).strip()
+        bgp_not_running = ["Invalid input", "BGP not active"]
+        if any((s in summary_output for s in bgp_not_running)):
+            return {}
 
         # get neighbor output from device
         neighbor_output = ""
         for afi in supported_afi:
-            cmd_bgp_neighbor = "show bgp %s unicast neighbors" % afi
-            neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
-            # trailing newline required for parsing
-            neighbor_output += "\n"
+            if afi in [
+                "ipv4 unicast",
+                "ipv4 multicast",
+                "ipv6 unicast",
+                "ipv6 multicast",
+            ]:
+                cmd_bgp_neighbor = "show bgp %s neighbors" % afi
+                neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
+                # trailing newline required for parsing
+                neighbor_output += "\n"
+            elif afi in ["vpnv4 unicast", "vpnv6 unicast", "ipv4 mdt"]:
+                cmd_bgp_neighbor = "show bgp %s all neighbors" % afi
+                neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
+                # trailing newline required for parsing
+                neighbor_output += "\n"
 
         # Regular expressions used for parsing BGP summary
         parse_summary = {
             "patterns": [
                 # For address family: IPv4 Unicast
+                # variable afi contains both afi and safi, i.e 'IPv4 Unicast'
                 {
-                    "regexp": re.compile(r"^For address family: (?P<afi>\S+) "),
+                    "regexp": re.compile(r"^For address family: (?P<afi>[\S ]+)$"),
                     "record": False,
                 },
                 # Capture router_id and local_as values, e.g.:
@@ -1579,6 +1666,7 @@ class IOSDriver(NetworkDriver):
                 {
                     "regexp": re.compile(
                         r"^BGP neighbor is (?P<remote_addr>({})|({})),"
+                        r"(\s+vrf (?P<vrf>\S+),)?"
                         r"\s+remote AS (?P<remote_as>{}).*".format(
                             IPV4_ADDR_REGEX, IPV6_ADDR_REGEX, ASN_REGEX
                         )
@@ -1607,7 +1695,7 @@ class IOSDriver(NetworkDriver):
                 # Capture AFI and SAFI names, e.g.:
                 # For address family: IPv4 Unicast
                 {
-                    "regexp": re.compile(r"^\s+For address family: (?P<afi>\S+) "),
+                    "regexp": re.compile(r"^\s+For address family: (?P<afi>[\S ]+)$"),
                     "record": False,
                 },
                 # Capture current sent and accepted prefixes, e.g.:
@@ -1673,6 +1761,13 @@ class IOSDriver(NetworkDriver):
                     # a match was found, so update the temp entry with the match's groupdict
                     neighbor_data_entry.update(match.groupdict())
                     if item["record"]:
+                        # update list of vrfs where bgp is configured
+                        if not neighbor_data_entry["vrf"]:
+                            vrf_to_add = "global"
+                        else:
+                            vrf_to_add = neighbor_data_entry["vrf"]
+                        if vrf_to_add not in bgp_config_vrfs:
+                            bgp_config_vrfs.append(vrf_to_add)
                         # Record indicates the last piece of data has been obtained; move
                         # on to next entry
                         neighbor_data.append(copy.deepcopy(neighbor_data_entry))
@@ -1695,9 +1790,12 @@ class IOSDriver(NetworkDriver):
         # check the router_id looks like an ipv4 address
         router_id = napalm.base.helpers.ip(router_id, version=4)
 
+        # create dict keys for vrfs where bgp is configured
+        for vrf in bgp_config_vrfs:
+            bgp_neighbor_data[vrf] = {}
+            bgp_neighbor_data[vrf]["router_id"] = router_id
+            bgp_neighbor_data[vrf]["peers"] = {}
         # add parsed data to output dict
-        bgp_neighbor_data["global"]["router_id"] = router_id
-        bgp_neighbor_data["global"]["peers"] = {}
         for entry in summary_data:
             remote_addr = napalm.base.helpers.ip(entry["remote_addr"])
             afi = entry["afi"].lower()
@@ -1765,15 +1863,21 @@ class IOSDriver(NetworkDriver):
 
             # get description
             try:
-                description = py23_compat.text_type(neighbor_entry["description"])
+                description = str(neighbor_entry["description"])
             except KeyError:
                 description = ""
 
             # check the remote router_id looks like an ipv4 address
             remote_id = napalm.base.helpers.ip(neighbor_entry["remote_id"], version=4)
 
-            if remote_addr not in bgp_neighbor_data["global"]["peers"]:
-                bgp_neighbor_data["global"]["peers"][remote_addr] = {
+            # get vrf name, if None use 'global'
+            if neighbor_entry["vrf"]:
+                vrf = neighbor_entry["vrf"]
+            else:
+                vrf = "global"
+
+            if remote_addr not in bgp_neighbor_data[vrf]["peers"]:
+                bgp_neighbor_data[vrf]["peers"][remote_addr] = {
                     "local_as": napalm.base.helpers.as_number(entry["local_as"]),
                     "remote_as": napalm.base.helpers.as_number(entry["remote_as"]),
                     "remote_id": remote_id,
@@ -1791,7 +1895,7 @@ class IOSDriver(NetworkDriver):
                 }
             else:
                 # found previous data for matching remote_addr, but for different afi
-                existing = bgp_neighbor_data["global"]["peers"][remote_addr]
+                existing = bgp_neighbor_data[vrf]["peers"][remote_addr]
                 assert afi not in existing["address_family"]
                 # compare with existing values and croak if they don't match
                 assert existing["local_as"] == napalm.base.helpers.as_number(
@@ -1817,6 +1921,10 @@ class IOSDriver(NetworkDriver):
         bgp_detail = defaultdict(lambda: defaultdict(lambda: []))
 
         raw_bgp_sum = self._send_command("show ip bgp all sum").strip()
+
+        if "Invalid input detected" in raw_bgp_sum:
+            raise CommandErrorException("BGP is not running on this device")
+
         bgp_sum = napalm.base.helpers.textfsm_extractor(
             self, "ip_bgp_all_sum", raw_bgp_sum
         )
@@ -2043,6 +2151,14 @@ class IOSDriver(NetworkDriver):
                     match = re.search(r"(\d+) output errors", line)
                     counters[interface]["tx_errors"] = int(match.group(1))
                     counters[interface]["tx_discards"] = -1
+
+            interface_type, interface_number = split_interface(interface)
+            if interface_type in [
+                "HundredGigabitEthernet",
+                "FortyGigabitEthernet",
+                "TenGigabitEthernet",
+            ]:
+                interface = abbreviated_interface_name(interface)
             for line in sh_int_sum_cmd_out.splitlines():
                 if interface in line:
                     # Line is tabular output with columns
@@ -2057,8 +2173,17 @@ class IOSDriver(NetworkDriver):
                     )
                     match = re.search(regex, line)
                     if match:
-                        counters[interface]["rx_discards"] = int(match.group("IQD"))
-                        counters[interface]["tx_discards"] = int(match.group("OQD"))
+                        can_interface = canonical_interface_name(interface)
+                        try:
+                            counters[can_interface]["rx_discards"] = int(
+                                match.group("IQD")
+                            )
+                            counters[can_interface]["tx_discards"] = int(
+                                match.group("OQD")
+                            )
+                        except KeyError:
+                            counters[interface]["rx_discards"] = int(match.group("IQD"))
+                            counters[interface]["tx_discards"] = int(match.group("OQD"))
 
         return counters
 
@@ -2088,13 +2213,23 @@ class IOSDriver(NetworkDriver):
                 break
 
         output = self._send_command(mem_cmd)
-        for line in output.splitlines():
-            if "Processor" in line:
-                _, _, proc_total_mem, proc_used_mem, _ = line.split()[:5]
-            elif "I/O" in line or "io" in line:
-                _, _, io_total_mem, io_used_mem, _ = line.split()[:5]
-        total_mem = int(proc_total_mem) + int(io_total_mem)
-        used_mem = int(proc_used_mem) + int(io_used_mem)
+        if "Invalid input detected at" not in output:
+            for line in output.splitlines():
+                if "Processor" in line:
+                    _, _, proc_total_mem, proc_used_mem, _ = line.split()[:5]
+                elif "I/O" in line or "io" in line:
+                    _, _, io_total_mem, io_used_mem, _ = line.split()[:5]
+            total_mem = int(proc_total_mem) + int(io_total_mem)
+            used_mem = int(proc_used_mem) + int(io_used_mem)
+        else:
+            # Parse the memory for IOS-XR devices correctly
+            output = self._send_command("show memory")
+            for line in output.splitlines():
+                if "System memory" in line:
+                    total_mem, _, used_mem = line.split()[3:6]
+                    total_mem = int(total_mem.replace("K", ""))
+                    used_mem = int(used_mem.replace("K", ""))
+
         environment.setdefault("memory", {})
         environment["memory"]["used_ram"] = used_mem
         environment["memory"]["available_ram"] = total_mem
@@ -2103,7 +2238,7 @@ class IOSDriver(NetworkDriver):
         re_temp_value = re.compile("(.*) Temperature Value")
         # The 'show env temperature status' is not ubiquitous in Cisco IOS
         output = self._send_command(temp_cmd)
-        if "% Invalid" not in output:
+        if "% Invalid" not in output and "Not Supported" not in output:
             for line in output.splitlines():
                 m = re_temp_value.match(line)
                 if m is not None:
@@ -2166,12 +2301,12 @@ class IOSDriver(NetworkDriver):
             ]
         """
         if vrf:
-            msg = "VRF support has not been added for this getter on this platform."
-            raise NotImplementedError(msg)
+            command = "show arp vrf {} | exclude Incomplete".format(vrf)
+        else:
+            command = "show arp | exclude Incomplete"
 
         arp_table = []
 
-        command = "show arp | exclude Incomplete"
         output = self._send_command(command)
 
         # Skip the first line which is a header
@@ -2193,7 +2328,7 @@ class IOSDriver(NetworkDriver):
 
             try:
                 if age == "-":
-                    age = 0
+                    age = -1
                 age = float(age)
             except ValueError:
                 raise ValueError("Unable to convert age value to float: {}".format(age))
@@ -2289,19 +2424,27 @@ class IOSDriver(NetworkDriver):
                 return []
 
             elif len(line.split()) == 9:
-                address, ref_clock, st, when, poll, reach, delay, offset, disp = (
-                    line.split()
-                )
+                (
+                    address,
+                    ref_clock,
+                    st,
+                    when,
+                    poll,
+                    reach,
+                    delay,
+                    offset,
+                    disp,
+                ) = line.split()
                 address_regex = re.match(r"(\W*)([0-9.*]*)", address)
             try:
                 ntp_stats.append(
                     {
-                        "remote": py23_compat.text_type(address_regex.group(2)),
+                        "remote": str(address_regex.group(2)),
                         "synchronized": ("*" in address_regex.group(1)),
-                        "referenceid": py23_compat.text_type(ref_clock),
+                        "referenceid": str(ref_clock),
                         "stratum": int(st),
                         "type": "-",
-                        "when": py23_compat.text_type(when),
+                        "when": str(when),
                         "hostpoll": int(poll),
                         "reachability": int(reach),
                         "delay": float(delay),
@@ -2362,9 +2505,7 @@ class IOSDriver(NetworkDriver):
         )  # 7 fields
         RE_MACTABLE_6500_2 = r"^{}\s+{}\s+".format(VLAN_REGEX, MAC_REGEX)  # 6 fields
         RE_MACTABLE_6500_3 = r"^\s{51}\S+"  # Fill down prior
-        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(
-            VLAN_REGEX, MAC_REGEX
-        )  # Router field
+        RE_MACTABLE_6500_4 = r"^R\s+{}\s+.*Router".format(VLAN_REGEX)  # Router field
         RE_MACTABLE_6500_5 = r"^R\s+N/A\s+{}.*Router".format(
             MAC_REGEX
         )  # Router skipped
@@ -2546,6 +2687,14 @@ class IOSDriver(NetworkDriver):
                 r"Displaying entries from active supervisor:\s+\w+\s+\[\d\]:", line
             ):
                 continue
+            elif re.search(r"EHWIC:.*", line):
+                # Skip module - process_mac_fields doesn't care.
+                continue
+            elif re.search(
+                r"Destination Address.*Address.*Type.*VLAN.*Destination.*Port", line
+            ):
+                # If there are multiple modules, this line gets repeated for each module.
+                continue
             else:
                 raise ValueError("Unexpected output from: {}".format(repr(line)))
 
@@ -2553,18 +2702,22 @@ class IOSDriver(NetworkDriver):
 
     def get_probes_config(self):
         probes = {}
+
         probes_regex = (
             r"ip\s+sla\s+(?P<id>\d+)\n"
-            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*"
-            r"\s+tag\s+(?P<name>\S+)\n.*"
-            r"\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*"
-            r"\s+frequency\s+(?P<interval>\d+)$"
+            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*)\n"
+            r"\s+tag\s+(?P<name>[\S ]+)\n"
+            r"(\s+.*\n)*"
+            r"((\s+frequency\s+(?P<interval0>\d+)\n(\s+.*\n)*\s+history"
+            r"\s+buckets-kept\s+(?P<probe_count0>\d+))|(\s+history\s+buckets-kept"
+            r"\s+(?P<probe_count1>\d+)\n.*\s+frequency\s+(?P<interval1>\d+)))"
         )
+
         probe_args = {
             "icmp-echo": r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
         }
         probe_type_map = {"icmp-echo": "icmp-ping"}
-        command = "show run | include ip sla [0-9]"
+        command = "show run | section ip sla [0-9]"
         output = self._send_command(command)
         for match in re.finditer(probes_regex, output, re.M):
             probe = match.groupdict()
@@ -2580,12 +2733,333 @@ class IOSDriver(NetworkDriver):
                     "probe_type": probe_type_map[probe["probe_type"]],
                     "target": probe_data["target"],
                     "source": probe_data["source"],
-                    "probe_count": int(probe["probe_count"]),
-                    "test_interval": int(probe["interval"]),
+                    "probe_count": int(probe["probe_count0"] or probe["probe_count1"]),
+                    "test_interval": int(probe["interval0"] or probe["interval1"]),
                 }
             }
 
         return probes
+
+    def _get_vrfs(self, ip_version=None):
+        """
+        Returns list of all VRFs (if ip_version=None) or VRFs which have ipv4 (ip_version=4) or
+        ipv6 (ip_version=6) configured
+        param ip_version can contain None, 4 or 6
+        """
+        vrfs = []
+
+        if ip_version and (ip_version not in [4, 6]):
+            return vrfs
+        command = "show vrf"
+        output = self._send_command(command)
+
+        if "% Invalid input detected" in output:
+            # 'sh vrf' command is not supported
+            # try 'sh ip vrf' command and return all vrf names regardless of ip version ...
+            command = "show ip vrf"
+            output = self._send_command(command)
+            out_lines = output.split("\n")
+            for line in out_lines[1:]:
+                vrfstr = RE_VRF_SIMPLE.match(line)
+                if vrfstr:
+                    vrfs.append(vrfstr.group(1))
+        else:
+            out_lines = output.split("\n")
+            for line in out_lines[1:]:
+                #   TEST                             65417:2               ipv4,ipv6
+                vrfstr = RE_VRF_ADVAN.match(line)
+                if vrfstr:
+                    if (ip_version is None) or (str(ip_version) in vrfstr.group(2)):
+                        vrfs.append(vrfstr.group(1))
+        return vrfs
+
+    def _get_bgp_route_attr(self, destination, vrf, next_hop, ip_version=4):
+        """
+        Returns bgp attributes of specific prefix. Result is used as a value
+        of 'protocol_attributes' key used in get_route_to function
+        """
+        CMD_SHIBN = "show ip bgp neighbors | include is {neigh}"
+        CMD_SHIBNV = "show ip bgp vpnv4 vrf {vrf} neighbors | include is {neigh}"
+
+        search_re_dict = {
+            "aspath": {
+                "re": r"[^|\\n][ ]{2}([\d\(\)]([\d\(\) ])*|Local)",
+                "group": 1,
+                "default": "",
+            },
+            "bgpnh": {
+                "re": r"[^|\\n][ ]{4}(" + IP_ADDR_REGEX + r")",
+                "group": 1,
+                "default": "",
+            },
+            "bgpfrom": {
+                "re": r"from (" + IP_ADDR_REGEX + r")",
+                "group": 1,
+                "default": "",
+            },
+            "bgpcomm": {
+                "re": r"  Community: ([\w\d\-\: ]+)",
+                "group": 1,
+                "default": "",
+            },
+            "bgpexcomm": {
+                "re": r"Extended Community: ([\w\d\-\: ]+)",
+                "group": 1,
+                "default": "",
+            },
+            "bgplp": {"re": r"localpref (\d+)", "group": 1, "default": ""},
+            "bgpie": {"re": r"(external)", "group": 1, "default": "internal"},
+        }
+
+        bgp_attr = {}
+        # find local AS number
+        outbgp = self._send_command("show ip protocols | include bgp")
+        matchbgpattr = re.search(r"Routing Protocol is \"bgp (\d+)", outbgp)
+        if matchbgpattr:
+            bgpas = matchbgpattr.group(1)
+        if ip_version == 4:
+            if vrf == "default":
+                bgpcmd = "show ip bgp {destination}".format(destination=destination)
+            else:
+                bgpcmd = "show ip bgp vpnv4 vrf {vrf} {destination}".format(
+                    vrf=vrf, destination=destination
+                )
+            outbgp = self._send_command(bgpcmd)
+            if "Refresh Epoch" in outbgp:
+                outbgpsec = outbgp.split("Refresh Epoch")
+            else:  # sections are not separated by 'Refresh Epoch' string
+                outbgpsec = []
+                outbgplines = outbgp.split("\n")
+                # sec_bord list contains list of line numbers which separate sections
+                sec_bord = [0]
+                process_line = 0
+                for bgpline in outbgplines:
+                    # find line with AS-PATH
+                    if RE_BGP_AS_PATH.match(bgpline):
+                        sec_bord.append(process_line)
+                    process_line += 1
+                nritems = len(sec_bord)
+                for item in range(0, nritems):
+                    if item == nritems - 1:
+                        block = "\n".join(outbgplines[sec_bord[item] :])
+                    else:
+                        block = "\n".join(
+                            outbgplines[sec_bord[item] : sec_bord[item + 1] - 1]
+                        )
+                    # hack to have the same format of block as with 'Refresh epoch' split
+                    block = "\n" + block
+                    outbgpsec.append(block)
+
+            # process all bgp paths
+            for bgppath in outbgpsec[1:]:
+                if "best" not in bgppath:
+                    # only best path is added to protocol attributes
+                    continue
+                # find BGP attributes
+                for key in search_re_dict:
+                    matchre = re.search(search_re_dict[key]["re"], bgppath)
+                    if matchre:
+                        groupnr = int(search_re_dict[key]["group"])
+                        search_re_dict[key]["result"] = matchre.group(groupnr)
+                    else:
+                        search_re_dict[key]["result"] = search_re_dict[key]["default"]
+                bgpnh = search_re_dict["bgpnh"]["result"]
+                # find remote AS nr. of this neighbor
+                if vrf == "default":
+                    bgpcmd = CMD_SHIBN.format(neigh=bgpnh)
+                else:
+                    bgpcmd = CMD_SHIBNV.format(vrf=vrf, neigh=bgpnh)
+                outbgpnei = self._send_command(bgpcmd)
+                matchbgpattr = RE_BGP_REMOTE_AS.search(outbgpnei)
+                if matchbgpattr:
+                    bgpras = matchbgpattr.group(1)
+                else:
+                    # next-hop is not known in this vrf, route leaked from
+                    # other vrf or from vpnv4 table?
+                    # get remote AS nr. from as-path if it is ebgp neighbor
+                    # localy sourced prefix is not in routing table as a bgp route (i hope...)
+                    if search_re_dict["bgpie"]["result"] == "external":
+                        bgpras = (
+                            search_re_dict["aspath"]["result"]
+                            .split(" ")[0]
+                            .replace("(", "")
+                        )
+                    else:
+                        bgpras = bgpas
+                # community + extended community
+                bothcomm = (
+                    search_re_dict["bgpcomm"]["result"]
+                    + " "
+                    + search_re_dict["bgpexcomm"]["result"]
+                )
+                bgp_attr = {
+                    "as_path": search_re_dict["aspath"]["result"],
+                    "remote_address": search_re_dict["bgpfrom"]["result"],
+                    "communities": bothcomm.split(),
+                    "local_preference": int(search_re_dict["bgplp"]["result"]),
+                    "local_as": napalm.base.helpers.as_number(bgpas),
+                }
+                if bgpras:
+                    bgp_attr["remote_as"] = napalm.base.helpers.as_number(bgpras)
+        return bgp_attr
+
+    def get_route_to(self, destination="", protocol="", longer=False):
+        """
+        Only IPv4 is supported
+        VRFs are supported
+
+        Output example:
+
+        {
+            "1.0.4.0/24": [
+                {
+                    "protocol": "bgp",
+                    "outgoing_interface": "",
+                    "age": 1123200,
+                    "current_active": true,
+                    "routing_table": "TEST",
+                    "last_active": true,
+                    "protocol_attributes": {
+                        "as_path": "65201 8244 3269 65020 65017",
+                        "remote_address": "10.105.113.164",
+                        "communities": [
+                            "RT:65417:2"
+                        ],
+                        "local_preference": 100,
+                        "remote_as": 65417,
+                        "local_as": 65417
+                    },
+                    "next_hop": "10.105.113.164",
+                    "selected_next_hop": true,
+                    "inactive_reason": "",
+                    "preference": 0
+                }
+            ]
+        }
+        """
+
+        if longer:
+            raise NotImplementedError("Longer prefixes not yet supported for IOS")
+
+        output = []
+        # Placeholder for vrf arg
+        vrf = ""
+        ip_version = None
+        try:
+            ip_version = IPNetwork(destination).version
+        except AddrFormatError:
+            return "Please specify a valid destination!"
+        if ip_version == 4:  # process IPv4 routing table
+            if vrf == "":
+                vrfs = sorted(self._get_vrfs(ip_version))
+            else:
+                vrfs = [vrf]  # VRFs where IPv4 is enabled
+            vrfs.append("default")  # global VRF
+            ipnet_dest = IPNetwork(destination)
+            prefix = str(ipnet_dest.network)
+            netmask = ""
+            routes = {}
+            if "/" in destination:
+                netmask = str(ipnet_dest.netmask)
+                routes = {destination: []}
+            commands = []
+            for _vrf in vrfs:
+                if _vrf == "default":
+                    commands.append(
+                        "show ip route {prefix} {netmask}".format(
+                            prefix=prefix, netmask=netmask
+                        )
+                    )
+                else:
+                    commands.append(
+                        "show ip route vrf {vrf} {prefix} {netmask}".format(
+                            vrf=_vrf, prefix=prefix, netmask=netmask
+                        )
+                    )
+            for cmditem in commands:
+                outvrf = self._send_command(cmditem)
+                output.append(outvrf)
+            for (outitem, _vrf) in zip(output, vrfs):  # for all VRFs
+                route_proto_regex = RE_RP_FROM.search(outitem)
+                if route_proto_regex:
+                    route_match = destination
+                    if netmask == "":
+                        # Get the matching route for a non-exact lookup
+                        route_match_regex = RE_RP_ROUTE.search(outitem)
+                        if route_match_regex:
+                            route_match = route_match_regex.group(1)
+                            if route_match not in routes:
+                                routes[route_match] = []
+                    # routing protocol name (bgp, ospf, ...)
+                    route_proto = route_proto_regex.group(1)
+                    rdb = outitem.split("Routing Descriptor Blocks:")
+                    nh_line_found = False
+                    # go through all routing entry lines related to prefix/mask
+                    for rdbline in rdb[1].split("\n"):
+                        #  * 10.105.113.164, from 10.105.113.164, 1w6d ago
+                        #  * 10.33.4.10 (default), from 10.33.4.10, 2w2d ago
+                        #    19.22.18.4, from 19.22.18.4, 7w0d ago, via GigabitEthernet0/2
+                        #  * 10.106.14.157, via Vlan406
+                        matchstr = RE_IP_ROUTE_VIA_REGEX.match(rdbline)
+                        if matchstr:
+                            nh = matchstr.group("ip")
+                            ageraw = matchstr.group("age")
+                            if not ageraw:
+                                ageraw = ""
+                            # line with next hop, age, etc. found
+                            nh_line_found = True
+                            viaraw = matchstr.group("via")
+                            if not viaraw:
+                                viaraw = ""
+                            continue
+                        elif route_proto == "connected":
+                            #  * directly connected, via Vlan781
+                            matchstr = RE_RP_VIA.search(rdbline)
+                            if matchstr:
+                                viaraw = matchstr.group(1)
+                                ageraw = ""
+                                nh = ""
+                                # outgoing interface (via) is like next hop in this case ...
+                                nh_line_found = True
+                        # process next line
+                        matchstr = RE_RP_METRIC.match(rdbline)
+                        if matchstr and nh_line_found:
+                            rmetric = matchstr.group(1)
+                            if ageraw:
+                                # 3w4d -> secs
+                                age = self.bgp_time_conversion(ageraw)
+                            else:
+                                age = ""
+                            route_entry = {
+                                "protocol": route_proto,
+                                "outgoing_interface": napalm.base.helpers.canonical_interface_name(
+                                    viaraw
+                                ),
+                                "age": age,
+                                "current_active": True,
+                                "routing_table": _vrf,
+                                "last_active": True,
+                                "protocol_attributes": {},
+                                "next_hop": nh,
+                                "selected_next_hop": True,
+                                "inactive_reason": "",
+                                "preference": int(rmetric),
+                            }
+                            # process rt entry only if was created by routing protocol
+                            # specified in 'protocol' parameter or if routing protocol
+                            # was not specified
+                            if protocol == "" or protocol == route_entry["protocol"]:
+                                if route_proto == "bgp":
+                                    route_entry[
+                                        "protocol_attributes"
+                                    ] = self._get_bgp_route_attr(
+                                        destination, _vrf, nh, ip_version
+                                    )
+                                nh_line_found = (
+                                    False  # for next RT entry processing ...
+                                )
+                                routes[route_match].append(route_entry)
+        return routes
 
     def get_snmp_information(self):
         """
@@ -2658,7 +3132,7 @@ class IOSDriver(NetworkDriver):
         """
         username_regex = (
             r"^username\s+(?P<username>\S+)\s+(?:privilege\s+(?P<priv_level>\S+)"
-            r"\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
+            r"\s+)?(?:(password|secret) \d+\s+(?P<pwd_hash>\S+))?$"
         )
         pub_keychain_regex = (
             r"^\s+username\s+(?P<username>\S+)(?P<keys>(?:\n\s+key-hash\s+"
@@ -2667,6 +3141,9 @@ class IOSDriver(NetworkDriver):
         users = {}
         command = "show run | section username"
         output = self._send_command(command)
+        if "Invalid input detected" in output:
+            command = "show run | include username"
+            output = self._send_command(command)
         for match in re.finditer(username_regex, output, re.M):
             users[match.groupdict()["username"]] = {
                 "level": int(match.groupdict()["priv_level"])
@@ -2764,10 +3241,7 @@ class IOSDriver(NetworkDriver):
                     results_array = []
                     for i in range(probes_received):
                         results_array.append(
-                            {
-                                "ip_address": py23_compat.text_type(destination),
-                                "rtt": 0.0,
-                            }
+                            {"ip_address": str(destination), "rtt": 0.0}
                         )
                     ping_dict["success"].update({"results": results_array})
 
@@ -2809,8 +3283,8 @@ class IOSDriver(NetworkDriver):
         if source:
             command += " source {}".format(source)
         if ttl:
-            if isinstance(ttl, int) and 0 <= timeout <= 255:
-                command += " ttl 0 {}".format(str(ttl))
+            if isinstance(ttl, int) and 0 <= ttl <= 255:
+                command += " ttl {}".format(str(ttl))
         if timeout:
             # Timeout should be an integer between 1 and 3600
             if isinstance(timeout, int) and 1 <= timeout <= 3600:
@@ -2849,8 +3323,12 @@ class IOSDriver(NetworkDriver):
                 stop_index = next_hop_match.start()
                 # Now you have the start and stop index for each hop
                 # and you can parse the probes
-            # Set the hop_variable, and remove spaces between msec for easier matching
-            hop_string = output[start_index:stop_index].replace(" msec", "msec")
+            # Set the hop_variable, and remove spaces between msec and [AS 1234] for easier matching
+            hop_string = re.sub(
+                r" \[AS [0-9.]+\]",
+                "",
+                output[start_index:stop_index].replace(" msec", "msec"),
+            )
             hop_list = hop_string.split()
             current_hop = int(hop_list.pop(0))
             # Prepare dictionary for each hop (assuming there are 3 probes in each hop)
@@ -2881,8 +3359,8 @@ class IOSDriver(NetworkDriver):
                     current_probe += 1
                 # If current_element contains msec record the entry for probe
                 elif "msec" in current_element:
-                    ip_address = py23_compat.text_type(ip_address)
-                    host_name = py23_compat.text_type(host_name)
+                    ip_address = str(ip_address)
+                    host_name = str(host_name)
                     rtt = float(current_element.replace("msec", ""))
                     results[current_hop]["probes"][current_probe][
                         "ip_address"
@@ -2927,6 +3405,13 @@ class IOSDriver(NetworkDriver):
             "interfaces": {"interface": interface_dict},
         }
 
+        # No vrf is defined return default one
+        if len(sh_vrf_detail) == 0:
+            if name:
+                raise ValueError("No vrf is setup on router")
+            else:
+                return instances
+
         for vrf in sh_vrf_detail.split("\n\n"):
 
             first_part = vrf.split("Address family")[0]
@@ -2941,7 +3426,14 @@ class IOSDriver(NetworkDriver):
             if "No interfaces" in first_part:
                 interfaces = {}
             else:
-                interfaces = {itf: {} for itf in if_regex.group(1).split()}
+                interfaces = {
+                    canonical_interface_name(itf, {"Vl": "Vlan"}): {}
+                    for itf in if_regex.group(1).split()
+                }
+
+            # remove interfaces in the VRF from the default VRF
+            for item in interfaces:
+                del instances["default"]["interfaces"]["interface"][item]
 
             instances[vrf_name] = {
                 "name": vrf_name,
@@ -2949,9 +3441,12 @@ class IOSDriver(NetworkDriver):
                 "state": {"route_distinguisher": RD},
                 "interfaces": {"interface": interfaces},
             }
-        return instances if not name else instances[name]
+        try:
+            return instances if not name else instances[name]
+        except AttributeError:
+            raise ValueError("The vrf %s does not exist" % name)
 
-    def get_config(self, retrieve="all"):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         """Implementation of get_config for IOS.
 
         Returns the startup or/and running configuration as dictionary.
@@ -2960,17 +3455,34 @@ class IOSDriver(NetworkDriver):
         since IOS does not support candidate configuration.
         """
 
+        # The output of get_config should be directly usable by load_replace_candidate()
+        # IOS adds some extra, unneeded lines that should be filtered.
+        filter_strings = [
+            r"^Building configuration.*$",
+            r"^Current configuration :.*$",
+            r"^! Last configuration change at.*$",
+            r"^! NVRAM config last updated at.*$",
+        ]
+        filter_pattern = generate_regex_or(filter_strings)
+
         configs = {"startup": "", "running": "", "candidate": ""}
+        # IOS only supports "all" on "show run"
+        run_full = " all" if full else ""
 
         if retrieve in ("startup", "all"):
             command = "show startup-config"
             output = self._send_command(command)
-            configs["startup"] = output
+            output = re.sub(filter_pattern, "", output, flags=re.M)
+            configs["startup"] = output.strip()
 
         if retrieve in ("running", "all"):
-            command = "show running-config"
+            command = "show running-config{}".format(run_full)
             output = self._send_command(command)
-            configs["running"] = output
+            output = re.sub(filter_pattern, "", output, flags=re.M)
+            configs["running"] = output.strip()
+
+        if sanitized:
+            return sanitize_configs(configs, C.CISCO_SANITIZE_FILTERS)
 
         return configs
 
@@ -3033,3 +3545,61 @@ class IOSDriver(NetworkDriver):
         if self.device and self._dest_file_system is None:
             self._dest_file_system = self._discover_file_system()
         return self._dest_file_system
+
+    def get_vlans(self):
+        command = "show vlan all-ports"
+        output = self._send_command(command)
+        if output.find("Invalid input detected") >= 0:
+            return self._get_vlan_from_id()
+        else:
+            return self._get_vlan_all_ports(output)
+
+    def _get_vlan_all_ports(self, output):
+        find_regexp = r"^(\d+)\s+(\S+)\s+\S+\s+([A-Z][a-z].*)$"
+        find = re.findall(find_regexp, output, re.MULTILINE)
+        vlans = {}
+        for vlan_id, vlan_name, interfaces in find:
+            vlans[vlan_id] = {
+                "name": vlan_name,
+                "interfaces": [
+                    canonical_interface_name(intf.strip())
+                    for intf in interfaces.split(",")
+                ],
+            }
+
+        find_regexp = r"^(\d+)\s+(\S+)\s+\S+$"
+        find = re.findall(find_regexp, output, re.MULTILINE)
+        for vlan_id, vlan_name in find:
+            vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
+        return vlans
+
+    def _get_vlan_from_id(self):
+        command = "show vlan brief"
+        output = self._send_command(command)
+        vlan_regexp = r"^(\d+)\s+(\S+)\s+\S+.*$"
+        find_vlan = re.findall(vlan_regexp, output, re.MULTILINE)
+        vlans = {}
+        for vlan_id, vlan_name in find_vlan:
+            output = self._send_command("show vlan id {}".format(vlan_id))
+            interface_regex = r"{}\s+{}\s+\S+\s+([A-Z][a-z].*)$".format(
+                vlan_id, vlan_name
+            )
+            interfaces = re.findall(interface_regex, output, re.MULTILINE)
+            if len(interfaces) == 1:
+                interfaces = interfaces[0]
+                vlans[vlan_id] = {
+                    "name": vlan_name,
+                    "interfaces": [
+                        canonical_interface_name(intf.strip())
+                        for intf in interfaces.split(",")
+                    ],
+                }
+            elif len(interfaces) == 0:
+                vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
+            else:
+                raise ValueError(
+                    "Error parsing vlan_id {}, "
+                    "found more values than can be present.".format(vlan_id)
+                )
+
+        return vlans

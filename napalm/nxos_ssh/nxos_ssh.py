@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from __future__ import unicode_literals
-
 # import stdlib
 from builtins import super
 import re
@@ -27,7 +25,6 @@ from netaddr.core import AddrFormatError
 # import NAPALM Base
 from napalm.base import helpers
 from napalm.base.exceptions import CommandErrorException, ReplaceConfigException
-from napalm.base.utils import py23_compat
 from napalm.nxos import NXOSDriverBase
 
 # Easier to store these as constants
@@ -123,7 +120,7 @@ def parse_intf_section(interface):
     else:
         # More standard is up, next line admin state is lines
         match = re.search(re_intf_name_state, interface)
-        intf_name = match.group("intf_name")
+        intf_name = helpers.canonical_interface_name(match.group("intf_name"))
         intf_state = match.group("intf_state").strip()
         is_up = True if intf_state == "up" else False
 
@@ -432,6 +429,17 @@ class NXOSSSHDriver(NXOSDriverBase):
             hostname, username, password, timeout=timeout, optional_args=optional_args
         )
         self.platform = "nxos_ssh"
+        self.connector_type_map = {
+            "1000base-LH": "LC_CONNECTOR",
+            "1000base-SX": "LC_CONNECTOR",
+            "1000base-T": "Unknown",
+            "10Gbase-LR": "LC_CONNECTOR",
+            "10Gbase-SR": "LC_CONNECTOR",
+            "SFP-H10GB-CU1M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU1.45M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU3M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU3.45M": "DAC_CONNECTOR",
+        }
 
     def open(self):
         self.device = self._netmiko_open(
@@ -441,25 +449,28 @@ class NXOSSSHDriver(NXOSDriverBase):
     def close(self):
         self._netmiko_close()
 
-    def _send_command(self, command, raw_text=False):
+    def _send_command(self, command, raw_text=False, cmd_verify=True):
         """
         Wrapper for Netmiko's send_command method.
 
         raw_text argument is not used and is for code sharing with NX-API.
         """
-        return self.device.send_command(command)
+        return self.device.send_command(command, cmd_verify=cmd_verify)
 
-    def _send_command_list(self, commands):
+    def _send_command_list(self, commands, expect_string=None):
         """Wrapper for Netmiko's send_command method (for list of commands."""
         output = ""
         for command in commands:
             output += self.device.send_command(
-                command, strip_prompt=False, strip_command=False
+                command,
+                strip_prompt=False,
+                strip_command=False,
+                expect_string=expect_string,
             )
         return output
 
     def _send_config(self, commands):
-        if isinstance(commands, py23_compat.string_types):
+        if isinstance(commands, str):
             commands = (command for command in commands.splitlines() if command)
         return self.device.send_config_set(commands)
 
@@ -506,7 +517,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 return {"is_alive": False}
             else:
                 # Try sending ASCII null byte to maintain the connection alive
-                self._send_command(null)
+                self._send_command(null, cmd_verify=False)
         except (socket.error, EOFError):
             # If unable to send, we can tell for sure that the connection is unusable,
             # hence return False.
@@ -523,13 +534,15 @@ class NXOSSSHDriver(NXOSDriverBase):
             raise CommandErrorException(msg)
 
     def _load_cfg_from_checkpoint(self):
+
         commands = [
             "terminal dont-ask",
             "rollback running-config file {}".format(self.candidate_cfg),
             "no terminal dont-ask",
         ]
+
         try:
-            rollback_result = self._send_command_list(commands)
+            rollback_result = self._send_command_list(commands, expect_string=r"[#>]")
         finally:
             self.changed = True
         msg = rollback_result
@@ -538,10 +551,16 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def rollback(self):
         if self.changed:
-            command = "rollback running-config file {}".format(self.rollback_cfg)
-            result = self._send_command(command)
+            commands = [
+                "terminal dont-ask",
+                "rollback running-config file {}".format(self.rollback_cfg),
+                "no terminal dont-ask",
+            ]
+            result = self._send_command_list(commands, expect_string=r"[#>]")
             if "completed" not in result.lower():
                 raise ReplaceConfigException(result)
+            # If hostname changes ensure Netmiko state is updated properly
+            self._netmiko_device.set_base_prompt()
             self._copy_run_start()
             self.changed = False
 
@@ -573,15 +592,31 @@ class NXOSSSHDriver(NXOSDriverBase):
         show_int_status = self._send_command("show interface status")
         show_hostname = self._send_command("show hostname")
 
+        try:
+            show_inventory_table = self._get_command_table(
+                "show inventory | json", "TABLE_inv", "ROW_inv"
+            )
+            if isinstance(show_inventory_table, dict):
+                show_inventory_table = [show_inventory_table]
+
+            for row in show_inventory_table:
+                if row["name"] == '"Chassis"' or row["name"] == "Chassis":
+                    serial_number = row.get("serialnum", "")
+                    break
+        except ValueError:
+            show_inventory = self._send_command("show inventory")
+            find_regexp = r"^NAME:\s+\"(.*)\",.*\n^PID:.*SN:\s+(\w*)"
+            find = re.findall(find_regexp, show_inventory, re.MULTILINE)
+            for row in find:
+                if row[0] == "Chassis":
+                    serial_number = row[1]
+                    break
+
         # uptime/serial_number/IOS version
         for line in show_ver.splitlines():
             if " uptime is " in line:
                 _, uptime_str = line.split(" uptime is ")
                 uptime = self.parse_uptime(uptime_str)
-
-            if "Processor Board ID" in line:
-                _, serial_number = line.split("Processor Board ID ")
-                serial_number = serial_number.strip()
 
             if "system: " in line or "NXOS: " in line:
                 line = line.strip()
@@ -630,10 +665,10 @@ class NXOSSSHDriver(NXOSDriverBase):
         return {
             "uptime": int(uptime),
             "vendor": vendor,
-            "os_version": py23_compat.text_type(os_version),
-            "serial_number": py23_compat.text_type(serial_number),
-            "model": py23_compat.text_type(model),
-            "hostname": py23_compat.text_type(hostname),
+            "os_version": str(os_version),
+            "serial_number": str(serial_number),
+            "model": str(model),
+            "hostname": str(hostname),
             "fqdn": fqdn,
             "interface_list": interface_list,
         }
@@ -760,8 +795,81 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         for command in commands:
             output = self._send_command(command)
-            cli_output[py23_compat.text_type(command)] = output
+            cli_output[str(command)] = output
         return cli_output
+
+    def get_environment(self):
+        """
+        Get environment facts.
+
+        power and fan are currently not implemented
+        cpu is using 1-minute average
+        """
+
+        environment = {}
+        # sys_resources contains cpu and mem output
+        sys_resources = self._send_command("show system resources")
+        temp_cmd = "show environment temperature"
+
+        # cpu
+        environment.setdefault("cpu", {})
+        environment["cpu"]["0"] = {}
+        environment["cpu"]["0"]["%usage"] = -1.0
+        system_resources_cpu = helpers.textfsm_extractor(
+            self, "system_resources", sys_resources
+        )
+        for cpu in system_resources_cpu:
+            cpu_dict = {
+                cpu.get("cpu_id"): {
+                    "%usage": round(100 - float(cpu.get("cpu_idle")), 2)
+                }
+            }
+            environment["cpu"].update(cpu_dict)
+
+        # memory
+        environment.setdefault("memory", {})
+        for line in sys_resources.splitlines():
+            # Memory usage:   16401224K total,   4798280K used,   11602944K free
+            if "Memory usage:" in line:
+                proc_total_mem, proc_used_mem, _ = line.split(",")
+                proc_used_mem = re.search(r"\d+", proc_used_mem).group(0)
+                proc_total_mem = re.search(r"\d+", proc_total_mem).group(0)
+                break
+        else:
+            raise ValueError("Unexpected output from: {}".format(line))
+        environment["memory"]["used_ram"] = int(proc_used_mem)
+        environment["memory"]["available_ram"] = int(proc_total_mem)
+
+        # temperature
+        output = self._send_command(temp_cmd)
+        environment.setdefault("temperature", {})
+        for line in output.splitlines():
+            # Module   Sensor        MajorThresh   MinorThres   CurTemp     Status
+            # 1        Intake          70              42          28         Ok
+            if re.match(r"^[0-9]", line):
+                module, sensor, is_critical, is_alert, temp, _ = line.split()
+                is_critical = float(is_critical)
+                is_alert = float(is_alert)
+                temp = float(temp)
+                env_value = {
+                    "is_alert": temp >= is_alert,
+                    "is_critical": temp >= is_critical,
+                    "temperature": temp,
+                }
+                location = "{0}-{1}".format(sensor, module)
+                environment["temperature"][location] = env_value
+
+        # Initialize 'power' and 'fan' to default values (not implemented)
+        environment.setdefault("power", {})
+        environment["power"]["invalid"] = {
+            "status": True,
+            "output": -1.0,
+            "capacity": -1.0,
+        }
+        environment.setdefault("fans", {})
+        environment["fans"]["invalid"] = {"status": True}
+
+        return environment
 
     def get_arp_table(self, vrf=""):
         """
@@ -906,10 +1014,14 @@ class NXOSSSHDriver(NXOSDriverBase):
                 ip_address = line.split(",")[0].split()[2]
                 try:
                     prefix_len = int(line.split()[5].split("/")[1])
-                except ValueError:
+                except (ValueError, IndexError):
                     prefix_len = "N/A"
-                val = {"prefix_length": prefix_len}
-                v4_interfaces.setdefault(interface, {})[ip_address] = val
+
+                if ip_address == "none":
+                    v4_interfaces.setdefault(interface, {})
+                else:
+                    val = {"prefix_length": prefix_len}
+                    v4_interfaces.setdefault(interface, {})[ip_address] = val
 
         v6_interfaces = {}
         for line in output_v6.splitlines():
@@ -940,6 +1052,10 @@ class NXOSSSHDriver(NXOSDriverBase):
                 prefix_len = int(prefix_len)
                 val = {"prefix_length": prefix_len}
                 v6_interfaces.setdefault(interface, {})[ip_address] = val
+            else:
+                # match the following format:
+                # IPv6 address: none
+                v6_interfaces.setdefault(interface, {})
 
         # Join data from intermediate dictionaries.
         for interface, data in v4_interfaces.items():
@@ -1212,10 +1328,12 @@ class NXOSSSHDriver(NXOSDriverBase):
                     bgp_attr["remote_as"] = 0  # 0? , locally sourced
         return bgp_attr
 
-    def get_route_to(self, destination="", protocol=""):
+    def get_route_to(self, destination="", protocol="", longer=False):
         """
         Only IPv4 supported, vrf aware, longer_prefixes parameter ready
         """
+        if longer:
+            raise NotImplementedError("Longer prefixes not yet supported for NXOS")
         longer_pref = ""  # longer_prefixes support, for future use
         vrf = ""
 
@@ -1330,34 +1448,34 @@ class NXOSSSHDriver(NXOSDriverBase):
             return snmp_information
 
         snmp_information = {
-            "contact": py23_compat.text_type(""),
-            "location": py23_compat.text_type(""),
+            "contact": str(""),
+            "location": str(""),
             "community": {},
-            "chassis_id": py23_compat.text_type(""),
+            "chassis_id": str(""),
         }
 
         for snmp_entry in snmp_config:
-            contact = py23_compat.text_type(snmp_entry.get("contact", ""))
+            contact = str(snmp_entry.get("contact", ""))
             if contact:
                 snmp_information["contact"] = contact
-            location = py23_compat.text_type(snmp_entry.get("location", ""))
+            location = str(snmp_entry.get("location", ""))
             if location:
                 snmp_information["location"] = location
 
-            community_name = py23_compat.text_type(snmp_entry.get("community", ""))
+            community_name = str(snmp_entry.get("community", ""))
             if not community_name:
                 continue
 
             if community_name not in snmp_information["community"].keys():
                 snmp_information["community"][community_name] = {
-                    "acl": py23_compat.text_type(snmp_entry.get("acl", "")),
-                    "mode": py23_compat.text_type(snmp_entry.get("mode", "").lower()),
+                    "acl": str(snmp_entry.get("acl", "")),
+                    "mode": str(snmp_entry.get("mode", "").lower()),
                 }
             else:
-                acl = py23_compat.text_type(snmp_entry.get("acl", ""))
+                acl = str(snmp_entry.get("acl", ""))
                 if acl:
                     snmp_information["community"][community_name]["acl"] = acl
-                mode = py23_compat.text_type(snmp_entry.get("mode", "").lower())
+                mode = str(snmp_entry.get("mode", "").lower())
                 if mode:
                     snmp_information["community"][community_name]["mode"] = mode
         return snmp_information
@@ -1383,7 +1501,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
             password = user.get("password", "")
             if password:
-                users[username]["password"] = py23_compat.text_type(password.strip())
+                users[username]["password"] = str(password.strip())
 
             level = 0
             role = user.get("role", "")
@@ -1401,5 +1519,221 @@ class NXOSSSHDriver(NXOSDriverBase):
             if sshkeytype and sshkeyvalue:
                 if sshkeytype not in ["ssh-rsa", "ssh-dsa"]:
                     continue
-                users[username]["sshkeys"].append(py23_compat.text_type(sshkeyvalue))
+                users[username]["sshkeys"].append(str(sshkeyvalue))
         return users
+
+    def get_vlans(self):
+        vlans = {}
+        command = "show vlan brief | json"
+        vlan_table_raw = self._get_command_table(
+            command, "TABLE_vlanbriefxbrief", "ROW_vlanbriefxbrief"
+        )
+        if isinstance(vlan_table_raw, dict):
+            vlan_table_raw = [vlan_table_raw]
+
+        for vlan in vlan_table_raw:
+            if "vlanshowplist-ifidx" not in vlan.keys():
+                vlan["vlanshowplist-ifidx"] = []
+            vlans[vlan["vlanshowbr-vlanid"]] = {
+                "name": vlan["vlanshowbr-vlanname"],
+                "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),
+            }
+        return vlans
+
+    def get_optics(self):
+        command = "show interface transceiver details"
+        output = self._send_command(command)
+
+        # Formatting data into return data structure
+        optics_detail = {}
+
+        # Extraction Regexps
+        port_ts_re = re.compile(r"^Ether.*?(?=\nEther|\Z)", re.M | re.DOTALL)
+        port_re = re.compile(r"^(Ether.*)[ ]*?$", re.M)
+        vendor_re = re.compile("name is (.*)$", re.M)
+        vendor_part_re = re.compile("part number is (.*)$", re.M)
+        vendor_rev_re = re.compile("revision is (.*)$", re.M)
+        serial_no_re = re.compile("serial number is (.*)$", re.M)
+        type_no_re = re.compile("type is (.*)$", re.M)
+        rx_instant_re = re.compile(r"Rx Power[ ]+(?:(\S+?)[ ]+dBm|(N.A))", re.M)
+        tx_instant_re = re.compile(r"Tx Power[ ]+(?:(\S+?)[ ]+dBm|(N.A))", re.M)
+        current_instant_re = re.compile(r"Current[ ]+(?:(\S+?)[ ]+mA|(N.A))", re.M)
+
+        port_ts_l = port_ts_re.findall(output)
+
+        for port_ts in port_ts_l:
+            port = port_re.search(port_ts).group(1)
+            # No transceiver is present in those case
+            if "transceiver is not present" in port_ts:
+                continue
+            if "transceiver is not applicable" in port_ts:
+                continue
+            port_detail = {"physical_channels": {"channel": []}}
+            # No metric present
+            vendor = vendor_re.search(port_ts).group(1)
+            vendor_part = vendor_part_re.search(port_ts).group(1)
+            vendor_rev = vendor_rev_re.search(port_ts).group(1)
+            serial_no = serial_no_re.search(port_ts).group(1)
+            type_s = type_no_re.search(port_ts).group(1)
+            state = {
+                "vendor": vendor.strip(),
+                "vendor_part": vendor_part.strip(),
+                "vendor_rev": vendor_rev.strip(),
+                "serial_no": serial_no.strip(),
+                "connector_type": self.connector_type_map.get(type_s, "Unknown"),
+            }
+            if "DOM is not supported" not in port_ts:
+                res = rx_instant_re.search(port_ts)
+                input_power = res.group(1) or res.group(2)
+                res = tx_instant_re.search(port_ts)
+                output_power = res.group(1) or res.group(2)
+                res = current_instant_re.search(port_ts)
+                current = res.group(1) or res.group(2)
+
+                # If interface is shutdown it returns "N/A" as output power
+                # or "N/A" as input power
+                # Converting that to -100.0 float
+                try:
+                    float(output_power)
+                except ValueError:
+                    output_power = -100.0
+                try:
+                    float(input_power)
+                except ValueError:
+                    input_power = -100.0
+                try:
+                    float(current)
+                except ValueError:
+                    current = -100.0
+
+                # Defaulting avg, min, max values to -100.0 since device does not
+                # return these values
+                optic_states = {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": (
+                                float(input_power) if "input_power" else -100.0
+                            ),
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0,
+                        },
+                        "output_power": {
+                            "instant": (
+                                float(output_power) if "output_power" else -100.0
+                            ),
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0,
+                        },
+                        "laser_bias_current": {
+                            "instant": (float(current) if "current" else -100.0),
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0,
+                        },
+                    },
+                }
+                port_detail["physical_channels"]["channel"].append(optic_states)
+
+            port_detail["state"] = state
+            optics_detail[port] = port_detail
+
+        return optics_detail
+
+    def get_interfaces_counters(self):
+        """
+        Return interface counters and errors.
+
+        'tx_errors': int,
+        'rx_errors': int,
+        'tx_discards': int,
+        'rx_discards': int,
+        'tx_octets': int,
+        'rx_octets': int,
+        'tx_unicast_packets': int,
+        'rx_unicast_packets': int,
+        'tx_multicast_packets': int,
+        'rx_multicast_packets': int,
+        'tx_broadcast_packets': int,
+        'rx_broadcast_packets': int,
+        """
+        if_mapping = {
+            "eth": {
+                "regexp": re.compile("^(Ether|port-channel).*"),
+                "mapping": {
+                    "tx_errors": "eth_outerr",
+                    "rx_errors": "eth_inerr",
+                    "tx_discards": "eth_outdiscard",
+                    "rx_discards": "eth_indiscard",
+                    "tx_octets": "eth_outbytes",
+                    "rx_octets": "eth_inbytes",
+                    "tx_unicast_packets": "eth_outucast",
+                    "rx_unicast_packets": "eth_inucast",
+                    "tx_multicast_packets": "eth_outmcast",
+                    "rx_multicast_packets": "eth_inmcast",
+                    "tx_broadcast_packets": "eth_outbcast",
+                    "rx_broadcast_packets": "eth_inbcast",
+                },
+            },
+            "mgmt": {
+                "regexp": re.compile("mgm.*"),
+                "mapping": {
+                    "tx_errors": None,
+                    "rx_errors": None,
+                    "tx_discards": None,
+                    "rx_discards": None,
+                    "tx_octets": "mgmt_out_bytes",
+                    "rx_octets": "mgmt_in_bytes",
+                    "tx_unicast_packets": None,
+                    "rx_unicast_packets": None,
+                    "tx_multicast_packets": "mgmt_out_mcast",
+                    "rx_multicast_packets": "mgmt_in_mcast",
+                    "tx_broadcast_packets": None,
+                    "rx_broadcast_packets": None,
+                },
+            },
+        }
+        command = "show interface counters detailed | json"
+        # To retrieve discards
+        command_interface = "show interface | json"
+        counters_table_raw = self._get_command_table(
+            command, "TABLE_interface", "ROW_interface"
+        )
+        counters_interface_table_raw = self._get_command_table(
+            command_interface, "TABLE_interface", "ROW_interface"
+        )
+        all_stats_d = {}
+        # Start with show interface as all interfaces
+        # Are surely listed
+        for row in counters_interface_table_raw:
+            if_counter = {}
+            # loop through regexp to find mapping
+            for if_v in if_mapping:
+                my_re = if_mapping[if_v]["regexp"]
+                re_match = my_re.match(row["interface"])
+                if re_match:
+                    interface = re_match.group()
+                    map_d = if_mapping[if_v]["mapping"]
+                    for k, v in map_d.items():
+                        if_counter[k] = int(row[v]) if v in row else 0
+                    all_stats_d[interface] = if_counter
+                    break
+
+        for row in counters_table_raw:
+            if_counter = {}
+            # loop through regexp to find mapping
+            for if_v in if_mapping:
+                my_re = if_mapping[if_v]["regexp"]
+                re_match = my_re.match(row["interface"])
+                if re_match:
+                    interface = re_match.group()
+                    map_d = if_mapping[if_v]["mapping"]
+                    for k, v in map_d.items():
+                        if v in row:
+                            if_counter[k] = int(row[v])
+                    all_stats_d[interface].update(if_counter)
+                    break
+
+        return all_stats_d

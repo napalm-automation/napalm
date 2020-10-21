@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response MajorVersion="1" MinorVersion="0"><Lock ErrorCode="0xa1863e00" ErrorMsg="&apos;CfgMgr&apos; detected the &apos;fatal&apos; condition &apos;The Configuration Namespace is locked by another agent.&apos;"/><ResultSummary ErrorCount="1"/></Response>
+XML>

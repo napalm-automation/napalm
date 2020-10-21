@@ -1,0 +1,112 @@
+TenGigabitEthernet0/0/0 is up, line protocol is up
+  Hardware is EPA-10X10GE, address is 0000.1111.2222 (bia 0000.1111.2222)
+  Description: Link
+  MTU 1500 bytes, BW 10000000 Kbit/sec, DLY 10 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation 802.1Q Virtual LAN, Vlan ID  1., loopback not set
+  Keepalive not supported
+  Full Duplex, 10000Mbps, link type is force-up, media type is SFP-SR
+  output flow-control is on, input flow-control is on
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input 00:00:00, output 00:00:30, output hang never
+  Last clearing of "show interface" counters 1w5d
+  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 0
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  30 second input rate 1 bits/sec, 0 packets/sec
+  30 second output rate 1 bits/sec, 0 packets/sec
+     0 packets input, 1748592 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicasts)
+     0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 watchdog, 0 multicast, 0 pause input
+     9297 packets output, 1355261 bytes, 0 underruns
+     0 output errors, 0 collisions, 0 interface resets
+     0 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier, 0 pause output
+     0 output buffer failures, 0 output buffers swapped out
+TenGigabitEthernet0/0/1 is up, line protocol is up
+  Hardware is EPA-10X10GE, address is 0000.1111.2222 (bia 0000.1111.2222)
+  Description: Link
+  MTU 1500 bytes, BW 10000000 Kbit/sec, DLY 10 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation 802.1Q Virtual LAN, Vlan ID  1., loopback not set
+  Keepalive not supported
+  Full Duplex, 10000Mbps, link type is force-up, media type is SFP-SR
+  output flow-control is on, input flow-control is on
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input 00:00:00, output 00:00:30, output hang never
+  Last clearing of "show interface" counters 1w5d
+  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 1
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  30 second input rate 1 bits/sec, 0 packets/sec
+  30 second output rate 1 bits/sec, 0 packets/sec
+     0 packets input, 1748592 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicasts)
+     0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 watchdog, 0 multicast, 0 pause input
+     9297 packets output, 1355261 bytes, 0 underruns
+     0 output errors, 0 collisions, 0 interface resets
+     0 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier, 0 pause output
+     0 output buffer failures, 0 output buffers swapped out
+FortyGigabitEthernet0/0/2 is up, line protocol is up
+  Hardware is EPA-10X40GE, address is 0000.1111.2222 (bia 0000.1111.2222)
+  Description: Link
+  MTU 1500 bytes, BW 40000000 Kbit/sec, DLY 10 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation 802.1Q Virtual LAN, Vlan ID  1., loopback not set
+  Keepalive not supported
+  Full Duplex, 40000Mbps, link type is force-up, media type is SFP-SR
+  output flow-control is on, input flow-control is on
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input 00:00:00, output 00:00:30, output hang never
+  Last clearing of "show interface" counters 1w5d
+  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 2
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  30 second input rate 1 bits/sec, 0 packets/sec
+  30 second output rate 1 bits/sec, 0 packets/sec
+     0 packets input, 1748592 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicasts)
+     0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 watchdog, 0 multicast, 0 pause input
+     9297 packets output, 1355261 bytes, 0 underruns
+     0 output errors, 0 collisions, 0 interface resets
+     0 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier, 0 pause output
+     0 output buffer failures, 0 output buffers swapped out
+HundredGigabitEthernet0/0/3 is up, line protocol is up
+  Hardware is EPA-1X100GE, address is 0000.1111.2222 (bia 0000.1111.2222)
+  Description: Link
+  MTU 1500 bytes, BW 100000000 Kbit/sec, DLY 10 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+  Encapsulation 802.1Q Virtual LAN, Vlan ID  1., loopback not set
+  Keepalive not supported
+  Full Duplex, 100000Mbps, link type is force-up, media type is SFP-SR
+  output flow-control is on, input flow-control is on
+  ARP type: ARPA, ARP Timeout 04:00:00
+  Last input 00:00:00, output 00:00:30, output hang never
+  Last clearing of "show interface" counters 1w5d
+  Input queue: 0/375/0/0 (size/max/drops/flushes); Total output drops: 3
+  Queueing strategy: fifo
+  Output queue: 0/40 (size/max)
+  30 second input rate 1 bits/sec, 0 packets/sec
+  30 second output rate 1 bits/sec, 0 packets/sec
+     0 packets input, 1748592 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicasts)
+     0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 watchdog, 0 multicast, 0 pause input
+     9297 packets output, 1355261 bytes, 0 underruns
+     0 output errors, 0 collisions, 0 interface resets
+     0 unknown protocol drops
+     0 babbles, 0 late collision, 0 deferred
+     0 lost carrier, 0 no carrier, 0 pause output
+     0 output buffer failures, 0 output buffers swapped out

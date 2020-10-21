@@ -4,13 +4,18 @@
             "172.16.100.1": {
                 "prefix_length": 24
             }
-        }
-    },
-    "Ethernet1/128": {
+        },
         "ipv6": {
-            "2001:dead:beef::1": {
+            "200::2": {
                 "prefix_length": 128
             },
+            "dead:beef::1": {
+                "prefix_length": 64
+            }
+        }
+    },
+    "Ethernet1/2": {
+        "ipv6": {
             "2001:c0ff:ee::1": {
                 "prefix_length": 128
             }

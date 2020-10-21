@@ -2,7 +2,7 @@
   "os_version": "7.0(3)I4(7)", 
   "uptime": 4338547, 
   "interface_list": [
-    "mgmt0", 
+    "Management0", 
     "Ethernet1/1", 
     "Ethernet1/2", 
     "Ethernet1/3", 

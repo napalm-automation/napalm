@@ -1,0 +1,9 @@
+BGP routing table entry for 1.0.4.0/24, version 2
+Paths: (1 available, best #1, table default)
+  Advertised to update-groups:
+     2
+  Refresh Epoch 1
+  3 3 3 3
+    200.200.200.1 from 200.200.200.1 (1.1.1.1)
+      Origin IGP, metric 0, localpref 100, valid, external, best
+      rx pathid: 0, tx pathid: 0x0

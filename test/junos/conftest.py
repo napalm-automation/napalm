@@ -53,6 +53,7 @@ class FakeJunOSDevice(BaseTestDouble):
         self._conn = FakeConnection(self.rpc)
         self.alternative_facts_file = "facts.yml"
         self.ON_JUNOS = True  # necessary for fake devices
+        self.hostname = "test"
         self.default_facts = {
             "domain": None,
             "hostname": "vsrx",
@@ -77,6 +78,10 @@ class FakeJunOSDevice(BaseTestDouble):
         }
         self._uptime = 4380
 
+        # Since junos-eznc 2.3.0 the new SAX parser is used as default. Thus
+        # disable it to use the DOM parser which was used prior.
+        self._use_filter = False
+
     @property
     def facts(self):
         # we want to reinitialize it every time to avoid side effects
@@ -94,7 +99,7 @@ class FakeJunOSDevice(BaseTestDouble):
     def uptime(self):
         return self._uptime
 
-    def open(self):
+    def open(self, auto_probe=0):
         pass
 
     def close(self):
@@ -128,7 +133,6 @@ class FakeRPCObject:
         filename = "{item}{instance}.xml".format(item=self.item, instance=instance)
         filepathpath = self._device.find_file(filename)
         xml_string = self._device.read_txt_file(filepathpath)
-
         return lxml.etree.fromstring(xml_string)
 
     def get_config(self, get_cmd=None, filter_xml=None, options={}):

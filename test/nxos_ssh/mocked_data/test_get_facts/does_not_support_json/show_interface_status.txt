@@ -1,0 +1,98 @@
+
+--------------------------------------------------------------------------------
+Port          Name               Status    Vlan      Duplex  Speed   Type
+--------------------------------------------------------------------------------
+mgmt0                            connected routed    full    1000    --         
+
+--------------------------------------------------------------------------------
+Port          Name               Status    Vlan      Duplex  Speed   Type
+--------------------------------------------------------------------------------
+Eth1/1        *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/2        *** LIBRE ***      connected trunk     full    1000    1000base-T 
+Eth1/3        *** LIBRE ***      connected trunk     full    1000    1000base-T 
+Eth1/4        *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/5        *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/6        *** LIBRE ***      connected trunk     full    1000    1000base-T 
+Eth1/7        *** LIBRE ***      connected trunk     full    1000    1000base-T 
+Eth1/8        *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/9        *** LIBRE ***      connected trunk     full    10G     10Gbase-SR 
+Eth1/10       *** LIBRE ***      connected trunk     full    10G     10Gbase-SR 
+Eth1/11       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/12       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/13       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/14       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/15       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/16       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/17       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/18       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/19       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/20       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/21       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/22       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/23       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/24       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/25       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/26       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/27       *** LIBRE ***      disabled  10        auto    auto    SFP-H10GB-CU5M
+Eth1/28       *** LIBRE ***      disabled  10        auto    auto    SFP-H10GB-CU5M
+Eth1/29       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/30       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/31       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/32       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/33       *** LIBRE ***      connected trunk     full    10G     SFP-H10GB-CU5M
+Eth1/34       *** LIBRE ***      connected trunk     full    10G     10Gbase-SR 
+Eth1/35       *** LIBRE ***      connected 1         full    10G     10Gbase-SR 
+Eth1/36       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/37       *** LIBRE ***      disabled  trunk     auto    auto    10Gbase-SR 
+Eth1/38       *** LIBRE ***      disabled  trunk     auto    auto    10Gbase-SR 
+Eth1/39       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/40       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/41       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/42       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/43       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/44       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/45       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/46       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/47       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/48       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/49       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/50       *** LIBRE ***      xcvrAbsen routed    auto    auto    --         
+Eth1/51       *** LIBRE ***      connected routed    full    100G    QSFP-100G-SR4-S
+Eth1/52       *** LIBRE ***      connected routed    full    100G    QSFP-100G-SR4-S
+Eth1/53       *** LIBRE ***      connected trunk     full    100G    QSFP-100G-CR4
+Eth1/54       *** LIBRE ***      connected trunk     full    100G    QSFP-100G-CR4
+Po1           *** LIBRE ***      connected trunk     full    100G    --         
+Po10          *** LIBRE ***      connected trunk     full    10G     --         
+Po13          *** LIBRE ***      connected trunk     full    10G     --         
+Po14          *** LIBRE ***      connected trunk     full    10G     --         
+Po15          *** LIBRE ***      connected trunk     full    10G     --         
+Po16          *** LIBRE ***      connected trunk     full    10G     --         
+Po17          *** LIBRE ***      connected trunk     full    10G     --         
+Po18          *** LIBRE ***      connected trunk     full    10G     --         
+Po19          *** LIBRE ***      connected trunk     full    10G     --         
+Po20          *** LIBRE ***      connected trunk     full    10G     --         
+Po21          *** LIBRE ***      connected trunk     full    10G     --         
+Po22          *** LIBRE ***      connected trunk     full    10G     --         
+Po23          *** LIBRE ***      connected trunk     full    10G     --         
+Po24          *** LIBRE ***      connected trunk     full    10G     --         
+Po25          *** LIBRE ***      connected trunk     full    10G     --         
+Po26          *** LIBRE ***      connected trunk     full    10G     --         
+Po29          *** LIBRE ***      connected trunk     full    10G     --         
+Po30          *** LIBRE ***      connected trunk     full    10G     --         
+Po33          *** LIBRE ***      connected trunk     full    10G     --         
+Po34          *** LIBRE ***      connected trunk     full    10G     --         
+Po37          *** LIBRE ***      disabled  trunk     auto    auto    --         
+Po92          *** LIBRE ***      connected trunk     full    1000    --         
+Po93          *** LIBRE ***      connected trunk     full    1000    --         
+Po94          *** LIBRE ***      connected trunk     full    10G     --         
+Po95          *** LIBRE ***      connected trunk     full    10G     --         
+Po96          *** LIBRE ***      connected trunk     full    1000    --         
+Po97          *** LIBRE ***      connected trunk     full    1000    --         
+Po99          *** LIBRE ***      connected trunk     full    10G     --         
+Lo0           *** LIBRE ***      connected routed    auto    auto    --         
+Lo1           *** LIBRE ***      connected routed    auto    auto    --         
+Vlan1         --                 down      routed    auto    auto    --
+Vlan333       *** BTB_OSPF ***   connected routed    auto    auto    --
+Vlan600       *** L3VNI-PROD *** connected routed    auto    auto    --
+Vlan650       *** L3VNI-NPROD ** connected routed    auto    auto    --
+nve1          --                 connected --        auto    auto    --         

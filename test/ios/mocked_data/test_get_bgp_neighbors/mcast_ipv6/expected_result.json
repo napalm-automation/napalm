@@ -1,0 +1,59 @@
+{
+    "global": {
+        "router_id": "192.168.0.2",
+        "peers": {
+            "192.168.0.1": {
+                "local_as": 1,
+                "remote_as": 1,
+                "remote_id": "192.168.0.1",
+                "is_up": true,
+                "is_enabled": true,
+                "description": "iBGP peer nx-osv-1",
+                "uptime": 2202,
+                "address_family": {
+                    "ipv4 unicast": {
+                        "received_prefixes": 2,
+                        "accepted_prefixes": 2,
+                        "sent_prefixes": 1
+                    },
+                    "ipv6 unicast": {
+                        "received_prefixes": 0,
+                        "accepted_prefixes": 0,
+                        "sent_prefixes": 0
+                    },
+                    "ipv4 multicast": {
+                        "received_prefixes": 1,
+                        "accepted_prefixes": 1,
+                        "sent_prefixes": 0
+                    }
+                }
+            },
+            "192.168.0.3": {
+                "local_as": 1,
+                "remote_as": 1,
+                "remote_id": "192.168.0.3",
+                "is_up": true,
+                "is_enabled": true,
+                "description": "iBGP peer csr1000v-1",
+                "uptime": 494,
+                "address_family": {
+                    "ipv4 unicast": {
+                        "received_prefixes": 1,
+                        "accepted_prefixes": 1,
+                        "sent_prefixes": 1
+                    },
+                    "ipv6 unicast": {
+                        "received_prefixes": 2,
+                        "accepted_prefixes": 2,
+                        "sent_prefixes": 0
+                    },
+                    "ipv4 multicast": {
+                        "received_prefixes": 0,
+                        "accepted_prefixes": 0,
+                        "sent_prefixes": 0
+                    }
+                }
+            }
+        }
+    }
+}

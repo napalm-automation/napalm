@@ -1,7 +1,3 @@
-from __future__ import print_function
-from __future__ import unicode_literals
-
-
 base_interfaces = {
     "ATM": "ATM",
     "AT": "ATM",
@@ -12,7 +8,9 @@ base_interfaces = {
     "EO": "EOBC",
     "Ethernet": "Ethernet",
     "Eth": "Ethernet",
+    "eth": "Ethernet",
     "Et": "Ethernet",
+    "et": "Ethernet",
     "FastEthernet": "FastEthernet",
     "FastEth": "FastEthernet",
     "FastE": "FastEthernet",
@@ -36,6 +34,8 @@ base_interfaces = {
     "GigE": "GigabitEthernet",
     "Gig": "GigabitEthernet",
     "GE": "GigabitEthernet",
+    "Ge": "GigabitEthernet",
+    "ge": "GigabitEthernet",
     "Gi": "GigabitEthernet",
     "HundredGigabitEthernet": "HundredGigabitEthernet",
     "HundredGigEthernet": "HundredGigabitEthernet",
@@ -44,10 +44,12 @@ base_interfaces = {
     "HundredGig": "HundredGigabitEthernet",
     "Hu": "HundredGigabitEthernet",
     "Loopback": "Loopback",
+    "loopback": "Loopback",
     "Lo": "Loopback",
     "lo": "Loopback",
     "Management": "Management",
     "Mgmt": "Management",
+    "mgmt": "Management",
     "Ma": "Management",
     "Management_short": "Ma",
     "MFR": "MFR",
@@ -59,6 +61,8 @@ base_interfaces = {
     "PortChannel": "Port-channel",
     "Port-channel": "Port-channel",
     "Port-Channel": "Port-channel",
+    "port-channel": "Port-channel",
+    "po": "Port-channel",
     "Po": "Port-channel",
     "POS": "POS",
     "PO": "POS",
@@ -76,6 +80,9 @@ base_interfaces = {
     "Tunnel": "Tunnel",
     "Tun": "Tunnel",
     "Tu": "Tunnel",
+    "Twe": "TwentyFiveGigE",
+    "Tw": "TwoGigabitEthernet",
+    "Two": "TwoGigabitEthernet",
     "Virtual-Access": "Virtual-Access",
     "Vi": "Virtual-Access",
     "Virtual-Template": "Virtual-Template",
@@ -83,6 +90,7 @@ base_interfaces = {
     "VLAN": "VLAN",
     "V": "VLAN",
     "Vl": "VLAN",
+    "Wlan-GigabitEthernet": "Wlan-GigabitEthernet",
 }
 
 reverse_mapping = {
@@ -103,7 +111,10 @@ reverse_mapping = {
     "Serial": "Se",
     "TenGigabitEthernet": "Te",
     "Tunnel": "Tu",
+    "TwoGigabitEthernet": "Two",
+    "TwentyFiveGigE": "Twe",
     "Virtual-Access": "Vi",
     "Virtual-Template": "Vt",
     "VLAN": "Vl",
+    "Wlan-GigabitEthernet": "Wl-Gi",
 }

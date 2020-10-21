@@ -1,0 +1,10 @@
+Routing entry for 1.0.4.0/24
+  Known via "bgp 1", distance 20, metric 0
+  Tag 3, type external
+  Last update from 200.200.200.1 00:01:02 ago
+  Routing Descriptor Blocks:
+  * 200.200.200.1, from 200.200.200.1, 00:01:02 ago
+      Route metric is 0, traffic share count is 1
+      AS Hops 4
+      Route tag 3
+      MPLS label: none

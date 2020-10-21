@@ -1,0 +1,14 @@
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1004 Vlan1004                         act/unsup
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+1004 fdnet 101004     1500  -      -      -        ieee -        0      0
+
+Remote SPAN VLAN
+----------------
+Disabled
+
+Primary Secondary Type              Ports
+------- --------- ----------------- ------------------------------------------

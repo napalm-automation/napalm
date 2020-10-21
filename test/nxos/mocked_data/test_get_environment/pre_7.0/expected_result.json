@@ -1,0 +1,59 @@
+{
+    "cpu": {
+        "0": {
+            "%usage": 0.01
+        }
+    },
+    "fans": {
+        "Fan-1": {
+            "status": false
+        },
+        "Fan-2": {
+            "status": false
+        },
+        "Fan-3": {
+            "status": false
+        },
+        "Fan-4": {
+            "status": false
+        }
+    },
+    "memory": {
+        "available_ram": 268000,
+        "used_ram": 24000
+    },
+    "power": {
+        "1": {
+            "capacity": 400.0,
+            "output": 396.0,
+            "status": true
+        },
+        "2": {
+            "capacity": 400.0,
+            "output": 396.0,
+            "status": true
+        }
+    },
+    "temperature": {
+        "1-1 ASIC": {
+            "is_alert": true,
+            "is_critical": false,
+            "temperature": 37.0
+        },
+        "1-2 INTAKE": {
+            "is_alert": true,
+            "is_critical": false,
+            "temperature": 20.0
+        },
+        "1-3 ASIC": {
+            "is_alert": true,
+            "is_critical": false,
+            "temperature": 37.0
+        },
+        "1-4 INTAKE": {
+            "is_alert": true,
+            "is_critical": false,
+            "temperature": 20.0
+        }
+    }
+}

@@ -112,12 +112,15 @@ ____________________________________
 * :code:`allow_agent` (ios, iosxr, nxos_ssh) - Paramiko argument, enable connecting to the SSH agent (default: ``False``).
 * :code:`alt_host_keys` (ios, iosxr, nxos_ssh) - If ``True``, host keys will be loaded from the file specified in ``alt_key_file``.
 * :code:`alt_key_file` (ios, iosxr, nxos_ssh) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
+* :code:`auto_probe` (junos) - A timeout in seconds, for which to probe the device. Probing determines if the device accepts remote connections. If `auto_probe` is set to ``0``, no probing will be done. (default: ``0``).
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
 * :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: ``False``).
 * :code:`lock_disable` (junos) - Disable all configuration locking for management by an external system (default: ``False``).
+* :code:`config_private` (junos) - Configure private, no DB locking (default: ``False``).
 * :code:`canonical_int` (ios) - Convert operational interface's returned name to canonical name (fully expanded name) (default: ``False``).
 * :code:`dest_file_system` (ios) - Destination file system for SCP transfers (default: ``flash:``).
 * :code:`enable_password` (eos) - Password required to enter privileged exec (enable) (default: ``''``).
+* :code:`force_no_enable` (ios, nxos_ssh) - Do not automatically enter enable-mode on connect (default: ``False``).
 * :code:`global_delay_factor` (ios, nxos_ssh) - Allow for additional delay in command execution (default: ``1``).
 * :code:`ignore_warning` (junos) - Allows to set `ignore_warning` when loading configuration to avoid exceptions via junos-pyez. (default: ``False``).
 * :code:`keepalive` (iosxr, junos) - SSH keepalive interval, in seconds (default: ``30`` seconds).
@@ -130,6 +133,13 @@ ____________________________________
 * :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`use_keys` (ios, iosxr, nxos_ssh) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
 * :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
+* :code:`eos_fn0039_config` (eos) - Transform old style configuration to the new 
+  style, available beginning with EOS release 4.23.0, as per FN 0039. Beware 
+  that enabling this option will change the configuration you're loading 
+  through NAPALM. Default: ``False`` (won't change your configuration 
+  commands).
+
+  .. versionadded:: 3.0.1
 
 The transport argument
 ______________________

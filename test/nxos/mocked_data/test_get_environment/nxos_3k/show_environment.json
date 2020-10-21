@@ -1,0 +1,139 @@
+{
+    "powersup": {
+        "voltage_level": "12",
+        "TABLE_psinfo_n3k": {
+            "ROW_psinfo_n3k": [
+                {
+                    "psnum": "1",
+                    "psmodel": "NXA-PAC-500W",
+                    "input_type": "AC",
+                    "watts": "504.00",
+                    "amps": "42.00",
+                    "ps_status": "ok"
+                },
+                {
+                    "psnum": "2",
+                    "psmodel": "NXA-PAC-500W",
+                    "input_type": "AC",
+                    "watts": "504.00",
+                    "amps": "42.00",
+                    "ps_status": "ok"
+                }
+            ]
+        },
+        "TABLE_mod_pow_info_n3k": {
+            "ROW_mod_pow_info_n3k": {
+                "modnum": "1",
+                "mod_model": "N3K-C3172TQ-XL",
+                "watts_requested": "348.00",
+                "amps_requested": "29.00",
+                "watts_alloced": "348.00",
+                "amps_alloced": "29.00",
+                "modstatus": "powered-up"
+            }
+        },
+        "power_summary_n3k": {
+            "ps_redun_mode": "Redundant",
+            "ps_redun_op_mode": "Redundant",
+            "tot_pow_capacity": "1008.00 W",
+            "reserve_sup": "348.00 W",
+            "pow_used_by_mods": "0.00 W",
+            "available_pow": "660.00 W"
+        }
+    },
+    "fandetails": {
+        "TABLE_faninfo": {
+            "ROW_faninfo": [
+                {
+                    "fanname": "Fan1(sys_fan1)",
+                    "fanmodel": "NXA-FAN-30CFM",
+                    "fanhwver": "0.0",
+                    "fandir": "front-to-back",
+                    "fanstatus": "Ok",
+                    "failfanlet": null
+                },
+                {
+                    "fanname": "Fan2(sys_fan2)",
+                    "fanmodel": "NXA-FAN-30CFM",
+                    "fanhwver": "0.0",
+                    "fandir": "front-to-back",
+                    "fanstatus": "Ok",
+                    "failfanlet": null
+                },
+                {
+                    "fanname": "Fan3(sys_fan3)",
+                    "fanmodel": "NXA-FAN-30CFM",
+                    "fanhwver": "0.0",
+                    "fandir": "front-to-back",
+                    "fanstatus": "Ok",
+                    "failfanlet": null
+                },
+                {
+                    "fanname": "Fan4(sys_fan4)",
+                    "fanmodel": "NXA-FAN-30CFM",
+                    "fanhwver": "0.0",
+                    "fandir": "front-to-back",
+                    "fanstatus": "Ok",
+                    "failfanlet": null
+                },
+                {
+                    "fanname": "Fan_in_PS1",
+                    "fanmodel": "NXA-PAC-500W",
+                    "fanhwver": "--",
+                    "fandir": "front-to-back",
+                    "fanstatus": "Ok"
+                },
+                {
+                    "fanname": "Fan_in_PS2",
+                    "fanmodel": "NXA-PAC-500W",
+                    "fanhwver": "--",
+                    "fandir": "front-to-back",
+                    "fanstatus": "Ok"
+                }
+            ]
+        },
+        "TABLE_fan_zone_speed": {
+            "ROW_fan_zone_speed": {
+                "zone": "1",
+                "speed": "0x28"
+            }
+        },
+        "fan_filter_status": "NotSupported"
+    },
+    "TABLE_tempinfo": {
+        "ROW_tempinfo": [
+            {
+                "tempmod": "1",
+                "sensor": "ASIC",
+                "majthres": "110",
+                "minthres": "100",
+                "curtemp": "55",
+                "alarmstatus": "Ok"
+            },
+            {
+                "tempmod": "1",
+                "sensor": "Front-Left (D1)",
+                "majthres": "70",
+                "minthres": "60",
+                "curtemp": "37",
+                "alarmstatus": "Ok"
+            },
+            {
+                "tempmod": "1",
+                "sensor": "Front-Right(D2)",
+                "majthres": "70",
+                "minthres": "56",
+                "curtemp": "32",
+                "alarmstatus": "Ok"
+            },
+            {
+                "tempmod": "1",
+                "sensor": "Back       (D3)",
+                "majthres": "70",
+                "minthres": "46",
+                "curtemp": "25",
+                "alarmstatus": "Ok"
+            }
+        ]
+    }
+}
