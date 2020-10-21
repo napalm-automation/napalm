@@ -80,6 +80,7 @@ base_interfaces = {
     "Tunnel": "Tunnel",
     "Tun": "Tunnel",
     "Tu": "Tunnel",
+    "TwentyFiveGigE": "TwentyFiveGigE",
     "Twe": "TwentyFiveGigE",
     "Tw": "TwoGigabitEthernet",
     "Two": "TwoGigabitEthernet",
