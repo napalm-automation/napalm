@@ -209,6 +209,7 @@ class JunOSDriver(NetworkDriver):
             "unprotect",
             "edit",
             "top",
+            "wildcard",
         ]
         if config.strip().startswith("<"):
             return "xml"
