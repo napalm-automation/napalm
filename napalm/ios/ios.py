@@ -3261,7 +3261,7 @@ class IOSDriver(NetworkDriver):
         :param destination: Host or IP Address of the destination
         :param source: Use a specific IP Address to execute the traceroute
         :type source: optional
-        :param ttl: Maimum number of hops -> int (0-255)
+        :param ttl: Maximum number of hops -> int (0-255)
         :type ttl: optional
         :param timeout: Number of seconds to wait for response -> int (1-3600)
         :type timeout: optional

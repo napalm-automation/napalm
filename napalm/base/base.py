@@ -1295,7 +1295,7 @@ class NetworkDriver(object):
             * success
             * error
 
-        In case of success, inner dictionary will have the followin keys:
+        In case of success, inner dictionary will have the following keys:
 
             * probes_sent (int)
             * packet_loss (int)
@@ -1356,7 +1356,7 @@ class NetworkDriver(object):
         :param destination: Host or IP Address of the destination
         :param source: Use a specific IP Address to execute the traceroute
         :type source: optional
-        :param ttl: Maimum number of hops
+        :param ttl: Maximum number of hops
         :type ttl: optional
         :param timeout: Number of seconds to wait for response
         :type timeout: optional
