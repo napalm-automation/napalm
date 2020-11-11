@@ -165,8 +165,10 @@ class NetworkDriver(object):
 
         :param cls: Instance of the driver class.
         :param template_name: Identifies the template name.
-        :param template_source (optional): Custom config template rendered and loaded on device
-        :param template_path (optional): Absolute path to directory for the configuration templates
+        :param template_source: Custom config template rendered and loaded on device
+        :type template_source optional
+        :param template_path: Absolute path to directory for the configuration templates
+        :type template_path optional
         :param template_vars: Dictionary with arguments to be used when the template is rendered.
         :raise DriverTemplateNotImplemented: No template defined for the device type.
         :raise TemplateNotImplemented: The template specified in template_name does not exist in \
@@ -1044,8 +1046,10 @@ class NetworkDriver(object):
         destination.
 
         :param destination: The destination prefix to be used when filtering the routes.
-        :param protocol (optional): Retrieve the routes only for a specific protocol.
-        :param longer (optional): Retrieve more specific routes as well.
+        :param protocol: Retrieve the routes only for a specific protocol.
+        :type protocol: optional
+        :param longer: Retrieve more specific routes as well.
+        :type longer: optional
 
         Each inner dictionary contains the following fields:
 
@@ -1275,11 +1279,16 @@ class NetworkDriver(object):
         Executes ping on the device and returns a dictionary with the result
 
         :param destination: Host or IP Address of the destination
-        :param source (optional): Source address of echo request
-        :param ttl (optional): Maximum number of hops
-        :param timeout (optional): Maximum seconds to wait after sending final packet
-        :param size (optional): Size of request (bytes)
-        :param count (optional): Number of ping request to send
+        :param source: Source address of echo request
+        :type source: optional
+        :param ttl: Maximum number of hops
+        :type ttl: optional
+        :param timeout: Maximum seconds to wait after sending final packet
+        :type timeout: optional
+        :param size: Size of request (bytes)
+        :type size: optional
+        :param count: Number of ping request to send
+        :type count: optional
 
         Output dictionary has one of following keys:
 
@@ -1345,9 +1354,12 @@ class NetworkDriver(object):
         Executes traceroute on the device and returns a dictionary with the result.
 
         :param destination: Host or IP Address of the destination
-        :param source (optional): Use a specific IP Address to execute the traceroute
-        :param ttl (optional): Maimum number of hops
-        :param timeout (optional): Number of seconds to wait for response
+        :param source: Use a specific IP Address to execute the traceroute
+        :type source: optional
+        :param ttl: Maimum number of hops
+        :type ttl: optional
+        :param timeout: Number of seconds to wait for response
+        :type timeout: optional
 
         Output dictionary has one of the following keys:
 
