@@ -1289,6 +1289,8 @@ class NetworkDriver(object):
         :type size: optional
         :param count: Number of ping request to send
         :type count: optional
+        :param vrf: Use a specific VRF to execute the ping
+        :type vrf: optional
 
         Output dictionary has one of following keys:
 
@@ -1360,6 +1362,8 @@ class NetworkDriver(object):
         :type ttl: optional
         :param timeout: Number of seconds to wait for response
         :type timeout: optional
+        :param vrf: Use a specific VRF to execute the traceroute
+        :type vrf: optional
 
         Output dictionary has one of the following keys:
 

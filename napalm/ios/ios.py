@@ -3265,6 +3265,8 @@ class IOSDriver(NetworkDriver):
         :type ttl: optional
         :param timeout: Number of seconds to wait for response -> int (1-3600)
         :type timeout: optional
+        :param vrf: Use a specific VRF to execute the traceroute
+        :type vrf: optional
 
         Output dictionary has one of the following keys:
 
