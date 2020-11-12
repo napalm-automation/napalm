@@ -5,7 +5,7 @@ import re
 import sys
 import itertools
 import logging
-from collections import Iterable
+from collections.abc import Iterable
 
 # third party libs
 import jinja2

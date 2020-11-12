@@ -1035,8 +1035,8 @@ class JunOSDriver(NetworkDriver):
 
         def update_dict(d, u):  # for deep dictionary update
             for k, v in u.items():
-                if isinstance(d, collections.Mapping):
-                    if isinstance(v, collections.Mapping):
+                if isinstance(d, collections.abc.Mapping):
+                    if isinstance(v, collections.abc.Mapping):
                         r = update_dict(d.get(k, {}), v)
                         d[k] = r
                     else:
