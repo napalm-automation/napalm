@@ -91,8 +91,8 @@ class NetworkDriver(object):
                 timeout=self.timeout,
                 **netmiko_optional_args
             )
-        except NetMikoTimeoutException:
-            raise ConnectionException("Cannot connect to {}".format(self.hostname))
+        except NetMikoTimeoutException as e:
+            raise ConnectionException("Cannot connect to {}\n\n{}".format(self.hostname, e))
 
         # Disable enable mode if force_no_enable is true (for NAPALM drivers
         # that support force_no_enable)
