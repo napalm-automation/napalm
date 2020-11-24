@@ -92,7 +92,9 @@ class NetworkDriver(object):
                 **netmiko_optional_args
             )
         except NetMikoTimeoutException as e:
-            raise ConnectionException("Cannot connect to {}\n\n{}".format(self.hostname, e))
+            raise ConnectionException(
+                "Cannot connect to {}\n\n{}".format(self.hostname, e)
+            )
 
         # Disable enable mode if force_no_enable is true (for NAPALM drivers
         # that support force_no_enable)
@@ -1460,7 +1462,7 @@ class NetworkDriver(object):
             {
                 'error': 'unknown host 8.8.8.8.8'
             }
-            """
+        """
         raise NotImplementedError
 
     def get_users(self):
