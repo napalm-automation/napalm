@@ -348,7 +348,7 @@ class IOSXR(object):
                             delay_factor=delay_factor,
                         )
         else:
-            output += self._netmiko_recv()  # try to read some more
+            output += self.device._read_channel_timing()  # try to read some more
 
         if "0xa3679e00" in output or "0xa367da00" in output:
             # when multiple parallel request are made, the device throws one of the the errors:
@@ -404,15 +404,6 @@ class IOSXR(object):
 
         self._unlock_xml_agent()
         return str(output.replace("XML>", "").strip())
-
-    def _netmiko_recv(self):
-
-        output = ""
-
-        for tmp_output in self.device.receive_data_generator():
-            output += tmp_output
-
-        return output
 
     # previous module function __execute_rpc__
     def _execute_rpc(self, command_xml, delay_factor=0.1):
