@@ -1350,11 +1350,13 @@ class EOSDriver(NetworkDriver):
                             )
                         except CommandError:
                             # Newer EOS can't mix longer-prefix and detail
-                            command = "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
-                                ipv=ipv,
-                                dest=destination,
-                                longer="longer-prefixes" if longer else "",
-                                _vrf=_vrf,
+                            command = (
+                                "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
+                                    ipv=ipv,
+                                    dest=destination,
+                                    longer="longer-prefixes" if longer else "",
+                                    _vrf=_vrf,
+                                )
                             )
                             vrf_cache.update(
                                 {
