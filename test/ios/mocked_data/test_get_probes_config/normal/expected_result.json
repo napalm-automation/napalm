@@ -16,5 +16,14 @@
 			"test_interval": 3,
 			"probe_count": 20
 		}
+	},
+	"3": {
+		"quad9": {
+			"source": "GigabitEthernet11",
+			"probe_type": "icmp-ping",
+			"target": "9.9.9.9",
+			"test_interval": 15,
+			"probe_count": 60
+		}
 	}
 }

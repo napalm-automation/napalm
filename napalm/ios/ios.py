@@ -88,6 +88,7 @@ RE_VRF_ADVAN = re.compile(r"[ ]{2}(\S+)[ ]+[<> a-z:\d]+[ ]+([a-z\d,]+)")
 RE_BGP_REMOTE_AS = re.compile(r"remote AS (" + ASN_REGEX + r")")
 RE_BGP_AS_PATH = re.compile(r"^[ ]{2}([\d\(]([\d\) ]+)|Local)")
 
+RE_RP_ROUTE = re.compile(r"Routing entry for (" + IP_ADDR_REGEX + r"\/\d+)")
 RE_RP_FROM = re.compile(r"Known via \"([a-z]+)[ \"]")
 RE_RP_VIA = re.compile(r"via (\S+)")
 RE_RP_METRIC = re.compile(r"[ ]+Route metric is (\d+)")
@@ -499,16 +500,21 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
             )
+
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
@@ -799,13 +805,21 @@ class IOSDriver(NetworkDriver):
         for optics_entry in split_output.splitlines():
             # Example, Te1/0/1      34.6       3.29      -2.0      -3.5
             try:
+                optics_entry = optics_entry.strip("-")
                 split_list = optics_entry.split()
             except ValueError:
                 return {}
 
-            int_brief = split_list[0]
-            output_power = split_list[3]
-            input_power = split_list[4]
+            current = 0
+            if len(split_list) == 5:
+                int_brief = split_list[0]
+                output_power = split_list[3]
+                input_power = split_list[4]
+            elif len(split_list) >= 6:
+                int_brief = split_list[0]
+                current = split_list[3]
+                output_power = split_list[4]
+                input_power = split_list[5]
 
             port = canonical_interface_name(int_brief)
 
@@ -841,7 +855,7 @@ class IOSDriver(NetworkDriver):
                         "max": -100.0,
                     },
                     "laser_bias_current": {
-                        "instant": 0.0,
+                        "instant": (float(current) if "current" else -100.0),
                         "avg": 0.0,
                         "min": 0.0,
                         "max": 0.0,
@@ -2314,7 +2328,7 @@ class IOSDriver(NetworkDriver):
 
             try:
                 if age == "-":
-                    age = 0
+                    age = -1
                 age = float(age)
             except ValueError:
                 raise ValueError("Unable to convert age value to float: {}".format(age))
@@ -2688,18 +2702,22 @@ class IOSDriver(NetworkDriver):
 
     def get_probes_config(self):
         probes = {}
+
         probes_regex = (
             r"ip\s+sla\s+(?P<id>\d+)\n"
-            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*\n).*"
-            r"\s+tag\s+(?P<name>\S+)\n.*"
-            r"\s+history\s+buckets-kept\s+(?P<probe_count>\d+)\n.*"
-            r"\s+frequency\s+(?P<interval>\d+)$"
+            r"\s+(?P<probe_type>\S+)\s+(?P<probe_args>.*)\n"
+            r"\s+tag\s+(?P<name>[\S ]+)\n"
+            r"(\s+.*\n)*"
+            r"((\s+frequency\s+(?P<interval0>\d+)\n(\s+.*\n)*\s+history"
+            r"\s+buckets-kept\s+(?P<probe_count0>\d+))|(\s+history\s+buckets-kept"
+            r"\s+(?P<probe_count1>\d+)\n.*\s+frequency\s+(?P<interval1>\d+)))"
         )
+
         probe_args = {
             "icmp-echo": r"^(?P<target>\S+)\s+source-(?:ip|interface)\s+(?P<source>\S+)$"
         }
         probe_type_map = {"icmp-echo": "icmp-ping"}
-        command = "show run | include ip sla [0-9]"
+        command = "show run | section ip sla [0-9]"
         output = self._send_command(command)
         for match in re.finditer(probes_regex, output, re.M):
             probe = match.groupdict()
@@ -2715,8 +2733,8 @@ class IOSDriver(NetworkDriver):
                     "probe_type": probe_type_map[probe["probe_type"]],
                     "target": probe_data["target"],
                     "source": probe_data["source"],
-                    "probe_count": int(probe["probe_count"]),
-                    "test_interval": int(probe["interval"]),
+                    "probe_count": int(probe["probe_count0"] or probe["probe_count1"]),
+                    "test_interval": int(probe["interval0"] or probe["interval1"]),
                 }
             }
 
@@ -2765,7 +2783,7 @@ class IOSDriver(NetworkDriver):
 
         search_re_dict = {
             "aspath": {
-                "re": r"[^|\\n][ ]{2}([\d\(\)]([\d\(\) ])*)",
+                "re": r"[^|\\n][ ]{2}([\d\(\)]([\d\(\) ])*|Local)",
                 "group": 1,
                 "default": "",
             },
@@ -2939,8 +2957,11 @@ class IOSDriver(NetworkDriver):
             vrfs.append("default")  # global VRF
             ipnet_dest = IPNetwork(destination)
             prefix = str(ipnet_dest.network)
-            netmask = str(ipnet_dest.netmask)
-            routes = {destination: []}
+            netmask = ""
+            routes = {}
+            if "/" in destination:
+                netmask = str(ipnet_dest.netmask)
+                routes = {destination: []}
             commands = []
             for _vrf in vrfs:
                 if _vrf == "default":
@@ -2961,6 +2982,14 @@ class IOSDriver(NetworkDriver):
             for (outitem, _vrf) in zip(output, vrfs):  # for all VRFs
                 route_proto_regex = RE_RP_FROM.search(outitem)
                 if route_proto_regex:
+                    route_match = destination
+                    if netmask == "":
+                        # Get the matching route for a non-exact lookup
+                        route_match_regex = RE_RP_ROUTE.search(outitem)
+                        if route_match_regex:
+                            route_match = route_match_regex.group(1)
+                            if route_match not in routes:
+                                routes[route_match] = []
                     # routing protocol name (bgp, ospf, ...)
                     route_proto = route_proto_regex.group(1)
                     rdb = outitem.split("Routing Descriptor Blocks:")
@@ -3029,7 +3058,7 @@ class IOSDriver(NetworkDriver):
                                 nh_line_found = (
                                     False  # for next RT entry processing ...
                                 )
-                                routes[destination].append(route_entry)
+                                routes[route_match].append(route_entry)
         return routes
 
     def get_snmp_information(self):
@@ -3103,7 +3132,7 @@ class IOSDriver(NetworkDriver):
         """
         username_regex = (
             r"^username\s+(?P<username>\S+)\s+(?:privilege\s+(?P<priv_level>\S+)"
-            r"\s+)?(?:secret \d+\s+(?P<pwd_hash>\S+))?$"
+            r"\s+)?(?:(password|secret) \d+\s+(?P<pwd_hash>\S+))?$"
         )
         pub_keychain_regex = (
             r"^\s+username\s+(?P<username>\S+)(?P<keys>(?:\n\s+key-hash\s+"
@@ -3112,6 +3141,9 @@ class IOSDriver(NetworkDriver):
         users = {}
         command = "show run | section username"
         output = self._send_command(command)
+        if "Invalid input detected" in output:
+            command = "show run | include username"
+            output = self._send_command(command)
         for match in re.finditer(username_regex, output, re.M):
             users[match.groupdict()["username"]] = {
                 "level": int(match.groupdict()["priv_level"])
@@ -3227,9 +3259,14 @@ class IOSDriver(NetworkDriver):
         Executes traceroute on the device and returns a dictionary with the result.
 
         :param destination: Host or IP Address of the destination
-        :param source (optional): Use a specific IP Address to execute the traceroute
-        :param ttl (optional): Maimum number of hops -> int (0-255)
-        :param timeout (optional): Number of seconds to wait for response -> int (1-3600)
+        :param source: Use a specific IP Address to execute the traceroute
+        :type source: optional
+        :param ttl: Maximum number of hops -> int (0-255)
+        :type ttl: optional
+        :param timeout: Number of seconds to wait for response -> int (1-3600)
+        :type timeout: optional
+        :param vrf: Use a specific VRF to execute the traceroute
+        :type vrf: optional
 
         Output dictionary has one of the following keys:
 
@@ -3394,7 +3431,14 @@ class IOSDriver(NetworkDriver):
             if "No interfaces" in first_part:
                 interfaces = {}
             else:
-                interfaces = {itf: {} for itf in if_regex.group(1).split()}
+                interfaces = {
+                    canonical_interface_name(itf, {"Vl": "Vlan"}): {}
+                    for itf in if_regex.group(1).split()
+                }
+
+            # remove interfaces in the VRF from the default VRF
+            for item in interfaces:
+                del instances["default"]["interfaces"]["interface"][item]
 
             instances[vrf_name] = {
                 "name": vrf_name,

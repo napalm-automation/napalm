@@ -429,6 +429,17 @@ class NXOSSSHDriver(NXOSDriverBase):
             hostname, username, password, timeout=timeout, optional_args=optional_args
         )
         self.platform = "nxos_ssh"
+        self.connector_type_map = {
+            "1000base-LH": "LC_CONNECTOR",
+            "1000base-SX": "LC_CONNECTOR",
+            "1000base-T": "Unknown",
+            "10Gbase-LR": "LC_CONNECTOR",
+            "10Gbase-SR": "LC_CONNECTOR",
+            "SFP-H10GB-CU1M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU1.45M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU3M": "DAC_CONNECTOR",
+            "SFP-H10GB-CU3.45M": "DAC_CONNECTOR",
+        }
 
     def open(self):
         self.device = self._netmiko_open(
@@ -438,13 +449,13 @@ class NXOSSSHDriver(NXOSDriverBase):
     def close(self):
         self._netmiko_close()
 
-    def _send_command(self, command, raw_text=False):
+    def _send_command(self, command, raw_text=False, cmd_verify=True):
         """
         Wrapper for Netmiko's send_command method.
 
         raw_text argument is not used and is for code sharing with NX-API.
         """
-        return self.device.send_command(command)
+        return self.device.send_command(command, cmd_verify=cmd_verify)
 
     def _send_command_list(self, commands, expect_string=None):
         """Wrapper for Netmiko's send_command method (for list of commands."""
@@ -506,7 +517,7 @@ class NXOSSSHDriver(NXOSDriverBase):
                 return {"is_alive": False}
             else:
                 # Try sending ASCII null byte to maintain the connection alive
-                self._send_command(null)
+                self._send_command(null, cmd_verify=False)
         except (socket.error, EOFError):
             # If unable to send, we can tell for sure that the connection is unusable,
             # hence return False.
@@ -1528,3 +1539,201 @@ class NXOSSSHDriver(NXOSDriverBase):
                 "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),
             }
         return vlans
+
+    def get_optics(self):
+        command = "show interface transceiver details"
+        output = self._send_command(command)
+
+        # Formatting data into return data structure
+        optics_detail = {}
+
+        # Extraction Regexps
+        port_ts_re = re.compile(r"^Ether.*?(?=\nEther|\Z)", re.M | re.DOTALL)
+        port_re = re.compile(r"^(Ether.*)[ ]*?$", re.M)
+        vendor_re = re.compile("name is (.*)$", re.M)
+        vendor_part_re = re.compile("part number is (.*)$", re.M)
+        vendor_rev_re = re.compile("revision is (.*)$", re.M)
+        serial_no_re = re.compile("serial number is (.*)$", re.M)
+        type_no_re = re.compile("type is (.*)$", re.M)
+        rx_instant_re = re.compile(r"Rx Power[ ]+(?:(\S+?)[ ]+dBm|(N.A))", re.M)
+        tx_instant_re = re.compile(r"Tx Power[ ]+(?:(\S+?)[ ]+dBm|(N.A))", re.M)
+        current_instant_re = re.compile(r"Current[ ]+(?:(\S+?)[ ]+mA|(N.A))", re.M)
+
+        port_ts_l = port_ts_re.findall(output)
+
+        for port_ts in port_ts_l:
+            port = port_re.search(port_ts).group(1)
+            # No transceiver is present in those case
+            if "transceiver is not present" in port_ts:
+                continue
+            if "transceiver is not applicable" in port_ts:
+                continue
+            port_detail = {"physical_channels": {"channel": []}}
+            # No metric present
+            vendor = vendor_re.search(port_ts).group(1)
+            vendor_part = vendor_part_re.search(port_ts).group(1)
+            vendor_rev = vendor_rev_re.search(port_ts).group(1)
+            serial_no = serial_no_re.search(port_ts).group(1)
+            type_s = type_no_re.search(port_ts).group(1)
+            state = {
+                "vendor": vendor.strip(),
+                "vendor_part": vendor_part.strip(),
+                "vendor_rev": vendor_rev.strip(),
+                "serial_no": serial_no.strip(),
+                "connector_type": self.connector_type_map.get(type_s, "Unknown"),
+            }
+            if "DOM is not supported" not in port_ts:
+                res = rx_instant_re.search(port_ts)
+                input_power = res.group(1) or res.group(2)
+                res = tx_instant_re.search(port_ts)
+                output_power = res.group(1) or res.group(2)
+                res = current_instant_re.search(port_ts)
+                current = res.group(1) or res.group(2)
+
+                # If interface is shutdown it returns "N/A" as output power
+                # or "N/A" as input power
+                # Converting that to -100.0 float
+                try:
+                    float(output_power)
+                except ValueError:
+                    output_power = -100.0
+                try:
+                    float(input_power)
+                except ValueError:
+                    input_power = -100.0
+                try:
+                    float(current)
+                except ValueError:
+                    current = -100.0
+
+                # Defaulting avg, min, max values to -100.0 since device does not
+                # return these values
+                optic_states = {
+                    "index": 0,
+                    "state": {
+                        "input_power": {
+                            "instant": (
+                                float(input_power) if "input_power" else -100.0
+                            ),
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0,
+                        },
+                        "output_power": {
+                            "instant": (
+                                float(output_power) if "output_power" else -100.0
+                            ),
+                            "avg": -100.0,
+                            "min": -100.0,
+                            "max": -100.0,
+                        },
+                        "laser_bias_current": {
+                            "instant": (float(current) if "current" else -100.0),
+                            "avg": 0.0,
+                            "min": 0.0,
+                            "max": 0.0,
+                        },
+                    },
+                }
+                port_detail["physical_channels"]["channel"].append(optic_states)
+
+            port_detail["state"] = state
+            optics_detail[port] = port_detail
+
+        return optics_detail
+
+    def get_interfaces_counters(self):
+        """
+        Return interface counters and errors.
+
+        'tx_errors': int,
+        'rx_errors': int,
+        'tx_discards': int,
+        'rx_discards': int,
+        'tx_octets': int,
+        'rx_octets': int,
+        'tx_unicast_packets': int,
+        'rx_unicast_packets': int,
+        'tx_multicast_packets': int,
+        'rx_multicast_packets': int,
+        'tx_broadcast_packets': int,
+        'rx_broadcast_packets': int,
+        """
+        if_mapping = {
+            "eth": {
+                "regexp": re.compile("^(Ether|port-channel).*"),
+                "mapping": {
+                    "tx_errors": "eth_outerr",
+                    "rx_errors": "eth_inerr",
+                    "tx_discards": "eth_outdiscard",
+                    "rx_discards": "eth_indiscard",
+                    "tx_octets": "eth_outbytes",
+                    "rx_octets": "eth_inbytes",
+                    "tx_unicast_packets": "eth_outucast",
+                    "rx_unicast_packets": "eth_inucast",
+                    "tx_multicast_packets": "eth_outmcast",
+                    "rx_multicast_packets": "eth_inmcast",
+                    "tx_broadcast_packets": "eth_outbcast",
+                    "rx_broadcast_packets": "eth_inbcast",
+                },
+            },
+            "mgmt": {
+                "regexp": re.compile("mgm.*"),
+                "mapping": {
+                    "tx_errors": None,
+                    "rx_errors": None,
+                    "tx_discards": None,
+                    "rx_discards": None,
+                    "tx_octets": "mgmt_out_bytes",
+                    "rx_octets": "mgmt_in_bytes",
+                    "tx_unicast_packets": None,
+                    "rx_unicast_packets": None,
+                    "tx_multicast_packets": "mgmt_out_mcast",
+                    "rx_multicast_packets": "mgmt_in_mcast",
+                    "tx_broadcast_packets": None,
+                    "rx_broadcast_packets": None,
+                },
+            },
+        }
+        command = "show interface counters detailed | json"
+        # To retrieve discards
+        command_interface = "show interface | json"
+        counters_table_raw = self._get_command_table(
+            command, "TABLE_interface", "ROW_interface"
+        )
+        counters_interface_table_raw = self._get_command_table(
+            command_interface, "TABLE_interface", "ROW_interface"
+        )
+        all_stats_d = {}
+        # Start with show interface as all interfaces
+        # Are surely listed
+        for row in counters_interface_table_raw:
+            if_counter = {}
+            # loop through regexp to find mapping
+            for if_v in if_mapping:
+                my_re = if_mapping[if_v]["regexp"]
+                re_match = my_re.match(row["interface"])
+                if re_match:
+                    interface = re_match.group()
+                    map_d = if_mapping[if_v]["mapping"]
+                    for k, v in map_d.items():
+                        if_counter[k] = int(row[v]) if v in row else 0
+                    all_stats_d[interface] = if_counter
+                    break
+
+        for row in counters_table_raw:
+            if_counter = {}
+            # loop through regexp to find mapping
+            for if_v in if_mapping:
+                my_re = if_mapping[if_v]["regexp"]
+                re_match = my_re.match(row["interface"])
+                if re_match:
+                    interface = re_match.group()
+                    map_d = if_mapping[if_v]["mapping"]
+                    for k, v in map_d.items():
+                        if v in row:
+                            if_counter[k] = int(row[v])
+                    all_stats_d[interface].update(if_counter)
+                    break
+
+        return all_stats_d

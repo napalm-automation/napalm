@@ -209,6 +209,7 @@ class JunOSDriver(NetworkDriver):
             "unprotect",
             "edit",
             "top",
+            "wildcard",
         ]
         if config.strip().startswith("<"):
             return "xml"
@@ -277,8 +278,12 @@ class JunOSDriver(NetworkDriver):
         else:
             return diff.strip()
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """Commit configuration."""
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
         commit_args = {"comment": message} if message else {}
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
         if not self.lock_disable and not self.session_config_lock:
@@ -429,6 +434,9 @@ class JunOSDriver(NetworkDriver):
                 structured_object_data["class"] = current_class
 
             if structured_object_data["class"] == "Power":
+                # Make sure naming is consistent
+                sensor_object = sensor_object.replace("PEM", "Power Supply")
+
                 # Create a dict for the 'power' key
                 try:
                     environment_data["power"][sensor_object] = {}
@@ -1027,8 +1035,8 @@ class JunOSDriver(NetworkDriver):
 
         def update_dict(d, u):  # for deep dictionary update
             for k, v in u.items():
-                if isinstance(d, collections.Mapping):
-                    if isinstance(v, collections.Mapping):
+                if isinstance(d, collections.abc.Mapping):
+                    if isinstance(v, collections.abc.Mapping):
                         r = update_dict(d.get(k, {}), v)
                         d[k] = r
                     else:

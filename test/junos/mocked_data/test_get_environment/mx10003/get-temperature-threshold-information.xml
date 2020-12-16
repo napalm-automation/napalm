@@ -1,0 +1,392 @@
+<temperature-threshold-information>
+    <temperature-threshold>
+        <name>Routing Engine 0</name>
+        <fan-normal-speed>48</fan-normal-speed>
+        <fan-high-speed>54</fan-high-speed>
+        <bad-fan-yellow-alarm>85</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>100</bad-fan-red-alarm>
+        <yellow-alarm>85</yellow-alarm>
+        <red-alarm>100</red-alarm>
+        <fire-shutdown>102</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>Routing Engine 1</name>
+        <fan-normal-speed>48</fan-normal-speed>
+        <fan-high-speed>54</fan-high-speed>
+        <bad-fan-yellow-alarm>85</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>100</bad-fan-red-alarm>
+        <yellow-alarm>85</yellow-alarm>
+        <red-alarm>100</red-alarm>
+        <fire-shutdown>102</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>CB 0 Exhaust Temp Sensor</name>
+        <fan-normal-speed>60</fan-normal-speed>
+        <fan-high-speed>65</fan-high-speed>
+        <bad-fan-yellow-alarm>75</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>85</bad-fan-red-alarm>
+        <yellow-alarm>75</yellow-alarm>
+        <red-alarm>85</red-alarm>
+        <fire-shutdown>95</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>CB 0 Inlet Temp Sensor</name>
+        <fan-normal-speed>60</fan-normal-speed>
+        <fan-high-speed>65</fan-high-speed>
+        <bad-fan-yellow-alarm>75</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>85</bad-fan-red-alarm>
+        <yellow-alarm>75</yellow-alarm>
+        <red-alarm>85</red-alarm>
+        <fire-shutdown>95</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>CB 0 CPU DIE Temp Sensor</name>
+        <fan-normal-speed>83</fan-normal-speed>
+        <fan-high-speed>90</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>105</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>105</red-alarm>
+        <fire-shutdown>110</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>CB 1 Exhaust Temp Sensor</name>
+        <fan-normal-speed>60</fan-normal-speed>
+        <fan-high-speed>65</fan-high-speed>
+        <bad-fan-yellow-alarm>75</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>85</bad-fan-red-alarm>
+        <yellow-alarm>75</yellow-alarm>
+        <red-alarm>85</red-alarm>
+        <fire-shutdown>95</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>CB 1 Inlet Temp Sensor</name>
+        <fan-normal-speed>60</fan-normal-speed>
+        <fan-high-speed>65</fan-high-speed>
+        <bad-fan-yellow-alarm>75</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>85</bad-fan-red-alarm>
+        <yellow-alarm>75</yellow-alarm>
+        <red-alarm>85</red-alarm>
+        <fire-shutdown>95</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>CB 1 CPU DIE Temp Sensor</name>
+        <fan-normal-speed>83</fan-normal-speed>
+        <fan-high-speed>90</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>105</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>105</red-alarm>
+        <fire-shutdown>110</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 Intake Temp Sensor</name>
+        <fan-normal-speed>40</fan-normal-speed>
+        <fan-high-speed>45</fan-high-speed>
+        <bad-fan-yellow-alarm>70</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>80</bad-fan-red-alarm>
+        <yellow-alarm>75</yellow-alarm>
+        <red-alarm>85</red-alarm>
+        <fire-shutdown>95</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 Exhaust-A Temp Sensor</name>
+        <fan-normal-speed>55</fan-normal-speed>
+        <fan-high-speed>60</fan-high-speed>
+        <bad-fan-yellow-alarm>80</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>90</bad-fan-red-alarm>
+        <yellow-alarm>85</yellow-alarm>
+        <red-alarm>90</red-alarm>
+        <fire-shutdown>100</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 Exhaust-B Temp Sensor</name>
+        <fan-normal-speed>55</fan-normal-speed>
+        <fan-high-speed>60</fan-high-speed>
+        <bad-fan-yellow-alarm>80</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>90</bad-fan-red-alarm>
+        <yellow-alarm>85</yellow-alarm>
+        <red-alarm>90</red-alarm>
+        <fire-shutdown>100</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA0 Chip</name>
+        <fan-normal-speed>87</fan-normal-speed>
+        <fan-high-speed>92</fan-high-speed>
+        <bad-fan-yellow-alarm>97</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>105</bad-fan-red-alarm>
+        <yellow-alarm>97</yellow-alarm>
+        <red-alarm>105</red-alarm>
+        <fire-shutdown>110</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA0-XR0 Chip</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA0-XR1 Chip</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA1 Chip</name>
+        <fan-normal-speed>87</fan-normal-speed>
+        <fan-high-speed>92</fan-high-speed>
+        <bad-fan-yellow-alarm>97</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>105</bad-fan-red-alarm>
+        <yellow-alarm>97</yellow-alarm>
+        <red-alarm>105</red-alarm>
+        <fire-shutdown>110</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA1-XR0 Chip</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA1-XR1 Chip</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA2 Chip</name>
+        <fan-normal-speed>87</fan-normal-speed>
+        <fan-high-speed>92</fan-high-speed>
+        <bad-fan-yellow-alarm>97</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>105</bad-fan-red-alarm>
+        <yellow-alarm>97</yellow-alarm>
+        <red-alarm>105</red-alarm>
+        <fire-shutdown>110</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA2-XR0 Chip</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA2-XR1 Chip</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 PF Chip</name>
+        <fan-normal-speed>89</fan-normal-speed>
+        <fan-high-speed>94</fan-high-speed>
+        <bad-fan-yellow-alarm>104</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>104</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>120</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA0_HMC0 Logic die</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>103</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>103</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA0_HMC0 DRAM botm</name>
+        <fan-normal-speed>83</fan-normal-speed>
+        <fan-high-speed>88</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA0_HMC1 Logic die</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>103</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>103</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA0_HMC1 DRAM botm</name>
+        <fan-normal-speed>83</fan-normal-speed>
+        <fan-high-speed>88</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA0_HMC2 Logic die</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>103</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>103</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA0_HMC2 DRAM botm</name>
+        <fan-normal-speed>83</fan-normal-speed>
+        <fan-high-speed>88</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA1_HMC0 Logic die</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>103</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>103</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA1_HMC0 DRAM botm</name>
+        <fan-normal-speed>83</fan-normal-speed>
+        <fan-high-speed>88</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA1_HMC1 Logic die</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>103</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>103</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA1_HMC1 DRAM botm</name>
+        <fan-normal-speed>83</fan-normal-speed>
+        <fan-high-speed>88</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA1_HMC2 Logic die</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>103</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>103</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA1_HMC2 DRAM botm</name>
+        <fan-normal-speed>83</fan-normal-speed>
+        <fan-high-speed>88</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA2_HMC0 Logic die</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>103</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>103</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA2_HMC0 DRAM botm</name>
+        <fan-normal-speed>83</fan-normal-speed>
+        <fan-high-speed>88</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA2_HMC1 Logic die</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>103</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>103</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA2_HMC1 DRAM botm</name>
+        <fan-normal-speed>83</fan-normal-speed>
+        <fan-high-speed>88</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA2_HMC2 Logic die</name>
+        <fan-normal-speed>88</fan-normal-speed>
+        <fan-high-speed>93</fan-high-speed>
+        <bad-fan-yellow-alarm>103</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>103</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+    <temperature-threshold>
+        <name>FPC 1 EA2_HMC2 DRAM botm</name>
+        <fan-normal-speed>83</fan-normal-speed>
+        <fan-high-speed>88</fan-high-speed>
+        <bad-fan-yellow-alarm>98</bad-fan-yellow-alarm>
+        <bad-fan-red-alarm>120</bad-fan-red-alarm>
+        <yellow-alarm>98</yellow-alarm>
+        <red-alarm>120</red-alarm>
+        <fire-shutdown>125</fire-shutdown>
+    </temperature-threshold>
+</temperature-threshold-information>
