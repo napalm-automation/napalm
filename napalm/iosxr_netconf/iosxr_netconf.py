@@ -3096,12 +3096,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
         # 'full' argument not supported; 'with-default' capability not supported.
         if full:
             raise NotImplementedError(
-                f"'full' argument has not been implemented on the IOS-XR NETCONF driver"
+                "'full' argument has not been implemented on the IOS-XR NETCONF driver"
             )
 
         if sanitized:
             raise NotImplementedError(
-                f"sanitized argument has not been implemented on the IOS-XR NETCONF driver"
+                "sanitized argument has not been implemented on the IOS-XR NETCONF driver"
             )
 
         # default values
