@@ -74,7 +74,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         if self.config_encoding not in C.CONFIG_ENCODINGS:
             raise ValueError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
 
-        self.platform = "iosxr"
+        self.platform = "iosxr_netconf"
         self.device = None
         self.module_set_ns = []
 
@@ -148,31 +148,24 @@ class IOSXRNETCONFDriver(NetworkDriver):
     def _filter_config_tree(self, tree):
         """Return filtered config etree based on YANG module set."""
         if self.module_set_ns:
-
             def unexpected(n):
                 return n not in self.module_set_ns
-
         else:
-
             def unexpected(n):
                 return n.startswith("http://openconfig.net/yang")
 
         for subtree in tree:
             if unexpected(subtree.tag[1:].split("}")[0]):
                 tree.remove(subtree)
-
         return tree
 
     def _unexpected_modules(self, tree):
         """Return list of unexpected modules based on YANG module set."""
         modules = []
         if self.module_set_ns:
-
             def unexpected(n):
                 return n not in self.module_set_ns
-
         else:
-
             def unexpected(n):
                 return n.startswith("http://openconfig.net/yang")
 
@@ -180,7 +173,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
             namespace = subtree.tag[1:].split("}")[0]
             if unexpected(namespace):
                 modules.append(namespace)
-
         return modules
 
     def is_alive(self):
@@ -247,9 +239,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
             logger.error(e.args[0])
             raise MergeConfigException(e)
 
-    def compare_config(self, encoding="cli"):
+    def compare_config(self):
         """Compare candidate config with running."""
+
         diff = ""
+        encoding = self.config_encoding
         if encoding not in C.CLI_DIFF_RPC_REQ:
             raise NotImplementedError(
                 f"config encoding must be one of {C.CONFIG_ENCODINGS}"
@@ -278,8 +272,16 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         return diff
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """Commit configuration."""
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
+        if message:
+            raise NotImplementedError(
+                "Commit message not implemented for this platform"
+            )
         self.device.commit()
         self.pending_changes = False
         self._unlock()
@@ -3081,9 +3083,20 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         return users
 
-    def get_config(self, retrieve="all", full=False, encoding="cli"):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         """Return device configuration."""
-        # NOTE: 'full' argument ignored. 'with-default' capability not supported.
+
+        encoding = self.config_encoding
+        # 'full' argument not supported; 'with-default' capability not supported.
+        if full:
+            raise NotImplementedError(
+                f"'full' argument has not been implemented on the IOS-XR NETCONF driver"
+            )
+
+        if sanitized:
+            raise NotImplementedError(
+                f"sanitized argument has not been implemented on the IOS-XR NETCONF driver"
+            )
 
         # default values
         config = {"startup": "", "running": "", "candidate": ""}
