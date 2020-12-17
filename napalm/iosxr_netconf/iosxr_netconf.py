@@ -148,9 +148,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
     def _filter_config_tree(self, tree):
         """Return filtered config etree based on YANG module set."""
         if self.module_set_ns:
+
             def unexpected(n):
                 return n not in self.module_set_ns
+
         else:
+
             def unexpected(n):
                 return n.startswith("http://openconfig.net/yang")
 
@@ -163,9 +166,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
         """Return list of unexpected modules based on YANG module set."""
         modules = []
         if self.module_set_ns:
+
             def unexpected(n):
                 return n not in self.module_set_ns
+
         else:
+
             def unexpected(n):
                 return n.startswith("http://openconfig.net/yang")
 
