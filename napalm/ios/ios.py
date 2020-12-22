@@ -542,17 +542,23 @@ class IOSDriver(NetworkDriver):
                 raise ReplaceConfigException(msg)
         else:
             # Merge operation
-            filename = self.merge_cfg
-            cfg_file = self._gen_full_path(filename)
-            if not self._check_file_exists(cfg_file):
-                raise MergeConfigException("Merge source config file does not exist")
-            cmd = "copy {} running-config".format(cfg_file)
-            output = self._commit_handler(cmd)
             if "Invalid input detected" in output:
-                self.rollback()
-                err_header = "Configuration merge failed; automatic rollback attempted"
-                merge_error = "{0}:\n{1}".format(err_header, output)
-                raise MergeConfigException(merge_error)
+                rollback = self.rollback()
+                if 'Rollback Done' in rollback:
+                    err_header = """Configuration merge failed, but automatic
+                    rollback successfully restored original configuration"""
+                    merge_error = "{0}:\n{1}".format(err_header,
+                            output,
+                            )
+                    raise MergeConfigException(merge_error)
+                else:
+                    err_header = "Configuration merge failed; automatic
+                    rollback failed, user intervention required"
+                    merge_error = "{0}:\n{1}{2}\n{3}".format(err_header,
+                            output,rollback)
+                    raise MergeConfigException(merge_error)
+
+
 
         # After a commit - we no longer know whether this is configured or not.
         self.prompt_quiet_configured = None
@@ -581,13 +587,15 @@ class IOSDriver(NetworkDriver):
         if not self._check_file_exists(cfg_file):
             raise ReplaceConfigException("Rollback config file does not exist")
         cmd = "configure replace {} force".format(cfg_file)
-        self._commit_handler(cmd)
+        output = self._commit_handler(cmd)
 
         # After a rollback - we no longer know whether this is configured or not.
         self.prompt_quiet_configured = None
 
         # Save config to startup
         self.device.save_config()
+
+        return(output)
 
     def _inline_tcl_xfer(
         self, source_file=None, source_config=None, dest_file=None, file_system=None
