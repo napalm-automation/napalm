@@ -550,21 +550,21 @@ class IOSDriver(NetworkDriver):
             output = self._commit_handler(cmd)
             if "Invalid input detected" in output:
                 rollback = self.rollback()
-                if 'Rollback Done' in rollback:
+                if "Rollback Done" in rollback:
                     err_header = """Configuration merge failed, but automatic
                     rollback successfully restored original configuration"""
-                    merge_error = "{0}:\n{1}".format(err_header,
-                            output,
-                            )
+                    merge_error = "{0}:\n{1}".format(
+                        err_header,
+                        output,
+                    )
                     raise MergeConfigException(merge_error)
                 else:
                     err_header = """Configuration merge failed; automatic
                     rollback failed, user intervention required"""
-                    merge_error = "{0}:\n{1}{2}\n{3}".format(err_header,
-                            output,rollback)
+                    merge_error = "{0}:\n{1}{2}\n{3}".format(
+                        err_header, output, rollback
+                    )
                     raise MergeConfigException(merge_error)
-
-
 
         # After a commit - we no longer know whether this is configured or not.
         self.prompt_quiet_configured = None
@@ -601,7 +601,7 @@ class IOSDriver(NetworkDriver):
         # Save config to startup
         self.device.save_config()
 
-        return(output)
+        return output
 
     def _inline_tcl_xfer(
         self, source_file=None, source_config=None, dest_file=None, file_system=None
