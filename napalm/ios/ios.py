@@ -542,6 +542,12 @@ class IOSDriver(NetworkDriver):
                 raise ReplaceConfigException(msg)
         else:
             # Merge operation
+            filename = self.merge_cfg
+            cfg_file = self._gen_full_path(filename)
+            if not self._check_file_exists(cfg_file):
+                raise MergeConfigException("Merge source config file does not exist")
+            cmd = "copy {} running-config".format(cfg_file)
+            output = self._commit_handler(cmd)
             if "Invalid input detected" in output:
                 rollback = self.rollback()
                 if 'Rollback Done' in rollback:
@@ -552,8 +558,8 @@ class IOSDriver(NetworkDriver):
                             )
                     raise MergeConfigException(merge_error)
                 else:
-                    err_header = "Configuration merge failed; automatic
-                    rollback failed, user intervention required"
+                    err_header = """Configuration merge failed; automatic
+                    rollback failed, user intervention required"""
                     merge_error = "{0}:\n{1}{2}\n{3}".format(err_header,
                             output,rollback)
                     raise MergeConfigException(merge_error)
