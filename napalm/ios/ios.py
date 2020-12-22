@@ -561,7 +561,7 @@ class IOSDriver(NetworkDriver):
                 else:
                     err_header = """Configuration merge failed; automatic
                     rollback failed, user intervention required"""
-                    merge_error = "{0}:\n{1}{2}\n{3}".format(
+                    merge_error = "{0}:\n{1}{2}".format(
                         err_header, output, rollback
                     )
                     raise MergeConfigException(merge_error)
