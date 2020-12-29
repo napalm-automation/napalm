@@ -1391,7 +1391,7 @@ class EOSDriver(NetworkDriver):
                                 .get("peerEntry", {})
                                 .get("peerAddr", "")
                             )
-                        except:
+                        except AddrFormatError:
                             remote_address = napalm.base.helpers.ip(
                                 bgp_route_details.get("peerEntry", {})
                                 .get("peerAddr", "")
