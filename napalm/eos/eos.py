@@ -1350,11 +1350,13 @@ class EOSDriver(NetworkDriver):
                             )
                         except CommandError:
                             # Newer EOS can't mix longer-prefix and detail
-                            command = "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
-                                ipv=ipv,
-                                dest=destination,
-                                longer="longer-prefixes" if longer else "",
-                                _vrf=_vrf,
+                            command = (
+                                "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
+                                    ipv=ipv,
+                                    dest=destination,
+                                    longer="longer-prefixes" if longer else "",
+                                    _vrf=_vrf,
+                                )
                             )
                             vrf_cache.update(
                                 {
@@ -1393,8 +1395,9 @@ class EOSDriver(NetworkDriver):
                             )
                         except AddrFormatError:
                             remote_address = napalm.base.helpers.ip(
-                                bgp_route_details.get("peerEntry", {})
-                                .get("peerAddr", "")
+                                bgp_route_details.get("peerEntry", {}).get(
+                                    "peerAddr", ""
+                                )
                             )
                         local_preference = bgp_route_details.get("localPreference")
                         next_hop = napalm.base.helpers.ip(
