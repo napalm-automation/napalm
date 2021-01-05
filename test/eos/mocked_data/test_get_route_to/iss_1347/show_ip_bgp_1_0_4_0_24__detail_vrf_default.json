@@ -1,0 +1,201 @@
+{
+    "vrfs": {
+        "default": {
+            "routerId": "2.2.2.2",
+            "vrf": "default",
+            "bgpRouteEntries": {
+                "1.0.4.0/24": {
+                    "totalPaths": 5,
+                    "bgpAdvertisedPeerGroups": {
+                        "ebgp-to-spines-peer": {
+                            "peerList": [
+                                "169.254.232.148",
+                                "169.254.232.152",
+                                "169.254.232.156"
+                            ]
+                        }
+                    },
+                    "bgpAdvertisedPeers": {
+                        "peerList": [
+                            "169.254.248.101"
+                        ]
+                    },
+                    "maskLength": 24,
+                    "totalAdvertisedPeers": 4,
+                    "bgpRoutePaths": [
+                        {
+                            "asPathEntry": {
+                                "asPath": "65418 65419",
+                                "asPathType": "External"
+                            },
+                            "med": 0,
+                            "timestamp": 1606117832,
+                            "localPreference": 100,
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.4",
+                                "peerAddr": "169.254.232.160"
+                            },
+                            "reasonNotBestpath": "noReason",
+                            "nextHop": "169.254.232.160",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Igp",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": true,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": true,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Igp",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false
+                            }
+                        },
+                        {
+                            "asPathEntry": {
+                                "asPath": "65418 65419",
+                                "asPathType": "External"
+                            },
+                            "med": 0,
+                            "timestamp": 1606120861,
+                            "localPreference": 100,
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.3",
+                                "peerAddr": "169.254.232.156"
+                            },
+                            "reasonNotBestpath": "ecmpFast",
+                            "nextHop": "169.254.232.156",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Igp",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": false,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Igp",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false
+                            }
+                        },
+                        {
+                            "asPathEntry": {
+                                "asPath": "65418 65419",
+                                "asPathType": "External"
+                            },
+                            "med": 0,
+                            "timestamp": 1607934322,
+                            "localPreference": 100,
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.1",
+                                "peerAddr": "169.254.232.148"
+                            },
+                            "reasonNotBestpath": "ecmpFast",
+                            "nextHop": "169.254.232.148",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Igp",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": false,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Igp",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false
+                            }
+                        },
+                        {
+                            "asPathEntry": {
+                                "asPath": "65418 65419",
+                                "asPathType": "External"
+                            },
+                            "med": 0,
+                            "timestamp": 1607937435,
+                            "localPreference": 100,
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.2",
+                                "peerAddr": "169.254.232.152"
+                            },
+                            "reasonNotBestpath": "ecmpFast",
+                            "nextHop": "169.254.232.152",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Igp",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": false,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Igp",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false
+                            }
+                        }
+                    ],
+                    "address": "1.0.4.0"
+                }
+            },
+            "asn": "65323"
+        }
+    }
+}
