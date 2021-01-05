@@ -1385,11 +1385,18 @@ class EOSDriver(NetworkDriver):
                             remote_as = napalm.base.helpers.as_number(
                                 as_path.strip("()").split()[-1]
                             )
-                        remote_address = napalm.base.helpers.ip(
-                            bgp_route_details.get("routeDetail", {})
-                            .get("peerEntry", {})
-                            .get("peerAddr", "")
-                        )
+                        try:
+                            remote_address = napalm.base.helpers.ip(
+                                bgp_route_details.get("routeDetail", {})
+                                .get("peerEntry", {})
+                                .get("peerAddr", "")
+                            )
+                        except AddrFormatError:
+                            remote_address = napalm.base.helpers.ip(
+                                bgp_route_details.get("peerEntry", {}).get(
+                                    "peerAddr", ""
+                                )
+                            )
                         local_preference = bgp_route_details.get("localPreference")
                         next_hop = napalm.base.helpers.ip(
                             bgp_route_details.get("nextHop")

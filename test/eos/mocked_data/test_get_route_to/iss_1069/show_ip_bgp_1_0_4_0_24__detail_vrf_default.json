@@ -1,0 +1,65 @@
+{
+    "vrfs": {
+        "default": {
+            "routerId": "2.2.2.2",
+            "vrf": "default",
+            "bgpRouteEntries": {
+                "1.0.4.0/24": {
+                    "totalPaths": 1,
+                    "bgpAdvertisedPeerGroups": {},
+                    "totalAdvertisedPeers": 0,
+                    "maskLength": 24,
+                    "bgpRoutePaths": [
+                        {
+                            "asPathEntry": {
+                                "asPathType": "External",
+                                "asPath": "65003"
+                            },
+                            "med": 0,
+                            "localPreference": 100,
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "3.3.3.3",
+                                "peerAddr": "169.254.123.2"
+                            },
+                            "reasonNotBestpath": "noReason",
+                            "timestamp": 1609809646,
+                            "nextHop": "169.254.123.2",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Igp",
+                                "suppressed": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": false,
+                                "luRoute": false,
+                                "active": true,
+                                "stale": false,
+                                "ecmp": false,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Igp",
+                                "labelStack": [],
+                                "isLeaked": false,
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "bgpContributors": [],
+                                "recvdFromRRClient": false,
+                                "igpMetric": 1,
+                                "largeCommunityList": [],
+                                "domainPath": []
+                            }
+                        }
+                    ],
+                    "address": "1.0.4.0"
+                }
+            },
+            "asn": "65002"
+        }
+    }
+}
