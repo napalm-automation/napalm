@@ -2301,9 +2301,9 @@ class IOSDriver(NetworkDriver):
             ]
         """
         if vrf:
-            command = "show arp vrf {} | exclude Incomplete".format(vrf)
+            command = "show ip arp vrf {} | exclude Incomplete".format(vrf)
         else:
-            command = "show arp | exclude Incomplete"
+            command = "show ip arp | exclude Incomplete"
 
         arp_table = []
 
