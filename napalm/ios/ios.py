@@ -2346,7 +2346,8 @@ class IOSDriver(NetworkDriver):
         if vrf:
             command = "show ip arp vrf {} | exclude Incomplete".format(vrf)
             arp_entries = self._get_arp_table(command)
-            arp_table.extend(arp_entries)
+            if arp_entries:
+                arp_table.extend(arp_entries)
         else:
             vrfs = self._get_vrfs()
             for entry in vrfs: 
@@ -2355,9 +2356,8 @@ class IOSDriver(NetworkDriver):
                 arp_table.extend(arp_entries)
             command = "show ip arp | exclude Incomplete"
             arp_entries = self._get_arp_table(command)
-            arp_table.extend(arp_entries)
-            
-        arp_table = []
+            if arp_entries:
+                arp_table.extend(arp_entries)
 
         return arp_table
 
