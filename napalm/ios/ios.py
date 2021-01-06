@@ -2280,6 +2280,7 @@ class IOSDriver(NetworkDriver):
         # Skip the first line which is a header
         output = output.split("\n")
         output = output[1:]
+        print(output)
 
         for line in output:
             if len(line) == 0:
