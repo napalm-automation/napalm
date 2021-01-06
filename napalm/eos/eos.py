@@ -1330,6 +1330,9 @@ class EOSDriver(NetworkDriver):
                 if protocol == "bgp" or route_protocol.lower() in ("ebgp", "ibgp"):
                     nexthop_interface_map = {}
                     for next_hop in route_details.get("vias"):
+                        if "vtepAddr" in next_hop:
+                            next_hop["nexthopAddr"] = next_hop["vtepAddr"]
+                            next_hop["interface"] = "vxlan1"
                         nexthop_ip = napalm.base.helpers.ip(next_hop.get("nexthopAddr"))
                         nexthop_interface_map[nexthop_ip] = next_hop.get("interface")
                     metric = route_details.get("metric")
