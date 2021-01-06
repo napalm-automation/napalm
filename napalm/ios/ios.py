@@ -2280,7 +2280,6 @@ class IOSDriver(NetworkDriver):
         # Skip the first line which is a header
         output = output.split("\n")
         output = output[1:]
-        print(output)
 
         for line in output:
             if len(line) == 0:
@@ -2315,7 +2314,7 @@ class IOSDriver(NetworkDriver):
             }
             arp_table.append(entry)
 
-            return arp_table
+        return arp_table
 
     def get_arp_table(self, vrf=""):
         """
@@ -2353,10 +2352,7 @@ class IOSDriver(NetworkDriver):
             vrfs = self._get_vrfs()
             for entry in vrfs: 
                 command = "show ip arp vrf {} | exclude Incomplete".format(entry)
-                print(f"running command: {command}")
                 arp_entries = self._get_arp_table(command)
-                print("#############################")
-                print(arp_entries)
                 if arp_entries:
                     arp_table.extend(arp_entries)
             command = "show ip arp | exclude Incomplete"
