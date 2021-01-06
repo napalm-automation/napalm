@@ -2304,7 +2304,7 @@ class IOSDriver(NetworkDriver):
             command = "show ip arp vrf {} | exclude Incomplete".format(vrf)
         else:
             command = "show ip arp | exclude Incomplete"
-
+        print(f"running command: {command}")
         arp_table = []
 
         output = self._send_command(command)
