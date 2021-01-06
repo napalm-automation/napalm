@@ -2274,41 +2274,9 @@ class IOSDriver(NetworkDriver):
 
         return environment
 
-    def get_arp_table(self, vrf=""):
-        """
-        Get arp table information.
-
-        Return a list of dictionaries having the following set of keys:
-            * interface (string)
-            * mac (string)
-            * ip (string)
-            * age (float)
-
-        For example::
-            [
-                {
-                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '5c:5e:ab:da:3c:f0',
-                    'ip'        : '172.17.17.1',
-                    'age'       : 1454496274.84
-                },
-                {
-                    'interface': 'MgmtEth0/RSP0/CPU0/0',
-                    'mac'       : '66:0e:94:96:e0:ff',
-                    'ip'        : '172.17.17.2',
-                    'age'       : 1435641582.49
-                }
-            ]
-        """
-        if vrf:
-            command = "show ip arp vrf {} | exclude Incomplete".format(vrf)
-        else:
-            command = "show ip arp | exclude Incomplete"
-        print(f"running command: {command}")
+    def _get_arp_table(self, command):
         arp_table = []
-
         output = self._send_command(command)
-
         # Skip the first line which is a header
         output = output.split("\n")
         output = output[1:]
@@ -2345,6 +2313,52 @@ class IOSDriver(NetworkDriver):
                 "age": age,
             }
             arp_table.append(entry)
+
+            return arp_table
+
+    def get_arp_table(self, vrf=""):
+        """
+        Get arp table information.
+
+        Return a list of dictionaries having the following set of keys:
+            * interface (string)
+            * mac (string)
+            * ip (string)
+            * age (float)
+
+        For example::
+            [
+                {
+                    'interface' : 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '5c:5e:ab:da:3c:f0',
+                    'ip'        : '172.17.17.1',
+                    'age'       : 1454496274.84
+                },
+                {
+                    'interface': 'MgmtEth0/RSP0/CPU0/0',
+                    'mac'       : '66:0e:94:96:e0:ff',
+                    'ip'        : '172.17.17.2',
+                    'age'       : 1435641582.49
+                }
+            ]
+        """
+        arp_table = []
+        if vrf:
+            command = "show ip arp vrf {} | exclude Incomplete".format(vrf)
+            arp_entries = self._get_arp_table(command)
+            arp_table.extend(arp_entries)
+        else:
+            vrfs = self._get_vrfs()
+            for entry in vrfs: 
+                command = "show ip arp vrf {} | exclude Incomplete".format(entry)
+                arp_entries = self._get_arp_table(command)
+                arp_table.extend(arp_entries)
+            command = "show ip arp | exclude Incomplete"
+            arp_entries = self._get_arp_table(command)
+            arp_table.extend(arp_entries)
+            
+        arp_table = []
+
         return arp_table
 
     def cli(self, commands):
