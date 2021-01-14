@@ -25,7 +25,7 @@ matrix:
     - python: nightly
 
 install:
-  - pip install tox==3.14.0 tox-travis==0.12 coveralls==1.8.2
+  - pip install tox==3.14.0 tox-travis==0.12 coveralls==2.2.0
 
 deploy:
   provider: pypi

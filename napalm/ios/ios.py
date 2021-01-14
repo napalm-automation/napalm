@@ -3259,9 +3259,14 @@ class IOSDriver(NetworkDriver):
         Executes traceroute on the device and returns a dictionary with the result.
 
         :param destination: Host or IP Address of the destination
-        :param source (optional): Use a specific IP Address to execute the traceroute
-        :param ttl (optional): Maimum number of hops -> int (0-255)
-        :param timeout (optional): Number of seconds to wait for response -> int (1-3600)
+        :param source: Use a specific IP Address to execute the traceroute
+        :type source: optional
+        :param ttl: Maximum number of hops -> int (0-255)
+        :type ttl: optional
+        :param timeout: Number of seconds to wait for response -> int (1-3600)
+        :type timeout: optional
+        :param vrf: Use a specific VRF to execute the traceroute
+        :type vrf: optional
 
         Output dictionary has one of the following keys:
 
