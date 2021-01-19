@@ -3304,7 +3304,7 @@ class IOSDriver(NetworkDriver):
             command += " source {}".format(source)
         if ttl:
             if isinstance(ttl, int) and 0 <= ttl <= 255:
-                command += " ttl {}".format(str(ttl))
+                command += " ttl 0 {}".format(str(ttl))
         if timeout:
             # Timeout should be an integer between 1 and 3600
             if isinstance(timeout, int) and 1 <= timeout <= 3600:
