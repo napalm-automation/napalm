@@ -102,9 +102,7 @@ class JunOSDriver(NetworkDriver):
         self.junos_config_inheritance = optional_args.get(
             "junos_config_inherit", "inherit"
         )
-        self.junos_config_groups = optional_args.get(
-            "junos_config_groups", "groups"
-        )
+        self.junos_config_groups = optional_args.get("junos_config_groups", "groups")
         self.junos_config_options = {
             "database": self.junos_config_database,
             "inherit": self.junos_config_inheritance,
@@ -419,8 +417,8 @@ class JunOSDriver(NetworkDriver):
             routing_engine = junos_views.junos_routing_engine_table_srx_cluster(
                 self.device
             )
-            temperature_thresholds = junos_views.junos_temperature_thresholds_srx_cluster(
-                self.device
+            temperature_thresholds = (
+                junos_views.junos_temperature_thresholds_srx_cluster(self.device)
             )
         else:
             environment = junos_views.junos_environment_table(self.device)
@@ -1912,12 +1910,14 @@ class JunOSDriver(NetworkDriver):
         if vrf:
             vrf_str = " routing-instance {vrf}".format(vrf=vrf)
 
-        traceroute_command = "traceroute {destination}{source}{maxttl}{wait}{vrf}".format(
-            destination=destination,
-            source=source_str,
-            maxttl=maxttl_str,
-            wait=wait_str,
-            vrf=vrf_str,
+        traceroute_command = (
+            "traceroute {destination}{source}{maxttl}{wait}{vrf}".format(
+                destination=destination,
+                source=source_str,
+                maxttl=maxttl_str,
+                wait=wait_str,
+                vrf=vrf_str,
+            )
         )
 
         traceroute_rpc = E("command", traceroute_command)
@@ -1999,14 +1999,16 @@ class JunOSDriver(NetworkDriver):
         if vrf:
             vrf_str = " routing-instance {vrf}".format(vrf=vrf)
 
-        ping_command = "ping {destination}{source}{ttl}{timeout}{size}{count}{vrf}".format(
-            destination=destination,
-            source=source_str,
-            ttl=maxttl_str,
-            timeout=timeout_str,
-            size=size_str,
-            count=count_str,
-            vrf=vrf_str,
+        ping_command = (
+            "ping {destination}{source}{ttl}{timeout}{size}{count}{vrf}".format(
+                destination=destination,
+                source=source_str,
+                ttl=maxttl_str,
+                timeout=timeout_str,
+                size=size_str,
+                count=count_str,
+                vrf=vrf_str,
+            )
         )
 
         ping_rpc = E("command", ping_command)

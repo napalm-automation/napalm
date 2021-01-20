@@ -1460,7 +1460,7 @@ class NetworkDriver(object):
             {
                 'error': 'unknown host 8.8.8.8.8'
             }
-            """
+        """
         raise NotImplementedError
 
     def get_users(self):
