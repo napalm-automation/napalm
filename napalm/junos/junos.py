@@ -325,7 +325,43 @@ class JunOSDriver(NetworkDriver):
             "interface_list": interface_list,
         }
 
+    def get_vlans(self):
+        result = {}
+        vlans = junos_views.junos_vlan_table(self.device)
+        vlans.get()
+
+        # VLAN information comes in a tuple so like interfaces
+        # we convert to dict
+        def _convert_to_dict(vlans):
+                vlans = dict(vlans)
+                
+                for vlan, vlan_data in vlans.items():
+
+                        result[vlan] = { 
+                                "name": vlan_data["name"],
+                                "tag": ( 
+                                        True
+                                        if vlan_data["tag"] is None
+                                        else vlan_data["tag"]
+
+                                ),
+                                "members": (
+                                        "none-assigned" # Checking even older junos, it alwayas returns either a list of members or l2ng-l2rtb that you see below
+                                        if( isinstance( vlan_data["members"], str ) and vlan_data["members"] == "l2ng-l2rtb-vlan-member-interface" ) is True
+                                        else vlan_data["members"]
+                                )
+                        }
+
+
+                return result
+                
+        result = _convert_to_dict(vlans)
+
+        return result
+
+
     def get_interfaces(self):
+        
         """Return interfaces details."""
         result = {}
 
