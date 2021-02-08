@@ -385,25 +385,30 @@ class IOSXRNETCONFDriver(NetworkDriver):
             ".//imo:inventory/imo:entities/imo:entity/imo:attributes/\
                         imo:inv-basic-bag",
             namespaces=C.NS,
-        )[0]
-        os_version = napalm.base.helpers.convert(
-            str,
-            self._find_txt(
-                basic_info_tree, "./imo:software-revision", default="", namespaces=C.NS
-            ),
         )
-        model = napalm.base.helpers.convert(
-            str,
-            self._find_txt(
-                basic_info_tree, "./imo:model-name", default="", namespaces=C.NS
-            ),
-        )
-        serial = napalm.base.helpers.convert(
-            str,
-            self._find_txt(
-                basic_info_tree, "./imo:serial-number", default="", namespaces=C.NS
-            ),
-        )
+        if basic_info_tree:
+            os_version = napalm.base.helpers.convert(
+                str,
+                self._find_txt(
+                    basic_info_tree[0], "./imo:software-revision", default="", namespaces=C.NS
+                ),
+            )
+            model = napalm.base.helpers.convert(
+                str,
+                self._find_txt(
+                    basic_info_tree[0], "./imo:model-name", default="", namespaces=C.NS
+                ),
+            )
+            serial = napalm.base.helpers.convert(
+                str,
+                self._find_txt(
+                    basic_info_tree[0], "./imo:serial-number", default="", namespaces=C.NS
+                ),
+            )
+        else:
+            os_version = ""
+            model = ""
+            serial = ""
 
         facts.update(
             {
