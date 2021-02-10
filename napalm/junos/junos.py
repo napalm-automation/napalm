@@ -1029,7 +1029,7 @@ class JunOSDriver(NetworkDriver):
                 policies = [policies]
             # Return True if "next-hop self" was found in any of the policies p
             for p in policies:
-                if nhs_policies[p] is True:
+                if nhs_policies[p] is True or isinstance(nhs_policies[p], list):
                     return True
             return False
 
