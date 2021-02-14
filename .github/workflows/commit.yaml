@@ -31,4 +31,4 @@ jobs:
           pylama .
       - name: Run Tests
         run: |
-          py.test -v -s tests/
+          py.test -v -s test/
