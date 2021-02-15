@@ -48,8 +48,8 @@ jobs:
       - uses: ammaraskar/sphinx-action@master
         with:
           docs-folder: "docs/"
-          # build-command: "sphinx-build -W -b html -d _build/doctrees . _build/html"
-          build-command: make doctest
+          build-command: "sphinx-build -b html -d _build/doctrees . _build/html"
+          # build-command: make doctest
           pre-build-command: |
             python -m pip install -e .
             python -m pip install -r requirements.txt
