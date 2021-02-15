@@ -32,3 +32,15 @@ jobs:
       - name: Run Tests
         run: |
           py.test -v -s test/
+
+  build_docs:
+    needs: std_tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+    - uses: ammaraskar/sphinx-action@master
+      with:
+        docs-folder: "docs/"
+        build-command: "sphinx-build -W -b html -d _build/doctrees . _build/html"
