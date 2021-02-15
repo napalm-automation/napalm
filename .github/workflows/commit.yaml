@@ -5,7 +5,7 @@ jobs:
   std_tests:
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 3
+      max-parallel: 4
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
 
@@ -26,6 +26,15 @@ jobs:
           pip install -r requirements-dev.txt
           python -m pip install -r docs/requirements.txt
 
-      - name: Run Tox
+      - name: Run black
         run: |
-          tox
+          black --check .
+
+      - name: Run linter
+        run: |
+          pylama .
+
+      - name: Run Tests
+        run: |
+          py.test -v -s test/
+          
