@@ -39,18 +39,18 @@ jobs:
   build_docs:
     needs: std_tests
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.7]
+    #strategy:
+    #  matrix:
+    #    python-version: [3.7]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
+#      - name: Setup Python ${{ matrix.python-version }}
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: ${{ matrix.python-version }}
 
 #      - name: Install dependencies
 #        run: |
@@ -62,3 +62,4 @@ jobs:
         with:
           docs-folder: "docs/"
           build-command: "sphinx-build -W -b html -d _build/doctrees . _build/html"
+          pre-build-command: python -m pip install -e .
