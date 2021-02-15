@@ -360,10 +360,7 @@ class EOSDriver(NetworkDriver):
 
         if not self.lock_disable:
             self._lock()
-        if revert_in is not None:
-            raise NotImplementedError(
-                "Commit confirm has not been implemented on this platform."
-            )
+
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
