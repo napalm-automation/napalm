@@ -62,4 +62,8 @@ jobs:
         with:
           docs-folder: "docs/"
           build-command: "sphinx-build -W -b html -d _build/doctrees . _build/html"
-          pre-build-command: python -m pip install -e .
+          pre-build-command: |
+            python -m pip install -e .
+            python -m pip install -r requirements.txt
+            python -m pip install -r requirements-dev.txt
+            python -m pip install -r docs/requirements.txt
