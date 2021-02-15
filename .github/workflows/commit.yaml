@@ -43,7 +43,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v1
 
-      - uses: ktbyers/sphinx-action@master
+      - uses: ammaraskar/sphinx-action@master
         with:
           docs-folder: "docs/"
           build-command: "sphinx-build -W -b html -d _build/doctrees . _build/html"
