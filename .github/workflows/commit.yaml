@@ -7,7 +7,8 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+#        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.9]
 
     steps:
       - name: Checkout repository
@@ -39,29 +40,16 @@ jobs:
   build_docs:
     needs: std_tests
     runs-on: ubuntu-latest
-    #strategy:
-    #  matrix:
-    #    python-version: [3.7]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-#      - name: Setup Python ${{ matrix.python-version }}
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: ${{ matrix.python-version }}
-
-#      - name: Install dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          pip install -r requirements.txt
-#          pip install -r requirements-dev.txt
-
       - uses: ammaraskar/sphinx-action@master
         with:
           docs-folder: "docs/"
-          build-command: "sphinx-build -W -b html -d _build/doctrees . _build/html"
+          # build-command: "sphinx-build -W -b html -d _build/doctrees . _build/html"
+          build-command: make doctest
           pre-build-command: |
             python -m pip install -e .
             python -m pip install -r requirements.txt
