@@ -35,7 +35,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          py.test -v -s test/
+          py.test --cov=napalm --cov-report term-missing -vs --pylama
         
   build_docs:
     needs: std_tests
