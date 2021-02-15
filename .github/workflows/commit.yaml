@@ -23,12 +23,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
+
       - name: Run black
         run: |
           black --check .
+
       - name: Run linter
         run: |
           pylama .
+
       - name: Run Tests
         run: |
           py.test -v -s test/
@@ -38,9 +41,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v1
 
-      - uses: ammaraskar/sphinx-action@master
+      - uses: ktbyers/sphinx-action@master
         with:
           docs-folder: "docs/"
           build-command: "sphinx-build -W -b html -d _build/doctrees . _build/html"
