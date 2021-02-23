@@ -403,11 +403,18 @@ class JunOSDriver(NetworkDriver):
         """Return interfaces counters."""
         query = junos_views.junos_iface_counter_table(self.device)
         query.get()
+        query_logical = junos_views.junos_logical_iface_counter_table(self.device)
+        query_logical.get()
         interface_counters = {}
         for interface, counters in query.items():
             interface_counters[interface] = {
                 k: v if v is not None else -1 for k, v in counters
             }
+        for interface, counters in query_logical.items():
+            interface_counters[interface] = {
+                k: v if v is not None else -1 for k, v in counters
+            }
+
         return interface_counters
 
     def get_environment(self):
