@@ -166,9 +166,9 @@ class NetworkDriver(object):
         :param cls: Instance of the driver class.
         :param template_name: Identifies the template name.
         :param template_source: Custom config template rendered and loaded on device
-        :type template_source optional
+        :type template_source: optional
         :param template_path: Absolute path to directory for the configuration templates
-        :type template_path optional
+        :type template_path: optional
         :param template_vars: Dictionary with arguments to be used when the template is rendered.
         :raise DriverTemplateNotImplemented: No template defined for the device type.
         :raise TemplateNotImplemented: The template specified in template_name does not exist in \
@@ -237,8 +237,7 @@ class NetworkDriver(object):
 
         :param message: Optional - configuration session commit message
         :type message: str
-        :param revert_in: Optional - number of seconds before the configuration will be
-        rolled back using a commit confirm mechanism.
+        :param revert_in: Optional - number of seconds before the configuration will be reverted
         :type revert_in: int|None
         """
         raise NotImplementedError
@@ -1460,7 +1459,7 @@ class NetworkDriver(object):
             {
                 'error': 'unknown host 8.8.8.8.8'
             }
-            """
+        """
         raise NotImplementedError
 
     def get_users(self):

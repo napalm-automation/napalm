@@ -570,10 +570,12 @@ class IOSXR(object):
             with open(filename) as f:
                 configuration = f.read()
 
-        rpc_command = "<CLI><Configuration>{configuration}</Configuration></CLI>".format(
-            configuration=escape_xml(
-                configuration
-            )  # need to escape, otherwise will try to load invalid XML
+        rpc_command = (
+            "<CLI><Configuration>{configuration}</Configuration></CLI>".format(
+                configuration=escape_xml(
+                    configuration
+                )  # need to escape, otherwise will try to load invalid XML
+            )
         )
 
         try:
@@ -710,7 +712,9 @@ class IOSXR(object):
 
         :param rb_id: Rollback a specific number of steps. Default: 1
         """
-        rpc_command = "<Unlock/><Rollback><Previous>{rb_id}</Previous></Rollback><Lock/>".format(
-            rb_id=rb_id
+        rpc_command = (
+            "<Unlock/><Rollback><Previous>{rb_id}</Previous></Rollback><Lock/>".format(
+                rb_id=rb_id
+            )
         )
         self._execute_rpc(rpc_command)

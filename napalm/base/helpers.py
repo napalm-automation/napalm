@@ -147,7 +147,7 @@ def cisco_conf_parse_objects(cfg_section, config):
 
 
 def regex_find_txt(pattern, text, default=""):
-    """""
+    """ ""
     RegEx search for pattern in text. Will try to match the data type of the "default" value
     or return the default value if no match is found.
     This is to parse IOS config like below:

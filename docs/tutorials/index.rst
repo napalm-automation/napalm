@@ -8,7 +8,7 @@ Tutorials
    installation
    lab
    samples
-   first_steps_config
+   changing_the_config
    context_manager
    extend_driver
    wrapup

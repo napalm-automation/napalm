@@ -360,10 +360,7 @@ class EOSDriver(NetworkDriver):
 
         if not self.lock_disable:
             self._lock()
-        if revert_in is not None:
-            raise NotImplementedError(
-                "Commit confirm has not been implemented on this platform."
-            )
+
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
@@ -1361,11 +1358,13 @@ class EOSDriver(NetworkDriver):
                             )
                         except CommandError:
                             # Newer EOS can't mix longer-prefix and detail
-                            command = "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
-                                ipv=ipv,
-                                dest=destination,
-                                longer="longer-prefixes" if longer else "",
-                                _vrf=_vrf,
+                            command = (
+                                "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
+                                    ipv=ipv,
+                                    dest=destination,
+                                    longer="longer-prefixes" if longer else "",
+                                    _vrf=_vrf,
+                                )
                             )
                             vrf_cache.update(
                                 {
