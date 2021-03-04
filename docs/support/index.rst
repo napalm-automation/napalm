@@ -35,9 +35,10 @@ Configuration support matrix
 =====================   ==========  =====   ==========  ==============  ==============
 _                       EOS         Junos   IOS-XR      NX-OS           IOS
 =====================   ==========  =====   ==========  ==============  ==============
-**Config. replace**     Yes         Yes     Yes         Yes             Yes
-**Config. merge**       Yes         Yes     Yes         Yes             Yes
-**Compare config**      Yes         Yes     Yes [#c1]_  Yes [#c4]_      Yes
+**Config Replace**      Yes         Yes     Yes         Yes             Yes
+**Config Merge**        Yes         Yes     Yes         Yes             Yes
+**Commit Confirm**      Yes         No      No          No              No
+**Compare Config**      Yes         Yes     Yes [#c1]_  Yes [#c4]_      Yes
 **Atomic Changes**      Yes         Yes     Yes         Yes/No [#c5]_   Yes/No [#c5]_
 **Rollback**            Yes [#c2]_  Yes     Yes         Yes/No [#c5]_   Yes
 =====================   ==========  =====   ==========  ==============  ==============
