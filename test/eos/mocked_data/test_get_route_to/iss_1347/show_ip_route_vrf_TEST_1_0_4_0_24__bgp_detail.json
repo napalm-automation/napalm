@@ -1,0 +1,34 @@
+{
+    "vrfs": {
+        "TEST": {
+            "routes": {
+                "1.0.4.0/24": {
+                    "kernelProgrammed": true,
+                    "directlyConnected": false,
+                    "routeAction": "forward",
+                    "routeLeaked": false,
+                    "vias": [
+                        {
+                            "vtepAddr": "169.254.224.6",
+                            "routerMac": "98:5d:82:de:ca:fe",
+                            "vni": 21631
+                        },
+                        {
+                            "vtepAddr": "169.254.224.6",
+                            "routerMac": "98:5d:82:c0:ff:ee",
+                            "vni": 21631
+                        }
+                    ],
+                    "metric": 0,
+                    "hardwareProgrammed": true,
+                    "routeType": "eBGP",
+                    "preference": 200
+                }
+            },
+            "allRoutesProgrammedKernel": true,
+            "routingDisabled": false,
+            "allRoutesProgrammedHardware": true,
+            "defaultRouteState": "reachable"
+        }
+    }
+}

@@ -360,10 +360,7 @@ class EOSDriver(NetworkDriver):
 
         if not self.lock_disable:
             self._lock()
-        if revert_in is not None:
-            raise NotImplementedError(
-                "Commit confirm has not been implemented on this platform."
-            )
+
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
@@ -600,6 +597,7 @@ class EOSDriver(NetworkDriver):
                         "is_up": peer_data["peerState"] == "Established",
                         "is_enabled": is_enabled,
                         "uptime": int(time.time() - float(peer_data["upDownTime"])),
+                        "description": peer_data.get("description", ""),
                     }
                     bgp_counters[vrf]["peers"][napalm.base.helpers.ip(peer)] = peer_info
         lines = []
@@ -663,6 +661,13 @@ class EOSDriver(NetworkDriver):
                     "uptime": 0,
                     "is_enabled": True,
                 }
+            if (
+                "description" in bgp_counters[vrf]["peers"][peer_addr]
+                and not data["description"]
+            ):
+                data["description"] = bgp_counters[vrf]["peers"][peer_addr][
+                    "description"
+                ]
             bgp_counters[vrf]["peers"][peer_addr].update(data)
         if "default" in bgp_counters:
             bgp_counters["global"] = bgp_counters.pop("default")
@@ -1330,6 +1335,9 @@ class EOSDriver(NetworkDriver):
                 if protocol == "bgp" or route_protocol.lower() in ("ebgp", "ibgp"):
                     nexthop_interface_map = {}
                     for next_hop in route_details.get("vias"):
+                        if "vtepAddr" in next_hop:
+                            next_hop["nexthopAddr"] = next_hop["vtepAddr"]
+                            next_hop["interface"] = "vxlan1"
                         nexthop_ip = napalm.base.helpers.ip(next_hop.get("nexthopAddr"))
                         nexthop_interface_map[nexthop_ip] = next_hop.get("interface")
                     metric = route_details.get("metric")
@@ -1387,11 +1395,18 @@ class EOSDriver(NetworkDriver):
                             remote_as = napalm.base.helpers.as_number(
                                 as_path.strip("()").split()[-1]
                             )
-                        remote_address = napalm.base.helpers.ip(
-                            bgp_route_details.get("routeDetail", {})
-                            .get("peerEntry", {})
-                            .get("peerAddr", "")
-                        )
+                        try:
+                            remote_address = napalm.base.helpers.ip(
+                                bgp_route_details.get("routeDetail", {})
+                                .get("peerEntry", {})
+                                .get("peerAddr", "")
+                            )
+                        except AddrFormatError:
+                            remote_address = napalm.base.helpers.ip(
+                                bgp_route_details.get("peerEntry", {}).get(
+                                    "peerAddr", ""
+                                )
+                            )
                         local_preference = bgp_route_details.get("localPreference")
                         next_hop = napalm.base.helpers.ip(
                             bgp_route_details.get("nextHop")

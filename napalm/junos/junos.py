@@ -99,6 +99,18 @@ class JunOSDriver(NetworkDriver):
         self.junos_config_database = optional_args.get(
             "junos_config_database", "committed"
         )
+        self.junos_config_inheritance = optional_args.get(
+            "junos_config_inherit", "inherit"
+        )
+        self.junos_config_groups = optional_args.get("junos_config_groups", "groups")
+        self.junos_config_options = {
+            "database": self.junos_config_database,
+            "inherit": self.junos_config_inheritance,
+            "groups": self.junos_config_groups,
+        }
+        self.junos_config_options = optional_args.get(
+            "junos_config_options", self.junos_config_options
+        )
 
         if self.key_file:
             self.device = Device(
@@ -1029,7 +1041,7 @@ class JunOSDriver(NetworkDriver):
                 policies = [policies]
             # Return True if "next-hop self" was found in any of the policies p
             for p in policies:
-                if nhs_policies[p] is True:
+                if nhs_policies[p] is True or isinstance(nhs_policies[p], list):
                     return True
             return False
 
@@ -1130,10 +1142,10 @@ class JunOSDriver(NetworkDriver):
 
         if group:
             bgp = junos_views.junos_bgp_config_group_table(self.device)
-            bgp.get(group=group, options={"database": self.junos_config_database})
+            bgp.get(group=group, options=self.junos_config_options)
         else:
             bgp = junos_views.junos_bgp_config_table(self.device)
-            bgp.get(options={"database": self.junos_config_database})
+            bgp.get(options=self.junos_config_options)
             neighbor = ""  # if no group is set, no neighbor should be set either
         bgp_items = bgp.items()
 
@@ -1146,7 +1158,7 @@ class JunOSDriver(NetworkDriver):
         # The resulting dict (nhs_policies) will be used by _check_nhs to determine if "nhs"
         # is configured or not in the policies applied to a BGP neighbor
         policy = junos_views.junos_policy_nhs_config_table(self.device)
-        policy.get(options={"database": self.junos_config_database})
+        policy.get(options=self.junos_config_options)
         nhs_policies = dict()
         for policy_name, is_nhs_list in policy.items():
             # is_nhs_list is a list with one element. Ex: [('is_nhs', True)]
@@ -1484,7 +1496,7 @@ class JunOSDriver(NetworkDriver):
     def get_ntp_peers(self):
         """Return the NTP peers configured on the device."""
         ntp_table = junos_views.junos_ntp_peers_config_table(self.device)
-        ntp_table.get(options={"database": self.junos_config_database})
+        ntp_table.get(options=self.junos_config_options)
 
         ntp_peers = ntp_table.items()
 
@@ -1496,7 +1508,7 @@ class JunOSDriver(NetworkDriver):
     def get_ntp_servers(self):
         """Return the NTP servers configured on the device."""
         ntp_table = junos_views.junos_ntp_servers_config_table(self.device)
-        ntp_table.get(options={"database": self.junos_config_database})
+        ntp_table.get(options=self.junos_config_options)
 
         ntp_servers = ntp_table.items()
 
@@ -1771,7 +1783,7 @@ class JunOSDriver(NetworkDriver):
         snmp_information = {}
 
         snmp_config = junos_views.junos_snmp_config_table(self.device)
-        snmp_config.get(options={"database": self.junos_config_database})
+        snmp_config.get(options=self.junos_config_options)
         snmp_items = snmp_config.items()
 
         if not snmp_items:
@@ -1808,7 +1820,7 @@ class JunOSDriver(NetworkDriver):
         probes = {}
 
         probes_table = junos_views.junos_rpm_probes_config_table(self.device)
-        probes_table.get(options={"database": self.junos_config_database})
+        probes_table.get(options=self.junos_config_options)
         probes_table_items = probes_table.items()
 
         for probe_test in probes_table_items:
@@ -2113,7 +2125,7 @@ class JunOSDriver(NetworkDriver):
         _DEFAULT_USER_DETAILS = {"level": 20, "password": "", "sshkeys": []}
         root = {}
         root_table = junos_views.junos_root_table(self.device)
-        root_table.get(options={"database": self.junos_config_database})
+        root_table.get(options=self.junos_config_options)
         root_items = root_table.items()
         for user_entry in root_items:
             username = "root"
@@ -2144,7 +2156,7 @@ class JunOSDriver(NetworkDriver):
         _DEFAULT_USER_DETAILS = {"level": 0, "password": "", "sshkeys": []}
 
         users_table = junos_views.junos_users_table(self.device)
-        users_table.get(options={"database": self.junos_config_database})
+        users_table.get(options=self.junos_config_options)
         users_items = users_table.items()
         root_user = self._get_root()
 
@@ -2292,7 +2304,7 @@ class JunOSDriver(NetworkDriver):
         network_instances = {}
 
         ri_table = junos_views.junos_nw_instances_table(self.device)
-        ri_table.get(options={"database": self.junos_config_database})
+        ri_table.get(options=self.junos_config_options)
         ri_entries = ri_table.items()
 
         vrf_interfaces = []

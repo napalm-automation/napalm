@@ -837,10 +837,10 @@ class NXOSDriver(NXOSDriverBase):
             "sys_ver_str", show_version.get("kickstart_ver_str", "")
         )
 
-        uptime_days = show_version.get("kern_uptm_days", 0)
-        uptime_hours = show_version.get("kern_uptm_hrs", 0)
-        uptime_mins = show_version.get("kern_uptm_mins", 0)
-        uptime_secs = show_version.get("kern_uptm_secs", 0)
+        uptime_days = int(show_version.get("kern_uptm_days", 0))
+        uptime_hours = int(show_version.get("kern_uptm_hrs", 0))
+        uptime_mins = int(show_version.get("kern_uptm_mins", 0))
+        uptime_secs = int(show_version.get("kern_uptm_secs", 0))
 
         uptime = 0
         uptime += uptime_days * 24 * 60 * 60
