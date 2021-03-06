@@ -390,7 +390,10 @@ class IOSXRNETCONFDriver(NetworkDriver):
             os_version = napalm.base.helpers.convert(
                 str,
                 self._find_txt(
-                    basic_info_tree[0], "./imo:software-revision", default="", namespaces=C.NS
+                    basic_info_tree[0],
+                    "./imo:software-revision",
+                    default="",
+                    namespaces=C.NS,
                 ),
             )
             model = napalm.base.helpers.convert(
@@ -402,7 +405,10 @@ class IOSXRNETCONFDriver(NetworkDriver):
             serial = napalm.base.helpers.convert(
                 str,
                 self._find_txt(
-                    basic_info_tree[0], "./imo:serial-number", default="", namespaces=C.NS
+                    basic_info_tree[0],
+                    "./imo:serial-number",
+                    default="",
+                    namespaces=C.NS,
                 ),
             )
         else:
