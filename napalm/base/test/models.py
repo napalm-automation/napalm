@@ -1,6 +1,8 @@
 from typing import TypedDict
 
-configuration = TypedDict("configuration", {"running": str, "candidate": str, "startup": str})
+configuration = TypedDict(
+    "configuration", {"running": str, "candidate": str, "startup": str}
+)
 
 alive = TypedDict("alive", {"is_alive": bool})
 
