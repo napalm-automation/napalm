@@ -1,4 +1,7 @@
-from typing import TypedDict
+try:
+    from typing import TypedDict
+except ImportError:
+    from typing_extensions import TypedDict
 
 configuration = TypedDict(
     "configuration", {"running": str, "candidate": str, "startup": str}
