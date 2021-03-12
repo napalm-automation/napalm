@@ -2383,7 +2383,9 @@ class JunOSDriver(NetworkDriver):
                 if k == "vlan_name":
                     _vlan_data["name"] = v
                 if k == "interfaces":
-                    if isinstance(v, str):
+                    if v is None:
+                        _vlan_data["interfaces"] = []
+                    elif isinstance(v, str):
                         if bool(re.match(unmatch_pattern, v)):
                             _vlan_data["interfaces"] = []
                         else:
