@@ -27,4 +27,9 @@
         <l2rtb-interface-name>xe-1/0/0.0</l2rtb-interface-name>
         <l2rtb-interface-name>xe-1/2/0.0</l2rtb-interface-name>
     </l2ald-bridge-instance-group>
+    <l2ald-bridge-instance-group>
+        <l2rtb-name>default-switch</l2rtb-name>
+        <l2rtb-bridging-domain>VLAN4001</l2rtb-bridging-domain>
+        <l2rtb-bridge-vlan>4001</l2rtb-bridge-vlan>
+    </l2ald-bridge-instance-group>
 </l2ald-bridge-instance-information>
