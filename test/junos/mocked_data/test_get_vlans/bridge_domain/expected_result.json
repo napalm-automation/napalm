@@ -1,0 +1,27 @@
+{
+    "10": {
+        "name": "VLAN10",
+        "interfaces": [
+            "ge-2/0/1.0",
+            "ge-2/0/2.0",
+            "ge-2/0/3.0"
+        ]
+    },
+    "2": {
+        "name": "VLAN2",
+        "interfaces": [
+            "ge-2/0/1.0"
+        ]
+    },
+    "300": {
+        "name": "VLAN300",
+        "interfaces": []
+    },
+    "4000": {
+        "name": "VLAN4000",
+        "interfaces": [
+            "xe-1/0/0.0",
+            "xe-1/2/0.0"
+        ]
+    }
+}
