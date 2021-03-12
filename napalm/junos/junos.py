@@ -2362,3 +2362,34 @@ class JunOSDriver(NetworkDriver):
         if name not in network_instances:
             return {}
         return {name: network_instances[name]}
+
+    def get_vlans(self):
+        result = {}
+        switch_style = self.device.facts.get("switch_style", "")
+        if switch_style == "VLAN_L2NG":
+            vlan = junos_views.junos_vlans_table_switch_l2ng(self.device)
+        elif switch_style == "BRIDGE_DOMAIN":
+            vlan = junos_views.junos_vlans_table(self.device)
+        elif switch_style == "VLAN":
+            vlan = junos_views.junos_vlans_table_switch(self.device)
+        else:  # switch_style == "NONE"
+            return result
+
+        vlan.get()
+        unmatch_pattern = "l2rtb-interface-name|None|l2ng-l2rtb-vlan-member-interface"
+        for vlan_id, vlan_data in vlan.items():
+            _vlan_data = {}
+            for k, v in vlan_data:
+                if k == "vlan_name":
+                    _vlan_data["name"] = v
+                if k == "interfaces":
+                    if isinstance(v, str):
+                        if bool(re.match(unmatch_pattern, v)):
+                            _vlan_data["interfaces"] = []
+                        else:
+                            _vlan_data["interfaces"] = [v.replace("*", "")]
+                    else:
+                        _vlan_data["interfaces"] = [_v.replace("*", "") for _v in v]
+
+            result[vlan_id] = _vlan_data
+        return result
