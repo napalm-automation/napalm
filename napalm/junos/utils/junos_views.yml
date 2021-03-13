@@ -121,6 +121,42 @@ junos_iface_counter_table:
 
 
 junos_iface_counter_view:
+  fields:
+    logical_interfaces: junos_logical_iface_counter_table
+  groups:
+    ts: traffic-statistics
+    rxerrs: input-error-list
+    txerrs: output-error-list
+    ethernet_traffic_types: ethernet-mac-statistics
+
+
+  # fields that are part of groups are called
+  # "fields_<group-name>"
+  fields_ethernet_traffic_types:
+    rx_broadcast_packets: { input-broadcasts: int }
+    tx_broadcast_packets: { output-broadcasts: int }
+    rx_unicast_packets: { input-unicasts: int }
+    tx_unicast_packets: { output-unicasts: int }
+    rx_multicast_packets: { input-multicasts: int }
+    tx_multicast_packets: { output-multicasts: int }
+
+  fields_ts:
+    rx_octets: { input-bytes: int }
+    tx_octets: { output-bytes: int }
+
+  fields_rxerrs:
+    rx_errors: { input-errors: int }
+    rx_discards: { input-discards: int }
+
+  fields_txerrs:
+    tx_errors: { output-errors: int }
+    tx_discards: { output-drops: int }
+
+junos_logical_iface_counter_table:
+  item: logical-interface
+  view: junos_logical_iface_counter_view
+
+junos_logical_iface_counter_view:
   groups:
     ts: traffic-statistics
     rxerrs: input-error-list

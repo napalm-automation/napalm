@@ -405,9 +405,17 @@ class JunOSDriver(NetworkDriver):
         query.get()
         interface_counters = {}
         for interface, counters in query.items():
-            interface_counters[interface] = {
-                k: v if v is not None else -1 for k, v in counters
-            }
+            _interface_counters = {}
+            for k, v in counters:
+                if k == "logical_interfaces":
+                    for _interface, _counters in v.items():
+                        interface_counters[_interface] = {
+                            k: v if v is not None else -1 for k, v in _counters
+                        }
+                else:
+                    _interface_counters[k] = v if v is not None else -1
+
+            interface_counters[interface] = _interface_counters
         return interface_counters
 
     def get_environment(self):
