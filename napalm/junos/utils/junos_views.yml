@@ -755,7 +755,7 @@ junos_users_table_view:
 
 junos_root_table:
   get: system
-  key: root-authentication
+  key: root-authentication/encrypted-password
   view: junos_root_table_view
 
 junos_root_table_view:
