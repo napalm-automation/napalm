@@ -292,16 +292,46 @@ class JunOSDriver(NetworkDriver):
 
     def commit_config(self, message="", revert_in=None):
         """Commit configuration."""
+        import ipdb; ipdb.set_trace()
+        commit_args = {}
         if revert_in is not None:
-            raise NotImplementedError(
-                "Commit confirm has not been implemented on this platform."
-            )
-        commit_args = {"comment": message} if message else {}
+            if revert_in % 60 != 0:
+                raise ValueError(
+                    "For Junos devices revert_in must be a multiple of 60 (60, 120, 180...)"
+                )
+            else:
+                juniper_confirm_time = int(revert_in / 60)
+                commit_args["confirm"] = juniper_confirm_time
+
+        if message:
+            commit_args["comment"] = message
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
         if not self.lock_disable and not self.session_config_lock:
             self._unlock()
         if self.config_private:
             self.device.rpc.close_configuration()
+
+    def has_pending_commit(self):
+        """Boolean indicating if there is a commit-confirm in process."""
+
+        import ipdb; ipdb.set_trace
+        pending_commits = self.device.rpc.get_commit_information()
+
+        commit0 = pending_commits.find("./commit-history")       
+        sequence_number = commit0.find("./sequence-number").text
+        commit_comment = commit0.find("./comment").text
+        commit_client = commit0.find("./client").text
+
+        if int(sequence_number) != 0:
+            raise ValueError(f"Invalid sequence number detected in has_pending_commit: {sequence_number}")
+        if commit_client != "netconf":
+            raise ValueError(f"Invalid client detected: should be 'netconf' if NAPALM controlled process")
+
+        # Msg from Jnpr: 'commit confirmed, rollback in 5mins'
+        if "commit confirmed" in commit_comment and "rollback in" in commit_comment:
+            return True
+        else:
+            return False
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
