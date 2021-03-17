@@ -292,7 +292,6 @@ class JunOSDriver(NetworkDriver):
 
     def commit_config(self, message="", revert_in=None):
         """Commit configuration."""
-        import ipdb; ipdb.set_trace()
         commit_args = {}
         if revert_in is not None:
             if revert_in % 60 != 0:
@@ -306,32 +305,58 @@ class JunOSDriver(NetworkDriver):
         if message:
             commit_args["comment"] = message
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
+        # FIX: might have to fix the session locking wrt commit confirm
         if not self.lock_disable and not self.session_config_lock:
             self._unlock()
+        # FIX: look into this also
         if self.config_private:
             self.device.rpc.close_configuration()
 
     def has_pending_commit(self):
         """Boolean indicating if there is a commit-confirm in process."""
-
-        import ipdb; ipdb.set_trace
-        pending_commits = self.device.rpc.get_commit_information()
-
-        commit0 = pending_commits.find("./commit-history")       
-        sequence_number = commit0.find("./sequence-number").text
-        commit_comment = commit0.find("./comment").text
-        commit_client = commit0.find("./client").text
-
-        if int(sequence_number) != 0:
-            raise ValueError(f"Invalid sequence number detected in has_pending_commit: {sequence_number}")
-        if commit_client != "netconf":
-            raise ValueError(f"Invalid client detected: should be 'netconf' if NAPALM controlled process")
-
-        # Msg from Jnpr: 'commit confirmed, rollback in 5mins'
-        if "commit confirmed" in commit_comment and "rollback in" in commit_comment:
+        pending_commit = self._get_pending_commits()
+        if pending_commit:
             return True
         else:
             return False
+
+    def _get_pending_commits(self):
+        """
+        Return a dictionary of commit sequences with pending commit confirms and
+        corresponding time when confirm needs to happen by. This is converted to seconds
+        since Juniper reports this in minutes.
+
+        Example:
+        {'commit_0': 522}
+
+        Will only report/return commit_0.
+
+        Will return an empty dictionary if there are no pending commit-confirms
+        """
+        pending_commits = self.device.rpc.get_commit_information()
+
+        commit0 = pending_commits.find("./commit-history")
+        sequence_number = commit0.find("./sequence-number").text
+        commit_comment = commit0.find("./comment").text
+
+        if int(sequence_number) != 0:
+            raise ValueError(
+                f"Invalid sequence number detected in has_pending_commit: {sequence_number}"
+            )
+
+        # Msg from Jnpr: 'commit confirmed, rollback in 5mins'
+        if "commit confirmed" in commit_comment and "rollback in" in commit_comment:
+            match = re.search(r"rollback in (\d+)mins", commit_comment)
+            if match:
+                confirm_time = match.group(1)
+                confirm_time = int(confirm_time) * 60
+                return {f"commit_{sequence_number}": confirm_time}
+
+        return {}
+
+    def confirm_commit(self):
+        """Send final commit to confirm an in-proces commit that requires confirmation."""
+        self.device.cu.commit(ignore_warning=self.ignore_warning)
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
