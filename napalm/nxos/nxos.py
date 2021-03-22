@@ -153,6 +153,7 @@ class NXOSDriverBase(NetworkDriver):
             with open(filename, "r") as f:
                 self.merge_candidate += f.read()
         else:
+            assert isinstance(config, str)
             self.merge_candidate += config
         self.replace = False
         self.loaded = True
