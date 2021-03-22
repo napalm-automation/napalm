@@ -266,7 +266,9 @@ class TestGettersNetworkDriver(object):
             result = result and self._test_model(models.PowerDict, power_data)
 
         for temperature, temperature_data in environment["temperature"].items():
-            result = result and self._test_model(models.TemperatureDict, temperature_data)
+            result = result and self._test_model(
+                models.TemperatureDict, temperature_data
+            )
 
         for cpu, cpu_data in environment["cpu"].items():
             result = result and self._test_model(models.CPUDict, cpu_data)
@@ -342,7 +344,9 @@ class TestGettersNetworkDriver(object):
             for remote_as, neighbor_list in vrf_ases.items():
                 result = result and isinstance(remote_as, int)
                 for neighbor in neighbor_list:
-                    result = result and self._test_model(models.PeerDetailsDict, neighbor)
+                    result = result and self._test_model(
+                        models.PeerDetailsDict, neighbor
+                    )
 
         self.assertTrue(result)
 
@@ -420,9 +424,13 @@ class TestGettersNetworkDriver(object):
             ipv4 = interface_details.get("ipv4", {})
             ipv6 = interface_details.get("ipv6", {})
             for ip, ip_details in ipv4.items():
-                result = result and self._test_model(models.InterfacesIPDictEntry, ip_details)
+                result = result and self._test_model(
+                    models.InterfacesIPDictEntry, ip_details
+                )
             for ip, ip_details in ipv6.items():
-                result = result and self._test_model(models.InterfacesIPDictEntry, ip_details)
+                result = result and self._test_model(
+                    models.InterfacesIPDictEntry, ip_details
+                )
 
         self.assertTrue(result)
 
@@ -434,9 +442,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_mac_address_table) > 0
 
         for mac_table_entry in get_mac_address_table:
-            result = result and self._test_model(
-                models.MACAdressTable, mac_table_entry
-            )
+            result = result and self._test_model(models.MACAdressTable, mac_table_entry)
 
         self.assertTrue(result)
 
@@ -469,7 +475,9 @@ class TestGettersNetworkDriver(object):
             result = result and self._test_model(models.SNMPDict, get_snmp_information)
 
         for community, community_data in get_snmp_information["community"].items():
-            result = result and self._test_model(models.SNMPCommunityDict, community_data)
+            result = result and self._test_model(
+                models.SNMPCommunityDict, community_data
+            )
 
         self.assertTrue(result)
 
@@ -514,7 +522,9 @@ class TestGettersNetworkDriver(object):
         result = result and self._test_model(models.PingDict, ping_results)
 
         for ping_result in ping_results.get("results", []):
-            result = result and self._test_model(models.PingResultDictEntry, ping_result)
+            result = result and self._test_model(
+                models.PingResultDictEntry, ping_result
+            )
 
         self.assertTrue(result)
 
@@ -530,7 +540,9 @@ class TestGettersNetworkDriver(object):
 
         for hope_id, hop_result in traceroute_results.items():
             for probe_id, probe_result in hop_result.get("probes", {}).items():
-                result = result and self._test_model(models.TracerouteDict, probe_result)
+                result = result and self._test_model(
+                    models.TracerouteDict, probe_result
+                )
 
         self.assertTrue(result)
 
