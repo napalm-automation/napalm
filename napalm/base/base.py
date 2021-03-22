@@ -387,7 +387,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_lldp_neighbors(self) -> Dict[str, models.LLDPNeighborDict]:
+    def get_lldp_neighbors(self) -> Dict[str, List[models.LLDPNeighborDict]]:
         """
         Returns a dictionary where the keys are local ports and the value is a list of \
         dictionaries with the following information:
@@ -855,7 +855,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_arp_table(self, vrf: str = "") -> models.ARPTableDict:
+    def get_arp_table(self, vrf: str = "") -> List[models.ARPTableDict]:
 
         """
         Returns a list of dictionaries having the following set of keys:
@@ -967,7 +967,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_interfaces_ip(self) -> models.InterfacesIPDict:
+    def get_interfaces_ip(self) -> Dict[str, models.InterfacesIPDict]:
 
         """
         Returns all configured IP addresses on all interfaces as a dictionary of dictionaries.
@@ -1149,7 +1149,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_snmp_information(self) -> Dict[str, models.SNMPDict]:
+    def get_snmp_information(self) -> models.SNMPDict:
 
         """
         Returns a dict of dicts containing SNMP configuration.
