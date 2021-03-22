@@ -330,7 +330,9 @@ ProbeTestResultDict = TypedDict(
     },
 )
 
-PingResultDictEntry = TypedDict("PingResultDictEntry", {"ip_address": str, "rtt": float})
+PingResultDictEntry = TypedDict(
+    "PingResultDictEntry", {"ip_address": str, "rtt": float}
+)
 
 PingDict = TypedDict(
     "PingDict",
@@ -346,18 +348,21 @@ PingDict = TypedDict(
 )
 
 PingResultDict = TypedDict(
-    "PingResultDict", {"success": Optional[PingDict], "error": Optional[str]}
+    "PingResultDict", {"success": Optional[PingDict], "error": Optional[str]}, total=False
 )
 
 TracerouteDict = TypedDict(
     "TracerouteDict", {"rtt": float, "ip_address": str, "host_name": str}
 )
 
-TracerouteResultDictEntry = TypedDict("TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]})
+TracerouteResultDictEntry = TypedDict(
+    "TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]}
+)
 
 TracerouteResultDict = TypedDict(
     "TracerouteResultDict",
     {"success": Optional[Dict[int, TracerouteResultDictEntry]], "error": Optional[str]},
+    total=False
 )
 
 UsersDict = TypedDict("UsersDict", {"level": int, "password": str, "sshkeys": List})
@@ -366,27 +371,24 @@ OpticsStateDict = TypedDict(
     "OpticsStateDict", {"instant": float, "avg": float, "min": float, "max": float}
 )
 
-OpticsStatePerChannelDict = TypedDict("OpticsStatePerChannelDict", {
-    "input_power": OpticsStateDict,
-    "output_power": OpticsStateDict,
-    "laser_bias_current": OpticsStateDict
-})
-
-OpticsPerChannelDict = TypedDict("OpticsPerChannelDict", {
-    "index": int,
-    "state": OpticsStatePerChannelDict
-})
-
-OpticsPhysicalChannelsDict = TypedDict("OpticsPhysicalChannelsDict", {
-    "channels": OpticsPerChannelDict
-})
-
-OpticsDict = TypedDict(
-    "OpticsDict",
+OpticsStatePerChannelDict = TypedDict(
+    "OpticsStatePerChannelDict",
     {
-        "physical_channels": OpticsPhysicalChannelsDict
-    }
+        "input_power": OpticsStateDict,
+        "output_power": OpticsStateDict,
+        "laser_bias_current": OpticsStateDict,
+    },
 )
+
+OpticsPerChannelDict = TypedDict(
+    "OpticsPerChannelDict", {"index": int, "state": OpticsStatePerChannelDict}
+)
+
+OpticsPhysicalChannelsDict = TypedDict(
+    "OpticsPhysicalChannelsDict", {"channels": OpticsPerChannelDict}
+)
+
+OpticsDict = TypedDict("OpticsDict", {"physical_channels": OpticsPhysicalChannelsDict})
 
 ConfigDict = TypedDict("ConfigDict", {"running": str, "startup": str, "candidate": str})
 
