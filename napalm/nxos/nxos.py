@@ -26,26 +26,21 @@ from builtins import super
 from collections import defaultdict
 
 # import third party lib
-from typing import (
-    Optional,
-    Dict,
-    List,
-    Union,
-    Any,
-    cast,
-    Callable,
-    TypeVar,
-    DefaultDict,
-)
+from typing import Optional, Dict, List, Union, Any
 
-from typing_extensions import TypedDict
-
+from requests.exceptions import ConnectionError
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from netmiko import file_transfer
-from requests.exceptions import ConnectionError
 
-import napalm.base.constants as c
+from napalm.base.test import models
+from napalm.nxapi_plumbing import Device as NXOSDevice
+from napalm.nxapi_plumbing import (
+    NXAPIAuthError,
+    NXAPIConnectionError,
+    NXAPICommandError,
+)
+import json
 
 # import NAPALM Base
 import napalm.base.helpers
@@ -321,7 +316,7 @@ class NXOSDriverBase(NetworkDriver):
         size: int = c.PING_SIZE,
         count: int = c.PING_COUNT,
         vrf: str = c.PING_VRF,
-        source_interface: str =c.PING_SOURCE_INTERFACE,
+        source_interface: str = c.PING_SOURCE_INTERFACE,
     ) -> models.PingResultDict:
         """
         Execute ping on the device and returns a dictionary with the result.
@@ -569,7 +564,7 @@ class NXOSDriverBase(NetworkDriver):
             fobj.write(config)
         return filename
 
-    def _disable_confirmation(self) -> None:
+    def _disable_confirmation(self) -> str:
         self._send_command_list(["terminal dont-ask"])
 
     def get_config(
