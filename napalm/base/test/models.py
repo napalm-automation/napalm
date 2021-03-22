@@ -92,23 +92,6 @@ EnvironmentDict = TypedDict(
         "fans": Dict[str, FanDict],
         "temperature": Dict[str, TemperatureDict],
         "power": Dict[str, PowerDict],
-        "cpu": Dict[int, CPUDict],
-        "memory": MemoryDict,
-    },
-)
-
-MemoryDict = TypedDict("MemoryDict", {"used_ram": int, "available_ram": int})
-
-FanDict = TypedDict("FanDict", {"status": bool})
-
-CPUDict = TypedDict("CPUDict", {"%usage": float})
-
-EnvironmentDict = TypedDict(
-    "EnvironmentDict",
-    {
-        "fans": Dict[str, FanDict],
-        "temperature": Dict[str, TemperatureDict],
-        "power": Dict[str, PowerDict],
         "cpu": Dict[str, CPUDict],
         "memory": Dict[str, MemoryDict],
     },
@@ -374,7 +357,9 @@ PingDict = TypedDict(
 )
 
 PingResultDict = TypedDict(
-    "PingResultDict", {"success": Optional[PingDict], "error": Optional[str]}, total=False
+    "PingResultDict",
+    {"success": PingDict, "error": str},
+    total=False,
 )
 
 TracerouteDict = TypedDict(
@@ -382,7 +367,6 @@ TracerouteDict = TypedDict(
 )
 
 TracerouteResultDictEntry = TypedDict(
-<<<<<<< HEAD
     "TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]}, total=False
 )
 
@@ -423,8 +407,8 @@ TracerouteResultDictEntry = TypedDict("TracerouteResultDictEntry", {"probes": Di
 
 TracerouteResultDict = TypedDict(
     "TracerouteResultDict",
-    {"success": Optional[Dict[int, TracerouteResultDictEntry]], "error": Optional[str]},
-    total=False
+    {"success": Dict[int, TracerouteResultDictEntry], "error": str},
+    total=False,
 )
 
 UsersDict = TypedDict("UsersDict", {"level": int, "password": str, "sshkeys": List})

@@ -6,7 +6,7 @@ Reimplemented by ktbyers to support XML-RPC in addition to JSON-RPC
 from __future__ import print_function, unicode_literals
 
 from builtins import super
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Union, Any
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -137,6 +137,7 @@ class RPCClient(RPCBase):
             method = self.cmd_method
         if isinstance(commands, string_types):
             commands = [commands]
+
 
         raw_text = True if method == "cli_ascii" else False
 

@@ -1159,7 +1159,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_snmp_information(self) -> Dict[str, models.SNMPDict]:
+    def get_snmp_information(self) -> models.SNMPDict:
 
         """
         Returns a dict of dicts containing SNMP configuration.
