@@ -1,0 +1,114 @@
+<vlan-information>
+    <vlan-terse/>
+    <vlan>
+        <vlan-instance>0</vlan-instance>
+        <vlan-name>VLAN10</vlan-name>
+        <vlan-create-time>Fri Mar 12 11:32:21 2021
+        </vlan-create-time>
+        <vlan-status>Enabled</vlan-status>
+        <vlan-owner>static</vlan-owner>
+        <vlan-tag>10</vlan-tag>
+        <vlan-tag-string>10</vlan-tag-string>
+        <vlan-index>53</vlan-index>
+        <vlan-protocol-port>Port Mode</vlan-protocol-port>
+        <vlan-members-count>3</vlan-members-count>
+        <vlan-members-upcount>1</vlan-members-upcount>
+        <vlan-detail>
+            <vlan-member-list>
+                <vlan-member>
+                    <vlan-member-interface>ge-0/0/1.0*</vlan-member-interface>
+                </vlan-member>
+                <vlan-member>
+                    <vlan-member-interface>ge-0/0/2.0</vlan-member-interface>
+                </vlan-member>
+                <vlan-member>
+                    <vlan-member-interface>ge-0/0/3.0</vlan-member-interface>
+                </vlan-member>
+            </vlan-member-list>
+        </vlan-detail>
+    </vlan>
+    <vlan>
+        <vlan-instance>0</vlan-instance>
+        <vlan-name>VLAN2</vlan-name>
+        <vlan-create-time>Fri Mar 12 11:32:21 2021
+        </vlan-create-time>
+        <vlan-status>Enabled</vlan-status>
+        <vlan-owner>static</vlan-owner>
+        <vlan-tag>2</vlan-tag>
+        <vlan-tag-string>2</vlan-tag-string>
+        <vlan-index>54</vlan-index>
+        <vlan-protocol-port>Port Mode</vlan-protocol-port>
+        <vlan-members-count>1</vlan-members-count>
+        <vlan-members-upcount>1</vlan-members-upcount>
+        <vlan-detail>
+            <vlan-member-list>
+                <vlan-member>
+                    <vlan-member-interface>ge-0/0/1.0*</vlan-member-interface>
+                </vlan-member>
+            </vlan-member-list>
+        </vlan-detail>
+    </vlan>
+    <vlan>
+        <vlan-instance>0</vlan-instance>
+        <vlan-name>VLAN300</vlan-name>
+        <vlan-create-time>Fri Mar 12 11:32:21 2021
+        </vlan-create-time>
+        <vlan-status>Enabled</vlan-status>
+        <vlan-owner>static</vlan-owner>
+        <vlan-tag>300</vlan-tag>
+        <vlan-tag-string>300</vlan-tag-string>
+        <vlan-index>55</vlan-index>
+        <vlan-protocol-port>Port Mode</vlan-protocol-port>
+        <vlan-detail>
+            <vlan-member-list>
+                <vlan-member>
+                    <vlan-member-interface>None</vlan-member-interface>
+                </vlan-member>
+            </vlan-member-list>
+        </vlan-detail>
+    </vlan>
+    <vlan>
+        <vlan-instance>0</vlan-instance>
+        <vlan-name>VLAN4000</vlan-name>
+        <vlan-create-time>Fri Mar 12 11:32:21 2021
+        </vlan-create-time>
+        <vlan-status>Enabled</vlan-status>
+        <vlan-owner>static</vlan-owner>
+        <vlan-tag>4000</vlan-tag>
+        <vlan-tag-string>4000</vlan-tag-string>
+        <vlan-index>56</vlan-index>
+        <vlan-protocol-port>Port Mode</vlan-protocol-port>
+        <vlan-members-count>2</vlan-members-count>
+        <vlan-members-upcount>0</vlan-members-upcount>
+        <vlan-detail>
+            <vlan-member-list>
+                <vlan-member>
+                    <vlan-member-interface>ge-0/0/4.0</vlan-member-interface>
+                </vlan-member>
+                <vlan-member>
+                    <vlan-member-interface>ge-0/0/5.0</vlan-member-interface>
+                </vlan-member>
+            </vlan-member-list>
+        </vlan-detail>
+    </vlan>
+    <vlan>
+        <vlan-instance>0</vlan-instance>
+        <vlan-name>default</vlan-name>
+        <vlan-create-time>Fri Dec 25 07:14:42 2020
+        </vlan-create-time>
+        <vlan-status>Enabled</vlan-status>
+        <vlan-owner>static</vlan-owner>
+        <vlan-tag>0</vlan-tag>
+        <vlan-index>2</vlan-index>
+        <vlan-protocol-port>Port Mode</vlan-protocol-port>
+        <vlan-members-count>1</vlan-members-count>
+        <vlan-members-upcount>1</vlan-members-upcount>
+        <vlan-detail>
+            <vlan-member-list>
+                <vlan-member>
+                    <vlan-member-interface>ge-0/0/0.0*</vlan-member-interface>
+                </vlan-member>
+            </vlan-member-list>
+        </vlan-detail>
+    </vlan>
+</vlan-information>
