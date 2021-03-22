@@ -109,7 +109,10 @@ class BaseTestGetters(object):
     """Base class for testing drivers."""
 
     def test_method_signatures(self):
-        """Test that all methods have the same signature."""
+        """
+        Test that all methods have the same signature.
+
+        The type hint annotations are ignored here because the import paths might differ."""
         errors = {}
         cls = self.driver
         # Create fictional driver instance (py3 needs bound methods)
@@ -121,17 +124,17 @@ class BaseTestGetters(object):
                 continue
             try:
                 orig = getattr(NetworkDriver, attr)
-                orig_spec = inspect.getfullargspec(orig)
+                orig_spec = inspect.getfullargspec(orig)[:4]
             except AttributeError:
                 orig_spec = "Method does not exist in napalm.base"
-            func_spec = inspect.getfullargspec(func)
+            func_spec = inspect.getfullargspec(func)[:4]
             if orig_spec != func_spec:
                 errors[attr] = (orig_spec, func_spec)
 
         EXTRA_METHODS = ["__init__"]
         for method in EXTRA_METHODS:
-            orig_spec = inspect.getfullargspec(getattr(NetworkDriver, method))
-            func_spec = inspect.getfullargspec(getattr(cls, method))
+            orig_spec = inspect.getfullargspec(getattr(NetworkDriver, method))[:4]
+            func_spec = inspect.getfullargspec(getattr(cls, method))[:4]
             if orig_spec != func_spec:
                 errors[attr] = (orig_spec, func_spec)
 

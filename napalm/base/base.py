@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import sys
 from types import TracebackType
-from typing import Optional, Dict, Type, Any, Literal, List
+from typing import Optional, Dict, Type, Any, Literal, List, Union
 
 from netmiko import ConnectHandler, NetMikoTimeoutException
 
@@ -129,7 +129,7 @@ class NetworkDriver(object):
         if getattr(self, "_netmiko_device", None):
             self._netmiko_device.disconnect()
             self._netmiko_device = None
-        self.device = None
+        self.device: Optional[ConnectHandler] = None
 
     def open(self) -> None:
         """
@@ -730,7 +730,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def cli(self, commands: List[str]) -> Dict[str, str]:
+    def cli(self, commands: List[str]) -> Dict[str, Union[str, Dict[str, Any]]]:
 
         """
         Will execute a list of commands and return the output in a dictionary format.
