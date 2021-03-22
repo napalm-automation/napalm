@@ -1,6 +1,9 @@
-from typing import Dict, List
+from typing import Dict, Literal, Union, List, Optional
 
-from typing_extensions import TypedDict
+try:
+    from typing import TypedDict
+except ImportError:
+    from typing_extensions import TypedDict
 
 ConfigurationDict = TypedDict(
     "ConfigurationDict", {"running": str, "candidate": str, "startup": str}
@@ -91,6 +94,23 @@ EnvironmentDict = TypedDict(
         "power": Dict[str, PowerDict],
         "cpu": Dict[int, CPUDict],
         "memory": MemoryDict,
+    },
+)
+
+MemoryDict = TypedDict("MemoryDict", {"used_ram": int, "available_ram": int})
+
+FanDict = TypedDict("FanDict", {"status": bool})
+
+CPUDict = TypedDict("CPUDict", {"%usage": float})
+
+EnvironmentDict = TypedDict(
+    "EnvironmentDict",
+    {
+        "fans": Dict[str, FanDict],
+        "temperature": Dict[str, TemperatureDict],
+        "power": Dict[str, PowerDict],
+        "cpu": Dict[str, CPUDict],
+        "memory": Dict[str, MemoryDict],
     },
 )
 
@@ -336,9 +356,7 @@ ProbeTestResultDict = TypedDict(
     },
 )
 
-PingResultDictEntry = TypedDict(
-    "PingResultDictEntry", {"ip_address": str, "rtt": float}
-)
+PingResultDictEntry = TypedDict("PingResultDictEntry", {"ip_address": str, "rtt": float})
 
 PingDict = TypedDict(
     "PingDict",
@@ -354,9 +372,7 @@ PingDict = TypedDict(
 )
 
 PingResultDict = TypedDict(
-    "PingResultDict",
-    {"success": PingDict, "error": str},
-    total=False,
+    "PingResultDict", {"success": Optional[PingDict], "error": Optional[str]}
 )
 
 TracerouteDict = TypedDict(
@@ -397,6 +413,44 @@ OpticsPhysicalChannelsDict = TypedDict(
 )
 
 OpticsDict = TypedDict("OpticsDict", {"physical_channels": OpticsPhysicalChannelsDict})
+
+ConfigDict = TypedDict("ConfigDict", {"running": str, "startup": str, "candidate": str})
+
+=======
+TracerouteResultDictEntry = TypedDict("TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]})
+
+TracerouteResultDict = TypedDict(
+    "TracerouteResultDict",
+    {"success": Optional[Dict[int, TracerouteResultDictEntry]], "error": Optional[str]},
+)
+
+UsersDict = TypedDict("UsersDict", {"level": int, "password": str, "sshkeys": List})
+
+OpticsStateDict = TypedDict(
+    "OpticsStateDict", {"instant": float, "avg": float, "min": float, "max": float}
+)
+
+OpticsStatePerChannelDict = TypedDict("OpticsStatePerChannelDict", {
+    "input_power": OpticsStateDict,
+    "output_power": OpticsStateDict,
+    "laser_bias_current": OpticsStateDict
+})
+
+OpticsPerChannelDict = TypedDict("OpticsPerChannelDict", {
+    "index": int,
+    "state": OpticsStatePerChannelDict
+})
+
+OpticsPhysicalChannelsDict = TypedDict("OpticsPhysicalChannelsDict", {
+    "channels": OpticsPerChannelDict
+})
+
+OpticsDict = TypedDict(
+    "OpticsDict",
+    {
+        "physical_channels": OpticsPhysicalChannelsDict
+    }
+)
 
 ConfigDict = TypedDict("ConfigDict", {"running": str, "startup": str, "candidate": str})
 

@@ -442,7 +442,9 @@ class TestGettersNetworkDriver(object):
         result = len(get_mac_address_table) > 0
 
         for mac_table_entry in get_mac_address_table:
-            result = result and self._test_model(models.MACAdressTable, mac_table_entry)
+            result = result and self._test_model(
+                models.MACAdressTable, mac_table_entry
+            )
 
         self.assertTrue(result)
 

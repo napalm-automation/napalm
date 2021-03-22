@@ -12,6 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+from __future__ import annotations
+
 import sys
 from types import TracebackType
 from typing import Optional, Dict, Type, Any, List, Union
@@ -61,7 +63,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def __enter__(self) -> "NetworkDriver":  # type: ignore
+    def __enter__(self) -> "NetworkDriver":
         try:
             self.open()
             return self
@@ -73,6 +75,7 @@ class NetworkDriver(object):
                 raise
 
     def __exit__(  # type: ignore
+    def __exit__(
         self,
         exc_type: Optional[Type[BaseException]],
         exc_value: Optional[BaseException],
@@ -1156,7 +1159,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_snmp_information(self) -> models.SNMPDict:
+    def get_snmp_information(self) -> Dict[str, models.SNMPDict]:
 
         """
         Returns a dict of dicts containing SNMP configuration.
@@ -1316,7 +1319,7 @@ class NetworkDriver(object):
         size: int = c.PING_SIZE,
         count: int = c.PING_COUNT,
         vrf: str = c.PING_VRF,
-        source_interface: str=c.PING_SOURCE_INTERFACE,
+        source_interface: str = c.PING_SOURCE_INTERFACE
     ) -> models.PingResultDict:
         """
         Executes ping on the device and returns a dictionary with the result
