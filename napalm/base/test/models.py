@@ -54,7 +54,7 @@ LLDPNeighborDetailDict = TypedDict(
     },
 )
 
-LLDPNeighborsDetailDict = Dict[str, LLDPNeighborDetailDict]
+LLDPNeighborsDetailDict = Dict[str, List[LLDPNeighborDetailDict]]
 
 InterfaceCounterDict = TypedDict(
     "InterfaceCounterDict",
@@ -92,8 +92,8 @@ EnvironmentDict = TypedDict(
         "fans": Dict[str, FanDict],
         "temperature": Dict[str, TemperatureDict],
         "power": Dict[str, PowerDict],
-        "cpu": Dict[str, CPUDict],
-        "memory": Dict[str, MemoryDict],
+        "cpu": Dict[int, CPUDict],
+        "memory": MemoryDict,
     },
 )
 
@@ -229,6 +229,7 @@ NTPPeerDict = TypedDict(
     {
         # will populate it in the future wit potential keys
     },
+    total=False,
 )
 
 NTPServerDict = TypedDict(
@@ -236,6 +237,7 @@ NTPServerDict = TypedDict(
     {
         # will populate it in the future wit potential keys
     },
+    total=False,
 )
 
 NTPStats = TypedDict(
@@ -255,10 +257,13 @@ NTPStats = TypedDict(
     },
 )
 
-InterfacesIPDictEntry = TypedDict("InterfacesIPDictEntry", {"prefix_length": int})
+InterfacesIPDictEntry = TypedDict(
+    "InterfacesIPDictEntry", {"prefix_length": int}, total=False
+)
 
 InterfacesIPDict = Dict[
-    str, Dict[Union[Literal["ipv4"], Literal["ipv6"]], Dict[str, InterfacesIPDictEntry]]
+    str,
+    Dict[Union[Literal["ipv4"], Literal["ipv6"]], InterfacesIPDictEntry],
 ]
 
 MACAdressTable = TypedDict(
@@ -348,7 +353,9 @@ PingDict = TypedDict(
 )
 
 PingResultDict = TypedDict(
-    "PingResultDict", {"success": Optional[PingDict], "error": Optional[str]}, total=False
+    "PingResultDict",
+    {"success": PingDict, "error": str},
+    total=False,
 )
 
 TracerouteDict = TypedDict(
@@ -356,13 +363,13 @@ TracerouteDict = TypedDict(
 )
 
 TracerouteResultDictEntry = TypedDict(
-    "TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]}
+    "TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]}, total=False
 )
 
 TracerouteResultDict = TypedDict(
     "TracerouteResultDict",
-    {"success": Optional[Dict[int, TracerouteResultDictEntry]], "error": Optional[str]},
-    total=False
+    {"success": Dict[int, TracerouteResultDictEntry], "error": str},
+    total=False,
 )
 
 UsersDict = TypedDict("UsersDict", {"level": int, "password": str, "sshkeys": List})

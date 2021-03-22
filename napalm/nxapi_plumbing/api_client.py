@@ -6,6 +6,8 @@ Reimplemented by ktbyers to support XML-RPC in addition to JSON-RPC
 from __future__ import print_function, unicode_literals
 
 from builtins import super
+from typing import Optional, List, Dict, Union, Any
+
 import requests
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError
@@ -31,13 +33,13 @@ class RPCBase(object):
 
     def __init__(
         self,
-        host,
-        username,
-        password,
-        transport="https",
-        port=None,
-        timeout=30,
-        verify=True,
+        host: str,
+        username: str,
+        password: str,
+        transport: str = "https",
+        port: Optional[int] = None,
+        timeout: int = 30,
+        verify: bool = True,
     ):
         if transport not in ["http", "https"]:
             raise NXAPIError("'{}' is an invalid transport.".format(transport))
@@ -53,11 +55,36 @@ class RPCBase(object):
         self.password = password
         self.timeout = timeout
         self.verify = verify
+        self.cmd_method: str
+        self.cmd_method_conf: str
+        self.cmd_method_raw: str
+        self.headers: Dict
 
-    def _process_api_response(self, response, commands, raw_text=False):
+    def _process_api_response(
+        self, response: str, commands: List[str], raw_text: bool = False
+    ) -> List[Any]:
         raise NotImplementedError("Method must be implemented in child class")
 
-    def _send_request(self, commands, method):
+    def _nxapi_command_conf(
+        self, commands: List[str], method: Optional[str] = None
+    ) -> List[Any]:
+        raise NotImplementedError("Method must be implemented in child class")
+
+    def _build_payload(
+        self,
+        commands: List[str],
+        method: str,
+        rpc_version: str = "2.0",
+        api_version: str = "1.0",
+    ) -> str:
+        raise NotImplementedError("Method must be implemented in child class")
+
+    def _nxapi_command(
+        self, commands: List[str], method: Optional[str] = None
+    ) -> List[Any]:
+        raise NotImplementedError("Method must be implemented in child class")
+
+    def _send_request(self, commands: List[str], method: str) -> str:
         payload = self._build_payload(commands, method)
 
         try:
@@ -94,7 +121,7 @@ status_code: {}""".format(
 
 
 class RPCClient(RPCBase):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
         self.headers = {"content-type": "application/json-rpc"}
         self.api = "jsonrpc"
@@ -102,12 +129,15 @@ class RPCClient(RPCBase):
         self.cmd_method_conf = "cli"
         self.cmd_method_raw = "cli_ascii"
 
-    def _nxapi_command(self, commands, method=None):
+    def _nxapi_command(
+        self, commands: List[str], method: Optional[str] = None
+    ) -> List[Any]:
         """Send a command down the NX-API channel."""
         if method is None:
             method = self.cmd_method
         if isinstance(commands, string_types):
             commands = [commands]
+
 
         raw_text = True if method == "cli_ascii" else False
 
@@ -115,12 +145,14 @@ class RPCClient(RPCBase):
         api_response = self._process_api_response(response, commands, raw_text=raw_text)
         return api_response
 
-    def _nxapi_command_conf(self, commands, method=None):
+    def _nxapi_command_conf(
+        self, commands: List[str], method: Optional[str] = None
+    ) -> List[Any]:
         if method is None:
             method = self.cmd_method_conf
         return self._nxapi_command(commands=commands, method=method)
 
-    def _build_payload(self, commands, method, rpc_version="2.0", api_version=1.0):
+    def _build_payload(self, commands: List[str], method: str, rpc_version: str = "2.0", api_version: float = 1.0) -> str:
         """Construct the JSON-RPC payload for NX-API."""
         payload_list = []
         id_num = 1
@@ -136,7 +168,9 @@ class RPCClient(RPCBase):
 
         return json.dumps(payload_list)
 
-    def _process_api_response(self, response, commands, raw_text=False):
+    def _process_api_response(
+        self, response: str, commands: List[str], raw_text: bool = False
+    ) -> List[Any]:
         """
         Normalize the API response including handling errors; adding the sent command into
         the returned data strucutre; make response structure consistent for raw_text and
@@ -174,7 +208,7 @@ class RPCClient(RPCBase):
 
         return new_response
 
-    def _error_check(self, command_response):
+    def _error_check(self, command_response: Dict) -> None:
         error = command_response.get("error")
         if error:
             command = command_response.get("command")
@@ -185,7 +219,7 @@ class RPCClient(RPCBase):
 
 
 class XMLClient(RPCBase):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.headers = {"content-type": "application/xml"}
         self.api = "xml"
@@ -193,7 +227,9 @@ class XMLClient(RPCBase):
         self.cmd_method_conf = "cli_conf"
         self.cmd_method_raw = "cli_show_ascii"
 
-    def _nxapi_command(self, commands, method=None):
+    def _nxapi_command(
+        self, commands: List[str], method: Optional[str] = None
+    ) -> List[Any]:
         """Send a command down the NX-API channel."""
         if method is None:
             method = self.cmd_method
@@ -207,12 +243,20 @@ class XMLClient(RPCBase):
             self._error_check(command_response)
         return api_response
 
-    def _nxapi_command_conf(self, commands, method=None):
+    def _nxapi_command_conf(
+        self, commands: List[str], method: Optional[str] = None
+    ) -> List[Any]:
         if method is None:
             method = self.cmd_method_conf
         return self._nxapi_command(commands=commands, method=method)
 
-    def _build_payload(self, commands, method, xml_version="1.0", version="1.0"):
+    def _build_payload(
+        self,
+        commands: List[str],
+        method: str,
+        xml_version: str = "1.0",
+        version: str = "1.0",
+    ) -> str:
         xml_commands = ""
         for command in commands:
             if not xml_commands:
@@ -238,7 +282,9 @@ class XMLClient(RPCBase):
         )
         return payload
 
-    def _process_api_response(self, response, commands, raw_text=False):
+    def _process_api_response(
+        self, response: str, commands: List[str], raw_text: bool = False
+    ) -> List[Any]:
         xml_root = etree.fromstring(response)
         response_list = xml_root.xpath("outputs/output")
         if len(commands) != len(response_list):
@@ -248,7 +294,7 @@ class XMLClient(RPCBase):
 
         return response_list
 
-    def _error_check(self, command_response):
+    def _error_check(self, command_response: etree) -> None:
         """commmand_response will be an XML Etree object."""
         error_list = command_response.find("./clierror")
         command_obj = command_response.find("./input")
