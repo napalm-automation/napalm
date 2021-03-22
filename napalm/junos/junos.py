@@ -333,7 +333,10 @@ class JunOSDriver(NetworkDriver):
 
         Will return an empty dictionary if there are no pending commit-confirms
         """
-        pending_commits = self.device.rpc.get_commit_information()
+        # pending_commits = self.device.rpc.get_commit_information()
+        pending_commits = self.device.rpc.get_commit_revision_information(detail=True)
+
+b'<commit-revision-information><revision>re0-1616437796-488</revision><user>pyclass</user><client>netconf</client><date-time seconds="1616437879">2021-03-22 18:31:19 UTC</date-time><comment>commit confirmed, rollback in 5mins</comment></commit-revision-information>'
 
         commit0 = pending_commits.find("./commit-history")
         sequence_number = commit0.find("./sequence-number").text
