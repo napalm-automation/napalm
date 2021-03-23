@@ -337,7 +337,9 @@ class JunOSDriver(NetworkDriver):
         # show system commit revision detail
         # Command introduced in Junos OS Release 14.1
         try:
-            pending_commit = self.device.rpc.get_commit_revision_information(detail=True)
+            pending_commit = self.device.rpc.get_commit_revision_information(
+                detail=True
+            )
         except RpcError:
             msg = "Using commit-confirm requires Junos OS >= 14.1"
             raise NapalmException(msg)
