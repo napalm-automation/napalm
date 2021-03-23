@@ -48,6 +48,7 @@ from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.exceptions import CommandTimeoutException
 from napalm.base.exceptions import LockError
 from napalm.base.exceptions import UnlockError
+from napalm.base.exceptions import NapalmException
 
 # import local modules
 from napalm.junos.utils import junos_views
@@ -335,7 +336,11 @@ class JunOSDriver(NetworkDriver):
         """
         # show system commit revision detail
         # Command introduced in Junos OS Release 14.1
-        pending_commit = self.device.rpc.get_commit_revision_information(detail=True)
+        try:
+            pending_commit = self.device.rpc.get_commit_revision_information(detail=True)
+        except RpcError:
+            msg = "Using commit-confirm requires Junos OS >= 14.1"
+            raise NapalmException(msg)
 
         commit_time_element = pending_commit.find("./date-time")
         commit_time = int(commit_time_element.attrib["seconds"])
