@@ -333,27 +333,38 @@ class JunOSDriver(NetworkDriver):
 
         Will return an empty dictionary if there are no pending commit-confirms
         """
-        # pending_commits = self.device.rpc.get_commit_information()
-        pending_commits = self.device.rpc.get_commit_revision_information(detail=True)
+        # show system commit revision detail
+        # Command introduced in Junos OS Release 14.1
+        pending_commit = self.device.rpc.get_commit_revision_information(detail=True)
 
-b'<commit-revision-information><revision>re0-1616437796-488</revision><user>pyclass</user><client>netconf</client><date-time seconds="1616437879">2021-03-22 18:31:19 UTC</date-time><comment>commit confirmed, rollback in 5mins</comment></commit-revision-information>'
+        commit_time_element = pending_commit.find("./date-time")
+        commit_time = int(commit_time_element.attrib["seconds"])
 
-        commit0 = pending_commits.find("./commit-history")
-        sequence_number = commit0.find("./sequence-number").text
-        commit_comment = commit0.find("./comment").text
+        commit_revision_element = pending_commit.find("./revision")
+        commit_revision = commit_revision_element.text
+        commit_comment_element = pending_commit.find("./comment")
+        if commit_comment_element is None:
+            # No commit comment means no commit-confirm
+            return {}
+        else:
+            commit_comment = commit_comment_element.text
 
-        if int(sequence_number) != 0:
-            raise ValueError(
-                f"Invalid sequence number detected in has_pending_commit: {sequence_number}"
-            )
+        sys_uptime_info = self.device.rpc.get_system_uptime_information()
+        current_time_element = sys_uptime_info.find("./current-time/date-time")
+        current_time = int(current_time_element.attrib["seconds"])
 
         # Msg from Jnpr: 'commit confirmed, rollback in 5mins'
         if "commit confirmed" in commit_comment and "rollback in" in commit_comment:
             match = re.search(r"rollback in (\d+)mins", commit_comment)
             if match:
                 confirm_time = match.group(1)
-                confirm_time = int(confirm_time) * 60
-                return {f"commit_{sequence_number}": confirm_time}
+                confirm_time_seconds = int(confirm_time) * 60
+                elapsed_time = current_time - commit_time
+                confirm_time_remaining = confirm_time_seconds - elapsed_time
+                if confirm_time_remaining <= 0:
+                    confirm_time_remaining = 0
+
+                return {commit_revision: confirm_time_remaining}
 
         return {}
 
