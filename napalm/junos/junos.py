@@ -306,10 +306,10 @@ class JunOSDriver(NetworkDriver):
         if message:
             commit_args["comment"] = message
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
-        # FIX: might have to fix the session locking wrt commit confirm
+
         if not self.lock_disable and not self.session_config_lock:
             self._unlock()
-        # FIX: look into this also
+
         if self.config_private:
             self.device.rpc.close_configuration()
 
