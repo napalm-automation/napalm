@@ -296,6 +296,8 @@ class JunOSDriver(NetworkDriver):
         commit_args = {}
         if revert_in is not None:
             if revert_in % 60 != 0:
+                if not self.lock_disable and not self.session_config_lock:
+                    self._unlock()
                 raise CommitConfirmException(
                     "For Junos devices revert_in must be a multiple of 60 (60, 120, 180...)"
                 )
