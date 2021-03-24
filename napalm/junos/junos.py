@@ -48,7 +48,7 @@ from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.exceptions import CommandTimeoutException
 from napalm.base.exceptions import LockError
 from napalm.base.exceptions import UnlockError
-from napalm.base.exceptions import NapalmException
+from napalm.base.exceptions import CommitConfirmException
 
 # import local modules
 from napalm.junos.utils import junos_views
@@ -296,7 +296,7 @@ class JunOSDriver(NetworkDriver):
         commit_args = {}
         if revert_in is not None:
             if revert_in % 60 != 0:
-                raise ValueError(
+                raise CommitConfirmException(
                     "For Junos devices revert_in must be a multiple of 60 (60, 120, 180...)"
                 )
             else:
@@ -341,8 +341,8 @@ class JunOSDriver(NetworkDriver):
                 detail=True
             )
         except RpcError:
-            msg = "Using commit-confirm requires Junos OS >= 14.1"
-            raise NapalmException(msg)
+            msg = "Using commit-confirm with NAPALM requires Junos OS >= 14.1"
+            raise CommitConfirmException(msg)
 
         commit_time_element = pending_commit.find("./date-time")
         commit_time = int(commit_time_element.attrib["seconds"])
