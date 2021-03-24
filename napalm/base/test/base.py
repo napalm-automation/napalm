@@ -157,6 +157,8 @@ class TestConfigNetworkDriver(object):
 class TestGettersNetworkDriver(object):
     @staticmethod
     def _test_model(model, data):
+        # Access the underlying schema for a TypedDict directly
+        model = model.__annotations__
         same_keys = set(model.keys()) == set(data.keys())
 
         if not same_keys:

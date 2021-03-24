@@ -811,3 +811,40 @@ junos_nw_instances_view:
     instance_type: {instance-type: unicode}
     interfaces: {interface/name | bridge-domains/domain/interface/name: unicode}
     route_distinguisher: {route-distinguisher/rd-type: unicode}
+
+###
+### Get Vlans
+###
+
+junos_vlans_table:
+  rpc: get-bridge-instance-information
+  item: l2ald-bridge-instance-group
+  key: l2rtb-bridge-vlan
+  view: junos_vlans_view
+
+junos_vlans_view:
+  fields:
+    vlan_name: l2rtb-bridging-domain
+    interfaces: l2rtb-interface-name
+
+junos_vlans_table_switch:
+  rpc: get-vlan-information
+  item: vlan
+  key: vlan-tag
+  view: junos_vlans_view_switch
+
+junos_vlans_view_switch:
+  fields:
+    vlan_name: vlan-name
+    interfaces: vlan-detail/vlan-member-list/vlan-member/vlan-member-interface
+
+junos_vlans_table_switch_l2ng:
+  rpc: get-vlan-information
+  item: l2ng-l2ald-vlan-instance-group
+  key: l2ng-l2rtb-vlan-tag
+  view: junos_vlans_view_switch_l2ng
+
+junos_vlans_view_switch_l2ng:
+  fields:
+    vlan_name: l2ng-l2rtb-vlan-name
+    interfaces: l2ng-l2rtb-vlan-member/l2ng-l2rtb-vlan-member-interface
