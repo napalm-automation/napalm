@@ -328,11 +328,11 @@ class JunOSDriver(NetworkDriver):
         since Juniper reports this in minutes.
 
         Example:
-        {'commit_0': 522}
+        {'re0-1616554286-559': 522}
 
-        Will only report/return commit_0.
+        Will only report on a single commit (the most recent one).
 
-        Will return an empty dictionary if there are no pending commit-confirms
+        Will return an empty dictionary if there is no pending commit-confirms.
         """
         # show system commit revision detail
         # Command introduced in Junos OS Release 14.1
