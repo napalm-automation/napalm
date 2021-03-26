@@ -1,0 +1,21 @@
+Control Plane Interface is down, line protocol is down
+  Hardware is Control-Plane, address is 0000.0000.0000 (bia 0000.0000.0000)
+  MTU 0 bytes, BW 10000000 Kbit, DLY 0 usec,
+     reliability 0/255, txload 1/255, rxload 1/255
+  Encapsulation UNKNOWN, loopback not set
+  ARP type: ARPA, ARP Timeout 00:00:00
+  Last input never, output never, output hang never
+  Last clearing of "show interface" counters never
+  Input queue: 0/75/0/0 (size/max/drops/flushes); Total output drops: 0
+  5 minute input rate 0 bits/sec, 0 packets/sec
+  5 minute output rate 0 bits/sec, 0 packets/sec
+  L2 Switched: ucast: 0 pkt, 0 bytes - mcast: 0 pkt, 0 bytes
+  L3 in Switched: ucast: 0 pkt, 0 bytes - mcast: 0 pkt, 0 bytes mcast
+  L3 out Switched: ucast: 0 pkt, 0 bytes mcast: 0 pkt, 0 bytes
+     0 packets input, 0 bytes, 0 no buffer
+     Received 0 broadcasts (0 IP multicast)
+     0 runts, 0 giants, 0 throttles
+     0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored
+     0 packets output, 0 bytes, 0 underruns
+     0 output errors, 0 interface resets
+     0 output buffer failures, 0 output buffers swapped out
