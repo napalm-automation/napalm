@@ -1088,7 +1088,10 @@ class IOSDriver(NetworkDriver):
 
             interface_regex_1 = r"^(\S+?)\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
             interface_regex_2 = r"^(\S+)\s+is\s+(up|down)"
-            interface_regex_3 = r"^(Control Plane Interface)\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
+            interface_regex_3 = (
+                r"^(Control Plane Interface)"
+                r"\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
+            )
             for pattern in (interface_regex_1, interface_regex_2, interface_regex_3):
                 interface_match = re.search(pattern, line)
                 if interface_match:
