@@ -32,21 +32,22 @@ General support matrix
 Configuration support matrix
 ----------------------------
 
-=====================   ==========  =====   ==========  ==============  ==============
-_                       EOS         Junos   IOS-XR      NX-OS           IOS
-=====================   ==========  =====   ==========  ==============  ==============
-**Config Replace**      Yes         Yes     Yes         Yes             Yes
-**Config Merge**        Yes         Yes     Yes         Yes             Yes
-**Commit Confirm**      Yes         No      No          No              No
-**Compare Config**      Yes         Yes     Yes [#c1]_  Yes [#c4]_      Yes
-**Atomic Changes**      Yes         Yes     Yes         Yes/No [#c5]_   Yes/No [#c5]_
-**Rollback**            Yes [#c2]_  Yes     Yes         Yes/No [#c5]_   Yes
-=====================   ==========  =====   ==========  ==============  ==============
+=====================   ==========  ==========  ==========  ==============  ==============
+_                       EOS         Junos       IOS-XR      NX-OS           IOS
+=====================   ==========  ==========  ==========  ==============  ==============
+**Config Replace**      Yes         Yes         Yes         Yes             Yes
+**Config Merge**        Yes         Yes         Yes         Yes             Yes
+**Commit Confirm**      Yes         Yes [#c6]_  No          No              No
+**Compare Config**      Yes         Yes         Yes [#c1]_  Yes [#c4]_      Yes
+**Atomic Changes**      Yes         Yes         Yes         Yes/No [#c5]_   Yes/No [#c5]_
+**Rollback**            Yes [#c2]_  Yes         Yes         Yes/No [#c5]_   Yes
+=====================   ==========  ==========  ==========  ==============  ==============
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
 .. [#c4] For merges, the diff is very simplistic. See caveats.
 .. [#c5] No for merges. See caveats.
+.. [#c6] NAPALM requires Junos OS >= 14.1 for commit-confirm functionality.
 
 .. warning:: Before building a workflow to deploy configuration it is important you understand what the table above means;
             what are atomic changes and which devices support it, what does replacing or merging configuration mean, etc.

@@ -75,6 +75,16 @@ class MergeConfigException(NapalmException):
     pass
 
 
+class CommitConfirmException(NapalmException):
+    """
+    Exceptions that are specifically related to commit-confirm.
+
+    This includes exceptions that occur during has_pending_commit()
+    """
+
+    pass
+
+
 class CommitError(NapalmException):
     """
     Raised when unable to commit the candidate config
