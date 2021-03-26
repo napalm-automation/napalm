@@ -823,7 +823,11 @@ class IOSXRDriver(NetworkDriver):
 
         lldp_neighbors = {}
 
-        rpc_command = "<Get><Operational><LLDP></LLDP></Operational></Get>"
+        rpc_command = (
+            "<Get><Operational>"
+            "<LLDP><NodeTable></NodeTable></LLDP>"
+            "</Operational></Get>"
+        )
 
         result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
