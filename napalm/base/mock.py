@@ -11,7 +11,8 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
-from typing import Optional, List, Dict, Union, Any, Callable
+from collections import Callable
+from typing import Optional, List, Dict, Union, Any
 
 from napalm.base.base import NetworkDriver
 import napalm.base.exceptions
@@ -213,7 +214,7 @@ class MockDriver(NetworkDriver):
         self.config = None
         mocked_data(self.path, "discard_config", count)
 
-    def confirm_commit(self):
+    def confirm_commit(self) -> None:
         count = self._count_calls("confirm_commit")
         self._raise_if_closed()
         self.merge = None
@@ -222,10 +223,10 @@ class MockDriver(NetworkDriver):
         self._pending_commits = False
         mocked_data(self.path, "confirm_commit", count)
 
-    def has_pending_commit(self):
+    def has_pending_commit(self) -> bool:
         return self._pending_commits
 
-    def rollback(self):
+    def rollback(self) -> None:
         self.config_session = None
         self._pending_commits = False
 

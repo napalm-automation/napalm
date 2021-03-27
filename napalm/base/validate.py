@@ -3,12 +3,12 @@ Validation methods for the NAPALM base.
 
 See: https://napalm.readthedocs.io/en/latest/validate.html
 """
+from __future__ import annotations
 
+import yaml
 import copy
 import re
 from typing import Dict, List, Union, TypeVar, Optional, TYPE_CHECKING
-
-import yaml
 
 if TYPE_CHECKING:
     from napalm.base import NetworkDriver

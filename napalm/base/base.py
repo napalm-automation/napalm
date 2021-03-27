@@ -72,7 +72,7 @@ class NetworkDriver(object):
             else:
                 raise
 
-    def __exit__(
+    def __exit__(  # type: ignore
         self,
         exc_type: Optional[Type[BaseException]],
         exc_value: Optional[BaseException],

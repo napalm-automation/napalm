@@ -35,10 +35,12 @@ from typing import (
     cast,
     Callable,
     TypeVar,
-    DefaultDict,
 )
 
-from typing_extensions import TypedDict
+from typing_extensions import (
+    TypedDict,
+    DefaultDict,
+)
 
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
