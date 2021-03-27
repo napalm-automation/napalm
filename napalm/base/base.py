@@ -31,6 +31,13 @@ from napalm.base.test.models import NTPStats
 
 
 class NetworkDriver(object):
+    hostname: str
+    username: str
+    password: str
+    timeout: int
+    force_no_enable: bool
+    use_canonical_interface: bool
+
     def __init__(
         self,
         hostname: str,
@@ -54,7 +61,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def __enter__(self) -> "NetworkDriver":
+    def __enter__(self) -> "NetworkDriver":  # type: ignore
         try:
             self.open()
             return self
@@ -65,7 +72,7 @@ class NetworkDriver(object):
             else:
                 raise
 
-    def __exit__(
+    def __exit__(  # type: ignore
         self,
         exc_type: Optional[Type[BaseException]],
         exc_value: Optional[BaseException],
@@ -74,7 +81,7 @@ class NetworkDriver(object):
         self.close()
         if exc_type is not None and (
             exc_type.__name__ not in dir(napalm.base.exceptions)
-            and exc_type.__name__ not in __builtins__.keys()
+            and exc_type.__name__ not in __builtins__.keys()  # type: ignore
         ):
             epilog = (
                 "NAPALM didn't catch this exception. Please, fill a bugfix on "
@@ -1773,7 +1780,7 @@ class NetworkDriver(object):
         self,
         validation_file: Optional[str] = None,
         validation_source: Optional[str] = None,
-    ) -> Dict:
+    ) -> models.ReportResult:
         """
         Return a compliance report.
 

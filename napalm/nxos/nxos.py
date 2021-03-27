@@ -19,12 +19,25 @@ import re
 import tempfile
 import time
 import uuid
+
 # import stdlib
 from abc import abstractmethod
 from builtins import super
 from collections import defaultdict
+
 # import third party lib
-from typing import Optional, Dict, List, Union, Any, cast, Callable, TypeVar
+from typing import (
+    Optional,
+    Dict,
+    List,
+    Union,
+    Any,
+    cast,
+    Callable,
+    TypeVar,
+    TypedDict,
+    DefaultDict,
+)
 
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
@@ -32,6 +45,7 @@ from netmiko import file_transfer, ConnectHandler
 from requests.exceptions import ConnectionError
 
 import napalm.base.constants as c
+
 # import NAPALM Base
 import napalm.base.helpers
 from napalm.base import NetworkDriver
@@ -50,13 +64,22 @@ from napalm.nxapi_plumbing import (
     NXAPICommandError,
 )
 
-F = TypeVar('F', bound=Callable[..., Any])
+F = TypeVar("F", bound=Callable[..., Any])
+ShowIPInterfaceReturn = TypedDict(
+    "ShowIPInterfaceReturn",
+    {
+        "intf-name": str,
+        "prefix": str,
+        "unnum-intf": str,
+        "masklen": str,
+    },
+)
 
 
 def ensure_netmiko_conn(func: F) -> F:
     """Decorator that ensures Netmiko connection exists."""
 
-    def wrap_function(self, filename=None, config=None): # type: ignore
+    def wrap_function(self, filename=None, config=None):  # type: ignore
         try:
             netmiko_object = self._netmiko_device
             if netmiko_object is None:
@@ -214,8 +237,8 @@ class NXOSDriverBase(NetworkDriver):
         try:
             diff_out = (
                 diff_out.split("Generating Rollback Patch")[1]
-                    .replace("Rollback Patch is Empty", "")
-                    .strip()
+                .replace("Rollback Patch is Empty", "")
+                .strip()
             )
             for line in diff_out.splitlines():
                 if line:
@@ -490,7 +513,7 @@ class NXOSDriverBase(NetworkDriver):
                         ip_address = "*"
                     traceroute_result["success"][hop_index]["probes"][
                         probe_index + 1
-                        ] = {
+                    ] = {
                         "host_name": str(host_name),
                         "ip_address": str(ip_address),
                         "rtt": rtt,
@@ -557,18 +580,24 @@ class NXOSDriverBase(NetworkDriver):
         ]
         filter_pattern = generate_regex_or(filter_strings)
 
-        config: models.ConfigDict = {"startup": "", "running": "", "candidate": ""}  # default values
+        config: models.ConfigDict = {
+            "startup": "",
+            "running": "",
+            "candidate": "",
+        }  # default values
         # NX-OS only supports "all" on "show run"
         run_full = " all" if full else ""
 
         if retrieve.lower() in ("running", "all"):
             command = f"show running-config{run_full}"
             output = self._send_command(command, raw_text=True)
+            assert isinstance(output, str)
             output = re.sub(filter_pattern, "", output, flags=re.M)
             config["running"] = output.strip()
         if retrieve.lower() in ("startup", "all"):
             command = "show startup-config"
             output = self._send_command(command, raw_text=True)
+            assert isinstance(output, str)
             output = re.sub(filter_pattern, "", output, flags=re.M)
             config["startup"] = output.strip()
 
@@ -591,7 +620,10 @@ class NXOSDriverBase(NetworkDriver):
                 # When lacking a system name (in show lldp neighbors)
                 if hostname == "N/A":
                     hostname = lldp_entry["remote_chassis_id"]
-                lldp_dict: models.LLDPNeighborDict = {"port": lldp_entry["remote_port"], "hostname": hostname}
+                lldp_dict: models.LLDPNeighborDict = {
+                    "port": lldp_entry["remote_port"],
+                    "hostname": hostname,
+                }
                 lldp[intf_name].append(lldp_dict)
 
         return lldp
@@ -637,7 +669,7 @@ class NXOSDriverBase(NetworkDriver):
             # Turn the interfaces into their long version
             local_intf = napalm.base.helpers.canonical_interface_name(local_intf)
             lldp.setdefault(local_intf, [])
-            lldp[local_intf].append(lldp_entry)
+            lldp[local_intf].append(lldp_entry)  # type: ignore
 
         return lldp
 
@@ -660,7 +692,7 @@ class NXOSDriverBase(NetworkDriver):
         if isinstance(_table, list):
             _table_rows = [_table_row.get(row_name) for _table_row in _table]
         elif isinstance(_table, dict):
-            _table_rows = _table.get(row_name)
+            _table_rows = _table.get(row_name)  # type: ignore
         if not isinstance(_table_rows, list):
             _table_rows = [_table_rows]
         return _table_rows
@@ -764,20 +796,27 @@ class NXOSDriver(NXOSDriverBase):
     def close(self) -> None:
         self.device = None
 
-    def _send_command(
-        self, command: str, raw_text: bool = False
-    ) -> Dict[str, Union[str, Dict[str, Any]]]:
+    def _send_command(self, command: str, raw_text: bool = False) -> Any:
         """
         Wrapper for NX-API show method.
 
         Allows more code sharing between NX-API and SSH.
         """
+        assert (
+            self.device is not None
+        ), "Call open() or use as a context manager before calling _send_command"
         return self.device.show(command, raw_text=raw_text)
 
-    def _send_command_list(self, commands: List[str]) ->  List[Any]:
+    def _send_command_list(self, commands: List[str]) -> List[Any]:
+        assert (
+            self.device is not None
+        ), "Call open() or use as a context manager before running _send_command_list"
         return self.device.config_list(commands)
 
     def _send_config(self, commands: Union[str, List]) -> List[str]:
+        assert (
+            self.device is not None
+        ), "Call open() or use as a context manager before running _send_config"
         if isinstance(commands, str):
             # Has to be a list generator and not generator expression (not JSON serializable)
             commands = [command for command in commands.splitlines() if command]
@@ -820,9 +859,7 @@ class NXOSDriver(NXOSDriverBase):
                         int, part.replace(key, ""), 0
                     )
 
-        delta = sum(
-            [det.get("count", 0) * det.get("weight") for det in things.values()]
-        )
+        delta = sum([det.get("count", 0) * det["weight"] for det in things.values()])
         return time.time() - delta
 
     def is_alive(self) -> models.AliveDict:
@@ -832,6 +869,9 @@ class NXOSDriver(NXOSDriverBase):
             return {"is_alive": False}
 
     def _copy_run_start(self) -> None:
+        assert (
+            self.device is not None
+        ), "Call open() or use as a context manager before calling _copy_run_start"
         results = self.device.save(filename="startup-config")
         if not results:
             msg = "Unable to save running-config to startup-config!"
@@ -875,7 +915,7 @@ class NXOSDriver(NXOSDriverBase):
             self.changed = False
 
     def get_facts(self) -> models.FactsDict:
-        facts: models.FactsDict = {}
+        facts: models.FactsDict = {}  # type: ignore
         facts["vendor"] = "Cisco"
 
         show_inventory_table = self._get_command_table(
@@ -884,7 +924,7 @@ class NXOSDriver(NXOSDriverBase):
         if isinstance(show_inventory_table, dict):
             show_inventory_table = [show_inventory_table]
 
-        facts["serial_number"] = None
+        facts["serial_number"] = None  # type: ignore
 
         for row in show_inventory_table:
             if row["name"] == '"Chassis"' or row["name"] == "Chassis":
@@ -932,7 +972,9 @@ class NXOSDriver(NXOSDriverBase):
         interfaces_body = interfaces_out["TABLE_interface"]["ROW_interface"]
 
         for interface_details in interfaces_body:
+            assert isinstance(interface_details, dict)
             interface_name = interface_details.get("interface")
+            assert isinstance(interface_name, str)
 
             if interface_details.get("eth_mtu"):
                 interface_mtu = int(interface_details["eth_mtu"])
@@ -977,7 +1019,7 @@ class NXOSDriver(NXOSDriverBase):
                 "speed": interface_speed,
                 "mtu": interface_mtu,
                 "mac_address": napalm.base.helpers.convert(
-                    napalm.base.helpers.mac, mac_address
+                    napalm.base.helpers.mac, mac_address, ""
                 ),
             }
         return interfaces
@@ -1181,8 +1223,12 @@ class NXOSDriver(NXOSDriverBase):
             ipv4_command, "TABLE_intf", "ROW_intf"
         )
 
+        # Cast the table to the proper type
+        cast(ShowIPInterfaceReturn, ipv4_interf_table_vrf)
+
         for interface in ipv4_interf_table_vrf:
             interface_name = str(interface.get("intf-name", ""))
+            assert isinstance(interface_name, str)
             addr_str = interface.get("prefix")
             unnumbered = str(interface.get("unnum-intf", ""))
             if addr_str:
@@ -1192,7 +1238,7 @@ class NXOSDriver(NXOSDriverBase):
                     interfaces_ip[interface_name] = {}
                 if "ipv4" not in interfaces_ip[interface_name].keys():
                     interfaces_ip[interface_name]["ipv4"] = {}
-                if address not in interfaces_ip[interface_name].get("ipv4"):
+                if address not in interfaces_ip[interface_name]["ipv4"]:
                     interfaces_ip[interface_name]["ipv4"][address] = {}
                 interfaces_ip[interface_name]["ipv4"][address].update(
                     {"prefix_length": prefix}
@@ -1207,7 +1253,7 @@ class NXOSDriver(NXOSDriverBase):
                             interfaces_ip[interface_name] = {}
                         if "ipv4" not in interfaces_ip[interface_name].keys():
                             interfaces_ip[interface_name]["ipv4"] = {}
-                        if address not in interfaces_ip[interface_name].get("ipv4"):
+                        if address not in interfaces_ip[interface_name]["ipv4"]:
                             interfaces_ip[interface_name]["ipv4"][address] = {}
                         interfaces_ip[interface_name]["ipv4"][address].update(
                             {"prefix_length": prefix}
@@ -1225,9 +1271,7 @@ class NXOSDriver(NXOSDriverBase):
                 secondary_address_prefix = int(secondary_address.get("masklen1", ""))
                 if "ipv4" not in interfaces_ip[interface_name].keys():
                     interfaces_ip[interface_name]["ipv4"] = {}
-                if secondary_address_ip not in interfaces_ip[interface_name].get(
-                    "ipv4"
-                ):
+                if secondary_address_ip not in interfaces_ip[interface_name]["ipv4"]:
                     interfaces_ip[interface_name]["ipv4"][secondary_address_ip] = {}
                 interfaces_ip[interface_name]["ipv4"][secondary_address_ip].update(
                     {"prefix_length": secondary_address_prefix}
@@ -1264,7 +1308,7 @@ class NXOSDriver(NXOSDriverBase):
                 for ipv6_address in interface.get("addr", ""):
                     address = napalm.base.helpers.ip(ipv6_address.split("/")[0])
                     prefix = int(ipv6_address.split("/")[-1])
-                    if address not in interfaces_ip[interface_name].get("ipv6"):
+                    if address not in interfaces_ip[interface_name]["ipv6"]:
                         interfaces_ip[interface_name]["ipv6"][address] = {}
                     interfaces_ip[interface_name]["ipv6"][address].update(
                         {"prefix_length": prefix}
@@ -1279,7 +1323,7 @@ class NXOSDriver(NXOSDriverBase):
                 else:
                     prefix = 128
 
-                if address not in interfaces_ip[interface_name].get("ipv6"):
+                if address not in interfaces_ip[interface_name]["ipv6"]:
                     interfaces_ip[interface_name]["ipv6"][address] = {}
                 interfaces_ip[interface_name]["ipv6"][address].update(
                     {"prefix_length": prefix}
@@ -1318,9 +1362,10 @@ class NXOSDriver(NXOSDriverBase):
         return mac_table
 
     def get_snmp_information(self) -> models.SNMPDict:
-        snmp_information = {}
+        snmp_information: models.SNMPDict = {}  # type: ignore
         snmp_command = "show running-config"
         snmp_raw_output = self.cli([snmp_command]).get(snmp_command, "")
+        assert isinstance(snmp_raw_output, str)
         snmp_config = napalm.base.helpers.textfsm_extractor(
             self, "snmp_config", snmp_raw_output
         )
@@ -1373,6 +1418,7 @@ class NXOSDriver(NXOSDriverBase):
         users: Dict[str, models.UsersDict] = {}
         command = "show running-config"
         section_username_raw_output = self.cli([command]).get(command, "")
+        assert isinstance(section_username_raw_output, str)
         section_username_tabled_output = napalm.base.helpers.textfsm_extractor(
             self, "users", section_username_raw_output
         )
@@ -1461,7 +1507,9 @@ class NXOSDriver(NXOSDriverBase):
 
     def get_environment(self) -> models.EnvironmentDict:
         def _process_pdus(power_data: Dict) -> Dict[str, models.PowerDict]:
-            normalized: Dict[str, models.PowerDict] = defaultdict(dict)
+            # defaultdict(dict) doesn't yet seem to work with Mypy
+            # https://github.com/python/mypy/issues/7217
+            normalized: DefaultDict[str, models.PowerDict] = defaultdict(dict)  # type: ignore
             # some nexus devices have keys postfixed with the shorthand device series name (ie n3k)
             # ex. on a 9k, the key is TABLE_psinfo, but on a 3k it is TABLE_psinfo_n3k
             ps_info_key = [
@@ -1515,7 +1563,7 @@ class NXOSDriver(NXOSDriverBase):
             return json.loads(json.dumps(normalized))
 
         def _process_fans(fan_data: Dict) -> Dict[str, models.FanDict]:
-            normalized = {}
+            normalized: Dict[str, models.FanDict] = {}
             for entry in fan_data["TABLE_faninfo"]["ROW_faninfo"]:
                 if "PS" in entry["fanname"]:
                     # Skip fans in power supplies
@@ -1524,14 +1572,14 @@ class NXOSDriver(NXOSDriverBase):
                     # Copying the behavior of eos.py where if the fanstatus key is not found
                     # we default the status to True
                     "status": entry.get("fanstatus", "Ok")
-                              == "Ok"
+                    == "Ok"
                 }
             return normalized
 
         def _process_temperature(
             temperature_data: Dict,
         ) -> Dict[str, models.TemperatureDict]:
-            normalized = {}
+            normalized: Dict[str, models.TemperatureDict] = {}
             # The modname and sensor type are not unique enough keys, so adding a count
             count = 1
             past_tempmod = "1"
@@ -1545,7 +1593,7 @@ class NXOSDriver(NXOSDriverBase):
                     "temperature": float(entry.get("curtemp", -1)),
                     "is_alert": entry.get("alarmstatus", "Ok").rstrip() != "Ok",
                     "is_critical": float(entry.get("curtemp"))
-                                   > float(entry.get("majthres")),
+                    > float(entry.get("majthres")),
                 }
                 count += 1
             return normalized
@@ -1556,6 +1604,7 @@ class NXOSDriver(NXOSDriverBase):
                 if cpu_data.get("idle_percent")
                 else cpu_data["TABLE_cpu_util"]["ROW_cpu_util"]["idle_percent"]
             )
+            assert isinstance(idle, str)
             return {0: {"%usage": round(100 - float(idle), 2)}}
 
         def _process_memory(memory_data: Dict) -> models.MemoryDict:
