@@ -224,7 +224,7 @@ def empty_tree(input_list: List) -> bool:
 
 
 def compliance_report(
-    cls: NetworkDriver,
+    cls: "NetworkDriver",
     validation_file: Optional[str] = None,
     validation_source: Optional[str] = None,
 ) -> models.ReportResult:
