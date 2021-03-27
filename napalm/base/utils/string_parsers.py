@@ -16,7 +16,7 @@ def alphanum_key(key: str) -> List[Union[str, int]]:
 
 
 def sorted_nicely(sort_me: Iterable) -> Iterable:
-    """ Sort the given iterable in the way that humans expect."""
+    """Sort the given iterable in the way that humans expect."""
     return sorted(sort_me, key=alphanum_key)
 
 

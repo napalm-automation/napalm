@@ -11,9 +11,11 @@ from collections.abc import Iterable
 # third party libs
 from typing import Optional, Dict, Any, List, Union, Tuple, TypeVar, Callable
 
+from ciscoconfparse import CiscoConfParse
+from typing import Optional, Dict, Any, List, Union, Tuple, TypeVar, Callable, Type
+
 import jinja2
 import textfsm
-from ciscoconfparse import CiscoConfParse
 from lxml import etree
 from netaddr import EUI
 from netaddr import IPAddress
@@ -22,6 +24,8 @@ from netaddr import mac_unix
 # local modules
 import napalm.base.exceptions
 from napalm.base import constants
+from napalm.base.test.models import ConfigDict
+from napalm.base.utils.jinja_filters import CustomJinjaFilters
 from napalm.base.canonical_map import base_interfaces, reverse_mapping
 from napalm.base.test.models import ConfigDict
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
@@ -303,7 +307,7 @@ def find_txt(
     return str(value)
 
 
-def convert(to: Callable[[T], R], who: Optional[T], default: R = "") -> R:  # type: ignore
+def convert(to: Callable[[T], R], who: Optional[T], default: R = "") -> R:
     """
     Converts data to a specific datatype.
     In case of error, will return a default value.

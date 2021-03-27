@@ -138,7 +138,6 @@ class RPCClient(RPCBase):
         if isinstance(commands, string_types):
             commands = [commands]
 
-
         raw_text = True if method == "cli_ascii" else False
 
         response = self._send_request(commands, method=method)

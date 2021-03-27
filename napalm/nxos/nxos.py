@@ -19,12 +19,25 @@ import re
 import tempfile
 import time
 import uuid
+
 # import stdlib
 from abc import abstractmethod
 from builtins import super
 from collections import defaultdict
+
 # import third party lib
-from typing import Optional, Dict, List, Union, Any, cast, Callable, TypeVar
+from typing import (
+    Optional,
+    Dict,
+    List,
+    Union,
+    Any,
+    cast,
+    Callable,
+    TypeVar,
+    TypedDict,
+    DefaultDict,
+)
 
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
@@ -32,6 +45,7 @@ from netmiko import file_transfer, ConnectHandler
 from requests.exceptions import ConnectionError
 
 import napalm.base.constants as c
+
 # import NAPALM Base
 import napalm.base.helpers
 from napalm.base import NetworkDriver
@@ -61,13 +75,12 @@ ShowIPInterfaceReturn = TypedDict(
     },
 )
 
-F = TypeVar('F', bound=Callable[..., Any])
 
 
 def ensure_netmiko_conn(func: F) -> F:
     """Decorator that ensures Netmiko connection exists."""
 
-    def wrap_function(self, filename=None, config=None): # type: ignore
+    def wrap_function(self, filename=None, config=None):  # type: ignore
         try:
             netmiko_object = self._netmiko_device
             if netmiko_object is None:
@@ -225,8 +238,8 @@ class NXOSDriverBase(NetworkDriver):
         try:
             diff_out = (
                 diff_out.split("Generating Rollback Patch")[1]
-                    .replace("Rollback Patch is Empty", "")
-                    .strip()
+                .replace("Rollback Patch is Empty", "")
+                .strip()
             )
             for line in diff_out.splitlines():
                 if line:
@@ -504,7 +517,7 @@ class NXOSDriverBase(NetworkDriver):
                         ip_address = "*"
                     traceroute_result["success"][hop_index]["probes"][
                         probe_index + 1
-                        ] = {
+                    ] = {
                         "host_name": str(host_name),
                         "ip_address": str(ip_address),
                         "rtt": rtt,
@@ -787,9 +800,7 @@ class NXOSDriver(NXOSDriverBase):
     def close(self) -> None:
         self.device = None
 
-    def _send_command(
-        self, command: str, raw_text: bool = False
-    ) -> Dict[str, Union[str, Dict[str, Any]]]:
+    def _send_command(self, command: str, raw_text: bool = False) -> Any:
         """
         Wrapper for NX-API show method.
 
@@ -1565,7 +1576,7 @@ class NXOSDriver(NXOSDriverBase):
                     # Copying the behavior of eos.py where if the fanstatus key is not found
                     # we default the status to True
                     "status": entry.get("fanstatus", "Ok")
-                              == "Ok"
+                    == "Ok"
                 }
             return normalized
 
@@ -1586,7 +1597,7 @@ class NXOSDriver(NXOSDriverBase):
                     "temperature": float(entry.get("curtemp", -1)),
                     "is_alert": entry.get("alarmstatus", "Ok").rstrip() != "Ok",
                     "is_critical": float(entry.get("curtemp"))
-                                   > float(entry.get("majthres")),
+                    > float(entry.get("majthres")),
                 }
                 count += 1
             return normalized

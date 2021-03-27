@@ -63,7 +63,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def __enter__(self) -> "NetworkDriver":
+    def __enter__(self) -> "NetworkDriver":  # type: ignore
         try:
             self.open()
             return self
@@ -74,7 +74,6 @@ class NetworkDriver(object):
             else:
                 raise
 
-    def __exit__(  # type: ignore
     def __exit__(
         self,
         exc_type: Optional[Type[BaseException]],
