@@ -35,7 +35,7 @@ jobs:
 
       - name: Run type checker
         run: |
-          mypy -p napalm --config-file mypy.ini || true
+          mypy -p napalm --config-file mypy.ini
 
       - name: Run Tests
         run: |
