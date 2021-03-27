@@ -16,7 +16,10 @@ import sys
 from types import TracebackType
 from typing import Optional, Dict, Type, Any, List, Union
 
-from typing_extensions import Literal
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 from netmiko import ConnectHandler, NetMikoTimeoutException
 
