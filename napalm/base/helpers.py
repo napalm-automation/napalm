@@ -304,7 +304,7 @@ def find_txt(
     return str(value)
 
 
-def convert(to: Callable[[T], R], who: Optional[T], default: R = "") -> R:
+def convert(to: Callable[[T], R], who: Optional[T], default: R = "") -> R:  # type: ignore
     """
     Converts data to a specific datatype.
     In case of error, will return a default value.
