@@ -240,11 +240,11 @@ class TestBaseHelpers(unittest.TestCase):
             napalm.base.helpers.convert(int, "non-int-value", default=-100) == -100
         )
         # default value returned
-        self.assertIsInstance(napalm.base.helpers.convert(float, "1e-17"), float)
+        self.assertIsInstance(napalm.base.helpers.convert(float, "1e-17", 1.0), float)
         # converts indeed to float
-        self.assertFalse(napalm.base.helpers.convert(str, None) == "None")
+        self.assertFalse(napalm.base.helpers.convert(str, None, "") == "None")
         # should not convert None-type to 'None' string
-        self.assertTrue(napalm.base.helpers.convert(str, None) == "")
+        self.assertTrue(napalm.base.helpers.convert(str, None, "") == "")
         # should return empty unicode
 
     def test_find_txt(self):

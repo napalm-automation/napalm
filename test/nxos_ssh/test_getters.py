@@ -24,6 +24,6 @@ class TestGetter(BaseTestGetters):
         assert len(get_interfaces) > 0
 
         for interface, interface_data in get_interfaces.items():
-            assert helpers.test_model(models.interface, interface_data)
+            assert helpers.test_model(models.InterfaceDict, interface_data)
 
         return get_interfaces
