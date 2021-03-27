@@ -41,7 +41,7 @@ from typing import (
 
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
-from netmiko import file_transfer, ConnectHandler
+from netmiko import file_transfer
 from requests.exceptions import ConnectionError
 
 import napalm.base.constants as c

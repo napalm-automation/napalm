@@ -1,29 +1,28 @@
 """Helper functions for the NAPALM base."""
+import itertools
+import logging
 # std libs
 import os
 import re
 import sys
-import itertools
-import logging
 from collections.abc import Iterable
-
 # third party libs
-from typing import Optional, Dict, Any, List, Union, Tuple, TypeVar, Callable, Type
+from typing import Optional, Dict, Any, List, Union, Tuple, TypeVar, Callable
 
 import jinja2
 import textfsm
+from ciscoconfparse import CiscoConfParse
 from lxml import etree
 from netaddr import EUI
-from netaddr import mac_unix
 from netaddr import IPAddress
-from ciscoconfparse import CiscoConfParse
+from netaddr import mac_unix
 
 # local modules
 import napalm.base.exceptions
 from napalm.base import constants
+from napalm.base.canonical_map import base_interfaces, reverse_mapping
 from napalm.base.test.models import ConfigDict
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
-from napalm.base.canonical_map import base_interfaces, reverse_mapping
 
 T = TypeVar("T")
 R = TypeVar("R")

@@ -6,7 +6,7 @@ Reimplemented by ktbyers to support XML-RPC in addition to JSON-RPC
 
 from __future__ import print_function, unicode_literals
 
-from typing import List, Optional, Dict, Any, Union
+from typing import List, Optional, Any, Union
 
 from napalm.nxapi_plumbing.errors import NXAPIError, NXAPICommandError
 from napalm.nxapi_plumbing.api_client import RPCClient, XMLClient, RPCBase
