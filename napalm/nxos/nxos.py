@@ -35,9 +35,10 @@ from typing import (
     cast,
     Callable,
     TypeVar,
-    TypedDict,
     DefaultDict,
 )
+
+from typing_extensions import TypedDict
 
 from netaddr import IPAddress
 from netaddr.core import AddrFormatError
