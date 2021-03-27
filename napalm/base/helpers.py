@@ -1,11 +1,13 @@
 """Helper functions for the NAPALM base."""
 import itertools
 import logging
+
 # std libs
 import os
 import re
 import sys
 from collections.abc import Iterable
+
 # third party libs
 
 from ciscoconfparse import CiscoConfParse
