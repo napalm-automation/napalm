@@ -54,7 +54,7 @@ class Device(object):
                 verify=verify,
             )
 
-    def show(self, command: str, raw_text: bool = False) -> Union[str, List]:
+    def show(self, command: str, raw_text: bool = False) -> Any:
         """Send a non-configuration command.
 
         Args:
