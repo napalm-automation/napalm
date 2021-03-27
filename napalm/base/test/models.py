@@ -1,4 +1,4 @@
-from typing import Dict, Literal, Union, List, Optional
+from typing import Dict, List
 
 try:
     from typing import TypedDict
@@ -261,10 +261,14 @@ InterfacesIPDictEntry = TypedDict(
     "InterfacesIPDictEntry", {"prefix_length": int}, total=False
 )
 
-InterfacesIPDict = Dict[
-    str,
-    Dict[Union[Literal["ipv4"], Literal["ipv6"]], InterfacesIPDictEntry],
-]
+InterfacesIPDict = TypedDict(
+    "InterfacesIPDict",
+    {
+        "ipv4": Dict[str, InterfacesIPDictEntry],
+        "ipv6": Dict[str, InterfacesIPDictEntry],
+    },
+    total=False,
+)
 
 MACAdressTable = TypedDict(
     "MACAdressTable",
@@ -431,3 +435,15 @@ FirewallPolicyDict = TypedDict(
 )
 
 VlanDict = TypedDict("VlanDict", {"name": str, "interfaces": List})
+
+DictValidationResult = TypedDict(
+    "DictValidationResult",
+    {"complies": bool, "present": Dict, "missing": List, "extra": List},
+)
+
+ListValidationResult = TypedDict(
+    "ListValidationResult",
+    {"complies": bool, "present": List, "missing": List, "extra": List},
+)
+
+ReportResult = TypedDict("ReportResult", {"complies": bool, "skipped": List})

@@ -1,25 +1,28 @@
 """ Common methods to normalize a string """
 import re
+from typing import Union, List, Iterable, Dict, Optional
 
 
-def convert(text):
+def convert(text: str) -> Union[str, int]:
     """Convert text to integer, if it is a digit."""
     if text.isdigit():
         return int(text)
     return text
 
 
-def alphanum_key(key):
+def alphanum_key(key: str) -> List[Union[str, int]]:
     """split on end numbers."""
     return [convert(c) for c in re.split("([0-9]+)", key)]
 
 
-def sorted_nicely(sort_me):
+def sorted_nicely(sort_me: Iterable) -> Iterable:
     """Sort the given iterable in the way that humans expect."""
     return sorted(sort_me, key=alphanum_key)
 
 
-def colon_separated_string_to_dict(string, separator=":"):
+def colon_separated_string_to_dict(
+    string: str, separator: str = ":"
+) -> Dict[str, Optional[str]]:
     """
     Converts a string in the format:
 
@@ -38,7 +41,7 @@ def colon_separated_string_to_dict(string, separator=":"):
     into a dictionary
 
     """
-    dictionary = dict()
+    dictionary: Dict[str, Optional[str]] = dict()
     for line in string.splitlines():
         line_data = line.split(separator)
         if len(line_data) > 1:
@@ -52,7 +55,7 @@ def colon_separated_string_to_dict(string, separator=":"):
     return dictionary
 
 
-def hyphen_range(string):
+def hyphen_range(string: str) -> List[int]:
     """
     Expands a string of numbers separated by commas and hyphens into a list of integers.
     For example:  2-3,5-7,20-21,23,100-200
@@ -76,7 +79,7 @@ def hyphen_range(string):
     return list_numbers
 
 
-def convert_uptime_string_seconds(uptime):
+def convert_uptime_string_seconds(uptime: str) -> int:
     """Convert uptime strings to seconds. The string can be formatted various ways."""
     regex_list = [
         # n years, n weeks, n days, n hours, n minutes where each of the fields except minutes

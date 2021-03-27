@@ -19,6 +19,8 @@ import inspect
 import importlib
 
 # NAPALM base
+from typing import Type
+
 from napalm.base.base import NetworkDriver
 from napalm.base.exceptions import ModuleImportError
 from napalm.base.mock import MockDriver
@@ -29,7 +31,7 @@ __all__ = [
 ]
 
 
-def get_network_driver(name, prepend=True):
+def get_network_driver(name: str, prepend: bool = True) -> Type[NetworkDriver]:
     """
     Searches for a class derived form the base NAPALM class NetworkDriver in a specific library.
     The library name must repect the following pattern: napalm_[DEVICE_OS].

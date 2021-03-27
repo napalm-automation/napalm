@@ -134,7 +134,6 @@ class RPCClient(RPCBase):
         if isinstance(commands, string_types):
             commands = [commands]
 
-
         raw_text = True if method == "cli_ascii" else False
 
         response = self._send_request(commands, method=method)
@@ -148,7 +147,13 @@ class RPCClient(RPCBase):
             method = self.cmd_method_conf
         return self._nxapi_command(commands=commands, method=method)
 
-    def _build_payload(self, commands: List[str], method: str, rpc_version: str = "2.0", api_version: float = 1.0) -> str:
+    def _build_payload(
+        self,
+        commands: List[str],
+        method: str,
+        rpc_version: str = "2.0",
+        api_version: str = "1.0",
+    ) -> str:
         """Construct the JSON-RPC payload for NX-API."""
         payload_list = []
         id_num = 1
@@ -156,7 +161,7 @@ class RPCClient(RPCBase):
             payload = {
                 "jsonrpc": rpc_version,
                 "method": method,
-                "params": {"cmd": command, "version": api_version},
+                "params": {"cmd": command, "version": float(api_version)},
                 "id": id_num,
             }
             payload_list.append(payload)
@@ -208,6 +213,7 @@ class RPCClient(RPCBase):
         error = command_response.get("error")
         if error:
             command = command_response.get("command")
+            assert isinstance(command, str)
             if "data" in error:
                 raise NXAPICommandError(command, error["data"]["msg"])
             else:
