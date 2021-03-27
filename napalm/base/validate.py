@@ -3,8 +3,6 @@ Validation methods for the NAPALM base.
 
 See: https://napalm.readthedocs.io/en/latest/validate.html
 """
-from __future__ import annotations
-
 import copy
 import re
 from typing import Dict, List, Union, TypeVar, Optional, TYPE_CHECKING
