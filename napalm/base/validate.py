@@ -5,11 +5,11 @@ See: https://napalm.readthedocs.io/en/latest/validate.html
 """
 from __future__ import annotations
 
+import copy
+import re
 from typing import Dict, List, Union, TypeVar, Optional, TYPE_CHECKING
 
 import yaml
-import copy
-import re
 
 if TYPE_CHECKING:
     from napalm.base import NetworkDriver
