@@ -12,8 +12,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-from __future__ import annotations
-
 import sys
 from types import TracebackType
 from typing import Optional, Dict, Type, Any, List, Union
