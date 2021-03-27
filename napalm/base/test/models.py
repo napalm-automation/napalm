@@ -1,9 +1,6 @@
 from typing import Dict, List
 
-try:
-    from typing import TypedDict
-except ImportError:
-    from typing_extensions import TypedDict
+from typing_extensions import TypedDict
 
 ConfigurationDict = TypedDict(
     "ConfigurationDict", {"running": str, "candidate": str, "startup": str}
