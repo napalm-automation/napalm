@@ -165,8 +165,12 @@ class IOSXRDriver(NetworkDriver):
             "interface_list": [],
         }
 
-        facts_rpc_request = "<Get><Operational><SystemTime/><PlatformInventory/>\
-        </Operational></Get>"
+        facts_rpc_request = (
+            "<Get><Operational><SystemTime/><PlatformInventory><RackTable>"
+            "<Rack><Naming><Name>0</Name></Naming>"
+            "<Attributes><BasicInfo/></Attributes>"
+            "</Rack></RackTable></PlatformInventory></Operational></Get>"
+        )
 
         facts_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(facts_rpc_request))
         system_time_xpath = ".//SystemTime/Uptime"
@@ -660,12 +664,24 @@ class IOSXRDriver(NetworkDriver):
 
         facts = self.get_facts()
         router_model = facts.get("model")
+        xr_version = facts.get("os_version")
+        major_version = (
+            int(xr_version.split(".")[0])
+            if xr_version
+            and isinstance(xr_version, str)
+            and xr_version.split(".")[0].isnumeric()
+            else 0
+        )
         is_xrv = router_model.lower().startswith("xrv")
         environment_status["memory"] = {"available_ram": 0.0, "used_ram": 0.0}
 
         if not is_xrv:
-            rpc_command = "<Get><AdminOperational><MemorySummary>\
-            </MemorySummary></AdminOperational></Get>"
+            if major_version >= 7:
+                rpc_command = "<Get><Operational><MemorySummary>\
+                </MemorySummary></Operational></Get>"
+            else:
+                rpc_command = "<Get><AdminOperational><MemorySummary>\
+                </MemorySummary></AdminOperational></Get>"
             result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
             for node in result_tree.xpath(".//Node"):
@@ -807,7 +823,11 @@ class IOSXRDriver(NetworkDriver):
 
         lldp_neighbors = {}
 
-        rpc_command = "<Get><Operational><LLDP></LLDP></Operational></Get>"
+        rpc_command = (
+            "<Get><Operational>"
+            "<LLDP><NodeTable></NodeTable></LLDP>"
+            "</Operational></Get>"
+        )
 
         result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
