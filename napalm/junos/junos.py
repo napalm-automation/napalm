@@ -2369,7 +2369,7 @@ class JunOSDriver(NetworkDriver):
 
         options = {"format": "text", "database": "candidate"}
         sanitize_strings = {
-            r"^(\s+community\s+)\w+(\s+{.*)$": r"\1<removed>\2",
+            r"^(\s+community\s+)\w+(;.*|\s+{.*)$": r"\1<removed>\2",
             r'^(.*)"\$\d\$\S+"(;.*)$': r"\1<removed>\2",
         }
         if retrieve in ("candidate", "all"):
