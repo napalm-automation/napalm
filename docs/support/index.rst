@@ -78,7 +78,7 @@ Available configuration templates
 
 * :code:`set_hostname` (JunOS, IOS-XR, IOS) - Configures the hostname of the device.
 * :code:`set_ntp_peers` (JunOS, IOS-XR, EOS, NXOS, IOS) - Configures NTP peers of the device.
-* :code:`delete_ntp_peers` (JunOS, IOS-XR, EOS, NXOS, IOS): Removes NTP peers form device's configuration.
+* :code:`delete_ntp_peers` (JunOS, IOS-XR, EOS, NXOS, IOS): Removes NTP peers from device's configuration.
 * :code:`set_probes` (JunOS, IOS-XR): Configures RPM/SLA probes.
 * :code:`schedule_probes` (IOS-XR): On Cisco devices, after defining the SLA probes, it is mandatory to schedule them. Defined also for JunOS as empty template, for consistency reasons.
 * :code:`delete_probes` (JunOS, IOS-XR): Removes RPM/SLA probes.
