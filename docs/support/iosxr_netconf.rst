@@ -4,8 +4,7 @@ IOS-XR (NETCONF)
 
 Device management using CLI Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-All configuration methods (``load_merge_candidate``, ``load_replace_candidate``, ``get_config``, ``compare_config``) support configuration encoded in XML and CLI (unstructured) format.
-Only devices running IOS-XR 7.0 or later support configuration encoded in CLI (unstructured) format using this driver.
+All configuration methods (``load_merge_candidate``, ``load_replace_candidate``, ``get_config``, ``compare_config``) support configuration encoded in XML and CLI (unstructured) format. Only devices running IOS-XR 7.0 or later are supported by NAPALM.
 
 
 Retrieving device environment
