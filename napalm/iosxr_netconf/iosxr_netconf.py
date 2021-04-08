@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright 2020 CISCO. All rights reserved.
+# Copyright 2021 Kirk Byers. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with the
@@ -35,6 +36,7 @@ from netaddr.core import AddrFormatError
 
 # import NAPALM base
 from napalm.iosxr_netconf import constants as C
+from napalm.iosxr.utilities import strip_config_header
 from napalm.base.base import NetworkDriver
 import napalm.base.helpers
 from napalm.base.exceptions import ConnectionException
@@ -260,6 +262,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             if encoding == "cli":
                 diff = self.device.dispatch(to_ele(C.CLI_DIFF_RPC_REQ)).xml
                 diff = ETREE.XML(diff, parser=parser)[0].text.strip()
+                diff = strip_config_header(diff)
             elif encoding == "xml":
                 run_conf = self.device.get_config("running").xml
                 can_conf = self.device.get_config("candidate").xml
