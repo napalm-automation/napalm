@@ -8,15 +8,15 @@ General support matrix
 
 
 
-  =====================   ==========  =============  ====================  ===================  ============  ============  ============
-  _                       EOS         Junos          IOS-XR (NETCONF)      IOS-XR (Legacy XML)  NX-OS         NX-OS SSH     IOS
-  =====================   ==========  =============  ====================  ===================  ============  ============  ============
-  **Driver Name**         eos         junos          iosxr_netconf         iosxr                nxos          nxos_ssh      ios
-  **Structured data**     Yes         Yes            Yes                   No                   Yes           No            No
-  **Minimum version**     4.15.0F     12.1           6.3.2                 5.1.0                6.1 [#g1]_    12.4(20)T     6.3.2
-  **Backend library**     `pyeapi`_   `junos-eznc`_  `ncclient`_           `pyIOSXR`_           `pynxos`_     `netmiko`_    `netmiko`_
-  **Caveats**             :doc:`eos`                 :doc:`iosxr_netconf`                       :doc:`nxos`   :doc:`nxos`   :doc:`ios`
-  =====================   ==========  =============  ====================  ===================  ============  ============  ============
+  =====================   ==========  =============  ====================  ==================  ============  ============  ============
+  _                       EOS         Junos          IOS-XR (NETCONF)      IOS-XR (XML-Agent)  NX-OS         NX-OS SSH     IOS
+  =====================   ==========  =============  ====================  ==================  ============  ============  ============
+  **Driver Name**         eos         junos          iosxr_netconf         iosxr               nxos          nxos_ssh      ios
+  **Structured data**     Yes         Yes            Yes                   No                  Yes           No            No
+  **Minimum version**     4.15.0F     12.1           7.0                   5.1.0               6.1 [#g1]_    12.4(20)T     6.3.2
+  **Backend library**     `pyeapi`_   `junos-eznc`_  `ncclient`_           `pyIOSXR`_          `pynxos`_     `netmiko`_    `netmiko`_
+  **Caveats**             :doc:`eos`                 :doc:`iosxr_netconf`                      :doc:`nxos`   :doc:`nxos`   :doc:`ios`
+  =====================   ==========  =============  ====================  ==================  ============  ============  ============
 
 .. _pyeapi: https://github.com/arista-eosplus/pyeapi
 .. _junos-eznc: https://github.com/Juniper/py-junos-eznc
@@ -34,15 +34,15 @@ Configuration support matrix
 ----------------------------
 
 =====================   ==========  =====   ================  ==================  ==============  ==============
-_                       EOS         Junos   IOS-XR (NETCONF)  IOS-XR (XML-Agent)   NX-OS           IOS
+_                       EOS         Junos   IOS-XR (NETCONF)  IOS-XR (XML-Agent)  NX-OS           IOS
 =====================   ==========  =====   ================  ==================  ==============  ==============
-**Config. replace**     Yes         Yes     Yes               Yes                  Yes             Yes
-**Config. merge**       Yes         Yes     Yes               Yes                  Yes             Yes
-**Commit Confirm**      Yes         Yes     No                No                   No              No
-**Compare config**      Yes         Yes     Yes               Yes [#c1]_           Yes [#c4]_      Yes
-**Atomic Changes**      Yes         Yes     Yes               Yes                  Yes/No [#c5]_   Yes/No [#c5]_
-**Rollback**            Yes [#c2]_  Yes     Yes               Yes                  Yes/No [#c5]_   Yes
-=====================   ==========  =====   ================  ===================  ==============  ==============
+**Config. replace**     Yes         Yes     Yes               Yes                 Yes             Yes
+**Config. merge**       Yes         Yes     Yes               Yes                 Yes             Yes
+**Commit Confirm**      Yes         Yes     No                No                  No              No
+**Compare config**      Yes         Yes     Yes               Yes [#c1]_          Yes [#c4]_      Yes
+**Atomic Changes**      Yes         Yes     Yes               Yes                 Yes/No [#c5]_   Yes/No [#c5]_
+**Rollback**            Yes [#c2]_  Yes     Yes               Yes                 Yes/No [#c5]_   Yes
+=====================   ==========  =====   ================  ==================  ==============  ==============
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
