@@ -39,6 +39,7 @@ import napalm.base.helpers
 from napalm.base.base import NetworkDriver
 from napalm.base.utils import string_parsers
 from napalm.base.exceptions import (
+    CommitError,
     ConnectionException,
     MergeConfigException,
     ReplaceConfigException,
@@ -129,6 +130,7 @@ class EOSDriver(NetworkDriver):
         transport = optional_args.get(
             "transport", optional_args.get("eos_transport", "https")
         )
+        self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
         try:
             self.transport_class = pyeapi.client.TRANSPORTS[transport]
         except KeyError:
@@ -189,6 +191,39 @@ class EOSDriver(NetworkDriver):
             if v["state"] == "pending" and k != self.config_session
         ]:
             raise SessionLockedException("Session is already in use")
+
+    def _get_pending_commits(self):
+        """
+        Return a dictionary of configuration sessions with pending commit confirms and
+        corresponding time when confirm needs to happen by (rounded to nearest second).
+
+        Example:
+        {'napalm_607123': 522}
+        """
+        config_sessions = self.device.run_commands(
+            ["show configuration sessions detail"]
+        )
+        # Still returns all of the configuration sessions (original data-struct was just a list)
+        config_sessions = config_sessions[0]["sessions"]
+
+        # Arista reports the commitBy time relative to uptime of the box... :-(
+        uptime = self.device.run_commands(["show version"])
+        uptime = uptime[0].get("uptime", -1)
+
+        pending_commits = {}
+        for session_name, session_dict in config_sessions.items():
+            if "pendingCommitTimer" in session_dict["state"]:
+                commit_by = session_dict.get("commitBy", -1)
+                # Set to -1 if something went wrong in the calculation.
+                if commit_by == -1 or uptime == -1:
+                    pending_commits[session_name] = -1
+                elif uptime >= commit_by:
+                    pending_commits[session_name] = -1
+                else:
+                    confirm_by_seconds = commit_by - uptime
+                    pending_commits[session_name] = round(confirm_by_seconds)
+
+        return pending_commits
 
     @staticmethod
     def _multiline_convert(config, start="banner login", end="EOF", depth=1):
@@ -285,9 +320,13 @@ class EOSDriver(NetworkDriver):
 
         try:
             if self.eos_autoComplete is not None:
-                self.device.run_commands(commands, autoComplete=self.eos_autoComplete)
+                self.device.run_commands(
+                    commands,
+                    autoComplete=self.eos_autoComplete,
+                    fn0039_transform=self.fn0039_config,
+                )
             else:
-                self.device.run_commands(commands)
+                self.device.run_commands(commands, fn0039_transform=self.fn0039_config)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             msg = str(e)
@@ -316,24 +355,58 @@ class EOSDriver(NetworkDriver):
 
             return result.strip()
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """Implementation of NAPALM method commit_config."""
 
         if not self.lock_disable:
             self._lock()
+
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
             )
-        commands = [
-            "copy startup-config flash:rollback-0",
-            "configure session {}".format(self.config_session),
-            "commit",
-            "write memory",
-        ]
 
-        self.device.run_commands(commands)
-        self.config_session = None
+        if revert_in is not None:
+            if self.has_pending_commit():
+                raise CommitError("Pending commit confirm already in process!")
+
+            commands = [
+                "copy startup-config flash:rollback-0",
+                "configure session {}".format(self.config_session),
+                "commit timer {}".format(
+                    time.strftime("%H:%M:%S", time.gmtime(revert_in))
+                ),
+            ]
+            self.device.run_commands(commands)
+        else:
+            commands = [
+                "copy startup-config flash:rollback-0",
+                "configure session {}".format(self.config_session),
+                "commit",
+                "write memory",
+            ]
+            self.device.run_commands(commands)
+            self.config_session = None
+
+    def has_pending_commit(self):
+        """Boolean indicating if there is a commit-confirm in process."""
+        pending_commits = self._get_pending_commits()
+        # pending_commits will return an empty dict, if there are no commit-confirms pending.
+        return bool(pending_commits)
+
+    def confirm_commit(self):
+        """Send final commit to confirm an in-proces commit that requires confirmation."""
+        pending_commits = self._get_pending_commits()
+        # The specific 'config_session' must show up as a pending commit.
+        if pending_commits.get(self.config_session):
+            commands = [
+                "configure session {} commit".format(self.config_session),
+                "write memory",
+            ]
+            self.device.run_commands(commands)
+            self.config_session = None
+        else:
+            raise CommitError("No pending commit-confirm found!")
 
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
@@ -344,8 +417,26 @@ class EOSDriver(NetworkDriver):
 
     def rollback(self):
         """Implementation of NAPALM method rollback."""
-        commands = ["configure replace flash:rollback-0", "write memory"]
+
+        # Commit-confirm check and abort
+        pending_commits = self._get_pending_commits()
+        if pending_commits:
+            # Make sure pending commit matches self.config_session
+            if pending_commits.get(self.config_session):
+                commands = [
+                    "configure session {} abort".format(self.config_session),
+                    "write memory",
+                ]
+            else:
+                msg = "Current config session not found as pending commit-confirm"
+                raise CommitError(msg)
+
+        # Standard rollback
+        else:
+            commands = ["configure replace flash:rollback-0", "write memory"]
+
         self.device.run_commands(commands)
+        self.config_session = None
 
     def get_facts(self):
         """Implementation of NAPALM method get_facts."""
@@ -506,6 +597,7 @@ class EOSDriver(NetworkDriver):
                         "is_up": peer_data["peerState"] == "Established",
                         "is_enabled": is_enabled,
                         "uptime": int(time.time() - float(peer_data["upDownTime"])),
+                        "description": peer_data.get("description", ""),
                     }
                     bgp_counters[vrf]["peers"][napalm.base.helpers.ip(peer)] = peer_info
         lines = []
@@ -569,6 +661,13 @@ class EOSDriver(NetworkDriver):
                     "uptime": 0,
                     "is_enabled": True,
                 }
+            if (
+                "description" in bgp_counters[vrf]["peers"][peer_addr]
+                and not data["description"]
+            ):
+                data["description"] = bgp_counters[vrf]["peers"][peer_addr][
+                    "description"
+                ]
             bgp_counters[vrf]["peers"][peer_addr].update(data)
         if "default" in bgp_counters:
             bgp_counters["global"] = bgp_counters.pop("default")
@@ -961,7 +1060,7 @@ class EOSDriver(NetworkDriver):
             interface = str(neighbor.get("interface"))
             mac_raw = neighbor.get("hwAddress")
             ip = str(neighbor.get("address"))
-            age = float(neighbor.get("age"))
+            age = float(neighbor.get("age", -1.0))
             arp_table.append(
                 {
                     "interface": interface,
@@ -1236,6 +1335,9 @@ class EOSDriver(NetworkDriver):
                 if protocol == "bgp" or route_protocol.lower() in ("ebgp", "ibgp"):
                     nexthop_interface_map = {}
                     for next_hop in route_details.get("vias"):
+                        if "vtepAddr" in next_hop:
+                            next_hop["nexthopAddr"] = next_hop["vtepAddr"]
+                            next_hop["interface"] = "vxlan1"
                         nexthop_ip = napalm.base.helpers.ip(next_hop.get("nexthopAddr"))
                         nexthop_interface_map[nexthop_ip] = next_hop.get("interface")
                     metric = route_details.get("metric")
@@ -1256,11 +1358,13 @@ class EOSDriver(NetworkDriver):
                             )
                         except CommandError:
                             # Newer EOS can't mix longer-prefix and detail
-                            command = "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
-                                ipv=ipv,
-                                dest=destination,
-                                longer="longer-prefixes" if longer else "",
-                                _vrf=_vrf,
+                            command = (
+                                "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
+                                    ipv=ipv,
+                                    dest=destination,
+                                    longer="longer-prefixes" if longer else "",
+                                    _vrf=_vrf,
+                                )
                             )
                             vrf_cache.update(
                                 {
@@ -1291,11 +1395,18 @@ class EOSDriver(NetworkDriver):
                             remote_as = napalm.base.helpers.as_number(
                                 as_path.strip("()").split()[-1]
                             )
-                        remote_address = napalm.base.helpers.ip(
-                            bgp_route_details.get("routeDetail", {})
-                            .get("peerEntry", {})
-                            .get("peerAddr", "")
-                        )
+                        try:
+                            remote_address = napalm.base.helpers.ip(
+                                bgp_route_details.get("routeDetail", {})
+                                .get("peerEntry", {})
+                                .get("peerAddr", "")
+                            )
+                        except AddrFormatError:
+                            remote_address = napalm.base.helpers.ip(
+                                bgp_route_details.get("peerEntry", {}).get(
+                                    "peerAddr", ""
+                                )
+                            )
                         local_preference = bgp_route_details.get("localPreference")
                         next_hop = napalm.base.helpers.ip(
                             bgp_route_details.get("nextHop")
@@ -1985,3 +2096,16 @@ class EOSDriver(NetworkDriver):
                     )
             ping_dict["success"].update({"results": results_array})
         return ping_dict
+
+    def get_vlans(self):
+        command = ["show vlan"]
+        output = self.device.run_commands(command, encoding="json")[0]["vlans"]
+
+        vlans = {}
+        for vlan, vlan_config in output.items():
+            vlans[vlan] = {
+                "name": vlan_config["name"],
+                "interfaces": list(vlan_config["interfaces"].keys()),
+            }
+
+        return vlans

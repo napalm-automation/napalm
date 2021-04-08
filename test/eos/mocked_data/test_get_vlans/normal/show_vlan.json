@@ -1,0 +1,489 @@
+{
+	"sourceDetail": "",
+	"vlans": {
+		"1": {
+			"status": "active",
+			"name": "default",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet3": {
+					"privatePromoted": false
+				},
+				"Ethernet4": {
+					"privatePromoted": false
+				},
+				"Ethernet49/1": {
+					"privatePromoted": false
+				},
+				"Ethernet50/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"10": {
+			"status": "active",
+			"name": "VLAN0010",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet49/1": {
+					"privatePromoted": false
+				},
+				"Ethernet50/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"11": {
+			"status": "active",
+			"name": "VLAN0011",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet49/1": {
+					"privatePromoted": false
+				},
+				"Ethernet50/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"12": {
+			"status": "active",
+			"name": "VLAN0012",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet49/1": {
+					"privatePromoted": false
+				},
+				"Ethernet50/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"13": {
+			"status": "active",
+			"name": "VLAN0013",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet49/1": {
+					"privatePromoted": false
+				},
+				"Ethernet50/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"14": {
+			"status": "active",
+			"name": "VLAN0014",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet49/1": {
+					"privatePromoted": false
+				},
+				"Ethernet50/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"15": {
+			"status": "active",
+			"name": "VLAN0015",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet49/1": {
+					"privatePromoted": false
+				},
+				"Ethernet50/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"100": {
+			"status": "active",
+			"name": "VLAN0100",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet1/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet2/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet3/1/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"101": {
+			"status": "active",
+			"name": "VLAN0101",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet1/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet2/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet3/1/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"102": {
+			"status": "active",
+			"name": "VLAN0102",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet1/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet2/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet3/1/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"103": {
+			"status": "active",
+			"name": "VLAN0103",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet1/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet2/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet3/1/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"104": {
+			"status": "active",
+			"name": "VLAN0104",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet1/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet2/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet3/1/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"105": {
+			"status": "active",
+			"name": "VLAN0105",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet1/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet2/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet3/1/1": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"200": {
+			"status": "active",
+			"name": "VLAN0200",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/3": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/4": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"201": {
+			"status": "active",
+			"name": "VLAN0201",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/3": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/4": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"202": {
+			"status": "active",
+			"name": "VLAN0202",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/3": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/4": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"203": {
+			"status": "active",
+			"name": "VLAN0203",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/3": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/4": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"204": {
+			"status": "active",
+			"name": "VLAN0204",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/3": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/4": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"205": {
+			"status": "active",
+			"name": "VLAN0205",
+			"interfaces": {
+				"Port-Channel1": {
+					"privatePromoted": false
+				},
+				"Ethernet1": {
+					"privatePromoted": false
+				},
+				"Ethernet2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/1": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/2": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/3": {
+					"privatePromoted": false
+				},
+				"Ethernet4/1/4": {
+					"privatePromoted": false
+				}
+			},
+			"dynamic": false
+		},
+		"1000": {
+			"status": "active",
+			"name": "VLAN1000",
+			"interfaces": {},
+			"dynamic": false
+		}
+	}
+}

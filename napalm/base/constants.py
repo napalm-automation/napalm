@@ -64,7 +64,7 @@ NETMIKO_MAP = {
     "nxos_ssh": "cisco_nxos",
     "iosxr": "cisco_iosxr",
     "eos": "arista_eos",
-    "junos": "juniper_eos",
+    "junos": "juniper_junos",
 }
 LLDP_CAPAB_TRANFORM_TABLE = {
     "o": "other",
