@@ -8,21 +8,22 @@ General support matrix
 
 
 
-  =====================   ==========  =============   ============ ============  ============ ============
-  _                       EOS         Junos           IOS-XR       NX-OS         NX-OS SSH    IOS
-  =====================   ==========  =============   ============ ============  ============ ============
-  **Driver Name**         eos         junos           iosxr        nxos          nxos_ssh     ios
-  **Structured data**     Yes         Yes             No           Yes           No           No
-  **Minimum version**     4.15.0F     12.1            5.1.0        6.1 [#g1]_                 12.4(20)T
-  **Backend library**     `pyeapi`_   `junos-eznc`_   `pyIOSXR`_   `pynxos`_     `netmiko`_   `netmiko`_
-  **Caveats**             :doc:`eos`                               :doc:`nxos`   :doc:`nxos`  :doc:`ios`
-  =====================   ==========  =============   ============ ============  ============ ============
+  =====================   ==========  =============  ====================  ===================  ============  ============  ============
+  _                       EOS         Junos          IOS-XR (NETCONF)      IOS-XR (Legacy XML)  NX-OS         NX-OS SSH     IOS
+  =====================   ==========  =============  ====================  ===================  ============  ============  ============
+  **Driver Name**         eos         junos          iosxr_netconf         iosxr                nxos          nxos_ssh      ios
+  **Structured data**     Yes         Yes            Yes                   No                   Yes           No            No
+  **Minimum version**     4.15.0F     12.1           6.3.2                 5.1.0                6.1 [#g1]_    12.4(20)T     6.3.2
+  **Backend library**     `pyeapi`_   `junos-eznc`_  `ncclient`_           `pyIOSXR`_           `pynxos`_     `netmiko`_    `netmiko`_
+  **Caveats**             :doc:`eos`                 :doc:`iosxr_netconf`                       :doc:`nxos`   :doc:`nxos`   :doc:`ios`
+  =====================   ==========  =============  ====================  ===================  ============  ============  ============
 
 .. _pyeapi: https://github.com/arista-eosplus/pyeapi
 .. _junos-eznc: https://github.com/Juniper/py-junos-eznc
 .. _pyIOSXR: https://github.com/fooelisa/pyiosxr
 .. _pynxos: https://github.com/networktocode/pynxos
 .. _netmiko: https://github.com/ktbyers/netmiko
+.. _ncclient: https://github.com/ncclient/ncclient
 
 .. [#g1] NX-API support on the Nexus 5k, 6k and 7k families was introduced in version 7.2
 
@@ -32,16 +33,16 @@ General support matrix
 Configuration support matrix
 ----------------------------
 
-=====================   ==========  =====   ==========  ==============  ==============
-_                       EOS         Junos   IOS-XR      NX-OS           IOS
-=====================   ==========  =====   ==========  ==============  ==============
-**Config Replace**      Yes         Yes     Yes         Yes             Yes
-**Config Merge**        Yes         Yes     Yes         Yes             Yes
-**Commit Confirm**      Yes         No      No          No              No
-**Compare Config**      Yes         Yes     Yes [#c1]_  Yes [#c4]_      Yes
-**Atomic Changes**      Yes         Yes     Yes         Yes/No [#c5]_   Yes/No [#c5]_
-**Rollback**            Yes [#c2]_  Yes     Yes         Yes/No [#c5]_   Yes
-=====================   ==========  =====   ==========  ==============  ==============
+=====================   ==========  =====   ================  ==================  ==============  ==============
+_                       EOS         Junos   IOS-XR (NETCONF)  IOS-XR (XML-Agent)   NX-OS           IOS
+=====================   ==========  =====   ================  ==================  ==============  ==============
+**Config. replace**     Yes         Yes     Yes               Yes                  Yes             Yes
+**Config. merge**       Yes         Yes     Yes               Yes                  Yes             Yes
+**Commit Confirm**      Yes         Yes     No                No                   No              No
+**Compare config**      Yes         Yes     Yes               Yes [#c1]_           Yes [#c4]_      Yes
+**Atomic Changes**      Yes         Yes     Yes               Yes                  Yes/No [#c5]_   Yes/No [#c5]_
+**Rollback**            Yes [#c2]_  Yes     Yes               Yes                  Yes/No [#c5]_   Yes
+=====================   ==========  =====   ================  ===================  ==============  ==============
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
@@ -66,13 +67,13 @@ Other methods
 .. |yes|   unicode:: U+02705 .. Yes
 .. |no|    unicode:: U+0274C .. No
 
-============================== =====  =====   ======  ======  =====
-_                              EOS    Junos   IOS-XR  NX-OS   IOS
-============================== =====  =====   ======  ======  =====
-**load_template**              |yes|  |yes|   |yes|   |yes|   |yes|
-**ping**                       |yes|  |yes|   |no|    |yes|   |yes|
-**traceroute**                 |yes|  |yes|   |yes|   |yes|   |yes|
-============================== =====  =====   ======  ======  =====
+============================== =====  =====   ===================  ======  ======  =====
+_                              EOS    Junos   IOS-XR (NETCONF)     IOS-XR  NX-OS   IOS
+============================== =====  =====   ===================  ======  ======  =====
+**load_template**              |yes|  |yes|   |yes|                |yes|   |yes|   |yes|
+**ping**                       |yes|  |yes|   |no|                 |no|    |yes|   |yes|
+**traceroute**                 |yes|  |yes|   |yes|                |yes|   |yes|   |yes|
+============================== =====  =====   ===================  ======  ======  =====
 
 Available configuration templates
 ---------------------------------
@@ -93,6 +94,7 @@ Caveats
    eos
    ios
    nxos
+   iosxr_netconf
 
 Optional arguments
 ------------------
@@ -115,7 +117,7 @@ ____________________________________
 * :code:`alt_key_file` (ios, iosxr, nxos_ssh) - SSH host key file to use (if ``alt_host_keys`` is ``True``).
 * :code:`auto_probe` (junos) - A timeout in seconds, for which to probe the device. Probing determines if the device accepts remote connections. If `auto_probe` is set to ``0``, no probing will be done. (default: ``0``).
 * :code:`auto_rollback_on_error` (ios) - Disable automatic rollback (certain versions of IOS support configure replace, but not rollback on error) (default: ``True``).
-* :code:`config_lock` (iosxr, junos) - Lock the config during open() (default: ``False``).
+* :code:`config_lock` (iosxr_netconf, iosxr, junos) - Lock the config during open() (default: ``False``).
 * :code:`lock_disable` (junos) - Disable all configuration locking for management by an external system (default: ``False``).
 * :code:`config_private` (junos) - Configure private, no DB locking (default: ``False``).
 * :code:`canonical_int` (ios) - Convert operational interface's returned name to canonical name (fully expanded name) (default: ``False``).
@@ -125,8 +127,8 @@ ____________________________________
 * :code:`global_delay_factor` (ios, nxos_ssh) - Allow for additional delay in command execution (default: ``1``).
 * :code:`ignore_warning` (junos) - Allows to set `ignore_warning` when loading configuration to avoid exceptions via junos-pyez. (default: ``False``).
 * :code:`keepalive` (iosxr, junos) - SSH keepalive interval, in seconds (default: ``30`` seconds).
-* :code:`key_file` (ios, iosxr, junos, nxos_ssh) - Path to a private key file. (default: ``False``).
-* :code:`port` (eos, ios, iosxr, junos, nxos, nxos_ssh) - Allows you to specify a port other than the default.
+* :code:`key_file` (ios, iosxr_netconf, iosxr, junos, nxos_ssh) - Path to a private key file. (default: ``False``).
+* :code:`port` (eos, ios, iosxr_netconf, iosxr, junos, nxos, nxos_ssh) - Allows you to specify a port other than the default.
 * :code:`secret` (ios, nxos_ssh) - Password required to enter privileged exec (enable) (default: ``''``).
 * :code:`ssh_config_file` (ios, iosxr, junos, nxos_ssh) - File name of OpenSSH configuration file.
 * :code:`ssh_strict` (ios, iosxr, nxos_ssh) - Automatically reject unknown SSH host keys (default: ``False``, which means unknown SSH host keys will be accepted).
@@ -134,12 +136,9 @@ ____________________________________
 * :code:`transport` (eos, ios, nxos) - Protocol to connect with (see `The transport argument`_ for more information).
 * :code:`use_keys` (ios, iosxr, nxos_ssh) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
 * :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
-* :code:`eos_fn0039_config` (eos) - Transform old style configuration to the new 
-  style, available beginning with EOS release 4.23.0, as per FN 0039. Beware 
-  that enabling this option will change the configuration you're loading 
-  through NAPALM. Default: ``False`` (won't change your configuration 
-  commands).
-
+* :code:`config_encoding` (iosxr_netconf) - Set encoding to either ``"xml"`` or ``"cli"`` for configuration load methods. (default: ``"cli"``)
+* :code:`eos_fn0039_config` (eos) - Transform old style configuration to the new style, available beginning with EOS release 4.23.0, as per FN 0039. Beware 
+  that enabling this option will change the configuration you're loading through NAPALM. Default: ``False`` (won't change your configuration commands).
   .. versionadded:: 3.0.1
 
 The transport argument
