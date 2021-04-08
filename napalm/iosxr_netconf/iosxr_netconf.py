@@ -36,7 +36,7 @@ from netaddr.core import AddrFormatError
 
 # import NAPALM base
 from napalm.iosxr_netconf import constants as C
-from napalm.iosxr_netconf.utilities import strip_config_header
+from napalm.iosxr.utilities import strip_config_header
 from napalm.base.base import NetworkDriver
 import napalm.base.helpers
 from napalm.base.exceptions import ConnectionException
