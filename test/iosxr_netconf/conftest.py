@@ -71,23 +71,43 @@ class FakeIOSXRNETCONFDevice(BaseTestDouble):
 
     def find_mocked_data_file(self, rpc_req_ele):
         """Find mocked XML file for the current testcase."""
-        filename = "{}{}.xml".format(self.current_test[5:], rpc_req_ele)
+        filename = f"{rpc_req_ele}.xml"
         full_path = self.find_file(filename)
         data = self.read_txt_file(full_path)
         return data
 
     def dispatch(self, rpc_command, source=None, filter=None):
-        rpc_req_ele = ""
-        for child in rpc_command[0]:
-            rpc_req_ele += "__" + child.tag.split("}")[1]
+        ns = "urn:ietf:params:xml:ns:netconf:base:1.1"
+        if rpc_command.tag == f"{{{ns}}}get":
+            rpc_req_ele = ""
+            for child in rpc_command[0]:
+                # Split the namespace with "/" and select the 5th element of the list.
+                # 5th element contain yang model name.
+                # Remove first 13 characters from model name i.e. ('Cisco-IOS-XR')
+                suffix = child.tag.split("/")[5][13:]
+                if rpc_req_ele != "":
+                    rpc_req_ele += "__"
+                rpc_req_ele += str.join("_", suffix.split("}"))
+        else:
+            suffix = rpc_command.tag.split("/")[5][13:]
+            rpc_req_ele = str.join("_", suffix.split("}"))
+
         return FakeRPCReply(self.find_mocked_data_file(rpc_req_ele))
 
     def get(self, filter=None):
-        rpc_req_ele = "__" + etree.fromstring(filter[1]).tag.split("}")[1]
+        # Split the namespace with "/" and select the 5th element of the list.
+        # 5th element contain yang model name.
+        # Remove first 13 characters from model name i.e. ('Cisco-IOS-XR')
+        suffix = etree.fromstring(filter[1]).tag.split("/")[5][13:]
+        rpc_req_ele = str.join("_", suffix.split("}"))
         return FakeRPCReply(self.find_mocked_data_file(rpc_req_ele))
 
     def get_config(self, source, filter=None):
-        rpc_req_ele = "__" + etree.fromstring(filter[1]).tag.split("}")[1]
+        # Split the namespace with "/" and select the 5th element of the list.
+        # 5th element contain yang model name.
+        # Remove first 13 characters from model name i.e. ('Cisco-IOS-XR')
+        suffix = etree.fromstring(filter[1]).tag.split("/")[5][13:]
+        rpc_req_ele = f"{str.join('_', suffix.split('}'))}__{source}"
         return FakeRPCReply(self.find_mocked_data_file(rpc_req_ele))
 
 

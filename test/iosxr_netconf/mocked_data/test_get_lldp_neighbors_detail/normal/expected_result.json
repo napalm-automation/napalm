@@ -1,0 +1,48 @@
+{
+    "TenGigE0/0/0/2": [
+        {
+            "parent_interface": "Bundle-Ether1",
+            "remote_chassis_id": "70:E4:22:61:6C:FE",
+            "remote_port": "TenGigE0/0/0/2",
+            "remote_port_description": "CONNECTS TO 304 Te0/0/0/2",
+            "remote_system_capab": [
+                "router"
+            ],
+            "remote_system_description": "6.6.2, ASR9K",
+            "remote_system_enable_capab": [
+                "router"
+            ],
+            "remote_system_name": "302"
+        },
+        {
+            "parent_interface": "Bundle-Ether1",
+            "remote_chassis_id": "70:E4:22:61:6C:FE",
+            "remote_port": "Bundle-Ether1",
+            "remote_port_description": "",
+            "remote_system_capab": [
+                "router"
+            ],
+            "remote_system_description": "6.6.2, ASR9K",
+            "remote_system_enable_capab": [
+                "router"
+            ],
+            "remote_system_name": "302"
+        }
+    ],
+    "TenGigE0/0/0/8": [
+        {
+            "parent_interface": "None",
+            "remote_chassis_id": "00:8A:96:42:B0:DF",
+            "remote_port": "TenGigE0/0/0/39",
+            "remote_port_description": "CONNECTS TO 304 Te0/0/0/8",
+            "remote_system_capab": [
+                "router"
+            ],
+            "remote_system_description": "6.6.3, NCS-5500",
+            "remote_system_enable_capab": [
+                "router"
+            ],
+            "remote_system_name": "r312"
+        }
+    ]
+}

@@ -94,9 +94,14 @@ class NetworkDriver(object):
         except NetMikoTimeoutException:
             raise ConnectionException("Cannot connect to {}".format(self.hostname))
 
-        # ensure in enable mode if not force disable
-        if not self.force_no_enable:
+        # Disable enable mode if force_no_enable is true (for NAPALM drivers
+        # that support force_no_enable)
+        try:
+            if not self.force_no_enable:
+                self._netmiko_device.enable()
+        except AttributeError:
             self._netmiko_device.enable()
+
         return self._netmiko_device
 
     def _netmiko_close(self):
@@ -160,8 +165,10 @@ class NetworkDriver(object):
 
         :param cls: Instance of the driver class.
         :param template_name: Identifies the template name.
-        :param template_source (optional): Custom config template rendered and loaded on device
-        :param template_path (optional): Absolute path to directory for the configuration templates
+        :param template_source: Custom config template rendered and loaded on device
+        :type template_source: optional
+        :param template_path: Absolute path to directory for the configuration templates
+        :type template_path: optional
         :param template_vars: Dictionary with arguments to be used when the template is rendered.
         :raise DriverTemplateNotImplemented: No template defined for the device type.
         :raise TemplateNotImplemented: The template specified in template_name does not exist in \
@@ -218,9 +225,34 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
+
+        NAPALM drivers that support 'commit confirm' should cause self.has_pending_commit
+        to return True when a 'commit confirm' is in progress.
+
+        Implementations should raise an exception if commit_config is called multiple times while a
+        'commit confirm' is pending.
+
+        :param message: Optional - configuration session commit message
+        :type message: str
+        :param revert_in: Optional - number of seconds before the configuration will be reverted
+        :type revert_in: int|None
+        """
+        raise NotImplementedError
+
+    def confirm_commit(self):
+        """
+        Confirm the changes requested via commit_config when commit_confirm=True.
+
+        Should cause self.has_pending_commit to return False when done.
+        """
+        raise NotImplementedError
+
+    def has_pending_commit(self):
+        """
+        :return Boolean indicating if a commit_config that needs confirmed is in process.
         """
         raise NotImplementedError
 
@@ -233,6 +265,8 @@ class NetworkDriver(object):
     def rollback(self):
         """
         If changes were made, revert changes to the original state.
+
+        If commit confirm is in process, rollback changes and clear has_pending_commit.
         """
         raise NotImplementedError
 
@@ -1011,8 +1045,10 @@ class NetworkDriver(object):
         destination.
 
         :param destination: The destination prefix to be used when filtering the routes.
-        :param protocol (optional): Retrieve the routes only for a specific protocol.
-        :param longer (optional): Retrieve more specific routes as well.
+        :param protocol: Retrieve the routes only for a specific protocol.
+        :type protocol: optional
+        :param longer: Retrieve more specific routes as well.
+        :type longer: optional
 
         Each inner dictionary contains the following fields:
 
@@ -1242,18 +1278,25 @@ class NetworkDriver(object):
         Executes ping on the device and returns a dictionary with the result
 
         :param destination: Host or IP Address of the destination
-        :param source (optional): Source address of echo request
-        :param ttl (optional): Maximum number of hops
-        :param timeout (optional): Maximum seconds to wait after sending final packet
-        :param size (optional): Size of request (bytes)
-        :param count (optional): Number of ping request to send
+        :param source: Source address of echo request
+        :type source: optional
+        :param ttl: Maximum number of hops
+        :type ttl: optional
+        :param timeout: Maximum seconds to wait after sending final packet
+        :type timeout: optional
+        :param size: Size of request (bytes)
+        :type size: optional
+        :param count: Number of ping request to send
+        :type count: optional
+        :param vrf: Use a specific VRF to execute the ping
+        :type vrf: optional
 
         Output dictionary has one of following keys:
 
             * success
             * error
 
-        In case of success, inner dictionary will have the followin keys:
+        In case of success, inner dictionary will have the following keys:
 
             * probes_sent (int)
             * packet_loss (int)
@@ -1312,9 +1355,14 @@ class NetworkDriver(object):
         Executes traceroute on the device and returns a dictionary with the result.
 
         :param destination: Host or IP Address of the destination
-        :param source (optional): Use a specific IP Address to execute the traceroute
-        :param ttl (optional): Maimum number of hops
-        :param timeout (optional): Number of seconds to wait for response
+        :param source: Use a specific IP Address to execute the traceroute
+        :type source: optional
+        :param ttl: Maximum number of hops
+        :type ttl: optional
+        :param timeout: Number of seconds to wait for response
+        :type timeout: optional
+        :param vrf: Use a specific VRF to execute the traceroute
+        :type vrf: optional
 
         Output dictionary has one of the following keys:
 
@@ -1411,7 +1459,7 @@ class NetworkDriver(object):
             {
                 'error': 'unknown host 8.8.8.8.8'
             }
-            """
+        """
         raise NotImplementedError
 
     def get_users(self):

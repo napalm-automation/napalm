@@ -1,0 +1,44 @@
+{
+    "1.0.4.0/24": [
+        {
+            "protocol": "bgp",
+            "outgoing_interface": "",
+            "age": 98,
+            "current_active": true,
+            "routing_table": "CustB",
+            "last_active": true,
+            "protocol_attributes": {
+                "as_path": "Local",
+                "remote_address": "169.254.255.1",
+                "communities": [],
+                "local_preference": 100,
+                "local_as": 1,
+                "remote_as": 1
+            },
+            "next_hop": "169.254.255.1",
+            "selected_next_hop": true,
+            "inactive_reason": "",
+            "preference": 0
+        },
+        {
+            "protocol": "bgp",
+            "outgoing_interface": "",
+            "age": 62,
+            "current_active": true,
+            "routing_table": "default",
+            "last_active": true,
+            "protocol_attributes": {
+                "as_path": "3 3 3 3",
+                "remote_address": "200.200.200.1",
+                "communities": [],
+                "local_preference": 100,
+                "local_as": 1,
+                "remote_as": 3
+            },
+            "next_hop": "200.200.200.1",
+            "selected_next_hop": true,
+            "inactive_reason": "",
+            "preference": 0
+        }
+    ]
+}

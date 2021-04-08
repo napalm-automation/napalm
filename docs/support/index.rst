@@ -33,15 +33,16 @@ General support matrix
 Configuration support matrix
 ----------------------------
 
-=====================   ==========  =====   ===================  ===================  ==============  ==============
-_                       EOS         Junos   IOS-XR (NETCONF)     IOS-XR (Legacy XML)  NX-OS           IOS
-=====================   ==========  =====   ===================  ===================  ==============  ==============
-**Config. replace**     Yes         Yes     Yes                  Yes                  Yes             Yes
-**Config. merge**       Yes         Yes     Yes                  Yes                  Yes             Yes
-**Compare config**      Yes         Yes     Yes                  Yes [#c1]_           Yes [#c4]_      Yes
-**Atomic Changes**      Yes         Yes     Yes                  Yes                  Yes/No [#c5]_   Yes/No [#c5]_
-**Rollback**            Yes [#c2]_  Yes     Yes                  Yes                  Yes/No [#c5]_   Yes
-=====================   ==========  =====   ===================  ===================  ==============  ==============
+=====================   ==========  =====   ================  ==================  ==============  ==============
+_                       EOS         Junos   IOS-XR (NETCONF)  IOS-XR (XML-Agent)   NX-OS           IOS
+=====================   ==========  =====   ================  ==================  ==============  ==============
+**Config. replace**     Yes         Yes     Yes               Yes                  Yes             Yes
+**Config. merge**       Yes         Yes     Yes               Yes                  Yes             Yes
+**Commit Confirm**      Yes         Yes     No                No                   No              No
+**Compare config**      Yes         Yes     Yes               Yes [#c1]_           Yes [#c4]_      Yes
+**Atomic Changes**      Yes         Yes     Yes               Yes                  Yes/No [#c5]_   Yes/No [#c5]_
+**Rollback**            Yes [#c2]_  Yes     Yes               Yes                  Yes/No [#c5]_   Yes
+=====================   ==========  =====   ================  ===================  ==============  ==============
 
 .. [#c1] Hand-crafted by the API as the device doesn't support the feature.
 .. [#c2] Not supported but emulated. Check caveats.
@@ -136,6 +137,9 @@ ____________________________________
 * :code:`use_keys` (ios, iosxr, nxos_ssh) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
 * :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
 * :code:`config_encoding` (iosxr_netconf) - Set encoding to either ``"xml"`` or ``"cli"`` for configuration load methods. (default: ``"cli"``)
+* :code:`eos_fn0039_config` (eos) - Transform old style configuration to the new style, available beginning with EOS release 4.23.0, as per FN 0039. Beware 
+  that enabling this option will change the configuration you're loading through NAPALM. Default: ``False`` (won't change your configuration commands).
+  .. versionadded:: 3.0.1
 
 The transport argument
 ______________________

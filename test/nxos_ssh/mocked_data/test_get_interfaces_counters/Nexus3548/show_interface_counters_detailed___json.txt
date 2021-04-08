@@ -1,0 +1,489 @@
+{
+    "TABLE_interface": {
+        "ROW_interface": [
+            {
+                "interface": "mgmt0",
+                "mgmt_in_pkts": "20733482",
+                "mgmt_in_bytes": "3567836622",
+                "mgmt_in_mcast": "6075188",
+                "mgmt_out_pkts": "10706589",
+                "mgmt_out_bytes": "3679872971"
+            },
+            {
+                "interface": "Ethernet1/1"
+            },
+            {
+                "interface": "Ethernet1/2",
+                "eth_outpkts": "62083186",
+                "eth_outucast": "45219243",
+                "eth_outmcast": "16482785",
+                "eth_outbcast": "381158",
+                "eth_outbytes": "5399880000",
+                "eth_outb64": "124725",
+                "eth_outb65_127": "61753136",
+                "eth_outb128_255": "169",
+                "eth_outb256_511": "205127",
+                "eth_outb512_1023": "19",
+                "eth_outb1024_1518": "4",
+                "eth_outtrunk": "61946449"
+            },
+            {
+                "interface": "Ethernet1/3",
+                "eth_outpkts": "47877260",
+                "eth_outucast": "39066086",
+                "eth_outmcast": "7570238",
+                "eth_outbcast": "1240936",
+                "eth_outbytes": "4476086054",
+                "eth_outb64": "105674",
+                "eth_outb65_127": "46882028",
+                "eth_outb128_255": "684056",
+                "eth_outb256_511": "205494",
+                "eth_outb512_1023": "1",
+                "eth_outb1024_1518": "1",
+                "eth_outtrunk": "47740523"
+            },
+            {
+                "interface": "Ethernet1/4",
+                "eth_inpkts": "337789336",
+                "eth_inucast": "313833591",
+                "eth_inmcast": "23955302",
+                "eth_inbcast": "443",
+                "eth_inbytes": "94486427294",
+                "eth_inb64": "6316659",
+                "eth_inb65_127": "215256831",
+                "eth_inb128_255": "28603510",
+                "eth_inb256_511": "34266327",
+                "eth_inb512_1023": "23878957",
+                "eth_inb1024_1518": "7494394",
+                "eth_intrunk": "337789310",
+                "eth_outpkts": "909831179",
+                "eth_outucast": "417535490",
+                "eth_outmcast": "491910934",
+                "eth_outbcast": "384752",
+                "eth_outbytes": "445884370181",
+                "eth_outb64": "150379",
+                "eth_outb65_127": "222078763",
+                "eth_outb128_255": "152728198",
+                "eth_outb256_511": "235578019",
+                "eth_outb512_1023": "156132252",
+                "eth_outb1024_1518": "116517133",
+                "eth_outtrunk": "904613959",
+                "eth_outcrc": "3"
+            },
+            {
+                "interface": "Ethernet1/5",
+                "eth_inpkts": "5337275308",
+                "eth_inucast": "5335856024",
+                "eth_inmcast": "1419241",
+                "eth_inbcast": "43",
+                "eth_inbytes": "1560457254436",
+                "eth_inb64": "7860814",
+                "eth_inb65_127": "2627434964",
+                "eth_inb128_255": "26873531",
+                "eth_inb256_511": "2581620412",
+                "eth_inb512_1023": "44785654",
+                "eth_inb1024_1518": "32986010",
+                "eth_intrunk": "5337275258",
+                "eth_outpkts": "6011108625",
+                "eth_outucast": "5993262869",
+                "eth_outmcast": "16605342",
+                "eth_outbcast": "1240414",
+                "eth_outbytes": "6446385184340",
+                "eth_outb64": "117568",
+                "eth_outb65_127": "163864639",
+                "eth_outb128_255": "23119170",
+                "eth_outb256_511": "40392448",
+                "eth_outb512_1023": "2561958217",
+                "eth_outb1024_1518": "17043393",
+                "eth_outtrunk": "6010971880"
+            },
+            {
+                "interface": "Ethernet1/6",
+                "eth_inpkts": "26",
+                "eth_inmcast": "26",
+                "eth_inbytes": "1944",
+                "eth_inb64": "6",
+                "eth_inb65_127": "20",
+                "eth_outpkts": "47864841",
+                "eth_outucast": "39056024",
+                "eth_outmcast": "7568252",
+                "eth_outbcast": "1240565",
+                "eth_outbytes": "4474527321",
+                "eth_outb64": "105670",
+                "eth_outb65_127": "46869799",
+                "eth_outb128_255": "683901",
+                "eth_outb256_511": "205463",
+                "eth_outb512_1023": "1",
+                "eth_outb1024_1518": "1",
+                "eth_outtrunk": "47728120"
+            },
+            {
+                "interface": "Ethernet1/7",
+                "eth_inpkts": "99",
+                "eth_inmcast": "99",
+                "eth_inbytes": "6546",
+                "eth_inb64": "90",
+                "eth_inb65_127": "9",
+                "eth_outpkts": "62081697",
+                "eth_outucast": "45218320",
+                "eth_outmcast": "16482339",
+                "eth_outbcast": "381038",
+                "eth_outbytes": "5399762948",
+                "eth_outb64": "124621",
+                "eth_outb65_127": "61751711",
+                "eth_outb128_255": "169",
+                "eth_outb256_511": "205167",
+                "eth_outb512_1023": "19",
+                "eth_outb1024_1518": "4",
+                "eth_outtrunk": "61944930"
+            },
+            {
+                "interface": "Ethernet1/8",
+                "eth_inpkts": "44",
+                "eth_inmcast": "44",
+                "eth_inbytes": "3324",
+                "eth_inb64": "6",
+                "eth_inb65_127": "38",
+                "eth_outpkts": "67141747",
+                "eth_outucast": "47254399",
+                "eth_outmcast": "19502035",
+                "eth_outbcast": "385310",
+                "eth_outbytes": "5833920736",
+                "eth_outb64": "129564",
+                "eth_outb65_127": "66806888",
+                "eth_outb128_255": "169",
+                "eth_outb256_511": "205097",
+                "eth_outb512_1023": "19",
+                "eth_outb1024_1518": "4",
+                "eth_outtrunk": "61924811",
+                "eth_outcrc": "3"
+            },
+            {
+                "interface": "Ethernet1/9",
+                "eth_outpkts": "46004454",
+                "eth_outucast": "39066072",
+                "eth_outmcast": "6748271",
+                "eth_outbcast": "190108",
+                "eth_outbytes": "4242440562",
+                "eth_outb64": "33199",
+                "eth_outb65_127": "45765937",
+                "eth_outb128_255": "165",
+                "eth_outb256_511": "205124",
+                "eth_outb512_1023": "19",
+                "eth_outb1024_1518": "4",
+                "eth_outtrunk": "40785725",
+                "eth_outcrc": "3"
+            },
+            {
+                "interface": "Ethernet1/10",
+                "eth_outpkts": "67163757",
+                "eth_outucast": "47269437",
+                "eth_outmcast": "19508466",
+                "eth_outbcast": "385851",
+                "eth_outbytes": "5836433372",
+                "eth_outb64": "129665",
+                "eth_outb65_127": "66828740",
+                "eth_outb128_255": "169",
+                "eth_outb256_511": "205154",
+                "eth_outb512_1023": "19",
+                "eth_outb1024_1518": "4",
+                "eth_outtrunk": "61945096",
+                "eth_outcrc": "3"
+            },
+            {
+                "interface": "Ethernet1/11",
+                "eth_inpkts": "6789895",
+                "eth_inucast": "5577180",
+                "eth_inmcast": "1212679",
+                "eth_inbcast": "36",
+                "eth_inbytes": "5223149869",
+                "eth_inb64": "35354",
+                "eth_inb65_127": "3061991",
+                "eth_inb128_255": "250895",
+                "eth_inb256_511": "237983",
+                "eth_inb512_1023": "8156",
+                "eth_inb1024_1518": "278101",
+                "eth_intrunk": "6789884",
+                "eth_outpkts": "74530000",
+                "eth_outucast": "55251199",
+                "eth_outmcast": "19078189",
+                "eth_outbcast": "200609",
+                "eth_outbytes": "10916695217",
+                "eth_outb64": "103075",
+                "eth_outb65_127": "70629266",
+                "eth_outb128_255": "44178",
+                "eth_outb256_511": "483741",
+                "eth_outb512_1023": "316005",
+                "eth_outb1024_1518": "12456",
+                "eth_outtrunk": "69311345",
+                "eth_outcrc": "3"
+            },
+            {
+                "interface": "Ethernet1/12"
+            },
+            {
+                "interface": "Ethernet1/13"
+            },
+            {
+                "interface": "Ethernet1/14"
+            },
+            {
+                "interface": "Ethernet1/15"
+            },
+            {
+                "interface": "Ethernet1/16"
+            },
+            {
+                "interface": "Ethernet1/17"
+            },
+            {
+                "interface": "Ethernet1/18"
+            },
+            {
+                "interface": "Ethernet1/19"
+            },
+            {
+                "interface": "Ethernet1/20"
+            },
+            {
+                "interface": "Ethernet1/21"
+            },
+            {
+                "interface": "Ethernet1/22"
+            },
+            {
+                "interface": "Ethernet1/23"
+            },
+            {
+                "interface": "Ethernet1/24"
+            },
+            {
+                "interface": "Ethernet1/25"
+            },
+            {
+                "interface": "Ethernet1/26"
+            },
+            {
+                "interface": "Ethernet1/27"
+            },
+            {
+                "interface": "Ethernet1/28"
+            },
+            {
+                "interface": "Ethernet1/29"
+            },
+            {
+                "interface": "Ethernet1/30"
+            },
+            {
+                "interface": "Ethernet1/31"
+            },
+            {
+                "interface": "Ethernet1/32"
+            },
+            {
+                "interface": "Ethernet1/33"
+            },
+            {
+                "interface": "Ethernet1/34"
+            },
+            {
+                "interface": "Ethernet1/35"
+            },
+            {
+                "interface": "Ethernet1/36"
+            },
+            {
+                "interface": "Ethernet1/37"
+            },
+            {
+                "interface": "Ethernet1/38"
+            },
+            {
+                "interface": "Ethernet1/39"
+            },
+            {
+                "interface": "Ethernet1/40"
+            },
+            {
+                "interface": "Ethernet1/41"
+            },
+            {
+                "interface": "Ethernet1/42"
+            },
+            {
+                "interface": "Ethernet1/43"
+            },
+            {
+                "interface": "Ethernet1/44"
+            },
+            {
+                "interface": "Ethernet1/45"
+            },
+            {
+                "interface": "Ethernet1/46",
+                "eth_inpkts": "9301655360",
+                "eth_inucast": "2211936525",
+                "eth_inmcast": "7089387601",
+                "eth_inbcast": "331234",
+                "eth_inbytes": "6666431359518",
+                "eth_inb64": "267353",
+                "eth_inb65_127": "220241597",
+                "eth_inb128_255": "196651378",
+                "eth_inb256_511": "3192677061",
+                "eth_inb512_1023": "3427580461",
+                "eth_inb1024_1518": "1322330443",
+                "eth_intrunk": "9301313520",
+                "eth_outpkts": "30574360685",
+                "eth_outucast": "30369677475",
+                "eth_outmcast": "203633648",
+                "eth_outbcast": "1049559",
+                "eth_outbytes": "21133414461024",
+                "eth_outb64": "15835057",
+                "eth_outb65_127": "7337228133",
+                "eth_outb128_255": "2763410951",
+                "eth_outb256_511": "5271165286",
+                "eth_outb512_1023": "5880781610",
+                "eth_outb1024_1518": "259990987",
+                "eth_outtrunk": "30569916779",
+                "eth_outcrc": "3"
+            },
+            {
+                "interface": "Ethernet1/47"
+            },
+            {
+                "interface": "Ethernet1/48",
+                "eth_inpkts": "28879078892",
+                "eth_inucast": "28817171736",
+                "eth_inmcast": "60665581",
+                "eth_inbcast": "1241572",
+                "eth_inbytes": "23867695653529",
+                "eth_inb64": "134383",
+                "eth_inb65_127": "4611915254",
+                "eth_inb128_255": "2713533868",
+                "eth_inb256_511": "2654989332",
+                "eth_inb512_1023": "7409893532",
+                "eth_inb1024_1518": "190964291",
+                "eth_intrunk": "28878873785",
+                "eth_outpkts": "24939877",
+                "eth_outucast": "21053483",
+                "eth_outmcast": "3882370",
+                "eth_outbcast": "4024",
+                "eth_outbytes": "2286251354",
+                "eth_outb64": "320991",
+                "eth_outb65_127": "22959375",
+                "eth_outb128_255": "498536",
+                "eth_outb256_511": "1128412",
+                "eth_outb512_1023": "24064",
+                "eth_outb1024_1518": "1900",
+                "eth_outtrunk": "24734775",
+                "eth_crc": "3",
+                "eth_inerr": "3"
+            },
+            {
+                "interface": "port-channel69",
+                "eth_inpkts": "9301655445",
+                "eth_inucast": "2211936587",
+                "eth_inmcast": "7089387624",
+                "eth_inbcast": "331234",
+                "eth_inbytes": "6666431436697",
+                "eth_inb64": "267353",
+                "eth_inb65_127": "220241597",
+                "eth_inb128_255": "196651378",
+                "eth_inb256_511": "3192677069",
+                "eth_inb512_1023": "3427580509",
+                "eth_inb1024_1518": "1322330443",
+                "eth_intrunk": "9301313614",
+                "eth_outpkts": "30574360931",
+                "eth_outucast": "30369677722",
+                "eth_outmcast": "203633648",
+                "eth_outbcast": "1049559",
+                "eth_outbytes": "21133414529641",
+                "eth_outb64": "15835057",
+                "eth_outb65_127": "7337228258",
+                "eth_outb128_255": "2763410952",
+                "eth_outb256_511": "5271165408",
+                "eth_outb512_1023": "5880781610",
+                "eth_outb1024_1518": "259990987",
+                "eth_outtrunk": "30569917029",
+                "eth_outcrc": "3"
+            },
+            {
+                "interface": "Vlan1",
+                "svi_ucast_bytes_in": "363138814",
+                "svi_ucast_pkts_in": "1230621",
+                "svi_ucast_bytes_out": "206606898",
+                "svi_ucast_pkts_out": "683676"
+            },
+            {
+                "interface": "Vlan69",
+                "svi_ucast_bytes_in": "1501673330",
+                "svi_ucast_pkts_in": "18080963",
+                "svi_ucast_bytes_out": "1107717529",
+                "svi_ucast_pkts_out": "11436296"
+            },
+            {
+                "interface": "Vlan569"
+            },
+            {
+                "interface": "Vlan669",
+                "svi_ucast_bytes_in": "23863517065889",
+                "svi_ucast_pkts_in": "28865891349",
+                "svi_ucast_bytes_out": "1404156078",
+                "svi_ucast_pkts_out": "15770289"
+            },
+            {
+                "interface": "Vlan1807",
+                "svi_ucast_bytes_in": "14147208799",
+                "svi_ucast_pkts_in": "56536698",
+                "svi_ucast_bytes_out": "14182523153",
+                "svi_ucast_pkts_out": "57332788"
+            },
+            {
+                "interface": "Vlan2101",
+                "svi_ucast_bytes_in": "4783642645594",
+                "svi_ucast_pkts_in": "7811073487",
+                "svi_ucast_bytes_out": "4344308777259",
+                "svi_ucast_pkts_out": "12587605482"
+            },
+            {
+                "interface": "Vlan2117",
+                "svi_ucast_bytes_in": "3516797443820",
+                "svi_ucast_pkts_in": "7363962822",
+                "svi_ucast_bytes_out": "23685193142068",
+                "svi_ucast_pkts_out": "25074490911"
+            },
+            {
+                "interface": "Vlan2119",
+                "svi_ucast_bytes_in": "5551373216",
+                "svi_ucast_pkts_in": "31911677",
+                "svi_ucast_bytes_out": "2576220332",
+                "svi_ucast_pkts_out": "35145817"
+            },
+            {
+                "interface": "Vlan2611"
+            },
+            {
+                "interface": "Vlan3934",
+                "svi_ucast_bytes_in": "5629664621",
+                "svi_ucast_pkts_in": "32658950",
+                "svi_ucast_bytes_out": "9323561844",
+                "svi_ucast_pkts_out": "58849701"
+            },
+            {
+                "interface": "Vlan3938",
+                "svi_ucast_bytes_in": "494966876",
+                "svi_ucast_pkts_in": "6953763",
+                "svi_ucast_bytes_out": "594745728",
+                "svi_ucast_pkts_out": "8379176"
+            },
+            {
+                "interface": "Vlan3947",
+                "svi_ucast_bytes_in": "5555609170",
+                "svi_ucast_pkts_in": "31971793",
+                "svi_ucast_bytes_out": "2500965121",
+                "svi_ucast_pkts_out": "34525067"
+            }
+        ]
+    }
+}

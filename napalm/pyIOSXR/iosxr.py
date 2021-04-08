@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright 2015 Netflix. All rights reserved.
 # Copyright 2016 BigWaveIT. All rights reserved.
+# Copyright 2021 Kirk Byers. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with the
@@ -47,6 +48,7 @@ from napalm.pyIOSXR.exceptions import TimeoutError
 from napalm.pyIOSXR.exceptions import IteratorIDError
 from napalm.pyIOSXR.exceptions import InvalidInputError
 from napalm.pyIOSXR.exceptions import InvalidXMLResponse
+from napalm.iosxr.utilities import strip_config_header
 
 logger = logging.getLogger(__name__)
 
@@ -348,7 +350,7 @@ class IOSXR(object):
                             delay_factor=delay_factor,
                         )
         else:
-            output += self._netmiko_recv()  # try to read some more
+            output += self.device._read_channel_timing()  # try to read some more
 
         if "0xa3679e00" in output or "0xa367da00" in output:
             # when multiple parallel request are made, the device throws one of the the errors:
@@ -404,15 +406,6 @@ class IOSXR(object):
 
         self._unlock_xml_agent()
         return str(output.replace("XML>", "").strip())
-
-    def _netmiko_recv(self):
-
-        output = ""
-
-        for tmp_output in self.device.receive_data_generator():
-            output += tmp_output
-
-        return output
 
     # previous module function __execute_rpc__
     def _execute_rpc(self, command_xml, delay_factor=0.1):
@@ -579,10 +572,12 @@ class IOSXR(object):
             with open(filename) as f:
                 configuration = f.read()
 
-        rpc_command = "<CLI><Configuration>{configuration}</Configuration></CLI>".format(
-            configuration=escape_xml(
-                configuration
-            )  # need to escape, otherwise will try to load invalid XML
+        rpc_command = (
+            "<CLI><Configuration>{configuration}</Configuration></CLI>".format(
+                configuration=escape_xml(
+                    configuration
+                )  # need to escape, otherwise will try to load invalid XML
+            )
         )
 
         try:
@@ -625,20 +620,13 @@ class IOSXR(object):
         show_merge = self._execute_config_show("show configuration merge")
         show_run = self._execute_config_show("show running-config")
 
-        show_merge = self.strip_config_header(show_merge)
-        show_run = self.strip_config_header(show_run)
+        show_merge = strip_config_header(show_merge)
+        show_run = strip_config_header(show_run)
 
         diff = difflib.unified_diff(
             show_run.splitlines(keepends=True), show_merge.splitlines(keepends=True)
         )
         return "".join([x.replace("\r", "") for x in diff])
-
-    @staticmethod
-    def strip_config_header(config):
-        config = re.sub(r"^Building config.*\n!! IOS.*", "", config, flags=re.M)
-        config = config.strip()
-        config = re.sub(r"^!!.*", "", config)
-        return config.strip()
 
     def compare_replace_config(self):
         """
@@ -651,7 +639,7 @@ class IOSXR(object):
         """
         diff = self._execute_config_show("show configuration changes diff")
         # Strip header lines
-        diff = self.strip_config_header(diff)
+        diff = strip_config_header(diff)
         # Strip trailer line
         diff = re.sub(r"^end$", "", diff, flags=re.M)
         return diff.strip()
@@ -719,7 +707,9 @@ class IOSXR(object):
 
         :param rb_id: Rollback a specific number of steps. Default: 1
         """
-        rpc_command = "<Unlock/><Rollback><Previous>{rb_id}</Previous></Rollback><Lock/>".format(
-            rb_id=rb_id
+        rpc_command = (
+            "<Unlock/><Rollback><Previous>{rb_id}</Previous></Rollback><Lock/>".format(
+                rb_id=rb_id
+            )
         )
         self._execute_rpc(rpc_command)

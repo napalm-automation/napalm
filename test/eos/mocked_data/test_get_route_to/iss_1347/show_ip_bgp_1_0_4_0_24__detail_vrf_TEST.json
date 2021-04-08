@@ -1,0 +1,441 @@
+{
+    "vrfs": {
+        "TEST": {
+            "routerId": "2.2.2.2",
+            "vrf": "TEST",
+            "bgpRouteEntries": {
+                "1.0.4.0/24": {
+                    "totalPaths": 9,
+                    "bgpAdvertisedPeerGroups": {},
+                    "bgpAdvertisedPeers": {
+                        "peerList": [
+                            "169.254.248.25"
+                        ]
+                    },
+                    "maskLength": 24,
+                    "totalAdvertisedPeers": 1,
+                    "bgpRoutePaths": [
+                        {
+                            "med": 0,
+                            "importedEvpnPathRd": "65419:631",
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.2",
+                                "peerAddr": "169.254.216.2"
+                            },
+                            "timestamp": 1609169682,
+                            "nextHop": "169.254.224.6",
+                            "asPathEntry": {
+                                "asPath": "65418 65419 65405",
+                                "asPathType": "External"
+                            },
+                            "localPreference": 100,
+                            "reasonNotBestpath": "noReason",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Incomplete",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": true,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": true,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Incomplete",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [
+                                    "Route-Target-AS:65419:31",
+                                    "Route-Target-IP:169.254.208.249:631",
+                                    "TunnelEncap:tunnelTypeVxlan",
+                                    "EvpnRouterMac:98:5d:82:de:ca:fe"
+                                ],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false,
+                                "remoteLabel": {
+                                    "value": "21631",
+                                    "encapType": "VXLAN"
+                                }
+                            }
+                        },
+                        {
+                            "med": 0,
+                            "importedEvpnPathRd": "65419:631",
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.3",
+                                "peerAddr": "169.254.216.3"
+                            },
+                            "timestamp": 1609169682,
+                            "nextHop": "169.254.224.6",
+                            "asPathEntry": {
+                                "asPath": "65418 65419 65405",
+                                "asPathType": "External"
+                            },
+                            "localPreference": 100,
+                            "reasonNotBestpath": "ecmpFast",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Incomplete",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": false,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Incomplete",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [
+                                    "Route-Target-AS:65419:31",
+                                    "Route-Target-IP:169.254.208.249:631",
+                                    "TunnelEncap:tunnelTypeVxlan",
+                                    "EvpnRouterMac:98:5d:82:de:ca:fe"
+                                ],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false,
+                                "remoteLabel": {
+                                    "value": "21631",
+                                    "encapType": "VXLAN"
+                                }
+                            }
+                        },
+                        {
+                            "med": 0,
+                            "importedEvpnPathRd": "65419:631",
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.4",
+                                "peerAddr": "169.254.216.4"
+                            },
+                            "timestamp": 1609169682,
+                            "nextHop": "169.254.224.6",
+                            "asPathEntry": {
+                                "asPath": "65418 65419 65405",
+                                "asPathType": "External"
+                            },
+                            "localPreference": 100,
+                            "reasonNotBestpath": "ecmpFast",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Incomplete",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": false,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Incomplete",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [
+                                    "Route-Target-AS:65419:31",
+                                    "Route-Target-IP:169.254.208.249:631",
+                                    "TunnelEncap:tunnelTypeVxlan",
+                                    "EvpnRouterMac:98:5d:82:de:ca:fe"
+                                ],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false,
+                                "remoteLabel": {
+                                    "value": "21631",
+                                    "encapType": "VXLAN"
+                                }
+                            }
+                        },
+                        {
+                            "med": 0,
+                            "importedEvpnPathRd": "65419:631",
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.1",
+                                "peerAddr": "169.254.216.1"
+                            },
+                            "timestamp": 1609169682,
+                            "nextHop": "169.254.224.6",
+                            "asPathEntry": {
+                                "asPath": "65418 65419 65405",
+                                "asPathType": "External"
+                            },
+                            "localPreference": 100,
+                            "reasonNotBestpath": "ecmpFast",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Incomplete",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": false,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Incomplete",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [
+                                    "Route-Target-AS:65419:31",
+                                    "Route-Target-IP:169.254.208.249:631",
+                                    "TunnelEncap:tunnelTypeVxlan",
+                                    "EvpnRouterMac:98:5d:82:de:ca:fe"
+                                ],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false,
+                                "remoteLabel": {
+                                    "value": "21631",
+                                    "encapType": "VXLAN"
+                                }
+                            }
+                        },
+                        {
+                            "med": 0,
+                            "importedEvpnPathRd": "65419:632",
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.4",
+                                "peerAddr": "169.254.216.4"
+                            },
+                            "timestamp": 1609169683,
+                            "nextHop": "169.254.224.6",
+                            "asPathEntry": {
+                                "asPath": "65418 65419 65405",
+                                "asPathType": "External"
+                            },
+                            "localPreference": 100,
+                            "reasonNotBestpath": "ecmpFast",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Incomplete",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": false,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Incomplete",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [
+                                    "Route-Target-AS:65419:632",
+                                    "Route-Target-IP:169.254.209.0:632",
+                                    "TunnelEncap:tunnelTypeVxlan",
+                                    "EvpnRouterMac:98:5d:82:c0:ff:ee"
+                                ],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false,
+                                "remoteLabel": {
+                                    "value": "21631",
+                                    "encapType": "VXLAN"
+                                }
+                            }
+                        },
+                        {
+                            "med": 0,
+                            "importedEvpnPathRd": "65419:632",
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.3",
+                                "peerAddr": "169.254.216.3"
+                            },
+                            "timestamp": 1609169683,
+                            "nextHop": "169.254.224.6",
+                            "asPathEntry": {
+                                "asPath": "65418 65419 65405",
+                                "asPathType": "External"
+                            },
+                            "localPreference": 100,
+                            "reasonNotBestpath": "ecmpFast",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Incomplete",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": false,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Incomplete",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [
+                                    "Route-Target-AS:65419:632",
+                                    "Route-Target-IP:169.254.209.0:632",
+                                    "TunnelEncap:tunnelTypeVxlan",
+                                    "EvpnRouterMac:98:5d:82:c0:ff:ee"
+                                ],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false,
+                                "remoteLabel": {
+                                    "value": "21631",
+                                    "encapType": "VXLAN"
+                                }
+                            }
+                        },
+                        {
+                            "med": 0,
+                            "importedEvpnPathRd": "65419:632",
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.1",
+                                "peerAddr": "169.254.216.1"
+                            },
+                            "timestamp": 1609169683,
+                            "nextHop": "169.254.224.6",
+                            "asPathEntry": {
+                                "asPath": "65418 65419 65405",
+                                "asPathType": "External"
+                            },
+                            "localPreference": 100,
+                            "reasonNotBestpath": "ecmpFast",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Incomplete",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": false,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Incomplete",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [
+                                    "Route-Target-AS:65419:632",
+                                    "Route-Target-IP:169.254.209.0:632",
+                                    "TunnelEncap:tunnelTypeVxlan",
+                                    "EvpnRouterMac:98:5d:82:c0:ff:ee"
+                                ],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false,
+                                "remoteLabel": {
+                                    "value": "21631",
+                                    "encapType": "VXLAN"
+                                }
+                            }
+                        },
+                        {
+                            "med": 0,
+                            "importedEvpnPathRd": "65419:632",
+                            "weight": 0,
+                            "peerEntry": {
+                                "peerRouterId": "169.254.216.2",
+                                "peerAddr": "169.254.216.2"
+                            },
+                            "timestamp": 1609169683,
+                            "nextHop": "169.254.224.6",
+                            "asPathEntry": {
+                                "asPath": "65418 65419 65405",
+                                "asPathType": "External"
+                            },
+                            "localPreference": 100,
+                            "reasonNotBestpath": "ecmpFast",
+                            "routeType": {
+                                "atomicAggregator": false,
+                                "origin": "Incomplete",
+                                "suppressed": false,
+                                "sixPeRoute": false,
+                                "queued": false,
+                                "valid": true,
+                                "ecmpContributor": true,
+                                "luRoute": false,
+                                "active": false,
+                                "stale": false,
+                                "ecmp": true,
+                                "backup": false,
+                                "ecmpHead": false,
+                                "ucmp": false
+                            },
+                            "routeDetail": {
+                                "origin": "Incomplete",
+                                "nextHopVrfName": "",
+                                "largeCommunityList": [],
+                                "tunnelRibEligible": false,
+                                "extCommunityList": [
+                                    "Route-Target-AS:65419:632",
+                                    "Route-Target-IP:169.254.209.0:632",
+                                    "TunnelEncap:tunnelTypeVxlan",
+                                    "EvpnRouterMac:98:5d:82:c0:ff:ee"
+                                ],
+                                "communityList": [],
+                                "rxSafi": "Unicast",
+                                "recvdFromRRClient": false,
+                                "remoteLabel": {
+                                    "value": "21631",
+                                    "encapType": "VXLAN"
+                                }
+                            }
+                        }
+                    ],
+                    "address": "1.0.4.0"
+                }
+            },
+            "asn": "65323"
+        }
+    }
+}

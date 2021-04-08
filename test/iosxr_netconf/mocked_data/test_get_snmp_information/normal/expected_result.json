@@ -1,0 +1,15 @@
+{
+    "chassis_id": "FOC2037NM6L",
+    "community": {
+        "private": {
+            "acl": "SNMP-WRITE",
+            "mode": "rw"
+        },
+        "public": {
+            "acl": "SNMP-READ",
+            "mode": "ro"
+        }
+    },
+    "contact": "Jane Doe",
+    "location": "Somewhere out there"
+}

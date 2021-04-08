@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright 2020 CISCO. All rights reserved.
+# Copyright 2021 Kirk Byers. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with the
@@ -35,6 +36,7 @@ from netaddr.core import AddrFormatError
 
 # import NAPALM base
 from napalm.iosxr_netconf import constants as C
+from napalm.iosxr.utilities import strip_config_header
 from napalm.base.base import NetworkDriver
 import napalm.base.helpers
 from napalm.base.exceptions import ConnectionException
@@ -74,7 +76,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         if self.config_encoding not in C.CONFIG_ENCODINGS:
             raise ValueError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
 
-        self.platform = "iosxr"
+        self.platform = "iosxr_netconf"
         self.device = None
         self.module_set_ns = []
 
@@ -160,7 +162,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
         for subtree in tree:
             if unexpected(subtree.tag[1:].split("}")[0]):
                 tree.remove(subtree)
-
         return tree
 
     def _unexpected_modules(self, tree):
@@ -180,7 +181,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
             namespace = subtree.tag[1:].split("}")[0]
             if unexpected(namespace):
                 modules.append(namespace)
-
         return modules
 
     def is_alive(self):
@@ -247,9 +247,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
             logger.error(e.args[0])
             raise MergeConfigException(e)
 
-    def compare_config(self, encoding="cli"):
+    def compare_config(self):
         """Compare candidate config with running."""
+
         diff = ""
+        encoding = self.config_encoding
         if encoding not in C.CLI_DIFF_RPC_REQ:
             raise NotImplementedError(
                 f"config encoding must be one of {C.CONFIG_ENCODINGS}"
@@ -260,6 +262,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             if encoding == "cli":
                 diff = self.device.dispatch(to_ele(C.CLI_DIFF_RPC_REQ)).xml
                 diff = ETREE.XML(diff, parser=parser)[0].text.strip()
+                diff = strip_config_header(diff)
             elif encoding == "xml":
                 run_conf = self.device.get_config("running").xml
                 can_conf = self.device.get_config("candidate").xml
@@ -278,8 +281,16 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         return diff
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """Commit configuration."""
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
+        if message:
+            raise NotImplementedError(
+                "Commit message not implemented for this platform"
+            )
         self.device.commit()
         self.pending_changes = False
         self._unlock()
@@ -377,25 +388,36 @@ class IOSXRNETCONFDriver(NetworkDriver):
             ".//imo:inventory/imo:entities/imo:entity/imo:attributes/\
                         imo:inv-basic-bag",
             namespaces=C.NS,
-        )[0]
-        os_version = napalm.base.helpers.convert(
-            str,
-            self._find_txt(
-                basic_info_tree, "./imo:software-revision", default="", namespaces=C.NS
-            ),
         )
-        model = napalm.base.helpers.convert(
-            str,
-            self._find_txt(
-                basic_info_tree, "./imo:model-name", default="", namespaces=C.NS
-            ),
-        )
-        serial = napalm.base.helpers.convert(
-            str,
-            self._find_txt(
-                basic_info_tree, "./imo:serial-number", default="", namespaces=C.NS
-            ),
-        )
+        if basic_info_tree:
+            os_version = napalm.base.helpers.convert(
+                str,
+                self._find_txt(
+                    basic_info_tree[0],
+                    "./imo:software-revision",
+                    default="",
+                    namespaces=C.NS,
+                ),
+            )
+            model = napalm.base.helpers.convert(
+                str,
+                self._find_txt(
+                    basic_info_tree[0], "./imo:model-name", default="", namespaces=C.NS
+                ),
+            )
+            serial = napalm.base.helpers.convert(
+                str,
+                self._find_txt(
+                    basic_info_tree[0],
+                    "./imo:serial-number",
+                    default="",
+                    namespaces=C.NS,
+                ),
+            )
+        else:
+            os_version = ""
+            model = ""
+            serial = ""
 
         facts.update(
             {
@@ -2674,7 +2696,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 test_interval = napalm.base.helpers.convert(
                     int,
                     self._find_txt(
-                        operation, "./prbc:frequency", default="", namespaces=C.NS
+                        operation, "./prbc:frequency", default="0", namespaces=C.NS
                     ),
                 )
                 probe_count = napalm.base.helpers.convert(
@@ -2682,7 +2704,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     self._find_txt(
                         operation,
                         "./prbc:history/prbc:buckets",
-                        default="",
+                        default="0",
                         namespaces=C.NS,
                     ),
                 )
@@ -2742,7 +2764,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:specific-stats/prb:op-type",
                     default="",
                     namespaces=C.NS,
-                )
+                ),
+                "",
             )
             probe_count = (
                 probes_config.get(probe_name).get(test_name, {}).get("probe_count", 0)
@@ -2773,7 +2796,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 for return_code in return_codes
             ]
 
-            last_test_loss = 0.0
+            last_test_loss = 0
             if len(return_codes):
                 last_test_loss = napalm.base.helpers.convert(
                     int,
@@ -2792,7 +2815,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:distributed/prb:target/prb:distribution-intervals/\
                     prb:distribution-interval/prb:common-stats/\
                     prb:sum2-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2804,7 +2827,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:distributed/prb:target/prb:distribution-intervals/\
                     prb:distribution-interval/prb:common-stats/\
                     prb:update-count",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2822,7 +2845,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     probe,
                     "./prb:statistics/prb:latest/prb:target/\
                     prb:common-stats/prb:min-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2832,7 +2855,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     probe,
                     "./prb:statistics/prb:latest/prb:target/\
                     prb:common-stats/prb:max-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2842,7 +2865,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     probe,
                     "./prb:statistics/prb:latest/prb:target/\
                     prb:common-stats/prb:sum-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2852,7 +2875,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     probe,
                     ".//prb:statistics/prb:latest/prb:target/\
                     prb:common-stats/prb:update-count",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2867,7 +2890,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:distributed/prb:target/prb:distribution-intervals/\
                     prb:distribution-interval/prb:common-stats/\
                     prb:min-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2879,7 +2902,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:distributed/prb:target/prb:distribution-intervals/\
                     prb:distribution-interval/prb:common-stats/\
                     prb:max-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -2891,7 +2914,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     prb:distributed/prb:target/prb:distribution-intervals/\
                     prb:distribution-interval/prb:common-stats/\
                     prb:sum-response-time",
-                    default="",
+                    default="0.0",
                     namespaces=C.NS,
                 ),
             )
@@ -3080,9 +3103,20 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         return users
 
-    def get_config(self, retrieve="all", full=False, encoding="cli"):
+    def get_config(self, retrieve="all", full=False, sanitized=False):
         """Return device configuration."""
-        # NOTE: 'full' argument ignored. 'with-default' capability not supported.
+
+        encoding = self.config_encoding
+        # 'full' argument not supported; 'with-default' capability not supported.
+        if full:
+            raise NotImplementedError(
+                "'full' argument has not been implemented on the IOS-XR NETCONF driver"
+            )
+
+        if sanitized:
+            raise NotImplementedError(
+                "sanitized argument has not been implemented on the IOS-XR NETCONF driver"
+            )
 
         # default values
         config = {"startup": "", "running": "", "candidate": ""}
