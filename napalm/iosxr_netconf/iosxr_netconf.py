@@ -3156,4 +3156,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
                         pretty_print=True,
                         encoding="unicode",
                     )
+        if sanitized and encoding == "cli":
+            return napalm.base.helpers.sanitize_configs(
+                config, C.CISCO_SANITIZE_FILTERS
+            )
         return config
