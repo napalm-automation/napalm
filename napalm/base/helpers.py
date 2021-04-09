@@ -492,7 +492,7 @@ def generate_regex_or(filters):
 
 def sanitize_config(config, filters):
     """
-    Given a list of filters, remove sensitive data from the provided config.
+    Given a dictionary of filters, remove sensitive data from the provided config.
     """
     for filter_, replace in filters.items():
         config = re.sub(filter_, replace, config, flags=re.M)

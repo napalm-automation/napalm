@@ -48,6 +48,7 @@ from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.exceptions import CommandTimeoutException
 from napalm.base.exceptions import LockError
 from napalm.base.exceptions import UnlockError
+from napalm.base.exceptions import CommitConfirmException
 
 # import local modules
 from napalm.junos.utils import junos_views
@@ -292,16 +293,93 @@ class JunOSDriver(NetworkDriver):
 
     def commit_config(self, message="", revert_in=None):
         """Commit configuration."""
+        commit_args = {}
         if revert_in is not None:
-            raise NotImplementedError(
-                "Commit confirm has not been implemented on this platform."
-            )
-        commit_args = {"comment": message} if message else {}
+            if revert_in % 60 != 0:
+                if not self.lock_disable and not self.session_config_lock:
+                    self._unlock()
+                raise CommitConfirmException(
+                    "For Junos devices revert_in must be a multiple of 60 (60, 120, 180...)"
+                )
+            else:
+                juniper_confirm_time = int(revert_in / 60)
+                commit_args["confirm"] = juniper_confirm_time
+
+        if message:
+            commit_args["comment"] = message
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
+
         if not self.lock_disable and not self.session_config_lock:
             self._unlock()
+
         if self.config_private:
             self.device.rpc.close_configuration()
+
+    def has_pending_commit(self):
+        """Boolean indicating if there is a commit-confirm in process."""
+        pending_commit = self._get_pending_commits()
+        if pending_commit:
+            return True
+        else:
+            return False
+
+    def _get_pending_commits(self):
+        """
+        Return a dictionary of commit sequences with pending commit confirms and
+        corresponding time when confirm needs to happen by. This is converted to seconds
+        since Juniper reports this in minutes.
+
+        Example:
+        {'re0-1616554286-559': 522}
+
+        Will only report on a single commit (the most recent one).
+
+        Will return an empty dictionary if there is no pending commit-confirms.
+        """
+        # show system commit revision detail
+        # Command introduced in Junos OS Release 14.1
+        try:
+            pending_commit = self.device.rpc.get_commit_revision_information(
+                detail=True
+            )
+        except RpcError:
+            msg = "Using commit-confirm with NAPALM requires Junos OS >= 14.1"
+            raise CommitConfirmException(msg)
+
+        commit_time_element = pending_commit.find("./date-time")
+        commit_time = int(commit_time_element.attrib["seconds"])
+
+        commit_revision_element = pending_commit.find("./revision")
+        commit_revision = commit_revision_element.text
+        commit_comment_element = pending_commit.find("./comment")
+        if commit_comment_element is None:
+            # No commit comment means no commit-confirm
+            return {}
+        else:
+            commit_comment = commit_comment_element.text
+
+        sys_uptime_info = self.device.rpc.get_system_uptime_information()
+        current_time_element = sys_uptime_info.find("./current-time/date-time")
+        current_time = int(current_time_element.attrib["seconds"])
+
+        # Msg from Jnpr: 'commit confirmed, rollback in 5mins'
+        if "commit confirmed" in commit_comment and "rollback in" in commit_comment:
+            match = re.search(r"rollback in (\d+)mins", commit_comment)
+            if match:
+                confirm_time = match.group(1)
+                confirm_time_seconds = int(confirm_time) * 60
+                elapsed_time = current_time - commit_time
+                confirm_time_remaining = confirm_time_seconds - elapsed_time
+                if confirm_time_remaining <= 0:
+                    confirm_time_remaining = 0
+
+                return {commit_revision: confirm_time_remaining}
+
+        return {}
+
+    def confirm_commit(self):
+        """Send final commit to confirm an in-proces commit that requires confirmation."""
+        self.device.cu.commit(ignore_warning=self.ignore_warning)
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
@@ -405,9 +483,17 @@ class JunOSDriver(NetworkDriver):
         query.get()
         interface_counters = {}
         for interface, counters in query.items():
-            interface_counters[interface] = {
-                k: v if v is not None else -1 for k, v in counters
-            }
+            _interface_counters = {}
+            for k, v in counters:
+                if k == "logical_interfaces":
+                    for _interface, _counters in v.items():
+                        interface_counters[_interface] = {
+                            k: v if v is not None else -1 for k, v in _counters
+                        }
+                else:
+                    _interface_counters[k] = v if v is not None else -1
+
+            interface_counters[interface] = _interface_counters
         return interface_counters
 
     def get_environment(self):
@@ -2283,7 +2369,7 @@ class JunOSDriver(NetworkDriver):
 
         options = {"format": "text", "database": "candidate"}
         sanitize_strings = {
-            r"^(\s+community\s+)\w+(\s+{.*)$": r"\1<removed>\2",
+            r"^(\s+community\s+)\w+(;.*|\s+{.*)$": r"\1<removed>\2",
             r'^(.*)"\$\d\$\S+"(;.*)$': r"\1<removed>\2",
         }
         if retrieve in ("candidate", "all"):
@@ -2354,3 +2440,36 @@ class JunOSDriver(NetworkDriver):
         if name not in network_instances:
             return {}
         return {name: network_instances[name]}
+
+    def get_vlans(self):
+        result = {}
+        switch_style = self.device.facts.get("switch_style", "")
+        if switch_style == "VLAN_L2NG":
+            vlan = junos_views.junos_vlans_table_switch_l2ng(self.device)
+        elif switch_style == "BRIDGE_DOMAIN":
+            vlan = junos_views.junos_vlans_table(self.device)
+        elif switch_style == "VLAN":
+            vlan = junos_views.junos_vlans_table_switch(self.device)
+        else:  # switch_style == "NONE"
+            return result
+
+        vlan.get()
+        unmatch_pattern = "l2rtb-interface-name|None|l2ng-l2rtb-vlan-member-interface"
+        for vlan_id, vlan_data in vlan.items():
+            _vlan_data = {}
+            for k, v in vlan_data:
+                if k == "vlan_name":
+                    _vlan_data["name"] = v
+                if k == "interfaces":
+                    if v is None:
+                        _vlan_data["interfaces"] = []
+                    elif isinstance(v, str):
+                        if bool(re.match(unmatch_pattern, v)):
+                            _vlan_data["interfaces"] = []
+                        else:
+                            _vlan_data["interfaces"] = [v.replace("*", "")]
+                    else:
+                        _vlan_data["interfaces"] = [_v.replace("*", "") for _v in v]
+
+            result[vlan_id] = _vlan_data
+        return result

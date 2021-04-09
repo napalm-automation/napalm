@@ -48,6 +48,7 @@ _                       EOS         Junos   IOS-XR (NETCONF)  IOS-XR (XML-Agent)
 .. [#c2] Not supported but emulated. Check caveats.
 .. [#c4] For merges, the diff is very simplistic. See caveats.
 .. [#c5] No for merges. See caveats.
+.. [#c6] NAPALM requires Junos OS >= 14.1 for commit-confirm functionality.
 
 .. warning:: Before building a workflow to deploy configuration it is important you understand what the table above means;
             what are atomic changes and which devices support it, what does replacing or merging configuration mean, etc.

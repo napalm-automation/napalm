@@ -3,6 +3,8 @@
 
 def test_model(model, data):
     """Return if the dictionary `data` complies with the `model`."""
+    # Access the underlying schema for a TypedDict directly
+    model = model.__annotations__
     same_keys = set(model.keys()) == set(data.keys())
 
     if not same_keys:

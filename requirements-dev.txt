@@ -1,6 +1,6 @@
 black==20.8b1
 coveralls==3.0.1
-ddt==1.4.1
+ddt==1.4.2
 flake8-import-order==0.18.1
 pytest==5.4.3
 pytest-cov==2.11.1
@@ -9,3 +9,4 @@ pytest-pythonpath==0.7.3
 pylama==7.7.1
 mock==4.0.3
 tox==3.23.0
+mypy==0.812

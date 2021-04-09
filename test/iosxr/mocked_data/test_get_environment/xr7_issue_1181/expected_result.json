@@ -1,0 +1,73 @@
+{
+	"fans": {
+		"FT1": {
+			"status": true
+		},
+		"FT0": {
+			"status": true
+		}
+	},
+	"cpu": {
+		"0/RSP0/CPU0": {
+			"%usage": 3.0
+		},
+		"0/2/CPU0": {
+			"%usage": 3.0
+		},
+		"0/RSP1/CPU0": {
+			"%usage": 1.0
+		},
+		"0/3/CPU0": {
+			"%usage": 29.0
+		},
+		"0/0/CPU0": {
+			"%usage": 3.0
+		},
+		"0/1/CPU0": {
+			"%usage": 3.0
+		}
+	},
+	"temperature": {
+		"FT1": {
+			"is_alert": false,
+			"temperature": 31.5,
+			"is_critical": false
+		},
+		"FT0": {
+			"is_alert": false,
+			"temperature": 31.4,
+			"is_critical": false
+		},
+		"RSP1": {
+			"is_alert": false,
+			"temperature": 33.8,
+			"is_critical": false
+		},
+		"RSP0": {
+			"is_alert": false,
+			"temperature": 33.8,
+			"is_critical": false
+		},
+		"1": {
+			"is_alert": false,
+			"temperature": 38.7,
+			"is_critical": false
+		},
+		"0": {
+			"is_alert": false,
+			"temperature": 38.7,
+			"is_critical": false
+		}
+	},
+	"power": {
+		"PM0": {
+			"status": true,
+			"output": 448.26848,
+			"capacity": 3000.0
+		}
+	},
+	"memory": {
+		"available_ram": 6158616452,
+		"used_ram": 2745669508
+	}
+}
