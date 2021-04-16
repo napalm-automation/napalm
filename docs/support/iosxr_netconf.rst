@@ -4,7 +4,12 @@ IOS-XR (NETCONF)
 
 Minimum IOS-XR OS Version
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-Only devices running IOS-XR 7.0 or later are supported by NAPALM.
+Only devices running IOS-XR 7.0 or later are supported by NAPALM and the IOS-XR NETCONF driver.
+
+
+Device management using XML Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using ``iosxr_netconf`` and a ``config_encoding="xml"`` for NAPALM configuration operations is entirely experimental. There is a very good chance XML configurations will not work properly and that only small subsections of the configuration will be configurable using merge operations.
 
 
 Device management using CLI Configuration
