@@ -83,7 +83,7 @@ CISCO_SANITIZE_FILTERS = {
     r"^(snmp-server user \S+( \S+)? auth md5) \S+ (priv) \S+ (localizedkey( engineID \S+)?)\s*$": r"\1 <removed> \3 <removed> \4\5",  # noqa
     r"^(username .+ (password|secret) \d) .+$": r"\1 <removed>",
     r"^(enable (password|secret)( level \d+)? \d) .+$": r"\1 <removed>",
-    r"^(\s+(?:password|secret)) (?:\d )?\S+$": r"\1 <removed>",
+    r"^(\s+(?:password|secret)) (?:\d{1,2} )?\S+$": r"\1 <removed>",
     r"^(.*wpa-psk ascii \d) (\S+)$": r"\1 <removed>",
     r"^(.*key 7) (\d.+)$": r"\1 <removed>",
     r"^(tacacs-server (.+ )?key) .+$": r"\1 <removed>",

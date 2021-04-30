@@ -1,0 +1,17 @@
+{
+    "admin": {
+        "level": 1,
+        "password": "",
+        "sshkeys": []
+    },
+    "lab": {
+        "level": 15,
+        "password": "",
+        "sshkeys": []
+    },
+    "user": {
+        "level": 15,
+        "password": "",
+        "sshkeys": []
+    }
+}

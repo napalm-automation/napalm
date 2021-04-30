@@ -1,0 +1,140 @@
+[
+    {
+        "age": 0.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "1.86.24.13",
+        "mac": "6C:8B:D3:45:F7:B0"
+    },
+    {
+        "age": 0.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "1.86.24.111",
+        "mac": "00:CC:FC:BB:69:32"
+    },
+    {
+        "age": 3235.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.153.2",
+        "mac": "00:13:5F:22:0D:4A"
+    },
+    {
+        "age": 23.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.153.3",
+        "mac": "00:13:5F:21:FD:0A"
+    },
+    {
+        "age": 243.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.153.94",
+        "mac": "00:0C:29:B8:86:37"
+    },
+    {
+        "age": 4718.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.218.129",
+        "mac": "00:00:0C:07:AC:06"
+    },
+    {
+        "age": 663.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.218.139",
+        "mac": "00:42:68:6E:FB:38"
+    },
+    {
+        "age": 661.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.218.145",
+        "mac": "A0:93:51:52:86:80"
+    },
+    {
+        "age": 0.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.218.148",
+        "mac": "00:A7:42:20:E2:B0"
+    },
+    {
+        "age": 2.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.219.130",
+        "mac": "00:13:5F:22:0D:4A"
+    },
+    {
+        "age": 1.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.219.174",
+        "mac": "00:CC:FC:BB:69:44"
+    },
+    {
+        "age": 1.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.219.175",
+        "mac": "00:56:2B:AD:7C:CA"
+    },
+    {
+        "age": 1.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.219.177",
+        "mac": "C4:F7:D5:42:41:AE"
+    },
+    {
+        "age": 213.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.219.206",
+        "mac": "00:78:88:A3:FF:0A"
+    },
+    {
+        "age": 1030.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.219.207",
+        "mac": "E0:0E:DA:BF:32:F2"
+    },
+    {
+        "age": 285.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.219.239",
+        "mac": "00:D0:C9:B6:85:2F"
+    },
+    {
+        "age": 567.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.219.240",
+        "mac": "F8:72:EA:F6:EF:A2"
+    },
+    {
+        "age": 362.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.219.242",
+        "mac": "00:0D:5D:0A:4E:2E"
+    },
+    {
+        "age": 318.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.219.243",
+        "mac": "00:0D:5D:0A:4E:BA"
+    },
+    {
+        "age": 391.0,
+        "interface": "MgmtEth0/RSP0/CPU0/0",
+        "ip": "172.27.219.244",
+        "mac": "00:0D:5D:0A:4B:61"
+    },
+    {
+        "age": 4267.0,
+        "interface": "Bundle-Ether1.10",
+        "ip": "172.16.0.0",
+        "mac": "70:E4:22:61:6C:FC"
+    },
+    {
+        "age": 0.0,
+        "interface": "Bundle-Ether1.10",
+        "ip": "172.16.0.1",
+        "mac": "70:E4:22:5F:89:FC"
+    },
+    {
+        "age": 0.0,
+        "interface": "TenGigE0/0/0/8",
+        "ip": "172.16.0.2",
+        "mac": "08:96:AD:67:2F:98"
+    }
+]

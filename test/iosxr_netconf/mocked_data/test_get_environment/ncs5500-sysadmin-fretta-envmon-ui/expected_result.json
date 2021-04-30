@@ -1,0 +1,85 @@
+{
+    "cpu": {
+        "0/0/CPU0": {
+            "%usage": 1.0
+        },
+        "0/7/CPU0": {
+            "%usage": 1.0
+        },
+        "0/RP0/CPU0": {
+            "%usage": 1.0
+        },
+        "0/RP1/CPU0": {
+            "%usage": 0.0
+        }
+    },
+    "fans": {
+        "FT0": {
+            "status": true
+        },
+        "FT1": {
+            "status": true
+        },
+        "FT2": {
+            "status": true
+        }
+    },
+    "memory": {
+        "available_ram": 27499954176,
+        "used_ram": 3932340224
+    },
+    "power": {
+        "0/PM0": {
+            "capacity": 15000.0,
+            "output": 0.0,
+            "status": true
+        },
+        "0/PM1": {
+            "capacity": 15000.0,
+            "output": 0.0,
+            "status": true
+        },
+        "0/PM2": {
+            "capacity": 15000.0,
+            "output": 1147.2,
+            "status": true
+        },
+        "0/PM3": {
+            "capacity": 15000.0,
+            "output": 1190.0,
+            "status": true
+        },
+        "0/PM4": {
+            "capacity": 15000.0,
+            "output": 1154.4,
+            "status": true
+        },
+        "0/PM5": {
+            "capacity": 15000.0,
+            "output": 0.0,
+            "status": false
+        },
+        "0/PM6": {
+            "capacity": 15000.0,
+            "output": 0.0,
+            "status": false
+        },
+        "0/PM7": {
+            "capacity": 15000.0,
+            "output": 0.0,
+            "status": false
+        }
+    },
+    "temperature": {
+        "0/RP0": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 18.0
+        },
+        "0/RP1": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 20.0
+        }
+    }
+}

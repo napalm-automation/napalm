@@ -1,0 +1,56 @@
+[
+    {
+        "active": true,
+        "interface": "Bundle-Ether1.100",
+        "last_move": 0.0,
+        "mac": "70:E4:22:61:6C:FF",
+        "moves": 0,
+        "static": false,
+        "vlan": 100
+    },
+    {
+        "active": true,
+        "interface": "Bundle-Ether2.100",
+        "last_move": 0.0,
+        "mac": "00:8A:96:42:B0:E0",
+        "moves": 0,
+        "static": false,
+        "vlan": 100
+    },
+    {
+        "active": true,
+        "interface": "",
+        "last_move": 0.0,
+        "mac": "70:E4:22:5F:89:FF",
+        "moves": 0,
+        "static": false,
+        "vlan": 100
+    },
+    {
+        "active": true,
+        "interface": "Bundle-Ether1.101",
+        "last_move": 0.0,
+        "mac": "70:E4:22:61:6C:FF",
+        "moves": 0,
+        "static": false,
+        "vlan": 101
+    },
+    {
+        "active": true,
+        "interface": "Bundle-Ether2.101",
+        "last_move": 0.0,
+        "mac": "00:8A:96:42:B0:E0",
+        "moves": 0,
+        "static": false,
+        "vlan": 101
+    },
+    {
+        "active": true,
+        "interface": "",
+        "last_move": 0.0,
+        "mac": "70:E4:22:5F:89:FF",
+        "moves": 0,
+        "static": false,
+        "vlan": 101
+    }
+]
