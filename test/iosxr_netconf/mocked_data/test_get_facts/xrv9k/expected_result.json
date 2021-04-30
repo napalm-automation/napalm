@@ -1,0 +1,16 @@
+{
+    "fqdn": "pavarotti",
+    "hostname": "pavarotti",
+    "interface_list": [
+        "GigabitEthernet0/0/0/0",
+        "GigabitEthernet0/0/0/1",
+        "Loopback0",
+        "MgmtEth0/RP0/CPU0/0",
+        "Null0"
+    ],
+    "model": "R-IOSXRV9000-CC",
+    "os_version": "6.3.2",
+    "serial_number": "A8C4DEB4C9B",
+    "uptime": 1727550,
+    "vendor": "Cisco"
+}

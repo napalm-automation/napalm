@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright 2015 Netflix. All rights reserved.
 # Copyright 2016 BigWaveIT. All rights reserved.
+# Copyright 2021 Kirk Byers. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with the
@@ -47,6 +48,7 @@ from napalm.pyIOSXR.exceptions import TimeoutError
 from napalm.pyIOSXR.exceptions import IteratorIDError
 from napalm.pyIOSXR.exceptions import InvalidInputError
 from napalm.pyIOSXR.exceptions import InvalidXMLResponse
+from napalm.iosxr.utilities import strip_config_header
 
 logger = logging.getLogger(__name__)
 
@@ -618,20 +620,13 @@ class IOSXR(object):
         show_merge = self._execute_config_show("show configuration merge")
         show_run = self._execute_config_show("show running-config")
 
-        show_merge = self.strip_config_header(show_merge)
-        show_run = self.strip_config_header(show_run)
+        show_merge = strip_config_header(show_merge)
+        show_run = strip_config_header(show_run)
 
         diff = difflib.unified_diff(
             show_run.splitlines(keepends=True), show_merge.splitlines(keepends=True)
         )
         return "".join([x.replace("\r", "") for x in diff])
-
-    @staticmethod
-    def strip_config_header(config):
-        config = re.sub(r"^Building config.*\n!! IOS.*", "", config, flags=re.M)
-        config = config.strip()
-        config = re.sub(r"^!!.*", "", config)
-        return config.strip()
 
     def compare_replace_config(self):
         """
@@ -644,7 +639,7 @@ class IOSXR(object):
         """
         diff = self._execute_config_show("show configuration changes diff")
         # Strip header lines
-        diff = self.strip_config_header(diff)
+        diff = strip_config_header(diff)
         # Strip trailer line
         diff = re.sub(r"^end$", "", diff, flags=re.M)
         return diff.strip()
