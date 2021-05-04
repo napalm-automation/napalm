@@ -10,12 +10,12 @@ def convert(text):
 
 
 def alphanum_key(key):
-    """ split on end numbers."""
+    """split on end numbers."""
     return [convert(c) for c in re.split("([0-9]+)", key)]
 
 
 def sorted_nicely(sort_me):
-    """ Sort the given iterable in the way that humans expect."""
+    """Sort the given iterable in the way that humans expect."""
     return sorted(sort_me, key=alphanum_key)
 
 
