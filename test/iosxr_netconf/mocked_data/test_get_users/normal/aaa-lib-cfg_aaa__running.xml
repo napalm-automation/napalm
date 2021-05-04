@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<rpc-reply message-id="urn:uuid:87a23813-4d2e-4bdf-918c-4082106b3c43" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+ <data>
+  <aaa xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-lib-cfg">
+   <usernames xmlns="http://cisco.com/ns/yang/Cisco-IOS-XR-aaa-locald-cfg">
+    <username>
+     <ordering-index>0</ordering-index>
+     <name>user</name>
+     <usergroup-under-usernames>
+      <usergroup-under-username>
+       <name>root-lr</name>
+      </usergroup-under-username>
+      <usergroup-under-username>
+       <name>cisco-support</name>
+      </usergroup-under-username>
+     </usergroup-under-usernames>
+     <secret>$1$xcE9$ESbvijcJOzCZdhUuuyZZZ0</secret>
+    </username>
+    <username>
+     <ordering-index>1</ordering-index>
+     <name>lab</name>
+     <usergroup-under-usernames>
+      <usergroup-under-username>
+       <name>root-lr</name>
+      </usergroup-under-username>
+      <usergroup-under-username>
+       <name>cisco-support</name>
+      </usergroup-under-username>
+     </usergroup-under-usernames>
+     <secret>$1$hUzG$lZnZuh49kTp19958ttwxR.</secret>
+    </username>
+    <username>
+     <ordering-index>2</ordering-index>
+     <name>admin</name>
+     <usergroup-under-usernames>
+      <usergroup-under-username>
+       <name>sysadmin</name>
+      </usergroup-under-username>
+     </usergroup-under-usernames>
+     <secret>$1$h9lk$43JfI9qyHlAdBWYPZOpLl0</secret>
+    </username>
+   </usernames>
+  </aaa>
+ </data>
+</rpc-reply>

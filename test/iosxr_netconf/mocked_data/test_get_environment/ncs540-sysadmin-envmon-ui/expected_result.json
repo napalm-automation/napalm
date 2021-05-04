@@ -1,0 +1,47 @@
+{
+    "cpu": {
+        "0/0/CPU0": {
+            "%usage": 0.0
+        },
+        "0/RP0/CPU0": {
+            "%usage": 1.0
+        }
+    },
+    "fans": {
+        "FT0": {
+            "status": true
+        },
+        "FT1": {
+            "status": true
+        },
+        "FT2": {
+            "status": true
+        },
+        "FT3": {
+            "status": true
+        }
+    },
+    "memory": {
+        "available_ram": 19327352832,
+        "used_ram": 3169386496
+    },
+    "power": {
+        "0/PM0": {
+            "capacity": 400.0,
+            "output": 49.53,
+            "status": true
+        },
+        "0/PM1": {
+            "capacity": 400.0,
+            "output": 52.07,
+            "status": true
+        }
+    },
+    "temperature": {
+        "0/RP0": {
+            "is_alert": false,
+            "is_critical": false,
+            "temperature": 30.0
+        }
+    }
+}

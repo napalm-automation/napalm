@@ -1,0 +1,45 @@
+{
+    "Bundle-Ether1.10": {
+        "ipv4": {
+            "172.16.0.1": {
+                "prefix_length": 31
+            }
+        },
+        "ipv6": {
+            "2001:db8::1": {
+                "prefix_length": 127
+            }
+        }
+    },
+    "Loopback0": {
+        "ipv4": {
+            "172.16.255.2": {
+                "prefix_length": 32
+            }
+        },
+        "ipv6": {
+            "2001:db8::ff:2": {
+                "prefix_length": 128
+            }
+        }
+    },
+    "MgmtEth0/RSP0/CPU0/0": {
+        "ipv4": {
+            "172.27.218.148": {
+                "prefix_length": 25
+            }
+        }
+    },
+    "TenGigE0/0/0/8": {
+        "ipv4": {
+            "172.16.0.2": {
+                "prefix_length": 31
+            }
+        },
+        "ipv6": {
+            "2001:db8::2": {
+                "prefix_length": 127
+            }
+        }
+    }
+}

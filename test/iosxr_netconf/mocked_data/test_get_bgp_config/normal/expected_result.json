@@ -1,0 +1,228 @@
+{
+    "EBGP": {
+        "apply_groups": [],
+        "description": "",
+        "export_policy": "EBGP-OUT-POLICY",
+        "import_policy": "EBGP-IN-POLICY",
+        "local_address": "",
+        "local_as": 0,
+        "multihop_ttl": 0,
+        "multipath": false,
+        "neighbors": {
+            "192.168.0.1": {
+                "authentication_key": "",
+                "description": "302 peer",
+                "export_policy": "",
+                "import_policy": "",
+                "local_address": "",
+                "local_as": 0,
+                "nhs": false,
+                "prefix_limit": {
+                    "inet": {
+                        "unicast": {
+                            "limit": 1000,
+                            "teardown": {
+                                "threshold": 75,
+                                "timeout": 10
+                            }
+                        }
+                    }
+                },
+                "remote_as": 65000,
+                "route_reflector_client": false
+            },
+            "192.168.0.3": {
+                "authentication_key": "",
+                "description": "talk-to-me neighbor",
+                "export_policy": "",
+                "import_policy": "",
+                "local_address": "",
+                "local_as": 0,
+                "nhs": false,
+                "prefix_limit": {
+                    "inet": {
+                        "unicast": {
+                            "limit": 500,
+                            "teardown": {
+                                "threshold": 75,
+                                "timeout": 0
+                            }
+                        }
+                    }
+                },
+                "remote_as": 65000,
+                "route_reflector_client": false
+            }
+        },
+        "prefix_limit": {},
+        "remote_as": 0,
+        "remove_private_as": true,
+        "type": "external"
+    },
+    "EBGP-VRF": {
+        "apply_groups": [],
+        "description": "",
+        "export_policy": "EBGP-VRF-OUT-POLICY",
+        "import_policy": "EBGP-VRF-IN-POLICY",
+        "local_address": "",
+        "local_as": 0,
+        "multihop_ttl": 0,
+        "multipath": false,
+        "neighbors": {},
+        "prefix_limit": {},
+        "remote_as": 0,
+        "remove_private_as": true,
+        "type": "external"
+    },
+    "EBGPv6": {
+        "apply_groups": [],
+        "description": "",
+        "export_policy": "IBGPv6-OUT-POLICY",
+        "import_policy": "IBGPv6-IN-POLICY",
+        "local_address": "",
+        "local_as": 0,
+        "multihop_ttl": 0,
+        "multipath": false,
+        "neighbors": {
+            "2001:db8:ffff::1": {
+                "authentication_key": "",
+                "description": "r302 peer (v6)",
+                "export_policy": "",
+                "import_policy": "",
+                "local_address": "",
+                "local_as": 0,
+                "nhs": false,
+                "prefix_limit": {
+                    "inet6": {
+                        "unicast": {
+                            "limit": 250,
+                            "teardown": {
+                                "threshold": 75,
+                                "timeout": 0
+                            }
+                        }
+                    }
+                },
+                "remote_as": 65000,
+                "route_reflector_client": false
+            },
+            "2001:db8:ffff::3": {
+                "authentication_key": "",
+                "description": "talk-to-me neighbor",
+                "export_policy": "",
+                "import_policy": "",
+                "local_address": "",
+                "local_as": 0,
+                "nhs": false,
+                "prefix_limit": {
+                    "inet6": {
+                        "unicast": {
+                            "limit": 100,
+                            "teardown": {
+                                "threshold": 75,
+                                "timeout": 0
+                            }
+                        }
+                    }
+                },
+                "remote_as": 65002,
+                "route_reflector_client": false
+            }
+        },
+        "prefix_limit": {},
+        "remote_as": 0,
+        "remove_private_as": true,
+        "type": "external"
+    },
+    "EBGPv6-VRF": {
+        "apply_groups": [],
+        "description": "",
+        "export_policy": "EBGPv6-VRF-OUT-POLICY",
+        "import_policy": "EBGPv6-VRF-IN-POLICY",
+        "local_address": "",
+        "local_as": 0,
+        "multihop_ttl": 0,
+        "multipath": false,
+        "neighbors": {},
+        "prefix_limit": {},
+        "remote_as": 0,
+        "remove_private_as": true,
+        "type": "external"
+    },
+    "IBGP": {
+        "apply_groups": [],
+        "description": "",
+        "export_policy": "IBGP-OUT-POLICY",
+        "import_policy": "",
+        "local_address": "",
+        "local_as": 0,
+        "multihop_ttl": 0,
+        "multipath": false,
+        "neighbors": {
+            "172.16.255.3": {
+                "authentication_key": "",
+                "description": "r312 peer",
+                "export_policy": "",
+                "import_policy": "",
+                "local_address": "",
+                "local_as": 0,
+                "nhs": false,
+                "prefix_limit": {
+                    "inet": {
+                        "unicast": {
+                            "limit": 0,
+                            "teardown": {
+                                "threshold": 0,
+                                "timeout": 0
+                            }
+                        }
+                    }
+                },
+                "remote_as": 0,
+                "route_reflector_client": false
+            }
+        },
+        "prefix_limit": {},
+        "remote_as": 65172,
+        "remove_private_as": true,
+        "type": "external"
+    },
+    "IBGPv6": {
+        "apply_groups": [],
+        "description": "",
+        "export_policy": "IBGP-OUT-POLICY",
+        "import_policy": "",
+        "local_address": "",
+        "local_as": 0,
+        "multihop_ttl": 0,
+        "multipath": false,
+        "neighbors": {
+            "2001:db8::ff:3": {
+                "authentication_key": "",
+                "description": "r312 peer (v6)",
+                "export_policy": "",
+                "import_policy": "",
+                "local_address": "",
+                "local_as": 0,
+                "nhs": false,
+                "prefix_limit": {
+                    "inet6": {
+                        "unicast": {
+                            "limit": 0,
+                            "teardown": {
+                                "threshold": 0,
+                                "timeout": 0
+                            }
+                        }
+                    }
+                },
+                "remote_as": 0,
+                "route_reflector_client": false
+            }
+        },
+        "prefix_limit": {},
+        "remote_as": 65172,
+        "remove_private_as": true,
+        "type": "external"
+    }
+}

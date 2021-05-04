@@ -1857,10 +1857,17 @@ class IOSXRDriver(NetworkDriver):
                 for route_entry in route.xpath("RoutePath/Entry"):
                     # get all possible entries
                     next_hop = napalm.base.helpers.find_txt(route_entry, "Address")
+                    outgoing_interface = napalm.base.helpers.find_txt(
+                        route_entry, "InterfaceName"
+                    )
                     single_route_details = {}
                     single_route_details.update(route_details)
                     single_route_details.update(
-                        {"current_active": first_route, "next_hop": next_hop}
+                        {
+                            "current_active": first_route,
+                            "next_hop": next_hop,
+                            "outgoing_interface": outgoing_interface,
+                        }
                     )
                     routes[destination].append(single_route_details)
                     first_route = False
