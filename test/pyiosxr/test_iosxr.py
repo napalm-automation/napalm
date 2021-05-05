@@ -257,7 +257,7 @@ class TestIOSXRDevice(unittest.TestCase):
 
     def test__getattr__no_show(self):
 
-        """"Test special attribute __getattr__ agains a no-show command"""
+        """Test special attribute __getattr__ agains a no-show command"""
 
         raised = False
 

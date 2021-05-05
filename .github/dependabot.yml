@@ -1,0 +1,19 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: pytest
+    versions:
+    - ">= 6.a, < 7"
+  - dependency-name: black
+    versions:
+    - 21.4b0
+    - 21.4b1
+  - dependency-name: tox
+    versions:
+    - 3.21.3
+    - 3.22.0

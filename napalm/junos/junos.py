@@ -48,6 +48,7 @@ from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.exceptions import CommandTimeoutException
 from napalm.base.exceptions import LockError
 from napalm.base.exceptions import UnlockError
+from napalm.base.exceptions import CommitConfirmException
 
 # import local modules
 from napalm.junos.utils import junos_views
@@ -98,6 +99,18 @@ class JunOSDriver(NetworkDriver):
         # Junos driver specific options
         self.junos_config_database = optional_args.get(
             "junos_config_database", "committed"
+        )
+        self.junos_config_inheritance = optional_args.get(
+            "junos_config_inherit", "inherit"
+        )
+        self.junos_config_groups = optional_args.get("junos_config_groups", "groups")
+        self.junos_config_options = {
+            "database": self.junos_config_database,
+            "inherit": self.junos_config_inheritance,
+            "groups": self.junos_config_groups,
+        }
+        self.junos_config_options = optional_args.get(
+            "junos_config_options", self.junos_config_options
         )
 
         if self.key_file:
@@ -209,6 +222,7 @@ class JunOSDriver(NetworkDriver):
             "unprotect",
             "edit",
             "top",
+            "wildcard",
         ]
         if config.strip().startswith("<"):
             return "xml"
@@ -277,14 +291,95 @@ class JunOSDriver(NetworkDriver):
         else:
             return diff.strip()
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """Commit configuration."""
-        commit_args = {"comment": message} if message else {}
+        commit_args = {}
+        if revert_in is not None:
+            if revert_in % 60 != 0:
+                if not self.lock_disable and not self.session_config_lock:
+                    self._unlock()
+                raise CommitConfirmException(
+                    "For Junos devices revert_in must be a multiple of 60 (60, 120, 180...)"
+                )
+            else:
+                juniper_confirm_time = int(revert_in / 60)
+                commit_args["confirm"] = juniper_confirm_time
+
+        if message:
+            commit_args["comment"] = message
         self.device.cu.commit(ignore_warning=self.ignore_warning, **commit_args)
+
         if not self.lock_disable and not self.session_config_lock:
             self._unlock()
+
         if self.config_private:
             self.device.rpc.close_configuration()
+
+    def has_pending_commit(self):
+        """Boolean indicating if there is a commit-confirm in process."""
+        pending_commit = self._get_pending_commits()
+        if pending_commit:
+            return True
+        else:
+            return False
+
+    def _get_pending_commits(self):
+        """
+        Return a dictionary of commit sequences with pending commit confirms and
+        corresponding time when confirm needs to happen by. This is converted to seconds
+        since Juniper reports this in minutes.
+
+        Example:
+        {'re0-1616554286-559': 522}
+
+        Will only report on a single commit (the most recent one).
+
+        Will return an empty dictionary if there is no pending commit-confirms.
+        """
+        # show system commit revision detail
+        # Command introduced in Junos OS Release 14.1
+        try:
+            pending_commit = self.device.rpc.get_commit_revision_information(
+                detail=True
+            )
+        except RpcError:
+            msg = "Using commit-confirm with NAPALM requires Junos OS >= 14.1"
+            raise CommitConfirmException(msg)
+
+        commit_time_element = pending_commit.find("./date-time")
+        commit_time = int(commit_time_element.attrib["seconds"])
+
+        commit_revision_element = pending_commit.find("./revision")
+        commit_revision = commit_revision_element.text
+        commit_comment_element = pending_commit.find("./comment")
+        if commit_comment_element is None:
+            # No commit comment means no commit-confirm
+            return {}
+        else:
+            commit_comment = commit_comment_element.text
+
+        sys_uptime_info = self.device.rpc.get_system_uptime_information()
+        current_time_element = sys_uptime_info.find("./current-time/date-time")
+        current_time = int(current_time_element.attrib["seconds"])
+
+        # Msg from Jnpr: 'commit confirmed, rollback in 5mins'
+        if "commit confirmed" in commit_comment and "rollback in" in commit_comment:
+            match = re.search(r"rollback in (\d+)mins", commit_comment)
+            if match:
+                confirm_time = match.group(1)
+                confirm_time_seconds = int(confirm_time) * 60
+                elapsed_time = current_time - commit_time
+                confirm_time_remaining = confirm_time_seconds - elapsed_time
+                if confirm_time_remaining <= 0:
+                    confirm_time_remaining = 0
+
+                return {commit_revision: confirm_time_remaining}
+
+        return {}
+
+    def confirm_commit(self):
+        """Send final commit to confirm an in-proces commit that requires confirmation."""
+        self.device.cu.commit(ignore_warning=self.ignore_warning)
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
@@ -388,9 +483,17 @@ class JunOSDriver(NetworkDriver):
         query.get()
         interface_counters = {}
         for interface, counters in query.items():
-            interface_counters[interface] = {
-                k: v if v is not None else -1 for k, v in counters
-            }
+            _interface_counters = {}
+            for k, v in counters:
+                if k == "logical_interfaces":
+                    for _interface, _counters in v.items():
+                        interface_counters[_interface] = {
+                            k: v if v is not None else -1 for k, v in _counters
+                        }
+                else:
+                    _interface_counters[k] = v if v is not None else -1
+
+            interface_counters[interface] = _interface_counters
         return interface_counters
 
     def get_environment(self):
@@ -400,8 +503,8 @@ class JunOSDriver(NetworkDriver):
             routing_engine = junos_views.junos_routing_engine_table_srx_cluster(
                 self.device
             )
-            temperature_thresholds = junos_views.junos_temperature_thresholds_srx_cluster(
-                self.device
+            temperature_thresholds = (
+                junos_views.junos_temperature_thresholds_srx_cluster(self.device)
             )
         else:
             environment = junos_views.junos_environment_table(self.device)
@@ -1024,14 +1127,14 @@ class JunOSDriver(NetworkDriver):
                 policies = [policies]
             # Return True if "next-hop self" was found in any of the policies p
             for p in policies:
-                if nhs_policies[p] is True:
+                if nhs_policies[p] is True or isinstance(nhs_policies[p], list):
                     return True
             return False
 
         def update_dict(d, u):  # for deep dictionary update
             for k, v in u.items():
-                if isinstance(d, collections.Mapping):
-                    if isinstance(v, collections.Mapping):
+                if isinstance(d, collections.abc.Mapping):
+                    if isinstance(v, collections.abc.Mapping):
                         r = update_dict(d.get(k, {}), v)
                         d[k] = r
                     else:
@@ -1125,10 +1228,10 @@ class JunOSDriver(NetworkDriver):
 
         if group:
             bgp = junos_views.junos_bgp_config_group_table(self.device)
-            bgp.get(group=group, options={"database": self.junos_config_database})
+            bgp.get(group=group, options=self.junos_config_options)
         else:
             bgp = junos_views.junos_bgp_config_table(self.device)
-            bgp.get(options={"database": self.junos_config_database})
+            bgp.get(options=self.junos_config_options)
             neighbor = ""  # if no group is set, no neighbor should be set either
         bgp_items = bgp.items()
 
@@ -1141,7 +1244,7 @@ class JunOSDriver(NetworkDriver):
         # The resulting dict (nhs_policies) will be used by _check_nhs to determine if "nhs"
         # is configured or not in the policies applied to a BGP neighbor
         policy = junos_views.junos_policy_nhs_config_table(self.device)
-        policy.get(options={"database": self.junos_config_database})
+        policy.get(options=self.junos_config_options)
         nhs_policies = dict()
         for policy_name, is_nhs_list in policy.items():
             # is_nhs_list is a list with one element. Ex: [('is_nhs', True)]
@@ -1479,7 +1582,7 @@ class JunOSDriver(NetworkDriver):
     def get_ntp_peers(self):
         """Return the NTP peers configured on the device."""
         ntp_table = junos_views.junos_ntp_peers_config_table(self.device)
-        ntp_table.get(options={"database": self.junos_config_database})
+        ntp_table.get(options=self.junos_config_options)
 
         ntp_peers = ntp_table.items()
 
@@ -1491,7 +1594,7 @@ class JunOSDriver(NetworkDriver):
     def get_ntp_servers(self):
         """Return the NTP servers configured on the device."""
         ntp_table = junos_views.junos_ntp_servers_config_table(self.device)
-        ntp_table.get(options={"database": self.junos_config_database})
+        ntp_table.get(options=self.junos_config_options)
 
         ntp_servers = ntp_table.items()
 
@@ -1766,7 +1869,7 @@ class JunOSDriver(NetworkDriver):
         snmp_information = {}
 
         snmp_config = junos_views.junos_snmp_config_table(self.device)
-        snmp_config.get(options={"database": self.junos_config_database})
+        snmp_config.get(options=self.junos_config_options)
         snmp_items = snmp_config.items()
 
         if not snmp_items:
@@ -1803,7 +1906,7 @@ class JunOSDriver(NetworkDriver):
         probes = {}
 
         probes_table = junos_views.junos_rpm_probes_config_table(self.device)
-        probes_table.get(options={"database": self.junos_config_database})
+        probes_table.get(options=self.junos_config_options)
         probes_table_items = probes_table.items()
 
         for probe_test in probes_table_items:
@@ -1893,12 +1996,14 @@ class JunOSDriver(NetworkDriver):
         if vrf:
             vrf_str = " routing-instance {vrf}".format(vrf=vrf)
 
-        traceroute_command = "traceroute {destination}{source}{maxttl}{wait}{vrf}".format(
-            destination=destination,
-            source=source_str,
-            maxttl=maxttl_str,
-            wait=wait_str,
-            vrf=vrf_str,
+        traceroute_command = (
+            "traceroute {destination}{source}{maxttl}{wait}{vrf}".format(
+                destination=destination,
+                source=source_str,
+                maxttl=maxttl_str,
+                wait=wait_str,
+                vrf=vrf_str,
+            )
         )
 
         traceroute_rpc = E("command", traceroute_command)
@@ -1980,14 +2085,16 @@ class JunOSDriver(NetworkDriver):
         if vrf:
             vrf_str = " routing-instance {vrf}".format(vrf=vrf)
 
-        ping_command = "ping {destination}{source}{ttl}{timeout}{size}{count}{vrf}".format(
-            destination=destination,
-            source=source_str,
-            ttl=maxttl_str,
-            timeout=timeout_str,
-            size=size_str,
-            count=count_str,
-            vrf=vrf_str,
+        ping_command = (
+            "ping {destination}{source}{ttl}{timeout}{size}{count}{vrf}".format(
+                destination=destination,
+                source=source_str,
+                ttl=maxttl_str,
+                timeout=timeout_str,
+                size=size_str,
+                count=count_str,
+                vrf=vrf_str,
+            )
         )
 
         ping_rpc = E("command", ping_command)
@@ -2104,7 +2211,7 @@ class JunOSDriver(NetworkDriver):
         _DEFAULT_USER_DETAILS = {"level": 20, "password": "", "sshkeys": []}
         root = {}
         root_table = junos_views.junos_root_table(self.device)
-        root_table.get(options={"database": self.junos_config_database})
+        root_table.get(options=self.junos_config_options)
         root_items = root_table.items()
         for user_entry in root_items:
             username = "root"
@@ -2135,7 +2242,7 @@ class JunOSDriver(NetworkDriver):
         _DEFAULT_USER_DETAILS = {"level": 0, "password": "", "sshkeys": []}
 
         users_table = junos_views.junos_users_table(self.device)
-        users_table.get(options={"database": self.junos_config_database})
+        users_table.get(options=self.junos_config_options)
         users_items = users_table.items()
         root_user = self._get_root()
 
@@ -2262,7 +2369,7 @@ class JunOSDriver(NetworkDriver):
 
         options = {"format": "text", "database": "candidate"}
         sanitize_strings = {
-            r"^(\s+community\s+)\w+(\s+{.*)$": r"\1<removed>\2",
+            r"^(\s+community\s+)\w+(;.*|\s+{.*)$": r"\1<removed>\2",
             r'^(.*)"\$\d\$\S+"(;.*)$': r"\1<removed>\2",
         }
         if retrieve in ("candidate", "all"):
@@ -2283,7 +2390,7 @@ class JunOSDriver(NetworkDriver):
         network_instances = {}
 
         ri_table = junos_views.junos_nw_instances_table(self.device)
-        ri_table.get(options={"database": self.junos_config_database})
+        ri_table.get(options=self.junos_config_options)
         ri_entries = ri_table.items()
 
         vrf_interfaces = []
@@ -2333,3 +2440,36 @@ class JunOSDriver(NetworkDriver):
         if name not in network_instances:
             return {}
         return {name: network_instances[name]}
+
+    def get_vlans(self):
+        result = {}
+        switch_style = self.device.facts.get("switch_style", "")
+        if switch_style == "VLAN_L2NG":
+            vlan = junos_views.junos_vlans_table_switch_l2ng(self.device)
+        elif switch_style == "BRIDGE_DOMAIN":
+            vlan = junos_views.junos_vlans_table(self.device)
+        elif switch_style == "VLAN":
+            vlan = junos_views.junos_vlans_table_switch(self.device)
+        else:  # switch_style == "NONE"
+            return result
+
+        vlan.get()
+        unmatch_pattern = "l2rtb-interface-name|None|l2ng-l2rtb-vlan-member-interface"
+        for vlan_id, vlan_data in vlan.items():
+            _vlan_data = {}
+            for k, v in vlan_data:
+                if k == "vlan_name":
+                    _vlan_data["name"] = v
+                if k == "interfaces":
+                    if v is None:
+                        _vlan_data["interfaces"] = []
+                    elif isinstance(v, str):
+                        if bool(re.match(unmatch_pattern, v)):
+                            _vlan_data["interfaces"] = []
+                        else:
+                            _vlan_data["interfaces"] = [v.replace("*", "")]
+                    else:
+                        _vlan_data["interfaces"] = [_v.replace("*", "") for _v in v]
+
+            result[vlan_id] = _vlan_data
+        return result

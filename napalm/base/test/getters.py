@@ -512,6 +512,8 @@ class BaseTestGetters(object):
     @wrap_test_cases
     def test_get_config_filtered(self, test_case):
         """Test get_config method."""
+        if self.device.platform == "iosxr_netconf":
+            pytest.skip("This test is not implemented on {self.device.platform}")
         for config in ["running", "startup", "candidate"]:
             get_config = self.device.get_config(retrieve=config)
 

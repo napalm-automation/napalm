@@ -500,16 +500,21 @@ class IOSDriver(NetworkDriver):
         self.device.set_base_prompt()
         return output
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
         """
         If replacement operation, perform 'configure replace' for the entire config.
 
         If merge operation, perform copy <file> running-config.
         """
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
             )
+
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
 
@@ -1083,7 +1088,11 @@ class IOSDriver(NetworkDriver):
 
             interface_regex_1 = r"^(\S+?)\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
             interface_regex_2 = r"^(\S+)\s+is\s+(up|down)"
-            for pattern in (interface_regex_1, interface_regex_2):
+            interface_regex_3 = (
+                r"^(Control Plane Interface)"
+                r"\s+is\s+(.+?),\s+line\s+protocol\s+is\s+(\S+)"
+            )
+            for pattern in (interface_regex_1, interface_regex_2, interface_regex_3):
                 interface_match = re.search(pattern, line)
                 if interface_match:
                     interface = interface_match.group(1)
@@ -3254,9 +3263,14 @@ class IOSDriver(NetworkDriver):
         Executes traceroute on the device and returns a dictionary with the result.
 
         :param destination: Host or IP Address of the destination
-        :param source (optional): Use a specific IP Address to execute the traceroute
-        :param ttl (optional): Maimum number of hops -> int (0-255)
-        :param timeout (optional): Number of seconds to wait for response -> int (1-3600)
+        :param source: Use a specific IP Address to execute the traceroute
+        :type source: optional
+        :param ttl: Maximum number of hops -> int (0-255)
+        :type ttl: optional
+        :param timeout: Number of seconds to wait for response -> int (1-3600)
+        :type timeout: optional
+        :param vrf: Use a specific VRF to execute the traceroute
+        :type vrf: optional
 
         Output dictionary has one of the following keys:
 
@@ -3279,7 +3293,7 @@ class IOSDriver(NetworkDriver):
             command += " source {}".format(source)
         if ttl:
             if isinstance(ttl, int) and 0 <= ttl <= 255:
-                command += " ttl {}".format(str(ttl))
+                command += " ttl 0 {}".format(str(ttl))
         if timeout:
             # Timeout should be an integer between 1 and 3600
             if isinstance(timeout, int) and 1 <= timeout <= 3600:

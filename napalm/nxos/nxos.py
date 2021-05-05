@@ -214,7 +214,11 @@ class NXOSDriverBase(NetworkDriver):
             return diff
         return ""
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
@@ -833,10 +837,10 @@ class NXOSDriver(NXOSDriverBase):
             "sys_ver_str", show_version.get("kickstart_ver_str", "")
         )
 
-        uptime_days = show_version.get("kern_uptm_days", 0)
-        uptime_hours = show_version.get("kern_uptm_hrs", 0)
-        uptime_mins = show_version.get("kern_uptm_mins", 0)
-        uptime_secs = show_version.get("kern_uptm_secs", 0)
+        uptime_days = int(show_version.get("kern_uptm_days", 0))
+        uptime_hours = int(show_version.get("kern_uptm_hrs", 0))
+        uptime_mins = int(show_version.get("kern_uptm_mins", 0))
+        uptime_secs = int(show_version.get("kern_uptm_secs", 0))
 
         uptime = 0
         uptime += uptime_days * 24 * 60 * 60
@@ -1332,7 +1336,7 @@ class NXOSDriver(NXOSDriverBase):
         return users
 
     def get_network_instances(self, name=""):
-        """ get_network_instances implementation for NX-OS """
+        """get_network_instances implementation for NX-OS"""
 
         # command 'show vrf detail' returns all VRFs with detailed information
         # format: list of dictionaries with keys such as 'vrf_name' and 'rd'

@@ -1,0 +1,28 @@
+{
+    "vrfs": {
+        "default": {
+            "routes": {
+                "1.0.4.0/24": {
+                    "kernelProgrammed": true,
+                    "directlyConnected": false,
+                    "routeAction": "forward",
+                    "routeLeaked": false,
+                    "vias": [
+                        {
+                            "interface": "Vlan123",
+                            "nexthopAddr": "169.254.123.2"
+                        }
+                    ],
+                    "metric": 0,
+                    "hardwareProgrammed": true,
+                    "routeType": "eBGP",
+                    "preference": 200
+                }
+            },
+            "allRoutesProgrammedKernel": true,
+            "routingDisabled": false,
+            "allRoutesProgrammedHardware": true,
+            "defaultRouteState": "notSet"
+        }
+    }
+}

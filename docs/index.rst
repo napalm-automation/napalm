@@ -34,6 +34,8 @@ You can select the driver you need by doing the following:
    >>> from napalm import get_network_driver
    >>> get_network_driver('eos')
    <class napalm.eos.eos.EOSDriver at 0x10ebad6d0>
+   >>> get_network_driver('iosxr_netconf')
+   <class napalm.iosxr_netconf.iosxr_netconf.IOSXRNETCONFDriver at 0x10ad170f0>
    >>> get_network_driver('iosxr')
    <class napalm.iosxr.iosxr.IOSXRDriver at 0x10ec90050>
    >>> get_network_driver('junos')

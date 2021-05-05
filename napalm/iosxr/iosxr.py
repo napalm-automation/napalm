@@ -129,7 +129,11 @@ class IOSXRDriver(NetworkDriver):
         else:
             return self.device.compare_config().strip()
 
-    def commit_config(self, message=""):
+    def commit_config(self, message="", revert_in=None):
+        if revert_in is not None:
+            raise NotImplementedError(
+                "Commit confirm has not been implemented on this platform."
+            )
         commit_args = {"comment": message} if message else {}
         if self.replace:
             self.device.commit_replace_config(**commit_args)
@@ -161,8 +165,12 @@ class IOSXRDriver(NetworkDriver):
             "interface_list": [],
         }
 
-        facts_rpc_request = "<Get><Operational><SystemTime/><PlatformInventory/>\
-        </Operational></Get>"
+        facts_rpc_request = (
+            "<Get><Operational><SystemTime/><PlatformInventory><RackTable>"
+            "<Rack><Naming><Name>0</Name></Naming>"
+            "<Attributes><BasicInfo/></Attributes>"
+            "</Rack></RackTable></PlatformInventory></Operational></Get>"
+        )
 
         facts_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(facts_rpc_request))
         system_time_xpath = ".//SystemTime/Uptime"
@@ -656,12 +664,24 @@ class IOSXRDriver(NetworkDriver):
 
         facts = self.get_facts()
         router_model = facts.get("model")
+        xr_version = facts.get("os_version")
+        major_version = (
+            int(xr_version.split(".")[0])
+            if xr_version
+            and isinstance(xr_version, str)
+            and xr_version.split(".")[0].isnumeric()
+            else 0
+        )
         is_xrv = router_model.lower().startswith("xrv")
         environment_status["memory"] = {"available_ram": 0.0, "used_ram": 0.0}
 
         if not is_xrv:
-            rpc_command = "<Get><AdminOperational><MemorySummary>\
-            </MemorySummary></AdminOperational></Get>"
+            if major_version >= 7:
+                rpc_command = "<Get><Operational><MemorySummary>\
+                </MemorySummary></Operational></Get>"
+            else:
+                rpc_command = "<Get><AdminOperational><MemorySummary>\
+                </MemorySummary></AdminOperational></Get>"
             result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
             for node in result_tree.xpath(".//Node"):
@@ -803,7 +823,11 @@ class IOSXRDriver(NetworkDriver):
 
         lldp_neighbors = {}
 
-        rpc_command = "<Get><Operational><LLDP></LLDP></Operational></Get>"
+        rpc_command = (
+            "<Get><Operational>"
+            "<LLDP><NodeTable></NodeTable></LLDP>"
+            "</Operational></Get>"
+        )
 
         result_tree = ETREE.fromstring(self.device.make_rpc_call(rpc_command))
 
@@ -1170,13 +1194,13 @@ class IOSXRDriver(NetworkDriver):
             vrf_keepalive = napalm.base.helpers.convert(
                 int,
                 napalm.base.helpers.find_txt(
-                    instance_active_list, "GlobalProcessInfo/VRF/KeepAliveTime"
+                    vrf_tree, "GlobalProcessInfo/VRF/KeepAliveTime"
                 ),
             )
             vrf_holdtime = napalm.base.helpers.convert(
                 int,
                 napalm.base.helpers.find_txt(
-                    instance_active_list, "GlobalProcessInfo/VRF/HoldTime"
+                    vrf_tree, "GlobalProcessInfo/VRF/HoldTime"
                 ),
             )
             if vrf_name not in bgp_neighbors_detail.keys():
@@ -1833,10 +1857,17 @@ class IOSXRDriver(NetworkDriver):
                 for route_entry in route.xpath("RoutePath/Entry"):
                     # get all possible entries
                     next_hop = napalm.base.helpers.find_txt(route_entry, "Address")
+                    outgoing_interface = napalm.base.helpers.find_txt(
+                        route_entry, "InterfaceName"
+                    )
                     single_route_details = {}
                     single_route_details.update(route_details)
                     single_route_details.update(
-                        {"current_active": first_route, "next_hop": next_hop}
+                        {
+                            "current_active": first_route,
+                            "next_hop": next_hop,
+                            "outgoing_interface": outgoing_interface,
+                        }
                     )
                     routes[destination].append(single_route_details)
                     first_route = False

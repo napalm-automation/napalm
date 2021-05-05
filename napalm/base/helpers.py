@@ -5,7 +5,7 @@ import re
 import sys
 import itertools
 import logging
-from collections import Iterable
+from collections.abc import Iterable
 
 # third party libs
 import jinja2
@@ -147,7 +147,7 @@ def cisco_conf_parse_objects(cfg_section, config):
 
 
 def regex_find_txt(pattern, text, default=""):
-    """""
+    """ ""
     RegEx search for pattern in text. Will try to match the data type of the "default" value
     or return the default value if no match is found.
     This is to parse IOS config like below:
@@ -350,8 +350,8 @@ def ip(addr, version=None):
     not the same.
 
     :param raw: the raw string containing the value of the IP Address
-    :param version: (optional) insist on a specific IP address version.
-    :type version: int.
+    :param version: insist on a specific IP address version.
+    :type version: int, optional.
     :return: a string containing the IP Address in a standard format (no leading zeros, \
     zeros-grouping, lowercase)
 
@@ -395,9 +395,10 @@ def canonical_interface_name(interface, addl_name_map=None):
     easily troubleshot, found, or known.
 
     :param interface: The interface you are attempting to expand.
-    :param addl_name_map (optional): A dict containing key/value pairs that updates
+    :param addl_name_map: A dict containing key/value pairs that updates
     the base mapping. Used if an OS has specific differences. e.g. {"Po": "PortChannel"} vs
     {"Po": "Port-Channel"}
+    :type addl_name_map: optional
     """
 
     name_map = {}
@@ -419,12 +420,14 @@ def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=N
     """Function to return an abbreviated representation of the interface name.
 
     :param interface: The interface you are attempting to abbreviate.
-    :param addl_name_map (optional): A dict containing key/value pairs that updates
+    :param addl_name_map: A dict containing key/value pairs that updates
     the base mapping. Used if an OS has specific differences. e.g. {"Po": "PortChannel"} vs
     {"Po": "Port-Channel"}
-    :param addl_reverse_map (optional): A dict containing key/value pairs that updates
+    :type addl_name_map: optional
+    :param addl_reverse_map: A dict containing key/value pairs that updates
     the reverse mapping. Used if an OS has specific differences. e.g. {"PortChannel": "Po"} vs
     {"PortChannel": "po"}
+    :type addl_reverse_map: optional
     """
 
     name_map = {}
@@ -489,7 +492,7 @@ def generate_regex_or(filters):
 
 def sanitize_config(config, filters):
     """
-    Given a list of filters, remove sensitive data from the provided config.
+    Given a dictionary of filters, remove sensitive data from the provided config.
     """
     for filter_, replace in filters.items():
         config = re.sub(filter_, replace, config, flags=re.M)

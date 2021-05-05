@@ -26,7 +26,7 @@ Driver labels
 -------------
 
 Each platform supported by NAPALM has associated a label, e.g., ``junos``, ``eos``,
-``ios``, ``iosxr``, ``vyos``, etc. It is mandatory that the maintainer to apply
+``ios``, ``iosxr_netconf``, ``iosxr``, ``vyos``, etc. It is mandatory that the maintainer to apply
 one or more of these labels.
 
 .. _triage-api-change-label:

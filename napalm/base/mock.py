@@ -33,7 +33,7 @@ def raise_exception(result):
 
 
 def is_mocked_method(method):
-    mocked_methods = []
+    mocked_methods = ["traceroute", "ping"]
     if method.startswith("get_") or method in mocked_methods:
         return True
     return False
@@ -177,7 +177,7 @@ class MockDriver(NetworkDriver):
         mocked_data(self.path, "commit_config", count)
 
     def discard_config(self):
-        count = self._count_calls("commit_config")
+        count = self._count_calls("discard_config")
         self._raise_if_closed()
         self.merge = None
         self.filename = None
