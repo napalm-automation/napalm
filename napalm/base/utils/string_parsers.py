@@ -10,13 +10,13 @@ def convert(text: str) -> Union[str, int]:
     return text
 
 
-def alphanum_key(key: str) -> List[Union[str, int]]:
-    """ split on end numbers."""
+def alphanum_key(key):
+    """split on end numbers."""
     return [convert(c) for c in re.split("([0-9]+)", key)]
 
 
-def sorted_nicely(sort_me: Iterable) -> Iterable:
-    """ Sort the given iterable in the way that humans expect."""
+def sorted_nicely(sort_me):
+    """Sort the given iterable in the way that humans expect."""
     return sorted(sort_me, key=alphanum_key)
 
 
