@@ -3442,7 +3442,8 @@ class IOSDriver(NetworkDriver):
 
             # remove interfaces in the VRF from the default VRF
             for item in interfaces:
-                del instances["default"]["interfaces"]["interface"][item]
+                if item in instances["default"]["interfaces"]["interface"]:
+                    del instances["default"]["interfaces"]["interface"][item]
 
             instances[vrf_name] = {
                 "name": vrf_name,
