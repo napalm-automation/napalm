@@ -267,6 +267,7 @@ class JunOSDriver(NetworkDriver):
                 ignore_warning=self.ignore_warning,
             )
         except ConfigLoadError as e:
+            self.discard_config()
             if self.config_replace:
                 raise ReplaceConfigException(e.errs)
             else:
