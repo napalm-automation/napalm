@@ -3178,6 +3178,7 @@ class IOSDriver(NetworkDriver):
         size=C.PING_SIZE,
         count=C.PING_COUNT,
         vrf=C.PING_VRF,
+        source_interface=C.PING_SOURCE_INTERFACE,
     ):
         """
         Execute ping on the device and returns a dictionary with the result.
@@ -3208,6 +3209,8 @@ class IOSDriver(NetworkDriver):
         command += " repeat {}".format(count)
         if source != "":
             command += " source {}".format(source)
+        elif source_interface != "":
+            command += " source {}".format(source_interface)
 
         output = self._send_command(command)
         if "%" in output:

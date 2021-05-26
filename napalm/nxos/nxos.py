@@ -276,6 +276,7 @@ class NXOSDriverBase(NetworkDriver):
         size=c.PING_SIZE,
         count=c.PING_COUNT,
         vrf=c.PING_VRF,
+        source_interface=c.PING_SOURCE_INTERFACE,
     ):
         """
         Execute ping on the device and returns a dictionary with the result.
@@ -311,6 +312,8 @@ class NXOSDriverBase(NetworkDriver):
         command += " count {}".format(count)
         if source != "":
             command += " source {}".format(source)
+        elif source_interface != "":
+            command += " source {}".format(source_interface)
 
         if vrf != "":
             command += " vrf {}".format(vrf)

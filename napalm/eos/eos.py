@@ -2006,6 +2006,7 @@ class EOSDriver(NetworkDriver):
         size=c.PING_SIZE,
         count=c.PING_COUNT,
         vrf=c.PING_VRF,
+        source_interface=c.PING_SOURCE_INTERFACE,
     ):
         """
         Execute ping on the device and returns a dictionary with the result.
@@ -2036,6 +2037,8 @@ class EOSDriver(NetworkDriver):
         command += " repeat {}".format(count)
         if source != "":
             command += " source {}".format(source)
+        if source_interface != "":
+            command += " interface {}".format(source_interface)
 
         commands.append(command)
         output = self.device.run_commands(commands, encoding="text")[-1]["output"]
