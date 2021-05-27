@@ -2065,6 +2065,7 @@ class JunOSDriver(NetworkDriver):
         size=C.PING_SIZE,
         count=C.PING_COUNT,
         vrf=C.PING_VRF,
+        source_interface=C.PING_SOURCE_INTERFACE,
     ):
 
         ping_dict = {}
@@ -2075,6 +2076,7 @@ class JunOSDriver(NetworkDriver):
         size_str = ""
         count_str = ""
         vrf_str = ""
+        source_interface_str = ""
 
         if source:
             source_str = " source {source}".format(source=source)
@@ -2088,17 +2090,22 @@ class JunOSDriver(NetworkDriver):
             count_str = " count {count}".format(count=count)
         if vrf:
             vrf_str = " routing-instance {vrf}".format(vrf=vrf)
+        if source_interface:
+            source_interface_str = " interface {source_interface}".format(
+                source_interface=source_interface
+            )
 
         ping_command = (
-            "ping {destination}{source}{ttl}{timeout}{size}{count}{vrf}".format(
-                destination=destination,
-                source=source_str,
-                ttl=maxttl_str,
-                timeout=timeout_str,
-                size=size_str,
-                count=count_str,
-                vrf=vrf_str,
-            )
+            "ping {destination}{source}{ttl}{timeout}{size}{count}{vrf}{source_interface}"
+        ).format(
+            destination=destination,
+            source=source_str,
+            ttl=maxttl_str,
+            timeout=timeout_str,
+            size=size_str,
+            count=count_str,
+            vrf=vrf_str,
+            source_interface=source_interface_str,
         )
 
         ping_rpc = E("command", ping_command)

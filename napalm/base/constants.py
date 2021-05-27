@@ -57,6 +57,7 @@ PING_TIMEOUT = 2
 PING_SIZE = 100
 PING_COUNT = 5
 PING_VRF = ""
+PING_SOURCE_INTERFACE = ""
 
 NETMIKO_MAP = {
     "ios": "cisco_ios",
