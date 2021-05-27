@@ -1273,6 +1273,7 @@ class NetworkDriver(object):
         size=c.PING_SIZE,
         count=c.PING_COUNT,
         vrf=c.PING_VRF,
+        source_interface=c.PING_SOURCE_INTERFACE,
     ):
         """
         Executes ping on the device and returns a dictionary with the result
@@ -1290,6 +1291,8 @@ class NetworkDriver(object):
         :type count: optional
         :param vrf: Use a specific VRF to execute the ping
         :type vrf: optional
+        :param source_interface: Use an IP from a source interface as source address of echo request
+        :type source_interface: optional
 
         Output dictionary has one of following keys:
 
