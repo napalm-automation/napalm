@@ -1316,7 +1316,7 @@ class NetworkDriver(object):
         size: int = c.PING_SIZE,
         count: int = c.PING_COUNT,
         vrf: str = c.PING_VRF,
-        source_interface: str = c.PING_SOURCE_INTERFACE
+        source_interface: str = c.PING_SOURCE_INTERFACE,
     ) -> models.PingResultDict:
         """
         Executes ping on the device and returns a dictionary with the result
