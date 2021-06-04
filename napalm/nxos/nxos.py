@@ -1461,7 +1461,7 @@ class NXOSDriver(NXOSDriverBase):
     def get_network_instances(
         self, name: str = ""
     ) -> Dict[str, models.NetworkInstanceDict]:
-        """ get_network_instances implementation for NX-OS """
+        """get_network_instances implementation for NX-OS"""
 
         # command 'show vrf detail' returns all VRFs with detailed information
         # format: list of dictionaries with keys such as 'vrf_name' and 'rd'
