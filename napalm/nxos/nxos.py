@@ -1175,7 +1175,7 @@ class NXOSDriver(NXOSDriverBase):
             ipv6_interf_table_vrf = self._get_command_table(
                 ipv6_command, "TABLE_intf", "ROW_intf"
             )
-        except napalm.nxapi_plumbing.errors.NXAPIPostError:
+        except napalm.nxapi_plumbing.errors.NXAPICommandError:
             return interfaces_ip
 
         for interface in ipv6_interf_table_vrf:

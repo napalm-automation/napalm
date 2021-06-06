@@ -78,15 +78,7 @@ class RPCBase(object):
             )
             raise NXAPIAuthError(msg)
 
-        if response.status_code not in [200]:
-            msg = """Invalid status code returned on NX-API POST
-commands: {}
-status_code: {}""".format(
-                commands, response.status_code
-            )
-            raise NXAPIPostError(msg)
-
-        return response.text
+        return response
 
 
 class RPCClient(RPCBase):
@@ -139,7 +131,7 @@ class RPCClient(RPCBase):
         structured data.
         """
 
-        response_list = json.loads(response)
+        response_list = json.loads(response.text)
         if isinstance(response_list, dict):
             response_list = [response_list]
 
@@ -150,7 +142,7 @@ class RPCClient(RPCBase):
         new_response = []
         for response in response_list:
 
-            # Dectect errors
+            # Detect errors
             self._error_check(response)
 
             # Some commands like "show run" can have a None result
@@ -235,7 +227,15 @@ class XMLClient(RPCBase):
         return payload
 
     def _process_api_response(self, response, commands, raw_text=False):
-        xml_root = etree.fromstring(response)
+        if response.status_code not in [200]:
+            msg = """Invalid status code returned on NX-API POST
+commands: {}
+status_code: {}""".format(
+                commands, response.status_code
+            )
+            raise NXAPIPostError(msg)
+
+        xml_root = etree.fromstring(response.text)
         response_list = xml_root.xpath("outputs/output")
         if len(commands) != len(response_list):
             raise NXAPIXMLError(
