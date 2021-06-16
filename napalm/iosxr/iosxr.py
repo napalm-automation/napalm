@@ -1283,7 +1283,7 @@ class IOSXRDriver(NetworkDriver):
                 output_messages = napalm.base.helpers.convert(
                     int, napalm.base.helpers.find_txt(neighbor, "MessagesSent"), 0
                 )
-                connection_down_count = napalm.base.helpers.convert(
+                flap_count = napalm.base.helpers.convert(
                     int,
                     napalm.base.helpers.find_txt(neighbor, "ConnectionDownCount"),
                     0,
@@ -1361,9 +1361,6 @@ class IOSXRDriver(NetworkDriver):
                     napalm.base.helpers.find_txt(neighbor, "ConfiguredKeepalive"),
                     0,
                 )
-                flap_count = int(connection_down_count / 2)
-                if up:
-                    flap_count -= 1
                 if remote_as not in bgp_neighbors_detail[vrf_name].keys():
                     bgp_neighbors_detail[vrf_name][remote_as] = []
                 bgp_neighbors_detail[vrf_name][remote_as].append(

@@ -1,6 +1,6 @@
 [![PyPI](https://img.shields.io/pypi/v/napalm.svg)](https://pypi.python.org/pypi/napalm)
 [![PyPI versions](https://img.shields.io/pypi/pyversions/napalm.svg)](https://pypi.python.org/pypi/napalm)
-[![Coverage Status](https://coveralls.io/repos/github/napalm-automation/napalm/badge.svg)](https://coveralls.io/github/napalm-automation/napalm)
+[![Actions Build](https://github.com/napalm-automation/napalm/actions/workflows/commit.yaml/badge.svg?branch=develop)](https://github.com/napalm-automation/napalm/actions/workflows/commit.yaml)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 
