@@ -10,6 +10,8 @@ from napalm.base.test.double import BaseTestDouble
 
 from napalm.junos import junos
 
+from ncclient.devices.junos import JunosDeviceHandler
+
 
 @pytest.fixture(scope="class")
 def set_device_parameters(request):
@@ -81,6 +83,15 @@ class FakeJunOSDevice(BaseTestDouble):
         # Since junos-eznc 2.3.0 the new SAX parser is used as default. Thus
         # disable it to use the DOM parser which was used prior.
         self._use_filter = False
+
+    @property
+    def transform(self):
+        # Junos device transform, inherited from the ncclient class
+        return self._conn._device_handler.transform_reply
+
+    @transform.setter
+    def transform(self, func):
+        self._conn._device_handler.transform_reply = func
 
     @property
     def facts(self):
@@ -183,6 +194,7 @@ class FakeConnection:
     def __init__(self, rpc):
         self.rpc = FakeConnectionRPCObject(rpc)
         self._session = FakeSession()
+        self._device_handler = JunosDeviceHandler({})
 
 
 class FakeSession:
