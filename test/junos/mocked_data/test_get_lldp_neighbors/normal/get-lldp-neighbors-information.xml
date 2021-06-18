@@ -14,7 +14,6 @@
     <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
     <lldp-remote-chassis-id>00:23:47:50:21:40</lldp-remote-chassis-id>
     <lldp-remote-port-description>27</lldp-remote-port-description>
-    <lldp-remote-port-id>27</lldp-remote-port-id>
     <lldp-remote-system-name>lom-bjg61-r1-1</lldp-remote-system-name>
   </lldp-neighbor-information>
   <lldp-neighbor-information>
