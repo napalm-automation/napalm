@@ -5,7 +5,6 @@
     <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
     <lldp-remote-chassis-id>00:1c:73:8f:0a:ed</lldp-remote-chassis-id>
     <lldp-remote-port-id-subtype>Interface name</lldp-remote-port-id-subtype>
-    <lldp-remote-port-id>Ethernet1</lldp-remote-port-id>
     <lldp-remote-port-description>Ethernet1 interface</lldp-remote-port-description>
     <lldp-remote-system-name>peer00.lab.demo</lldp-remote-system-name>
   </lldp-neighbor-information>
@@ -14,7 +13,6 @@
     <lldp-local-parent-interface-name>-</lldp-local-parent-interface-name>
     <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
     <lldp-remote-chassis-id>00:23:47:50:21:40</lldp-remote-chassis-id>
-    <lldp-remote-port-id>27</lldp-remote-port-id>
     <lldp-remote-port-description>Interface 27</lldp-remote-port-description>
     <lldp-remote-system-name>lom-bjg61-r1-1</lldp-remote-system-name>
   </lldp-neighbor-information>
@@ -23,7 +21,6 @@
     <lldp-local-parent-interface-name>-</lldp-local-parent-interface-name>
     <lldp-remote-chassis-id-subtype>Mac address</lldp-remote-chassis-id-subtype>
     <lldp-remote-chassis-id>02:e4:c8:6c:a4:00</lldp-remote-chassis-id>
-    <lldp-remote-port-id>ge-0/0/0</lldp-remote-port-id>
     <lldp-remote-port-description>GigabitEthernet0/0/0/0</lldp-remote-port-description>
     <lldp-remote-system-name>rtr00.demo</lldp-remote-system-name>
   </lldp-neighbor-information>
