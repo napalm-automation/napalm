@@ -913,7 +913,7 @@ class JunOSDriver(NetworkDriver):
             for neigh_data in neigh[1]:
                 key = neigh_data[0]
                 value = (
-                    neigh_data[1][0]
+                    str(neigh_data[1][0])
                     # When return value is a list of multiple objects, we pick the first one
                     if isinstance(neigh_data[1], list)
                     else str(neigh_data[1])
