@@ -916,7 +916,7 @@ class JunOSDriver(NetworkDriver):
                 value = (
                     str(neigh_data[1][0])
                     # When return value is a list of multiple objects, we pick the first one
-                    if isinstance(neigh_data[1], list)
+                    if neigh_data[1] and isinstance(neigh_data[1], list)
                     else str(neigh_data[1])
                 )
                 neigh_dict[key] = value
