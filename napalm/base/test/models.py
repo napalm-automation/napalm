@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from typing_extensions import TypedDict
 
@@ -89,8 +89,8 @@ EnvironmentDict = TypedDict(
         "fans": Dict[str, FanDict],
         "temperature": Dict[str, TemperatureDict],
         "power": Dict[str, PowerDict],
-        "cpu": Dict[str, CPUDict],
-        "memory": Dict[str, MemoryDict],
+        "cpu": Dict[int, CPUDict],
+        "memory": MemoryDict,
     },
 )
 

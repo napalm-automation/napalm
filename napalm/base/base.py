@@ -90,6 +90,7 @@ class NetworkDriver(object):
             )
             print(epilog)
             return False
+        return None
 
     def __del__(self) -> None:
         """
