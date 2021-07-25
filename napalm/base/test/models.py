@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from typing_extensions import TypedDict
 
@@ -404,14 +404,6 @@ TracerouteResultDictEntry = TypedDict(
     "TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]}
 )
 
-TracerouteResultDict = TypedDict(
-    "TracerouteResultDict",
-    {"success": Dict[int, TracerouteResultDictEntry], "error": str},
-    total=False,
-)
-
-UsersDict = TypedDict("UsersDict", {"level": int, "password": str, "sshkeys": List})
-
 OpticsStateDict = TypedDict(
     "OpticsStateDict", {"instant": float, "avg": float, "min": float, "max": float}
 )
@@ -432,10 +424,6 @@ OpticsPerChannelDict = TypedDict(
 OpticsPhysicalChannelsDict = TypedDict(
     "OpticsPhysicalChannelsDict", {"channels": OpticsPerChannelDict}
 )
-
-OpticsDict = TypedDict("OpticsDict", {"physical_channels": OpticsPhysicalChannelsDict})
-
-ConfigDict = TypedDict("ConfigDict", {"running": str, "startup": str, "candidate": str})
 
 NetworkInstanceDict = TypedDict(
     "NetworkInstanceDict", {"name": str, "type": str, "state": dict, "interfaces": dict}
