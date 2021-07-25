@@ -77,7 +77,6 @@ ShowIPInterfaceReturn = TypedDict(
 )
 
 
-
 def ensure_netmiko_conn(func: F) -> F:
     """Decorator that ensures Netmiko connection exists."""
 

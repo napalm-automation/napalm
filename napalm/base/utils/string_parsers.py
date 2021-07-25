@@ -11,7 +11,7 @@ def convert(text: str) -> Union[str, int]:
 
 
 def alphanum_key(key: str) -> List[Union[str, int]]:
-    """ split on end numbers."""
+    """split on end numbers."""
     return [convert(c) for c in re.split("([0-9]+)", key)]
 
 

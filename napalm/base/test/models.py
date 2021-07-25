@@ -400,7 +400,9 @@ OpticsDict = TypedDict("OpticsDict", {"physical_channels": OpticsPhysicalChannel
 
 ConfigDict = TypedDict("ConfigDict", {"running": str, "startup": str, "candidate": str})
 
-TracerouteResultDictEntry = TypedDict("TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]})
+TracerouteResultDictEntry = TypedDict(
+    "TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]}
+)
 
 TracerouteResultDict = TypedDict(
     "TracerouteResultDict",
