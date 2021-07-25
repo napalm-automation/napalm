@@ -10,8 +10,7 @@ from collections.abc import Iterable
 
 # third party libs
 
-from ciscoconfparse import CiscoConfParse
-from typing import Optional, Dict, Any, List, Union, Tuple, TypeVar, Callable, Type
+from typing import Optional, Dict, Any, List, Union, Tuple, TypeVar, Callable
 import jinja2
 import textfsm
 from ciscoconfparse import CiscoConfParse
