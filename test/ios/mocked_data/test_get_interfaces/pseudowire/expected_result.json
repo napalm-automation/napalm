@@ -1,6 +1,6 @@
 {
 	"pseudowire100006": {
-		"speed": 10000,
+		"speed": 10000.0,
 		"mac_address": "",
 		"is_up": true,
 		"last_flapped": -1.0,
