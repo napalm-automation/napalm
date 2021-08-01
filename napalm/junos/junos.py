@@ -463,8 +463,7 @@ class JunOSDriver(NetworkDriver):
                     )
                 if match is None:
                     continue
-                speed_value = napalm.base.helpers.convert(float,
-                        match.group(1), -1.0)
+                speed_value = napalm.base.helpers.convert(float, match.group(1), -1.0)
 
                 if speed_value == -1.0:
                     continue
