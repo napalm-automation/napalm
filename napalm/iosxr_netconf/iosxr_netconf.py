@@ -491,8 +491,12 @@ class IOSXRNETCONFDriver(NetworkDriver):
             speed = napalm.base.helpers.convert(
                 float,
                 napalm.base.helpers.convert(
-                    float,self._find_txt(interface_tree, "./int:bandwidth", namespaces=C.NS),0,)* 1e-3)
-#            speed = float(speed)
+                    float,
+                    self._find_txt(interface_tree, "./int:bandwidth", namespaces=C.NS),
+                    0,
+                )
+                * 1e-3,
+            )
 
             mtu = int(
                 self._find_txt(interface_tree, "./int:mtu", default="", namespaces=C.NS)
