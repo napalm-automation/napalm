@@ -110,6 +110,7 @@ class IOSXR(object):
         self._cli_prompt = None
         self._xml_agent_locker = Lock()
         self._xml_agent_alive = False
+        self.start_time = None
 
     def __getattr__(self, item):
         """
@@ -213,17 +214,17 @@ class IOSXR(object):
             )
         return False  # remote_conn not there => connection not init => not alive
 
-    def _timeout_exceeded(self, start=None, msg="Timeout exceeded!"):
-        if not start:
+    def _timeout_exceeded(self, msg="Timeout exceeded!"):
+        if not self.start_time:
             return False  # reference not specified, noth to compare => no error
-        if time.time() - start > self.timeout:
+        if time.time() - self.start_time > self.timeout:
             # it timeout exceeded, throw TimeoutError
             raise TimeoutError(msg, self)
         return False
 
-    def _lock_xml_agent(self, start=None):
+    def _lock_xml_agent(self):
         while not self._xml_agent_locker.acquire(False) and not self._timeout_exceeded(
-            start, "Waiting to acquire the XML agent!"
+            "Waiting to acquire the XML agent!"
         ):
             # will wait here till the XML agent is ready to receive new requests
             # if stays too much, _timeout_exceeded will raise TimeoutError
@@ -278,7 +279,6 @@ class IOSXR(object):
         self,
         command,
         delay_factor=None,
-        start=None,
         expect_string=None,
         read_output=None,
         receive=False,
@@ -293,9 +293,6 @@ class IOSXR(object):
         if not delay_factor:
             delay_factor = self._READ_DELAY
 
-        if not start:
-            start = time.time()
-
         output = read_output
 
         last_read = ""
@@ -303,7 +300,7 @@ class IOSXR(object):
         if not read_output and not receive:
             # because the XML agent is able to process only one single request over the same SSH
             # session at a time first come first served
-            self._lock_xml_agent(start)
+            self._lock_xml_agent()
             try:
                 max_loops = self.timeout / delay_factor
                 last_read = self.device.send_command_expect(
@@ -339,9 +336,9 @@ class IOSXR(object):
                     #
                     # Which of course does not contain the XML and netmiko throws the not found
                     # error therefore we need to re-enter in XML mode
-                    self._enter_xml_mode()
                     # and let's issue the command again if still got time
-                    if not self._timeout_exceeded(start=start):
+                    if not self._timeout_exceeded():
+                        self._enter_xml_mode()
                         # if still got time
                         # reiterate the command from the beginning
                         return self._send_command(
@@ -397,9 +394,9 @@ class IOSXR(object):
                 not output.strip()
             ):  # empty output, means that the device did not start delivering the output
                 # but for sure is still in XML mode as netmiko did not throw error
-                if not self._timeout_exceeded(start=start):
+                if not self._timeout_exceeded():
                     return self._send_command(
-                        command, receive=True, start=start
+                        command, receive=True
                     )  # let's try receiving more
 
             raise XMLCLIError(output.strip(), self)
@@ -409,7 +406,8 @@ class IOSXR(object):
 
     # previous module function __execute_rpc__
     def _execute_rpc(self, command_xml, delay_factor=0.1):
-
+        if not self.start_time:
+            self.start_time = time.time()
         xml_rpc_command = (
             '<?xml version="1.0" encoding="UTF-8"?><Request MajorVersion="1" MinorVersion="0">'
             + command_xml
@@ -485,6 +483,7 @@ class IOSXR(object):
                 logger.error("Invalid input entered:\n%s" % (output))
                 raise InvalidInputError("Invalid input entered:\n%s" % output, self)
 
+        self.start_time = None
         return root
 
     # previous module function __execute_show__
