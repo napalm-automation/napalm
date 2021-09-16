@@ -284,7 +284,7 @@ class JunOSDriver(NetworkDriver):
 
     def compare_config(self):
         """Compare candidate config with running."""
-        diff = self.device.cu.diff()
+        diff = self.device.cu.diff(ignore_warning=self.ignore_warning)
 
         if diff is None:
             return ""
