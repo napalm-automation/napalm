@@ -114,6 +114,7 @@ class MockDriver(NetworkDriver):
         self.merge = None
         self.filename = None
         self.config = None
+        self._pending_commits = False
 
     def _count_calls(self, name):
         current_count = self.calls.get(name, 0)
@@ -168,9 +169,14 @@ class MockDriver(NetworkDriver):
         self._raise_if_closed()
         return mocked_data(self.path, "compare_config", count)["diff"]
 
-    def commit_config(self):
+    def commit_config(self, message="", revert_in=None):
         count = self._count_calls("commit_config")
         self._raise_if_closed()
+        if revert_in is not None:
+            if self.has_pending_commit():
+                raise napalm.CommitError("Pending commit confirm already in process!")
+            else:
+                self._pending_commits = True
         self.merge = None
         self.filename = None
         self.config = None
@@ -183,6 +189,22 @@ class MockDriver(NetworkDriver):
         self.filename = None
         self.config = None
         mocked_data(self.path, "discard_config", count)
+
+    def confirm_commit(self):
+        count = self._count_calls("confirm_commit")
+        self._raise_if_closed()
+        self.merge = None
+        self.filename = None
+        self.config = None
+        self._pending_commits = False
+        mocked_data(self.path, "confirm_commit", count)
+
+    def has_pending_commit(self):
+        return self._pending_commits
+
+    def rollback(self):
+        self.config_session = None
+        self._pending_commits = False
 
     def _rpc(self, get):
         """This one is only useful for junos."""
