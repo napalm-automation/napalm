@@ -1132,7 +1132,6 @@ class IOSDriver(NetworkDriver):
                     speed = speed / 1000.0
                 elif speedformat.startswith("Gb"):
                     speed = speed * 1000
-                speed = int(round(speed))
 
                 if interface == "":
                     raise ValueError(
