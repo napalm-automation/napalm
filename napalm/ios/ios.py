@@ -1302,7 +1302,7 @@ class IOSDriver(NetworkDriver):
             if "ipv6" in af_table.lower():
                 inet6 = True
                 preifx_type = "inet6"
-            if len(af_table.split()) == 2:
+            if not af_table or len(af_table.split()) == 2:
                 safi = "unicast"
             else:
                 safi = af_table.split()[-1]
@@ -1354,7 +1354,11 @@ class IOSDriver(NetworkDriver):
             afi_list = napalm.base.helpers.cisco_conf_parse_parents(
                 r"\s+address-family.*", bgp_neighbor, bgp_config_text
             )
-            afi = afi_list[0]
+            try:
+                afi = afi_list[0]
+            except IndexError:
+                afi = ""
+
             # Skipping neighbors in VRFs for now
             if "vrf" in str(afi_list):
                 continue
