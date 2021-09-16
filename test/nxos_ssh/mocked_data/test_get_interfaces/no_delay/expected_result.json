@@ -6,7 +6,7 @@
         "last_flapped": -1.0,
         "mac_address": "",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Tunnel901": {
         "description": "Visitor to *****",
@@ -15,6 +15,6 @@
         "last_flapped": -1.0,
         "mac_address": "",
         "mtu": 1476,
-        "speed": 1
+        "speed": 1.0
     }
 }
