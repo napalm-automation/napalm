@@ -284,7 +284,7 @@ class JunOSDriver(NetworkDriver):
 
     def compare_config(self):
         """Compare candidate config with running."""
-        diff = self.device.cu.diff()
+        diff = self.device.cu.diff(ignore_warning=self.ignore_warning)
 
         if diff is None:
             return ""
@@ -448,7 +448,7 @@ class JunOSDriver(NetworkDriver):
                         iface_data["mac_address"],
                         str(iface_data["mac_address"]),
                     ),
-                    "speed": -1,
+                    "speed": -1.0,
                     "mtu": 0,
                 }
                 # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
@@ -463,12 +463,13 @@ class JunOSDriver(NetworkDriver):
                     )
                 if match is None:
                     continue
-                speed_value = napalm.base.helpers.convert(int, match.group(1), -1)
-                if speed_value == -1:
+                speed_value = napalm.base.helpers.convert(float, match.group(1), -1.0)
+
+                if speed_value == -1.0:
                     continue
                 speed_unit = match.group(2)
                 if speed_unit.lower() == "gbps":
-                    speed_value *= 1000
+                    speed_value *= 1000.0
                 result[iface]["speed"] = speed_value
 
             return result

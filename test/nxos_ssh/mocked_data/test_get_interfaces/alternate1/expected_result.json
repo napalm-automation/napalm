@@ -6,7 +6,7 @@
     "is_up": false,
     "mac_address": "2C:C2:60:4F:FE:B2",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Ethernet2/10": {
     "is_enabled": false,
@@ -15,7 +15,7 @@
     "is_up": false,
     "mac_address": "2C:C2:60:4F:FE:B2",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Ethernet2/8": {
     "is_enabled": false,
@@ -24,7 +24,7 @@
     "is_up": false,
     "mac_address": "2C:C2:60:4F:FE:B2",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Management0": {
     "is_enabled": true,
@@ -33,7 +33,7 @@
     "is_up": true,
     "mac_address": "2C:C2:60:12:EC:74",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Ethernet2/6": {
     "is_enabled": true,
@@ -42,7 +42,7 @@
     "is_up": true,
     "mac_address": "2C:C2:60:4F:FE:B2",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Loopback0": {
     "is_enabled": true,
@@ -51,7 +51,7 @@
     "is_up": true,
     "mac_address": "",
     "mtu": 1500,
-    "speed": 8000
+    "speed": 8000.0
   },
   "Ethernet2/9": {
     "is_enabled": false,
@@ -60,7 +60,7 @@
     "is_up": false,
     "mac_address": "2C:C2:60:4F:FE:B2",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Loopback55": {
     "is_enabled": true,
@@ -69,7 +69,7 @@
     "is_up": true,
     "mac_address": "",
     "mtu": 1500,
-    "speed": 8000
+    "speed": 8000.0
   },
   "Ethernet2/7": {
     "is_enabled": true,
@@ -78,7 +78,7 @@
     "is_up": true,
     "mac_address": "2C:C2:60:4F:FE:B2",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Vlan1": {
     "is_enabled": false,
@@ -87,7 +87,7 @@
     "is_up": false,
     "mac_address": "",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Ethernet2/5": {
     "is_enabled": true,
@@ -96,7 +96,7 @@
     "is_up": true,
     "mac_address": "2C:C2:60:4F:FE:B2",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Ethernet2/4": {
     "is_enabled": true,
@@ -105,7 +105,7 @@
     "is_up": true,
     "mac_address": "2C:C2:60:4F:FE:B2",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Ethernet2/3": {
     "is_enabled": true,
@@ -114,7 +114,7 @@
     "is_up": true,
     "mac_address": "2C:C2:60:4F:FE:B2",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Ethernet2/2": {
     "is_enabled": true,
@@ -123,7 +123,7 @@
     "is_up": true,
     "mac_address": "2C:C2:60:4F:FE:B2",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Ethernet2/1": {
     "is_enabled": true,
@@ -132,6 +132,6 @@
     "is_up": true,
     "mac_address": "2C:C2:60:4F:FE:B2",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   }
 }
