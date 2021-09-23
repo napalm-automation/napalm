@@ -164,7 +164,7 @@ def parse_intf_section(interface):
 
     if speed_exist:
         match = re.search(re_speed, interface, flags=re.M)
-        speed = int(match.group("speed"))
+        speed = float(match.group("speed"))
         mtu = int(match.group("mtu"))
         speed_unit = match.group("speed_unit")
         speed_unit = speed_unit.rstrip(",")
@@ -174,9 +174,9 @@ def parse_intf_section(interface):
                 interface
             )
             raise ValueError(msg)
-        speed = int(round(speed / 1000.0))
+        speed = float(speed / 1000.0)
     else:
-        speed = -1
+        speed = -1.0
 
     description = ""
     for x_pattern in [re_description_1, re_description_2]:
@@ -686,19 +686,19 @@ class NXOSSSHDriver(NXOSDriverBase):
                       'is_up': True,
                       'last_flapped': -1.0,
                       'mac_address': u'a493.4cc1.67a7',
-                      'speed': 100},
+                      'speed': 100.0},
         u'Vlan100': {   'description': u'Data Network',
                         'is_enabled': True,
                         'is_up': True,
                         'last_flapped': -1.0,
                         'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100},
+                        'speed': 100.0},
         u'Vlan200': {   'description': u'Voice Network',
                         'is_enabled': True,
                         'is_up': True,
                         'last_flapped': -1.0,
                         'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100}}
+                        'speed': 100.0}}
         """
         interfaces = {}
         command = "show interface"

@@ -6,7 +6,7 @@
 		"is_up": false,
 		"mac_address": "E0:AC:F1:64:71:52",
 		"mtu": 1514,
-		"speed": 10000
+		"speed": 10000.0
 	},
 	"TenGigE0/0/0/24": {
 		"is_enabled": false,
@@ -15,7 +15,7 @@
 		"is_up": false,
 		"mac_address": "E0:AC:F1:64:71:5C",
 		"mtu": 1514,
-		"speed": 10000
+		"speed": 10000.0
 	},
 	"TenGigE0/0/0/13": {
 		"is_enabled": true,
@@ -24,6 +24,6 @@
 		"is_up": false,
 		"mac_address": "E0:AC:F1:64:71:51",
 		"mtu": 1514,
-		"speed": 10000
+		"speed": 10000.0
 	}
 }

@@ -6,7 +6,7 @@
     "last_flapped": -1,
     "mac_address": "FA:16:3E:57:33:6F",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "GigabitEthernet0/1": {
     "description": "to iosvl2-2",
@@ -15,7 +15,7 @@
     "last_flapped": -1,
     "mac_address": "FA:16:3E:4F:41:CC",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "GigabitEthernet0/2": {
     "description": "to iosvl2-4",
@@ -24,7 +24,7 @@
     "last_flapped": -1,
     "mac_address": "FA:16:3E:A3:3E:49",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "GigabitEthernet0/3": {
     "description": "to iosvl2-3",
@@ -33,7 +33,7 @@
     "last_flapped": -1,
     "mac_address": "FA:16:3E:31:2C:47",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "GigabitEthernet1/0": {
     "description": "to iosvl2-3",
@@ -42,7 +42,7 @@
     "last_flapped": -1,
     "mac_address": "FA:16:3E:C8:50:AB",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   },
   "Loopback0": {
     "description": "Loopback",
@@ -51,7 +51,7 @@
     "last_flapped": -1,
     "mac_address": "",
     "mtu": 1514,
-    "speed": 8000
+    "speed": 8000.0
   },
   "Port-channel1": {
     "description": "",
@@ -60,7 +60,7 @@
     "last_flapped": -1,
     "mac_address": "FA:16:3E:4F:41:CC",
     "mtu": 1500,
-    "speed": 100
+    "speed": 100.0
   },
   "Vlan1": {
     "description": "OOB Management",
@@ -69,6 +69,6 @@
     "last_flapped": -1,
     "mac_address": "FA:16:3E:57:80:01",
     "mtu": 1500,
-    "speed": 1000
+    "speed": 1000.0
   }
 }
