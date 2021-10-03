@@ -22,6 +22,7 @@ Read napalm.readthedocs.org for more information.
 import re
 import time
 import inspect
+import json
 
 from datetime import datetime
 from collections import defaultdict
@@ -131,50 +132,65 @@ class EOSDriver(NetworkDriver):
             "transport", optional_args.get("eos_transport", "https")
         )
         self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
-        try:
-            self.transport_class = pyeapi.client.TRANSPORTS[transport]
-        except KeyError:
-            raise ConnectionException("Unknown transport: {}".format(self.transport))
+        self.transport = transport
+        if transport == "ssh":
+            self.transport_class = "ssh"
+        else:
+            try:
+                self.transport_class = pyeapi.client.TRANSPORTS[transport]
+            except KeyError:
+                raise ConnectionException("Unknown transport: {}".format(self.transport))
+        filter_args = ["host", "username", "password", "timeout", "lock_disable"]
         init_args = inspect.getfullargspec(self.transport_class.__init__)[0]
 
         init_args.pop(0)  # Remove "self"
-        init_args.append("enforce_verification")  # Not an arg for unknown reason
 
-        filter_args = ["host", "username", "password", "timeout", "lock_disable"]
-
-        self.eapi_kwargs = {
-            k: v
-            for k, v in optional_args.items()
-            if k in init_args and k not in filter_args
-        }
+        if transport == "ssh":
+            self.netmiko_optional_args = {
+                k: v
+                for k, v in optional_args.items()
+                if k in init_args and k not in filter_args
+            }
+        else:
+            init_args.append("enforce_verification")  # Not an arg for unknown reason
+            self.eapi_kwargs = {
+                k: v
+                for k, v in optional_args.items()
+                if k in init_args and k not in filter_args
+            }
 
     def open(self):
         """Implementation of NAPALM method open."""
-        try:
-            connection = self.transport_class(
-                host=self.hostname,
-                username=self.username,
-                password=self.password,
-                timeout=self.timeout,
-                **self.eapi_kwargs
+        if self.transport == "ssh":
+            self.device = self._netmiko_open(
+                "arista_eos", netmiko_optional_args=self.netmiko_optional_args
             )
+        else:
+            try:
+                connection = self.transport_class(
+                    host=self.hostname,
+                    username=self.username,
+                    password=self.password,
+                    timeout=self.timeout,
+                    **self.eapi_kwargs
+                )
 
-            if self.device is None:
-                self.device = Node(connection, enablepwd=self.enablepwd)
-            # does not raise an Exception if unusable
+                if self.device is None:
+                    self.device = Node(connection, enablepwd=self.enablepwd)
+                # does not raise an Exception if unusable
 
-            # let's try to determine if we need to use new EOS cli syntax
-            sh_ver = self.device.run_commands(["show version"])
-            cli_version = (
-                2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
-            )
+                # let's try to determine if we need to use new EOS cli syntax
+                sh_ver = self.device.run_commands(["show version"])
+                cli_version = (
+                    2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
+                )
 
-            self.device.update_cli_version(cli_version)
-        except ConnectionError as ce:
-            # and this is raised either if device not avaiable
-            # either if HTTP(S) agent is not enabled
-            # show management api http-commands
-            raise ConnectionException(str(ce))
+                self.device.update_cli_version(cli_version)
+            except ConnectionError as ce:
+                # and this is raised either if device not avaiable
+                # either if HTTP(S) agent is not enabled
+                # show management api http-commands
+                raise ConnectionException(str(ce))
 
     def close(self):
         """Implementation of NAPALM method close."""
@@ -182,6 +198,18 @@ class EOSDriver(NetworkDriver):
 
     def is_alive(self):
         return {"is_alive": True}  # always true as eAPI is HTTP-based
+
+    def _run_commands(self, commands):
+        if self.transport == "ssh":
+            ret = []
+            for command in commands:
+                cmd_pipe = command + " | json"
+                cmd_txt = self._netmiko_device.send_command(cmd_pipe)
+                cmd_json = json.loads(cmd_txt)
+                ret.append(cmd_json)
+            return ret
+        else:
+            return self.device.run_commands(commands)
 
     def _lock(self):
         sess = self.device.run_commands(["show configuration sessions"])[0]["sessions"]
@@ -442,7 +470,7 @@ class EOSDriver(NetworkDriver):
         """Implementation of NAPALM method get_facts."""
         commands = ["show version", "show hostname", "show interfaces"]
 
-        result = self.device.run_commands(commands)
+        result = self._run_commands(commands)
 
         version = result[0]
         hostname = result[1]
