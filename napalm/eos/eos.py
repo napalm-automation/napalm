@@ -23,6 +23,7 @@ import re
 import time
 import inspect
 import json
+import socket
 
 from datetime import datetime
 from collections import defaultdict
@@ -197,9 +198,21 @@ class EOSDriver(NetworkDriver):
         self.discard_config()
 
     def is_alive(self):
+        if self.transport == "ssh":
+            null = chr(0)
+            if self.device is None:
+                return {"is_alive": False}
+            try:
+                # Try sending ASCII null byte to maintain the connection alive
+                self.device.write_channel(null)
+                return {"is_alive": self.device.remote_conn.transport.is_active()}
+            except (socket.error, EOFError):
+                # If unable to send, we can tell for sure that the connection is unusable
+                return {"is_alive": False}
+
         return {"is_alive": True}  # always true as eAPI is HTTP-based
 
-    def _run_commands(self, commands):
+    def _run_commands(self, commands, **kwargs):
         if self.transport == "ssh":
             ret = []
             for command in commands:
@@ -209,7 +222,7 @@ class EOSDriver(NetworkDriver):
                 ret.append(cmd_json)
             return ret
         else:
-            return self.device.run_commands(commands)
+            return self.device.run_commands(commands, **kwargs)
 
     def _lock(self):
         sess = self.device.run_commands(["show configuration sessions"])[0]["sessions"]
@@ -494,7 +507,7 @@ class EOSDriver(NetworkDriver):
 
     def get_interfaces(self):
         commands = ["show interfaces"]
-        output = self.device.run_commands(commands)[0]
+        output = self._run_commands(commands)[0]
 
         interfaces = {}
 
@@ -528,7 +541,7 @@ class EOSDriver(NetworkDriver):
 
     def get_lldp_neighbors(self):
         commands = ["show lldp neighbors"]
-        output = self.device.run_commands(commands)[0]["lldpNeighbors"]
+        output = self._run_commands(commands)[0]["lldpNeighbors"]
 
         lldp = {}
 
@@ -544,7 +557,7 @@ class EOSDriver(NetworkDriver):
 
     def get_interfaces_counters(self):
         commands = ["show interfaces"]
-        output = self.device.run_commands(commands)
+        output = self._run_commands(commands)
         interface_counters = defaultdict(dict)
         for interface, data in output[0]["interfaces"].items():
             if data["hardware"] == "subinterface":
@@ -1078,7 +1091,7 @@ class EOSDriver(NetworkDriver):
             commands = ["show arp vrf all"]
             ipv4_neighbors = [
                 neighbor
-                for k, v in self.device.run_commands(commands)[0].get("vrfs").items()
+                for k, v in self._run_commands(commands)[0].get("vrfs").items()
                 if not vrf or k == vrf
                 for neighbor in v.get("ipV4Neighbors", [])
             ]
@@ -2131,7 +2144,7 @@ class EOSDriver(NetworkDriver):
 
     def get_vlans(self):
         command = ["show vlan"]
-        output = self.device.run_commands(command, encoding="json")[0]["vlans"]
+        output = self._run_commands(command, encoding="json")[0]["vlans"]
 
         vlans = {}
         for vlan, vlan_config in output.items():
