@@ -132,6 +132,8 @@ class JunOSDriver(NetworkDriver):
             )
 
         self.platform = "junos"
+        # caching of interface list on device
+        self.interface_list = []
         self.profile = [self.platform]
 
     def open(self):
@@ -399,10 +401,13 @@ class JunOSDriver(NetworkDriver):
         output = self.device.facts
 
         uptime = self.device.uptime or -1
+        interface_list = self.interface_list
 
-        interfaces = junos_views.junos_iface_table(self.device)
-        interfaces.get()
-        interface_list = interfaces.keys()
+        if not interface_list:
+            interfaces = junos_views.junos_iface_table(self.device)
+            interfaces.get()
+            self.interface_list = interfaces.keys()
+            interface_list = self.interface_list
 
         return {
             "vendor": "Juniper",
