@@ -218,7 +218,10 @@ class EOSDriver(NetworkDriver):
             for command in commands:
                 cmd_pipe = command + " | json"
                 cmd_txt = self._netmiko_device.send_command(cmd_pipe)
-                cmd_json = json.loads(cmd_txt)
+                try:
+                    cmd_json = json.loads(cmd_txt)
+                except json.decoder.JSONDecodeError:
+                    cmd_json = {}
                 ret.append(cmd_json)
             return ret
         else:
@@ -799,7 +802,7 @@ class EOSDriver(NetworkDriver):
             "show lldp neighbors {filters} detail".format(filters=" ".join(filters))
         ]
 
-        lldp_neighbors_in = self.device.run_commands(commands)[0].get(
+        lldp_neighbors_in = self._run_commands(commands)[0].get(
             "lldpNeighbors", {}
         )
 
@@ -1149,7 +1152,7 @@ class EOSDriver(NetworkDriver):
         # failed: unconverted command
         # JSON output not yet implemented...
 
-        ntp_assoc = self.device.run_commands(commands, encoding="text")[0].get(
+        ntp_assoc = self._run_commands(commands, encoding="text")[0].get(
             "output", "\n\n"
         )
         ntp_assoc_lines = ntp_assoc.splitlines()[2:]
@@ -1184,11 +1187,11 @@ class EOSDriver(NetworkDriver):
 
         interfaces_ip = {}
 
-        interfaces_ipv4_out = self.device.run_commands(["show ip interface"])[0][
+        interfaces_ipv4_out = self._run_commands(["show ip interface"])[0][
             "interfaces"
         ]
         try:
-            interfaces_ipv6_out = self.device.run_commands(["show ipv6 interface"])[0][
+            interfaces_ipv6_out = self._run_commands(["show ipv6 interface"])[0][
                 "interfaces"
             ]
         except pyeapi.eapilib.CommandError as e:
@@ -1286,7 +1289,7 @@ class EOSDriver(NetworkDriver):
         commands = ["show mac address-table"]
 
         mac_entries = (
-            self.device.run_commands(commands)[0]
+            self._run_commands(commands)[0]
             .get("unicastTable", {})
             .get("tableEntries", [])
         )
@@ -1521,7 +1524,7 @@ class EOSDriver(NetworkDriver):
         snmp_dict = {"chassis_id": "", "location": "", "contact": "", "community": {}}
 
         commands = ["show snmp chassis", "show snmp location", "show snmp contact"]
-        snmp_config = self.device.run_commands(commands, encoding="json")
+        snmp_config = self._run_commands(commands, encoding="json")
         for line in snmp_config:
             for k, v in line.items():
                 if k == "chassisId":
@@ -1556,7 +1559,7 @@ class EOSDriver(NetworkDriver):
         users = {}
 
         commands = ["show user-account"]
-        user_items = self.device.run_commands(commands)[0].get("users", {})
+        user_items = self._run_commands(commands)[0].get("users", {})
 
         for user, user_details in user_items.items():
             user_details.pop("username", "")
@@ -1869,7 +1872,7 @@ class EOSDriver(NetworkDriver):
 
         command = ["show interfaces transceiver"]
 
-        output = self.device.run_commands(command, encoding="json")[0]["interfaces"]
+        output = self._run_commands(command, encoding="json")[0]["interfaces"]
 
         # Formatting data into return data structure
         optics_detail = {}
@@ -1975,7 +1978,7 @@ class EOSDriver(NetworkDriver):
         commands = ["show vrf"]
 
         # This command has no JSON yet
-        raw_output = self.device.run_commands(commands, encoding="text")[0].get(
+        raw_output = self._run_commands(commands, encoding="text")[0].get(
             "output", ""
         )
 
