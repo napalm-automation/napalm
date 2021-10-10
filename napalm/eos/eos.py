@@ -140,7 +140,9 @@ class EOSDriver(NetworkDriver):
             try:
                 self.transport_class = pyeapi.client.TRANSPORTS[transport]
             except KeyError:
-                raise ConnectionException("Unknown transport: {}".format(self.transport))
+                raise ConnectionException(
+                    "Unknown transport: {}".format(self.transport)
+                )
         filter_args = ["host", "username", "password", "timeout", "lock_disable"]
         init_args = inspect.getfullargspec(self.transport_class.__init__)[0]
 
@@ -802,9 +804,7 @@ class EOSDriver(NetworkDriver):
             "show lldp neighbors {filters} detail".format(filters=" ".join(filters))
         ]
 
-        lldp_neighbors_in = self._run_commands(commands)[0].get(
-            "lldpNeighbors", {}
-        )
+        lldp_neighbors_in = self._run_commands(commands)[0].get("lldpNeighbors", {})
 
         for interface in lldp_neighbors_in:
             interface_neighbors = lldp_neighbors_in.get(interface).get(
@@ -1187,9 +1187,7 @@ class EOSDriver(NetworkDriver):
 
         interfaces_ip = {}
 
-        interfaces_ipv4_out = self._run_commands(["show ip interface"])[0][
-            "interfaces"
-        ]
+        interfaces_ipv4_out = self._run_commands(["show ip interface"])[0]["interfaces"]
         try:
             interfaces_ipv6_out = self._run_commands(["show ipv6 interface"])[0][
                 "interfaces"
@@ -1978,9 +1976,7 @@ class EOSDriver(NetworkDriver):
         commands = ["show vrf"]
 
         # This command has no JSON yet
-        raw_output = self._run_commands(commands, encoding="text")[0].get(
-            "output", ""
-        )
+        raw_output = self._run_commands(commands, encoding="text")[0].get("output", "")
 
         output = napalm.base.helpers.textfsm_extractor(self, "vrf", raw_output)
 
