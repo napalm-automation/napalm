@@ -51,6 +51,7 @@ from napalm.base.exceptions import (
 from napalm.eos.constants import LLDP_CAPAB_TRANFORM_TABLE
 from napalm.eos.pyeapi_syntax_wrapper import Node
 from napalm.eos.utils.versions import EOSVersion
+from napalm.eos.utils.cli_syntax import cli_convert
 import napalm.base.constants as c
 
 # local modules
@@ -116,6 +117,7 @@ class EOSDriver(NetworkDriver):
         self.timeout = timeout
         self.config_session = None
         self.locked = False
+        self.cli_version = 1
 
         self.platform = "eos"
         self.profile = [self.platform]
@@ -168,6 +170,10 @@ class EOSDriver(NetworkDriver):
             self.device = self._netmiko_open(
                 "arista_eos", netmiko_optional_args=self.netmiko_optional_args
             )
+            # let's try to determine if we need to use new EOS cli syntax
+            sh_ver = self._run_commands(["show version"])
+            if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0"):
+                self.cli_version = 2
         else:
             try:
                 connection = self.transport_class(
@@ -184,11 +190,11 @@ class EOSDriver(NetworkDriver):
 
                 # let's try to determine if we need to use new EOS cli syntax
                 sh_ver = self.device.run_commands(["show version"])
-                cli_version = (
+                self.cli_version = (
                     2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
                 )
 
-                self.device.update_cli_version(cli_version)
+                self.device.update_cli_version(self.cli_version)
             except ConnectionError as ce:
                 # and this is raised either if device not avaiable
                 # either if HTTP(S) agent is not enabled
@@ -216,8 +222,19 @@ class EOSDriver(NetworkDriver):
 
     def _run_commands(self, commands, **kwargs):
         if self.transport == "ssh":
+            fn0039_transform = kwargs.pop("fn0039_transform", True)
+            if fn0039_transform:
+                if isinstance(commands, str):
+                    commands = [cli_convert(commands, self.cli_version)]
+                else:
+                    commands = [cli_convert(cmd, self.cli_version) for cmd in commands]
             ret = []
             for command in commands:
+                if kwargs.get("encoding") == "text":
+                    cmd_output = self._netmiko_device.send_command(command).replace("% Invalid input", "")
+                    ret.append({"output": cmd_output})
+                    continue
+
                 cmd_pipe = command + " | json"
                 cmd_txt = self._netmiko_device.send_command(cmd_pipe)
                 try:
@@ -594,11 +611,11 @@ class EOSDriver(NetworkDriver):
                 return default
 
         NEIGHBOR_FILTER = "bgp neighbors vrf all | include remote AS | remote router ID |IPv[46] (Unicast|6PE):.*[0-9]+|^Local AS|Desc|BGP state"  # noqa
-        output_summary_cmds = self.device.run_commands(
+        output_summary_cmds = self._run_commands(
             ["show ipv6 bgp summary vrf all", "show ip bgp summary vrf all"],
             encoding="json",
         )
-        output_neighbor_cmds = self.device.run_commands(
+        output_neighbor_cmds = self._run_commands(
             ["show ip " + NEIGHBOR_FILTER, "show ipv6 " + NEIGHBOR_FILTER],
             encoding="text",
         )
@@ -732,16 +749,16 @@ class EOSDriver(NetworkDriver):
                 }
                 yield name, values
 
-        sh_version_out = self.device.run_commands(["show version"])
+        sh_version_out = self._run_commands(["show version"])
         is_veos = sh_version_out[0]["modelName"].lower() == "veos"
         commands = ["show environment cooling", "show environment temperature"]
         if not is_veos:
             commands.append("show environment power")
-            fans_output, temp_output, power_output = self.device.run_commands(commands)
+            fans_output, temp_output, power_output = self._run_commands(commands)
         else:
-            fans_output, temp_output = self.device.run_commands(commands)
+            fans_output, temp_output = self._run_commands(commands)
         environment_counters = {"fans": {}, "temperature": {}, "power": {}, "cpu": {}}
-        cpu_output = self.device.run_commands(
+        cpu_output = self._run_commands(
             ["show processes top once"], encoding="text"
         )[0]["output"]
         for slot in fans_output["fanTraySlots"]:
@@ -1006,7 +1023,7 @@ class EOSDriver(NetworkDriver):
         bgp_config = {}
 
         commands = ["show running-config | section router bgp"]
-        bgp_conf = self.device.run_commands(commands, encoding="text")[0].get(
+        bgp_conf = self._run_commands(commands, encoding="text")[0].get(
             "output", "\n\n"
         )
         bgp_conf_lines = bgp_conf.splitlines()
@@ -1120,7 +1137,7 @@ class EOSDriver(NetworkDriver):
     def get_ntp_servers(self):
         commands = ["show running-config | section ntp"]
 
-        raw_ntp_config = self.device.run_commands(commands, encoding="text")[0].get(
+        raw_ntp_config = self._run_commands(commands, encoding="text")[0].get(
             "output", ""
         )
 
@@ -1345,7 +1362,7 @@ class EOSDriver(NetworkDriver):
                 )
             )
 
-        commands_output = self.device.run_commands(commands)
+        commands_output = self._run_commands(commands)
         vrf_cache = {}
 
         for _vrf, command_output in zip(vrfs, commands_output):
@@ -1385,21 +1402,14 @@ class EOSDriver(NetworkDriver):
                         nexthop_interface_map[nexthop_ip] = next_hop.get("interface")
                     metric = route_details.get("metric")
                     if _vrf not in vrf_cache.keys():
-                        try:
+                        if self.cli_version == 1:
                             command = "show ip{ipv} bgp {dest} {longer} detail vrf {_vrf}".format(
                                 ipv=ipv,
                                 dest=destination,
                                 longer="longer-prefixes" if longer else "",
                                 _vrf=_vrf,
                             )
-                            vrf_cache.update(
-                                {
-                                    _vrf: self.device.run_commands([command])[0]
-                                    .get("vrfs", {})
-                                    .get(_vrf, {})
-                                }
-                            )
-                        except CommandError:
+                        else:
                             # Newer EOS can't mix longer-prefix and detail
                             command = (
                                 "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
@@ -1409,13 +1419,13 @@ class EOSDriver(NetworkDriver):
                                     _vrf=_vrf,
                                 )
                             )
-                            vrf_cache.update(
-                                {
-                                    _vrf: self.device.run_commands([command])[0]
-                                    .get("vrfs", {})
-                                    .get(_vrf, {})
-                                }
-                            )
+                        vrf_cache.update(
+                            {
+                                _vrf: self._run_commands([command])[0]
+                                .get("vrfs", {})
+                                .get(_vrf, {})
+                            }
+                        )
 
                     vrf_details = vrf_cache.get(_vrf)
                     local_as = napalm.base.helpers.as_number(vrf_details.get("asn"))
@@ -1532,7 +1542,7 @@ class EOSDriver(NetworkDriver):
                     snmp_dict[k] = v.strip('"')
 
         commands = ["show running-config | section snmp-server community"]
-        raw_snmp_config = self.device.run_commands(commands, encoding="text")[0].get(
+        raw_snmp_config = self._run_commands(commands, encoding="text")[0].get(
             "output", ""
         )
         for line in raw_snmp_config.splitlines():
@@ -1815,8 +1825,8 @@ class EOSDriver(NetworkDriver):
                 commands.append("show ipv6 bgp neighbors %s vrf all" % neighbor_address)
                 summary_commands.append("show ipv6 bgp summary vrf all")
 
-        raw_output = self.device.run_commands(commands, encoding="text")
-        bgp_summary = self.device.run_commands(summary_commands, encoding="json")
+        raw_output = self._run_commands(commands, encoding="text")
+        bgp_summary = self._run_commands(summary_commands, encoding="json")
 
         bgp_detail_info = {}
 
@@ -1940,7 +1950,7 @@ class EOSDriver(NetworkDriver):
                     )
                 )
 
-            output = self.device.run_commands(commands, encoding="text")
+            output = self._run_commands(commands, encoding="text")
             startup_cfg = str(output[0]["output"]) if get_startup else ""
             if sanitized and startup_cfg:
                 startup_cfg = napalm.base.helpers.sanitize_config(
@@ -1956,7 +1966,7 @@ class EOSDriver(NetworkDriver):
                 commands = ["show {}-config{}".format(retrieve, run_full)]
             elif retrieve == "startup":
                 commands = ["show {}-config".format(retrieve)]
-            output = self.device.run_commands(commands, encoding="text")
+            output = self._run_commands(commands, encoding="text")
             return {
                 "startup": str(output[0]["output"]) if get_startup else "",
                 "running": str(output[0]["output"]) if get_running else "",
@@ -1964,7 +1974,7 @@ class EOSDriver(NetworkDriver):
             }
         elif get_candidate:
             commands = ["show session-config named {}".format(self.config_session)]
-            output = self.device.run_commands(commands, encoding="text")
+            output = self._run_commands(commands, encoding="text")
             return {"startup": "", "running": "", "candidate": str(output[0]["output"])}
         elif retrieve == "candidate":
             # If we get here it means that we want the candidate but there is none.
