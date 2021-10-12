@@ -231,7 +231,9 @@ class EOSDriver(NetworkDriver):
             ret = []
             for command in commands:
                 if kwargs.get("encoding") == "text":
-                    cmd_output = self._netmiko_device.send_command(command).replace("% Invalid input", "")
+                    cmd_output = self._netmiko_device.send_command(command).replace(
+                        "% Invalid input", ""
+                    )
                     ret.append({"output": cmd_output})
                     continue
 
@@ -758,9 +760,9 @@ class EOSDriver(NetworkDriver):
         else:
             fans_output, temp_output = self._run_commands(commands)
         environment_counters = {"fans": {}, "temperature": {}, "power": {}, "cpu": {}}
-        cpu_output = self._run_commands(
-            ["show processes top once"], encoding="text"
-        )[0]["output"]
+        cpu_output = self._run_commands(["show processes top once"], encoding="text")[
+            0
+        ]["output"]
         for slot in fans_output["fanTraySlots"]:
             environment_counters["fans"][slot["label"]] = {
                 "status": slot["status"] == "ok"
