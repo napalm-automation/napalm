@@ -34,7 +34,7 @@ from netaddr.core import AddrFormatError
 
 # third party libs
 import pyeapi
-from pyeapi.eapilib import ConnectionError, CommandError
+from pyeapi.eapilib import ConnectionError
 
 # NAPALM base
 import napalm.base.helpers
