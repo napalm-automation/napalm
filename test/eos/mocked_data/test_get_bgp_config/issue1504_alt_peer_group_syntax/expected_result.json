@@ -1,0 +1,42 @@
+{
+  "IPv6-PEERS-GROUP-NAME": {
+    "type": "",
+    "multipath": false,
+    "apply_groups": [],
+    "remove_private_as": true,
+    "multihop_ttl": 0,
+    "remote_as": 0,
+    "local_address": "",
+    "local_as": 64496,
+    "description": "",
+    "import_policy": "reject-all",
+    "export_policy": "reject-all",
+    "prefix_limit": {},
+    "neighbors": {
+      "2001:db8::0:1": {
+        "description": "",
+        "remote_as": 64510,
+        "local_address": "",
+        "local_as": 64496,
+        "nhs": false,
+        "route_reflector_client": false,
+        "import_policy": "",
+        "export_policy": "",
+        "authentication_key": "",
+        "prefix_limit": {}
+      },
+      "2001:db8::0:2": {
+        "description": "",
+        "remote_as": 64511,
+        "local_address": "",
+        "local_as": 64496,
+        "nhs": false,
+        "route_reflector_client": false,
+        "import_policy": "",
+        "export_policy": "",
+        "authentication_key": "",
+        "prefix_limit": {}
+      }
+    }
+  }
+}
