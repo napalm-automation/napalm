@@ -1006,6 +1006,10 @@ class EOSDriver(NetworkDriver):
                     bgp_neighbors[peer_address] = default_neighbor_dict(local_as)
                 if options[0] == "peer-group":
                     bgp_neighbors[peer_address]["__group"] = options[1]
+                # EOS > 4.23.0 only supports the new syntax
+                # https://www.arista.com/en/support/advisories-notices/fieldnotices/7097-field-notice-39
+                elif options[0] == "peer" and options[1] == "group":
+                    bgp_neighbors[peer_address]["__group"] = options[2]
 
                 # in the config, neighbor details are lister after
                 # the group is specified for the neighbor:
