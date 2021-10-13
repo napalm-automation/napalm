@@ -909,7 +909,18 @@ class JunOSDriver(NetworkDriver):
         for neigh in result:
             if neigh[0] not in neighbors.keys():
                 neighbors[neigh[0]] = []
-            neighbors[neigh[0]].append({x[0]: str(x[1]) for x in neigh[1]})
+
+            neigh_dict = {}
+            for neigh_data in neigh[1]:
+                key = neigh_data[0]
+                value = (
+                    str(neigh_data[1][0])
+                    # When return value is a list of multiple objects, we pick the first one
+                    if neigh_data[1] and isinstance(neigh_data[1], list)
+                    else str(neigh_data[1])
+                )
+                neigh_dict[key] = value
+            neighbors[neigh[0]].append(neigh_dict)
 
         return neighbors
 

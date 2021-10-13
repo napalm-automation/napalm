@@ -104,7 +104,7 @@ junos_lldp_table:
 junos_lldp_view:
   fields:
     hostname: lldp-remote-system-name
-    port: lldp-remote-port-description | lldp-remote-port-id
+    port: lldp-remote-port-id | lldp-remote-port-description
 
 ####
 #### Interface counters
