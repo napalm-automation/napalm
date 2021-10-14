@@ -97,7 +97,7 @@ def parse_intf_section(interface):
     re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
     re_mac = r"^\s+Hardware:\s+(?P<hardware>.*),\s+address:\s+(?P<mac_address>\S+) "
     re_speed = (
-        r"\s+MTU (?P<mtu>\S+)\s+bytes,\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
+        r"\s+(MTU (?P<mtu>\S+)\s+bytes)?,\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
     )
     re_mtu_nve = r"\s+MTU (?P<mtu_nve>\S+)\s+bytes.*$"
     re_description_1 = r"^\s+Description:\s+(?P<description>.*)  (?:MTU|Internet)"
@@ -164,21 +164,18 @@ def parse_intf_section(interface):
 
     if speed_exist:
         match = re.search(re_speed, interface, flags=re.M)
-        if match:
-            speed = float(match.group("speed"))
-            mtu = int(match.group("mtu"))
-            speed_unit = match.group("speed_unit")
-            speed_unit = speed_unit.rstrip(",")
-            # This was alway in Kbit (in the data I saw)
-            if speed_unit != "Kbit":
-                msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(
-                    interface
-                )
-                raise ValueError(msg)
-            speed = float(speed / 1000.0)
-        else:
-            speed = -1.0
-            mtu = -1
+        speed_data = match.groupdict(-1)
+        speed = float(speed_data["speed"])
+        mtu = int(speed_data["mtu"])
+        speed_unit = speed_data["speed_unit"]
+        speed_unit = speed_unit.rstrip(",")
+        # This was alway in Kbit (in the data I saw)
+        if speed_unit != "Kbit":
+            msg = "Unexpected speed unit in show interfaces parsing:\n\n{}".format(
+                interface
+            )
+            raise ValueError(msg)
+        speed = float(speed / 1000.0)
     else:
         speed = -1.0
 
