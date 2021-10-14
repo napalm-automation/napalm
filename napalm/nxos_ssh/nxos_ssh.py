@@ -1534,7 +1534,11 @@ class NXOSSSHDriver(NXOSDriverBase):
         for vlan in vlan_table_raw:
             if "vlanshowplist-ifidx" not in vlan.keys():
                 vlan["vlanshowplist-ifidx"] = []
-            vlans[vlan["vlanshowbr-vlanid"]] = {
+            if "vlanshowbr-vlanid-utf" in vlan.keys():
+                vlan_number = vlan["vlanshowbr-vlanid-utf"]
+            else:
+                vlan_number = vlan["vlanshowbr-vlanid"]
+            vlans[vlan_number] = {
                 "name": vlan["vlanshowbr-vlanname"],
                 "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),
             }
