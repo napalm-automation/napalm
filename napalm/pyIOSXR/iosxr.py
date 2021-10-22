@@ -406,85 +406,87 @@ class IOSXR(object):
 
     # previous module function __execute_rpc__
     def _execute_rpc(self, command_xml, delay_factor=0.1):
-        if not self.start_time:
-            self.start_time = time.time()
-        xml_rpc_command = (
-            '<?xml version="1.0" encoding="UTF-8"?><Request MajorVersion="1" MinorVersion="0">'
-            + command_xml
-            + "</Request>"
-        )
-
-        response = self._send_command(xml_rpc_command, delay_factor=delay_factor)
-
         try:
-            root = ET.fromstring(str.encode(response))
-        except ET.XMLSyntaxError:
-            if 'IteratorID="' in response:
-                logger.error(self._ITERATOR_ID_ERROR_MSG)
-                raise IteratorIDError(self._ITERATOR_ID_ERROR_MSG, self)
-            raise InvalidXMLResponse(
-                "Unable to process the XML Response from the device!", self
+            if not self.start_time:
+                self.start_time = time.time()
+            xml_rpc_command = (
+                '<?xml version="1.0" encoding="UTF-8"?><Request MajorVersion="1" MinorVersion="0">'
+                + command_xml
+                + "</Request>"
             )
 
-        if "IteratorID" in root.attrib:
-            logger.error(self._ITERATOR_ID_ERROR_MSG)
-            raise IteratorIDError(self._ITERATOR_ID_ERROR_MSG, self)
+            response = self._send_command(xml_rpc_command, delay_factor=delay_factor)
 
-        childs = [x.tag for x in list(root)]
+            try:
+                root = ET.fromstring(str.encode(response))
+            except ET.XMLSyntaxError:
+                if 'IteratorID="' in response:
+                    logger.error(self._ITERATOR_ID_ERROR_MSG)
+                    raise IteratorIDError(self._ITERATOR_ID_ERROR_MSG, self)
+                raise InvalidXMLResponse(
+                    "Unable to process the XML Response from the device!", self
+                )
 
-        result_summary = root.find("ResultSummary")
+            if "IteratorID" in root.attrib:
+                logger.error(self._ITERATOR_ID_ERROR_MSG)
+                raise IteratorIDError(self._ITERATOR_ID_ERROR_MSG, self)
 
-        if result_summary is not None and int(result_summary.get("ErrorCount", 0)) > 0:
+            childs = [x.tag for x in list(root)]
+
+            result_summary = root.find("ResultSummary")
+
+            if result_summary is not None and int(result_summary.get("ErrorCount", 0)) > 0:
+
+                if "CLI" in childs:
+                    error_msg = root.find("CLI").get("ErrorMsg") or ""
+                elif "Commit" in childs:
+                    error_msg = root.find("Commit").get("ErrorMsg") or ""
+                    error_code = root.find("Commit").get("ErrorCode") or ""
+                    if error_code == "0x41866c00":
+                        # yet another pointless IOS-XR error:
+                        # if the config DB was changed by another process,
+                        # while the current SSH connection is established and alive,
+                        # we won't be able to commit and the device will throw the following error:
+                        # 'CfgMgr' detected the 'warning' condition
+                        # 'One or more commits have occurred from other configuration sessions since
+                        # this session started or since the last commit was made from this session.'
+                        # in this case we need to re-open the connection with the XML agent
+                        _candidate_config = self.get_candidate_config(merge=True)
+                        self.discard_config()  # discard candidate config
+                        try:
+                            # exiting from the XML mode
+                            self._send_command("exit", expect_string=self._cli_prompt)
+                        except XMLCLIError:
+                            pass  # because does not end with `XML>`
+                        self._enter_xml_mode()  # re-entering XML mode
+                        self.load_candidate_config(config=_candidate_config)
+                        return self.commit_config()
+                    elif error_code == "0x41864e00" or error_code == "0x43682c00":
+                        # raises this error when the commit buffer is empty
+                        raise CommitError("The target configuration buffer is empty.", self)
+
+                else:
+                    error_msg = root.get("ErrorMsg") or ""
+
+                error_msg += "\nOriginal call was: %s" % xml_rpc_command
+                logger.error(error_msg)
+                raise XMLCLIError(error_msg, self)
 
             if "CLI" in childs:
-                error_msg = root.find("CLI").get("ErrorMsg") or ""
-            elif "Commit" in childs:
-                error_msg = root.find("Commit").get("ErrorMsg") or ""
-                error_code = root.find("Commit").get("ErrorCode") or ""
-                if error_code == "0x41866c00":
-                    # yet another pointless IOS-XR error:
-                    # if the config DB was changed by another process,
-                    # while the current SSH connection is established and alive,
-                    # we won't be able to commit and the device will throw the following error:
-                    # 'CfgMgr' detected the 'warning' condition
-                    # 'One or more commits have occurred from other configuration sessions since
-                    # this session started or since the last commit was made from this session.'
-                    # in this case we need to re-open the connection with the XML agent
-                    _candidate_config = self.get_candidate_config(merge=True)
-                    self.discard_config()  # discard candidate config
-                    try:
-                        # exiting from the XML mode
-                        self._send_command("exit", expect_string=self._cli_prompt)
-                    except XMLCLIError:
-                        pass  # because does not end with `XML>`
-                    self._enter_xml_mode()  # re-entering XML mode
-                    self.load_candidate_config(config=_candidate_config)
-                    return self.commit_config()
-                elif error_code == "0x41864e00" or error_code == "0x43682c00":
-                    # raises this error when the commit buffer is empty
-                    raise CommitError("The target configuration buffer is empty.", self)
+                cli_childs = [x.tag for x in list(root.find("CLI"))]
+                if "Configuration" in cli_childs:
+                    output = root.find("CLI").find("Configuration").text
+                elif "Exec" in cli_childs:
+                    output = root.find("CLI").find("Exec").text
+                if output is None:
+                    output = ""
+                elif "Invalid input detected" in output:
+                    logger.error("Invalid input entered:\n%s" % (output))
+                    raise InvalidInputError("Invalid input entered:\n%s" % output, self)
 
-            else:
-                error_msg = root.get("ErrorMsg") or ""
-
-            error_msg += "\nOriginal call was: %s" % xml_rpc_command
-            logger.error(error_msg)
-            raise XMLCLIError(error_msg, self)
-
-        if "CLI" in childs:
-            cli_childs = [x.tag for x in list(root.find("CLI"))]
-            if "Configuration" in cli_childs:
-                output = root.find("CLI").find("Configuration").text
-            elif "Exec" in cli_childs:
-                output = root.find("CLI").find("Exec").text
-            if output is None:
-                output = ""
-            elif "Invalid input detected" in output:
-                logger.error("Invalid input entered:\n%s" % (output))
-                raise InvalidInputError("Invalid input entered:\n%s" % output, self)
-
-        self.start_time = None
-        return root
+            return root
+        finally:
+            self.start_time = None
 
     # previous module function __execute_show__
     def _execute_show(self, show_command):
