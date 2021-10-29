@@ -435,7 +435,10 @@ class IOSXR(object):
 
             result_summary = root.find("ResultSummary")
 
-            if result_summary is not None and int(result_summary.get("ErrorCount", 0)) > 0:
+            if (
+                result_summary is not None
+                and int(result_summary.get("ErrorCount", 0)) > 0
+            ):
 
                 if "CLI" in childs:
                     error_msg = root.find("CLI").get("ErrorMsg") or ""
@@ -463,7 +466,9 @@ class IOSXR(object):
                         return self.commit_config()
                     elif error_code == "0x41864e00" or error_code == "0x43682c00":
                         # raises this error when the commit buffer is empty
-                        raise CommitError("The target configuration buffer is empty.", self)
+                        raise CommitError(
+                            "The target configuration buffer is empty.", self
+                        )
 
                 else:
                     error_msg = root.get("ErrorMsg") or ""
