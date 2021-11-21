@@ -96,9 +96,7 @@ def parse_intf_section(interface):
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
     re_mac = r"^\s+Hardware:\s+(?P<hardware>.*),\s+address:\s+(?P<mac_address>\S+) "
-    re_speed = (
-        r"\s+MTU (?P<mtu>\S+)\s+bytes,\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
-    )
+    re_speed = r"\s+(MTU (?P<mtu>\S+)\s+bytes)?,\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
     re_mtu_nve = r"\s+MTU (?P<mtu_nve>\S+)\s+bytes.*$"
     re_description_1 = r"^\s+Description:\s+(?P<description>.*)  (?:MTU|Internet)"
     re_description_2 = r"^\s+Description:\s+(?P<description>.*)$"
@@ -164,9 +162,10 @@ def parse_intf_section(interface):
 
     if speed_exist:
         match = re.search(re_speed, interface, flags=re.M)
-        speed = float(match.group("speed"))
-        mtu = int(match.group("mtu"))
-        speed_unit = match.group("speed_unit")
+        speed_data = match.groupdict(-1)
+        speed = float(speed_data["speed"])
+        mtu = int(speed_data["mtu"])
+        speed_unit = speed_data["speed_unit"]
         speed_unit = speed_unit.rstrip(",")
         # This was alway in Kbit (in the data I saw)
         if speed_unit != "Kbit":
@@ -1534,7 +1533,11 @@ class NXOSSSHDriver(NXOSDriverBase):
         for vlan in vlan_table_raw:
             if "vlanshowplist-ifidx" not in vlan.keys():
                 vlan["vlanshowplist-ifidx"] = []
-            vlans[vlan["vlanshowbr-vlanid"]] = {
+            if "vlanshowbr-vlanid-utf" in vlan.keys():
+                vlan_number = vlan["vlanshowbr-vlanid-utf"]
+            else:
+                vlan_number = vlan["vlanshowbr-vlanid"]
+            vlans[vlan_number] = {
                 "name": vlan["vlanshowbr-vlanname"],
                 "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),
             }
