@@ -266,10 +266,7 @@ class EOSDriver(NetworkDriver):
         Example:
         {'napalm_607123': 522}
         """
-        config_sessions = self._run_commands(
-            ["show configuration sessions detail"]
-        )
-        # Still returns all of the configuration sessions (original data-struct was just a list)        print(f"CONFIG SESSIONS: {config_sessions}")
+        config_sessions = self._run_commands(["show configuration sessions detail"])
         config_sessions = config_sessions[0]["sessions"]
         # Arista reports the commitBy time relative to uptime of the box... :-(
         uptime = self._run_commands(["show version"])
@@ -450,7 +447,10 @@ class EOSDriver(NetworkDriver):
 
             commands = [
                 "copy startup-config flash:rollback-0",
-                "configure session {} commit timer {}".format(self.config_session, time.strftime("%H:%M:%S", time.gmtime(revert_in))),
+                "configure session {} commit timer {}".format(
+                    self.config_session,
+                    time.strftime("%H:%M:%S", time.gmtime(revert_in)),
+                ),
                 # "commit timer {}".format(
                 #     time.strftime("%H:%M:%S", time.gmtime(revert_in))
                 # ),
