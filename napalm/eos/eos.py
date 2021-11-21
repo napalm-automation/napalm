@@ -223,8 +223,7 @@ class EOSDriver(NetworkDriver):
 
     def _run_commands(self, commands, **kwargs):
         if self.transport == "ssh":
-            fn0039_transform = kwargs.pop("fn0039_transform", True)
-            if fn0039_transform:
+            if self.fn0039_transform:
                 if isinstance(commands, str):
                     commands = [cli_convert(commands, self.cli_version)]
                 else:
