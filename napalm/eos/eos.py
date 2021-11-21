@@ -35,6 +35,7 @@ from netaddr.core import AddrFormatError
 # third party libs
 import pyeapi
 from pyeapi.eapilib import ConnectionError
+from netmiko import ConfigInvalidException
 
 # NAPALM base
 import napalm.base.helpers
@@ -249,7 +250,7 @@ class EOSDriver(NetworkDriver):
             return self.device.run_commands(commands, **kwargs)
 
     def _lock(self):
-        sess = self.device.run_commands(["show configuration sessions"])[0]["sessions"]
+        sess = self._run_commands(["show configuration sessions"])[0]["sessions"]
         if [
             k
             for k, v in sess.items()
@@ -265,14 +266,13 @@ class EOSDriver(NetworkDriver):
         Example:
         {'napalm_607123': 522}
         """
-        config_sessions = self.device.run_commands(
+        config_sessions = self._run_commands(
             ["show configuration sessions detail"]
         )
-        # Still returns all of the configuration sessions (original data-struct was just a list)
+        # Still returns all of the configuration sessions (original data-struct was just a list)        print(f"CONFIG SESSIONS: {config_sessions}")
         config_sessions = config_sessions[0]["sessions"]
-
         # Arista reports the commitBy time relative to uptime of the box... :-(
-        uptime = self.device.run_commands(["show version"])
+        uptime = self._run_commands(["show version"])
         uptime = uptime[0].get("uptime", -1)
 
         pending_commits = {}
@@ -383,15 +383,28 @@ class EOSDriver(NetworkDriver):
 
         commands = self._mode_comment_convert(commands)
 
+        if self.transport == "ssh":
+            try:
+                self.device.send_command_expect(commands[0], expect_string=r"\)#")
+                self.device.send_config_set(commands, enter_config_mode=False)
+            except ConfigInvalidException as e:
+                self.discard_config()
+                msg = str(e)
+                if replace:
+                    raise ReplaceConfigException(msg)
+                else:
+                    raise MergeConfigException(msg)
+            return None
+
         try:
             if self.eos_autoComplete is not None:
-                self.device.run_commands(
+                self._run_commands(
                     commands,
                     autoComplete=self.eos_autoComplete,
                     fn0039_transform=self.fn0039_config,
                 )
             else:
-                self.device.run_commands(commands, fn0039_transform=self.fn0039_config)
+                self._run_commands(commands, fn0039_transform=self.fn0039_config)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             msg = str(e)
@@ -414,7 +427,7 @@ class EOSDriver(NetworkDriver):
             return ""
         else:
             commands = ["show session-config named %s diffs" % self.config_session]
-            result = self.device.run_commands(commands, encoding="text")[0]["output"]
+            result = self._run_commands(commands, encoding="text")[0]["output"]
 
             result = "\n".join(result.splitlines()[2:])
 
@@ -437,20 +450,21 @@ class EOSDriver(NetworkDriver):
 
             commands = [
                 "copy startup-config flash:rollback-0",
-                "configure session {}".format(self.config_session),
-                "commit timer {}".format(
-                    time.strftime("%H:%M:%S", time.gmtime(revert_in))
-                ),
+                "configure session {} commit timer {}".format(self.config_session, time.strftime("%H:%M:%S", time.gmtime(revert_in))),
+                # "commit timer {}".format(
+                #     time.strftime("%H:%M:%S", time.gmtime(revert_in))
+                # ),
             ]
-            self.device.run_commands(commands)
+            self._run_commands(commands, encoding="text")
         else:
             commands = [
                 "copy startup-config flash:rollback-0",
-                "configure session {}".format(self.config_session),
-                "commit",
+                "configure session {} commit".format(self.config_session),
+                # "commit",
                 "write memory",
             ]
-            self.device.run_commands(commands)
+
+            self._run_commands(commands, encoding="text")
             self.config_session = None
 
     def has_pending_commit(self):
@@ -468,7 +482,7 @@ class EOSDriver(NetworkDriver):
                 "configure session {} commit".format(self.config_session),
                 "write memory",
             ]
-            self.device.run_commands(commands)
+            self._run_commands(commands)
             self.config_session = None
         else:
             raise CommitError("No pending commit-confirm found!")
@@ -477,7 +491,12 @@ class EOSDriver(NetworkDriver):
         """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
             commands = ["configure session {}".format(self.config_session), "abort"]
-            self.device.run_commands(commands)
+            if self.transport == "ssh":
+                # For some reason when testing with vEOS 4.26.1F this
+                # doesn't work with the normal wrapper.
+                self._run_commands(["", commands[0]])
+            else:
+                self.device.run_commands(commands)
             self.config_session = None
 
     def rollback(self):
@@ -500,7 +519,7 @@ class EOSDriver(NetworkDriver):
         else:
             commands = ["configure replace flash:rollback-0", "write memory"]
 
-        self.device.run_commands(commands)
+        self._run_commands(commands, encoding="text")
         self.config_session = None
 
     def get_facts(self):
@@ -1661,7 +1680,7 @@ class EOSDriver(NetworkDriver):
         )
 
         try:
-            traceroute_raw_output = self.device.run_commands(commands, encoding="text")[
+            traceroute_raw_output = self._run_commands(commands, encoding="text")[
                 -1
             ].get("output")
         except CommandErrorException:
@@ -2098,7 +2117,7 @@ class EOSDriver(NetworkDriver):
             command += " interface {}".format(source_interface)
 
         commands.append(command)
-        output = self.device.run_commands(commands, encoding="text")[-1]["output"]
+        output = self._run_commands(commands, encoding="text")[-1]["output"]
 
         if "connect:" in output:
             ping_dict["error"] = output
