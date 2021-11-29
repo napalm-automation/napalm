@@ -267,6 +267,7 @@ class JunOSDriver(NetworkDriver):
                 ignore_warning=self.ignore_warning,
             )
         except ConfigLoadError as e:
+            self.discard_config()
             if self.config_replace:
                 raise ReplaceConfigException(e.errs)
             else:
@@ -383,7 +384,7 @@ class JunOSDriver(NetworkDriver):
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
-        self.device.cu.rollback(rb_id=0)
+        self.device.cu.rollback(rb_id=0, ignore_warning=self.ignore_warning)
         if not self.lock_disable and not self.session_config_lock:
             self._unlock()
         if self.config_private:
