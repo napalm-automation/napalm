@@ -1,6 +1,6 @@
 {
 	"GigabitEthernet3": {
-		"speed": 1000,
+		"speed": 1000.0,
 		"mtu": 1500,
 		"mac_address": "08:00:27:82:51:6B",
 		"is_up": false,
@@ -9,7 +9,7 @@
 		"is_enabled": false
 	},
 	"GigabitEthernet2": {
-		"speed": 1000,
+		"speed": 1000.0,
 		"mtu": 1500,
 		"mac_address": "08:00:27:79:E8:96",
 		"is_up": true,
@@ -18,12 +18,21 @@
 		"is_enabled": true
 	},
 	"GigabitEthernet1": {
-		"speed": 1000,
+		"speed": 1000.0,
 		"mtu": 1500,
 		"mac_address": "08:00:27:F8:E8:42",
 		"is_up": true,
 		"last_flapped": -1.0,
 		"description": "",
 		"is_enabled": true
+	},
+	"GigabitEthernet4": {
+		"speed": 2.5,
+		"mtu": 1500,
+		"mac_address": "08:00:27:82:51:6B",
+		"is_up": false,
+		"last_flapped": -1.0,
+		"description": "",
+		"is_enabled": false
 	}
 }

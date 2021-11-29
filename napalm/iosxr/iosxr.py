@@ -221,7 +221,7 @@ class IOSXRDriver(NetworkDriver):
             "is_up": False,
             "mac_address": "",
             "description": "",
-            "speed": -1,
+            "speed": -1.0,
             "last_flapped": -1.0,
         }
 
@@ -252,12 +252,13 @@ class IOSXRDriver(NetworkDriver):
                 napalm.base.helpers.mac, raw_mac, raw_mac
             )
             speed = napalm.base.helpers.convert(
-                int,
+                float,
                 napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(interface_tree, "Bandwidth"), 0
+                    float, napalm.base.helpers.find_txt(interface_tree, "Bandwidth"), 0
                 )
                 * 1e-3,
             )
+
             mtu = int(napalm.base.helpers.find_txt(interface_tree, "MTU"))
             description = napalm.base.helpers.find_txt(interface_tree, "Description")
             interfaces[interface_name] = copy.deepcopy(INTERFACE_DEFAULTS)

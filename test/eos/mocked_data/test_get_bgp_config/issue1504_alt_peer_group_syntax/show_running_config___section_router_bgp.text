@@ -1,0 +1,14 @@
+router bgp 64496
+   maximum-paths 32
+   neighbor IPv6-PEERS-GROUP-NAME peer group
+   neighbor IPv6-PEERS-GROUP-NAME remove-private-as
+   neighbor IPv6-PEERS-GROUP-NAME route-map reject-all in
+   neighbor IPv6-PEERS-GROUP-NAME route-map reject-all out
+   neighbor IPv6-PEERS-GROUP-NAME maximum-routes 100
+   neighbor IPv6-PEERS-GROUP-NAME send-community
+   neighbor 2001:db8::0:1 peer group IPv6-PEERS-GROUP-NAME
+   neighbor 2001:db8::0:1 remote-as 64510
+   neighbor 2001:db8::0:1 maximum-routes 500
+   neighbor 2001:db8::0:2 peer group IPv6-PEERS-GROUP-NAME
+   neighbor 2001:db8::0:2 remote-as 64511
+!

@@ -6,7 +6,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/20": {
         "is_enabled": false,
@@ -15,7 +15,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/23": {
         "is_enabled": false,
@@ -24,7 +24,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/22": {
         "is_enabled": false,
@@ -33,7 +33,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/25": {
         "is_enabled": false,
@@ -42,7 +42,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/24": {
         "is_enabled": false,
@@ -51,7 +51,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/27": {
         "is_enabled": false,
@@ -60,7 +60,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/26": {
         "is_enabled": false,
@@ -69,7 +69,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/29": {
         "is_enabled": false,
@@ -78,7 +78,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/28": {
         "is_enabled": false,
@@ -87,7 +87,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/39": {
         "is_enabled": false,
@@ -96,7 +96,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/38": {
         "is_enabled": false,
@@ -105,7 +105,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/31": {
         "is_enabled": false,
@@ -114,7 +114,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/30": {
         "is_enabled": false,
@@ -123,7 +123,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/33": {
         "is_enabled": false,
@@ -132,7 +132,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/32": {
         "is_enabled": false,
@@ -141,7 +141,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/35": {
         "is_enabled": false,
@@ -150,7 +150,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/34": {
         "is_enabled": false,
@@ -159,7 +159,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/37": {
         "is_enabled": false,
@@ -168,7 +168,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/36": {
         "is_enabled": false,
@@ -177,7 +177,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/48": {
         "is_enabled": false,
@@ -186,7 +186,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/44": {
         "is_enabled": false,
@@ -195,7 +195,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/45": {
         "is_enabled": false,
@@ -204,7 +204,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/46": {
         "is_enabled": false,
@@ -213,7 +213,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/47": {
         "is_enabled": false,
@@ -222,7 +222,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/40": {
         "is_enabled": false,
@@ -231,7 +231,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/41": {
         "is_enabled": false,
@@ -240,7 +240,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/42": {
         "is_enabled": false,
@@ -249,7 +249,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/43": {
         "is_enabled": false,
@@ -258,7 +258,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Vlan1": {
         "is_enabled": false,
@@ -267,7 +267,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:1C:7B:94",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/47": {
         "is_enabled": false,
@@ -276,7 +276,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/46": {
         "is_enabled": false,
@@ -285,7 +285,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/45": {
         "is_enabled": false,
@@ -294,7 +294,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/44": {
         "is_enabled": false,
@@ -303,7 +303,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/43": {
         "is_enabled": false,
@@ -312,7 +312,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/42": {
         "is_enabled": false,
@@ -321,7 +321,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/41": {
         "is_enabled": false,
@@ -330,7 +330,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/40": {
         "is_enabled": false,
@@ -339,7 +339,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/48": {
         "is_enabled": false,
@@ -348,7 +348,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/42": {
         "is_enabled": false,
@@ -357,7 +357,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/43": {
         "is_enabled": false,
@@ -366,7 +366,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/40": {
         "is_enabled": false,
@@ -375,7 +375,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/41": {
         "is_enabled": false,
@@ -384,7 +384,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/46": {
         "is_enabled": false,
@@ -393,7 +393,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/47": {
         "is_enabled": false,
@@ -402,7 +402,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/44": {
         "is_enabled": false,
@@ -411,7 +411,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/45": {
         "is_enabled": false,
@@ -420,7 +420,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/48": {
         "is_enabled": false,
@@ -429,7 +429,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/8": {
         "is_enabled": false,
@@ -438,7 +438,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/1": {
         "is_enabled": true,
@@ -447,7 +447,7 @@
         "is_up": true,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/28": {
         "is_enabled": false,
@@ -456,7 +456,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/29": {
         "is_enabled": false,
@@ -465,7 +465,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/20": {
         "is_enabled": false,
@@ -474,7 +474,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/21": {
         "is_enabled": false,
@@ -483,7 +483,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/22": {
         "is_enabled": false,
@@ -492,7 +492,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/23": {
         "is_enabled": false,
@@ -501,7 +501,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/24": {
         "is_enabled": false,
@@ -510,7 +510,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/25": {
         "is_enabled": false,
@@ -519,7 +519,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/26": {
         "is_enabled": false,
@@ -528,7 +528,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/27": {
         "is_enabled": false,
@@ -537,7 +537,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/18": {
         "is_enabled": false,
@@ -546,7 +546,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/19": {
         "is_enabled": false,
@@ -555,7 +555,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/10": {
         "is_enabled": false,
@@ -564,7 +564,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/11": {
         "is_enabled": false,
@@ -573,7 +573,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/12": {
         "is_enabled": false,
@@ -582,7 +582,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/13": {
         "is_enabled": false,
@@ -591,7 +591,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/14": {
         "is_enabled": false,
@@ -600,7 +600,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/15": {
         "is_enabled": false,
@@ -609,7 +609,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/16": {
         "is_enabled": false,
@@ -618,7 +618,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/17": {
         "is_enabled": false,
@@ -627,7 +627,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/5": {
         "is_enabled": false,
@@ -636,7 +636,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/4": {
         "is_enabled": false,
@@ -645,7 +645,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/7": {
         "is_enabled": false,
@@ -654,7 +654,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/6": {
         "is_enabled": false,
@@ -663,7 +663,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/1": {
         "is_enabled": false,
@@ -672,7 +672,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/3": {
         "is_enabled": false,
@@ -681,7 +681,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/2": {
         "is_enabled": false,
@@ -690,7 +690,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/9": {
         "is_enabled": false,
@@ -699,7 +699,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/8": {
         "is_enabled": false,
@@ -708,7 +708,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/39": {
         "is_enabled": false,
@@ -717,7 +717,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/38": {
         "is_enabled": false,
@@ -726,7 +726,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/33": {
         "is_enabled": false,
@@ -735,7 +735,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/32": {
         "is_enabled": false,
@@ -744,7 +744,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/31": {
         "is_enabled": false,
@@ -753,7 +753,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/30": {
         "is_enabled": false,
@@ -762,7 +762,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/37": {
         "is_enabled": false,
@@ -771,7 +771,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/36": {
         "is_enabled": false,
@@ -780,7 +780,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/35": {
         "is_enabled": false,
@@ -789,7 +789,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/34": {
         "is_enabled": false,
@@ -798,7 +798,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/6": {
         "is_enabled": false,
@@ -807,7 +807,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/7": {
         "is_enabled": false,
@@ -816,7 +816,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/4": {
         "is_enabled": false,
@@ -825,7 +825,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/5": {
         "is_enabled": false,
@@ -834,7 +834,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/2": {
         "is_enabled": false,
@@ -843,7 +843,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/3": {
         "is_enabled": false,
@@ -852,7 +852,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/9": {
         "is_enabled": false,
@@ -861,7 +861,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/1": {
         "is_enabled": false,
@@ -870,7 +870,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/7": {
         "is_enabled": false,
@@ -879,7 +879,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/6": {
         "is_enabled": true,
@@ -888,7 +888,7 @@
         "is_up": true,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/5": {
         "is_enabled": true,
@@ -897,7 +897,7 @@
         "is_up": true,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/4": {
         "is_enabled": true,
@@ -906,7 +906,7 @@
         "is_up": true,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/3": {
         "is_enabled": true,
@@ -915,7 +915,7 @@
         "is_up": true,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/2": {
         "is_enabled": true,
@@ -924,7 +924,7 @@
         "is_up": true,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/8": {
         "is_enabled": false,
@@ -933,7 +933,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/9": {
         "is_enabled": false,
@@ -942,7 +942,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "mgmt0": {
         "is_enabled": true,
@@ -951,7 +951,7 @@
         "is_up": true,
         "mac_address": "2C:C2:60:17:D7:60",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/13": {
         "is_enabled": false,
@@ -960,7 +960,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/12": {
         "is_enabled": false,
@@ -969,7 +969,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/11": {
         "is_enabled": false,
@@ -978,7 +978,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/10": {
         "is_enabled": false,
@@ -987,7 +987,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/17": {
         "is_enabled": false,
@@ -996,7 +996,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/16": {
         "is_enabled": false,
@@ -1005,7 +1005,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/15": {
         "is_enabled": false,
@@ -1014,7 +1014,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/14": {
         "is_enabled": false,
@@ -1023,7 +1023,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/19": {
         "is_enabled": false,
@@ -1032,7 +1032,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/18": {
         "is_enabled": false,
@@ -1041,7 +1041,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/36": {
         "is_enabled": false,
@@ -1050,7 +1050,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/37": {
         "is_enabled": false,
@@ -1059,7 +1059,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/34": {
         "is_enabled": false,
@@ -1068,7 +1068,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/35": {
         "is_enabled": false,
@@ -1077,7 +1077,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/32": {
         "is_enabled": false,
@@ -1086,7 +1086,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/33": {
         "is_enabled": false,
@@ -1095,7 +1095,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/30": {
         "is_enabled": false,
@@ -1104,7 +1104,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/31": {
         "is_enabled": false,
@@ -1113,7 +1113,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/38": {
         "is_enabled": false,
@@ -1122,7 +1122,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet3/39": {
         "is_enabled": false,
@@ -1131,7 +1131,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/28": {
         "is_enabled": false,
@@ -1140,7 +1140,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/29": {
         "is_enabled": false,
@@ -1149,7 +1149,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/26": {
         "is_enabled": false,
@@ -1158,7 +1158,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/27": {
         "is_enabled": false,
@@ -1167,7 +1167,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/24": {
         "is_enabled": false,
@@ -1176,7 +1176,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/25": {
         "is_enabled": false,
@@ -1185,7 +1185,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/22": {
         "is_enabled": false,
@@ -1194,7 +1194,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/23": {
         "is_enabled": false,
@@ -1203,7 +1203,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/20": {
         "is_enabled": false,
@@ -1212,7 +1212,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet2/21": {
         "is_enabled": false,
@@ -1221,7 +1221,7 @@
         "is_up": false,
         "mac_address": "2C:C2:60:4F:FE:B2",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/11": {
         "is_enabled": false,
@@ -1230,7 +1230,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/10": {
         "is_enabled": false,
@@ -1239,7 +1239,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/13": {
         "is_enabled": false,
@@ -1248,7 +1248,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/12": {
         "is_enabled": false,
@@ -1257,7 +1257,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/15": {
         "is_enabled": false,
@@ -1266,7 +1266,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/14": {
         "is_enabled": false,
@@ -1275,7 +1275,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/17": {
         "is_enabled": false,
@@ -1284,7 +1284,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/16": {
         "is_enabled": false,
@@ -1293,7 +1293,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/19": {
         "is_enabled": false,
@@ -1302,7 +1302,7 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
     },
     "Ethernet4/18": {
         "is_enabled": false,
@@ -1311,6 +1311,6 @@
         "is_up": false,
         "mac_address": "00:0C:29:D1:D5:6B",
         "mtu": 1500,
-        "speed": 1000
+        "speed": 1000.0
   }
 }

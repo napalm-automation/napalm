@@ -1,0 +1,30 @@
+{
+    "_": {
+        "apply_groups": [],
+        "description": "",
+        "local_as": 0,
+        "type": "",
+        "import_policy": "",
+        "export_policy": "",
+        "local_address": "",
+        "multipath": false,
+        "multihop_ttl": 0,
+        "remote_as": 0,
+        "remove_private_as": false,
+        "prefix_limit": {},
+        "neighbors": {
+            "10.22.8.38": {
+                "description": "",
+                "remote_as": 44,
+                "prefix_limit": {},
+                "export_policy": "",
+                "import_policy": "",
+                "local_address": "",
+                "local_as": 0,
+                "authentication_key": "",
+                "nhs": false,
+                "route_reflector_client": false
+            }
+        }
+    }
+}
