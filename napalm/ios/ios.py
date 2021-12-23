@@ -34,6 +34,7 @@ from napalm.base.exceptions import (
     MergeConfigException,
     ConnectionClosedException,
     CommandErrorException,
+    CommitConfirmException,
 )
 from napalm.base.helpers import (
     canonical_interface_name,
@@ -506,14 +507,29 @@ class IOSDriver(NetworkDriver):
 
         If merge operation, perform copy <file> running-config.
         """
-        if revert_in is not None:
-            raise NotImplementedError(
-                "Commit confirm has not been implemented on this platform."
-            )
+        CISCO_TIMER_MIN = 1
+        CISCO_TIMER_MAX = 120
+        ARCHIVE_DISABLED_MESSAGE = "For Cisco devices, revert_in requires 'archive' feature to be" \
+                                   " enabled."
+
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
             )
+
+        if revert_in is not None:
+            if not self._check_archive_feature():
+                raise CommitConfirmException(ARCHIVE_DISABLED_MESSAGE)
+            elif not CISCO_TIMER_MIN*60 <= revert_in <= CISCO_TIMER_MAX*60:
+                msg = "For Cisco devices revert_in between {} and {} seconds, this will round " \
+                      "down to the nearest minute".format(CISCO_TIMER_MIN*60, CISCO_TIMER_MAX*60)
+                raise CommitConfirmException(msg)
+            else:
+                revert_in = int(revert_in / 60)
+
+        if self.has_pending_commit():
+            raise CommandErrorException('Configuration session already in progress, cannot '
+                                        'perform configuration actions')
 
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
@@ -524,8 +540,13 @@ class IOSDriver(NetworkDriver):
             cfg_file = self._gen_full_path(filename)
             if not self._check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
-            if self.auto_rollback_on_error:
+            if revert_in and self.auto_rollback_on_error:
+                cmd = "configure replace {} force revert trigger error timer {}".format(cfg_file,
+                                                                                        revert_in)
+            elif self.auto_rollback_on_error:
                 cmd = "configure replace {} force revert trigger error".format(cfg_file)
+            elif revert_in:
+                cmd = "configure replace {} force revert timer {}".format(revert_in)
             else:
                 cmd = "configure replace {} force".format(cfg_file)
             output = self._commit_handler(cmd)
@@ -538,14 +559,22 @@ class IOSDriver(NetworkDriver):
                 msg = "Candidate config could not be applied\n{}".format(output)
                 raise ReplaceConfigException(msg)
             elif "%Please turn config archive on" in output:
-                msg = "napalm-ios replace() requires Cisco 'archive' feature to be enabled."
-                raise ReplaceConfigException(msg)
+                raise CommitConfirmException(ARCHIVE_DISABLED_MESSAGE)
         else:
             # Merge operation
             filename = self.merge_cfg
             cfg_file = self._gen_full_path(filename)
             if not self._check_file_exists(cfg_file):
                 raise MergeConfigException("Merge source config file does not exist")
+            if revert_in is not None:
+                # Enter config mode with a revert timer and exit config mode
+                try:
+                    self.device.config_mode(
+                        config_command='configure terminal revert timer {}'.format(revert_in))
+                    self.device.exit_config_mode()
+                except ValueError:
+                    raise MergeConfigException(ARCHIVE_DISABLED_MESSAGE)
+
             cmd = "copy {} running-config".format(cfg_file)
             output = self._commit_handler(cmd)
             if "Invalid input detected" in output:
@@ -557,8 +586,57 @@ class IOSDriver(NetworkDriver):
         # After a commit - we no longer know whether this is configured or not.
         self.prompt_quiet_configured = None
 
-        # Save config to startup (both replace and merge)
-        output += self.device.save_config()
+        if revert_in is None:
+            # Save config to startup (both replace and merge)
+            output += self.device.save_config()
+
+    def _check_archive_feature(self):
+        cmd = 'show archive'
+        output = self.device.send_command_expect(cmd)
+        if 'Archive feature not enabled' in output:
+            return False
+        return True
+
+    def has_pending_commit(self):
+        pending_commits = self._get_pending_commits()
+        return bool(pending_commits)
+
+    def _get_pending_commits(self):
+        if self._check_archive_feature():
+            cmd = 'show archive config rollback timer'
+            output = self.device.send_command_expect(cmd)
+        else:
+            return {}
+        if 'No Rollback Confirmed Change pending' in output:
+            return {}
+        match_strings = r'|'.join([
+            r'Time configured.*?: (?P<configured>.*)',
+            r'Timer type: (?P<type>.*)',
+            r'Timer value: (?P<timer>.*)',
+            r'User: (?P<user>.*)'
+        ])
+        keys = ['configured', 'type', 'timer', 'user']
+        matches = re.finditer(match_strings, output)
+        pending_commits = {}
+        for match in matches:
+            for key in keys:
+                if match.groupdict().get(key):
+                    pending_commits.update({key: match.groupdict().get(key)})
+
+        return pending_commits
+
+    def confirm_commit(self):
+        """Send final commit to confirm an in-proces commit that requires confirmation."""
+        if self.has_pending_commit():
+            pending = self._get_pending_commits()
+            if pending.get('user') == self.username:
+                self.device.send_command('configure confirm')
+                self.device.save_config()
+            else:
+                raise CommitConfirmException('Configuration session active but not owned by {} '
+                                            'cannot confirm commit'.format(self.username))
+        else:
+            raise CommitConfirmException('No pending configuration'.format(self.username))
 
     def discard_config(self):
         """Discard loaded candidate configurations."""
@@ -576,18 +654,27 @@ class IOSDriver(NetworkDriver):
 
     def rollback(self):
         """Rollback configuration to filename or to self.rollback_cfg file."""
-        filename = self.rollback_cfg
-        cfg_file = self._gen_full_path(filename)
-        if not self._check_file_exists(cfg_file):
-            raise ReplaceConfigException("Rollback config file does not exist")
-        cmd = "configure replace {} force".format(cfg_file)
-        self._commit_handler(cmd)
+        if self.has_pending_commit():
+            if self._get_pending_commits().get('user') == self.username:
+                cmd = 'configure revert now'
+                self._commit_handler(cmd)
+                self.device.save_config()
+            else:
+                raise CommitConfirmException('Configuration session active but not owned by {} '
+                                            'cannot rollback'.format(self.username))
+        else:
+            filename = self.rollback_cfg
+            cfg_file = self._gen_full_path(filename)
+            if not self._check_file_exists(cfg_file):
+                raise ReplaceConfigException("Rollback config file does not exist")
+            cmd = "configure replace {} force".format(cfg_file)
+            self._commit_handler(cmd)
 
-        # After a rollback - we no longer know whether this is configured or not.
-        self.prompt_quiet_configured = None
+            # After a rollback - we no longer know whether this is configured or not.
+            self.prompt_quiet_configured = None
 
-        # Save config to startup
-        self.device.save_config()
+            # Save config to startup
+            self.device.save_config()
 
     def _inline_tcl_xfer(
         self, source_file=None, source_config=None, dest_file=None, file_system=None
