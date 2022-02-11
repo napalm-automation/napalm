@@ -6,7 +6,7 @@ import logging
 import os
 import re
 import sys
-from typing import Optional, Dict, Any, List, Union, Tuple, TypeVar, Callable, Type
+from typing import Optional, Dict, Any, List, Union, Tuple, TypeVar, Callable
 from collections.abc import Iterable
 
 # third party libs
@@ -24,8 +24,6 @@ from napalm.base import constants
 from napalm.base.test.models import ConfigDict
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
 from napalm.base.canonical_map import base_interfaces, reverse_mapping
-from napalm.base.test.models import ConfigDict
-from napalm.base.utils.jinja_filters import CustomJinjaFilters
 
 T = TypeVar("T")
 R = TypeVar("R")
