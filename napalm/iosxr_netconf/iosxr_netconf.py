@@ -444,7 +444,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             "is_up": False,
             "mac_address": "",
             "description": "",
-            "speed": -1,
+            "speed": -1.0,
             "last_flapped": -1.0,
         }
 
@@ -491,9 +491,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 napalm.base.helpers.mac, raw_mac, raw_mac
             )
             speed = napalm.base.helpers.convert(
-                int,
+                float,
                 napalm.base.helpers.convert(
-                    int,
+                    float,
                     self._find_txt(interface_tree, "./int:bandwidth", namespaces=C.NS),
                     0,
                 )
