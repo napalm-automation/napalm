@@ -1,0 +1,5 @@
+<group
+interface {{ interface }}
+ description {{ description | re(".+") }}
+! {{ _end_ }}
+</group>

@@ -14,3 +14,5 @@ ciscoconfparse
 scp
 lxml>=4.3.0
 ncclient
+ttp
+ttp_templates

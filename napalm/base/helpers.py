@@ -18,6 +18,13 @@ from netaddr import EUI
 from netaddr import IPAddress
 from netaddr import mac_unix
 
+try:
+    from ttp import ttp, quick_parse as ttp_quick_parse
+
+    TTP_INSTALLED = True
+except ImportError:
+    TTP_INSTALLED = False
+
 # local modules
 import napalm.base.exceptions
 from napalm.base import constants
@@ -267,6 +274,77 @@ def textfsm_extractor(
             template_name=template_name, path=template_dir_path
         )
     )
+
+
+def ttp_parse(
+    cls: "napalm.base.NetworkDriver",
+    template: str,
+    raw_text: str,
+    structure: str = "flat_list",
+) -> List[Dict]:
+    """
+    Applies a TTP template over a raw text and return the parsing results.
+
+    Main usage of this method will be to extract data form a non-structured output
+    from a network device and return parsed values.
+
+    :param cls: Instance of the driver class
+    :param template: Specifies the name or the content of the template to be used
+    :param raw_text: Text output as the devices prompts on the CLI
+    :param structure: Results structure to apply to parsing results
+    :return: parsing results structure
+
+    ``template`` can be inline TTP template string, reference to TTP Templates
+    repository template in a form of ``ttp://path/to/template`` or name of template
+    file within ``{NAPALM_install_dir}/utils/ttp_templates/{template}.txt`` folder.
+    """
+    if not TTP_INSTALLED:
+        msg = "\nTTP is not installed. Please PIP install ttp:\n" "pip install ttp\n"
+        raise napalm.base.exceptions.ModuleImportError(msg)
+
+    for c in cls.__class__.mro():
+        if c is object:
+            continue
+        module = sys.modules[c.__module__].__file__
+        if module:
+            current_dir = os.path.dirname(os.path.abspath(module))
+        else:
+            continue
+        template_dir_path = "{current_dir}/utils/ttp_templates".format(
+            current_dir=current_dir
+        )
+
+        # check if inline template given, use it as is
+        if "{{" in template and "}}" in template:
+            template = template
+        # check if template from ttp_templates repo, use it as is
+        elif template.startswith("ttp://"):
+            template = template
+        # default to using template in NAPALM folder
+        else:
+            template = "{template_dir_path}/{template}.txt".format(
+                template_dir_path=template_dir_path, template=template
+            )
+            if not os.path.exists(template):
+                msg = "Template '{template}' not found".format(template=template)
+                logging.error(msg)
+                raise napalm.base.exceptions.TemplateRenderException(msg)
+
+        # parse data
+        try:
+            return ttp_quick_parse(
+                data=str(raw_text),
+                template=template,
+                result_kwargs={"structure": structure},
+                parse_kwargs={"one": True},
+            )
+        except Exception as e:
+            msg = "TTP template:\n'{template}'\nError: {error}".format(
+                template=template, error=e
+            )
+            logging.exception(e)
+            logging.error(msg)
+            raise napalm.base.exceptions.TemplateRenderException(msg)
 
 
 def find_txt(
