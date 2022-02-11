@@ -37,6 +37,20 @@ try:
 except ImportError:
     HAS_NETADDR = False
 
+try:
+    from ttp import ttp  # noqa
+
+    HAS_TTP = True
+except ImportError:
+    HAS_TTP = False
+
+try:
+    from ttp_templates import get_template  # noqa
+
+    HAS_TTP_TEMPLATES = True
+except ImportError:
+    HAS_TTP_TEMPLATES = False
+
 # NAPALM base
 import napalm.base.helpers
 import napalm.base.constants as C
@@ -672,6 +686,74 @@ class TestBaseHelpers(unittest.TestCase):
         )
         ret = napalm.base.helpers.sanitize_config(config, C.CISCO_SANITIZE_FILTERS)
         self.assertEqual(ret, expected)
+
+    def test_ttp_parse(self):
+        """
+        Tests helper function ```ttp_parse```:
+
+            * check if raises TemplateRenderException when template does not exist
+            * check if raises TemplateRenderException for /utils/ttp_templates/bad_template.txt
+            * check if returns expected result as output for ./utils/ttp_templates/good_template.txt
+            * check if returns expected result as output for inline template
+            * check if returns expected result as output for template from ttp templates
+        """
+
+        self.assertTrue(
+            HAS_TTP, "Install TTP: python3 -m pip install ttp"
+        )  # before anything else, let's see if TTP is available
+        _TTP_TEST_STRING = """
+interface Gi1/1
+ description FOO
+!
+interface Gi1/2
+ description BAR
+!
+        """
+        _TTP_TEST_TEMPLATE = '<group>\ninterface {{ interface }}\n description {{ description | re(".+") }}\n! {{ _end_ }}\n</group>'
+        _EXPECTED_RESULT = [
+            {"description": "FOO", "interface": "Gi1/1"},
+            {"description": "BAR", "interface": "Gi1/2"},
+        ]
+        self.assertRaises(
+            napalm.base.exceptions.TemplateRenderException,
+            napalm.base.helpers.ttp_parse,
+            self.network_driver,
+            "__this_template_does_not_exist__",
+            _TTP_TEST_STRING,
+        )
+
+        self.assertRaises(
+            napalm.base.exceptions.TemplateRenderException,
+            napalm.base.helpers.ttp_parse,
+            self.network_driver,
+            "bad_template",
+            _TTP_TEST_STRING,
+        )
+
+        # use ./utils/ttp_templates/good_template.txt
+        result = napalm.base.helpers.ttp_parse(
+            self.network_driver, "good_template", _TTP_TEST_STRING
+        )
+        self.assertEqual(result, _EXPECTED_RESULT)
+
+        # use inline template
+        result = napalm.base.helpers.ttp_parse(
+            self.network_driver, _TTP_TEST_TEMPLATE, _TTP_TEST_STRING
+        )
+        self.assertEqual(result, _EXPECTED_RESULT)
+
+        self.assertTrue(
+            HAS_TTP_TEMPLATES,
+            "Install TTP Templates: python3 -m pip install ttp-templates",
+        )  # before anything else, let's see if TTP_Templates is available
+
+        # use template from ttp templates package
+        result = napalm.base.helpers.ttp_parse(
+            self.network_driver,
+            "ttp://platform/test_platform_show_run_pipe_sec_interface.txt",
+            _TTP_TEST_STRING,
+        )
+        self.assertEqual(result, _EXPECTED_RESULT)
 
 
 class FakeNetworkDriver(NetworkDriver):
