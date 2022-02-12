@@ -3427,6 +3427,10 @@ class IOSDriver(NetworkDriver):
             else:
                 return instances
 
+        if "Invalid input detected" in sh_vrf_detail:
+            # No VRF support
+            return instances
+
         for vrf in sh_vrf_detail.split("\n\n"):
 
             first_part = vrf.split("Address family")[0]
