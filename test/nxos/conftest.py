@@ -2,10 +2,9 @@
 from builtins import super
 
 import pytest
+from napalm.base.mock import raise_exception
 from napalm.base.test import conftest as parent_conftest
-
 from napalm.base.test.double import BaseTestDouble
-
 from napalm.nxos import nxos
 
 
@@ -74,6 +73,8 @@ class FakeNXOSDevice(BaseTestDouble):
             result = self.read_txt_file(full_path)
         else:
             result = self.read_json_file(full_path)
+            if "exception" in result:
+                raise_exception(result)
 
         return result
 

@@ -39,6 +39,7 @@ def pytest_addoption(parser):
 @pytest.fixture(scope="module")
 def mock_pynxos_device(request):
     """Create a mock pynxos test device."""
+    response_status_code = getattr(request, "param", 200)
     device = {
         "host": "nxos1.fake.com",
         "username": "admin",
@@ -49,13 +50,14 @@ def mock_pynxos_device(request):
         "timeout": 60,
         "verify": False,
     }
-    conn = MockDevice(**device)
+    conn = MockDevice(response_status_code=response_status_code, **device)
     return conn
 
 
 @pytest.fixture(scope="module")
 def mock_pynxos_device_xml(request):
     """Create a mock pynxos test device."""
+    response_status_code = getattr(request, "param", 200)
     device = {
         "host": "nxos1.fake.com",
         "username": "admin",
@@ -66,7 +68,7 @@ def mock_pynxos_device_xml(request):
         "timeout": 60,
         "verify": False,
     }
-    conn = MockDevice(**device)
+    conn = MockDevice(response_status_code=response_status_code, **device)
     return conn
 
 

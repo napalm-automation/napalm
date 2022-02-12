@@ -9,6 +9,7 @@ from builtins import super
 from typing import Optional, List, Dict, Any
 
 import requests
+from requests import Response
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -61,7 +62,7 @@ class RPCBase(object):
         self.headers: Dict
 
     def _process_api_response(
-        self, response: str, commands: List[str], raw_text: bool = False
+        self, response: Response, commands: List[str], raw_text: bool = False
     ) -> List[Any]:
         raise NotImplementedError("Method must be implemented in child class")
 
@@ -84,7 +85,7 @@ class RPCBase(object):
     ) -> List[Any]:
         raise NotImplementedError("Method must be implemented in child class")
 
-    def _send_request(self, commands: List[str], method: str) -> str:
+    def _send_request(self, commands: List[str], method: str) -> Response:
         payload = self._build_payload(commands, method)
 
         try:
@@ -109,15 +110,7 @@ class RPCBase(object):
             )
             raise NXAPIAuthError(msg)
 
-        if response.status_code not in [200]:
-            msg = """Invalid status code returned on NX-API POST
-commands: {}
-status_code: {}""".format(
-                commands, response.status_code
-            )
-            raise NXAPIPostError(msg)
-
-        return response.text
+        return response
 
 
 class RPCClient(RPCBase):
@@ -174,7 +167,7 @@ class RPCClient(RPCBase):
         return json.dumps(payload_list)
 
     def _process_api_response(
-        self, response: str, commands: List[str], raw_text: bool = False
+        self, response: Response, commands: List[str], raw_text: bool = False
     ) -> List[Any]:
         """
         Normalize the API response including handling errors; adding the sent command into
@@ -182,7 +175,7 @@ class RPCClient(RPCBase):
         structured data.
         """
 
-        response_list = json.loads(response)
+        response_list = json.loads(response.text)
         if isinstance(response_list, dict):
             response_list = [response_list]
 
@@ -193,7 +186,7 @@ class RPCClient(RPCBase):
         new_response = []
         for response in response_list:
 
-            # Dectect errors
+            # Detect errors
             self._error_check(response)
 
             # Some commands like "show run" can have a None result
@@ -289,9 +282,17 @@ class XMLClient(RPCBase):
         return payload
 
     def _process_api_response(
-        self, response: str, commands: List[str], raw_text: bool = False
+        self, response: Response, commands: List[str], raw_text: bool = False
     ) -> List[Any]:
-        xml_root = etree.fromstring(response)
+        if response.status_code not in [200]:
+            msg = """Invalid status code returned on NX-API POST
+commands: {}
+status_code: {}""".format(
+                commands, response.status_code
+            )
+            raise NXAPIPostError(msg)
+
+        xml_root = etree.fromstring(response.text)
         response_list = xml_root.xpath("outputs/output")
         if len(commands) != len(response_list):
             raise NXAPIXMLError(
