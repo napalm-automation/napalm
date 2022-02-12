@@ -224,13 +224,13 @@ class TestIOSXRDevice(unittest.TestCase):
 
         """Testing if able to acquire the XML agent."""
 
-        self.device._lock_xml_agent(time.time())
+        self.device._lock_xml_agent()
         self.assertTrue(self.device._xml_agent_locker.locked())
         self.device._unlock_xml_agent()
 
     def test_acquire_locked_agent_raises_timeout_error(self):
         """Testing if trying to acquire the XML agent while locked raises TimeoutError."""
-        self.device._lock_xml_agent(time.time())  # acquiring
+        self.device._lock_xml_agent()  # acquiring
         self.assertRaises(
             TimeoutError,
             self.device._lock_xml_agent,  # trying to acquire again
@@ -240,7 +240,7 @@ class TestIOSXRDevice(unittest.TestCase):
 
     def test_release_xml_agent(self):
         """Testing releasing of XML agent."""
-        self.device._lock_xml_agent(time.time())
+        self.device._lock_xml_agent()
         self.assertTrue(self.device._xml_agent_locker.locked())
         self.device._unlock_xml_agent()
         self.assertFalse(self.device._xml_agent_locker.locked())
@@ -285,7 +285,7 @@ class TestIOSXRDevice(unittest.TestCase):
         exception thrown
         """
 
-        self.device._lock_xml_agent(time.time())  # acquiring the XML agent
+        self.device._lock_xml_agent()  # acquiring the XML agent
 
         self.assertRaises(
             TimeoutError,
