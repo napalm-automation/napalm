@@ -1,4 +1,4 @@
---- 
+---
 name: build
 on: [push, pull_request]
 jobs:
@@ -33,10 +33,14 @@ jobs:
         run: |
           pylama .
 
+      - name: Run type checker
+        run: |
+          mypy -p napalm --config-file mypy.ini
+
       - name: Run Tests
         run: |
           py.test --cov=napalm --cov-report term-missing -vs --pylama
-        
+
   build_docs:
     needs: std_tests
     runs-on: ubuntu-latest
