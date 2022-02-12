@@ -77,11 +77,20 @@ def load_template(
                     )
             else:
                 # Search modules for template paths
-                search_path = [
-                    os.path.dirname(os.path.abspath(sys.modules[c.__module__].__file__))
-                    for c in cls.__class__.mro()
-                    if c is not object
-                ]
+                for c in cls.__class__.mro():
+                    if c is object:
+                        continue
+                    module = sys.modules[c.__module__].__file__
+                    if module:
+                        path = os.path.abspath(module)
+                    else:
+                        continue
+                    if path:
+                        path_to_append = os.path.dirname(path)
+                    else:
+                        continue
+                    if path_to_append:
+                        search_path.append(path_to_append)
 
             if openconfig:
                 search_path = ["{}/oc_templates".format(s) for s in search_path]
@@ -209,9 +218,13 @@ def textfsm_extractor(
     for c in cls.__class__.mro():
         if c is object:
             continue
-        current_dir = os.path.dirname(
-            os.path.abspath(sys.modules[c.__module__].__file__)
-        )
+        module = sys.modules[c.__module__].__file__
+        if module:
+            current_dir = os.path.dirname(
+                os.path.abspath(module)
+            )
+        else:
+            continue
         template_dir_path = "{current_dir}/utils/textfsm_templates".format(
             current_dir=current_dir
         )

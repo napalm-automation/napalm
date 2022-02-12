@@ -12,7 +12,7 @@ import requests
 from requests import Response
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from requests.packages.urllib3.exceptions import InsecureRequestWarning  # type: ignore
 import json
 
 from lxml import etree
@@ -90,7 +90,7 @@ class RPCBase(object):
 
         try:
             if not self.verify:
-                requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+                requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # type: ignore
 
             response = requests.post(
                 self.url,
