@@ -35,7 +35,7 @@ from netaddr import IPNetwork
 from netaddr.core import AddrFormatError
 
 # third party libs
-import pygnmi
+from pygnmi.client import gNMIclient
 # from pyeapi.eapilib import ConnectionError, CommandError
 
 # NAPALM base
@@ -99,26 +99,27 @@ class gNMIDriver(NetworkDriver):
     def open(self):
         """Implementation of NAPALM method open."""
         try:
-            connection = self.transport_class(
-                host=self.hostname,
+            self.gnmi = gNMIclient(
+                target=(self.hostname,57400),
                 username=self.username,
                 password=self.password,
-                timeout=self.timeout,
-                **self.eapi_kwargs
+                gnmi_timeout=self.timeout,
+                insecure=False # hardcoded, TODO parameter
+                # **self.eapi_kwargs
             )
 
-            if self.device is None:
-                self.device = Node(connection, enablepwd=self.enablepwd)
-            # does not raise an Exception if unusable
+            self.gnmi.connect()
 
             # TODO run commands to determine device type and version
+            data = self.gnmi.get(path=["/system"], encoding='json_ietf')
+            print( data )
             # sh_ver = self.device.run_commands(["show version"])
             # cli_version = (
             #     2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
             # )
 
             # self.device.update_cli_version(cli_version)
-        except ConnectionError as ce:
+        except Exception as ce:
             # and this is raised either if device not avaiable
             # either if HTTP(S) agent is not enabled
             # show management api http-commands
@@ -200,7 +201,7 @@ class gNMIDriver(NetworkDriver):
             commands.append(line)
 
         try:
-          # TODO pygnmi.set( json )
+          pygnmi.set( json )
         except Exception as e:
             self.discard_config()
             msg = str(e)
