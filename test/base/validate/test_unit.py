@@ -1,5 +1,6 @@
 """Tests for the validate methods."""
 import pytest
+import copy
 
 from napalm.base import validate
 
@@ -403,7 +404,9 @@ class TestValidate:
     @pytest.mark.parametrize("src, dst, result", _compare_getter)
     def test__compare_getter_list(self, src, dst, result):
         """Test for _compare_getter_list."""
-        assert validate.compare(src, dst) == result
+        assert validate.compare(
+            copy.deepcopy(src), copy.deepcopy(dst)
+        ) == copy.deepcopy(result)
 
     def test_numeric_comparison(self):
         assert validate._compare_numeric("<2", 1)
