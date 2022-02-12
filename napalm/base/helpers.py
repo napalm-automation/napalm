@@ -162,7 +162,7 @@ def netutils_parse_parents(
     return return_config
 
 
-def cisco_conf_parse_objects(
+def netutils_parse_objects(
     cfg_section: str, config: Union[str, List[str]]
 ) -> List[str]:
     """
@@ -172,15 +172,27 @@ def cisco_conf_parse_objects(
     :param cfg_section: The section of the config to return eg. "router bgp"
     :param config: The running/startup config of the device to parse
     """
+    # Config tree is the entire configuration in a tree format,
+    # followed by getting the individual lines that has the formats:
+    # ConfigLine(config_line=' ip address 192.0.2.10 255.255.255.0', parents=('interface GigabitEthernet1',))
+    # ConfigLine(config_line='Current configuration : 1624 bytes', parents=())
+    config_tree = IOSConfigParser(str(config))
+    lines = config_tree.build_config_relationship()
+
+    # Return config is the list that will be returned
     return_config = []
-    if type(config) is str:
-        config = config.splitlines()  # type: ignore
-    parse = CiscoConfParse(config)
-    cfg_obj = parse.find_objects(cfg_section)
-    for parent in cfg_obj:
-        return_config.append(parent.text)
-        for child in parent.all_children:
-            return_config.append(child.text)
+    for line in lines:
+        # The parent configuration is expected on the function that this is replacing,
+        # add the parent line to the base of the return_config
+        if cfg_section in line.config_line:
+            return_config.append(line.config_line)
+        # Check if the tuple is greater than 0
+        if len(line.parents) > 0:
+            # Check the eldest parent, if that is part of the config section, then append
+            # the current line being checked to it.
+            if cfg_section in line.parents[0]:
+                return_config.append(line.config_line)
+
     return return_config
 
 

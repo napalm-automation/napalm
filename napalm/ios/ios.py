@@ -1323,7 +1323,7 @@ class IOSDriver(NetworkDriver):
         # Get BGP config using ciscoconfparse because some old devices dont support "| sec bgp"
         cfg = self.get_config(retrieve="running")
         cfg = cfg["running"].splitlines()
-        bgp_config_text = napalm.base.helpers.cisco_conf_parse_objects(
+        bgp_config_text = napalm.base.helpers.netutils_parse_objects(
             "router bgp", cfg
         )
         bgp_asn = napalm.base.helpers.regex_find_txt(
@@ -1363,7 +1363,7 @@ class IOSDriver(NetworkDriver):
             if "vrf" in str(afi_list):
                 continue
             else:
-                neighbor_config = napalm.base.helpers.cisco_conf_parse_objects(
+                neighbor_config = napalm.base.helpers.netutils_parse_objects(
                     bgp_neighbor, bgp_config_text
                 )
             # For group_name- use peer-group name, else VRF name, else "_" for no group
@@ -1454,7 +1454,7 @@ class IOSDriver(NetworkDriver):
                     "neighbors": bgp_group_neighbors.get("_", {}),
                 }
                 continue
-            neighbor_config = napalm.base.helpers.cisco_conf_parse_objects(
+            neighbor_config = napalm.base.helpers.netutils_parse_objects(
                 group_name, bgp_config_text
             )
             multipath = False
@@ -1462,7 +1462,7 @@ class IOSDriver(NetworkDriver):
                 r"\s+address-family.*", group_name, neighbor_config
             )
             for afi in afi_list:
-                afi_config = napalm.base.helpers.cisco_conf_parse_objects(
+                afi_config = napalm.base.helpers.netutils_parse_objects(
                     afi, bgp_config_text
                 )
                 multipath = bool(
