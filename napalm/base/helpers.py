@@ -166,7 +166,7 @@ def netutils_parse_objects(
     cfg_section: str, config: Union[str, List[str]]
 ) -> List[str]:
     """
-    Use CiscoConfParse to find and return a section of Cisco IOS config.
+    Use Netutils to find and return a section of Cisco IOS config.
     Similar to "show run | section <cfg_section>"
 
     :param cfg_section: The section of the config to return eg. "router bgp"
