@@ -911,7 +911,6 @@ class IOSDriver(NetworkDriver):
                 entry["remote_chassis_id"] = napalm.base.helpers.mac(
                     entry["remote_chassis_id"]
                 )
-                print(entry["remote_chassis_id"])
 
         # Older IOS versions don't have 'Local Intf' defined in LLDP detail.
         # We need to get them from the non-detailed command
