@@ -146,3 +146,15 @@ class TestMockDriver(object):
         d.compare_config() == "a_diff"
         d.commit_config()
         d.close()
+
+    def test_configuration_replace_confirm(self):
+        d = driver("blah", "bleh", "blih", optional_args=optional_args)
+        d.open()
+        d.load_replace_candidate(config="asdasdasd")
+        assert d.merge is False
+        d.compare_config() == "a_diff"
+        d.commit_config(message="testcommit", revert_in=120)
+        assert d.has_pending_commit() is True
+        d.confirm_commit()
+        assert d.has_pending_commit() is False
+        d.close()

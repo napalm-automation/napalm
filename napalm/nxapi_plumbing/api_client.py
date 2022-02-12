@@ -9,6 +9,7 @@ from builtins import super
 import requests
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import json
 
 from lxml import etree
@@ -60,6 +61,9 @@ class RPCBase(object):
         payload = self._build_payload(commands, method)
 
         try:
+            if not self.verify:
+                requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
             response = requests.post(
                 self.url,
                 timeout=self.timeout,

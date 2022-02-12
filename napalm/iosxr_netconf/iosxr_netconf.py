@@ -442,7 +442,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             "is_up": False,
             "mac_address": "",
             "description": "",
-            "speed": -1,
+            "speed": -1.0,
             "last_flapped": -1.0,
         }
 
@@ -489,14 +489,15 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 napalm.base.helpers.mac, raw_mac, raw_mac
             )
             speed = napalm.base.helpers.convert(
-                int,
+                float,
                 napalm.base.helpers.convert(
-                    int,
+                    float,
                     self._find_txt(interface_tree, "./int:bandwidth", namespaces=C.NS),
                     0,
                 )
                 * 1e-3,
             )
+
             mtu = int(
                 self._find_txt(interface_tree, "./int:mtu", default="", namespaces=C.NS)
             )
@@ -1855,7 +1856,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     ),
                     0,
                 )
-                connection_down_count = napalm.base.helpers.convert(
+                flap_count = napalm.base.helpers.convert(
                     int,
                     self._find_txt(
                         neighbor,
@@ -1995,10 +1996,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
                     ),
                     0,
                 )
-                flap_count = int(connection_down_count / 2)
-                if up:
-                    flap_count -= 1
-
                 if remote_as not in bgp_vrf_neighbors_detail[vrf_name].keys():
                     bgp_vrf_neighbors_detail[vrf_name][remote_as] = []
                 bgp_vrf_neighbors_detail[vrf_name][remote_as].append(
