@@ -1351,7 +1351,7 @@ class IOSDriver(NetworkDriver):
             if neighbor:
                 if bgp_neighbor != neighbor:
                     continue
-            afi_list = napalm.base.helpers.cisco_conf_parse_parents(
+            afi_list = napalm.base.helpers.netutils_parse_parents(
                 r"\s+address-family.*", bgp_neighbor, bgp_config_text
             )
             try:
@@ -1458,7 +1458,7 @@ class IOSDriver(NetworkDriver):
                 group_name, bgp_config_text
             )
             multipath = False
-            afi_list = napalm.base.helpers.cisco_conf_parse_parents(
+            afi_list = napalm.base.helpers.netutils_parse_parents(
                 r"\s+address-family.*", group_name, neighbor_config
             )
             for afi in afi_list:
