@@ -862,7 +862,7 @@ class NXOSDriver(NXOSDriverBase):
             for key in things_keys:
                 if key in part:
                     things[key]["count"] = napalm.base.helpers.convert(
-                        int, part.replace(key, ""), 0
+                        int, part.replace(key, "")
                     )
 
         delta = sum([det.get("count", 0) * det["weight"] for det in things.values()])
@@ -1025,7 +1025,7 @@ class NXOSDriver(NXOSDriverBase):
                 "speed": interface_speed,
                 "mtu": interface_mtu,
                 "mac_address": napalm.base.helpers.convert(
-                    napalm.base.helpers.mac, mac_address, ""
+                    napalm.base.helpers.mac, mac_address
                 ),
             }
         return interfaces
@@ -1161,7 +1161,7 @@ class NXOSDriver(NXOSDriverBase):
                 {
                     "interface": interface,
                     "mac": napalm.base.helpers.convert(
-                        napalm.base.helpers.mac, raw_mac, raw_mac
+                        napalm.base.helpers.mac, raw_mac
                     ),
                     "ip": napalm.base.helpers.ip(raw_ip),
                     "age": age_sec,

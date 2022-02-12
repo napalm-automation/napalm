@@ -198,7 +198,9 @@ class MockDriver(NetworkDriver):
         self._raise_if_closed()
         if revert_in is not None:
             if self.has_pending_commit():
-                raise napalm.CommitError("Pending commit confirm already in process!")
+                raise napalm.base.exceptions.CommitError(
+                    "Pending commit confirm already in process!"
+                )
             else:
                 self._pending_commits = True
         self.merge = None

@@ -302,16 +302,36 @@ def find_txt(
     return str(value)
 
 
-def convert(to: Callable[[T], R], who: Optional[T], default: R = "") -> R:
+def convert(to: Callable[[T], R], who: Optional[T], default: Optional[R] = None) -> R:
     """
     Converts data to a specific datatype.
     In case of error, will return a default value.
 
     :param to:      datatype to be casted to.
     :param who:     value to cast.
-    :param default: value to return in case of error.
-    :return: a str value.
+    :param default: default value to return in case of an error with the conversion function.
+    :return:        the result of the cast or a default value.
     """
+    if default is None:
+        # Mypy is currently unable to resolve the Optional[R] correctly, therefore the following
+        # assignments to 'default' need a 'type: ignore' statement.
+        # Ref: https://github.com/python/mypy/issues/8708
+        if to in [str, ip, mac]:
+            default = ""  # type: ignore
+        elif to in [float, int]:
+            default = 0  # type: ignore
+        elif to == bool:
+            default = False  # type: ignore
+        elif to == list:
+            default = []  # type: ignore
+        else:
+            raise ValueError(
+                f"Can't convert with callable {to} - no default is defined for this type."
+            )
+
+    # This is safe because the None-case if handled above
+    assert default is not None
+
     if who is None:
         return default
     try:
