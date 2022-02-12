@@ -54,6 +54,7 @@ from napalm.base.exceptions import (
 import napalm.base.constants as c
 
 # local modules
+import napalm.gnmi.module_openconfig as oc_yang
 # here add local imports
 # e.g. import napalm.eos.helpers etc.
 
@@ -83,8 +84,10 @@ class gNMIDriver(NetworkDriver):
         self.timeout = timeout
         self.config_session = None
         self.locked = False
+        self.vendor = None
 
         self.platform = "gnmi" # TODO auto-detect: cEOS or SR Linux
+        self.port = optional_args.get("port", 57400)
         self.profile = [self.platform]
 
         self._process_optional_args(optional_args or {})
@@ -100,7 +103,7 @@ class gNMIDriver(NetworkDriver):
         """Implementation of NAPALM method open."""
         try:
             self.gnmi = gNMIclient(
-                target=(self.hostname,57400),
+                target=(self.hostname, self.port), #
                 username=self.username,
                 password=self.password,
                 gnmi_timeout=self.timeout,
@@ -111,14 +114,29 @@ class gNMIDriver(NetworkDriver):
             self.gnmi.connect()
 
             # TODO run commands to determine device type and version
-            data = self.gnmi.get(path=["/system"], encoding='json_ietf')
-            print( data )
-            # sh_ver = self.device.run_commands(["show version"])
-            # cli_version = (
-            #     2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
-            # )
+            data = self.gnmi.capabilities()
 
-            # self.device.update_cli_version(cli_version)
+            orgs = set()
+
+            for item in data["supported_models"]:
+                orgs.update([re.sub(r'^\W*(\w+)\W*$', r'\1', word) for word in item["organization"].lower().split()])
+
+            print(orgs)
+            # Define a vendor
+            if "openconfig" in orgs:
+                self.vendor = "openconfig"
+
+            elif "nokia" in orgs:
+                self.vendor = "nokia"
+
+            elif "cisco" in orgs:
+                self.vendor = "cisco"
+
+            elif "arista" in orgs:
+                self.vendor = "arista"
+
+            print(self.vendor)
+
         except Exception as ce:
             # and this is raised either if device not avaiable
             # either if HTTP(S) agent is not enabled
@@ -282,29 +300,13 @@ class gNMIDriver(NetworkDriver):
 
     def get_facts(self):
         """Implementation of NAPALM method get_facts."""
-        commands = ["show version", "show hostname", "show interfaces"]
+        result = {}
 
-        result = self.device.run_commands(commands)
+        if self.vendor == "openconfig":
+            result = oc_yang.get_facts(gnmi_object=self.gnmi)
 
-        version = result[0]
-        hostname = result[1]
-        interfaces_dict = result[2]["interfaces"]
 
-        uptime = time.time() - version["bootupTimestamp"]
-
-        interfaces = [i for i in interfaces_dict.keys() if "." not in i]
-        interfaces = string_parsers.sorted_nicely(interfaces)
-
-        return {
-            "hostname": hostname["hostname"],
-            "fqdn": hostname["fqdn"],
-            "vendor": "Arista",
-            "model": version["modelName"],
-            "serial_number": version["serialNumber"],
-            "os_version": version["internalVersion"],
-            "uptime": int(uptime),
-            "interface_list": interfaces,
-        }
+        return result
 
     def get_interfaces(self):
         commands = ["show interfaces"]
