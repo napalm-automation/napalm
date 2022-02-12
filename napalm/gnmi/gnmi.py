@@ -116,26 +116,23 @@ class gNMIDriver(NetworkDriver):
             # TODO run commands to determine device type and version
             data = self.gnmi.capabilities()
 
-            orgs = set()
+            self.orgs = set()
 
             for item in data["supported_models"]:
-                orgs.update([re.sub(r'^\W*(\w+)\W*$', r'\1', word) for word in item["organization"].lower().split()])
+                self.orgs.update([re.sub(r'^\W*(\w+)\W*$', r'\1', word) for word in item["organization"].lower().split()])
 
-            print(orgs)
             # Define a vendor
-            if "openconfig" in orgs:
+            if "openconfig" in self.orgs:
                 self.vendor = "openconfig"
 
-            elif "nokia" in orgs:
+            elif "nokia" in self.orgs:
                 self.vendor = "nokia"
 
-            elif "cisco" in orgs:
+            elif "cisco" in self.orgs:
                 self.vendor = "cisco"
 
-            elif "arista" in orgs:
+            elif "arista" in self.orgs:
                 self.vendor = "arista"
-
-            print(self.vendor)
 
         except Exception as ce:
             # and this is raised either if device not avaiable
@@ -303,8 +300,7 @@ class gNMIDriver(NetworkDriver):
         result = {}
 
         if self.vendor == "openconfig":
-            result = oc_yang.get_facts(gnmi_object=self.gnmi)
-
+            result = oc_yang.get_facts(gnmi_object=self.gnmi, orgs=self.orgs)
 
         return result
 
