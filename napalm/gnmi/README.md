@@ -15,5 +15,10 @@ source venv/bin/activate
 python3 -m pip install -r requirements.txt -r requirements-dev.txt
 ```
 
+# Test
+Using NAPALM CLI:
+```
+napalm --vendor gnmi --user admin --password admin leaf1.srlinux.dev call get_facts
+```
 
 ![Napalm_olypics](https://user-images.githubusercontent.com/2031627/153724175-69f9fcd0-bcbe-49e5-8676-89de32c1f9b3.png)
