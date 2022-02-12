@@ -267,6 +267,7 @@ class JunOSDriver(NetworkDriver):
                 ignore_warning=self.ignore_warning,
             )
         except ConfigLoadError as e:
+            self.discard_config()
             if self.config_replace:
                 raise ReplaceConfigException(e.errs)
             else:
@@ -284,7 +285,7 @@ class JunOSDriver(NetworkDriver):
 
     def compare_config(self):
         """Compare candidate config with running."""
-        diff = self.device.cu.diff()
+        diff = self.device.cu.diff(ignore_warning=self.ignore_warning)
 
         if diff is None:
             return ""
@@ -383,7 +384,7 @@ class JunOSDriver(NetworkDriver):
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
-        self.device.cu.rollback(rb_id=0)
+        self.device.cu.rollback(rb_id=0, ignore_warning=self.ignore_warning)
         if not self.lock_disable and not self.session_config_lock:
             self._unlock()
         if self.config_private:
@@ -448,7 +449,7 @@ class JunOSDriver(NetworkDriver):
                         iface_data["mac_address"],
                         str(iface_data["mac_address"]),
                     ),
-                    "speed": -1,
+                    "speed": -1.0,
                     "mtu": 0,
                 }
                 # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
@@ -463,12 +464,13 @@ class JunOSDriver(NetworkDriver):
                     )
                 if match is None:
                     continue
-                speed_value = napalm.base.helpers.convert(int, match.group(1), -1)
-                if speed_value == -1:
+                speed_value = napalm.base.helpers.convert(float, match.group(1), -1.0)
+
+                if speed_value == -1.0:
                     continue
                 speed_unit = match.group(2)
                 if speed_unit.lower() == "gbps":
-                    speed_value *= 1000
+                    speed_value *= 1000.0
                 result[iface]["speed"] = speed_value
 
             return result
@@ -908,7 +910,18 @@ class JunOSDriver(NetworkDriver):
         for neigh in result:
             if neigh[0] not in neighbors.keys():
                 neighbors[neigh[0]] = []
-            neighbors[neigh[0]].append({x[0]: str(x[1]) for x in neigh[1]})
+
+            neigh_dict = {}
+            for neigh_data in neigh[1]:
+                key = neigh_data[0]
+                value = (
+                    str(neigh_data[1][0])
+                    # When return value is a list of multiple objects, we pick the first one
+                    if neigh_data[1] and isinstance(neigh_data[1], list)
+                    else str(neigh_data[1])
+                )
+                neigh_dict[key] = value
+            neighbors[neigh[0]].append(neigh_dict)
 
         return neighbors
 

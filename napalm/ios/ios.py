@@ -1132,7 +1132,6 @@ class IOSDriver(NetworkDriver):
                     speed = speed / 1000.0
                 elif speedformat.startswith("Gb"):
                     speed = speed * 1000
-                speed = int(round(speed))
 
                 if interface == "":
                     raise ValueError(
@@ -1303,7 +1302,7 @@ class IOSDriver(NetworkDriver):
             if "ipv6" in af_table.lower():
                 inet6 = True
                 preifx_type = "inet6"
-            if len(af_table.split()) == 2:
+            if not af_table or len(af_table.split()) == 2:
                 safi = "unicast"
             else:
                 safi = af_table.split()[-1]
@@ -1355,7 +1354,11 @@ class IOSDriver(NetworkDriver):
             afi_list = napalm.base.helpers.cisco_conf_parse_parents(
                 r"\s+address-family.*", bgp_neighbor, bgp_config_text
             )
-            afi = afi_list[0]
+            try:
+                afi = afi_list[0]
+            except IndexError:
+                afi = ""
+
             # Skipping neighbors in VRFs for now
             if "vrf" in str(afi_list):
                 continue
@@ -3424,6 +3427,10 @@ class IOSDriver(NetworkDriver):
             else:
                 return instances
 
+        if "Invalid input detected" in sh_vrf_detail:
+            # No VRF support
+            return instances
+
         for vrf in sh_vrf_detail.split("\n\n"):
 
             first_part = vrf.split("Address family")[0]
@@ -3595,7 +3602,7 @@ class IOSDriver(NetworkDriver):
         for vlan_id, vlan_name in find_vlan:
             output = self._send_command("show vlan id {}".format(vlan_id))
             interface_regex = r"{}\s+{}\s+\S+\s+([A-Z][a-z].*)$".format(
-                vlan_id, vlan_name
+                vlan_id, re.escape(vlan_name)
             )
             interfaces = re.findall(interface_regex, output, re.MULTILINE)
             if len(interfaces) == 1:

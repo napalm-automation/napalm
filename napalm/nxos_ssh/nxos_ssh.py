@@ -96,9 +96,7 @@ def parse_intf_section(interface):
     re_is_enabled_2 = r"^admin state is (?P<is_enabled>\S+), "
     re_is_enabled_3 = r"^.* is down.*Administratively down.*$"
     re_mac = r"^\s+Hardware:\s+(?P<hardware>.*),\s+address:\s+(?P<mac_address>\S+) "
-    re_speed = (
-        r"\s+MTU (?P<mtu>\S+)\s+bytes,\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
-    )
+    re_speed = r"\s+(MTU (?P<mtu>\S+)\s+bytes)?,\s+BW\s+(?P<speed>\S+)\s+(?P<speed_unit>\S+).*$"
     re_mtu_nve = r"\s+MTU (?P<mtu_nve>\S+)\s+bytes.*$"
     re_description_1 = r"^\s+Description:\s+(?P<description>.*)  (?:MTU|Internet)"
     re_description_2 = r"^\s+Description:\s+(?P<description>.*)$"
@@ -164,9 +162,10 @@ def parse_intf_section(interface):
 
     if speed_exist:
         match = re.search(re_speed, interface, flags=re.M)
-        speed = int(match.group("speed"))
-        mtu = int(match.group("mtu"))
-        speed_unit = match.group("speed_unit")
+        speed_data = match.groupdict(-1)
+        speed = float(speed_data["speed"])
+        mtu = int(speed_data["mtu"])
+        speed_unit = speed_data["speed_unit"]
         speed_unit = speed_unit.rstrip(",")
         # This was alway in Kbit (in the data I saw)
         if speed_unit != "Kbit":
@@ -174,9 +173,9 @@ def parse_intf_section(interface):
                 interface
             )
             raise ValueError(msg)
-        speed = int(round(speed / 1000.0))
+        speed = float(speed / 1000.0)
     else:
-        speed = -1
+        speed = -1.0
 
     description = ""
     for x_pattern in [re_description_1, re_description_2]:
@@ -686,19 +685,19 @@ class NXOSSSHDriver(NXOSDriverBase):
                       'is_up': True,
                       'last_flapped': -1.0,
                       'mac_address': u'a493.4cc1.67a7',
-                      'speed': 100},
+                      'speed': 100.0},
         u'Vlan100': {   'description': u'Data Network',
                         'is_enabled': True,
                         'is_up': True,
                         'last_flapped': -1.0,
                         'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100},
+                        'speed': 100.0},
         u'Vlan200': {   'description': u'Voice Network',
                         'is_enabled': True,
                         'is_up': True,
                         'last_flapped': -1.0,
                         'mac_address': u'a493.4cc1.67a7',
-                        'speed': 100}}
+                        'speed': 100.0}}
         """
         interfaces = {}
         command = "show interface"
@@ -1534,7 +1533,11 @@ class NXOSSSHDriver(NXOSDriverBase):
         for vlan in vlan_table_raw:
             if "vlanshowplist-ifidx" not in vlan.keys():
                 vlan["vlanshowplist-ifidx"] = []
-            vlans[vlan["vlanshowbr-vlanid"]] = {
+            if "vlanshowbr-vlanid-utf" in vlan.keys():
+                vlan_number = vlan["vlanshowbr-vlanid-utf"]
+            else:
+                vlan_number = vlan["vlanshowbr-vlanid"]
+            vlans[vlan_number] = {
                 "name": vlan["vlanshowbr-vlanname"],
                 "interfaces": self._parse_vlan_ports(vlan["vlanshowplist-ifidx"]),
             }
