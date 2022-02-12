@@ -340,7 +340,8 @@ def convert(to: Callable[[T], R], who: Optional[T], default: Optional[R] = None)
                 f"Can't convert with callable {to} - no default is defined for this type."
             )
 
-    # This is safe because the None-case if handled above
+    # This is safe because the None-case if handled above. This needs to be here because Mypy is
+    # unable to infer that 'default' is in fact not None based of the chained if-statements above.
     assert default is not None
 
     if who is None:
