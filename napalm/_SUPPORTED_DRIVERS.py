@@ -7,4 +7,5 @@ SUPPORTED_DRIVERS = [
     "nxos",
     "nxos_ssh",
     "iosxr_netconf",
+    "gnmi"
 ]
