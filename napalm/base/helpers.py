@@ -220,9 +220,7 @@ def textfsm_extractor(
             continue
         module = sys.modules[c.__module__].__file__
         if module:
-            current_dir = os.path.dirname(
-                os.path.abspath(module)
-            )
+            current_dir = os.path.dirname(os.path.abspath(module))
         else:
             continue
         template_dir_path = "{current_dir}/utils/textfsm_templates".format(
