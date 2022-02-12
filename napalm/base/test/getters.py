@@ -109,7 +109,10 @@ class BaseTestGetters(object):
     """Base class for testing drivers."""
 
     def test_method_signatures(self):
-        """Test that all methods have the same signature."""
+        """
+        Test that all methods have the same signature.
+
+        The type hint annotations are ignored here because the import paths might differ."""
         errors = {}
         cls = self.driver
         # Create fictional driver instance (py3 needs bound methods)
@@ -121,17 +124,17 @@ class BaseTestGetters(object):
                 continue
             try:
                 orig = getattr(NetworkDriver, attr)
-                orig_spec = inspect.getfullargspec(orig)
+                orig_spec = inspect.getfullargspec(orig)[:4]
             except AttributeError:
                 orig_spec = "Method does not exist in napalm.base"
-            func_spec = inspect.getfullargspec(func)
+            func_spec = inspect.getfullargspec(func)[:4]
             if orig_spec != func_spec:
                 errors[attr] = (orig_spec, func_spec)
 
         EXTRA_METHODS = ["__init__"]
         for method in EXTRA_METHODS:
-            orig_spec = inspect.getfullargspec(getattr(NetworkDriver, method))
-            func_spec = inspect.getfullargspec(getattr(cls, method))
+            orig_spec = inspect.getfullargspec(getattr(NetworkDriver, method))[:4]
+            func_spec = inspect.getfullargspec(getattr(cls, method))[:4]
             if orig_spec != func_spec:
                 errors[attr] = (orig_spec, func_spec)
 
@@ -141,14 +144,14 @@ class BaseTestGetters(object):
     def test_is_alive(self, test_case):
         """Test is_alive method."""
         alive = self.device.is_alive()
-        assert helpers.test_model(models.alive, alive)
+        assert helpers.test_model(models.AliveDict, alive)
         return alive
 
     @wrap_test_cases
     def test_get_facts(self, test_case):
         """Test get_facts method."""
         facts = self.device.get_facts()
-        assert helpers.test_model(models.facts, facts)
+        assert helpers.test_model(models.FactsDict, facts)
         return facts
 
     @wrap_test_cases
@@ -158,7 +161,7 @@ class BaseTestGetters(object):
         assert len(get_interfaces) > 0
 
         for interface, interface_data in get_interfaces.items():
-            assert helpers.test_model(models.interface, interface_data)
+            assert helpers.test_model(models.InterfaceDict, interface_data)
 
         return get_interfaces
 
@@ -170,7 +173,7 @@ class BaseTestGetters(object):
 
         for interface, neighbor_list in get_lldp_neighbors.items():
             for neighbor in neighbor_list:
-                assert helpers.test_model(models.lldp_neighbors, neighbor)
+                assert helpers.test_model(models.LLDPNeighborDict, neighbor)
 
         return get_lldp_neighbors
 
@@ -181,7 +184,7 @@ class BaseTestGetters(object):
         assert len(self.device.get_interfaces_counters()) > 0
 
         for interface, interface_data in get_interfaces_counters.items():
-            assert helpers.test_model(models.interface_counters, interface_data)
+            assert helpers.test_model(models.InterfaceCounterDict, interface_data)
 
         return get_interfaces_counters
 
@@ -192,18 +195,18 @@ class BaseTestGetters(object):
         assert len(environment) > 0
 
         for fan, fan_data in environment["fans"].items():
-            assert helpers.test_model(models.fan, fan_data)
+            assert helpers.test_model(models.FanDict, fan_data)
 
         for power, power_data in environment["power"].items():
-            assert helpers.test_model(models.power, power_data)
+            assert helpers.test_model(models.PowerDict, power_data)
 
         for temperature, temperature_data in environment["temperature"].items():
-            assert helpers.test_model(models.temperature, temperature_data)
+            assert helpers.test_model(models.TemperatureDict, temperature_data)
 
         for cpu, cpu_data in environment["cpu"].items():
-            assert helpers.test_model(models.cpu, cpu_data)
+            assert helpers.test_model(models.CPUDict, cpu_data)
 
-        assert helpers.test_model(models.memory, environment["memory"])
+        assert helpers.test_model(models.MemoryDict, environment["memory"])
 
         return environment
 
@@ -218,10 +221,10 @@ class BaseTestGetters(object):
             assert isinstance(vrf_data["router_id"], str)
 
             for peer, peer_data in vrf_data["peers"].items():
-                assert helpers.test_model(models.peer, peer_data)
+                assert helpers.test_model(models.PeerDict, peer_data)
 
                 for af, af_data in peer_data["address_family"].items():
-                    assert helpers.test_model(models.af, af_data)
+                    assert helpers.test_model(models.AFDict, af_data)
 
         return get_bgp_neighbors
 
@@ -233,7 +236,7 @@ class BaseTestGetters(object):
 
         for interface, neighbor_list in get_lldp_neighbors_detail.items():
             for neighbor in neighbor_list:
-                assert helpers.test_model(models.lldp_neighbors_detail, neighbor)
+                assert helpers.test_model(models.LLDPNeighborDetailDict, neighbor)
 
         return get_lldp_neighbors_detail
 
@@ -244,9 +247,9 @@ class BaseTestGetters(object):
         assert len(get_bgp_config) > 0
 
         for bgp_group in get_bgp_config.values():
-            assert helpers.test_model(models.bgp_config_group, bgp_group)
+            assert helpers.test_model(models.BPGConfigGroupDict, bgp_group)
             for bgp_neighbor in bgp_group.get("neighbors", {}).values():
-                assert helpers.test_model(models.bgp_config_neighbor, bgp_neighbor)
+                assert helpers.test_model(models.BGPConfigNeighborDict, bgp_neighbor)
 
         return get_bgp_config
 
@@ -262,7 +265,7 @@ class BaseTestGetters(object):
             for remote_as, neighbor_list in vrf_ases.items():
                 assert isinstance(remote_as, int)
                 for neighbor in neighbor_list:
-                    assert helpers.test_model(models.peer_details, neighbor)
+                    assert helpers.test_model(models.PeerDetailsDict, neighbor)
 
         return get_bgp_neighbors_detail
 
@@ -273,7 +276,7 @@ class BaseTestGetters(object):
         assert len(get_arp_table) > 0
 
         for arp_entry in get_arp_table:
-            assert helpers.test_model(models.arp_table, arp_entry)
+            assert helpers.test_model(models.ARPTableDict, arp_entry)
 
         return get_arp_table
 
@@ -284,7 +287,7 @@ class BaseTestGetters(object):
         assert len(get_arp_table) > 0
 
         for arp_entry in get_arp_table:
-            assert helpers.test_model(models.arp_table, arp_entry)
+            assert helpers.test_model(models.ARPTableDict, arp_entry)
 
         return get_arp_table
 
@@ -294,7 +297,7 @@ class BaseTestGetters(object):
         get_ipv6_neighbors_table = self.device.get_ipv6_neighbors_table()
 
         for entry in get_ipv6_neighbors_table:
-            assert helpers.test_model(models.ipv6_neighbor, entry)
+            assert helpers.test_model(models.IPV6NeighborDict, entry)
 
         return get_ipv6_neighbors_table
 
@@ -306,7 +309,7 @@ class BaseTestGetters(object):
 
         for peer, peer_details in get_ntp_peers.items():
             assert isinstance(peer, str)
-            assert helpers.test_model(models.ntp_peer, peer_details)
+            assert helpers.test_model(models.NTPPeerDict, peer_details)
 
         return get_ntp_peers
 
@@ -318,7 +321,7 @@ class BaseTestGetters(object):
 
         for server, server_details in get_ntp_servers.items():
             assert isinstance(server, str)
-            assert helpers.test_model(models.ntp_server, server_details)
+            assert helpers.test_model(models.NTPServerDict, server_details)
 
         return get_ntp_servers
 
@@ -329,7 +332,7 @@ class BaseTestGetters(object):
         assert len(get_ntp_stats) > 0
 
         for ntp_peer_details in get_ntp_stats:
-            assert helpers.test_model(models.ntp_stats, ntp_peer_details)
+            assert helpers.test_model(models.NTPStats, ntp_peer_details)
 
         return get_ntp_stats
 
@@ -343,9 +346,9 @@ class BaseTestGetters(object):
             ipv4 = interface_details.get("ipv4", {})
             ipv6 = interface_details.get("ipv6", {})
             for ip, ip_details in ipv4.items():
-                assert helpers.test_model(models.interfaces_ip, ip_details)
+                assert helpers.test_model(models.InterfacesIPDictEntry, ip_details)
             for ip, ip_details in ipv6.items():
-                assert helpers.test_model(models.interfaces_ip, ip_details)
+                assert helpers.test_model(models.InterfacesIPDictEntry, ip_details)
 
         return get_interfaces_ip
 
@@ -356,7 +359,7 @@ class BaseTestGetters(object):
         assert len(get_mac_address_table) > 0
 
         for mac_table_entry in get_mac_address_table:
-            assert helpers.test_model(models.mac_address_table, mac_table_entry)
+            assert helpers.test_model(models.MACAdressTable, mac_table_entry)
 
         return get_mac_address_table
 
@@ -373,7 +376,7 @@ class BaseTestGetters(object):
 
         for prefix, routes in get_route_to.items():
             for route in routes:
-                assert helpers.test_model(models.route, route)
+                assert helpers.test_model(models.RouteDict, route)
 
         return get_route_to
 
@@ -391,7 +394,7 @@ class BaseTestGetters(object):
 
         for prefix, routes in get_route_to.items():
             for route in routes:
-                assert helpers.test_model(models.route, route)
+                assert helpers.test_model(models.RouteDict, route)
 
         return get_route_to
 
@@ -403,10 +406,10 @@ class BaseTestGetters(object):
         assert len(get_snmp_information) > 0
 
         for snmp_entry in get_snmp_information:
-            assert helpers.test_model(models.snmp, get_snmp_information)
+            assert helpers.test_model(models.SNMPDict, get_snmp_information)
 
         for community, community_data in get_snmp_information["community"].items():
-            assert helpers.test_model(models.snmp_community, community_data)
+            assert helpers.test_model(models.SNMPCommunityDict, community_data)
 
         return get_snmp_information
 
@@ -419,7 +422,7 @@ class BaseTestGetters(object):
 
         for probe_name, probe_tests in get_probes_config.items():
             for test_name, test_config in probe_tests.items():
-                assert helpers.test_model(models.probe_test, test_config)
+                assert helpers.test_model(models.ProbeTestDict, test_config)
 
         return get_probes_config
 
@@ -431,7 +434,7 @@ class BaseTestGetters(object):
 
         for probe_name, probe_tests in get_probes_results.items():
             for test_name, test_results in probe_tests.items():
-                assert helpers.test_model(models.probe_test_results, test_results)
+                assert helpers.test_model(models.ProbeTestResultDict, test_results)
 
         return get_probes_results
 
@@ -443,10 +446,10 @@ class BaseTestGetters(object):
         assert isinstance(get_ping.get("success"), dict)
         ping_results = get_ping.get("success", {})
 
-        assert helpers.test_model(models.ping, ping_results)
+        assert helpers.test_model(models.PingDict, ping_results)
 
         for ping_result in ping_results.get("results", []):
-            assert helpers.test_model(models.ping_result, ping_result)
+            assert helpers.test_model(models.PingResultDictEntry, ping_result)
 
         return get_ping
 
@@ -460,7 +463,7 @@ class BaseTestGetters(object):
 
         for hope_id, hop_result in traceroute_results.items():
             for probe_id, probe_result in hop_result.get("probes", {}).items():
-                assert helpers.test_model(models.traceroute, probe_result)
+                assert helpers.test_model(models.TracerouteDict, probe_result)
 
         return get_traceroute
 
@@ -471,7 +474,7 @@ class BaseTestGetters(object):
         assert len(get_users)
 
         for user, user_details in get_users.items():
-            assert helpers.test_model(models.users, user_details)
+            assert helpers.test_model(models.UsersDict, user_details)
             assert (0 <= user_details.get("level") <= 15) or (
                 user_details.get("level") == 20
             )
@@ -505,7 +508,7 @@ class BaseTestGetters(object):
         get_config = self.device.get_config()
 
         assert isinstance(get_config, dict)
-        assert helpers.test_model(models.config, get_config)
+        assert helpers.test_model(models.ConfigDict, get_config)
 
         return get_config
 
@@ -529,7 +532,7 @@ class BaseTestGetters(object):
         get_config = self.device.get_config(sanitized=True)
 
         assert isinstance(get_config, dict)
-        assert helpers.test_model(models.config, get_config)
+        assert helpers.test_model(models.ConfigDict, get_config)
 
         return get_config
 
@@ -540,12 +543,12 @@ class BaseTestGetters(object):
 
         assert isinstance(get_network_instances, dict)
         for network_instance_name, network_instance in get_network_instances.items():
-            assert helpers.test_model(models.network_instance, network_instance)
+            assert helpers.test_model(models.NetworkInstanceDict, network_instance)
             assert helpers.test_model(
-                models.network_instance_state, network_instance["state"]
+                models.NetworkInstanceStateDict, network_instance["state"]
             )
             assert helpers.test_model(
-                models.network_instance_interfaces, network_instance["interfaces"]
+                models.NetworkInstanceInterfacesDict, network_instance["interfaces"]
             )
 
         return get_network_instances
@@ -557,7 +560,7 @@ class BaseTestGetters(object):
         assert len(get_firewall_policies) > 0
         for policy_name, policy_details in get_firewall_policies.items():
             for policy_term in policy_details:
-                assert helpers.test_model(models.firewall_policies, policy_term)
+                assert helpers.test_model(models.FirewallPolicyDict, policy_term)
         return get_firewall_policies
 
     @wrap_test_cases
@@ -568,6 +571,6 @@ class BaseTestGetters(object):
         assert len(get_vlans) > 0
 
         for vlan, vlan_data in get_vlans.items():
-            assert helpers.test_model(models.vlan, vlan_data)
+            assert helpers.test_model(models.VlanDict, vlan_data)
 
         return get_vlans

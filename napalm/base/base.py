@@ -13,6 +13,10 @@
 # the License.
 
 import sys
+from types import TracebackType
+from typing import Optional, Dict, Type, Any, List, Union
+
+from typing_extensions import Literal
 
 from netmiko import ConnectHandler, NetMikoTimeoutException
 
@@ -22,26 +26,42 @@ import napalm.base.helpers
 from napalm.base import constants as c
 from napalm.base import validate
 from napalm.base.exceptions import ConnectionException
+from napalm.base.test import models
+from napalm.base.test.models import NTPStats
 
 
 class NetworkDriver(object):
-    def __init__(self, hostname, username, password, timeout=60, optional_args=None):
+    hostname: str
+    username: str
+    password: str
+    timeout: int
+    force_no_enable: bool
+    use_canonical_interface: bool
+
+    def __init__(
+        self,
+        hostname: str,
+        username: str,
+        password: str,
+        timeout: int = 60,
+        optional_args: Dict = None,
+    ) -> None:
         """
         This is the base class you have to inherit from when writing your own Network Driver to
         manage any device. You will, in addition, have to override all the methods specified on
         this class. Make sure you follow the guidelines for every method and that you return the
         correct data.
 
-        :param hostname: (str) IP or FQDN of the device you want to connect to.
-        :param username: (str) Username you want to use
-        :param password: (str) Password
-        :param timeout: (int) Time in seconds to wait for the device to respond.
-        :param optional_args: (dict) Pass additional arguments to underlying driver
+        :param hostname: IP or FQDN of the device you want to connect to.
+        :param username: Username you want to use
+        :param password: Password
+        :param timeout: Time in seconds to wait for the device to respond.
+        :param optional_args: Pass additional arguments to underlying driver
         :return:
         """
         raise NotImplementedError
 
-    def __enter__(self):
+    def __enter__(self) -> "NetworkDriver":  # type: ignore
         try:
             self.open()
             return self
@@ -52,11 +72,16 @@ class NetworkDriver(object):
             else:
                 raise
 
-    def __exit__(self, exc_type, exc_value, exc_traceback):
+    def __exit__(  # type: ignore
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_value: Optional[BaseException],
+        exc_traceback: Optional[TracebackType],
+    ) -> Optional[Literal[False]]:
         self.close()
         if exc_type is not None and (
             exc_type.__name__ not in dir(napalm.base.exceptions)
-            and exc_type.__name__ not in __builtins__.keys()
+            and exc_type.__name__ not in __builtins__.keys()  # type: ignore
         ):
             epilog = (
                 "NAPALM didn't catch this exception. Please, fill a bugfix on "
@@ -65,8 +90,9 @@ class NetworkDriver(object):
             )
             print(epilog)
             return False
+        return None
 
-    def __del__(self):
+    def __del__(self) -> None:
         """
         This method is used to cleanup when the program is terminated suddenly.
         We need to make sure the connection is closed properly and the configuration DB
@@ -78,7 +104,9 @@ class NetworkDriver(object):
         except Exception:
             pass
 
-    def _netmiko_open(self, device_type, netmiko_optional_args=None):
+    def _netmiko_open(
+        self, device_type: str, netmiko_optional_args: Optional[Dict] = None
+    ) -> ConnectHandler:
         """Standardized method of creating a Netmiko connection using napalm attributes."""
         if netmiko_optional_args is None:
             netmiko_optional_args = {}
@@ -104,26 +132,26 @@ class NetworkDriver(object):
 
         return self._netmiko_device
 
-    def _netmiko_close(self):
+    def _netmiko_close(self) -> None:
         """Standardized method of closing a Netmiko connection."""
         if getattr(self, "_netmiko_device", None):
             self._netmiko_device.disconnect()
             self._netmiko_device = None
-        self.device = None
+        self.device: Optional[ConnectHandler] = None
 
-    def open(self):
+    def open(self) -> None:
         """
         Opens a connection to the device.
         """
         raise NotImplementedError
 
-    def close(self):
+    def close(self) -> None:
         """
         Closes the connection to the device.
         """
         raise NotImplementedError
 
-    def is_alive(self):
+    def is_alive(self) -> models.AliveDict:
         """
         Returns a flag with the connection state.
         Depends on the nature of API used by each driver.
@@ -133,7 +161,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def pre_connection_tests(self):
+    def pre_connection_tests(self) -> None:
         """
         This is a helper function used by the cli tool cl_napalm_show_tech. Drivers
         can override this method to do some tests, show information, enable debugging, etc.
@@ -141,7 +169,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def connection_tests(self):
+    def connection_tests(self) -> None:
         """
         This is a helper function used by the cli tool cl_napalm_show_tech. Drivers
         can override this method to do some tests, show information, enable debugging, etc.
@@ -149,7 +177,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def post_connection_tests(self):
+    def post_connection_tests(self) -> None:
         """
         This is a helper function used by the cli tool cl_napalm_show_tech. Drivers
         can override this method to do some tests, show information, enable debugging, etc.
@@ -158,8 +186,12 @@ class NetworkDriver(object):
         raise NotImplementedError
 
     def load_template(
-        self, template_name, template_source=None, template_path=None, **template_vars
-    ):
+        self,
+        template_name: str,
+        template_source: Optional[str] = None,
+        template_path: Optional[str] = None,
+        **template_vars: Any
+    ) -> None:
         """
         Will load a templated configuration on the device.
 
@@ -185,7 +217,9 @@ class NetworkDriver(object):
             **template_vars
         )
 
-    def load_replace_candidate(self, filename=None, config=None):
+    def load_replace_candidate(
+        self, filename: Optional[str] = None, config: Optional[str] = None
+    ) -> None:
         """
         Populates the candidate configuration. You can populate it from a file or from a string.
         If you send both a filename and a string containing the configuration, the file takes
@@ -201,7 +235,9 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def load_merge_candidate(self, filename=None, config=None):
+    def load_merge_candidate(
+        self, filename: Optional[str] = None, config: Optional[str] = None
+    ) -> None:
         """
         Populates the candidate configuration. You can populate it from a file or from a string.
         If you send both a filename and a string containing the configuration, the file takes
@@ -217,7 +253,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def compare_config(self):
+    def compare_config(self) -> str:
         """
         :return: A string showing the difference between the running configuration and the \
         candidate configuration. The running_config is loaded automatically just before doing the \
@@ -225,7 +261,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def commit_config(self, message="", revert_in=None):
+    def commit_config(self, message: str = "", revert_in: Optional[int] = None) -> None:
         """
         Commits the changes requested by the method load_replace_candidate or load_merge_candidate.
 
@@ -242,7 +278,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def confirm_commit(self):
+    def confirm_commit(self) -> None:
         """
         Confirm the changes requested via commit_config when commit_confirm=True.
 
@@ -250,19 +286,19 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def has_pending_commit(self):
+    def has_pending_commit(self) -> bool:
         """
         :return Boolean indicating if a commit_config that needs confirmed is in process.
         """
         raise NotImplementedError
 
-    def discard_config(self):
+    def discard_config(self) -> None:
         """
         Discards the configuration loaded into the candidate.
         """
         raise NotImplementedError
 
-    def rollback(self):
+    def rollback(self) -> None:
         """
         If changes were made, revert changes to the original state.
 
@@ -270,7 +306,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_facts(self):
+    def get_facts(self) -> models.FactsDict:
         """
         Returns a dictionary containing the following information:
          * uptime - Uptime of the device in seconds.
@@ -298,7 +334,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_interfaces(self):
+    def get_interfaces(self) -> Dict[str, models.InterfaceDict]:
         """
         Returns a dictionary of dictionaries. The keys for the first dictionary will be the \
         interfaces in the devices. The inner dictionary will containing the following data for \
@@ -359,7 +395,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_lldp_neighbors(self):
+    def get_lldp_neighbors(self) -> Dict[str, List[models.LLDPNeighborDict]]:
         """
         Returns a dictionary where the keys are local ports and the value is a list of \
         dictionaries with the following information:
@@ -405,7 +441,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_bgp_neighbors(self):
+    def get_bgp_neighbors(self) -> Dict[str, models.BGPStateNeighborsPerVRFDict]:
         """
         Returns a dictionary of dictionaries. The keys for the first dictionary will be the vrf
         (global if no vrf). The inner dictionary will contain the following data for each vrf:
@@ -462,7 +498,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_environment(self):
+    def get_environment(self) -> models.EnvironmentDict:
         """
         Returns a dictionary where:
 
@@ -484,7 +520,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_interfaces_counters(self):
+    def get_interfaces_counters(self) -> Dict[str, models.InterfaceCounterDict]:
         """
         Returns a dictionary of dictionaries where the first key is an interface name and the
         inner dictionary contains the following keys:
@@ -551,7 +587,9 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_lldp_neighbors_detail(self, interface=""):
+    def get_lldp_neighbors_detail(
+        self, interface: str = ""
+    ) -> models.LLDPNeighborsDetailDict:
         """
         Returns a detailed view of the LLDP neighbors as a dictionary
         containing lists of dictionaries for each interface.
@@ -599,7 +637,9 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_bgp_config(self, group="", neighbor=""):
+    def get_bgp_config(
+        self, group: str = "", neighbor: str = ""
+    ) -> models.BPGConfigGroupDict:
         """
         Returns a dictionary containing the BGP configuration.
         Can return either the whole config, either the config only for a group or neighbor.
@@ -698,7 +738,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def cli(self, commands):
+    def cli(self, commands: List[str]) -> Dict[str, Union[str, Dict[str, Any]]]:
 
         """
         Will execute a list of commands and return the output in a dictionary format.
@@ -726,7 +766,9 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_bgp_neighbors_detail(self, neighbor_address=""):
+    def get_bgp_neighbors_detail(
+        self, neighbor_address: str = ""
+    ) -> Dict[str, models.PeerDetailsDict]:
 
         """
         Returns a detailed view of the BGP neighbors as a dictionary of lists.
@@ -821,7 +863,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_arp_table(self, vrf=""):
+    def get_arp_table(self, vrf: str = "") -> List[models.ARPTableDict]:
 
         """
         Returns a list of dictionaries having the following set of keys:
@@ -856,7 +898,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_ntp_peers(self):
+    def get_ntp_peers(self) -> Dict[str, models.NTPPeerDict]:
 
         """
         Returns the NTP peers configuration as dictionary.
@@ -876,7 +918,7 @@ class NetworkDriver(object):
 
         raise NotImplementedError
 
-    def get_ntp_servers(self):
+    def get_ntp_servers(self) -> Dict[str, models.NTPServerDict]:
 
         """
         Returns the NTP servers configuration as dictionary.
@@ -896,7 +938,7 @@ class NetworkDriver(object):
 
         raise NotImplementedError
 
-    def get_ntp_stats(self):
+    def get_ntp_stats(self) -> List[NTPStats]:
 
         """
         Returns a list of NTP synchronization statistics.
@@ -933,7 +975,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_interfaces_ip(self):
+    def get_interfaces_ip(self) -> Dict[str, models.InterfacesIPDict]:
 
         """
         Returns all configured IP addresses on all interfaces as a dictionary of dictionaries.
@@ -987,7 +1029,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_mac_address_table(self):
+    def get_mac_address_table(self) -> List[models.MACAdressTable]:
 
         """
         Returns a lists of dictionaries. Each dictionary represents an entry in the MAC Address
@@ -1038,7 +1080,9 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_route_to(self, destination="", protocol="", longer=False):
+    def get_route_to(
+        self, destination: str = "", protocol: str = "", longer: bool = False
+    ) -> Dict[str, models.RouteDict]:
 
         """
         Returns a dictionary of dictionaries containing details of all available routes to a
@@ -1113,7 +1157,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_snmp_information(self):
+    def get_snmp_information(self) -> models.SNMPDict:
 
         """
         Returns a dict of dicts containing SNMP configuration.
@@ -1157,7 +1201,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_probes_config(self):
+    def get_probes_config(self) -> Dict[str, models.ProbeTestDict]:
         """
         Returns a dictionary with the probes configured on the device.
         Probes can be either RPM on JunOS devices, either SLA on IOS-XR. Other vendors do not
@@ -1195,7 +1239,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_probes_results(self):
+    def get_probes_results(self) -> Dict[str, models.ProbeTestResultDict]:
         """
         Returns a dictionary with the results of the probes.
         The keys of the main dictionary represent the name of the probes.
@@ -1266,15 +1310,15 @@ class NetworkDriver(object):
 
     def ping(
         self,
-        destination,
-        source=c.PING_SOURCE,
-        ttl=c.PING_TTL,
-        timeout=c.PING_TIMEOUT,
-        size=c.PING_SIZE,
-        count=c.PING_COUNT,
-        vrf=c.PING_VRF,
-        source_interface=c.PING_SOURCE_INTERFACE,
-    ):
+        destination: str,
+        source: str = c.PING_SOURCE,
+        ttl: int = c.PING_TTL,
+        timeout: int = c.PING_TIMEOUT,
+        size: int = c.PING_SIZE,
+        count: int = c.PING_COUNT,
+        vrf: str = c.PING_VRF,
+        source_interface: str = c.PING_SOURCE_INTERFACE,
+    ) -> models.PingResultDict:
         """
         Executes ping on the device and returns a dictionary with the result
 
@@ -1348,12 +1392,12 @@ class NetworkDriver(object):
 
     def traceroute(
         self,
-        destination,
-        source=c.TRACEROUTE_SOURCE,
-        ttl=c.TRACEROUTE_TTL,
-        timeout=c.TRACEROUTE_TIMEOUT,
-        vrf=c.TRACEROUTE_VRF,
-    ):
+        destination: str,
+        source: str = c.TRACEROUTE_SOURCE,
+        ttl: int = c.TRACEROUTE_TTL,
+        timeout: int = c.TRACEROUTE_TIMEOUT,
+        vrf: str = c.TRACEROUTE_VRF,
+    ) -> models.TracerouteResultDict:
         """
         Executes traceroute on the device and returns a dictionary with the result.
 
@@ -1465,7 +1509,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_users(self):
+    def get_users(self) -> Dict[str, models.UsersDict]:
         """
         Returns a dictionary with the configured users.
         The keys of the main dictionary represents the username. The values represent the details
@@ -1497,7 +1541,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_optics(self):
+    def get_optics(self) -> Dict[str, models.OpticsDict]:
         """Fetches the power usage on the various transceivers installed
         on the switch (in dbm), and returns a view that conforms with the
         openconfig model openconfig-platform-transceiver.yang
@@ -1561,7 +1605,9 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_config(self, retrieve="all", full=False, sanitized=False):
+    def get_config(
+        self, retrieve: str = "all", full: bool = False, sanitized: bool = False
+    ) -> models.ConfigDict:
         """
         Return the configuration of a device.
 
@@ -1584,7 +1630,9 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_network_instances(self, name=""):
+    def get_network_instances(
+        self, name: str = ""
+    ) -> Dict[str, models.NetworkInstanceDict]:
         """
         Return a dictionary of network instances (VRFs) configured, including default/global
 
@@ -1636,7 +1684,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_firewall_policies(self):
+    def get_firewall_policies(self) -> Dict[str, List[models.FirewallPolicyDict]]:
         """
         Returns a dictionary of lists of dictionaries where the first key is an unique policy
         name and the inner dictionary contains the following keys:
@@ -1677,7 +1725,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_ipv6_neighbors_table(self):
+    def get_ipv6_neighbors_table(self) -> List[models.IPV6NeighborDict]:
         """
         Get IPv6 neighbors table information.
 
@@ -1710,7 +1758,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_vlans(self):
+    def get_vlans(self) -> Dict[str, models.VlanDict]:
         """
         Return structure being spit balled is as follows.
             * vlan_id (int)
@@ -1732,7 +1780,11 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def compliance_report(self, validation_file=None, validation_source=None):
+    def compliance_report(
+        self,
+        validation_file: Optional[str] = None,
+        validation_source: Optional[str] = None,
+    ) -> models.ReportResult:
         """
         Return a compliance report.
 
@@ -1748,7 +1800,7 @@ class NetworkDriver(object):
             self, validation_file=validation_file, validation_source=validation_source
         )
 
-    def _canonical_int(self, interface):
+    def _canonical_int(self, interface: str) -> str:
         """Expose the helper function within this class."""
         if self.use_canonical_interface is True:
             return napalm.base.helpers.canonical_interface_name(

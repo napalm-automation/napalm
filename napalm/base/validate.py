@@ -6,15 +6,19 @@ See: https://napalm.readthedocs.io/en/latest/validate.html
 import yaml
 import copy
 import re
+from typing import Dict, List, Union, TypeVar, Optional, TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from napalm.base import NetworkDriver
 from napalm.base.exceptions import ValidationException
+from napalm.base.test import models
 
 
 # We put it here to compile it only once
 numeric_compare_regex = re.compile(r"^(<|>|<=|>=|==|!=)(\d+(\.\d+){0,1})$")
 
 
-def _get_validation_file(validation_file):
+def _get_validation_file(validation_file: str) -> Dict[str, Dict]:
     try:
         with open(validation_file, "r") as stream:
             try:
@@ -26,7 +30,7 @@ def _get_validation_file(validation_file):
     return validation_source
 
 
-def _mode(mode_string):
+def _mode(mode_string: str) -> Dict[str, bool]:
     mode = {"strict": False}
 
     for m in mode_string.split():
@@ -36,8 +40,15 @@ def _mode(mode_string):
     return mode
 
 
-def _compare_getter_list(src, dst, mode):
-    result = {"complies": True, "present": [], "missing": [], "extra": []}
+def _compare_getter_list(
+    src: List, dst: List, mode: Dict[str, bool]
+) -> models.ListValidationResult:
+    result: models.ListValidationResult = {
+        "complies": True,
+        "present": [],
+        "missing": [],
+        "extra": [],
+    }
     for src_element in src:
         found = False
 
@@ -71,8 +82,15 @@ def _compare_getter_list(src, dst, mode):
     return result
 
 
-def _compare_getter_dict(src, dst, mode):
-    result = {"complies": True, "present": {}, "missing": [], "extra": []}
+def _compare_getter_dict(
+    src: Dict[str, List], dst: Dict[str, List], mode: Dict[str, bool]
+) -> models.DictValidationResult:
+    result: models.DictValidationResult = {
+        "complies": True,
+        "present": {},
+        "missing": [],
+        "extra": [],
+    }
     dst = copy.deepcopy(dst)  # Otherwise we are going to modify a "live" object
 
     for key, src_element in src.items():
@@ -111,7 +129,12 @@ def _compare_getter_dict(src, dst, mode):
     return result
 
 
-def compare(src, dst):
+CompareInput = TypeVar("CompareInput", str, Dict, List)
+
+
+def compare(
+    src: CompareInput, dst: CompareInput
+) -> Union[bool, models.DictValidationResult, models.ListValidationResult]:
     if isinstance(src, str):
         src = str(src)
 
@@ -152,7 +175,7 @@ def compare(src, dst):
         return src == dst
 
 
-def _compare_numeric(src_num, dst_num):
+def _compare_numeric(src_num: str, dst_num: str) -> bool:
     """Compare numerical values. You can use '<%d','>%d'."""
     dst_num = float(dst_num)
 
@@ -174,7 +197,7 @@ def _compare_numeric(src_num, dst_num):
     return getattr(dst_num, operand[match.group(1)])(float(match.group(2)))
 
 
-def _compare_range(src_num, dst_num):
+def _compare_range(src_num: str, dst_num: str) -> bool:
     """Compare value against a range of values. You can use '%d<->%d'."""
     dst_num = float(dst_num)
 
@@ -191,7 +214,7 @@ def _compare_range(src_num, dst_num):
         return False
 
 
-def empty_tree(input_list):
+def empty_tree(input_list: List) -> bool:
     """Recursively iterate through values in nested lists."""
     for item in input_list:
         if not isinstance(item, list) or not empty_tree(item):
@@ -199,13 +222,19 @@ def empty_tree(input_list):
     return True
 
 
-def compliance_report(cls, validation_file=None, validation_source=None):
-    report = {}
+def compliance_report(
+    cls: "NetworkDriver",
+    validation_file: Optional[str] = None,
+    validation_source: Optional[str] = None,
+) -> models.ReportResult:
+    report: models.ReportResult = {}  # type: ignore
     if validation_file:
-        validation_source = _get_validation_file(validation_file)
+        validation_source = _get_validation_file(validation_file)  # type: ignore
 
     # Otherwise we are going to modify a "live" object
     validation_source = copy.deepcopy(validation_source)
+
+    assert isinstance(validation_source, list), validation_source
 
     for validation_check in validation_source:
         for getter, expected_results in validation_check.items():

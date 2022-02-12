@@ -10,10 +10,12 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 import inspect
+from typing import Dict
+
 from netmiko import BaseConnection
 
 
-def netmiko_args(optional_args):
+def netmiko_args(optional_args: Dict) -> Dict:
     """Check for Netmiko arguments that were passed in as NAPALM optional arguments.
 
     Return a dictionary of these optional args  that will be passed into the Netmiko
@@ -22,6 +24,7 @@ def netmiko_args(optional_args):
     fields = inspect.getfullargspec(BaseConnection.__init__)
     args = fields[0]
     defaults = fields[3]
+    assert isinstance(defaults, tuple)
 
     check_self = args.pop(0)
     if check_self != "self":
