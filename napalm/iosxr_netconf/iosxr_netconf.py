@@ -69,6 +69,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
         if optional_args is None:
             optional_args = {}
 
+        self.netmiko_optional_args = optional_args
         self.port = optional_args.get("port", 830)
         self.lock_on_connect = optional_args.get("config_lock", False)
         self.key_file = optional_args.get("key_file", None)
@@ -91,6 +92,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 key_filename=self.key_file,
                 timeout=self.timeout,
                 device_params={"name": "iosxr"},
+                **self.netmiko_optional_args,
             )
             if self.lock_on_connect:
                 self._lock()
@@ -497,7 +499,6 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 )
                 * 1e-3,
             )
-
             mtu = int(
                 self._find_txt(interface_tree, "./int:mtu", default="", namespaces=C.NS)
             )
