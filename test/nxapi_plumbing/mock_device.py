@@ -61,6 +61,7 @@ class MockDevice(Device):
         port=None,
         timeout=30,
         verify=True,
+        response_status_code=200,
     ):
         super().__init__(
             host,
@@ -81,6 +82,7 @@ class MockDevice(Device):
                 port=port,
                 timeout=timeout,
                 verify=verify,
+                response_status_code=response_status_code,
             )
         elif api_format == "xml":
             self.api = MockXMLClient(
@@ -91,10 +93,33 @@ class MockDevice(Device):
                 port=port,
                 timeout=timeout,
                 verify=verify,
+                response_status_code=response_status_code,
             )
 
 
 class MockRPCClient(RPCClient):
+    def __init__(
+        self,
+        host,
+        username,
+        password,
+        transport="https",
+        port=None,
+        timeout=30,
+        verify=True,
+        response_status_code=200,
+    ):
+        self.response_status_code = response_status_code
+        super().__init__(
+            host=host,
+            username=username,
+            password=password,
+            transport=transport,
+            port=port,
+            timeout=timeout,
+            verify=verify,
+        )
+
     def _send_request(self, commands, method="cli"):
         payload = self._build_payload(commands, method)
 
@@ -112,12 +137,34 @@ class MockRPCClient(RPCClient):
 
         response_obj = FakeResponse()
         response_obj.text = mock_response
-        response_obj.status_code = 200
+        response_obj.status_code = self.response_status_code
 
-        return response_obj.text
+        return response_obj
 
 
 class MockXMLClient(XMLClient):
+    def __init__(
+        self,
+        host,
+        username,
+        password,
+        transport="https",
+        port=None,
+        timeout=30,
+        verify=True,
+        response_status_code=200,
+    ):
+        self.response_status_code = response_status_code
+        super().__init__(
+            host=host,
+            username=username,
+            password=password,
+            transport=transport,
+            port=port,
+            timeout=timeout,
+            verify=verify,
+        )
+
     def _send_request(self, commands, method="cli_show"):
         payload = self._build_payload(commands, method)
 
@@ -135,6 +182,6 @@ class MockXMLClient(XMLClient):
 
         response_obj = FakeResponse()
         response_obj.text = mock_response
-        response_obj.status_code = 200
+        response_obj.status_code = self.response_status_code
 
-        return response_obj.text
+        return response_obj

@@ -1,4 +1,4 @@
-black==21.11b1
+black==22.1.0
 coveralls==3.3.1
 ddt==1.4.4
 flake8-import-order==0.18.1
@@ -8,5 +8,5 @@ pytest-json==0.4.0
 pytest-pythonpath==0.7.4
 pylama==7.7.1
 mock==4.0.3
-tox==3.24.4
+tox==3.24.5
 mypy==0.931
