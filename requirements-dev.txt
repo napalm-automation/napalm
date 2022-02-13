@@ -14,3 +14,5 @@ types-requests==2.27.9
 types-six==1.16.10
 types-setuptools==57.4.9
 types-PyYAML==6.0.4
+ttp==0.8.4
+ttp_templates==0.1.3
