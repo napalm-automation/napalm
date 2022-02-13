@@ -906,7 +906,9 @@ class IOSDriver(NetworkDriver):
         # format chassis_id for consistency
         for entry in lldp_entries:
             entry["remote_chassis_id"] = napalm.base.helpers.convert(
-                napalm.base.helpers.mac, entry["remote_chassis_id"]
+                napalm.base.helpers.mac,
+                entry["remote_chassis_id"],
+                entry["remote_chassis_id"],
             )
 
         # Older IOS versions don't have 'Local Intf' defined in LLDP detail.
