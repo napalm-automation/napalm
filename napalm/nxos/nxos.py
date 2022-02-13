@@ -210,10 +210,12 @@ class NXOSDriverBase(NetworkDriver):
 
     def _get_merge_diff(self) -> str:
         """
-        Uses netutils diff_network_config to create a partial configuration with the proper hierarchy.
+        Uses netutils diff_network_config to create a partial configuration
+        with the proper hierarchy.
         Note: the netutils utility performs the diff offline.
 
-        Returns: diff with the proper hierarchy of commands that are missing from the current config.
+        Returns: diff with the proper hierarchy of commands
+        that are missing from the current config.
         Examples:
         Candidate configuration:
         interface loopback0
