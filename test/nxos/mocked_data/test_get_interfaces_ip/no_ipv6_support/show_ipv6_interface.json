@@ -1,3 +1,7 @@
 {
-    "exception": "nxapi_plumbing.api_client.NXAPIPostError"
+    "exception": "napalm.nxapi_plumbing.errors.NXAPICommandError",
+    "kwargs": {
+        "command": "show ipv6 interface",
+        "message": ""
+    }
 }

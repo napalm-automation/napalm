@@ -6,21 +6,23 @@ Reimplemented by ktbyers to support XML-RPC in addition to JSON-RPC
 
 from __future__ import print_function, unicode_literals
 
+from typing import List, Optional, Any, Union
+
 from napalm.nxapi_plumbing.errors import NXAPIError, NXAPICommandError
-from napalm.nxapi_plumbing.api_client import RPCClient, XMLClient
+from napalm.nxapi_plumbing.api_client import RPCClient, XMLClient, RPCBase
 
 
 class Device(object):
     def __init__(
         self,
-        host,
-        username,
-        password,
-        transport="http",
-        api_format="jsonrpc",
-        port=None,
-        timeout=30,
-        verify=True,
+        host: str,
+        username: str,
+        password: str,
+        transport: str = "http",
+        api_format: str = "jsonrpc",
+        port: Optional[int] = None,
+        timeout: int = 30,
+        verify: bool = True,
     ):
         self.host = host
         self.username = username
@@ -30,6 +32,7 @@ class Device(object):
         self.verify = verify
         self.port = port
 
+        self.api: RPCBase
         if api_format == "xml":
             self.api = XMLClient(
                 host,
@@ -51,7 +54,7 @@ class Device(object):
                 verify=verify,
             )
 
-    def show(self, command, raw_text=False):
+    def show(self, command: str, raw_text: bool = False) -> Any:
         """Send a non-configuration command.
 
         Args:
@@ -79,7 +82,7 @@ class Device(object):
 
         return result
 
-    def show_list(self, commands, raw_text=False):
+    def show_list(self, commands: List[str], raw_text: bool = False) -> List[Any]:
         """Send a list of non-configuration commands.
 
         Args:
@@ -94,7 +97,7 @@ class Device(object):
         cmd_method = self.api.cmd_method_raw if raw_text else self.api.cmd_method
         return self.api._nxapi_command(commands, method=cmd_method)
 
-    def config(self, command):
+    def config(self, command: str) -> Union[str, List]:
         """Send a configuration command.
 
         Args:
@@ -120,7 +123,7 @@ class Device(object):
 
         return result
 
-    def config_list(self, commands):
+    def config_list(self, commands: List[str]) -> List[Any]:
         """Send a list of configuration commands.
 
         Args:
@@ -131,7 +134,7 @@ class Device(object):
         """
         return self.api._nxapi_command_conf(commands)
 
-    def save(self, filename="startup-config"):
+    def save(self, filename: str = "startup-config") -> bool:
         """Save a device's running configuration.
 
         Args:
@@ -148,7 +151,7 @@ class Device(object):
             raise
         return True
 
-    def rollback(self, filename):
+    def rollback(self, filename: str) -> None:
         """Rollback to a checkpoint file.
 
         Args:
@@ -158,7 +161,7 @@ class Device(object):
         cmd = "rollback running-config file {}".format(filename)
         self.show(cmd, raw_text=True)
 
-    def checkpoint(self, filename):
+    def checkpoint(self, filename: str) -> None:
         """Save a checkpoint of the running configuration to the device.
 
         Args:

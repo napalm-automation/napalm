@@ -1,20 +1,19 @@
-try:
-    from typing import TypedDict
-except ImportError:
-    from typing_extensions import TypedDict
+from typing import Dict, List
 
-configuration = TypedDict(
-    "configuration", {"running": str, "candidate": str, "startup": str}
+from typing_extensions import TypedDict
+
+ConfigurationDict = TypedDict(
+    "ConfigurationDict", {"running": str, "candidate": str, "startup": str}
 )
 
-alive = TypedDict("alive", {"is_alive": bool})
+AliveDict = TypedDict("AliveDict", {"is_alive": bool})
 
-facts = TypedDict(
-    "facts",
+FactsDict = TypedDict(
+    "FactsDict",
     {
         "os_version": str,
         "uptime": int,
-        "interface_list": list,
+        "interface_list": List,
         "vendor": str,
         "serial_number": str,
         "model": str,
@@ -23,8 +22,8 @@ facts = TypedDict(
     },
 )
 
-interface = TypedDict(
-    "interface",
+InterfaceDict = TypedDict(
+    "InterfaceDict",
     {
         "is_up": bool,
         "is_enabled": bool,
@@ -36,10 +35,26 @@ interface = TypedDict(
     },
 )
 
-lldp_neighbors = TypedDict("lldp_neighbors", {"hostname": str, "port": str})
+LLDPNeighborDict = TypedDict("LLDPNeighborDict", {"hostname": str, "port": str})
 
-interface_counters = TypedDict(
-    "interface_counters",
+LLDPNeighborDetailDict = TypedDict(
+    "LLDPNeighborDetailDict",
+    {
+        "parent_interface": str,
+        "remote_port": str,
+        "remote_chassis_id": str,
+        "remote_port_description": str,
+        "remote_system_name": str,
+        "remote_system_description": str,
+        "remote_system_capab": List,
+        "remote_system_enable_capab": List,
+    },
+)
+
+LLDPNeighborsDetailDict = Dict[str, List[LLDPNeighborDetailDict]]
+
+InterfaceCounterDict = TypedDict(
+    "InterfaceCounterDict",
     {
         "tx_errors": int,
         "rx_errors": int,
@@ -56,20 +71,31 @@ interface_counters = TypedDict(
     },
 )
 
-temperature = TypedDict(
-    "temperature", {"is_alert": bool, "is_critical": bool, "temperature": float}
+TemperatureDict = TypedDict(
+    "TemperatureDict", {"is_alert": bool, "is_critical": bool, "temperature": float}
 )
 
-power = TypedDict("power", {"status": bool, "output": float, "capacity": float})
+PowerDict = TypedDict("PowerDict", {"status": bool, "output": float, "capacity": float})
 
-memory = TypedDict("memory", {"used_ram": int, "available_ram": int})
+MemoryDict = TypedDict("MemoryDict", {"used_ram": int, "available_ram": int})
 
-fan = TypedDict("fan", {"status": bool})
+FanDict = TypedDict("FanDict", {"status": bool})
 
-cpu = TypedDict("cpu", {"%usage": float})
+CPUDict = TypedDict("CPUDict", {"%usage": float})
 
-peer = TypedDict(
-    "peer",
+EnvironmentDict = TypedDict(
+    "EnvironmentDict",
+    {
+        "fans": Dict[str, FanDict],
+        "temperature": Dict[str, TemperatureDict],
+        "power": Dict[str, PowerDict],
+        "cpu": Dict[int, CPUDict],
+        "memory": MemoryDict,
+    },
+)
+
+PeerDict = TypedDict(
+    "PeerDict",
     {
         "is_enabled": bool,
         "uptime": int,
@@ -82,61 +108,8 @@ peer = TypedDict(
     },
 )
 
-af = TypedDict(
-    "af", {"sent_prefixes": int, "accepted_prefixes": int, "received_prefixes": int}
-)
-
-lldp_neighbors_detail = TypedDict(
-    "lldp_neighbors_detail",
-    {
-        "parent_interface": str,
-        "remote_port": str,
-        "remote_chassis_id": str,
-        "remote_port_description": str,
-        "remote_system_name": str,
-        "remote_system_description": str,
-        "remote_system_capab": list,
-        "remote_system_enable_capab": list,
-    },
-)
-
-bgp_config_group = TypedDict(
-    "bgp_config_group",
-    {
-        "type": str,
-        "description": str,
-        "apply_groups": list,
-        "multihop_ttl": int,
-        "multipath": bool,
-        "local_address": str,
-        "local_as": int,
-        "remote_as": int,
-        "import_policy": str,
-        "export_policy": str,
-        "remove_private_as": bool,
-        "prefix_limit": dict,
-        "neighbors": dict,
-    },
-)
-
-bgp_config_neighbor = TypedDict(
-    "bgp_config_neighbor",
-    {
-        "description": str,
-        "import_policy": str,
-        "export_policy": str,
-        "local_address": str,
-        "authentication_key": str,
-        "nhs": bool,
-        "route_reflector_client": bool,
-        "local_as": int,
-        "remote_as": int,
-        "prefix_limit": dict,
-    },
-)
-
-peer_details = TypedDict(
-    "peer_details",
+PeerDetailsDict = TypedDict(
+    "PeerDetailsDict",
     {
         "up": bool,
         "local_as": int,
@@ -176,31 +149,96 @@ peer_details = TypedDict(
     },
 )
 
-arp_table = TypedDict(
-    "arp_table", {"interface": str, "mac": str, "ip": str, "age": float}
+AFDict = TypedDict(
+    "AFDict", {"sent_prefixes": int, "accepted_prefixes": int, "received_prefixes": int}
 )
 
-ipv6_neighbor = TypedDict(
-    "ipv6_neighbor",
+BPGConfigGroupDict = TypedDict(
+    "BPGConfigGroupDict",
+    {
+        "type": str,
+        "description": str,
+        "apply_groups": List,
+        "multihop_ttl": int,
+        "multipath": bool,
+        "local_address": str,
+        "local_as": int,
+        "remote_as": int,
+        "import_policy": str,
+        "export_policy": str,
+        "remove_private_as": bool,
+        "prefix_limit": dict,
+        "neighbors": dict,
+    },
+)
+
+BGPConfigNeighborDict = TypedDict(
+    "BGPConfigNeighborDict",
+    {
+        "description": str,
+        "import_policy": str,
+        "export_policy": str,
+        "local_address": str,
+        "authentication_key": str,
+        "nhs": bool,
+        "route_reflector_client": bool,
+        "local_as": int,
+        "remote_as": int,
+        "prefix_limit": dict,
+    },
+)
+
+BGPStateAdressFamilyDict = TypedDict(
+    "BGPStateAdressFamilyDict",
+    {"received_prefixes": int, "accepted_prefixes": int, "sent_prefixes": int},
+)
+
+BGPStateNeighborDict = TypedDict(
+    "BGPStateNeighborDict",
+    {
+        "local_as": int,
+        "remote_as": int,
+        "remote_id": str,
+        "is_up": bool,
+        "is_enabled": bool,
+        "description": str,
+        "uptime": int,
+        "address_family": Dict[str, BGPStateAdressFamilyDict],
+    },
+)
+
+BGPStateNeighborsPerVRFDict = TypedDict(
+    "BGPStateNeighborsPerVRFDict",
+    {"router_id": str, "peers": Dict[str, BGPStateNeighborDict]},
+)
+
+ARPTableDict = TypedDict(
+    "ARPTableDict", {"interface": str, "mac": str, "ip": str, "age": float}
+)
+
+IPV6NeighborDict = TypedDict(
+    "IPV6NeighborDict",
     {"interface": str, "mac": str, "ip": str, "age": float, "state": str},
 )
 
-ntp_peer = TypedDict(
-    "ntp_peer",
+NTPPeerDict = TypedDict(
+    "NTPPeerDict",
     {
         # will populate it in the future wit potential keys
     },
+    total=False,
 )
 
-ntp_server = TypedDict(
-    "ntp_server",
+NTPServerDict = TypedDict(
+    "NTPServerDict",
     {
         # will populate it in the future wit potential keys
     },
+    total=False,
 )
 
-ntp_stats = TypedDict(
-    "ntp_stats",
+NTPStats = TypedDict(
+    "NTPStats",
     {
         "remote": str,
         "referenceid": str,
@@ -216,10 +254,21 @@ ntp_stats = TypedDict(
     },
 )
 
-interfaces_ip = TypedDict("interfaces_ip", {"prefix_length": int})
+InterfacesIPDictEntry = TypedDict(
+    "InterfacesIPDictEntry", {"prefix_length": int}, total=False
+)
 
-mac_address_table = TypedDict(
-    "mac_address_table",
+InterfacesIPDict = TypedDict(
+    "InterfacesIPDict",
+    {
+        "ipv4": Dict[str, InterfacesIPDictEntry],
+        "ipv6": Dict[str, InterfacesIPDictEntry],
+    },
+    total=False,
+)
+
+MACAdressTable = TypedDict(
+    "MACAdressTable",
     {
         "mac": str,
         "interface": str,
@@ -231,8 +280,8 @@ mac_address_table = TypedDict(
     },
 )
 
-route = TypedDict(
-    "route",
+RouteDict = TypedDict(
+    "RouteDict",
     {
         "protocol": str,
         "current_active": bool,
@@ -248,14 +297,14 @@ route = TypedDict(
     },
 )
 
-snmp = TypedDict(
-    "snmp", {"chassis_id": str, "community": dict, "contact": str, "location": str}
+SNMPDict = TypedDict(
+    "SNMPDict", {"chassis_id": str, "community": dict, "contact": str, "location": str}
 )
 
-snmp_community = TypedDict("snmp_community", {"acl": str, "mode": str})
+SNMPCommunityDict = TypedDict("SNMPCommunityDict", {"acl": str, "mode": str})
 
-probe_test = TypedDict(
-    "probe_test",
+ProbeTestDict = TypedDict(
+    "ProbeTestDict",
     {
         "probe_type": str,
         "target": str,
@@ -265,8 +314,8 @@ probe_test = TypedDict(
     },
 )
 
-probe_test_results = TypedDict(
-    "probe_test_results",
+ProbeTestResultDict = TypedDict(
+    "ProbeTestResultDict",
     {
         "target": str,
         "source": str,
@@ -287,8 +336,12 @@ probe_test_results = TypedDict(
     },
 )
 
-ping = TypedDict(
-    "ping",
+PingResultDictEntry = TypedDict(
+    "PingResultDictEntry", {"ip_address": str, "rtt": float}
+)
+
+PingDict = TypedDict(
+    "PingDict",
     {
         "probes_sent": int,
         "packet_loss": int,
@@ -300,34 +353,92 @@ ping = TypedDict(
     },
 )
 
-ping_result = TypedDict("ping_result", {"ip_address": str, "rtt": float})
-
-traceroute = TypedDict(
-    "traceroute", {"rtt": float, "ip_address": str, "host_name": str}
+PingResultDict = TypedDict(
+    "PingResultDict",
+    {"success": PingDict, "error": str},
+    total=False,
 )
 
-users = TypedDict("users", {"level": int, "password": str, "sshkeys": list})
-
-optics_state = TypedDict(
-    "optics_state", {"instant": float, "avg": float, "min": float, "max": float}
+TracerouteDict = TypedDict(
+    "TracerouteDict", {"rtt": float, "ip_address": str, "host_name": str}
 )
 
-config = TypedDict("config", {"running": str, "startup": str, "candidate": str})
-
-network_instance = TypedDict(
-    "network_instance", {"name": str, "type": str, "state": dict, "interfaces": dict}
+TracerouteResultDictEntry = TypedDict(
+    "TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]}, total=False
 )
 
-network_instance_state = TypedDict(
-    "network_instance_state", {"route_distinguisher": str}
+TracerouteResultDict = TypedDict(
+    "TracerouteResultDict",
+    {"success": Dict[int, TracerouteResultDictEntry], "error": str},
+    total=False,
 )
 
-network_instance_interfaces = TypedDict(
-    "network_instance_interfaces", {"interface": dict}
+UsersDict = TypedDict("UsersDict", {"level": int, "password": str, "sshkeys": List})
+
+OpticsStateDict = TypedDict(
+    "OpticsStateDict", {"instant": float, "avg": float, "min": float, "max": float}
 )
 
-firewall_policies = TypedDict(
-    "firewall_policies",
+OpticsStatePerChannelDict = TypedDict(
+    "OpticsStatePerChannelDict",
+    {
+        "input_power": OpticsStateDict,
+        "output_power": OpticsStateDict,
+        "laser_bias_current": OpticsStateDict,
+    },
+)
+
+OpticsPerChannelDict = TypedDict(
+    "OpticsPerChannelDict", {"index": int, "state": OpticsStatePerChannelDict}
+)
+
+OpticsPhysicalChannelsDict = TypedDict(
+    "OpticsPhysicalChannelsDict", {"channels": OpticsPerChannelDict}
+)
+
+OpticsDict = TypedDict("OpticsDict", {"physical_channels": OpticsPhysicalChannelsDict})
+
+ConfigDict = TypedDict("ConfigDict", {"running": str, "startup": str, "candidate": str})
+
+TracerouteResultDictEntry = TypedDict(
+    "TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]}
+)
+
+OpticsStateDict = TypedDict(
+    "OpticsStateDict", {"instant": float, "avg": float, "min": float, "max": float}
+)
+
+OpticsStatePerChannelDict = TypedDict(
+    "OpticsStatePerChannelDict",
+    {
+        "input_power": OpticsStateDict,
+        "output_power": OpticsStateDict,
+        "laser_bias_current": OpticsStateDict,
+    },
+)
+
+OpticsPerChannelDict = TypedDict(
+    "OpticsPerChannelDict", {"index": int, "state": OpticsStatePerChannelDict}
+)
+
+OpticsPhysicalChannelsDict = TypedDict(
+    "OpticsPhysicalChannelsDict", {"channels": OpticsPerChannelDict}
+)
+
+NetworkInstanceDict = TypedDict(
+    "NetworkInstanceDict", {"name": str, "type": str, "state": dict, "interfaces": dict}
+)
+
+NetworkInstanceStateDict = TypedDict(
+    "NetworkInstanceStateDict", {"route_distinguisher": str}
+)
+
+NetworkInstanceInterfacesDict = TypedDict(
+    "NetworkInstanceInterfacesDict", {"interface": dict}
+)
+
+FirewallPolicyDict = TypedDict(
+    "FirewallPolicyDict",
     {
         "position": int,
         "packet_hits": int,
@@ -345,4 +456,16 @@ firewall_policies = TypedDict(
     },
 )
 
-vlan = TypedDict("vlan", {"name": str, "interfaces": list})
+VlanDict = TypedDict("VlanDict", {"name": str, "interfaces": List})
+
+DictValidationResult = TypedDict(
+    "DictValidationResult",
+    {"complies": bool, "present": Dict, "missing": List, "extra": List},
+)
+
+ListValidationResult = TypedDict(
+    "ListValidationResult",
+    {"complies": bool, "present": List, "missing": List, "extra": List},
+)
+
+ReportResult = TypedDict("ReportResult", {"complies": bool, "skipped": List})

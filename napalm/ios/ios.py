@@ -3427,6 +3427,10 @@ class IOSDriver(NetworkDriver):
             else:
                 return instances
 
+        if "Invalid input detected" in sh_vrf_detail:
+            # No VRF support
+            return instances
+
         for vrf in sh_vrf_detail.split("\n\n"):
 
             first_part = vrf.split("Address family")[0]
@@ -3598,7 +3602,7 @@ class IOSDriver(NetworkDriver):
         for vlan_id, vlan_name in find_vlan:
             output = self._send_command("show vlan id {}".format(vlan_id))
             interface_regex = r"{}\s+{}\s+\S+\s+([A-Z][a-z].*)$".format(
-                vlan_id, vlan_name
+                vlan_id, re.escape(vlan_name)
             )
             interfaces = re.findall(interface_regex, output, re.MULTILINE)
             if len(interfaces) == 1:

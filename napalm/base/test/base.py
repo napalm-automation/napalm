@@ -192,7 +192,7 @@ class TestGettersNetworkDriver(object):
         for policy_name, policy_details in policies.items():
             for policy_term in policy_details:
                 result = result and self._test_model(
-                    models.firewall_policies, policy_term
+                    models.FirewallPolicyDict, policy_term
                 )
 
         self.assertTrue(result)
@@ -202,7 +202,7 @@ class TestGettersNetworkDriver(object):
             alive = self.device.is_alive()
         except NotImplementedError:
             raise SkipTest()
-        result = self._test_model(models.alive, alive)
+        result = self._test_model(models.AliveDict, alive)
         self.assertTrue(result)
 
     def test_get_facts(self):
@@ -210,7 +210,7 @@ class TestGettersNetworkDriver(object):
             facts = self.device.get_facts()
         except NotImplementedError:
             raise SkipTest()
-        result = self._test_model(models.facts, facts)
+        result = self._test_model(models.FactsDict, facts)
         self.assertTrue(result)
 
     def test_get_interfaces(self):
@@ -221,7 +221,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_interfaces) > 0
 
         for interface, interface_data in get_interfaces.items():
-            result = result and self._test_model(models.interface, interface_data)
+            result = result and self._test_model(models.InterfaceDict, interface_data)
 
         self.assertTrue(result)
 
@@ -234,7 +234,7 @@ class TestGettersNetworkDriver(object):
 
         for interface, neighbor_list in get_lldp_neighbors.items():
             for neighbor in neighbor_list:
-                result = result and self._test_model(models.lldp_neighbors, neighbor)
+                result = result and self._test_model(models.LLDPNeighborDict, neighbor)
 
         self.assertTrue(result)
 
@@ -247,7 +247,7 @@ class TestGettersNetworkDriver(object):
 
         for interface, interface_data in get_interfaces_counters.items():
             result = result and self._test_model(
-                models.interface_counters, interface_data
+                models.InterfaceCounterDict, interface_data
             )
 
         self.assertTrue(result)
@@ -260,18 +260,20 @@ class TestGettersNetworkDriver(object):
         result = len(environment) > 0
 
         for fan, fan_data in environment["fans"].items():
-            result = result and self._test_model(models.fan, fan_data)
+            result = result and self._test_model(models.FanDict, fan_data)
 
         for power, power_data in environment["power"].items():
-            result = result and self._test_model(models.power, power_data)
+            result = result and self._test_model(models.PowerDict, power_data)
 
         for temperature, temperature_data in environment["temperature"].items():
-            result = result and self._test_model(models.temperature, temperature_data)
+            result = result and self._test_model(
+                models.TemperatureDict, temperature_data
+            )
 
         for cpu, cpu_data in environment["cpu"].items():
-            result = result and self._test_model(models.cpu, cpu_data)
+            result = result and self._test_model(models.CPUDict, cpu_data)
 
-        result = result and self._test_model(models.memory, environment["memory"])
+        result = result and self._test_model(models.MemoryDict, environment["memory"])
 
         self.assertTrue(result)
 
@@ -291,10 +293,10 @@ class TestGettersNetworkDriver(object):
                     print("router_id is not {}".format(str))
 
                 for peer, peer_data in vrf_data["peers"].items():
-                    result = result and self._test_model(models.peer, peer_data)
+                    result = result and self._test_model(models.PeerDict, peer_data)
 
                     for af, af_data in peer_data["address_family"].items():
-                        result = result and self._test_model(models.af, af_data)
+                        result = result and self._test_model(models.AFDict, af_data)
 
             self.assertTrue(result)
 
@@ -308,7 +310,7 @@ class TestGettersNetworkDriver(object):
         for interface, neighbor_list in get_lldp_neighbors_detail.items():
             for neighbor in neighbor_list:
                 result = result and self._test_model(
-                    models.lldp_neighbors_detail, neighbor
+                    models.LLDPNeighborsDetailDict, neighbor
                 )
 
         self.assertTrue(result)
@@ -321,10 +323,10 @@ class TestGettersNetworkDriver(object):
         result = len(get_bgp_config) > 0
 
         for bgp_group in get_bgp_config.values():
-            result = result and self._test_model(models.bgp_config_group, bgp_group)
+            result = result and self._test_model(models.BPGConfigGroupDict, bgp_group)
             for bgp_neighbor in bgp_group.get("neighbors", {}).values():
                 result = result and self._test_model(
-                    models.bgp_config_neighbor, bgp_neighbor
+                    models.BGPConfigNeighborDict, bgp_neighbor
                 )
 
         self.assertTrue(result)
@@ -342,7 +344,9 @@ class TestGettersNetworkDriver(object):
             for remote_as, neighbor_list in vrf_ases.items():
                 result = result and isinstance(remote_as, int)
                 for neighbor in neighbor_list:
-                    result = result and self._test_model(models.peer_details, neighbor)
+                    result = result and self._test_model(
+                        models.PeerDetailsDict, neighbor
+                    )
 
         self.assertTrue(result)
 
@@ -354,7 +358,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_arp_table) > 0
 
         for arp_entry in get_arp_table:
-            result = result and self._test_model(models.arp_table, arp_entry)
+            result = result and self._test_model(models.ARPTableDict, arp_entry)
 
         self.assertTrue(result)
 
@@ -366,7 +370,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_arp_table) > 0
 
         for arp_entry in get_arp_table:
-            result = result and self._test_model(models.arp_table, arp_entry)
+            result = result and self._test_model(models.ARPTableDict, arp_entry)
 
         self.assertTrue(result)
 
@@ -379,7 +383,7 @@ class TestGettersNetworkDriver(object):
 
         for peer, peer_details in get_ntp_peers.items():
             result = result and isinstance(peer, str)
-            result = result and self._test_model(models.ntp_peer, peer_details)
+            result = result and self._test_model(models.NTPPeerDict, peer_details)
 
         self.assertTrue(result)
 
@@ -393,7 +397,7 @@ class TestGettersNetworkDriver(object):
 
         for server, server_details in get_ntp_servers.items():
             result = result and isinstance(server, str)
-            result = result and self._test_model(models.ntp_server, server_details)
+            result = result and self._test_model(models.NTPServerDict, server_details)
 
         self.assertTrue(result)
 
@@ -405,7 +409,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_ntp_stats) > 0
 
         for ntp_peer_details in get_ntp_stats:
-            result = result and self._test_model(models.ntp_stats, ntp_peer_details)
+            result = result and self._test_model(models.NTPStats, ntp_peer_details)
 
         self.assertTrue(result)
 
@@ -420,9 +424,13 @@ class TestGettersNetworkDriver(object):
             ipv4 = interface_details.get("ipv4", {})
             ipv6 = interface_details.get("ipv6", {})
             for ip, ip_details in ipv4.items():
-                result = result and self._test_model(models.interfaces_ip, ip_details)
+                result = result and self._test_model(
+                    models.InterfacesIPDictEntry, ip_details
+                )
             for ip, ip_details in ipv6.items():
-                result = result and self._test_model(models.interfaces_ip, ip_details)
+                result = result and self._test_model(
+                    models.InterfacesIPDictEntry, ip_details
+                )
 
         self.assertTrue(result)
 
@@ -434,9 +442,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_mac_address_table) > 0
 
         for mac_table_entry in get_mac_address_table:
-            result = result and self._test_model(
-                models.mac_address_table, mac_table_entry
-            )
+            result = result and self._test_model(models.MACAdressTable, mac_table_entry)
 
         self.assertTrue(result)
 
@@ -454,7 +460,7 @@ class TestGettersNetworkDriver(object):
 
         for prefix, routes in get_route_to.items():
             for route in routes:
-                result = result and self._test_model(models.route, route)
+                result = result and self._test_model(models.RouteDict, route)
         self.assertTrue(result)
 
     def test_get_snmp_information(self):
@@ -466,10 +472,12 @@ class TestGettersNetworkDriver(object):
         result = len(get_snmp_information) > 0
 
         for snmp_entry in get_snmp_information:
-            result = result and self._test_model(models.snmp, get_snmp_information)
+            result = result and self._test_model(models.SNMPDict, get_snmp_information)
 
         for community, community_data in get_snmp_information["community"].items():
-            result = result and self._test_model(models.snmp_community, community_data)
+            result = result and self._test_model(
+                models.SNMPCommunityDict, community_data
+            )
 
         self.assertTrue(result)
 
@@ -483,7 +491,7 @@ class TestGettersNetworkDriver(object):
 
         for probe_name, probe_tests in get_probes_config.items():
             for test_name, test_config in probe_tests.items():
-                result = result and self._test_model(models.probe_test, test_config)
+                result = result and self._test_model(models.ProbeTestDict, test_config)
 
         self.assertTrue(result)
 
@@ -497,7 +505,7 @@ class TestGettersNetworkDriver(object):
         for probe_name, probe_tests in get_probes_results.items():
             for test_name, test_results in probe_tests.items():
                 result = result and self._test_model(
-                    models.probe_test_results, test_results
+                    models.ProbeTestResultDict, test_results
                 )
 
         self.assertTrue(result)
@@ -511,10 +519,12 @@ class TestGettersNetworkDriver(object):
         result = isinstance(get_ping.get("success"), dict)
         ping_results = get_ping.get("success", {})
 
-        result = result and self._test_model(models.ping, ping_results)
+        result = result and self._test_model(models.PingDict, ping_results)
 
         for ping_result in ping_results.get("results", []):
-            result = result and self._test_model(models.ping_result, ping_result)
+            result = result and self._test_model(
+                models.PingResultDictEntry, ping_result
+            )
 
         self.assertTrue(result)
 
@@ -530,7 +540,9 @@ class TestGettersNetworkDriver(object):
 
         for hope_id, hop_result in traceroute_results.items():
             for probe_id, probe_result in hop_result.get("probes", {}).items():
-                result = result and self._test_model(models.traceroute, probe_result)
+                result = result and self._test_model(
+                    models.TracerouteDict, probe_result
+                )
 
         self.assertTrue(result)
 
@@ -543,7 +555,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_users)
 
         for user, user_details in get_users.items():
-            result = result and self._test_model(models.users, user_details)
+            result = result and self._test_model(models.UsersDict, user_details)
             result = result and (0 <= user_details.get("level") <= 15)
 
         self.assertTrue(result)
@@ -578,7 +590,7 @@ class TestGettersNetworkDriver(object):
             raise SkipTest()
 
         assert isinstance(get_config, dict)
-        assert self._test_model(models.config, get_config)
+        assert self._test_model(models.ConfigDict, get_config)
 
     def test_get_config_filtered(self):
         """Test get_config method."""
@@ -602,13 +614,13 @@ class TestGettersNetworkDriver(object):
         result = isinstance(get_network_instances, dict)
         for network_instance_name, network_instance in get_network_instances.items():
             result = result and self._test_model(
-                models.network_instance, network_instance
+                models.NetworkInstanceDict, network_instance
             )
             result = result and self._test_model(
-                models.network_instance_state, network_instance["state"]
+                models.NetworkInstanceStateDict, network_instance["state"]
             )
             result = result and self._test_model(
-                models.network_instance_interfaces, network_instance["interfaces"]
+                models.NetworkInstanceInterfacesDict, network_instance["interfaces"]
             )
 
         self.assertTrue(result)
@@ -621,7 +633,7 @@ class TestGettersNetworkDriver(object):
         result = len(get_ipv6_neighbors_table) > 0
 
         for entry in get_ipv6_neighbors_table:
-            result = result and self._test_model(models.ipv6_neighbor, entry)
+            result = result and self._test_model(models.IPV6NeighborDict, entry)
 
         self.assertTrue(result)
 
@@ -633,6 +645,6 @@ class TestGettersNetworkDriver(object):
         result = len(get_vlans) > 0
 
         for vlan, vlan_data in get_vlans.items():
-            result = result and self._test_model(models.vlan, vlan_data)
+            result = result and self._test_model(models.VlanDict, vlan_data)
 
         self.assertTrue(result)
