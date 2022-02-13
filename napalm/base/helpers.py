@@ -12,11 +12,11 @@ from collections.abc import Iterable
 # third party libs
 import jinja2
 import textfsm
-from ciscoconfparse import CiscoConfParse
 from lxml import etree
 from netaddr import EUI
 from netaddr import IPAddress
 from netaddr import mac_unix
+from netutils.config.parser import IOSConfigParser
 
 # local modules
 import napalm.base.exceptions
@@ -127,42 +127,84 @@ def load_template(
     return cls.load_merge_candidate(config=configuration)
 
 
-def cisco_conf_parse_parents(
+def netutils_parse_parents(
     parent: str, child: str, config: Union[str, List[str]]
 ) -> List[str]:
     """
-    Use CiscoConfParse to find parent lines that contain a specific child line.
+    Use Netutils to find parent lines that contain a specific child line.
 
     :param parent: The parent line to search for
     :param child:  The child line required under the given parent
     :param config: The device running/startup config
     """
-    if type(config) == str:
-        config = config.splitlines()  # type: ignore
-    parse = CiscoConfParse(config)
-    cfg_obj = parse.find_parents_w_child(parent, child)
-    return cfg_obj
+    # Check if the config is a list, if it is a list, then join it to make a string.
+    if isinstance(config, list):
+        config = "\n".join(config)
+        config = config + "\n"
+
+    # Config tree is the entire configuration in a tree format,
+    # followed by getting the individual lines that has the formats:
+    # ConfigLine(config_line=' ip address 192.0.2.10 255.255.255.0',
+    # parents=('interface GigabitEthernet1',))
+    # ConfigLine(config_line='Current configuration : 1624 bytes', parents=())
+    config_tree = IOSConfigParser(str(config))
+    configuration_lines = config_tree.build_config_relationship()
+
+    # Return config is the list that will be returned
+    return_config = []
+
+    # Loop over each of the configuration lines
+    for line in configuration_lines:
+        # Loop over any line that has a parent line. If there are no parents for a line item then
+        # the parents is an empty tuple.
+        for parent_line in line.parents:
+            if (
+                child in line.config_line
+                and re.match(parent, parent_line) is not None
+                and parent_line not in return_config
+            ):
+                return_config.append(parent_line)
+
+    return return_config
 
 
-def cisco_conf_parse_objects(
+def netutils_parse_objects(
     cfg_section: str, config: Union[str, List[str]]
 ) -> List[str]:
     """
-    Use CiscoConfParse to find and return a section of Cisco IOS config.
+    Use Netutils to find and return a section of Cisco IOS config.
     Similar to "show run | section <cfg_section>"
 
     :param cfg_section: The section of the config to return eg. "router bgp"
     :param config: The running/startup config of the device to parse
     """
+    # Check if the config is a list, if it is a list, then join it to make a string.
+    if isinstance(config, list):
+        config = "\n".join(config)
+        config = config + "\n"
+
+    # Config tree is the entire configuration in a tree format,
+    # followed by getting the individual lines that has the formats:
+    # ConfigLine(config_line=' ip address 192.0.2.10 255.255.255.0',
+    # parents=('interface GigabitEthernet1',))
+    # ConfigLine(config_line='Current configuration : 1624 bytes', parents=())
+    config_tree = IOSConfigParser(str(config))
+    lines = config_tree.build_config_relationship()
+
+    # Return config is the list that will be returned
     return_config = []
-    if type(config) is str:
-        config = config.splitlines()  # type: ignore
-    parse = CiscoConfParse(config)
-    cfg_obj = parse.find_objects(cfg_section)
-    for parent in cfg_obj:
-        return_config.append(parent.text)
-        for child in parent.all_children:
-            return_config.append(child.text)
+    for line in lines:
+        # The parent configuration is expected on the function that this is replacing,
+        # add the parent line to the base of the return_config
+        if cfg_section in line.config_line:
+            return_config.append(line.config_line)
+        # Check if the tuple is greater than 0
+        if len(line.parents) > 0:
+            # Check the eldest parent, if that is part of the config section, then append
+            # the current line being checked to it.
+            if cfg_section in line.parents[0]:
+                return_config.append(line.config_line)
+
     return return_config
 
 
