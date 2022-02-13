@@ -963,11 +963,13 @@ class IOSDriver(NetworkDriver):
             lldp[intf_name] = []
             for lldp_entry in entries:
                 hostname = lldp_entry["remote_system_name"]
+                port = lldp_entry["remote_port"]
                 # Match IOS behaviour of taking remote chassis ID
                 # When lacking a system name (in show lldp neighbors)
                 if not hostname:
-                    hostname = lldp_entry["remote_chassis_id"]
-                lldp_dict = {"port": lldp_entry["remote_port"], "hostname": hostname}
+                    hostname = napalm.base.helpers.mac(lldp_entry["remote_chassis_id"])
+                    port = napalm.base.helpers.mac(port)
+                lldp_dict = {"port": port, "hostname": hostname}
                 lldp[intf_name].append(lldp_dict)
 
         return lldp
@@ -987,6 +989,14 @@ class IOSDriver(NetworkDriver):
 
         if len(lldp_entries) == 0:
             return {}
+
+        # format chassis_id for consistency
+        for entry in lldp_entries:
+            entry["remote_chassis_id"] = napalm.base.helpers.convert(
+                napalm.base.helpers.mac,
+                entry["remote_chassis_id"],
+                entry["remote_chassis_id"],
+            )
 
         # Older IOS versions don't have 'Local Intf' defined in LLDP detail.
         # We need to get them from the non-detailed command
@@ -1290,6 +1300,7 @@ class IOSDriver(NetworkDriver):
             m = re.match(INTERNET_ADDRESS, line)
             if m:
                 ip, prefix = m.groups()
+                ip = napalm.base.helpers.ip(ip)
                 ipv4.update({ip: {"prefix_length": int(prefix)}})
                 interfaces[interface_name] = {"ipv4": ipv4}
 
@@ -1307,10 +1318,12 @@ class IOSDriver(NetworkDriver):
                 m = re.match(LINK_LOCAL_ADDRESS, line)
                 if m:
                     ip = m.group(1)
+                    ip = napalm.base.helpers.ip(ip, 6)
                     ipv6.update({ip: {"prefix_length": 10}})
                 m = re.match(GLOBAL_ADDRESS, line)
                 if m:
                     ip, prefix = m.groups()
+                    ip = napalm.base.helpers.ip(ip, 6)
                     ipv6.update({ip: {"prefix_length": int(prefix)}})
 
         # Interface without ipv6 doesn't appears in show ipv6 interface
@@ -2470,7 +2483,7 @@ class IOSDriver(NetworkDriver):
         ntp_stats = self.get_ntp_stats()
 
         return {
-            ntp_peer.get("remote"): {}
+            napalm.base.helpers.ip(ntp_peer.get("remote")): {}
             for ntp_peer in ntp_stats
             if ntp_peer.get("remote")
         }
@@ -3338,7 +3351,10 @@ class IOSDriver(NetworkDriver):
                     results_array = []
                     for i in range(probes_received):
                         results_array.append(
-                            {"ip_address": str(destination), "rtt": 0.0}
+                            {
+                                "ip_address": napalm.base.helpers.ip(str(destination)),
+                                "rtt": 0.0,
+                            }
                         )
                     ping_dict["success"].update({"results": results_array})
 
@@ -3461,7 +3477,7 @@ class IOSDriver(NetworkDriver):
                     current_probe += 1
                 # If current_element contains msec record the entry for probe
                 elif "msec" in current_element:
-                    ip_address = str(ip_address)
+                    ip_address = napalm.base.helpers.ip(str(ip_address))
                     host_name = str(host_name)
                     rtt = float(current_element.replace("msec", ""))
                     results[current_hop]["probes"][current_probe][
