@@ -709,7 +709,7 @@ interface Gi1/2
  description BAR
 !
         """
-        _TTP_TEST_TEMPLATE = '<group>\ninterface {{ interface }}\n description {{ description | re(".+") }}\n! {{ _end_ }}\n</group>'
+        _TTP_TEST_TEMPLATE = '<group>\ninterface {{ interface }}\n description {{ description | re(".+") }}\n! {{ _end_ }}\n</group>'  # noqa:E501
         _EXPECTED_RESULT = [
             {"description": "FOO", "interface": "Gi1/1"},
             {"description": "BAR", "interface": "Gi1/2"},

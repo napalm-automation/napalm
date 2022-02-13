@@ -19,7 +19,7 @@ from netaddr import IPAddress
 from netaddr import mac_unix
 
 try:
-    from ttp import ttp, quick_parse as ttp_quick_parse
+    from ttp import quick_parse as ttp_quick_parse
 
     TTP_INSTALLED = True
 except ImportError:
@@ -281,7 +281,7 @@ def ttp_parse(
     template: str,
     raw_text: str,
     structure: str = "flat_list",
-) -> List[Dict]:
+) -> Union[None, List, Dict]:
     """
     Applies a TTP template over a raw text and return the parsing results.
 
@@ -301,6 +301,8 @@ def ttp_parse(
     if not TTP_INSTALLED:
         msg = "\nTTP is not installed. Please PIP install ttp:\n" "pip install ttp\n"
         raise napalm.base.exceptions.ModuleImportError(msg)
+
+    result = None
 
     for c in cls.__class__.mro():
         if c is object:
@@ -332,12 +334,13 @@ def ttp_parse(
 
         # parse data
         try:
-            return ttp_quick_parse(
+            result = ttp_quick_parse(
                 data=str(raw_text),
                 template=template,
                 result_kwargs={"structure": structure},
                 parse_kwargs={"one": True},
             )
+            break
         except Exception as e:
             msg = "TTP template:\n'{template}'\nError: {error}".format(
                 template=template, error=e
@@ -345,6 +348,8 @@ def ttp_parse(
             logging.exception(e)
             logging.error(msg)
             raise napalm.base.exceptions.TemplateRenderException(msg)
+
+    return result
 
 
 def find_txt(
