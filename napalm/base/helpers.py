@@ -139,7 +139,8 @@ def netutils_parse_parents(
     """
     # Config tree is the entire configuration in a tree format,
     # followed by getting the individual lines that has the formats:
-    # ConfigLine(config_line=' ip address 192.0.2.10 255.255.255.0', parents=('interface GigabitEthernet1',))
+    # ConfigLine(config_line=' ip address 192.0.2.10 255.255.255.0',
+    # parents=('interface GigabitEthernet1',))
     # ConfigLine(config_line='Current configuration : 1624 bytes', parents=())
     config_tree = IOSConfigParser(str(config))
     configuration_lines = config_tree.build_config_relationship()
@@ -174,7 +175,8 @@ def netutils_parse_objects(
     """
     # Config tree is the entire configuration in a tree format,
     # followed by getting the individual lines that has the formats:
-    # ConfigLine(config_line=' ip address 192.0.2.10 255.255.255.0', parents=('interface GigabitEthernet1',))
+    # ConfigLine(config_line=' ip address 192.0.2.10 255.255.255.0',
+    # parents=('interface GigabitEthernet1',))
     # ConfigLine(config_line='Current configuration : 1624 bytes', parents=())
     config_tree = IOSConfigParser(str(config))
     lines = config_tree.build_config_relationship()

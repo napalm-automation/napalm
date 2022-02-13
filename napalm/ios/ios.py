@@ -1323,9 +1323,7 @@ class IOSDriver(NetworkDriver):
         # Get BGP config using netutils because some old devices dont support "| sec bgp"
         cfg = self.get_config(retrieve="running")
         cfg = cfg["running"].splitlines()
-        bgp_config_text = napalm.base.helpers.netutils_parse_objects(
-            "router bgp", cfg
-        )
+        bgp_config_text = napalm.base.helpers.netutils_parse_objects("router bgp", cfg)
         bgp_asn = napalm.base.helpers.regex_find_txt(
             r"router bgp (\d+)", bgp_config_text, default=0
         )
