@@ -138,11 +138,9 @@ def netutils_parse_parents(
     :param config: The device running/startup config
     """
     # Check if the config is a list, if it is a list, then join it to make a string.
-    logger.error(config)
     if isinstance(config, list):
         config = "\n".join(config)
         config = config + "\n"
-        logger.error(config)
 
     # Config tree is the entire configuration in a tree format,
     # followed by getting the individual lines that has the formats:
