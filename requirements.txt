@@ -14,3 +14,4 @@ ciscoconfparse
 scp
 lxml>=4.3.0
 ncclient
+netutils
