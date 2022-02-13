@@ -903,14 +903,11 @@ class IOSDriver(NetworkDriver):
         if len(lldp_entries) == 0:
             return {}
 
-        # format chassis_id for consistency, if it is a mac address
+        # format chassis_id for consistency
         for entry in lldp_entries:
-            if re.search(
-                r"^(\d|\w){4}.(\d|\w){4}.(\d|\w){4}$", entry["remote_chassis_id"]
-            ):
-                entry["remote_chassis_id"] = napalm.base.helpers.mac(
-                    entry["remote_chassis_id"]
-                )
+            entry["remote_chassis_id"] = napalm.base.helpers.convert(
+                napalm.base.helpers.mac, entry["remote_chassis_id"]
+            )
 
         # Older IOS versions don't have 'Local Intf' defined in LLDP detail.
         # We need to get them from the non-detailed command
