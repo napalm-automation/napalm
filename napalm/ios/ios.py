@@ -1322,17 +1322,18 @@ class IOSDriver(NetworkDriver):
 
         # Get BGP config using netutils because some old devices dont support "| sec bgp"
         cfg = self.get_config(retrieve="running")
-        cfg = cfg["running"].splitlines()
-        bgp_config_text = napalm.base.helpers.netutils_parse_objects("router bgp", cfg)
+        bgp_config_list = napalm.base.helpers.netutils_parse_objects(
+            "router bgp", cfg["running"]
+        )
         bgp_asn = napalm.base.helpers.regex_find_txt(
-            r"router bgp (\d+)", bgp_config_text, default=0
+            r"router bgp (\d+)", bgp_config_list, default=0
         )
         # Get a list of all neighbors and groups in the config
         all_neighbors = set()
         all_groups = set()
         bgp_group_neighbors = {}
         all_groups.add("_")
-        for line in bgp_config_text:
+        for line in bgp_config_list:
             if " neighbor " in line:
                 if re.search(IP_ADDR_REGEX, line) is not None:
                     all_neighbors.add(re.search(IP_ADDR_REGEX, line).group())
@@ -1350,7 +1351,7 @@ class IOSDriver(NetworkDriver):
                 if bgp_neighbor != neighbor:
                     continue
             afi_list = napalm.base.helpers.netutils_parse_parents(
-                r"\s+address-family.*", bgp_neighbor, bgp_config_text
+                r"\s+address-family.*", bgp_neighbor, bgp_config_list
             )
             try:
                 afi = afi_list[0]
@@ -1362,7 +1363,7 @@ class IOSDriver(NetworkDriver):
                 continue
             else:
                 neighbor_config = napalm.base.helpers.netutils_parse_objects(
-                    bgp_neighbor, bgp_config_text
+                    bgp_neighbor, bgp_config_list
                 )
             # For group_name- use peer-group name, else VRF name, else "_" for no group
             group_name = napalm.base.helpers.regex_find_txt(
@@ -1453,15 +1454,15 @@ class IOSDriver(NetworkDriver):
                 }
                 continue
             neighbor_config = napalm.base.helpers.netutils_parse_objects(
-                group_name, bgp_config_text
+                group_name, bgp_config_list
             )
             multipath = False
             afi_list = napalm.base.helpers.netutils_parse_parents(
-                r"\s+address-family.*", group_name, neighbor_config
+                r"\s+address-family.*", group_name, bgp_config_list
             )
             for afi in afi_list:
                 afi_config = napalm.base.helpers.netutils_parse_objects(
-                    afi, bgp_config_text
+                    afi, bgp_config_list
                 )
                 multipath = bool(
                     napalm.base.helpers.regex_find_txt(r" multipath", str(afi_config))
