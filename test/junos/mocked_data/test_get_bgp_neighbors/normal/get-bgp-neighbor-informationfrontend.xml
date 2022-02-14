@@ -251,6 +251,28 @@
     <flap-count>0</flap-count>
   </bgp-peer>
   <bgp-peer style="detail">
+    <peer-address>192.169.1.2</peer-address>
+    <peer-as>20000</peer-as>
+    <local-address>192.169.1.3</local-address>
+    <local-as>20001</local-as>
+    <peer-type>External</peer-type>
+    <peer-state>Idle</peer-state>
+    <peer-flags/>
+    <last-state>Idle</last-state>
+    <last-event>Start</last-event>
+    <last-error>None</last-error>
+    <bgp-option-information>
+      <export-policy>NORMAL-FRONTEND</export-policy>
+      <bgp-options>Preference LocalAddress AddressFamily PeerAS Multipath Refresh</bgp-options>
+      <bgp-options2>VpnApplyExport PeerSpecficLoopsAllowed</bgp-options2>
+      <bgp-options-extended>GracefulShutdownRcv Shutdown</bgp-options-extended>
+      <address-families>inet-unicast inet6-unicast</address-families>
+      <holdtime>90</holdtime>
+      <preference>170</preference>
+    </bgp-option-information>
+    <flap-count>0</flap-count>
+  </bgp-peer>
+  <bgp-peer style="detail">
     <peer-address>2a01:280:100::1</peer-address>
     <peer-as>20000</peer-as>
     <local-address>2a01:280:100::</local-address>
