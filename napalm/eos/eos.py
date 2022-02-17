@@ -173,8 +173,12 @@ class EOSDriver(NetworkDriver):
             self.device.update_cli_version(cli_version)
 
             # determine if in multi-agent mode
-            commands = ["sh running-config | include service routing protocols model multi-agent"]
-            is_multi_agent = self.device.run_commands(commands, encoding="text")[0].get("output", "")
+            commands = [
+                "sh running-config | include service routing protocols model multi-agent"
+            ]
+            is_multi_agent = self.device.run_commands(commands, encoding="text")[0].get(
+                "output", ""
+            )
             self.multi_agent = bool(is_multi_agent)
         except ConnectionError as ce:
             # and this is raised either if device not avaiable
@@ -1691,7 +1695,9 @@ class EOSDriver(NetworkDriver):
             ]
 
             peer_details = []
-            extrator_type = "bgp_detail_multi_agent" if self.multi_agent else "bgp_detail"
+            extrator_type = (
+                "bgp_detail_multi_agent" if self.multi_agent else "bgp_detail"
+            )
 
             # Using preset template to extract peer info
             peer_info = napalm.base.helpers.textfsm_extractor(
