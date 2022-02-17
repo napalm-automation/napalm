@@ -117,6 +117,7 @@ class EOSDriver(NetworkDriver):
 
         self.platform = "eos"
         self.profile = [self.platform]
+        self.multi_agent = False
 
         self._process_optional_args(optional_args or {})
 
@@ -170,6 +171,11 @@ class EOSDriver(NetworkDriver):
             )
 
             self.device.update_cli_version(cli_version)
+
+            # determine if in multi-agent mode
+            commands = ["sh running-config | include service routing protocols model multi-agent"]
+            is_multi_agent = self.device.run_commands(commands, encoding="text")[0].get("output", "")
+            self.multi_agent = bool(is_multi_agent)
         except ConnectionError as ce:
             # and this is raised either if device not avaiable
             # either if HTTP(S) agent is not enabled
@@ -1685,10 +1691,11 @@ class EOSDriver(NetworkDriver):
             ]
 
             peer_details = []
+            extrator_type = "bgp_detail_multi_agent" if self.multi_agent else "bgp_detail"
 
             # Using preset template to extract peer info
             peer_info = napalm.base.helpers.textfsm_extractor(
-                self, "bgp_detail", peer_output
+                self, extrator_type, peer_output
             )
 
             for item in peer_info:
@@ -1774,7 +1781,7 @@ class EOSDriver(NetworkDriver):
                 commands.append("show ip bgp neighbors %s vrf all" % neighbor_address)
                 summary_commands.append("show ip bgp summary vrf all")
             elif peer_ver == 6:
-                commands.append("show ipv6 bgp neighbors %s vrf all" % neighbor_address)
+                commands.append("show ipv6 bgp %s vrf all" % neighbor_address)
                 summary_commands.append("show ipv6 bgp summary vrf all")
 
         raw_output = self.device.run_commands(commands, encoding="text")
