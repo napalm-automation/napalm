@@ -117,7 +117,6 @@ class EOSDriver(NetworkDriver):
 
         self.platform = "eos"
         self.profile = [self.platform]
-        self.multi_agent = False
 
         self._process_optional_args(optional_args or {})
 
@@ -171,15 +170,6 @@ class EOSDriver(NetworkDriver):
             )
 
             self.device.update_cli_version(cli_version)
-
-            # determine if in multi-agent mode
-            commands = [
-                "sh running-config | include service routing protocols model multi-agent"
-            ]
-            is_multi_agent = self.device.run_commands(commands, encoding="text")[0].get(
-                "output", ""
-            )
-            self.multi_agent = bool(is_multi_agent)
         except ConnectionError as ce:
             # and this is raised either if device not avaiable
             # either if HTTP(S) agent is not enabled
@@ -1692,11 +1682,21 @@ class EOSDriver(NetworkDriver):
                 "configured_keepalive",
                 "advertised_prefix_count",
                 "received_prefix_count",
+                "advertised_ipv6_prefix_count",
+                "received_ipv6_prefix_count",
             ]
 
             peer_details = []
+
+            # determine if in multi-agent mode to get correct extrator_type
+            commands = [
+                "show running-config | include service routing protocols model multi-agent"
+            ]
+            is_multi_agent = self.device.run_commands(commands, encoding="text")[0].get(
+                "output", ""
+            )
             extrator_type = (
-                "bgp_detail_multi_agent" if self.multi_agent else "bgp_detail"
+                "bgp_detail_multi_agent" if bool(is_multi_agent) else "bgp_detail"
             )
 
             # Using preset template to extract peer info
@@ -1712,7 +1712,7 @@ class EOSDriver(NetworkDriver):
                     True if item["local_address"] else False
                 )
                 item["multihop"] = (
-                    False if item["multihop"] == 0 or item["multihop"] == "" else True
+                    False if item["multihop"] == "0" or item["multihop"] == "" else True
                 )
 
                 # TODO: The below fields need to be retrieved
@@ -1753,6 +1753,12 @@ class EOSDriver(NetworkDriver):
                 item["local_address"] = napalm.base.helpers.convert(
                     napalm.base.helpers.ip, item["local_address"]
                 )
+                # Get all the advertised prefixes
+                item["advertised_prefix_count"] += item["advertised_ipv6_prefix_count"]
+                item["received_prefix_count"] += item["received_ipv6_prefix_count"]
+                # Remove the ipv6_prefix for comformity with test_model
+                item.pop("advertised_ipv6_prefix_count", None)
+                item.pop("received_ipv6_prefix_count", None)
 
                 peer_details.append(item)
 
