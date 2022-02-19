@@ -1012,13 +1012,17 @@ class NXOSDriver(NXOSDriverBase):
                 mac_address = interface_details["svi_mac"].strip()
             else:
                 mac_address = None
+
+            desc = interface_details.get(
+                "desc", interface_details.get("svi_desc", "")
+            ).strip('"')
             interfaces[interface_name] = {
                 "is_up": is_up,
                 "is_enabled": (
                     interface_details.get("state") == "up"
                     or interface_details.get("svi_admin_state") == "up"
                 ),
-                "description": str(interface_details.get("desc", "").strip('"')),
+                "description": desc,
                 "last_flapped": self._compute_timestamp(
                     interface_details.get("eth_link_flapped", "")
                 ),
