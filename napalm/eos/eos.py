@@ -1688,20 +1688,20 @@ class EOSDriver(NetworkDriver):
 
             peer_details = []
 
-            # determine if in multi-agent mode to get correct extrator_type
+            # determine if in multi-agent mode to get correct extractor_type
             commands = [
                 "show running-config | include service routing protocols model multi-agent"
             ]
             is_multi_agent = self.device.run_commands(commands, encoding="text")[0].get(
                 "output", ""
             )
-            extrator_type = (
+            extractor_type = (
                 "bgp_detail_multi_agent" if bool(is_multi_agent) else "bgp_detail"
             )
 
             # Using preset template to extract peer info
             peer_info = napalm.base.helpers.textfsm_extractor(
-                self, extrator_type, peer_output
+                self, extractor_type, peer_output
             )
 
             for item in peer_info:
@@ -1756,7 +1756,7 @@ class EOSDriver(NetworkDriver):
                 # Get all the advertised prefixes
                 item["advertised_prefix_count"] += item["advertised_ipv6_prefix_count"]
                 item["received_prefix_count"] += item["received_ipv6_prefix_count"]
-                # Remove the ipv6_prefix for comformity with test_model
+                # Remove the ipv6_prefix for conformity with test_model
                 item.pop("advertised_ipv6_prefix_count", None)
                 item.pop("received_ipv6_prefix_count", None)
 
@@ -1793,7 +1793,7 @@ class EOSDriver(NetworkDriver):
                 commands.append("show ip bgp neighbors %s vrf all" % neighbor_address)
                 summary_commands.append("show ip bgp summary vrf all")
             elif peer_ver == 6:
-                commands.append("show ipv6 bgp %s vrf all" % neighbor_address)
+                commands.append("show ipv6 bgp neighbors %s vrf all" % neighbor_address)
                 summary_commands.append("show ipv6 bgp summary vrf all")
 
         raw_output = self.device.run_commands(commands, encoding="text")
