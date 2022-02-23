@@ -24,7 +24,10 @@ Contributors fooelisa, mirceaulinic, et all
 """
 
 # stdlib
-import re
+try:
+    import regex as re
+except ModuleNotFoundError:
+    import re  # type:ignore
 import time
 import difflib
 import logging

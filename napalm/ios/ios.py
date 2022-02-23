@@ -15,7 +15,11 @@
 import copy
 import functools
 import os
-import re
+
+try:
+    import regex as re
+except ModuleNotFoundError:
+    import re
 import socket
 import telnetlib
 import tempfile

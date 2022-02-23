@@ -15,7 +15,11 @@
 
 # import stdlib
 from builtins import super
-import re
+
+try:
+    import regex as re
+except ModuleNotFoundError:
+    import re  # type:ignore
 import socket
 
 # import third party lib

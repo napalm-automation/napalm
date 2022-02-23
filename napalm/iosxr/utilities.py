@@ -1,4 +1,7 @@
-import re
+try:
+    import regex as re
+except ModuleNotFoundError:
+    import re  # type:ignore
 
 
 def strip_config_header(config):

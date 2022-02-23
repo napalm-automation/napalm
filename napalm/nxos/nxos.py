@@ -15,7 +15,11 @@
 
 import json
 import os
-import re
+
+try:
+    import regex as re
+except ModuleNotFoundError:
+    import re  # type:ignore
 import tempfile
 import time
 import uuid

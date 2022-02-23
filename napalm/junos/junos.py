@@ -16,7 +16,10 @@
 """Driver for JunOS devices."""
 
 # import stdlib
-import re
+try:
+    import regex as re
+except ModuleNotFoundError:
+    import re  # type:ignore
 import json
 import logging
 import collections

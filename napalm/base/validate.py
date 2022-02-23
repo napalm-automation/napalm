@@ -5,7 +5,11 @@ See: https://napalm.readthedocs.io/en/latest/validate.html
 """
 import yaml
 import copy
-import re
+
+try:
+    import regex as re
+except ModuleNotFoundError:
+    import re  # type:ignore
 from typing import Dict, List, Union, TypeVar, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
