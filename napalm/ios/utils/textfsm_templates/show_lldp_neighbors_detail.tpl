@@ -6,7 +6,7 @@ Value REMOTE_SYSTEM_NAME (.*)
 Value REMOTE_SYSTEM_DESCRIPTION (.+)
 Value REMOTE_SYSTEM_CAPAB (.*)
 Value REMOTE_SYSTEM_ENABLE_CAPAB (.*)
-
+Value REMOTE_SYSTEM_MGMT_IP (.*)
 Start
   ^Local Intf\s*?[:-]\s+${LOCAL_INTERFACE}
   ^Chassis id\s*?[:-]\s+${REMOTE_CHASSIS_ID}
@@ -18,6 +18,7 @@ Start
   ^System Description\s*-\s*${REMOTE_SYSTEM_DESCRIPTION}
   ^System Capabilities\s*?[:-]\s+${REMOTE_SYSTEM_CAPAB}
   ^Enabled Capabilities\s*?[:-]\s+${REMOTE_SYSTEM_ENABLE_CAPAB} -> Record
+  ^\s+IP\:\s${REMPRT_SYSTEM_MGMT_IP} -> Record
 
 Description
   # Capture the entire line and go back to Neighbor state
