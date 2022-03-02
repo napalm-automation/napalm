@@ -6,7 +6,7 @@ import json
 
 import pytest
 from napalm.base.test import helpers
-from napalm.base.test import models
+from napalm.base import models
 from napalm.base import NetworkDriver
 from napalm.base.test import conftest
 
