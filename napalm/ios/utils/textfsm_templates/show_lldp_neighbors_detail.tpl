@@ -17,7 +17,7 @@ Start
   ^System Description: -> Description
   ^System Description\s*-\s*${REMOTE_SYSTEM_DESCRIPTION}
   ^System Capabilities\s*?[:-]\s+${REMOTE_SYSTEM_CAPAB}
-  ^Enabled Capabilities\s*?[:-]\s+${REMOTE_SYSTEM_ENABLE_CAPAB} -> Record
+  ^Enabled Capabilities\s*?[:-]\s+${REMOTE_SYSTEM_ENABLE_CAPAB}
   ^\s+IP\:\s${REMPRT_SYSTEM_MGMT_IP} -> Record
 
 Description
