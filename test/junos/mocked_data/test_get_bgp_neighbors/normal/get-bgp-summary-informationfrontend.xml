@@ -134,6 +134,16 @@
     <peer-state>Active</peer-state>
   </bgp-peer>
   <bgp-peer style="terse">
+    <peer-address>192.169.1.2</peer-address>
+    <peer-as>20000</peer-as>
+    <input-messages>0</input-messages>
+    <output-messages>0</output-messages>
+    <route-queue-count>0</route-queue-count>
+    <flap-count>0</flap-count>
+    <elapsed-time seconds="696506">1w1d1h</elapsed-time>
+    <peer-state>Idle</peer-state>
+  </bgp-peer>
+  <bgp-peer style="terse">
     <peer-address>2a01:280:100::1</peer-address>
     <peer-as>20000</peer-as>
     <input-messages>81</input-messages>

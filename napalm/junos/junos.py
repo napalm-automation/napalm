@@ -765,7 +765,7 @@ class JunOSDriver(NetworkDriver):
             "remote_as": 0,
             "remote_id": "",
             "is_up": False,
-            "is_enabled": False,
+            "is_enabled": True,
             "description": "",
             "uptime": 0,
             "address_family": {},
@@ -828,6 +828,11 @@ class JunOSDriver(NetworkDriver):
                     for key, value in neighbor_details.items()
                     if key in keys
                 }
+                bgp_opts = (
+                    neighbor_details.pop("bgp_options_extended", "").lower().split()
+                )
+                if "shutdown" in bgp_opts:
+                    peer["is_enabled"] = False
                 peer["local_as"] = napalm.base.helpers.as_number(peer["local_as"])
                 peer["remote_as"] = napalm.base.helpers.as_number(peer["remote_as"])
                 peer["address_family"] = self._parse_route_stats(
