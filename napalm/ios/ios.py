@@ -3636,22 +3636,12 @@ class IOSDriver(NetworkDriver):
         vlans = {}
         for vlan_id, vlan_name in find_vlan:
             output = self._send_command("show vlan id {}".format(vlan_id))
-            interface_regex = r"{}\s+{}\s+\S+\s+([A-Z][a-z].*)$".format(
-                vlan_id, re.escape(vlan_name)
-            )
-            interfaces = re.findall(interface_regex, output, re.MULTILINE)
-            if len(interfaces) == 1:
-                interfaces = interfaces[0]
-                vlans[vlan_id] = {
-                    "name": vlan_name,
-                    "interfaces": [
-                        canonical_interface_name(intf.strip())
-                        for intf in interfaces.split(",")
-                    ],
-                }
-            elif len(interfaces) == 0:
+            _vlans = self._get_vlan_all_ports(output)
+            if len(_vlans) == 0:
                 vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
-            else:
+            elif len(_vlans) == 1:
+                vlans.update(_vlans)
+            elif len(_vlans.keys()) > 1:
                 raise ValueError(
                     "Error parsing vlan_id {}, "
                     "found more values than can be present.".format(vlan_id)
