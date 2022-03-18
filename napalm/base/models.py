@@ -400,31 +400,6 @@ OpticsDict = TypedDict("OpticsDict", {"physical_channels": OpticsPhysicalChannel
 
 ConfigDict = TypedDict("ConfigDict", {"running": str, "startup": str, "candidate": str})
 
-TracerouteResultDictEntry = TypedDict(
-    "TracerouteResultDictEntry", {"probes": Dict[int, TracerouteDict]}
-)
-
-OpticsStateDict = TypedDict(
-    "OpticsStateDict", {"instant": float, "avg": float, "min": float, "max": float}
-)
-
-OpticsStatePerChannelDict = TypedDict(
-    "OpticsStatePerChannelDict",
-    {
-        "input_power": OpticsStateDict,
-        "output_power": OpticsStateDict,
-        "laser_bias_current": OpticsStateDict,
-    },
-)
-
-OpticsPerChannelDict = TypedDict(
-    "OpticsPerChannelDict", {"index": int, "state": OpticsStatePerChannelDict}
-)
-
-OpticsPhysicalChannelsDict = TypedDict(
-    "OpticsPhysicalChannelsDict", {"channels": OpticsPerChannelDict}
-)
-
 NetworkInstanceDict = TypedDict(
     "NetworkInstanceDict", {"name": str, "type": str, "state": dict, "interfaces": dict}
 )

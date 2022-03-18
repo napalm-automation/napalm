@@ -26,8 +26,7 @@ import napalm.base.helpers
 from napalm.base import constants as c
 from napalm.base import validate
 from napalm.base.exceptions import ConnectionException
-from napalm.base.test import models
-from napalm.base.test.models import NTPStats
+from napalm.base import models
 
 
 class NetworkDriver(object):
@@ -938,7 +937,7 @@ class NetworkDriver(object):
 
         raise NotImplementedError
 
-    def get_ntp_stats(self) -> List[NTPStats]:
+    def get_ntp_stats(self) -> List[models.NTPStats]:
 
         """
         Returns a list of NTP synchronization statistics.
