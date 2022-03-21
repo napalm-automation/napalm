@@ -12,7 +12,7 @@ tox==3.24.5
 mypy==0.931
 types-requests==2.27.9
 types-six==1.16.12
-types-setuptools==57.4.10
+types-setuptools==57.4.11
 types-PyYAML==6.0.4
 ttp==0.8.4
 ttp_templates==0.1.3
