@@ -60,7 +60,7 @@ from napalm.base.exceptions import ReplaceConfigException
 from napalm.base.helpers import as_number
 from napalm.base.helpers import generate_regex_or
 from napalm.base.netmiko_helpers import netmiko_args
-from napalm.base.test import models
+from napalm.base import models
 from napalm.nxapi_plumbing import Device as NXOSDevice
 from napalm.nxapi_plumbing import (
     NXAPIAuthError,
