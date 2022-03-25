@@ -3590,22 +3590,42 @@ class IOSDriver(NetworkDriver):
             return self._get_vlan_all_ports(output)
 
     def _get_vlan_all_ports(self, output):
-        find_regexp = r"^(\d+)\s+(\S+)\s+\S+\s+([A-Z][a-z].*)$"
-        find = re.findall(find_regexp, output, re.MULTILINE)
+        find_regexp = re.compile(r"^(\d+)\s+(\S+)\s+\S+(\s+[A-Z][a-z].*)?$")
+        continuation_regexp = re.compile(r"^\s+([A-Z][a-z].*)$")
+        output = output.splitlines()
         vlans = {}
-        for vlan_id, vlan_name, interfaces in find:
-            vlans[vlan_id] = {
-                "name": vlan_name,
-                "interfaces": [
+
+        was_vlan_or_cont = False
+        vlan_id = None
+        vlan_name = None
+        interfaces = ""
+        for line in output:
+            vlan_m = find_regexp.match(line)
+            if vlan_m:
+                was_vlan_or_cont = True
+                vlan_id = vlan_m.group(1)
+                vlan_name = vlan_m.group(2)
+                interfaces = vlan_m.group(3) or ""
+                vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
+
+            cont_m = None
+            if was_vlan_or_cont:
+                cont_m = continuation_regexp.match(line)
+                if cont_m:
+                    interfaces = cont_m.group(1)
+
+            if not cont_m and not vlan_m:
+                was_vlan_or_cont = False
+                continue
+
+            vlans[vlan_id]["interfaces"].extend(
+                [
                     canonical_interface_name(intf.strip())
                     for intf in interfaces.split(",")
-                ],
-            }
+                    if intf.strip()
+                ]
+            )
 
-        find_regexp = r"^(\d+)\s+(\S+)\s+\S+$"
-        find = re.findall(find_regexp, output, re.MULTILINE)
-        for vlan_id, vlan_name in find:
-            vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
         return vlans
 
     def _get_vlan_from_id(self):
@@ -3616,22 +3636,12 @@ class IOSDriver(NetworkDriver):
         vlans = {}
         for vlan_id, vlan_name in find_vlan:
             output = self._send_command("show vlan id {}".format(vlan_id))
-            interface_regex = r"{}\s+{}\s+\S+\s+([A-Z][a-z].*)$".format(
-                vlan_id, re.escape(vlan_name)
-            )
-            interfaces = re.findall(interface_regex, output, re.MULTILINE)
-            if len(interfaces) == 1:
-                interfaces = interfaces[0]
-                vlans[vlan_id] = {
-                    "name": vlan_name,
-                    "interfaces": [
-                        canonical_interface_name(intf.strip())
-                        for intf in interfaces.split(",")
-                    ],
-                }
-            elif len(interfaces) == 0:
+            _vlans = self._get_vlan_all_ports(output)
+            if len(_vlans) == 0:
                 vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
-            else:
+            elif len(_vlans) == 1:
+                vlans.update(_vlans)
+            elif len(_vlans.keys()) > 1:
                 raise ValueError(
                     "Error parsing vlan_id {}, "
                     "found more values than can be present.".format(vlan_id)

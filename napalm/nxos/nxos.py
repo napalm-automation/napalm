@@ -46,6 +46,7 @@ from netaddr import IPAddress
 from netaddr.core import AddrFormatError
 from netmiko import file_transfer
 from requests.exceptions import ConnectionError
+from netutils.config.compliance import diff_network_config
 
 import napalm.base.constants as c
 
@@ -209,22 +210,31 @@ class NXOSDriverBase(NetworkDriver):
 
     def _get_merge_diff(self) -> str:
         """
-        The merge diff is not necessarily what needs to be loaded
-        for example under NTP, even though the 'ntp commit' command might be
-        alread configured, it is mandatory to be sent
-        otherwise it won't take the new configuration - see:
-        https://github.com/napalm-automation/napalm-nxos/issues/59
-        therefore this method will return the real diff (but not necessarily what is
-        being sent by the merge_load_config()
+        Uses netutils diff_network_config to create a partial configuration
+        with the proper hierarchy.
+        Note: the netutils utility performs the diff offline.
+
+        Returns: diff with the proper hierarchy of commands
+        that are missing from the current config.
+        Examples:
+        Candidate configuration:
+        interface loopback0
+          ip address 10.1.4.5/32
+          ip router ospf 100 area 0.0.0.1
+
+        Base (on device) - relevant section:
+        ...
+        interface loopback0
+          ip address 10.1.4.4/32
+          ip router ospf 100 area 0.0.0.1
+        ...
+
+        Diff that respects the required command hierarchy:
+        interface loopback0
+          ip address 10.1.4.5/32
         """
-        diff = []
         running_config = self.get_config(retrieve="running")["running"]
-        running_lines = running_config.splitlines()
-        for line in self.merge_candidate.splitlines():
-            if line not in running_lines and line:
-                if line[0].strip() != "!":
-                    diff.append(line)
-        return "\n".join(diff)
+        return diff_network_config(self.merge_candidate, running_config, "cisco_nxos")
 
     def _get_diff(self) -> str:
         """Get a diff between running config and a proposed file."""
@@ -1012,13 +1022,17 @@ class NXOSDriver(NXOSDriverBase):
                 mac_address = interface_details["svi_mac"].strip()
             else:
                 mac_address = None
+
+            desc = interface_details.get(
+                "desc", interface_details.get("svi_desc", "")
+            ).strip('"')
             interfaces[interface_name] = {
                 "is_up": is_up,
                 "is_enabled": (
                     interface_details.get("state") == "up"
                     or interface_details.get("svi_admin_state") == "up"
                 ),
-                "description": str(interface_details.get("desc", "").strip('"')),
+                "description": desc,
                 "last_flapped": self._compute_timestamp(
                     interface_details.get("eth_link_flapped", "")
                 ),
