@@ -25,7 +25,7 @@ import re
 
 from pydoc import locate
 
-from napalm.base.test import models
+from napalm.base import models
 
 
 def raise_exception(result):  # type: ignore
