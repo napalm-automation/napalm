@@ -13,7 +13,7 @@
 # the License.
 import difflib
 from napalm.base import exceptions
-from napalm.base.test import models
+from napalm.base import models
 from unittest import SkipTest
 
 
