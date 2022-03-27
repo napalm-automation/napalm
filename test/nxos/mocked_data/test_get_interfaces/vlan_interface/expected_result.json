@@ -16,5 +16,14 @@
         "mac_address": "00:2A:6A:D3:00:00",
         "mtu": 1500,
         "speed": 1000
+    },
+    "Vlan199": {
+        "is_enabled": false,
+        "description": "This is a description",
+        "last_flapped": -1.0,
+        "is_up": false,
+        "mac_address": "00:2A:6A:D3:00:00",
+        "mtu": 1500,
+        "speed": 1000
     }
 }

@@ -28,7 +28,7 @@ except ImportError:
 # local modules
 import napalm.base.exceptions
 from napalm.base import constants
-from napalm.base.test.models import ConfigDict
+from napalm.base.models import ConfigDict
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
 from napalm.base.canonical_map import base_interfaces, reverse_mapping
 

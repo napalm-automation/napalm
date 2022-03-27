@@ -11,7 +11,7 @@ from typing import Dict, List, Union, TypeVar, Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from napalm.base import NetworkDriver
 from napalm.base.exceptions import ValidationException
-from napalm.base.test import models
+from napalm.base import models
 
 
 # We put it here to compile it only once
