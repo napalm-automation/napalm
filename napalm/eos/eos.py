@@ -1877,6 +1877,61 @@ class EOSDriver(NetworkDriver):
 
         return optics_detail
 
+    def get_optics_dom(self):
+        """Implementation of "show interfaces transciever dom", allowing devices to 
+        get optic detail on more than one channel"
+
+        Returns:
+            dict: stuctured data on optics detail
+        """
+        
+        command = ["show interfaces transceiver dom"]
+        
+        output = self.device.run_commands(command, encoding="json")[0]["interfaces"]
+
+        # Formatting data into return data structure
+        optics_detail = {}
+
+        for port, port_values in output.items():
+            port_detail = {"physical_channels": {"channel": []}}
+
+            # Defaulting avg, min, max values to 0.0 since device does not
+            # return these values
+            optic_states = {
+                "index": 0,
+                "state": {
+                    "input_power": {
+                        "instant": (
+                            port_values["parameters"]["rxPower"] if "rxPower" in port_values["parameters"] else 0.0
+                        ),
+                        "avg": 0.0,
+                        "min": 0.0,
+                        "max": 0.0,
+                    },
+                    "output_power": {
+                        "instant": (
+                            port_values["parameters"]["txPower"] if "txPower" in port_values["parameters"] else 0.0
+                        ),
+                        "avg": 0.0,
+                        "min": 0.0,
+                        "max": 0.0,
+                    },
+                    "laser_bias_current": {
+                        "instant": (
+                            port_values["parameters"]["txBias"] if "txBias" in port_values["parameters"] else 0.0
+                        ),
+                        "avg": 0.0,
+                        "min": 0.0,
+                        "max": 0.0,
+                    },
+                },
+            }
+
+            port_detail["physical_channels"]["channel"].append(optic_states)
+            optics_detail[port] = port_detail
+
+        return optics_detail
+
     def get_config(self, retrieve="all", full=False, sanitized=False):
         """get_config implementation for EOS."""
         get_startup = retrieve == "all" or retrieve == "startup"
