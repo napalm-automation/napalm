@@ -1689,9 +1689,6 @@ class EOSDriver(NetworkDriver):
             peer_details = []
 
             # determine if in multi-agent mode to get correct extractor_type
-            commands = [
-                "show running-config | include service routing protocols model multi-agent"
-            ]
             is_multi_agent = self.device.run_commands(
                 [
                     "show running-config | include service routing protocols model multi-agent"
