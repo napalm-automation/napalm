@@ -1879,7 +1879,7 @@ class EOSDriver(NetworkDriver):
 
     def get_optics_dom(self):
         """Implementation of "show interfaces transciever dom", allowing devices to 
-        get optic detail on more than one channel"
+        get optic details on multiple channels."
 
         Returns:
             dict: stuctured data on optics detail

@@ -1604,6 +1604,100 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
+    def get_optics_dom(self) -> Dict[str, models.OpticsDict]:
+        """Fetches the power usage on the various transceivers installed
+        on the switch, and returns a view that containing information on 
+        all channels, and applicable units. 
+        
+        Returns a dictionary where the keys are as listed below:
+
+            * intf_name (unicode)
+                * physical_channels
+                    * channels (list of dicts)
+                        * index (int)
+                        * state
+                            * input_power
+                                * instant (float)
+                                    * channels (int)
+                                        * avg (float)
+                                        * min (float)
+                                        * max (float)
+                                    * unit (string)
+                            * output_power
+                                * instant (float)
+                                * channels (int)
+                                        * avg (float)
+                                        * min (float)
+                                        * max (float)
+                                * unit (string)
+                            * laser_bias_current
+                                * instant (float)
+                                * channels (int)
+                                        * avg (float)
+                                        * min (float)
+                                        * max (float)
+                                * unit (string)
+
+        Example::
+
+        {
+            "Et1":{
+                "physical_channels":{
+                    "channel":[
+                        {
+                        "index":0,
+                        "state":{
+                            "input_power":{
+                                "instant":{
+                                    "channels":{
+                                    "1":0.0,
+                                    "2":0.0,
+                                    "3":0.0,
+                                    "4":0.0
+                                    },
+                                    "unit":"dBm"
+                                },
+                                "avg":0.0,
+                                "min":0.0,
+                                "max":0.0
+                            },
+                            "output_power":{
+                                "instant":{
+                                    "channels":{
+                                    "1":0.0,
+                                    "2":0.0,
+                                    "3":0.0,
+                                    "4":0.0
+                                    },
+                                    "unit":"dBm"
+                                },
+                                "avg":0.0,
+                                "min":0.0,
+                                "max":0.0
+                            },
+                            "laser_bias_current":{
+                                "instant":{
+                                    "channels":{
+                                    "1":0.0,
+                                    "2":0.0,
+                                    "3":0.0,
+                                    "4":0.0
+                                    },
+                                    "unit":"mA"
+                                },
+                                "avg":0.0,
+                                "min":0.0,
+                                "max":0.0
+                            }
+                        }
+                        }
+                    ]
+                }
+            }
+        }
+        """
+        raise NotImplementedError    
+
     def get_config(
         self, retrieve: str = "all", full: bool = False, sanitized: bool = False
     ) -> models.ConfigDict:
