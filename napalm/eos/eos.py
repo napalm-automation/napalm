@@ -1697,9 +1697,7 @@ class EOSDriver(NetworkDriver):
                     "show running-config | include service routing protocols model multi-agent"
                 ],
                 encoding="text",
-            )[0].get()
-                "output", ""
-            )
+            )[0].get("output", "")
             extractor_type = (
                 "bgp_detail_multi_agent" if bool(is_multi_agent) else "bgp_detail"
             )
