@@ -1692,7 +1692,12 @@ class EOSDriver(NetworkDriver):
             commands = [
                 "show running-config | include service routing protocols model multi-agent"
             ]
-            is_multi_agent = self.device.run_commands(commands, encoding="text")[0].get(
+            is_multi_agent = self.device.run_commands(
+                [
+                    "show running-config | include service routing protocols model multi-agent"
+                ],
+                encoding="text",
+            )[0].get()
                 "output", ""
             )
             extractor_type = (
