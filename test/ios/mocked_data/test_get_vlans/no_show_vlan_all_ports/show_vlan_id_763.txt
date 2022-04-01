@@ -1,6 +1,8 @@
 VLAN Name                             Status    Ports
 ---- -------------------------------- --------- -------------------------------
-763  Vlan763                          active    Gi0/2, Gi0/7, Gi0/12, Gi0/13, Po1
+763  Vlan763                          active    Gi1/1, Gi1/2, Gi1/3, Gi1/4, Gi1/5, Gi1/6, Gi1/7, Gi1/8, Gi1/9, Gi1/10, Gi1/11, Gi1/12, Gi1/37, Gi1/38, Gi1/39, Gi1/40, Gi1/41, Gi1/42, Gi1/43, Gi1/44, Gi1/47, Gi1/48, Gi2/1, Gi2/2, Gi2/3, Gi2/4, Gi2/7, Gi2/8, Gi2/9, Gi2/10, Gi2/11, Gi2/12, Gi2/15, Gi2/16, Gi2/41, Gi2/42, Gi2/43, Gi2/44, Gi3/3, Gi3/4, Gi3/5, Gi3/6, Gi3/7, Gi3/8, Gi3/9, Gi3/10, Gi3/37, Gi3/38, Gi3/39, Gi3/40, Gi3/41, Gi3/42, Gi3/43, Gi3/44, Gi3/45, Gi3/46, Gi3/47, Gi3/48, Gi4/1, Gi4/2, Gi4/3
+                                                Gi4/4, Gi4/5, Gi4/6, Gi4/7, Gi4/8, Gi4/41, Gi4/42, Gi4/43, Gi4/44, Gi4/45, Gi4/46, Gi4/47, Gi4/48, Gi7/1, Gi7/2, Gi7/3, Gi7/4, Gi7/5, Gi7/6, Gi7/7, Gi7/27, Gi7/29, Gi7/32, Gi7/37, Gi7/38, Gi7/39, Gi7/40, Gi7/41, Gi7/42, Gi7/43, Gi7/44, Gi7/45, Gi7/46, Gi8/1, Gi8/2, Gi8/3, Gi8/4, Gi8/5, Gi8/6, Gi8/9, Gi8/10, Gi8/13, Gi8/14, Gi8/39, Gi8/40, Gi8/41, Gi8/42, Gi8/43, Gi8/44, Gi8/45, Gi8/46, Gi8/47, Gi8/48, Gi9/7, Gi9/8, Gi9/9, Gi9/10, Gi9/11, Gi9/12, Gi9/41
+                                                Gi9/42, Gi9/43, Gi9/44, Gi9/45, Gi10/29, Gi10/30, Gi10/31, Gi10/33, Gi10/34
 
 VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
 ---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------

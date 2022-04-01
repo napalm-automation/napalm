@@ -681,7 +681,11 @@
             "Port-channel26",
             "Port-channel27",
             "Port-channel28",
-            "Port-channel30"
+            "Port-channel30",
+            "TenGigabitEthernet2/2/30",
+            "TenGigabitEthernet2/1/15",
+            "TenGigabitEthernet2/2/21",
+            "TenGigabitEthernet1/3/8"
         ]
     },
     "707": {

@@ -38,6 +38,8 @@ VLAN Name                             Status    Ports
 612  Vlan612                          active    Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
 613  Vlan613                          active    Po1, Po3, Po4, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
 702  Vlan702                          active    Te2/2/32, Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
+                                                Te2/2/30, Te2/1/15
+                                                Te2/2/21, Te1/3/8
 707  Vlan707                          active    Po1, Po5, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30
 710  Vlan710                          active    Te1/1/9, Te1/1/11, Te1/3/4, Te2/2/31, Te2/3/4, Te2/3/6, Po1, Po3, Po4, Po5, Po6, Po7, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po29, Po30, Po100
 711  Vlan711                          active    Po1, Po5, Po21, Po22, Po23, Po24, Po25, Po26, Po27, Po28, Po30

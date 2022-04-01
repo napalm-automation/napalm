@@ -66,4 +66,29 @@ As a result, merges are **not atomic**.
 Diffs
 _____
 
-Diffs for merges are simply the lines in the merge candidate config.
+Diffs for merges are simply the lines in the merge candidate config. `Netutils <https://netutils.readthedocs.io/en/latest/>`__ is used for creating the merge diff between the candidate and running configurations.
+One caveat of using netutils diff of configurations is that the diff is performed offline and not online in the device.
+
+Example assuming that the device config contains:
+
+.. code-block::
+
+    interface loopback0
+      ip address 10.1.4.4/32
+      ip router ospf 100 area 0.0.0.1
+
+Then what you will get with the diff:
+
+.. code-block:: python
+
+    candidate_cfg = """
+    interface loopback0
+      ip address 10.1.4.5/32
+      ip router ospf 100 area 0.0.0.1
+    """
+
+    nxos1.load_merge_candidate(config=candidate_cfg)
+
+    print(nxos1.compare_config())
+    interface loopback0
+      ip address 10.1.4.5/32
