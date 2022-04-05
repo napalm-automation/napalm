@@ -2233,6 +2233,10 @@ class IOSDriver(NetworkDriver):
 
         output = self._send_command(mem_cmd)
         if "Invalid input detected at" not in output:
+            proc_total_mem = 0
+            proc_used_mem = 0
+            io_total_mem = 0
+            io_used_mem = 0
             for line in output.splitlines():
                 if "Processor" in line:
                     _, _, proc_total_mem, proc_used_mem, _ = line.split()[:5]
