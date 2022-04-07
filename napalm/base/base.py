@@ -1606,7 +1606,7 @@ class NetworkDriver(object):
 
     def get_optics_dom(self) -> Dict[str, models.OpticsDict]:
         """Fetches the power usage on the various transceivers installed
-        on the switch, and returns a view that containing information on
+        on the switch, and returns a view that contains information on
         all channels, and applicable units.
 
         Returns a dictionary where the keys are as listed below:
@@ -1640,61 +1640,61 @@ class NetworkDriver(object):
 
         Example::
 
-        {
-            "Et1":{
-                "physical_channels":{
-                    "channel":[
-                        {
-                        "index":0,
-                        "state":{
-                            "input_power":{
-                                "instant":{
-                                    "channels":{
-                                    "1":0.0,
-                                    "2":0.0,
-                                    "3":0.0,
-                                    "4":0.0
+            {
+                "Et1":{
+                    "physical_channels":{
+                        "channel":[
+                            {
+                            "index":0,
+                            "state":{
+                                "input_power":{
+                                    "instant":{
+                                        "channels":{
+                                        "1":0.0,
+                                        "2":0.0,
+                                        "3":0.0,
+                                        "4":0.0
+                                        },
+                                        "unit":"dBm"
                                     },
-                                    "unit":"dBm"
+                                    "avg":0.0,
+                                    "min":0.0,
+                                    "max":0.0
                                 },
-                                "avg":0.0,
-                                "min":0.0,
-                                "max":0.0
-                            },
-                            "output_power":{
-                                "instant":{
-                                    "channels":{
-                                    "1":0.0,
-                                    "2":0.0,
-                                    "3":0.0,
-                                    "4":0.0
+                                "output_power":{
+                                    "instant":{
+                                        "channels":{
+                                        "1":0.0,
+                                        "2":0.0,
+                                        "3":0.0,
+                                        "4":0.0
+                                        },
+                                        "unit":"dBm"
                                     },
-                                    "unit":"dBm"
+                                    "avg":0.0,
+                                    "min":0.0,
+                                    "max":0.0
                                 },
-                                "avg":0.0,
-                                "min":0.0,
-                                "max":0.0
-                            },
-                            "laser_bias_current":{
-                                "instant":{
-                                    "channels":{
-                                    "1":0.0,
-                                    "2":0.0,
-                                    "3":0.0,
-                                    "4":0.0
+                                "laser_bias_current":{
+                                    "instant":{
+                                        "channels":{
+                                        "1":0.0,
+                                        "2":0.0,
+                                        "3":0.0,
+                                        "4":0.0
+                                        },
+                                        "unit":"mA"
                                     },
-                                    "unit":"mA"
-                                },
-                                "avg":0.0,
-                                "min":0.0,
-                                "max":0.0
+                                    "avg":0.0,
+                                    "min":0.0,
+                                    "max":0.0
+                                }
                             }
-                        }
-                        }
-                    ]
+                            }
+                        ]
+                    }
                 }
             }
-        }
         """
         raise NotImplementedError
 
