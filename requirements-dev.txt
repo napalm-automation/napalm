@@ -10,3 +10,6 @@ pylama==7.7.1
 mock==4.0.3
 tox==3.24.5
 mypy==0.931
+# Force click to previous release so black/PY3.6 is not broken
+# Can be removed in NAPALM >= 4.0.0
+click==8.0.4
