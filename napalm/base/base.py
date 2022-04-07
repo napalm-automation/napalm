@@ -1606,9 +1606,9 @@ class NetworkDriver(object):
 
     def get_optics_dom(self) -> Dict[str, models.OpticsDict]:
         """Fetches the power usage on the various transceivers installed
-        on the switch, and returns a view that containing information on 
-        all channels, and applicable units. 
-        
+        on the switch, and returns a view that containing information on
+        all channels, and applicable units.
+
         Returns a dictionary where the keys are as listed below:
 
             * intf_name (unicode)
@@ -1696,7 +1696,7 @@ class NetworkDriver(object):
             }
         }
         """
-        raise NotImplementedError    
+        raise NotImplementedError
 
     def get_config(
         self, retrieve: str = "all", full: bool = False, sanitized: bool = False

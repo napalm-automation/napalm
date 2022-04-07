@@ -1878,15 +1878,15 @@ class EOSDriver(NetworkDriver):
         return optics_detail
 
     def get_optics_dom(self):
-        """Implementation of "show interfaces transciever dom", allowing devices to 
+        """Implementation of "show interfaces transciever dom", allowing devices to
         get optic details on multiple channels."
 
         Returns:
             dict: stuctured data on optics detail
         """
-        
+
         command = ["show interfaces transceiver dom"]
-        
+
         output = self.device.run_commands(command, encoding="json")[0]["interfaces"]
 
         # Formatting data into return data structure
@@ -1902,7 +1902,9 @@ class EOSDriver(NetworkDriver):
                 "state": {
                     "input_power": {
                         "instant": (
-                            port_values["parameters"]["rxPower"] if "rxPower" in port_values["parameters"] else 0.0
+                            port_values["parameters"]["rxPower"]
+                            if "rxPower" in port_values["parameters"]
+                            else 0.0
                         ),
                         "avg": 0.0,
                         "min": 0.0,
@@ -1910,7 +1912,9 @@ class EOSDriver(NetworkDriver):
                     },
                     "output_power": {
                         "instant": (
-                            port_values["parameters"]["txPower"] if "txPower" in port_values["parameters"] else 0.0
+                            port_values["parameters"]["txPower"]
+                            if "txPower" in port_values["parameters"]
+                            else 0.0
                         ),
                         "avg": 0.0,
                         "min": 0.0,
@@ -1918,7 +1922,9 @@ class EOSDriver(NetworkDriver):
                     },
                     "laser_bias_current": {
                         "instant": (
-                            port_values["parameters"]["txBias"] if "txBias" in port_values["parameters"] else 0.0
+                            port_values["parameters"]["txBias"]
+                            if "txBias" in port_values["parameters"]
+                            else 0.0
                         ),
                         "avg": 0.0,
                         "min": 0.0,
