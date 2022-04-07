@@ -14,6 +14,11 @@ That will install all the core drivers currently available.
 
 .. note::
 
+    Beginning with release 4.0.0 and later, NAPALM offers support for Python
+    3.7+ only.
+
+.. note::
+
     Beginning with release 3.0.0 and later, NAPALM offers support for Python
     3.6+ only.
 
