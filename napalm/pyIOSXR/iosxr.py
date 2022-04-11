@@ -61,7 +61,7 @@ class IOSXR(object):
 
     _XML_SHELL = "xml"
     _XML_MODE_PROMPT = r"XML>"
-    _XML_MODE_READ_TIMEOUT = 1  # should be able to read within one second
+    _XML_MODE_READ_TIMEOUT = 10  # should be able to complete read within 10 seconds
 
     _ITERATOR_ID_ERROR_MSG = (
         "Non-supported IteratorID in response object. "
@@ -430,6 +430,7 @@ class IOSXR(object):
 
         result_summary = root.find("ResultSummary")
 
+        # import pdbr; pdbr.set_trace()
         if result_summary is not None and int(result_summary.get("ErrorCount", 0)) > 0:
 
             if "CLI" in childs:
