@@ -430,7 +430,6 @@ class IOSXR(object):
 
         result_summary = root.find("ResultSummary")
 
-        # import pdbr; pdbr.set_trace()
         if result_summary is not None and int(result_summary.get("ErrorCount", 0)) > 0:
 
             if "CLI" in childs:
