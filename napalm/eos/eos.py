@@ -139,18 +139,19 @@ class EOSDriver(NetworkDriver):
         self.transport = transport
         if transport == "ssh":
             self.transport_class = "ssh"
+            init_args = ['port']
         else:
             try:
                 self.transport_class = pyeapi.client.TRANSPORTS[transport]
+                # ([1:]) to omit self
+                init_args = inspect.getfullargspec(self.transport_class.__init__)[0][1:]
+                
             except KeyError:
                 raise ConnectionException(
                     "Unknown transport: {}".format(self.transport)
                 )
         filter_args = ["host", "username", "password", "timeout", "lock_disable"]
-        init_args = inspect.getfullargspec(self.transport_class.__init__)[0]
-
-        init_args.pop(0)  # Remove "self"
-
+        
         if transport == "ssh":
             self.netmiko_optional_args = {
                 k: v
@@ -223,7 +224,7 @@ class EOSDriver(NetworkDriver):
 
     def _run_commands(self, commands, **kwargs):
         if self.transport == "ssh":
-            if self.fn0039_transform:
+            if self.fn0039_config:
                 if isinstance(commands, str):
                     commands = [cli_convert(commands, self.cli_version)]
                 else:
@@ -892,7 +893,7 @@ class EOSDriver(NetworkDriver):
 
         for command in commands:
             try:
-                cli_output[str(command)] = self.device.run_commands(
+                cli_output[str(command)] = self._run_commands(
                     [command], encoding="text"
                 )[0].get("output")
                 # not quite fair to not exploit rum_commands
