@@ -6,6 +6,8 @@ Minimum Version
 
 To be able to support the ``compare_config``, ``load_merge_candidate`` or ``load_replace_candidate`` methods you will require to run at least EOS version `4.15.0F`.
 
+The ssh driver for the config session timers requires you to run at least EOS 4.18.0F.
+
 Multi-line/HEREDOC
 ~~~~~~~~~~~~~~~~~~
 EOS configuration is loaded via ``pyeapi.eapilib.Node.run_commands()``, which by itself cannot handle multi-line commands
