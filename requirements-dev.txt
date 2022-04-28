@@ -10,7 +10,7 @@ mock==4.0.3
 tox==3.24.5
 mypy==0.942
 types-requests==2.27.16
-types-six==1.16.12
+types-six==1.16.15
 types-setuptools==57.4.12
 types-PyYAML==6.0.5
 ttp==0.8.4
