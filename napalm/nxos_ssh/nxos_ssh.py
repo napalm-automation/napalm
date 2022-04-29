@@ -169,7 +169,9 @@ def parse_intf_section(interface):
        
         # This was alway in Kbit (in the data I saw)  
         if speed_unit != "Kbit":
-            raise ValueError(f"Unexpected speed unit in show interfaces parsing:\n\n{interface}")
+            raise ValueError(
+                f"Unexpected speed unit in show interfaces parsing:\n\n{interface}"
+            )
        
         speed = float(speed / 1000.0)
     else:
