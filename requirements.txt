@@ -9,7 +9,7 @@ netaddr
 pyYAML
 pyeapi>=0.8.2
 netmiko>=3.3.0,<4.0.0
-junos-eznc>=2.2.1
+junos-eznc>=2.6.3
 ciscoconfparse
 scp
 lxml>=4.3.0
