@@ -164,7 +164,7 @@ def parse_intf_section(interface):
 
     if speed_exist:
         match = re.search(re_speed, interface, flags=re.M)
-        
+
         if match:
             speed_data = match.groupdict(-1)
             speed = float(speed_data["speed"])
@@ -172,7 +172,7 @@ def parse_intf_section(interface):
             speed_unit = speed_data["speed_unit"]
             speed_unit = speed_unit.rstrip(",")
 
-            # This was alway in Kbit (in the data I saw)  
+            # This was alway in Kbit (in the data I saw)
             if speed_unit != "Kbit":
                 raise ValueError(
                     f"Unexpected speed unit in show interfaces parsing:\n\n{interface}"
