@@ -173,7 +173,7 @@ def parse_intf_section(interface):
        
         speed = float(speed / 1000.0)
     else:
-        mtu = -1.0
+        mtu = mtu if mtu else -1.0
         speed = -1.0
 
     description = ""
