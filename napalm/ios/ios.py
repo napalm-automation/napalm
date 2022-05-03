@@ -509,8 +509,9 @@ class IOSDriver(NetworkDriver):
         """
         CISCO_TIMER_MIN = 1
         CISCO_TIMER_MAX = 120
-        ARCHIVE_DISABLED_MESSAGE = "For Cisco devices, revert_in requires 'archive' feature to be" \
-                                   " enabled."
+        ARCHIVE_DISABLED_MESSAGE = (
+            "For Cisco devices, revert_in requires 'archive' feature to be enabled."
+        )
 
         if message:
             raise NotImplementedError(
@@ -520,16 +521,22 @@ class IOSDriver(NetworkDriver):
         if revert_in is not None:
             if not self._check_archive_feature():
                 raise CommitConfirmException(ARCHIVE_DISABLED_MESSAGE)
-            elif not CISCO_TIMER_MIN*60 <= revert_in <= CISCO_TIMER_MAX*60:
-                msg = "For Cisco devices revert_in between {} and {} seconds, this will round " \
-                      "down to the nearest minute".format(CISCO_TIMER_MIN*60, CISCO_TIMER_MAX*60)
+            elif not CISCO_TIMER_MIN * 60 <= revert_in <= CISCO_TIMER_MAX * 60:
+                msg = (
+                    "For Cisco devices revert_in between {} and {} seconds, this will round "
+                    "down to the nearest minute".format(
+                        CISCO_TIMER_MIN * 60, CISCO_TIMER_MAX * 60
+                    )
+                )
                 raise CommitConfirmException(msg)
             else:
                 revert_in = int(revert_in / 60)
 
         if self.has_pending_commit():
-            raise CommandErrorException('Configuration session already in progress, cannot '
-                                        'perform configuration actions')
+            raise CommandErrorException(
+                "Configuration session already in progress, cannot "
+                "perform configuration actions"
+            )
 
         # Always generate a rollback config on commit
         self._gen_rollback_cfg()
@@ -541,8 +548,9 @@ class IOSDriver(NetworkDriver):
             if not self._check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
             if revert_in and self.auto_rollback_on_error:
-                cmd = "configure replace {} force revert trigger error timer {}".format(cfg_file,
-                                                                                        revert_in)
+                cmd = "configure replace {} force revert trigger error timer {}".format(
+                    cfg_file, revert_in
+                )
             elif self.auto_rollback_on_error:
                 cmd = "configure replace {} force revert trigger error".format(cfg_file)
             elif revert_in:
@@ -570,7 +578,10 @@ class IOSDriver(NetworkDriver):
                 # Enter config mode with a revert timer and exit config mode
                 try:
                     self.device.config_mode(
-                        config_command='configure terminal revert timer {}'.format(revert_in))
+                        config_command="configure terminal revert timer {}".format(
+                            revert_in
+                        )
+                    )
                     self.device.exit_config_mode()
                 except ValueError:
                     raise MergeConfigException(ARCHIVE_DISABLED_MESSAGE)
@@ -591,9 +602,9 @@ class IOSDriver(NetworkDriver):
             output += self.device.save_config()
 
     def _check_archive_feature(self):
-        cmd = 'show archive'
+        cmd = "show archive"
         output = self.device.send_command_expect(cmd)
-        if 'Archive feature not enabled' in output:
+        if "Archive feature not enabled" in output:
             return False
         return True
 
@@ -603,19 +614,21 @@ class IOSDriver(NetworkDriver):
 
     def _get_pending_commits(self):
         if self._check_archive_feature():
-            cmd = 'show archive config rollback timer'
+            cmd = "show archive config rollback timer"
             output = self.device.send_command_expect(cmd)
         else:
             return {}
-        if 'No Rollback Confirmed Change pending' in output:
+        if "No Rollback Confirmed Change pending" in output:
             return {}
-        match_strings = r'|'.join([
-            r'Time configured.*?: (?P<configured>.*)',
-            r'Timer type: (?P<type>.*)',
-            r'Timer value: (?P<timer>.*)',
-            r'User: (?P<user>.*)'
-        ])
-        keys = ['configured', 'type', 'timer', 'user']
+        match_strings = r"|".join(
+            [
+                r"Time configured.*?: (?P<configured>.*)",
+                r"Timer type: (?P<type>.*)",
+                r"Timer value: (?P<timer>.*)",
+                r"User: (?P<user>.*)",
+            ]
+        )
+        keys = ["configured", "type", "timer", "user"]
         matches = re.finditer(match_strings, output)
         pending_commits = {}
         for match in matches:
@@ -629,14 +642,18 @@ class IOSDriver(NetworkDriver):
         """Send final commit to confirm an in-proces commit that requires confirmation."""
         if self.has_pending_commit():
             pending = self._get_pending_commits()
-            if pending.get('user') == self.username:
-                self.device.send_command('configure confirm')
+            if pending.get("user") == self.username:
+                self.device.send_command("configure confirm")
                 self.device.save_config()
             else:
-                raise CommitConfirmException('Configuration session active but not owned by {} '
-                                            'cannot confirm commit'.format(self.username))
+                raise CommitConfirmException(
+                    "Configuration session active but not owned by {} "
+                    "cannot confirm commit".format(self.username)
+                )
         else:
-            raise CommitConfirmException('No pending configuration'.format(self.username))
+            raise CommitConfirmException(
+                "No pending configuration".format(self.username)
+            )
 
     def discard_config(self):
         """Discard loaded candidate configurations."""
@@ -655,13 +672,15 @@ class IOSDriver(NetworkDriver):
     def rollback(self):
         """Rollback configuration to filename or to self.rollback_cfg file."""
         if self.has_pending_commit():
-            if self._get_pending_commits().get('user') == self.username:
-                cmd = 'configure revert now'
+            if self._get_pending_commits().get("user") == self.username:
+                cmd = "configure revert now"
                 self._commit_handler(cmd)
                 self.device.save_config()
             else:
-                raise CommitConfirmException('Configuration session active but not owned by {} '
-                                            'cannot rollback'.format(self.username))
+                raise CommitConfirmException(
+                    "Configuration session active but not owned by {} "
+                    "cannot rollback".format(self.username)
+                )
         else:
             filename = self.rollback_cfg
             cfg_file = self._gen_full_path(filename)
