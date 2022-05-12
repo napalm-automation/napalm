@@ -811,11 +811,9 @@ class EOSDriver(NetworkDriver):
 
         for command in commands:
             try:
-                result = self.device.run_commands(
-                    [command], encoding=encoding
-                )
+                result = self.device.run_commands([command], encoding=encoding)
                 if encoding == "text":
-                    cli_output[str(command)] = result[0]['output']
+                    cli_output[str(command)] = result[0]["output"]
                 else:
                     cli_output[str(command)] = result[0]
                 # not quite fair to not exploit rum_commands
