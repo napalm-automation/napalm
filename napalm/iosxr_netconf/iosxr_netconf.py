@@ -1329,7 +1329,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         return lldp_neighbors_detail
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
         """Execute raw CLI commands and returns their output."""
         return NotImplementedError
 

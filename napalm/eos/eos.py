@@ -804,6 +804,8 @@ class EOSDriver(NetworkDriver):
         return lldp_neighbors_out
 
     def cli(self, commands, encoding="text"):
+        if encoding not in ("text", "json"):
+            raise ValueError("%s is not a supported encoding" % encoding)
         cli_output = {}
 
         if type(commands) is not list:
