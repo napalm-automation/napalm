@@ -803,7 +803,7 @@ class EOSDriver(NetworkDriver):
                 )
         return lldp_neighbors_out
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
         cli_output = {}
 
         if type(commands) is not list:
@@ -811,9 +811,13 @@ class EOSDriver(NetworkDriver):
 
         for command in commands:
             try:
-                cli_output[str(command)] = self.device.run_commands(
-                    [command], encoding="text"
-                )[0].get("output")
+                result = self.device.run_commands(
+                    [command], encoding=encoding
+                )
+                if encoding == "text":
+                    cli_output[str(command)] = result[0]['output']
+                else:
+                    cli_output[str(command)] = result[0]
                 # not quite fair to not exploit rum_commands
                 # but at least can have better control to point to wrong command in case of failure
             except pyeapi.eapilib.CommandError:
