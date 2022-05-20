@@ -68,8 +68,8 @@ class _MockedNetMikoDevice(object):
     def send_command(
         self,
         command_string,
-        delay_factor=0.1,
-        max_loops=150,
+        expect_string="",
+        read_timeout=10,
         strip_prompt=True,
         strip_command=True,
     ):
