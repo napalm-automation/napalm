@@ -22,6 +22,8 @@ Read napalm.readthedocs.org for more information.
 import re
 import time
 import inspect
+import json
+import socket
 
 from datetime import datetime
 from collections import defaultdict
@@ -32,7 +34,8 @@ from netaddr.core import AddrFormatError
 
 # third party libs
 import pyeapi
-from pyeapi.eapilib import ConnectionError, CommandError
+from pyeapi.eapilib import ConnectionError
+from netmiko import ConfigInvalidException
 
 # NAPALM base
 import napalm.base.helpers
@@ -49,6 +52,7 @@ from napalm.base.exceptions import (
 from napalm.eos.constants import LLDP_CAPAB_TRANFORM_TABLE
 from napalm.eos.pyeapi_syntax_wrapper import Node
 from napalm.eos.utils.versions import EOSVersion
+from napalm.eos.utils.cli_syntax import cli_convert
 import napalm.base.constants as c
 
 # local modules
@@ -114,6 +118,7 @@ class EOSDriver(NetworkDriver):
         self.timeout = timeout
         self.config_session = None
         self.locked = False
+        self.cli_version = 1
 
         self.platform = "eos"
         self.profile = [self.platform]
@@ -131,60 +136,121 @@ class EOSDriver(NetworkDriver):
             "transport", optional_args.get("eos_transport", "https")
         )
         self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
-        try:
-            self.transport_class = pyeapi.client.TRANSPORTS[transport]
-        except KeyError:
-            raise ConnectionException("Unknown transport: {}".format(self.transport))
-        init_args = inspect.getfullargspec(self.transport_class.__init__)[0]
+        self.transport = transport
+        if transport == "ssh":
+            self.transport_class = "ssh"
+            init_args = ["port"]
+        else:
+            try:
+                self.transport_class = pyeapi.client.TRANSPORTS[transport]
+                # ([1:]) to omit self
+                init_args = inspect.getfullargspec(self.transport_class.__init__)[0][1:]
 
-        init_args.pop(0)  # Remove "self"
-        init_args.append("enforce_verification")  # Not an arg for unknown reason
-
+            except KeyError:
+                raise ConnectionException(
+                    "Unknown transport: {}".format(self.transport)
+                )
         filter_args = ["host", "username", "password", "timeout", "lock_disable"]
 
-        self.eapi_kwargs = {
-            k: v
-            for k, v in optional_args.items()
-            if k in init_args and k not in filter_args
-        }
+        if transport == "ssh":
+            self.netmiko_optional_args = {
+                k: v
+                for k, v in optional_args.items()
+                if k in init_args and k not in filter_args
+            }
+        else:
+            init_args.append("enforce_verification")  # Not an arg for unknown reason
+            self.eapi_kwargs = {
+                k: v
+                for k, v in optional_args.items()
+                if k in init_args and k not in filter_args
+            }
 
     def open(self):
         """Implementation of NAPALM method open."""
-        try:
-            connection = self.transport_class(
-                host=self.hostname,
-                username=self.username,
-                password=self.password,
-                timeout=self.timeout,
-                **self.eapi_kwargs
+        if self.transport == "ssh":
+            self.device = self._netmiko_open(
+                "arista_eos", netmiko_optional_args=self.netmiko_optional_args
             )
-
-            if self.device is None:
-                self.device = Node(connection, enablepwd=self.enablepwd)
-            # does not raise an Exception if unusable
-
             # let's try to determine if we need to use new EOS cli syntax
-            sh_ver = self.device.run_commands(["show version"])
-            cli_version = (
-                2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
-            )
+            sh_ver = self._run_commands(["show version"])
+            if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0"):
+                self.cli_version = 2
+        else:
+            try:
+                connection = self.transport_class(
+                    host=self.hostname,
+                    username=self.username,
+                    password=self.password,
+                    timeout=self.timeout,
+                    **self.eapi_kwargs
+                )
 
-            self.device.update_cli_version(cli_version)
-        except ConnectionError as ce:
-            # and this is raised either if device not avaiable
-            # either if HTTP(S) agent is not enabled
-            # show management api http-commands
-            raise ConnectionException(str(ce))
+                if self.device is None:
+                    self.device = Node(connection, enablepwd=self.enablepwd)
+                # does not raise an Exception if unusable
+
+                # let's try to determine if we need to use new EOS cli syntax
+                sh_ver = self.device.run_commands(["show version"])
+                self.cli_version = (
+                    2 if EOSVersion(sh_ver[0]["version"]) >= EOSVersion("4.23.0") else 1
+                )
+
+                self.device.update_cli_version(self.cli_version)
+            except ConnectionError as ce:
+                # and this is raised either if device not avaiable
+                # either if HTTP(S) agent is not enabled
+                # show management api http-commands
+                raise ConnectionException(str(ce))
 
     def close(self):
         """Implementation of NAPALM method close."""
         self.discard_config()
 
     def is_alive(self):
+        if self.transport == "ssh":
+            null = chr(0)
+            if self.device is None:
+                return {"is_alive": False}
+            try:
+                # Try sending ASCII null byte to maintain the connection alive
+                self.device.write_channel(null)
+                return {"is_alive": self.device.remote_conn.transport.is_active()}
+            except (socket.error, EOFError):
+                # If unable to send, we can tell for sure that the connection is unusable
+                return {"is_alive": False}
+
         return {"is_alive": True}  # always true as eAPI is HTTP-based
 
+    def _run_commands(self, commands, **kwargs):
+        if self.transport == "ssh":
+            if self.fn0039_config:
+                if isinstance(commands, str):
+                    commands = [cli_convert(commands, self.cli_version)]
+                else:
+                    commands = [cli_convert(cmd, self.cli_version) for cmd in commands]
+            ret = []
+            for command in commands:
+                if kwargs.get("encoding") == "text":
+                    cmd_output = self._netmiko_device.send_command(command).replace(
+                        "% Invalid input", ""
+                    )
+                    ret.append({"output": cmd_output})
+                    continue
+
+                cmd_pipe = command + " | json"
+                cmd_txt = self._netmiko_device.send_command(cmd_pipe)
+                try:
+                    cmd_json = json.loads(cmd_txt)
+                except json.decoder.JSONDecodeError:
+                    cmd_json = {}
+                ret.append(cmd_json)
+            return ret
+        else:
+            return self.device.run_commands(commands, **kwargs)
+
     def _lock(self):
-        sess = self.device.run_commands(["show configuration sessions"])[0]["sessions"]
+        sess = self._run_commands(["show configuration sessions"])[0]["sessions"]
         if [
             k
             for k, v in sess.items()
@@ -200,14 +266,10 @@ class EOSDriver(NetworkDriver):
         Example:
         {'napalm_607123': 522}
         """
-        config_sessions = self.device.run_commands(
-            ["show configuration sessions detail"]
-        )
-        # Still returns all of the configuration sessions (original data-struct was just a list)
+        config_sessions = self._run_commands(["show configuration sessions detail"])
         config_sessions = config_sessions[0]["sessions"]
-
         # Arista reports the commitBy time relative to uptime of the box... :-(
-        uptime = self.device.run_commands(["show version"])
+        uptime = self._run_commands(["show version"])
         uptime = uptime[0].get("uptime", -1)
 
         pending_commits = {}
@@ -318,15 +380,28 @@ class EOSDriver(NetworkDriver):
 
         commands = self._mode_comment_convert(commands)
 
+        if self.transport == "ssh":
+            try:
+                self.device.send_command_expect(commands[0], expect_string=r"\)#")
+                self.device.send_config_set(commands, enter_config_mode=False)
+            except ConfigInvalidException as e:
+                self.discard_config()
+                msg = str(e)
+                if replace:
+                    raise ReplaceConfigException(msg)
+                else:
+                    raise MergeConfigException(msg)
+            return None
+
         try:
             if self.eos_autoComplete is not None:
-                self.device.run_commands(
+                self._run_commands(
                     commands,
                     autoComplete=self.eos_autoComplete,
                     fn0039_transform=self.fn0039_config,
                 )
             else:
-                self.device.run_commands(commands, fn0039_transform=self.fn0039_config)
+                self._run_commands(commands, fn0039_transform=self.fn0039_config)
         except pyeapi.eapilib.CommandError as e:
             self.discard_config()
             msg = str(e)
@@ -349,7 +424,7 @@ class EOSDriver(NetworkDriver):
             return ""
         else:
             commands = ["show session-config named %s diffs" % self.config_session]
-            result = self.device.run_commands(commands, encoding="text")[0]["output"]
+            result = self._run_commands(commands, encoding="text")[0]["output"]
 
             result = "\n".join(result.splitlines()[2:])
 
@@ -372,20 +447,24 @@ class EOSDriver(NetworkDriver):
 
             commands = [
                 "copy startup-config flash:rollback-0",
-                "configure session {}".format(self.config_session),
-                "commit timer {}".format(
-                    time.strftime("%H:%M:%S", time.gmtime(revert_in))
+                "configure session {} commit timer {}".format(
+                    self.config_session,
+                    time.strftime("%H:%M:%S", time.gmtime(revert_in)),
                 ),
+                # "commit timer {}".format(
+                #     time.strftime("%H:%M:%S", time.gmtime(revert_in))
+                # ),
             ]
-            self.device.run_commands(commands)
+            self._run_commands(commands, encoding="text")
         else:
             commands = [
                 "copy startup-config flash:rollback-0",
-                "configure session {}".format(self.config_session),
-                "commit",
+                "configure session {} commit".format(self.config_session),
+                # "commit",
                 "write memory",
             ]
-            self.device.run_commands(commands)
+
+            self._run_commands(commands, encoding="text")
             self.config_session = None
 
     def has_pending_commit(self):
@@ -403,7 +482,7 @@ class EOSDriver(NetworkDriver):
                 "configure session {} commit".format(self.config_session),
                 "write memory",
             ]
-            self.device.run_commands(commands)
+            self._run_commands(commands)
             self.config_session = None
         else:
             raise CommitError("No pending commit-confirm found!")
@@ -412,7 +491,12 @@ class EOSDriver(NetworkDriver):
         """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
             commands = ["configure session {}".format(self.config_session), "abort"]
-            self.device.run_commands(commands)
+            if self.transport == "ssh":
+                # For some reason when testing with vEOS 4.26.1F this
+                # doesn't work with the normal wrapper.
+                self._run_commands(["", commands[0]])
+            else:
+                self.device.run_commands(commands)
             self.config_session = None
 
     def rollback(self):
@@ -435,14 +519,14 @@ class EOSDriver(NetworkDriver):
         else:
             commands = ["configure replace flash:rollback-0", "write memory"]
 
-        self.device.run_commands(commands)
+        self._run_commands(commands, encoding="text")
         self.config_session = None
 
     def get_facts(self):
         """Implementation of NAPALM method get_facts."""
         commands = ["show version", "show hostname", "show interfaces"]
 
-        result = self.device.run_commands(commands)
+        result = self._run_commands(commands)
 
         version = result[0]
         hostname = result[1]
@@ -466,7 +550,7 @@ class EOSDriver(NetworkDriver):
 
     def get_interfaces(self):
         commands = ["show interfaces"]
-        output = self.device.run_commands(commands)[0]
+        output = self._run_commands(commands)[0]
 
         interfaces = {}
 
@@ -500,7 +584,7 @@ class EOSDriver(NetworkDriver):
 
     def get_lldp_neighbors(self):
         commands = ["show lldp neighbors"]
-        output = self.device.run_commands(commands)[0]["lldpNeighbors"]
+        output = self._run_commands(commands)[0]["lldpNeighbors"]
 
         lldp = {}
 
@@ -516,7 +600,7 @@ class EOSDriver(NetworkDriver):
 
     def get_interfaces_counters(self):
         commands = ["show interfaces"]
-        output = self.device.run_commands(commands)
+        output = self._run_commands(commands)
         interface_counters = defaultdict(dict)
         for interface, data in output[0]["interfaces"].items():
             if data["hardware"] == "subinterface":
@@ -548,11 +632,11 @@ class EOSDriver(NetworkDriver):
                 return default
 
         NEIGHBOR_FILTER = "bgp neighbors vrf all | include remote AS | remote router ID |IPv[46] (Unicast|6PE):.*[0-9]+|^Local AS|Desc|BGP state"  # noqa
-        output_summary_cmds = self.device.run_commands(
+        output_summary_cmds = self._run_commands(
             ["show ipv6 bgp summary vrf all", "show ip bgp summary vrf all"],
             encoding="json",
         )
-        output_neighbor_cmds = self.device.run_commands(
+        output_neighbor_cmds = self._run_commands(
             ["show ip " + NEIGHBOR_FILTER, "show ipv6 " + NEIGHBOR_FILTER],
             encoding="text",
         )
@@ -686,18 +770,18 @@ class EOSDriver(NetworkDriver):
                 }
                 yield name, values
 
-        sh_version_out = self.device.run_commands(["show version"])
+        sh_version_out = self._run_commands(["show version"])
         is_veos = sh_version_out[0]["modelName"].lower() == "veos"
         commands = ["show environment cooling", "show environment temperature"]
         if not is_veos:
             commands.append("show environment power")
-            fans_output, temp_output, power_output = self.device.run_commands(commands)
+            fans_output, temp_output, power_output = self._run_commands(commands)
         else:
-            fans_output, temp_output = self.device.run_commands(commands)
+            fans_output, temp_output = self._run_commands(commands)
         environment_counters = {"fans": {}, "temperature": {}, "power": {}, "cpu": {}}
-        cpu_output = self.device.run_commands(
-            ["show processes top once"], encoding="text"
-        )[0]["output"]
+        cpu_output = self._run_commands(["show processes top once"], encoding="text")[
+            0
+        ]["output"]
         for slot in fans_output["fanTraySlots"]:
             environment_counters["fans"][slot["label"]] = {
                 "status": slot["status"] == "ok"
@@ -758,9 +842,7 @@ class EOSDriver(NetworkDriver):
             "show lldp neighbors {filters} detail".format(filters=" ".join(filters))
         ]
 
-        lldp_neighbors_in = self.device.run_commands(commands)[0].get(
-            "lldpNeighbors", {}
-        )
+        lldp_neighbors_in = self._run_commands(commands)[0].get("lldpNeighbors", {})
 
         for interface in lldp_neighbors_in:
             interface_neighbors = lldp_neighbors_in.get(interface).get(
@@ -811,7 +893,7 @@ class EOSDriver(NetworkDriver):
 
         for command in commands:
             try:
-                cli_output[str(command)] = self.device.run_commands(
+                cli_output[str(command)] = self._run_commands(
                     [command], encoding="text"
                 )[0].get("output")
                 # not quite fair to not exploit rum_commands
@@ -962,7 +1044,7 @@ class EOSDriver(NetworkDriver):
         bgp_config = {}
 
         commands = ["show running-config | section router bgp"]
-        bgp_conf = self.device.run_commands(commands, encoding="text")[0].get(
+        bgp_conf = self._run_commands(commands, encoding="text")[0].get(
             "output", "\n\n"
         )
         bgp_conf_lines = bgp_conf.splitlines()
@@ -1054,7 +1136,7 @@ class EOSDriver(NetworkDriver):
             commands = ["show arp vrf all"]
             ipv4_neighbors = [
                 neighbor
-                for k, v in self.device.run_commands(commands)[0].get("vrfs").items()
+                for k, v in self._run_commands(commands)[0].get("vrfs").items()
                 if not vrf or k == vrf
                 for neighbor in v.get("ipV4Neighbors", [])
             ]
@@ -1080,7 +1162,7 @@ class EOSDriver(NetworkDriver):
     def get_ntp_servers(self):
         commands = ["show running-config | section ntp"]
 
-        raw_ntp_config = self.device.run_commands(commands, encoding="text")[0].get(
+        raw_ntp_config = self._run_commands(commands, encoding="text")[0].get(
             "output", ""
         )
 
@@ -1112,7 +1194,7 @@ class EOSDriver(NetworkDriver):
         # failed: unconverted command
         # JSON output not yet implemented...
 
-        ntp_assoc = self.device.run_commands(commands, encoding="text")[0].get(
+        ntp_assoc = self._run_commands(commands, encoding="text")[0].get(
             "output", "\n\n"
         )
         ntp_assoc_lines = ntp_assoc.splitlines()[2:]
@@ -1147,11 +1229,9 @@ class EOSDriver(NetworkDriver):
 
         interfaces_ip = {}
 
-        interfaces_ipv4_out = self.device.run_commands(["show ip interface"])[0][
-            "interfaces"
-        ]
+        interfaces_ipv4_out = self._run_commands(["show ip interface"])[0]["interfaces"]
         try:
-            interfaces_ipv6_out = self.device.run_commands(["show ipv6 interface"])[0][
+            interfaces_ipv6_out = self._run_commands(["show ipv6 interface"])[0][
                 "interfaces"
             ]
         except pyeapi.eapilib.CommandError as e:
@@ -1249,7 +1329,7 @@ class EOSDriver(NetworkDriver):
         commands = ["show mac address-table"]
 
         mac_entries = (
-            self.device.run_commands(commands)[0]
+            self._run_commands(commands)[0]
             .get("unicastTable", {})
             .get("tableEntries", [])
         )
@@ -1307,7 +1387,7 @@ class EOSDriver(NetworkDriver):
                 )
             )
 
-        commands_output = self.device.run_commands(commands)
+        commands_output = self._run_commands(commands)
         vrf_cache = {}
 
         for _vrf, command_output in zip(vrfs, commands_output):
@@ -1347,21 +1427,14 @@ class EOSDriver(NetworkDriver):
                         nexthop_interface_map[nexthop_ip] = next_hop.get("interface")
                     metric = route_details.get("metric")
                     if _vrf not in vrf_cache.keys():
-                        try:
+                        if self.cli_version == 1:
                             command = "show ip{ipv} bgp {dest} {longer} detail vrf {_vrf}".format(
                                 ipv=ipv,
                                 dest=destination,
                                 longer="longer-prefixes" if longer else "",
                                 _vrf=_vrf,
                             )
-                            vrf_cache.update(
-                                {
-                                    _vrf: self.device.run_commands([command])[0]
-                                    .get("vrfs", {})
-                                    .get(_vrf, {})
-                                }
-                            )
-                        except CommandError:
+                        else:
                             # Newer EOS can't mix longer-prefix and detail
                             command = (
                                 "show ip{ipv} bgp {dest} {longer} vrf {_vrf}".format(
@@ -1371,13 +1444,13 @@ class EOSDriver(NetworkDriver):
                                     _vrf=_vrf,
                                 )
                             )
-                            vrf_cache.update(
-                                {
-                                    _vrf: self.device.run_commands([command])[0]
-                                    .get("vrfs", {})
-                                    .get(_vrf, {})
-                                }
-                            )
+                        vrf_cache.update(
+                            {
+                                _vrf: self._run_commands([command])[0]
+                                .get("vrfs", {})
+                                .get(_vrf, {})
+                            }
+                        )
 
                     vrf_details = vrf_cache.get(_vrf)
                     local_as = napalm.base.helpers.as_number(vrf_details.get("asn"))
@@ -1484,7 +1557,7 @@ class EOSDriver(NetworkDriver):
         snmp_dict = {"chassis_id": "", "location": "", "contact": "", "community": {}}
 
         commands = ["show snmp chassis", "show snmp location", "show snmp contact"]
-        snmp_config = self.device.run_commands(commands, encoding="json")
+        snmp_config = self._run_commands(commands, encoding="json")
         for line in snmp_config:
             for k, v in line.items():
                 if k == "chassisId":
@@ -1494,7 +1567,7 @@ class EOSDriver(NetworkDriver):
                     snmp_dict[k] = v.strip('"')
 
         commands = ["show running-config | section snmp-server community"]
-        raw_snmp_config = self.device.run_commands(commands, encoding="text")[0].get(
+        raw_snmp_config = self._run_commands(commands, encoding="text")[0].get(
             "output", ""
         )
         for line in raw_snmp_config.splitlines():
@@ -1519,7 +1592,7 @@ class EOSDriver(NetworkDriver):
         users = {}
 
         commands = ["show user-account"]
-        user_items = self.device.run_commands(commands)[0].get("users", {})
+        user_items = self._run_commands(commands)[0].get("users", {})
 
         for user, user_details in user_items.items():
             user_details.pop("username", "")
@@ -1607,7 +1680,7 @@ class EOSDriver(NetworkDriver):
         )
 
         try:
-            traceroute_raw_output = self.device.run_commands(commands, encoding="text")[
+            traceroute_raw_output = self._run_commands(commands, encoding="text")[
                 -1
             ].get("output")
         except CommandErrorException:
@@ -1796,8 +1869,8 @@ class EOSDriver(NetworkDriver):
                 commands.append("show ipv6 bgp neighbors %s vrf all" % neighbor_address)
                 summary_commands.append("show ipv6 bgp summary vrf all")
 
-        raw_output = self.device.run_commands(commands, encoding="text")
-        bgp_summary = self.device.run_commands(summary_commands, encoding="json")
+        raw_output = self._run_commands(commands, encoding="text")
+        bgp_summary = self._run_commands(summary_commands, encoding="json")
 
         bgp_detail_info = {}
 
@@ -1851,7 +1924,7 @@ class EOSDriver(NetworkDriver):
 
         command = ["show interfaces transceiver"]
 
-        output = self.device.run_commands(command, encoding="json")[0]["interfaces"]
+        output = self._run_commands(command, encoding="json")[0]["interfaces"]
 
         # Formatting data into return data structure
         optics_detail = {}
@@ -1921,7 +1994,7 @@ class EOSDriver(NetworkDriver):
                     )
                 )
 
-            output = self.device.run_commands(commands, encoding="text")
+            output = self._run_commands(commands, encoding="text")
             startup_cfg = str(output[0]["output"]) if get_startup else ""
             if sanitized and startup_cfg:
                 startup_cfg = napalm.base.helpers.sanitize_config(
@@ -1937,7 +2010,7 @@ class EOSDriver(NetworkDriver):
                 commands = ["show {}-config{}".format(retrieve, run_full)]
             elif retrieve == "startup":
                 commands = ["show {}-config".format(retrieve)]
-            output = self.device.run_commands(commands, encoding="text")
+            output = self._run_commands(commands, encoding="text")
             return {
                 "startup": str(output[0]["output"]) if get_startup else "",
                 "running": str(output[0]["output"]) if get_running else "",
@@ -1945,7 +2018,7 @@ class EOSDriver(NetworkDriver):
             }
         elif get_candidate:
             commands = ["show session-config named {}".format(self.config_session)]
-            output = self.device.run_commands(commands, encoding="text")
+            output = self._run_commands(commands, encoding="text")
             return {"startup": "", "running": "", "candidate": str(output[0]["output"])}
         elif retrieve == "candidate":
             # If we get here it means that we want the candidate but there is none.
@@ -1957,9 +2030,7 @@ class EOSDriver(NetworkDriver):
         commands = ["show vrf"]
 
         # This command has no JSON yet
-        raw_output = self.device.run_commands(commands, encoding="text")[0].get(
-            "output", ""
-        )
+        raw_output = self._run_commands(commands, encoding="text")[0].get("output", "")
 
         output = napalm.base.helpers.textfsm_extractor(self, "vrf", raw_output)
 
@@ -2065,7 +2136,7 @@ class EOSDriver(NetworkDriver):
             command += " interface {}".format(source_interface)
 
         commands.append(command)
-        output = self.device.run_commands(commands, encoding="text")[-1]["output"]
+        output = self._run_commands(commands, encoding="text")[-1]["output"]
 
         if "connect:" in output:
             ping_dict["error"] = output
@@ -2126,7 +2197,7 @@ class EOSDriver(NetworkDriver):
 
     def get_vlans(self):
         command = ["show vlan"]
-        output = self.device.run_commands(command, encoding="json")[0]["vlans"]
+        output = self._run_commands(command, encoding="json")[0]["vlans"]
 
         vlans = {}
         for vlan, vlan_config in output.items():
