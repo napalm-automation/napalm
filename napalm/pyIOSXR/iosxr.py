@@ -34,9 +34,11 @@ from xml.sax.saxutils import escape as escape_xml
 
 # third party lib
 from lxml import etree as ET
-from netmiko import ConnectHandler
-from netmiko.ssh_exception import NetMikoTimeoutException
-from netmiko.ssh_exception import NetMikoAuthenticationException
+from netmiko import (
+    ConnectHandler,
+    NetMikoAuthenticationException,
+    NetMikoTimeoutException,
+)
 
 # local modules
 from napalm.pyIOSXR.exceptions import LockError
