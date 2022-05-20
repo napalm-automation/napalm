@@ -2375,7 +2375,7 @@ class IOSDriver(NetworkDriver):
             'show clock': u'*22:01:51.165 UTC Thu Feb 18 2016'}
 
         """
-        if encoding not in ("text", ):
+        if encoding not in ("text",):
             raise ValueError("%s is not a supported encoding" % encoding)
         cli_output = dict()
         if type(commands) is not list:

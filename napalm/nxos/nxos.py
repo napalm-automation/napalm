@@ -1127,8 +1127,10 @@ class NXOSDriver(NXOSDriverBase):
             results[vrf_name] = result_vrf_dict
         return results
 
-    def cli(self, commands: List[str], encoding: str="text") -> Dict[str, Union[str, Dict[str, Any]]]:
-        if encoding not in ("text", ):
+    def cli(
+        self, commands: List[str], encoding: str = "text"
+    ) -> Dict[str, Union[str, Dict[str, Any]]]:
+        if encoding not in ("text",):
             raise ValueError("%s is not a supported encoding" % encoding)
         cli_output: Dict[str, Union[str, Dict[str, Any]]] = {}
         if type(commands) is not list:

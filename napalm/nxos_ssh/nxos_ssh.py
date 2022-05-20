@@ -788,7 +788,7 @@ class NXOSSSHDriver(NXOSDriverBase):
         return bgp_dict
 
     def cli(self, commands, encoding="text"):
-        if encoding not in ("text", ):
+        if encoding not in ("text",):
             raise ValueError("%s is not a supported encoding" % encoding)
         cli_output = {}
         if type(commands) is not list:
