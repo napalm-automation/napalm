@@ -957,7 +957,7 @@ class JunOSDriver(NetworkDriver):
                 log.error("Unable to retrieve the LLDP neighbors information:")
                 log.error(str(rpcerr))
                 return {}
-            interfaces = lldp_table.get().keys()
+            interfaces = set(lldp_table.get().keys())
         else:
             interfaces = [interface]
 
