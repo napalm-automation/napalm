@@ -7,6 +7,7 @@ Value REMOTE_SYSTEM_DESCRIPTION (.+)
 Value REMOTE_SYSTEM_CAPAB (.*)
 Value REMOTE_SYSTEM_ENABLE_CAPAB (.*)
 Value REMOTE_SYSTEM_MGMT_IP (.*)
+
 Start
   ^Local Intf\s*?[:-]\s+${LOCAL_INTERFACE}
   ^Chassis id\s*?[:-]\s+${REMOTE_CHASSIS_ID}
