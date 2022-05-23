@@ -1015,7 +1015,7 @@ class JunOSDriver(NetworkDriver):
     def cli(self, commands, encoding="text"):
         """Execute raw CLI commands and returns their output."""
         if encoding not in ("text",):
-            raise ValueError("%s is not a supported encoding" % encoding)
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
         cli_output = {}
 
         def _count(txt, none):  # Second arg for consistency only. noqa

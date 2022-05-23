@@ -789,7 +789,7 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def cli(self, commands, encoding="text"):
         if encoding not in ("text",):
-            raise ValueError("%s is not a supported encoding" % encoding)
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
         cli_output = {}
         if type(commands) is not list:
             raise TypeError("Please enter a valid list of commands!")
