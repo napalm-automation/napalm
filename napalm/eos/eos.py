@@ -21,6 +21,7 @@ Read napalm.readthedocs.org for more information.
 # std libs
 import re
 import time
+import importlib
 import inspect
 import json
 import socket
@@ -34,7 +35,7 @@ from netaddr.core import AddrFormatError
 
 # third party libs
 import pyeapi
-from pyeapi.eapilib import ConnectionError
+from pyeapi.eapilib import ConnectionError, EapiConnection
 from netmiko import ConfigInvalidException
 
 # NAPALM base
@@ -105,7 +106,10 @@ class EOSDriver(NetworkDriver):
                 - http
                 - https
                 - https_certs
+                - A subclass of EapiConnection
+                - a string that identifies a module and class that is a subclass of EapiConnection
                 (from: https://github.com/arista-eosplus/pyeapi/blob/develop/pyeapi/client.py#L115)
+
                 transport is the preferred method
             * eos_transport (string): pyeapi transport, defaults to https
                 eos_transport for backwards compatibility
@@ -141,15 +145,11 @@ class EOSDriver(NetworkDriver):
             self.transport_class = "ssh"
             init_args = ["port"]
         else:
-            try:
-                self.transport_class = pyeapi.client.TRANSPORTS[transport]
-                # ([1:]) to omit self
-                init_args = inspect.getfullargspec(self.transport_class.__init__)[0][1:]
+            # Parse pyeapi transport class
+            self.transport_class = self._parse_transport(transport)
+            # ([1:]) to omit self
+            init_args = inspect.getfullargspec(self.transport_class.__init__)[0][1:]
 
-            except KeyError:
-                raise ConnectionException(
-                    "Unknown transport: {}".format(self.transport)
-                )
         filter_args = ["host", "username", "password", "timeout", "lock_disable"]
 
         if transport == "ssh":
@@ -165,6 +165,31 @@ class EOSDriver(NetworkDriver):
                 for k, v in optional_args.items()
                 if k in init_args and k not in filter_args
             }
+
+    def _parse_transport(self, transport):
+        if inspect.isclass(transport) and issubclass(transport, EapiConnection):
+            # Subclass of EapiConnection
+            return transport
+        elif "." in transport:
+            # Try to resolve string import to module and getattr to class
+            try:
+                comps = transport.split(".")
+                module = importlib.import_module(comps[0])
+                for comp in comps[1:]:
+                    module = getattr(module, comp)
+                if issubclass(module, EapiConnection):
+                    return module
+            except ImportError:
+                # String doesn't start with a module, fallthrough to pyeapi defined strings
+                pass
+            except AttributeError:
+                # Error walking from module to class, fallthrough to pyeapi defined strings
+                pass
+        try:
+            return pyeapi.client.TRANSPORTS[transport]
+        except KeyError:
+            # All methods failed, raise exception
+            raise ConnectionException("Unknown transport: {}".format(transport))
 
     def open(self):
         """Implementation of NAPALM method open."""
