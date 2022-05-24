@@ -451,16 +451,12 @@ class EOSDriver(NetworkDriver):
                     self.config_session,
                     time.strftime("%H:%M:%S", time.gmtime(revert_in)),
                 ),
-                # "commit timer {}".format(
-                #     time.strftime("%H:%M:%S", time.gmtime(revert_in))
-                # ),
             ]
             self._run_commands(commands, encoding="text")
         else:
             commands = [
                 "copy startup-config flash:rollback-0",
                 "configure session {} commit".format(self.config_session),
-                # "commit",
                 "write memory",
             ]
 
