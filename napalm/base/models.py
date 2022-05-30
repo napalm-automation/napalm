@@ -30,7 +30,7 @@ InterfaceDict = TypedDict(
         "description": str,
         "last_flapped": float,
         "mtu": int,
-        "speed": int,
+        "speed": float,
         "mac_address": str,
     },
 )
