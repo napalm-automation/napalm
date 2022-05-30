@@ -70,7 +70,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
             optional_args = {}
 
         self.netmiko_optional_args = optional_args
-        self.port = optional_args.get("port", 830)
+        try:
+            self.port = self.netmiko_optional_args.pop("port")
+        except KeyError:
+            self.port = 830
+
         self.lock_on_connect = optional_args.get("config_lock", False)
         self.key_file = optional_args.get("key_file", None)
         self.config_encoding = optional_args.get("config_encoding", "cli")
