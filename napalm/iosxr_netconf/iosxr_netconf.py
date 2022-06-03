@@ -66,14 +66,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self.pending_changes = False
         self.replace = False
         self.locked = False
-        if optional_args is None:
-            optional_args = {}
-
-        self.netmiko_optional_args = optional_args
-        self.port = optional_args.get("port", 830)
-        self.lock_on_connect = optional_args.get("config_lock", False)
-        self.key_file = optional_args.get("key_file", None)
-        self.config_encoding = optional_args.get("config_encoding", "cli")
+        self.optional_args = optional_args if optional_args else {}
+        self.port = self.optional_args.pop("port", 830)
+        self.lock_on_connect = self.optional_args.pop("config_lock", False)
+        self.key_file = self.optional_args.pop("key_file", None)
+        self.config_encoding = self.optional_args.pop("config_encoding", "cli")
         if self.config_encoding not in C.CONFIG_ENCODINGS:
             raise ValueError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
 
@@ -92,7 +89,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 key_filename=self.key_file,
                 timeout=self.timeout,
                 device_params={"name": "iosxr"},
-                **self.netmiko_optional_args,
+                **self.optional_args,
             )
             if self.lock_on_connect:
                 self._lock()
