@@ -351,6 +351,9 @@ class EOSDriver(NetworkDriver):
         if self.config_session is None:
             self.config_session = "napalm_{}".format(datetime.now().microsecond)
 
+        if not self.lock_disable:
+            self._lock()
+
         commands = []
         commands.append("configure session {}".format(self.config_session))
         if replace:
@@ -432,9 +435,6 @@ class EOSDriver(NetworkDriver):
 
     def commit_config(self, message="", revert_in=None):
         """Implementation of NAPALM method commit_config."""
-
-        if not self.lock_disable:
-            self._lock()
 
         if message:
             raise NotImplementedError(
