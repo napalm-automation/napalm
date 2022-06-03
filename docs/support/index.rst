@@ -138,7 +138,7 @@ ____________________________________
 * :code:`use_keys` (ios, iosxr, nxos_ssh) - Paramiko argument, enable searching for discoverable private key files in ``~/.ssh/`` (default: ``False``).
 * :code:`eos_autoComplete` (eos) - Allows to set `autoComplete` when running commands. (default: ``None`` equivalent to ``False``)
 * :code:`config_encoding` (iosxr_netconf) - Set encoding to either ``"xml"`` or ``"cli"`` for configuration load methods. (default: ``"cli"``)
-* :code:`eos_fn0039_config` (eos) - Transform old style configuration to the new style, available beginning with EOS release 4.23.0, as per FN 0039. Beware 
+* :code:`eos_fn0039_config` (eos) - Transform old style configuration to the new style, available beginning with EOS release 4.23.0, as per FN 0039. Beware
   that enabling this option will change the configuration you're loading through NAPALM. Default: ``False`` (won't change your configuration commands).
   .. versionadded:: 3.0.1
 
@@ -147,9 +147,9 @@ ______________________
 
 Certain drivers support providing an alternate transport in the :code:`optional_args`, overriding the default protocol to connect with. Allowed transports are therefore device/library dependant:
 
-=============== ====================  ====================  ===================
-_               EOS                   NXOS                  IOS
-=============== ====================  ====================  ===================
-**Default**     ``https``             ``https``             ``ssh``
-**Supported**   ``http``, ``https``   ``http``, ``https``   ``telnet``, ``ssh``
-=============== ====================  ====================  ===================
+=============== ============================  ====================  ===================
+_               EOS                           NXOS                  IOS
+=============== ============================  ====================  ===================
+**Default**     ``https``                     ``https``             ``ssh``
+**Supported**   ``http``, ``https``, ``ssh``   ``http``, ``https``   ``telnet``, ``ssh``
+=============== ============================  ====================  ===================

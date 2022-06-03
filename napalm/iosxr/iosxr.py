@@ -158,7 +158,7 @@ class IOSXRDriver(NetworkDriver):
             "vendor": "Cisco",
             "os_version": "",
             "hostname": "",
-            "uptime": -1,
+            "uptime": -1.0,
             "serial_number": "",
             "fqdn": "",
             "model": "",
@@ -185,7 +185,7 @@ class IOSXRDriver(NetworkDriver):
             str, napalm.base.helpers.find_txt(system_time_tree, "Hostname")
         )
         uptime = napalm.base.helpers.convert(
-            int, napalm.base.helpers.find_txt(system_time_tree, "Uptime"), -1
+            float, napalm.base.helpers.find_txt(system_time_tree, "Uptime"), -1.0
         )
         serial = napalm.base.helpers.convert(
             str, napalm.base.helpers.find_txt(platform_attr_tree, "SerialNumber")
@@ -885,7 +885,9 @@ class IOSXRDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
+        if encoding not in ("text",):
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
 
         cli_output = {}
 
