@@ -231,6 +231,10 @@ class EOSDriver(NetworkDriver):
     def close(self):
         """Implementation of NAPALM method close."""
         self.discard_config()
+        if hasattr(self.device.connection, "close") and callable(
+            self.device.connection.close
+        ):
+            self.device.connection.close()
 
     def is_alive(self):
         if self.transport == "ssh":
@@ -245,6 +249,10 @@ class EOSDriver(NetworkDriver):
                 # If unable to send, we can tell for sure that the connection is unusable
                 return {"is_alive": False}
 
+        if hasattr(self.device.connection, "is_alive") and callable(
+            self.device.connection.is_alive
+        ):
+            return self.device.connection.is_alive()
         return {"is_alive": True}  # always true as eAPI is HTTP-based
 
     def _run_commands(self, commands, **kwargs):
@@ -376,6 +384,9 @@ class EOSDriver(NetworkDriver):
         if self.config_session is None:
             self.config_session = "napalm_{}".format(datetime.now().microsecond)
 
+        if not self.lock_disable:
+            self._lock()
+
         commands = []
         commands.append("configure session {}".format(self.config_session))
         if replace:
@@ -419,6 +430,8 @@ class EOSDriver(NetworkDriver):
             return None
 
         try:
+            if not any(l == "end" for l in commands):
+                commands.append("end")  # exit config mode
             if self.eos_autoComplete is not None:
                 self._run_commands(
                     commands,
@@ -458,9 +471,6 @@ class EOSDriver(NetworkDriver):
     def commit_config(self, message="", revert_in=None):
         """Implementation of NAPALM method commit_config."""
 
-        if not self.lock_disable:
-            self._lock()
-
         if message:
             raise NotImplementedError(
                 "Commit message not implemented for this platform"
@@ -476,16 +486,12 @@ class EOSDriver(NetworkDriver):
                     self.config_session,
                     time.strftime("%H:%M:%S", time.gmtime(revert_in)),
                 ),
-                # "commit timer {}".format(
-                #     time.strftime("%H:%M:%S", time.gmtime(revert_in))
-                # ),
             ]
             self._run_commands(commands, encoding="text")
         else:
             commands = [
                 "copy startup-config flash:rollback-0",
                 "configure session {} commit".format(self.config_session),
-                # "commit",
                 "write memory",
             ]
 
@@ -569,7 +575,7 @@ class EOSDriver(NetworkDriver):
             "model": version["modelName"],
             "serial_number": version["serialNumber"],
             "os_version": version["internalVersion"],
-            "uptime": int(uptime),
+            "uptime": float(uptime),
             "interface_list": interfaces,
         }
 
@@ -910,7 +916,9 @@ class EOSDriver(NetworkDriver):
                 )
         return lldp_neighbors_out
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
+        if encoding not in ("text", "json"):
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
         cli_output = {}
 
         if type(commands) is not list:
@@ -918,9 +926,11 @@ class EOSDriver(NetworkDriver):
 
         for command in commands:
             try:
-                cli_output[str(command)] = self._run_commands(
-                    [command], encoding="text"
-                )[0].get("output")
+                result = self._run_commands([command], encoding=encoding)
+                if encoding == "text":
+                    cli_output[str(command)] = result[0]["output"]
+                else:
+                    cli_output[str(command)] = result[0]
                 # not quite fair to not exploit rum_commands
                 # but at least can have better control to point to wrong command in case of failure
             except pyeapi.eapilib.CommandError:
@@ -1780,13 +1790,26 @@ class EOSDriver(NetworkDriver):
                 "configured_keepalive",
                 "advertised_prefix_count",
                 "received_prefix_count",
+                "advertised_ipv6_prefix_count",
+                "received_ipv6_prefix_count",
             ]
 
             peer_details = []
 
+            # determine if in multi-agent mode to get correct extractor_type
+            is_multi_agent = self.device.run_commands(
+                [
+                    "show running-config | include service routing protocols model multi-agent"
+                ],
+                encoding="text",
+            )[0].get("output", "")
+            extractor_type = (
+                "bgp_detail_multi_agent" if bool(is_multi_agent) else "bgp_detail"
+            )
+
             # Using preset template to extract peer info
             peer_info = napalm.base.helpers.textfsm_extractor(
-                self, "bgp_detail", peer_output
+                self, extractor_type, peer_output
             )
 
             for item in peer_info:
@@ -1797,7 +1820,7 @@ class EOSDriver(NetworkDriver):
                     True if item["local_address"] else False
                 )
                 item["multihop"] = (
-                    False if item["multihop"] == 0 or item["multihop"] == "" else True
+                    False if item["multihop"] == "0" or item["multihop"] == "" else True
                 )
 
                 # TODO: The below fields need to be retrieved
@@ -1838,6 +1861,12 @@ class EOSDriver(NetworkDriver):
                 item["local_address"] = napalm.base.helpers.convert(
                     napalm.base.helpers.ip, item["local_address"]
                 )
+                # Get all the advertised prefixes
+                item["advertised_prefix_count"] += item["advertised_ipv6_prefix_count"]
+                item["received_prefix_count"] += item["received_ipv6_prefix_count"]
+                # Remove the ipv6_prefix for conformity with test_model
+                item.pop("advertised_ipv6_prefix_count", None)
+                item.pop("received_ipv6_prefix_count", None)
 
                 peer_details.append(item)
 

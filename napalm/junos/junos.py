@@ -412,7 +412,7 @@ class JunOSDriver(NetworkDriver):
             "os_version": str(output["version"]),
             "hostname": str(output["hostname"]),
             "fqdn": str(output["fqdn"]),
-            "uptime": uptime,
+            "uptime": float(uptime),
             "interface_list": interface_list,
         }
 
@@ -1012,8 +1012,10 @@ class JunOSDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
         """Execute raw CLI commands and returns their output."""
+        if encoding not in ("text",):
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
         cli_output = {}
 
         def _count(txt, none):  # Second arg for consistency only. noqa

@@ -42,6 +42,10 @@ class PatchedEOSDriver(eos.EOSDriver):
 class FakeEOSDevice(BaseTestDouble):
     """EOS device test double."""
 
+    def __init__(self):
+        super(FakeEOSDevice, self).__init__()
+        self.connection = object()
+
     def run_commands(self, command_list, encoding="json"):
         """Fake run_commands."""
         result = list()
