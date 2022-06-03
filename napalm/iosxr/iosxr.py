@@ -165,16 +165,44 @@ class IOSXRDriver(NetworkDriver):
             "interface_list": [],
         }
 
+        #facts_rpc_request = (
+        #    "<Get>"
+        #        "<Operational>"
+        #            "<SystemTime/>"
+        #            "<PlatformInventory>"
+        #                "<RackTable>"
+        #                    "<Rack><Naming><Name>0</Name></Naming>"
+        #                    "<Attributes><BasicInfo/></Attributes>"
+        #                "</Rack></RackTable>"
+        #            "</PlatformInventory>"
+        #        "</Operational>"
+        #    "</Get>"
+        #)
+
         facts_rpc_request = (
-            "<Get><Operational><SystemTime/><PlatformInventory><RackTable>"
-            "<Rack><Naming><Name>0</Name></Naming>"
-            "<Attributes><BasicInfo/></Attributes>"
-            "</Rack></RackTable></PlatformInventory></Operational></Get>"
+            """<Get>
+                <Operational>
+                    <SystemTime/>
+                    <Inventory>
+                        <Entities>
+                            <Entity>
+                                <Naming>
+                                    <Name>Rack 0</Name>
+                                </Naming>
+                                <Attributes>
+                                    <InvBasicBag/>
+                                </Attributes>
+                            </Entity>
+                        </Entities>
+                    </Inventory>
+                </Operational>
+            </Get>"""
         )
 
         facts_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(facts_rpc_request))
         system_time_xpath = ".//SystemTime/Uptime"
-        platform_attr_xpath = ".//RackTable/Rack/Attributes/BasicInfo"
+        #platform_attr_xpath = ".//RackTable/Rack/Attributes/BasicInfo"
+        platform_attr_xpath = ".//Inventory/Entities/Entity/Attributes/InvBasicBag"
         system_time_tree = facts_rpc_reply.xpath(system_time_xpath)[0]
         try:
             platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)[0]
@@ -225,7 +253,15 @@ class IOSXRDriver(NetworkDriver):
             "last_flapped": -1.0,
         }
 
-        interfaces_rpc_request = "<Get><Operational><Interfaces/></Operational></Get>"
+        #interfaces_rpc_request = "<Get><Operational><Interfaces/></Operational></Get>"
+        interfaces_rpc_request = """
+            <Get>
+                <Operational>
+                    <Interfaces><InterfaceTable></InterfaceTable></Interfaces>
+                </Operational>
+            </Get>
+        """
+
 
         interfaces_rpc_reply = ETREE.fromstring(
             self.device.make_rpc_call(interfaces_rpc_request)
