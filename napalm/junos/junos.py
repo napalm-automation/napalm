@@ -1014,7 +1014,7 @@ class JunOSDriver(NetworkDriver):
 
     def cli(self, commands, encoding="text"):
         """Execute raw CLI commands and returns their output."""
-        if encoding not in ("text",):
+        if encoding not in ("text", "json", "xml"):
             raise NotImplementedError("%s is not a supported encoding" % encoding)
         cli_output = {}
 
@@ -1134,7 +1134,7 @@ class JunOSDriver(NetworkDriver):
                     base=exploded_cmd[0], pipes=" | ".join(command_safe_parts)
                 )
             )
-            raw_txt = self.device.cli(safe_command, warning=False)
+            raw_txt = self.device.cli(safe_command, warning=False, format=encoding)
             if isinstance(raw_txt, etree._Element):
                 raw_txt = etree.tostring(raw_txt.get_parent()).decode()
                 cli_output[str(command)] = raw_txt
