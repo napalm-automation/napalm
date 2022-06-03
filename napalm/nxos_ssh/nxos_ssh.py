@@ -662,7 +662,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             interface_list.append(helpers.canonical_interface_name(interface))
 
         return {
-            "uptime": int(uptime),
+            "uptime": float(uptime),
             "vendor": vendor,
             "os_version": str(os_version),
             "serial_number": str(serial_number),

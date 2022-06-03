@@ -1043,7 +1043,7 @@ class IOSDriver(NetworkDriver):
             interface_list.append(interface)
 
         return {
-            "uptime": uptime,
+            "uptime": float(uptime),
             "vendor": vendor,
             "os_version": str(os_version),
             "serial_number": str(serial_number),

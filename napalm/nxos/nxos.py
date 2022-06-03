@@ -966,7 +966,7 @@ class NXOSDriver(NXOSDriverBase):
         uptime += uptime_mins * 60
         uptime += uptime_secs
 
-        facts["uptime"] = uptime
+        facts["uptime"] = float(uptime)
 
         iface_cmd = "show interface"
         interfaces_out = self._send_command(iface_cmd)
