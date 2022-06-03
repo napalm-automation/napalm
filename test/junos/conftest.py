@@ -119,7 +119,7 @@ class FakeJunOSDevice(BaseTestDouble):
     def bind(*args, **kvargs):
         pass
 
-    def cli(self, command=""):
+    def cli(self, command="", encoding="text"):
         filename = "{safe_command}.txt".format(safe_command=self.sanitize_text(command))
         fielpath = self.find_file(filename)
         return self.read_txt_file(fielpath)

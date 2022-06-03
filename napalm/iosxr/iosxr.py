@@ -885,7 +885,9 @@ class IOSXRDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
+        if encoding not in ("text",):
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
 
         cli_output = {}
 

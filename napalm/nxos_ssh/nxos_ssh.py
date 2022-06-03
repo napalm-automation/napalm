@@ -787,7 +787,9 @@ class NXOSSSHDriver(NXOSDriverBase):
         # FIX -- need to merge IPv6 and IPv4 AFI for same neighbor
         return bgp_dict
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
+        if encoding not in ("text",):
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
         cli_output = {}
         if type(commands) is not list:
             raise TypeError("Please enter a valid list of commands!")

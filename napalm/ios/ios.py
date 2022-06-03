@@ -2362,7 +2362,7 @@ class IOSDriver(NetworkDriver):
             arp_table.append(entry)
         return arp_table
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
         """
         Execute a list of commands and return the output in a dictionary format using the command
         as the key.
@@ -2375,6 +2375,8 @@ class IOSDriver(NetworkDriver):
             'show clock': u'*22:01:51.165 UTC Thu Feb 18 2016'}
 
         """
+        if encoding not in ("text",):
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
         cli_output = dict()
         if type(commands) is not list:
             raise TypeError("Please enter a valid list of commands!")
