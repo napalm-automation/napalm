@@ -550,7 +550,7 @@ class EOSDriver(NetworkDriver):
             "model": version["modelName"],
             "serial_number": version["serialNumber"],
             "os_version": version["internalVersion"],
-            "uptime": int(uptime),
+            "uptime": float(uptime),
             "interface_list": interfaces,
         }
 
