@@ -335,7 +335,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             "vendor": "Cisco",
             "os_version": "",
             "hostname": "",
-            "uptime": -1,
+            "uptime": -1.0,
             "serial_number": "",
             "fqdn": "",
             "model": "",
@@ -362,7 +362,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         # Retrieves uptime
         uptime = napalm.base.helpers.convert(
-            int,
+            float,
             self._find_txt(
                 facts_rpc_reply_etree,
                 ".//suo:system-time/\
@@ -370,7 +370,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 default="",
                 namespaces=C.NS,
             ),
-            -1,
+            -1.0,
         )
 
         # Retrieves interfaces name

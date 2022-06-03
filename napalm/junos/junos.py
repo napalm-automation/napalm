@@ -412,7 +412,7 @@ class JunOSDriver(NetworkDriver):
             "os_version": str(output["version"]),
             "hostname": str(output["hostname"]),
             "fqdn": str(output["fqdn"]),
-            "uptime": uptime,
+            "uptime": float(uptime),
             "interface_list": interface_list,
         }
 
