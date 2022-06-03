@@ -206,6 +206,10 @@ class EOSDriver(NetworkDriver):
     def close(self):
         """Implementation of NAPALM method close."""
         self.discard_config()
+        if hasattr(self.device.connection, "close") and callable(
+            self.device.connection.close
+        ):
+            self.device.connection.close()
 
     def is_alive(self):
         if self.transport == "ssh":
@@ -220,6 +224,10 @@ class EOSDriver(NetworkDriver):
                 # If unable to send, we can tell for sure that the connection is unusable
                 return {"is_alive": False}
 
+        if hasattr(self.device.connection, "is_alive") and callable(
+            self.device.connection.is_alive
+        ):
+            return self.device.connection.is_alive()
         return {"is_alive": True}  # always true as eAPI is HTTP-based
 
     def _run_commands(self, commands, **kwargs):
@@ -397,6 +405,8 @@ class EOSDriver(NetworkDriver):
             return None
 
         try:
+            if not any(l == "end" for l in commands):
+                commands.append("end")  # exit config mode
             if self.eos_autoComplete is not None:
                 self._run_commands(
                     commands,
@@ -451,16 +461,12 @@ class EOSDriver(NetworkDriver):
                     self.config_session,
                     time.strftime("%H:%M:%S", time.gmtime(revert_in)),
                 ),
-                # "commit timer {}".format(
-                #     time.strftime("%H:%M:%S", time.gmtime(revert_in))
-                # ),
             ]
             self._run_commands(commands, encoding="text")
         else:
             commands = [
                 "copy startup-config flash:rollback-0",
                 "configure session {} commit".format(self.config_session),
-                # "commit",
                 "write memory",
             ]
 
