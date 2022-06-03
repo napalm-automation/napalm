@@ -1,0 +1,204 @@
+BGP neighbor is 100.64.1.0, remote AS 65001, external link
+  BGP version 4, remote router ID 100.127.251.129, VRF default
+  Inherits configuration from and member of peer-group PG-L3_RA
+  Last read 00:00:12, last write 00:00:16
+  Hold time is 90, keepalive interval is 30 seconds
+  Configured hold time is 180, keepalive interval is 60 seconds
+  Hold timer is active, time left: 00:00:51
+  Keepalive timer is active, time left: 00:00:09
+  Connect timer is inactive
+  Idle-restart timer is inactive
+  BGP state is Established, up for 00:06:10
+  Number of transitions to established: 1
+  Last state was OpenConfirm
+  Last event was RecvUpdate
+  Neighbor Capabilities:
+    Multiprotocol IPv4 Unicast: advertised and received and negotiated
+    Four Octet ASN: advertised and received and negotiated
+    Route Refresh: advertised and received and negotiated
+    Send End-of-RIB messages: advertised and received and negotiated
+    Additional-paths recv capability:
+      IPv4 Unicast: advertised
+    Additional-paths send capability:
+  Restart timer is inactive
+  End of rib timer is inactive
+    IPv4 Unicast End-of-RIB received: Yes
+  Message Statistics:
+                         Sent      Rcvd
+    Opens:                  1         1
+    Notifications:          0         0
+    Updates:                6         3
+    Keepalives:            16        14
+    Route-Refresh:          0         0
+    Total messages:        23        18
+  Prefix Statistics:
+                                   Sent      Rcvd
+    IPv4 Unicast:                     7         2
+    IPv6 Unicast:                     0         0
+  Configured maximum total number of routes is 10000
+  Inbound updates dropped by reason:
+    AS path loop detection: 0
+    Enforced First AS: 0
+    Malformed MPBGP routes: 0
+    Originator ID matches local router ID: 0
+    Nexthop matches local IP address: 2
+  Inbound updates with attribute errors:
+    Resulting in removal of all paths in update (treat as withdraw): 0
+    Resulting in AFI/SAFI disable: 0
+    Resulting in attribute ignore: 0
+    Disabled AFI/SAFIs: None
+  Inbound route map is RM-BGP-IN
+  Outbound route map is RM-BGP-OUT
+Local AS is 65501, local router ID 100.127.251.128
+TTL is 2
+Local TCP address is 100.64.1.1, local port is 35001
+Remote TCP address is 100.64.1.0, remote port is 179
+TCP Socket Information:
+  TCP state is ESTABLISHED
+  Recv-Q: 0/32768
+  Send-Q: 0/32768
+  Outgoing Maximum Segment Size (MSS): 8192
+  Total Number of TCP retransmissions: 3
+  Options:
+    Timestamps enabled: yes
+    Selective Acknowledgments enabled: yes
+    Window Scale enabled: yes
+    Explicit Congestion Notification (ECN) enabled: no
+  Socket Statistics:
+    Window Scale (wscale): 0,7
+    Retransmission Timeout (rto): 944.0ms
+    Round-trip Time (rtt/rtvar): 218.5ms/180.7ms
+    Delayed Ack Timeout (ato): 40.0ms
+    Congestion Window (cwnd): 4
+    Slow-start Threshold (ssthresh): 4
+    TCP Throughput: 1.20 Mbps
+    Advertised Recv Window (rcv_space): 27180
+
+BGP neighbor is 100.64.2.0, remote AS 65004, external link
+  BGP version 4, remote router ID 0.0.0.0, VRF default
+  Inherits configuration from and member of peer-group PG-L3_RA
+  Last read never, last write never
+  Hold time is 0, keepalive interval is 0 seconds
+  Configured hold time is 180, keepalive interval is 60 seconds
+  Hold timer is inactive
+  Keepalive timer is inactive
+  Connect timer is active, time left: 00:01:02
+  Connection interval is 148 seconds
+  Failed connection attempts is 9
+  Idle-restart timer is inactive
+  BGP state is Active
+  Number of transitions to established: 0
+  Last state was Connect
+  Last event was TransportError
+  Last sent socket-error:Connect (No route to host), Last time 00:01:36, First time 00:06:07, Repeats 8
+  Neighbor Capabilities:
+  Restart timer is inactive
+  End of rib timer is inactive
+  Message Statistics:
+                         Sent      Rcvd
+    Opens:                  0         0
+    Notifications:          0         0
+    Updates:                0         0
+    Keepalives:             0         0
+    Route-Refresh:          0         0
+    Total messages:         0         0
+  Prefix Statistics:
+                                   Sent      Rcvd
+    IPv4 Unicast:                     0         0
+    IPv6 Unicast:                     0         0
+  Configured maximum total number of routes is 10000
+  Inbound updates dropped by reason:
+    AS path loop detection: 0
+    Enforced First AS: 0
+    Malformed MPBGP routes: 0
+    Originator ID matches local router ID: 0
+    Nexthop matches local IP address: 0
+  Inbound updates with attribute errors:
+    Resulting in removal of all paths in update (treat as withdraw): 0
+    Resulting in AFI/SAFI disable: 0
+    Resulting in attribute ignore: 0
+    Disabled AFI/SAFIs: None
+  Inbound route map is RM-BGP-IN
+  Outbound route map is RM-BGP-OUT
+Local AS is 65501, local router ID 100.127.251.128
+TTL is 1
+Local TCP address is 100.64.2.1
+Remote TCP address is 100.64.2.0, remote port is 179
+
+BGP neighbor is 100.67.0.65, remote AS 65000, external link
+  BGP version 4, remote router ID 100.127.251.135, VRF default
+  Inherits configuration from and member of peer-group PG-L3_SS
+  Last read 00:00:10, last write 00:00:18
+  Hold time is 180, keepalive interval is 60 seconds
+  Configured hold time is 180, keepalive interval is 60 seconds
+  Hold timer is active, time left: 00:01:49
+  Keepalive timer is active, time left: 00:00:23
+  Connect timer is inactive
+  Idle-restart timer is inactive
+  BGP state is Established, up for 00:06:10
+  Number of transitions to established: 1
+  Last state was OpenConfirm
+  Last event was RecvUpdate
+  Neighbor Capabilities:
+    Multiprotocol IPv4 Unicast: advertised and received and negotiated
+    Multiprotocol IPv6 Unicast: received
+    Four Octet ASN: advertised and received and negotiated
+    Route Refresh: advertised and received and negotiated
+    Send End-of-RIB messages: advertised and received and negotiated
+    Additional-paths recv capability:
+      IPv4 Unicast: advertised
+    Additional-paths send capability:
+      IPv4 Unicast: received
+      IPv6 Unicast: received
+  Restart timer is inactive
+  End of rib timer is inactive
+    IPv4 Unicast End-of-RIB received: Yes
+  Message Statistics:
+                         Sent      Rcvd
+    Opens:                  1         1
+    Notifications:          0         0
+    Updates:                7         5
+    Keepalives:             8         7
+    Route-Refresh:          0         0
+    Total messages:        16        13
+  Prefix Statistics:
+                                   Sent      Rcvd
+    IPv4 Unicast:                     7         5
+    IPv6 Unicast:                     0         0
+  Configured maximum total number of routes is 10000
+  Inbound updates dropped by reason:
+    AS path loop detection: 0
+    Enforced First AS: 0
+    Malformed MPBGP routes: 0
+    Originator ID matches local router ID: 0
+    Nexthop matches local IP address: 0
+  Inbound updates with attribute errors:
+    Resulting in removal of all paths in update (treat as withdraw): 0
+    Resulting in AFI/SAFI disable: 0
+    Resulting in attribute ignore: 0
+    Disabled AFI/SAFIs: None
+  Inbound route map is RM-BGP-IN
+  Outbound route map is RM-BGP-OUT
+Local AS is 65501, local router ID 100.127.251.128
+TTL is 1
+Local TCP address is 100.67.0.64, local port is 46733
+Remote TCP address is 100.67.0.65, remote port is 179
+TCP Socket Information:
+  TCP state is ESTABLISHED
+  Recv-Q: 0/32768
+  Send-Q: 0/32768
+  Outgoing Maximum Segment Size (MSS): 9048
+  Total Number of TCP retransmissions: 0
+  Options:
+    Timestamps enabled: yes
+    Selective Acknowledgments enabled: yes
+    Window Scale enabled: yes
+    Explicit Congestion Notification (ECN) enabled: no
+  Socket Statistics:
+    Window Scale (wscale): 7,7
+    Retransmission Timeout (rto): 204.0ms
+    Round-trip Time (rtt/rtvar): 3.8ms/6.9ms
+    Delayed Ack Timeout (ato): 40.0ms
+    Congestion Window (cwnd): 10
+    TCP Throughput: 192.56 Mbps
+    Advertised Recv Window (rcv_space): 27180
