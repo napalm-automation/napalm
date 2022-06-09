@@ -1,0 +1,13 @@
+{
+    "vendor": "Cisco",
+    "os_version": "6.5.3",
+    "hostname": "iosxr3",
+    "uptime": 29215136.0,
+    "serial_number": "D841B64BBE1",
+    "fqdn": "iosxr3",
+    "model": "R-IOSXRV9000-CC",
+    "interface_list": [
+        "MgmtEth0/RP0/CPU0/0",
+        "Null0"
+    ]
+}
