@@ -554,7 +554,9 @@ class IOSDriver(NetworkDriver):
             elif self.auto_rollback_on_error:
                 cmd = "configure replace {} force revert trigger error".format(cfg_file)
             elif revert_in:
-                cmd = "configure replace {} force revert timer {}".format(cfg_file, revert_in)
+                cmd = "configure replace {} force revert timer {}".format(
+                    cfg_file, revert_in
+                )
             else:
                 cmd = "configure replace {} force".format(cfg_file)
             output = self._commit_handler(cmd)
@@ -651,9 +653,7 @@ class IOSDriver(NetworkDriver):
                     " {} cannot confirm commit".format(self.username)
                 )
         else:
-            raise CommitConfirmException(
-                "No pending configuration"
-            )
+            raise CommitConfirmException("No pending configuration")
 
     def discard_config(self):
         """Discard loaded candidate configurations."""
