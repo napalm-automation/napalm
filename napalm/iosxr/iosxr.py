@@ -210,10 +210,14 @@ class IOSXRDriver(NetworkDriver):
 
         system_time_xpath = ".//SystemTime/Uptime"
         try:
-            facts_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(facts_rpc_request))
+            facts_rpc_reply = ETREE.fromstring(
+                self.device.make_rpc_call(facts_rpc_request)
+            )
             platform_attr_xpath = ".//RackTable/Rack/Attributes/BasicInfo"
         except XMLCLIError:
-            facts_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(facts_rpc_request_alt))
+            facts_rpc_reply = ETREE.fromstring(
+                self.device.make_rpc_call(facts_rpc_request_alt)
+            )
             platform_attr_xpath = ".//Entities/Entity/Attributes/InvBasicBag"
 
         system_time_tree = facts_rpc_reply.xpath(system_time_xpath)[0]
