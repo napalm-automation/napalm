@@ -29,6 +29,7 @@ from napalm.pyIOSXR import IOSXR
 from napalm.pyIOSXR.exceptions import ConnectError
 from napalm.pyIOSXR.exceptions import TimeoutError
 from napalm.pyIOSXR.exceptions import InvalidInputError
+from napalm.pyIOSXR.exceptions import XMLCLIError
 
 # import NAPALM base
 import napalm.base.helpers
@@ -165,16 +166,56 @@ class IOSXRDriver(NetworkDriver):
             "interface_list": [],
         }
 
-        facts_rpc_request = (
-            "<Get><Operational><SystemTime/><PlatformInventory><RackTable>"
-            "<Rack><Naming><Name>0</Name></Naming>"
-            "<Attributes><BasicInfo/></Attributes>"
-            "</Rack></RackTable></PlatformInventory></Operational></Get>"
-        )
+        facts_rpc_request = """
+<Get>
+  <Operational>
+    <SystemTime/>
+    <PlatformInventory>
+      <RackTable>
+        <Rack>
+          <Naming>
+            <Name>0</Name>
+          </Naming>
+          <Attributes>
+            <BasicInfo/>
+          </Attributes>
+        </Rack>
+      </RackTable>
+    </PlatformInventory>
+  </Operational>
+</Get>
+        """
 
-        facts_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(facts_rpc_request))
+        # IOS-XR 7.3.3 and possibly other 7.X versions have this located in
+        # different location in the XML tree
+        facts_rpc_request_alt = """
+<Get>
+  <Operational>
+    <SystemTime/>
+    <Inventory>
+      <Entities>
+        <Entity>
+          <Naming>
+            <Name>Rack 0</Name>
+          </Naming>
+          <Attributes>
+            <InvBasicBag></InvBasicBag>
+          </Attributes>
+        </Entity>
+      </Entities>
+    </Inventory>
+  </Operational>
+</Get>
+"""
+
         system_time_xpath = ".//SystemTime/Uptime"
-        platform_attr_xpath = ".//RackTable/Rack/Attributes/BasicInfo"
+        try:
+            facts_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(facts_rpc_request))
+            platform_attr_xpath = ".//RackTable/Rack/Attributes/BasicInfo"
+        except XMLCLIError:
+            facts_rpc_reply = ETREE.fromstring(self.device.make_rpc_call(facts_rpc_request_alt))
+            platform_attr_xpath = ".//Entities/Entity/Attributes/InvBasicBag"
+
         system_time_tree = facts_rpc_reply.xpath(system_time_xpath)[0]
         try:
             platform_attr_tree = facts_rpc_reply.xpath(platform_attr_xpath)[0]
