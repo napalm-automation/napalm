@@ -554,7 +554,7 @@ class IOSDriver(NetworkDriver):
             elif self.auto_rollback_on_error:
                 cmd = "configure replace {} force revert trigger error".format(cfg_file)
             elif revert_in:
-                cmd = "configure replace {} force revert timer {}".format(revert_in)
+                cmd = "configure replace {} force revert timer {}".format(cfg_file, revert_in)
             else:
                 cmd = "configure replace {} force".format(cfg_file)
             output = self._commit_handler(cmd)
@@ -647,12 +647,12 @@ class IOSDriver(NetworkDriver):
                 self.device.save_config()
             else:
                 raise CommitConfirmException(
-                    "Configuration session active but not owned by {} "
-                    "cannot confirm commit".format(self.username)
+                    "Configuration session active but not owned by"
+                    " {} cannot confirm commit".format(self.username)
                 )
         else:
             raise CommitConfirmException(
-                "No pending configuration".format(self.username)
+                "No pending configuration"
             )
 
     def discard_config(self):
