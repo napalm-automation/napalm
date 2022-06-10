@@ -523,8 +523,9 @@ class IOSDriver(NetworkDriver):
                 raise CommitConfirmException(ARCHIVE_DISABLED_MESSAGE)
             elif not CISCO_TIMER_MIN * 60 <= revert_in <= CISCO_TIMER_MAX * 60:
                 msg = (
-                    "For Cisco devices revert_in between {} and {} seconds, this will round "
-                    "down to the nearest minute".format(
+                    "For Cisco devices revert_in  must be between {} and {} seconds. "
+                    "revert_in will be rounded down to the nearest minute."
+                    "Pass revert_in as a multiple of 60".format(
                         CISCO_TIMER_MIN * 60, CISCO_TIMER_MAX * 60
                     )
                 )
