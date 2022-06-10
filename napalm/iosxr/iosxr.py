@@ -271,14 +271,19 @@ class IOSXRDriver(NetworkDriver):
         }
 
         interfaces_rpc_request = "<Get><Operational><Interfaces/></Operational></Get>"
+        interfaces_rpc_request_alt = "<Get><Operational><Interfaces><InterfaceTable/></Interfaces></Operational></Get>"
+        interfaces_attr_xpath = ".//Interfaces/InterfaceTable/Interface"
 
-        interfaces_rpc_reply = ETREE.fromstring(
-            self.device.make_rpc_call(interfaces_rpc_request)
-        )
+        try:
+            interfaces_rpc_reply = ETREE.fromstring(
+                self.device.make_rpc_call(interfaces_rpc_request)
+            )
+        except XMLCLIError:
+            interfaces_rpc_reply = ETREE.fromstring(
+                self.device.make_rpc_call(interfaces_rpc_request_alt)
+            )
 
-        for interface_tree in interfaces_rpc_reply.xpath(
-            ".//Interfaces/InterfaceTable/Interface"
-        ):
+        for interface_tree in interfaces_rpc_reply.xpath(interfaces_attr_xpath):
             interface_name = napalm.base.helpers.find_txt(
                 interface_tree, "Naming/InterfaceName"
             )
