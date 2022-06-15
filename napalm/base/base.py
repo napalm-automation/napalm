@@ -343,7 +343,7 @@ class NetworkDriver(object):
          * is_enabled (True/False)
          * description (string)
          * last_flapped (float in seconds)
-         * speed (int in Mbit)
+         * speed (float in Mbit)
          * MTU (in Bytes)
          * mac_address (string)
 
@@ -356,7 +356,7 @@ class NetworkDriver(object):
                 'is_enabled': False,
                 'description': '',
                 'last_flapped': -1.0,
-                'speed': 1000,
+                'speed': 1000.0,
                 'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:61',
                 },
@@ -366,7 +366,7 @@ class NetworkDriver(object):
                 'is_enabled': True,
                 'description': 'foo',
                 'last_flapped': 1429978575.1554043,
-                'speed': 1000,
+                'speed': 1000.0,
                 'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:62',
                 },
@@ -376,7 +376,7 @@ class NetworkDriver(object):
                 'is_enabled': True,
                 'description': 'bla',
                 'last_flapped': 1429978575.1555667,
-                'speed': 1000,
+                'speed': 1000.0,
                 'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:63',
                 },
@@ -386,7 +386,7 @@ class NetworkDriver(object):
                 'is_enabled': True,
                 'description': 'bar',
                 'last_flapped': -1.0,
-                'speed': 1000,
+                'speed': 1000.0,
                 'mtu': 1500,
                 'mac_address': 'FA:16:3E:57:33:64',
                 }
@@ -737,7 +737,9 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def cli(self, commands: List[str]) -> Dict[str, Union[str, Dict[str, Any]]]:
+    def cli(
+        self, commands: List[str], encoding: str = "text"
+    ) -> Dict[str, Union[str, Dict[str, Any]]]:
 
         """
         Will execute a list of commands and return the output in a dictionary format.
@@ -1383,7 +1385,7 @@ class NetworkDriver(object):
             OR
 
             {
-                'error': 'unknown host 8.8.8.8.8'
+                'error': 'unknown host 8.8.8.8'
             }
 
         """
@@ -1503,7 +1505,7 @@ class NetworkDriver(object):
             OR
 
             {
-                'error': 'unknown host 8.8.8.8.8'
+                'error': 'unknown host 8.8.8.8'
             }
         """
         raise NotImplementedError
