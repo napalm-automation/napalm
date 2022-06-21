@@ -9,7 +9,7 @@ pylama==8.2.1
 mock==4.0.3
 tox==3.25.0
 mypy==0.960
-types-requests==2.27.30
+types-requests==2.27.31
 types-six==1.16.15
 types-setuptools==57.4.17
 types-PyYAML==6.0.8
