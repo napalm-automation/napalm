@@ -14,4 +14,4 @@ types-six==1.16.15
 types-setuptools==57.4.17
 types-PyYAML==6.0.8
 ttp==0.8.4
-ttp_templates==0.1.4
+ttp_templates==0.2.0
