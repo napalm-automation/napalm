@@ -2504,3 +2504,104 @@ class JunOSDriver(NetworkDriver):
 
             result[vlan_id] = _vlan_data
         return result
+
+    def get_interfaces_vlans(self):
+        result = {}
+        
+        switch_style = self.device.facts["switch_style"]
+        switch_version = float(self.device.facts["version"][:4])
+        
+        if switch_style == "VLAN":
+            table = junos_views.junos_iface_vlan_table(self.device)
+            table.get()
+
+            for iface in table:
+            
+                mode = iface.mode.lower()
+                access_vlan = -1
+                trunk_vlans = []
+                native_vlan = -1
+                tagged_native_vlan = False
+
+                if isinstance(iface.vlans_id, list):
+                    for i in range(len(iface.vlans_tag)):
+                        if iface.vlans_tag[i] == "tagged":
+                            trunk_vlans.append(int(iface.vlans_id[i]))
+
+                    if iface.mode == "Access" and "tagged" in iface.vlans_tag:
+                        mode = "voice"
+                        access_vlan = int(iface.vlans_id[iface.vlans_tag.index('untagged')])
+                        native_vlan = access_vlan
+                    elif iface.mode == "Trunk" and "untagged" in iface.vlans_tag:
+                        native_vlan = int(iface.vlans_id[iface.vlans_tag.index('untagged')])
+                        tagged_native_vlan = True
+
+                else:
+                    if iface.mode == "Access":
+                        if iface.vlans_id:
+                            access_vlan = int(iface.vlans_id)
+                        else:
+                            continue
+                    elif iface.mode == "Trunk":
+                        trunk_vlans.append(int(iface.vlans_id))
+
+                result[iface.name] = {
+                    "mode": mode,
+                    "access-vlan": access_vlan,
+                    "trunk-vlans": trunk_vlans,
+                    "native-vlan": native_vlan,
+                    "tagged-native-vlan": tagged_native_vlan,
+                }
+
+        elif switch_style == "VLAN_L2NG":
+            if switch_version < 20.4:
+                table = junos_views.junos_iface_vlan_table_switch_l2ng_sub20_4(self.device)
+            else:
+                table = junos_views.junos_iface_vlan_table_switch_l2ng(self.device)
+            table.get()
+
+            iface_data = {}
+
+            for iface in table:
+                if iface.name not in iface_data.keys():
+                    iface_data[iface.name] = {
+                    "vlans_id": [],
+                    "vlans_tag": []
+                    }
+
+                if iface.vlans_id and iface.vlans_tag:
+                    iface_data[iface.name]["vlans_id"].append(iface.vlans_id)
+                    iface_data[iface.name]["vlans_tag"].append(iface.vlans_tag)
+
+
+            for iface_name, data in iface_data.items():
+                mode = "Access"
+                access_vlan = -1
+                trunk_vlans = []
+                native_vlan = -1
+                tagged_native_vlan = False
+
+                for i in range(len(data["vlans_tag"])):
+                    if data["vlans_tag"][i] == "tagged":
+                        trunk_vlans.append(int(data["vlans_id"][i]))
+                
+                if "untagged" in data["vlans_tag"]:
+                    if len(trunk_vlans) == 0:
+                        mode = "access"
+                        access_vlan = int(data["vlans_id"][data["vlans_tag"].index('untagged')])
+                    else:
+                        mode = "trunk"
+                        native_vlan = int(data["vlans_id"][data["vlans_tag"].index('untagged')])
+                        tagged_native_vlan = True
+                else:
+                    mode = "trunk"
+                
+                result[iface_name] = {
+                    "mode": mode,
+                    "access-vlan": access_vlan,
+                    "trunk-vlans": trunk_vlans,
+                    "native-vlan": native_vlan,
+                    "tagged-native-vlan": tagged_native_vlan,
+                }
+    
+        return result

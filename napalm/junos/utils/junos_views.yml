@@ -848,3 +848,44 @@ junos_vlans_view_switch_l2ng:
   fields:
     vlan_name: l2ng-l2rtb-vlan-name
     interfaces: l2ng-l2rtb-vlan-member/l2ng-l2rtb-vlan-member-interface
+
+###
+### Get interfaces Vlans
+###
+
+junos_iface_vlan_table:
+  rpc: get-ethernet-switching-interface-information
+  args:
+    detail: True
+  item: interface
+  key: name
+  view: junos_iface_vlan_view
+
+junos_iface_vlan_view:
+  fields:
+    mode: interface-port-mode
+    name: interface-name
+    vlans_id: interface-vlan-member-list/interface-vlan-member/interface-vlan-member-tagid
+    vlans_tag:  interface-vlan-member-list/interface-vlan-member/interface-vlan-member-tagness
+
+junos_iface_vlan_table_switch_l2ng_sub20_4:
+  rpc: get-ethernet-switching-interface-information
+  args:
+    detail: True
+  item: l2ng-l2ald-iff-interface-entry
+  key: l2iff-interface-name
+  view: junos_iface_vlan_view_switch_l2ng
+
+junos_iface_vlan_table_switch_l2ng:
+  rpc: get-ethernet-switching-interface-details
+  args:
+    detail: True
+  item: l2ng-l2ald-iff-interface-entry
+  key: l2iff-interface-name
+  view: junos_iface_vlan_view_switch_l2ng
+
+junos_iface_vlan_view_switch_l2ng:
+  fields:
+    name: l2iff-interface-name
+    vlans_id: l2iff-interface-vlan-id
+    vlans_tag:  l2iff-interface-vlan-member-tagness

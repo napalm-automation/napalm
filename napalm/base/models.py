@@ -433,6 +433,17 @@ FirewallPolicyDict = TypedDict(
 
 VlanDict = TypedDict("VlanDict", {"name": str, "interfaces": List})
 
+InterfaceVlansDict = TypedDict(
+    "InterfacesVlansDict",
+    {
+        "mode": str,
+        "access-vlan": int,
+        "trunk-vlans": List,
+        "native-vlan": int,
+        "tagged-native-vlan": bool,
+    },
+)
+
 DictValidationResult = TypedDict(
     "DictValidationResult",
     {"complies": bool, "present": Dict, "missing": List, "extra": List},

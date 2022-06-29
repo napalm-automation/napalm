@@ -1781,6 +1781,45 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
+    def get_interfaces_vlans(self) -> Dict[str, models.InterfaceVlansDict] :
+        """
+        Returns a dictionary of dictionaries where the first key is an interface name and the
+        inner dictionary contains the following keys:
+
+            * mode (str)
+            * access-vlan (int)
+            * trunk-vlans (List[int])
+            * native-vlan (int)
+            * tagged-native-vlan (int)
+
+        Example::
+
+            {
+                "gi-0/0/1": {
+                    "mode": "access",
+                    "access-vlan": 15,
+                    "trunk-vlans": [],
+                    "native-vlan": -1,
+                    "tagged-native-vlan": False,
+                },
+                "gi-0/0/2": {
+                    "mode": "trunk",
+                    "access-vlan": -1,
+                    "trunk-vlans": [2, 3, 4],
+                    "native-vlan": 1,
+                    "tagged-native-vlan": True,
+                },
+                "gi-0/0/3": {
+                    "mode": "voice",
+                    "access-vlan": 1,
+                    "trunk-vlans": [2],
+                    "native-vlan": 1,
+                    "tagged-native-vlan": False,
+                },
+        }
+        """
+        raise NotImplementedError
+
     def compliance_report(
         self,
         validation_file: Optional[str] = None,

@@ -574,3 +574,16 @@ class BaseTestGetters(object):
             assert helpers.test_model(models.VlanDict, vlan_data)
 
         return get_vlans
+
+    @wrap_test_cases
+    def test_get_interfaces_vlans(self, test_case):
+        """Test get_interfaces_vlans."""
+        
+        get_interfaces_vlans = self.device.get_interfaces_vlans()
+
+        assert len(get_interfaces_vlans) > 0
+
+        for vlan, data in get_interfaces_vlans.items():
+            assert helpers.test_model(models.InterfaceVlansDict, data)
+
+        return get_interfaces_vlans

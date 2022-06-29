@@ -648,3 +648,15 @@ class TestGettersNetworkDriver(object):
             result = result and self._test_model(models.VlanDict, vlan_data)
 
         self.assertTrue(result)
+
+    def test_get_interfaces_vlans(self):
+        try:
+            get_interfaces_vlans = self.device.get_interfaces_vlans()
+        except NotImplementedError:
+            raise SkipTest()
+        result = len(get_interfaces_vlans) > 0
+
+        for vlan, data in get_interfaces_vlans.items():
+            result = result and self._test_model(models.InterfaceVlansDict, data)
+
+        self.assertTrue(result)
