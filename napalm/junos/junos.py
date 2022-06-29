@@ -505,8 +505,8 @@ class JunOSDriver(NetworkDriver):
             routing_engine = junos_views.junos_routing_engine_table_srx_cluster(
                 self.device
             )
-            temperature_thresholds = (
-                junos_views.junos_temperature_thresholds_srx_cluster(self.device)
+            temperature_thresholds = junos_views.junos_temperature_thresholds_srx_cluster(
+                self.device
             )
         else:
             environment = junos_views.junos_environment_table(self.device)
@@ -2020,14 +2020,12 @@ class JunOSDriver(NetworkDriver):
         if vrf:
             vrf_str = " routing-instance {vrf}".format(vrf=vrf)
 
-        traceroute_command = (
-            "traceroute {destination}{source}{maxttl}{wait}{vrf}".format(
-                destination=destination,
-                source=source_str,
-                maxttl=maxttl_str,
-                wait=wait_str,
-                vrf=vrf_str,
-            )
+        traceroute_command = "traceroute {destination}{source}{maxttl}{wait}{vrf}".format(
+            destination=destination,
+            source=source_str,
+            maxttl=maxttl_str,
+            wait=wait_str,
+            vrf=vrf_str,
         )
 
         traceroute_rpc = E("command", traceroute_command)
@@ -2507,16 +2505,16 @@ class JunOSDriver(NetworkDriver):
 
     def get_interfaces_vlans(self):
         result = {}
-        
+
         switch_style = self.device.facts["switch_style"]
         switch_version = float(self.device.facts["version"][:4])
-        
+
         if switch_style == "VLAN":
             table = junos_views.junos_iface_vlan_table(self.device)
             table.get()
 
             for iface in table:
-            
+
                 mode = iface.mode.lower()
                 access_vlan = -1
                 trunk_vlans = []
@@ -2530,10 +2528,14 @@ class JunOSDriver(NetworkDriver):
 
                     if iface.mode == "Access" and "tagged" in iface.vlans_tag:
                         mode = "voice"
-                        access_vlan = int(iface.vlans_id[iface.vlans_tag.index('untagged')])
+                        access_vlan = int(
+                            iface.vlans_id[iface.vlans_tag.index("untagged")]
+                        )
                         native_vlan = access_vlan
                     elif iface.mode == "Trunk" and "untagged" in iface.vlans_tag:
-                        native_vlan = int(iface.vlans_id[iface.vlans_tag.index('untagged')])
+                        native_vlan = int(
+                            iface.vlans_id[iface.vlans_tag.index("untagged")]
+                        )
                         tagged_native_vlan = True
 
                 else:
@@ -2555,7 +2557,9 @@ class JunOSDriver(NetworkDriver):
 
         elif switch_style == "VLAN_L2NG":
             if switch_version < 20.4:
-                table = junos_views.junos_iface_vlan_table_switch_l2ng_sub20_4(self.device)
+                table = junos_views.junos_iface_vlan_table_switch_l2ng_sub20_4(
+                    self.device
+                )
             else:
                 table = junos_views.junos_iface_vlan_table_switch_l2ng(self.device)
             table.get()
@@ -2564,15 +2568,11 @@ class JunOSDriver(NetworkDriver):
 
             for iface in table:
                 if iface.name not in iface_data.keys():
-                    iface_data[iface.name] = {
-                    "vlans_id": [],
-                    "vlans_tag": []
-                    }
+                    iface_data[iface.name] = {"vlans_id": [], "vlans_tag": []}
 
                 if iface.vlans_id and iface.vlans_tag:
                     iface_data[iface.name]["vlans_id"].append(iface.vlans_id)
                     iface_data[iface.name]["vlans_tag"].append(iface.vlans_tag)
-
 
             for iface_name, data in iface_data.items():
                 mode = "Access"
@@ -2584,18 +2584,22 @@ class JunOSDriver(NetworkDriver):
                 for i in range(len(data["vlans_tag"])):
                     if data["vlans_tag"][i] == "tagged":
                         trunk_vlans.append(int(data["vlans_id"][i]))
-                
+
                 if "untagged" in data["vlans_tag"]:
                     if len(trunk_vlans) == 0:
                         mode = "access"
-                        access_vlan = int(data["vlans_id"][data["vlans_tag"].index('untagged')])
+                        access_vlan = int(
+                            data["vlans_id"][data["vlans_tag"].index("untagged")]
+                        )
                     else:
                         mode = "trunk"
-                        native_vlan = int(data["vlans_id"][data["vlans_tag"].index('untagged')])
+                        native_vlan = int(
+                            data["vlans_id"][data["vlans_tag"].index("untagged")]
+                        )
                         tagged_native_vlan = True
                 else:
                     mode = "trunk"
-                
+
                 result[iface_name] = {
                     "mode": mode,
                     "access-vlan": access_vlan,
@@ -2603,5 +2607,5 @@ class JunOSDriver(NetworkDriver):
                     "native-vlan": native_vlan,
                     "tagged-native-vlan": tagged_native_vlan,
                 }
-    
+
         return result

@@ -578,7 +578,7 @@ class BaseTestGetters(object):
     @wrap_test_cases
     def test_get_interfaces_vlans(self, test_case):
         """Test get_interfaces_vlans."""
-        
+
         get_interfaces_vlans = self.device.get_interfaces_vlans()
 
         assert len(get_interfaces_vlans) > 0

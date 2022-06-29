@@ -1781,7 +1781,7 @@ class NetworkDriver(object):
         """
         raise NotImplementedError
 
-    def get_interfaces_vlans(self) -> Dict[str, models.InterfaceVlansDict] :
+    def get_interfaces_vlans(self) -> Dict[str, models.InterfaceVlansDict]:
         """
         Returns a dictionary of dictionaries where the first key is an interface name and the
         inner dictionary contains the following keys:
