@@ -7,7 +7,7 @@ pytest-cov==3.0.0
 pytest-json==0.4.0
 pylama==8.2.1
 mock==4.0.3
-tox==3.25.0
+tox==3.25.1
 mypy==0.960
 types-requests==2.27.30
 types-six==1.16.15
