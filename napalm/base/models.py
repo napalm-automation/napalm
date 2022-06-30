@@ -434,7 +434,7 @@ FirewallPolicyDict = TypedDict(
 VlanDict = TypedDict("VlanDict", {"name": str, "interfaces": List})
 
 InterfaceVlansDict = TypedDict(
-    "InterfacesVlansDict",
+    "InterfaceVlansDict",
     {
         "mode": str,
         "access-vlan": int,
