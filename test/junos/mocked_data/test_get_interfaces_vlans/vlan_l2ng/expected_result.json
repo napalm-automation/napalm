@@ -14,10 +14,10 @@
         "tagged-native-vlan": true
     },
     "ge-0/0/2.0": {
-        "mode": "trunk",
-        "access-vlan": -1,
+        "mode": "voice",
+        "access-vlan": 1,
         "trunk-vlans": [2],
         "native-vlan": 1,
-        "tagged-native-vlan": true
+        "tagged-native-vlan": false
     }
 }

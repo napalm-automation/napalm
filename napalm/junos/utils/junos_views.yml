@@ -889,3 +889,12 @@ junos_iface_vlan_view_switch_l2ng:
     name: l2iff-interface-name
     vlans_id: l2iff-interface-vlan-id
     vlans_tag:  l2iff-interface-vlan-member-tagness
+
+junos_iface_mode_switch_l2ng:
+  get: interfaces/interface
+  view: junos_iface_mode_view_switch_l2ng
+
+junos_iface_mode_view_switch_l2ng:
+  fields:
+    name: name
+    mode: unit/family/ethernet-switching/interface-mode

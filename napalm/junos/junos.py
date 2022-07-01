@@ -2566,6 +2566,9 @@ class JunOSDriver(NetworkDriver):
                 table = junos_views.junos_iface_vlan_table_switch_l2ng(self.device)
             table.get()
 
+            mode_table = junos_views.junos_iface_mode_switch_l2ng(self.device)
+            mode_table.get()
+
             iface_data = {}
 
             for iface in table:
@@ -2576,8 +2579,12 @@ class JunOSDriver(NetworkDriver):
                     iface_data[iface.name]["vlans_id"].append(iface.vlans_id)
                     iface_data[iface.name]["vlans_tag"].append(iface.vlans_tag)
 
+            for iface in mode_table:
+                if iface.mode != None and iface.name + ".0" in iface_data.keys():
+                    iface_data[iface.name + ".0"]["mode"] = iface.mode
+
             for iface_name, data in iface_data.items():
-                mode = "Access"
+                mode = "access"
                 access_vlan = -1
                 trunk_vlans = []
                 native_vlan = -1
@@ -2587,20 +2594,21 @@ class JunOSDriver(NetworkDriver):
                     if data["vlans_tag"][i] == "tagged":
                         trunk_vlans.append(int(data["vlans_id"][i]))
 
-                if "untagged" in data["vlans_tag"]:
-                    if len(trunk_vlans) == 0:
-                        mode = "access"
-                        access_vlan = int(
-                            data["vlans_id"][data["vlans_tag"].index("untagged")]
-                        )
-                    else:
-                        mode = "trunk"
+                if data["mode"] == "access":
+                    mode = "access"
+                    access_vlan = int(
+                        data["vlans_id"][data["vlans_tag"].index("untagged")]
+                    )
+                    if "tagged" in data["vlans_tag"]:
+                        mode = "voice"
+                        native_vlan = access_vlan
+                elif data["mode"] == "trunk":
+                    mode = "trunk"
+                    if "untagged" in data["vlans_tag"]:
                         native_vlan = int(
                             data["vlans_id"][data["vlans_tag"].index("untagged")]
                         )
                         tagged_native_vlan = True
-                else:
-                    mode = "trunk"
 
                 result[iface_name] = {
                     "mode": mode,
