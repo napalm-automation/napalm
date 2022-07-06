@@ -1,0 +1,901 @@
+{
+    "cardSlots": [
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 46.0,
+                    "maxTemperatureLastChange": 1437583421.9598742,
+                    "hwStatus": "ok",
+                    "description": "Digital Temperature Sensor on cpu0",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor1/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 28.0
+                },
+                {
+                    "maxTemperature": 52.0,
+                    "maxTemperatureLastChange": 1437583156.9341135,
+                    "hwStatus": "ok",
+                    "description": "Digital Temperature Sensor on cpu1",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor1/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 32.0
+                },
+                {
+                    "maxTemperature": 52.0,
+                    "maxTemperatureLastChange": 1437583156.9341378,
+                    "hwStatus": "ok",
+                    "description": "Digital Temperature Sensor on cpu2",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor1/3",
+                    "inAlertState": false,
+                    "relPos": "3",
+                    "alertCount": 0,
+                    "currentTemperature": 32.0
+                },
+                {
+                    "maxTemperature": 51.0,
+                    "maxTemperatureLastChange": 1437583156.9340882,
+                    "hwStatus": "ok",
+                    "description": "Digital Temperature Sensor on cpu3",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor1/4",
+                    "inAlertState": false,
+                    "relPos": "4",
+                    "alertCount": 0,
+                    "currentTemperature": 31.0
+                },
+                {
+                    "maxTemperature": 29.0,
+                    "maxTemperatureLastChange": 1447409199.1607616,
+                    "hwStatus": "ok",
+                    "description": "Supervisor temp sensor",
+                    "overheatThreshold": 75.0,
+                    "criticalThreshold": 85.0,
+                    "name": "TempSensor1/5",
+                    "inAlertState": false,
+                    "relPos": "5",
+                    "alertCount": 0,
+                    "currentTemperature": 26.0
+                },
+                {
+                    "maxTemperature": 52.0,
+                    "maxTemperatureLastChange": 1448204929.102181,
+                    "hwStatus": "ok",
+                    "description": "PlxLc sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 103.0,
+                    "name": "TempSensor1/6",
+                    "inAlertState": false,
+                    "relPos": "6",
+                    "alertCount": 0,
+                    "currentTemperature": 49.0
+                },
+                {
+                    "maxTemperature": 52.0,
+                    "maxTemperatureLastChange": 1447409179.1398125,
+                    "hwStatus": "ok",
+                    "description": "PlxFc sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 103.0,
+                    "name": "TempSensor1/7",
+                    "inAlertState": false,
+                    "relPos": "7",
+                    "alertCount": 0,
+                    "currentTemperature": 48.0
+                },
+                {
+                    "maxTemperature": 24.0,
+                    "maxTemperatureLastChange": 1448275657.4751613,
+                    "hwStatus": "ok",
+                    "description": "Rear sensor",
+                    "overheatThreshold": 65.0,
+                    "criticalThreshold": 75.0,
+                    "name": "TempSensor1/8",
+                    "inAlertState": false,
+                    "relPos": "8",
+                    "alertCount": 0,
+                    "currentTemperature": 21.0
+                },
+                {
+                    "maxTemperature": 23.0,
+                    "maxTemperatureLastChange": 1448274501.2003179,
+                    "hwStatus": "ok",
+                    "description": "Front sensor",
+                    "overheatThreshold": 65.0,
+                    "criticalThreshold": 75.0,
+                    "name": "TempSensor1/9",
+                    "inAlertState": false,
+                    "relPos": "9",
+                    "alertCount": 0,
+                    "currentTemperature": 20.0
+                },
+                {
+                    "maxTemperature": 31.0,
+                    "maxTemperatureLastChange": 1437583528.221005,
+                    "hwStatus": "ok",
+                    "description": "CPU VRM temp sensor 0",
+                    "overheatThreshold": 105.0,
+                    "criticalThreshold": 110.0,
+                    "name": "TempSensor1/10",
+                    "inAlertState": false,
+                    "relPos": "10",
+                    "alertCount": 0,
+                    "currentTemperature": 27.0
+                },
+                {
+                    "maxTemperature": 31.0,
+                    "maxTemperatureLastChange": 1437583528.2210116,
+                    "hwStatus": "ok",
+                    "description": "CPU VRM temp sensor 1",
+                    "overheatThreshold": 105.0,
+                    "criticalThreshold": 110.0,
+                    "name": "TempSensor1/11",
+                    "inAlertState": false,
+                    "relPos": "11",
+                    "alertCount": 0,
+                    "currentTemperature": 27.0
+                }
+            ],
+            "entPhysicalClass": "Supervisor",
+            "relPos": "1"
+        },
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 29.25,
+                    "maxTemperatureLastChange": 1437583598.7151737,
+                    "hwStatus": "ok",
+                    "description": "Inlet sensor",
+                    "overheatThreshold": 60.0,
+                    "criticalThreshold": 70.0,
+                    "name": "TempSensor3/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 25.75
+                },
+                {
+                    "maxTemperature": 59.0,
+                    "maxTemperatureLastChange": 1447129800.86387,
+                    "hwStatus": "ok",
+                    "description": "Board sensor",
+                    "overheatThreshold": 75.0,
+                    "criticalThreshold": 85.0,
+                    "name": "TempSensor3/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 55.25
+                },
+                {
+                    "maxTemperature": 37.75,
+                    "maxTemperatureLastChange": 1439067314.4993434,
+                    "hwStatus": "ok",
+                    "description": "Outlet sensor",
+                    "overheatThreshold": 75.0,
+                    "criticalThreshold": 85.0,
+                    "name": "TempSensor3/3",
+                    "inAlertState": false,
+                    "relPos": "3",
+                    "alertCount": 0,
+                    "currentTemperature": 34.75
+                },
+                {
+                    "maxTemperature": 57.0,
+                    "maxTemperatureLastChange": 1447129807.9957194,
+                    "hwStatus": "ok",
+                    "description": "Board sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 110.0,
+                    "name": "TempSensor3/4",
+                    "inAlertState": false,
+                    "relPos": "4",
+                    "alertCount": 0,
+                    "currentTemperature": 53.0
+                },
+                {
+                    "maxTemperature": 57.75,
+                    "maxTemperatureLastChange": 1437583619.612965,
+                    "hwStatus": "ok",
+                    "description": "Switch chip 1 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 110.0,
+                    "name": "TempSensor3/5",
+                    "inAlertState": false,
+                    "relPos": "5",
+                    "alertCount": 0,
+                    "currentTemperature": 51.5
+                },
+                {
+                    "maxTemperature": 67.0,
+                    "maxTemperatureLastChange": 1438207344.8952332,
+                    "hwStatus": "ok",
+                    "description": "Switch chip 2 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 110.0,
+                    "name": "TempSensor3/6",
+                    "inAlertState": false,
+                    "relPos": "6",
+                    "alertCount": 0,
+                    "currentTemperature": 62.0
+                },
+                {
+                    "maxTemperature": 58.0,
+                    "maxTemperatureLastChange": 1448121955.436718,
+                    "hwStatus": "ok",
+                    "description": "Board sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 110.0,
+                    "name": "TempSensor3/7",
+                    "inAlertState": false,
+                    "relPos": "7",
+                    "alertCount": 0,
+                    "currentTemperature": 54.0
+                },
+                {
+                    "maxTemperature": 60.75,
+                    "maxTemperatureLastChange": 1437583624.6120057,
+                    "hwStatus": "ok",
+                    "description": "Switch chip 3 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 110.0,
+                    "name": "TempSensor3/8",
+                    "inAlertState": false,
+                    "relPos": "8",
+                    "alertCount": 0,
+                    "currentTemperature": 55.5
+                },
+                {
+                    "maxTemperature": 67.25,
+                    "maxTemperatureLastChange": 1448121942.374377,
+                    "hwStatus": "ok",
+                    "description": "Switch chip 4 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 110.0,
+                    "name": "TempSensor3/9",
+                    "inAlertState": false,
+                    "relPos": "9",
+                    "alertCount": 0,
+                    "currentTemperature": 62.25
+                },
+                {
+                    "maxTemperature": 58.0,
+                    "maxTemperatureLastChange": 1448202173.9825656,
+                    "hwStatus": "ok",
+                    "description": "Board sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 110.0,
+                    "name": "TempSensor3/10",
+                    "inAlertState": false,
+                    "relPos": "10",
+                    "alertCount": 0,
+                    "currentTemperature": 55.0
+                },
+                {
+                    "maxTemperature": 56.0,
+                    "maxTemperatureLastChange": 1437583614.603508,
+                    "hwStatus": "ok",
+                    "description": "Switch chip 5 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 110.0,
+                    "name": "TempSensor3/11",
+                    "inAlertState": false,
+                    "relPos": "11",
+                    "alertCount": 0,
+                    "currentTemperature": 48.75
+                },
+                {
+                    "maxTemperature": 68.75,
+                    "maxTemperatureLastChange": 1448121955.4413555,
+                    "hwStatus": "ok",
+                    "description": "Switch chip 6 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 110.0,
+                    "name": "TempSensor3/12",
+                    "inAlertState": false,
+                    "relPos": "12",
+                    "alertCount": 0,
+                    "currentTemperature": 64.0
+                }
+            ],
+            "entPhysicalClass": "Linecard",
+            "relPos": "3"
+        },
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 32.0,
+                    "maxTemperatureLastChange": 1437583617.816358,
+                    "hwStatus": "ok",
+                    "description": "Outlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor11/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 27.75
+                },
+                {
+                    "maxTemperature": 28.0,
+                    "maxTemperatureLastChange": 1441487427.119975,
+                    "hwStatus": "ok",
+                    "description": "Inlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor11/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 24.5
+                },
+                {
+                    "maxTemperature": 33.0,
+                    "maxTemperatureLastChange": 1437583629.7917063,
+                    "hwStatus": "ok",
+                    "description": "Board sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor11/3",
+                    "inAlertState": false,
+                    "relPos": "3",
+                    "alertCount": 0,
+                    "currentTemperature": 28.5
+                },
+                {
+                    "maxTemperature": 37.0,
+                    "maxTemperatureLastChange": 1441487361.326174,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 1 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor11/4",
+                    "inAlertState": false,
+                    "relPos": "4",
+                    "alertCount": 0,
+                    "currentTemperature": 32.0
+                },
+                {
+                    "maxTemperature": 34.0,
+                    "maxTemperatureLastChange": 1441487441.3293684,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 2 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor11/5",
+                    "inAlertState": false,
+                    "relPos": "5",
+                    "alertCount": 0,
+                    "currentTemperature": 29.0
+                }
+            ],
+            "entPhysicalClass": "Fabric",
+            "relPos": "1"
+        },
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 32.0,
+                    "maxTemperatureLastChange": 1437583591.7713757,
+                    "hwStatus": "ok",
+                    "description": "Outlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor12/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 27.5
+                },
+                {
+                    "maxTemperature": 27.75,
+                    "maxTemperatureLastChange": 1437583643.0048025,
+                    "hwStatus": "ok",
+                    "description": "Inlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor12/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 24.25
+                },
+                {
+                    "maxTemperature": 33.5,
+                    "maxTemperatureLastChange": 1437583586.3524427,
+                    "hwStatus": "ok",
+                    "description": "Board sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor12/3",
+                    "inAlertState": false,
+                    "relPos": "3",
+                    "alertCount": 0,
+                    "currentTemperature": 28.5
+                },
+                {
+                    "maxTemperature": 37.0,
+                    "maxTemperatureLastChange": 1441556470.6309335,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 1 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor12/4",
+                    "inAlertState": false,
+                    "relPos": "4",
+                    "alertCount": 0,
+                    "currentTemperature": 32.0
+                },
+                {
+                    "maxTemperature": 35.0,
+                    "maxTemperatureLastChange": 1441487381.328109,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 2 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor12/5",
+                    "inAlertState": false,
+                    "relPos": "5",
+                    "alertCount": 0,
+                    "currentTemperature": 30.0
+                }
+            ],
+            "entPhysicalClass": "Fabric",
+            "relPos": "2"
+        },
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 32.25,
+                    "maxTemperatureLastChange": 1437583586.3418207,
+                    "hwStatus": "ok",
+                    "description": "Outlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor13/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 27.75
+                },
+                {
+                    "maxTemperature": 28.0,
+                    "maxTemperatureLastChange": 1437583642.9943464,
+                    "hwStatus": "ok",
+                    "description": "Inlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor13/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 24.5
+                },
+                {
+                    "maxTemperature": 32.75,
+                    "maxTemperatureLastChange": 1437583611.5365534,
+                    "hwStatus": "ok",
+                    "description": "Board sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor13/3",
+                    "inAlertState": false,
+                    "relPos": "3",
+                    "alertCount": 0,
+                    "currentTemperature": 28.25
+                },
+                {
+                    "maxTemperature": 37.0,
+                    "maxTemperatureLastChange": 1441489636.5117283,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 1 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor13/4",
+                    "inAlertState": false,
+                    "relPos": "4",
+                    "alertCount": 0,
+                    "currentTemperature": 32.0
+                },
+                {
+                    "maxTemperature": 35.0,
+                    "maxTemperatureLastChange": 1441488461.4214644,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 2 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor13/5",
+                    "inAlertState": false,
+                    "relPos": "5",
+                    "alertCount": 0,
+                    "currentTemperature": 30.0
+                }
+            ],
+            "entPhysicalClass": "Fabric",
+            "relPos": "3"
+        },
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 32.25,
+                    "maxTemperatureLastChange": 1437583629.8022814,
+                    "hwStatus": "ok",
+                    "description": "Outlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor14/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 28.25
+                },
+                {
+                    "maxTemperature": 28.0,
+                    "maxTemperatureLastChange": 1437583617.8269086,
+                    "hwStatus": "ok",
+                    "description": "Inlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor14/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 24.75
+                },
+                {
+                    "maxTemperature": 33.0,
+                    "maxTemperatureLastChange": 1437583591.7814753,
+                    "hwStatus": "ok",
+                    "description": "Board sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor14/3",
+                    "inAlertState": false,
+                    "relPos": "3",
+                    "alertCount": 0,
+                    "currentTemperature": 28.5
+                },
+                {
+                    "maxTemperature": 37.0,
+                    "maxTemperatureLastChange": 1441488556.4277143,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 1 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor14/4",
+                    "inAlertState": false,
+                    "relPos": "4",
+                    "alertCount": 0,
+                    "currentTemperature": 33.0
+                },
+                {
+                    "maxTemperature": 34.0,
+                    "maxTemperatureLastChange": 1441488756.4354422,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 2 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor14/5",
+                    "inAlertState": false,
+                    "relPos": "5",
+                    "alertCount": 0,
+                    "currentTemperature": 29.0
+                }
+            ],
+            "entPhysicalClass": "Fabric",
+            "relPos": "4"
+        },
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 32.25,
+                    "maxTemperatureLastChange": 1437583611.5469427,
+                    "hwStatus": "ok",
+                    "description": "Outlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor15/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 28.0
+                },
+                {
+                    "maxTemperature": 27.75,
+                    "maxTemperatureLastChange": 1437583661.268155,
+                    "hwStatus": "ok",
+                    "description": "Inlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor15/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 24.75
+                },
+                {
+                    "maxTemperature": 32.75,
+                    "maxTemperatureLastChange": 1437583586.3523726,
+                    "hwStatus": "ok",
+                    "description": "Board sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor15/3",
+                    "inAlertState": false,
+                    "relPos": "3",
+                    "alertCount": 0,
+                    "currentTemperature": 28.5
+                },
+                {
+                    "maxTemperature": 37.0,
+                    "maxTemperatureLastChange": 1441488486.42269,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 1 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor15/4",
+                    "inAlertState": false,
+                    "relPos": "4",
+                    "alertCount": 0,
+                    "currentTemperature": 33.0
+                },
+                {
+                    "maxTemperature": 33.0,
+                    "maxTemperatureLastChange": 1441556555.6321013,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 2 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor15/5",
+                    "inAlertState": false,
+                    "relPos": "5",
+                    "alertCount": 0,
+                    "currentTemperature": 30.0
+                }
+            ],
+            "entPhysicalClass": "Fabric",
+            "relPos": "5"
+        },
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 32.25,
+                    "maxTemperatureLastChange": 1437583605.4615312,
+                    "hwStatus": "ok",
+                    "description": "Outlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor16/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 28.25
+                },
+                {
+                    "maxTemperature": 29.75,
+                    "maxTemperatureLastChange": 1441488558.4321597,
+                    "hwStatus": "ok",
+                    "description": "Inlet sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor16/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 27.0
+                },
+                {
+                    "maxTemperature": 33.5,
+                    "maxTemperatureLastChange": 1437583623.1854844,
+                    "hwStatus": "ok",
+                    "description": "Board sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor16/3",
+                    "inAlertState": false,
+                    "relPos": "3",
+                    "alertCount": 0,
+                    "currentTemperature": 29.75
+                },
+                {
+                    "maxTemperature": 37.0,
+                    "maxTemperatureLastChange": 1441556500.6320963,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 1 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor16/4",
+                    "inAlertState": false,
+                    "relPos": "4",
+                    "alertCount": 0,
+                    "currentTemperature": 33.0
+                },
+                {
+                    "maxTemperature": 35.0,
+                    "maxTemperatureLastChange": 1441489651.5134578,
+                    "hwStatus": "ok",
+                    "description": "Fan controller 2 sensor",
+                    "overheatThreshold": 95.0,
+                    "criticalThreshold": 105.0,
+                    "name": "TempSensor16/5",
+                    "inAlertState": false,
+                    "relPos": "5",
+                    "alertCount": 0,
+                    "currentTemperature": 31.0
+                }
+            ],
+            "entPhysicalClass": "Fabric",
+            "relPos": "6"
+        }
+    ],
+    "powerSupplySlots": [
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 41.125,
+                    "maxTemperatureLastChange": 1440032303.0436726,
+                    "hwStatus": "ok",
+                    "description": "Power supply sensor",
+                    "overheatThreshold": 65.0,
+                    "criticalThreshold": 70.0,
+                    "name": "TempSensorP1/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 29.625
+                },
+                {
+                    "maxTemperature": 24.625,
+                    "maxTemperatureLastChange": 1441488537.2046435,
+                    "hwStatus": "ok",
+                    "description": "Power supply sensor",
+                    "overheatThreshold": 65.0,
+                    "criticalThreshold": 70.0,
+                    "name": "TempSensorP1/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 22.375
+                }
+            ],
+            "entPhysicalClass": "PowerSupply",
+            "relPos": "1"
+        },
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 41.375,
+                    "maxTemperatureLastChange": 1440150172.225087,
+                    "hwStatus": "ok",
+                    "description": "Power supply sensor",
+                    "overheatThreshold": 65.0,
+                    "criticalThreshold": 70.0,
+                    "name": "TempSensorP2/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 28.75
+                },
+                {
+                    "maxTemperature": 24.75,
+                    "maxTemperatureLastChange": 1438819715.119814,
+                    "hwStatus": "ok",
+                    "description": "Power supply sensor",
+                    "overheatThreshold": 65.0,
+                    "criticalThreshold": 70.0,
+                    "name": "TempSensorP2/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 22.25
+                }
+            ],
+            "entPhysicalClass": "PowerSupply",
+            "relPos": "2"
+        },
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 42.75,
+                    "maxTemperatureLastChange": 1444591985.1574292,
+                    "hwStatus": "ok",
+                    "description": "Power supply sensor",
+                    "overheatThreshold": 65.0,
+                    "criticalThreshold": 70.0,
+                    "name": "TempSensorP3/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 30.375
+                },
+                {
+                    "maxTemperature": 25.25,
+                    "maxTemperatureLastChange": 1441488587.6122668,
+                    "hwStatus": "ok",
+                    "description": "Power supply sensor",
+                    "overheatThreshold": 65.0,
+                    "criticalThreshold": 70.0,
+                    "name": "TempSensorP3/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 23.125
+                }
+            ],
+            "entPhysicalClass": "PowerSupply",
+            "relPos": "3"
+        },
+        {
+            "tempSensors": [
+                {
+                    "maxTemperature": 43.25,
+                    "maxTemperatureLastChange": 1438274685.6674328,
+                    "hwStatus": "ok",
+                    "description": "Power supply sensor",
+                    "overheatThreshold": 65.0,
+                    "criticalThreshold": 70.0,
+                    "name": "TempSensorP4/1",
+                    "inAlertState": false,
+                    "relPos": "1",
+                    "alertCount": 0,
+                    "currentTemperature": 30.0
+                },
+                {
+                    "maxTemperature": 26.0,
+                    "maxTemperatureLastChange": 1447652810.2495797,
+                    "hwStatus": "ok",
+                    "description": "Power supply sensor",
+                    "overheatThreshold": 65.0,
+                    "criticalThreshold": 70.0,
+                    "name": "TempSensorP4/2",
+                    "inAlertState": false,
+                    "relPos": "2",
+                    "alertCount": 0,
+                    "currentTemperature": 23.75
+                }
+            ],
+            "entPhysicalClass": "PowerSupply",
+            "relPos": "4"
+        }
+    ],
+    "shutdownOnOverheat": true,
+    "tempSensors": [
+       {
+            "maxTemperature": 48.21273929067406, 
+            "maxTemperatureLastChange": 1473779176.7382116, 
+            "hwStatus": "ok", 
+            "currentTemperature": 41.63677939132518, 
+            "description": "Cpu temp sensor", 
+            "overheatThreshold": 90.0, 
+            "criticalThreshold": 95.0, 
+            "inAlertState": false, 
+            "relPos": "1", 
+            "alertCount": 0, 
+            "name": "TempSensor1"
+        }, 
+        {
+            "maxTemperature": 38.0, 
+            "maxTemperatureLastChange": 1473853425.4411056, 
+            "hwStatus": "ok", 
+            "currentTemperature": 35.0, 
+            "description": "CPU board temp sensor", 
+            "overheatThreshold": 75.0, 
+            "criticalThreshold": 80.0, 
+            "inAlertState": false, 
+            "relPos": "2", 
+            "alertCount": 0, 
+            "name": "TempSensor2"
+        } 
+    ],
+    "systemStatus": "temperatureOk"
+}
