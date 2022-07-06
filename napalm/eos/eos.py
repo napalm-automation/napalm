@@ -846,16 +846,32 @@ class EOSDriver(NetworkDriver):
         # Matches either of
         # Mem:   3844356k total,  3763184k used,    81172k free,    16732k buffers ( 4.16 > )
         # KiB Mem:  32472080 total,  5697604 used, 26774476 free,   372052 buffers ( 4.16 < )
+        # MiB Mem :   3889.2 total,    150.3 free,   1104.5 used,   2634.4 buff/cache (4.27 < )
         mem_regex = (
-            r"[^\d]*(?P<total>\d+)[k\s]+total,"
-            r"\s+(?P<used>\d+)[k\s]+used,"
-            r"\s+(?P<free>\d+)[k\s]+free,.*"
+            r"^(?:(?P<unit>\S+)\s+)?Mem\s*:"
+            r"\s+(?P<total>[0-9.]+)[k\s]+total,"
+            r"(?:\s+(?P<used1>[0-9.]+)[k\s]+used,)?"
+            r"\s+(?P<free>[0-9.]+)[k\s]+free,"
+            r"(?:\s+(?P<used2>[0-9.]+)[k\s]+used,)?"
+            r".*"
         )
         m = re.match(mem_regex, cpu_lines[3])
-        environment_counters["memory"] = {
-            "available_ram": int(m.group("total")),
-            "used_ram": int(m.group("used")),
-        }
+
+        def _parse_memory(unit, total, used):
+            if unit == "MiB":
+                return {
+                    "available_ram": int(float(total) * 1024),
+                    "used_ram": int(float(used) * 1024),
+                }
+            return {
+                "available_ram": int(total),
+                "used_ram": int(used),
+            }
+
+        environment_counters["memory"] = _parse_memory(
+            m.group("unit"), m.group("total"), m.group("used1") or m.group("used2")
+        )
+
         return environment_counters
 
     def _transform_lldp_capab(self, capabilities):
