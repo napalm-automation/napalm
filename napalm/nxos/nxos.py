@@ -966,7 +966,7 @@ class NXOSDriver(NXOSDriverBase):
         uptime += uptime_mins * 60
         uptime += uptime_secs
 
-        facts["uptime"] = uptime
+        facts["uptime"] = float(uptime)
 
         iface_cmd = "show interface"
         interfaces_out = self._send_command(iface_cmd)
@@ -1127,7 +1127,11 @@ class NXOSDriver(NXOSDriverBase):
             results[vrf_name] = result_vrf_dict
         return results
 
-    def cli(self, commands: List[str]) -> Dict[str, Union[str, Dict[str, Any]]]:
+    def cli(
+        self, commands: List[str], encoding: str = "text"
+    ) -> Dict[str, Union[str, Dict[str, Any]]]:
+        if encoding not in ("text",):
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
         cli_output: Dict[str, Union[str, Dict[str, Any]]] = {}
         if type(commands) is not list:
             raise TypeError("Please enter a valid list of commands!")

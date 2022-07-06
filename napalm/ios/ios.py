@@ -417,17 +417,13 @@ class IOSDriver(NetworkDriver):
         )
 
         if self.config_replace:
-            cmd = "show archive config differences {} {}".format(
-                base_file_full, new_file_full
-            )
-            diff = self.device.send_command_expect(cmd)
+            cmd = f"show archive config differences {base_file_full} {new_file_full}"
+            diff = self.device.send_command(cmd)
             diff = self._normalize_compare_config(diff)
         else:
             # merge
-            cmd = "show archive config incremental-diffs {} ignorecase".format(
-                new_file_full
-            )
-            diff = self.device.send_command_expect(cmd)
+            cmd = f"show archive config incremental-diffs {new_file_full} ignorecase"
+            diff = self.device.send_command(cmd)
             if "error code 5" in diff or "returned error 5" in diff:
                 diff = (
                     "You have encountered the obscure 'error 5' message. This generally "
@@ -436,8 +432,8 @@ class IOSDriver(NetworkDriver):
             elif "% Invalid" not in diff:
                 diff = self._normalize_merge_diff_incr(diff)
             else:
-                cmd = "more {}".format(new_file_full)
-                diff = self.device.send_command_expect(cmd)
+                cmd = f"more {new_file_full}"
+                diff = self.device.send_command(cmd)
                 diff = self._normalize_merge_diff(diff)
 
         return diff.strip()
@@ -456,8 +452,8 @@ class IOSDriver(NetworkDriver):
                 else:
                     # check if the command is already in the running-config
                     cmd = "file prompt quiet"
-                    show_cmd = "show running-config | inc {}".format(cmd)
-                    output = self.device.send_command_expect(show_cmd)
+                    show_cmd = f"show running-config | inc {cmd}"
+                    output = self.device.send_command(show_cmd)
                     if cmd in output:
                         self.prompt_quiet_configured = True
                     else:
@@ -484,8 +480,8 @@ class IOSDriver(NetworkDriver):
         pattern1 = r"[>#{}]\s*$".format(terminating_char)
         # Handle special username removal pattern
         pattern2 = r".*all username.*confirm"
-        patterns = r"(?:{}|{})".format(pattern1, pattern2)
-        output = self.device.send_command_expect(cmd, expect_string=patterns)
+        patterns = rf"(?:{pattern1}|{pattern2})"
+        output = self.device.send_command(cmd, expect_string=patterns)
         loop_count = 50
         new_output = output
         for i in range(loop_count):
@@ -668,12 +664,12 @@ class IOSDriver(NetworkDriver):
     @_file_prompt_quiet
     def _discard_config(self):
         """Set candidate_cfg to current running-config. Erase the merge_cfg file."""
-        discard_candidate = "copy running-config {}".format(
-            self._gen_full_path(self.candidate_cfg)
+        discard_candidate = (
+            f"copy running-config {self._gen_full_path(self.candidate_cfg)}"
         )
-        discard_merge = "copy null: {}".format(self._gen_full_path(self.merge_cfg))
-        self.device.send_command_expect(discard_candidate)
-        self.device.send_command_expect(discard_merge)
+        discard_merge = f"copy null: {self._gen_full_path(self.merge_cfg)}"
+        self.device.send_command(discard_candidate)
+        self.device.send_command(discard_merge)
 
     def rollback(self):
         """Rollback configuration to filename or to self.rollback_cfg file."""
@@ -797,8 +793,8 @@ class IOSDriver(NetworkDriver):
 
             if use_scp:
                 cmd = "ip scp server enable"
-                show_cmd = "show running-config | inc {}".format(cmd)
-                output = self.device.send_command_expect(show_cmd)
+                show_cmd = f"show running-config | inc {cmd}"
+                output = self.device.send_command(show_cmd)
                 if cmd not in output:
                     msg = (
                         "SCP file transfers are not enabled. "
@@ -833,8 +829,8 @@ class IOSDriver(NetworkDriver):
     def _gen_rollback_cfg(self):
         """Save a configuration that can be used for rollback."""
         cfg_file = self._gen_full_path(self.rollback_cfg)
-        cmd = "copy running-config {}".format(cfg_file)
-        self.device.send_command_expect(cmd)
+        cmd = f"copy running-config {cfg_file}"
+        self.device.send_command(cmd)
 
     def _check_file_exists(self, cfg_file):
         """
@@ -850,9 +846,9 @@ class IOSDriver(NetworkDriver):
 
         return boolean
         """
-        cmd = "dir {}".format(cfg_file)
-        success_pattern = "Directory of {}".format(cfg_file)
-        output = self.device.send_command_expect(cmd)
+        cmd = f"dir {cfg_file}"
+        success_pattern = f"Directory of {cfg_file}"
+        output = self.device.send_command(cmd)
         if "Error opening" in output:
             return False
         elif success_pattern in output:
@@ -1004,7 +1000,7 @@ class IOSDriver(NetworkDriver):
         lldp_interfaces = []
 
         if interface:
-            command = "show lldp neighbors {} detail".format(interface)
+            command = f"show lldp neighbors {interface} detail"
         else:
             command = "show lldp neighbors detail"
         lldp_entries = self._send_command(command)
@@ -1028,7 +1024,7 @@ class IOSDriver(NetworkDriver):
         # which is in the same sequence as the detailed output
         if not lldp_entries[0]["local_interface"]:
             if interface:
-                command = "show lldp neighbors {}".format(interface)
+                command = f"show lldp neighbors {interface}"
             else:
                 command = "show lldp neighbors"
             lldp_brief = self._send_command(command)
@@ -1159,7 +1155,7 @@ class IOSDriver(NetworkDriver):
             interface_list.append(interface)
 
         return {
-            "uptime": uptime,
+            "uptime": float(uptime),
             "vendor": vendor,
             "os_version": str(os_version),
             "serial_number": str(serial_number),
@@ -1689,12 +1685,12 @@ class IOSDriver(NetworkDriver):
                 "ipv6 unicast",
                 "ipv6 multicast",
             ]:
-                cmd_bgp_neighbor = "show bgp %s neighbors" % afi
+                cmd_bgp_neighbor = f"show bgp {afi} neighbors"
                 neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
                 neighbor_output += "\n"
             elif afi in ["vpnv4 unicast", "vpnv6 unicast", "ipv4 mdt"]:
-                cmd_bgp_neighbor = "show bgp %s all neighbors" % afi
+                cmd_bgp_neighbor = f"show bgp {afi} all neighbors"
                 neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
                 neighbor_output += "\n"
@@ -2432,7 +2428,7 @@ class IOSDriver(NetworkDriver):
             ]
         """
         if vrf:
-            command = "show arp vrf {} | exclude Incomplete".format(vrf)
+            command = f"show arp vrf {vrf} | exclude Incomplete"
         else:
             command = "show arp | exclude Incomplete"
 
@@ -2478,7 +2474,7 @@ class IOSDriver(NetworkDriver):
             arp_table.append(entry)
         return arp_table
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
         """
         Execute a list of commands and return the output in a dictionary format using the command
         as the key.
@@ -2491,6 +2487,8 @@ class IOSDriver(NetworkDriver):
             'show clock': u'*22:01:51.165 UTC Thu Feb 18 2016'}
 
         """
+        if encoding not in ("text",):
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
         cli_output = dict()
         if type(commands) is not list:
             raise TypeError("Please enter a valid list of commands!")
@@ -3430,19 +3428,18 @@ class IOSDriver(NetworkDriver):
         if timeout:
             # Timeout should be an integer between 1 and 3600
             if isinstance(timeout, int) and 1 <= timeout <= 3600:
-                command += " timeout {}".format(str(timeout))
+                command += f" timeout {str(timeout)}"
 
-        # Calculation to leave enough time for traceroute to complete assumes send_command
-        # delay of .2 seconds.
-        max_loops = (5 * ttl * timeout) + 150
-        if max_loops < 500:  # Make sure max_loops isn't set artificially low
-            max_loops = 500
-        output = self.device.send_command(command, max_loops=max_loops)
+        read_timeout = ttl * timeout
+        # Make sure read_timeout isn't artificially low
+        if read_timeout < 100:
+            read_timeout = 100
+        output = self.device.send_command(command, read_timeout=read_timeout)
 
         # Prepare return dict
         traceroute_dict = dict()
         if re.search("Unrecognized host or address", output):
-            traceroute_dict["error"] = "unknown host %s" % destination
+            traceroute_dict["error"] = f"unknown host {destination}"
             return traceroute_dict
         else:
             traceroute_dict["success"] = dict()
@@ -3623,7 +3620,7 @@ class IOSDriver(NetworkDriver):
             configs["startup"] = output.strip()
 
         if retrieve in ("running", "all"):
-            command = "show running-config{}".format(run_full)
+            command = f"show running-config{run_full}"
             output = self._send_command(command)
             output = re.sub(filter_pattern, "", output, flags=re.M)
             configs["running"] = output.strip()

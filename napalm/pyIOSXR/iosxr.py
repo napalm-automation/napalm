@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright 2015 Netflix. All rights reserved.
 # Copyright 2016 BigWaveIT. All rights reserved.
-# Copyright 2021 Kirk Byers. All rights reserved.
+# Copyright 2022 Kirk Byers. All rights reserved.
 #
 # The contents of this file are licensed under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with the
@@ -34,9 +34,11 @@ from xml.sax.saxutils import escape as escape_xml
 
 # third party lib
 from lxml import etree as ET
-from netmiko import ConnectHandler
-from netmiko.ssh_exception import NetMikoTimeoutException
-from netmiko.ssh_exception import NetMikoAuthenticationException
+from netmiko import (
+    ConnectHandler,
+    NetMikoAuthenticationException,
+    NetMikoTimeoutException,
+)
 
 # local modules
 from napalm.pyIOSXR.exceptions import LockError
@@ -61,8 +63,7 @@ class IOSXR(object):
 
     _XML_SHELL = "xml"
     _XML_MODE_PROMPT = r"XML>"
-    _READ_DELAY = 0.1  # at least 0.1, corresponding to 600 max loops (60s timeout)
-    _XML_MODE_DELAY = 1  # should be able to read within one second
+    _XML_MODE_READ_TIMEOUT = 10  # should be able to complete read within 10 seconds
 
     _ITERATOR_ID_ERROR_MSG = (
         "Non-supported IteratorID in response object. "
@@ -235,11 +236,9 @@ class IOSXR(object):
             self._xml_agent_locker.release()
 
     def _send_command_timing(self, command):
-
         return self.device.send_command_timing(
             command,
-            delay_factor=self._READ_DELAY,
-            max_loops=self._XML_MODE_DELAY / self._READ_DELAY,
+            read_timeout=self._XML_MODE_READ_TIMEOUT,
             strip_prompt=False,
             strip_command=False,
         )
@@ -277,7 +276,8 @@ class IOSXR(object):
     def _send_command(
         self,
         command,
-        delay_factor=None,
+        delay_factor=None,  # noqa
+        read_timeout=None,
         start=None,
         expect_string=None,
         read_output=None,
@@ -290,29 +290,25 @@ class IOSXR(object):
         if read_output is None:
             read_output = ""
 
-        if not delay_factor:
-            delay_factor = self._READ_DELAY
+        if not read_timeout:
+            read_timeout = self.timeout
 
         if not start:
             start = time.time()
 
         output = read_output
-
         last_read = ""
-
         if not read_output and not receive:
             # because the XML agent is able to process only one single request over the same SSH
             # session at a time first come first served
             self._lock_xml_agent(start)
             try:
-                max_loops = self.timeout / delay_factor
-                last_read = self.device.send_command_expect(
+                last_read = self.device.send_command(
                     command,
                     expect_string=expect_string,
                     strip_prompt=False,
                     strip_command=False,
-                    delay_factor=delay_factor,
-                    max_loops=max_loops,
+                    read_timeout=read_timeout,
                 )
                 output += last_read
             except IOError:
@@ -347,7 +343,7 @@ class IOSXR(object):
                         return self._send_command(
                             command,
                             expect_string=expect_string,
-                            delay_factor=delay_factor,
+                            read_timeout=read_timeout,
                         )
         else:
             output += self.device._read_channel_timing()  # try to read some more
