@@ -3,7 +3,7 @@ cffi>=1.11.3
 paramiko>=2.6.0
 requests>=2.7.0
 future
-textfsm<=1.1.2
+textfsm<1.1.4
 jinja2
 netaddr
 pyYAML
