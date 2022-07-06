@@ -512,6 +512,7 @@ class IOSDriver(NetworkDriver):
         ARCHIVE_DISABLED_MESSAGE = (
             "For Cisco devices, revert_in requires 'archive' feature to be enabled."
         )
+        revert_in_min = None
 
         if message:
             raise NotImplementedError(
@@ -531,7 +532,7 @@ class IOSDriver(NetworkDriver):
                 )
                 raise CommitConfirmException(msg)
             else:
-                revert_in = int(revert_in / 60)
+                revert_in_min = int(revert_in / 60)
 
         if self.has_pending_commit():
             raise CommandErrorException(
@@ -548,15 +549,15 @@ class IOSDriver(NetworkDriver):
             cfg_file = self._gen_full_path(filename)
             if not self._check_file_exists(cfg_file):
                 raise ReplaceConfigException("Candidate config file does not exist")
-            if revert_in and self.auto_rollback_on_error:
+            if revert_in_min and self.auto_rollback_on_error:
                 cmd = "configure replace {} force revert trigger error timer {}".format(
-                    cfg_file, revert_in
+                    cfg_file, revert_in_min
                 )
             elif self.auto_rollback_on_error:
                 cmd = "configure replace {} force revert trigger error".format(cfg_file)
-            elif revert_in:
+            elif revert_in_min:
                 cmd = "configure replace {} force revert timer {}".format(
-                    cfg_file, revert_in
+                    cfg_file, revert_in_min
                 )
             else:
                 cmd = "configure replace {} force".format(cfg_file)
@@ -570,19 +571,23 @@ class IOSDriver(NetworkDriver):
                 msg = "Candidate config could not be applied\n{}".format(output)
                 raise ReplaceConfigException(msg)
             elif "%Please turn config archive on" in output:
-                raise CommitConfirmException(ARCHIVE_DISABLED_MESSAGE)
+                if revert_in_min:
+                    raise CommitConfirmException(ARCHIVE_DISABLED_MESSAGE)
+                else:
+                    msg = "napalm-ios replace() requires Cisco 'archive' feature to be enabled"
+                    raise ReplaceConfigException(msg)
         else:
             # Merge operation
             filename = self.merge_cfg
             cfg_file = self._gen_full_path(filename)
             if not self._check_file_exists(cfg_file):
                 raise MergeConfigException("Merge source config file does not exist")
-            if revert_in is not None:
+            if revert_in_min is not None:
                 # Enter config mode with a revert timer and exit config mode
                 try:
                     self.device.config_mode(
                         config_command="configure terminal revert timer {}".format(
-                            revert_in
+                            revert_in_min
                         )
                     )
                     self.device.exit_config_mode()
@@ -600,13 +605,13 @@ class IOSDriver(NetworkDriver):
         # After a commit - we no longer know whether this is configured or not.
         self.prompt_quiet_configured = None
 
-        if revert_in is None:
+        if revert_in_min is None:
             # Save config to startup (both replace and merge)
             output += self.device.save_config()
 
     def _check_archive_feature(self):
         cmd = "show archive"
-        output = self.device.send_command_expect(cmd)
+        output = self.device.send_command(cmd)
         if "Archive feature not enabled" in output:
             return False
         return True
@@ -618,7 +623,7 @@ class IOSDriver(NetworkDriver):
     def _get_pending_commits(self):
         if self._check_archive_feature():
             cmd = "show archive config rollback timer"
-            output = self.device.send_command_expect(cmd)
+            output = self.device.send_command(cmd)
         else:
             return {}
         if "No Rollback Confirmed Change pending" in output:
