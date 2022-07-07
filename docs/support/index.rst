@@ -38,7 +38,7 @@ _                       EOS         Junos   IOS-XR (NETCONF)  IOS-XR (XML-Agent)
 =====================   ==========  =====   ================  ==================  ==============  ==============
 **Config. replace**     Yes         Yes     Yes               Yes                 Yes             Yes
 **Config. merge**       Yes         Yes     Yes               Yes                 Yes             Yes
-**Commit Confirm**      Yes         Yes     No                No                  No              No
+**Commit Confirm**      Yes         Yes     No                No                  No              Yes
 **Compare config**      Yes         Yes     Yes               Yes [#c1]_          Yes [#c4]_      Yes
 **Atomic Changes**      Yes         Yes     Yes               Yes                 Yes/No [#c5]_   Yes/No [#c5]_
 **Rollback**            Yes [#c2]_  Yes     Yes               Yes                 Yes/No [#c5]_   Yes
