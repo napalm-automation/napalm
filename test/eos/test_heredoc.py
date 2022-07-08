@@ -55,6 +55,7 @@ class TestConfigMangling(object):
             },
             "management ssh",
             "idle-timeout 15",
+            "end",
         ]
 
         self.device.device.run_commands.assert_called_with(
@@ -108,6 +109,7 @@ class TestConfigMangling(object):
                 "input": "This is a multi-line HEREDOC\ncomment for standard ACL test3",
             },
             "permit host 192.0.2.3",
+            "end",
         ]
 
         self.device.device.run_commands.assert_called_with(
@@ -147,6 +149,7 @@ class TestConfigMangling(object):
             },
             "management ssh",
             "idle-timeout 15",
+            "end",
         ]
 
         self.device.device.run_commands.assert_called_with(

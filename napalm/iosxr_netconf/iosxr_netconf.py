@@ -66,13 +66,11 @@ class IOSXRNETCONFDriver(NetworkDriver):
         self.pending_changes = False
         self.replace = False
         self.locked = False
-        if optional_args is None:
-            optional_args = {}
-
-        self.port = optional_args.get("port", 830)
-        self.lock_on_connect = optional_args.get("config_lock", False)
-        self.key_file = optional_args.get("key_file", None)
-        self.config_encoding = optional_args.get("config_encoding", "cli")
+        self.optional_args = optional_args if optional_args else {}
+        self.port = self.optional_args.pop("port", 830)
+        self.lock_on_connect = self.optional_args.pop("config_lock", False)
+        self.key_file = self.optional_args.pop("key_file", None)
+        self.config_encoding = self.optional_args.pop("config_encoding", "cli")
         if self.config_encoding not in C.CONFIG_ENCODINGS:
             raise ValueError(f"config encoding must be one of {C.CONFIG_ENCODINGS}")
 
@@ -91,6 +89,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 key_filename=self.key_file,
                 timeout=self.timeout,
                 device_params={"name": "iosxr"},
+                **self.optional_args,
             )
             if self.lock_on_connect:
                 self._lock()
@@ -336,7 +335,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             "vendor": "Cisco",
             "os_version": "",
             "hostname": "",
-            "uptime": -1,
+            "uptime": -1.0,
             "serial_number": "",
             "fqdn": "",
             "model": "",
@@ -363,7 +362,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         # Retrieves uptime
         uptime = napalm.base.helpers.convert(
-            int,
+            float,
             self._find_txt(
                 facts_rpc_reply_etree,
                 ".//suo:system-time/\
@@ -371,7 +370,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 default="",
                 namespaces=C.NS,
             ),
-            -1,
+            -1.0,
         )
 
         # Retrieves interfaces name
@@ -442,7 +441,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
             "is_up": False,
             "mac_address": "",
             "description": "",
-            "speed": -1,
+            "speed": -1.0,
             "last_flapped": -1.0,
         }
 
@@ -489,9 +488,9 @@ class IOSXRNETCONFDriver(NetworkDriver):
                 napalm.base.helpers.mac, raw_mac, raw_mac
             )
             speed = napalm.base.helpers.convert(
-                int,
+                float,
                 napalm.base.helpers.convert(
-                    int,
+                    float,
                     self._find_txt(interface_tree, "./int:bandwidth", namespaces=C.NS),
                     0,
                 )
@@ -1327,7 +1326,7 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         return lldp_neighbors_detail
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
         """Execute raw CLI commands and returns their output."""
         return NotImplementedError
 

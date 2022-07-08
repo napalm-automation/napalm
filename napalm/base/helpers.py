@@ -1,25 +1,39 @@
 """Helper functions for the NAPALM base."""
+import itertools
+import logging
+
 # std libs
 import os
 import re
 import sys
-import itertools
-import logging
+from typing import Optional, Dict, Any, List, Union, Tuple, TypeVar, Callable
 from collections.abc import Iterable
 
 # third party libs
 import jinja2
 import textfsm
+from lxml import etree
 from netaddr import EUI
-from netaddr import mac_unix
 from netaddr import IPAddress
-from ciscoconfparse import CiscoConfParse
+from netaddr import mac_unix
+from netutils.config.parser import IOSConfigParser
+
+try:
+    from ttp import quick_parse as ttp_quick_parse
+
+    TTP_INSTALLED = True
+except ImportError:
+    TTP_INSTALLED = False
 
 # local modules
 import napalm.base.exceptions
 from napalm.base import constants
+from napalm.base.models import ConfigDict
 from napalm.base.utils.jinja_filters import CustomJinjaFilters
 from napalm.base.canonical_map import base_interfaces, reverse_mapping
+
+T = TypeVar("T")
+R = TypeVar("R")
 
 # -------------------------------------------------------------------
 # Functional Global
@@ -41,14 +55,14 @@ _MACFormat.word_fmt = "%.2X"
 # callable helpers
 # -------------------------------------------------------------------
 def load_template(
-    cls,
-    template_name,
-    template_source=None,
-    template_path=None,
-    openconfig=False,
-    jinja_filters={},
-    **template_vars,
-):
+    cls: "napalm.base.NetworkDriver",
+    template_name: str,
+    template_source: Optional[str] = None,
+    template_path: Optional[str] = None,
+    openconfig: bool = False,
+    jinja_filters: Dict = {},
+    **template_vars: Any,
+) -> None:
     try:
         search_path = []
         if isinstance(template_source, str):
@@ -70,11 +84,20 @@ def load_template(
                     )
             else:
                 # Search modules for template paths
-                search_path = [
-                    os.path.dirname(os.path.abspath(sys.modules[c.__module__].__file__))
-                    for c in cls.__class__.mro()
-                    if c is not object
-                ]
+                for c in cls.__class__.mro():
+                    if c is object:
+                        continue
+                    module = sys.modules[c.__module__].__file__
+                    if module:
+                        path = os.path.abspath(module)
+                    else:
+                        continue
+                    if path:
+                        path_to_append = os.path.dirname(path)
+                    else:
+                        continue
+                    if path_to_append:
+                        search_path.append(path_to_append)
 
             if openconfig:
                 search_path = ["{}/oc_templates".format(s) for s in search_path]
@@ -111,42 +134,88 @@ def load_template(
     return cls.load_merge_candidate(config=configuration)
 
 
-def cisco_conf_parse_parents(parent, child, config):
+def netutils_parse_parents(
+    parent: str, child: str, config: Union[str, List[str]]
+) -> List[str]:
     """
-    Use CiscoConfParse to find parent lines that contain a specific child line.
+    Use Netutils to find parent lines that contain a specific child line.
 
     :param parent: The parent line to search for
     :param child:  The child line required under the given parent
     :param config: The device running/startup config
     """
-    if type(config) == str:
-        config = config.splitlines()
-    parse = CiscoConfParse(config)
-    cfg_obj = parse.find_parents_w_child(parent, child)
-    return cfg_obj
+    # Check if the config is a list, if it is a list, then join it to make a string.
+    if isinstance(config, list):
+        config = "\n".join(config)
+        config = config + "\n"
+
+    # Config tree is the entire configuration in a tree format,
+    # followed by getting the individual lines that has the formats:
+    # ConfigLine(config_line=' ip address 192.0.2.10 255.255.255.0',
+    # parents=('interface GigabitEthernet1',))
+    # ConfigLine(config_line='Current configuration : 1624 bytes', parents=())
+    config_tree = IOSConfigParser(str(config))
+    configuration_lines = config_tree.build_config_relationship()
+
+    # Return config is the list that will be returned
+    return_config = []
+
+    # Loop over each of the configuration lines
+    for line in configuration_lines:
+        # Loop over any line that has a parent line. If there are no parents for a line item then
+        # the parents is an empty tuple.
+        for parent_line in line.parents:
+            if (
+                child in line.config_line
+                and re.match(parent, parent_line) is not None
+                and parent_line not in return_config
+            ):
+                return_config.append(parent_line)
+
+    return return_config
 
 
-def cisco_conf_parse_objects(cfg_section, config):
+def netutils_parse_objects(
+    cfg_section: str, config: Union[str, List[str]]
+) -> List[str]:
     """
-    Use CiscoConfParse to find and return a section of Cisco IOS config.
+    Use Netutils to find and return a section of Cisco IOS config.
     Similar to "show run | section <cfg_section>"
 
     :param cfg_section: The section of the config to return eg. "router bgp"
     :param config: The running/startup config of the device to parse
     """
+    # Check if the config is a list, if it is a list, then join it to make a string.
+    if isinstance(config, list):
+        config = "\n".join(config)
+        config = config + "\n"
+
+    # Config tree is the entire configuration in a tree format,
+    # followed by getting the individual lines that has the formats:
+    # ConfigLine(config_line=' ip address 192.0.2.10 255.255.255.0',
+    # parents=('interface GigabitEthernet1',))
+    # ConfigLine(config_line='Current configuration : 1624 bytes', parents=())
+    config_tree = IOSConfigParser(str(config))
+    lines = config_tree.build_config_relationship()
+
+    # Return config is the list that will be returned
     return_config = []
-    if type(config) is str:
-        config = config.splitlines()
-    parse = CiscoConfParse(config)
-    cfg_obj = parse.find_objects(cfg_section)
-    for parent in cfg_obj:
-        return_config.append(parent.text)
-        for child in parent.all_children:
-            return_config.append(child.text)
+    for line in lines:
+        # The parent configuration is expected on the function that this is replacing,
+        # add the parent line to the base of the return_config
+        if cfg_section in line.config_line:
+            return_config.append(line.config_line)
+        # Check if the tuple is greater than 0
+        if len(line.parents) > 0:
+            # Check the eldest parent, if that is part of the config section, then append
+            # the current line being checked to it.
+            if cfg_section in line.parents[0]:
+                return_config.append(line.config_line)
+
     return return_config
 
 
-def regex_find_txt(pattern, text, default=""):
+def regex_find_txt(pattern: str, text: str, default: str = "") -> Any:
     """ ""
     RegEx search for pattern in text. Will try to match the data type of the "default" value
     or return the default value if no match is found.
@@ -167,7 +236,7 @@ def regex_find_txt(pattern, text, default=""):
         if not isinstance(value, type(default)):
             if isinstance(value, list) and len(value) == 1:
                 value = value[0]
-            value = type(default)(value)
+            value = type(default)(value)  # type: ignore
     except Exception as regexFindTxtErr01:  # in case of any exception, returns default
         logger.error(
             'errorCode="regexFindTxtErr01" in napalm.base.helpers with systemMessage="%s"\
@@ -175,11 +244,13 @@ def regex_find_txt(pattern, text, default=""):
                       default to empty string"'
             % (regexFindTxtErr01)
         )
-        value = default
+        value = default  # type: ignore
     return value
 
 
-def textfsm_extractor(cls, template_name, raw_text):
+def textfsm_extractor(
+    cls: "napalm.base.NetworkDriver", template_name: str, raw_text: str
+) -> List[Dict]:
     """
     Applies a TextFSM template over a raw text and return the matching table.
 
@@ -196,9 +267,11 @@ def textfsm_extractor(cls, template_name, raw_text):
     for c in cls.__class__.mro():
         if c is object:
             continue
-        current_dir = os.path.dirname(
-            os.path.abspath(sys.modules[c.__module__].__file__)
-        )
+        module = sys.modules[c.__module__].__file__
+        if module:
+            current_dir = os.path.dirname(os.path.abspath(module))
+        else:
+            continue
         template_dir_path = "{current_dir}/utils/textfsm_templates".format(
             current_dir=current_dir
         )
@@ -245,7 +318,88 @@ def textfsm_extractor(cls, template_name, raw_text):
     )
 
 
-def find_txt(xml_tree, path, default="", namespaces=None):
+def ttp_parse(
+    cls: "napalm.base.NetworkDriver",
+    template: str,
+    raw_text: str,
+    structure: str = "flat_list",
+) -> Union[None, List, Dict]:
+    """
+    Applies a TTP template over a raw text and return the parsing results.
+
+    Main usage of this method will be to extract data form a non-structured output
+    from a network device and return parsed values.
+
+    :param cls: Instance of the driver class
+    :param template: Specifies the name or the content of the template to be used
+    :param raw_text: Text output as the devices prompts on the CLI
+    :param structure: Results structure to apply to parsing results
+    :return: parsing results structure
+
+    ``template`` can be inline TTP template string, reference to TTP Templates
+    repository template in a form of ``ttp://path/to/template`` or name of template
+    file within ``{NAPALM_install_dir}/utils/ttp_templates/{template}.txt`` folder.
+    """
+    if not TTP_INSTALLED:
+        msg = "\nTTP is not installed. Please PIP install ttp:\n" "pip install ttp\n"
+        raise napalm.base.exceptions.ModuleImportError(msg)
+
+    result = None
+
+    for c in cls.__class__.mro():
+        if c is object:
+            continue
+        module = sys.modules[c.__module__].__file__
+        if module:
+            current_dir = os.path.dirname(os.path.abspath(module))
+        else:
+            continue
+        template_dir_path = "{current_dir}/utils/ttp_templates".format(
+            current_dir=current_dir
+        )
+
+        # check if inline template given, use it as is
+        if "{{" in template and "}}" in template:
+            template = template
+        # check if template from ttp_templates repo, use it as is
+        elif template.startswith("ttp://"):
+            template = template
+        # default to using template in NAPALM folder
+        else:
+            template = "{template_dir_path}/{template}.txt".format(
+                template_dir_path=template_dir_path, template=template
+            )
+            if not os.path.exists(template):
+                msg = "Template '{template}' not found".format(template=template)
+                logging.error(msg)
+                raise napalm.base.exceptions.TemplateRenderException(msg)
+
+        # parse data
+        try:
+            result = ttp_quick_parse(
+                data=str(raw_text),
+                template=template,
+                result_kwargs={"structure": structure},
+                parse_kwargs={"one": True},
+            )
+            break
+        except Exception as e:
+            msg = "TTP template:\n'{template}'\nError: {error}".format(
+                template=template, error=e
+            )
+            logging.exception(e)
+            logging.error(msg)
+            raise napalm.base.exceptions.TemplateRenderException(msg)
+
+    return result
+
+
+def find_txt(
+    xml_tree: etree._Element,
+    path: str,
+    default: str = "",
+    namespaces: Optional[Dict] = None,
+) -> str:
     """
     Extracts the text value from an XML tree, using XPath.
     In case of error or text element unavailability, will return a default value.
@@ -284,16 +438,37 @@ def find_txt(xml_tree, path, default="", namespaces=None):
     return str(value)
 
 
-def convert(to, who, default=""):
+def convert(to: Callable[[T], R], who: Optional[T], default: Optional[R] = None) -> R:
     """
     Converts data to a specific datatype.
     In case of error, will return a default value.
 
     :param to:      datatype to be casted to.
     :param who:     value to cast.
-    :param default: value to return in case of error.
-    :return: a str value.
+    :param default: default value to return in case of an error with the conversion function.
+    :return:        the result of the cast or a default value.
     """
+    if default is None:
+        # Mypy is currently unable to resolve the Optional[R] correctly, therefore the following
+        # assignments to 'default' need a 'type: ignore' statement.
+        # Ref: https://github.com/python/mypy/issues/8708
+        if to in [str, ip, mac]:
+            default = ""  # type: ignore
+        elif to in [float, int]:
+            default = 0  # type: ignore
+        elif to == bool:
+            default = False  # type: ignore
+        elif to == list:
+            default = []  # type: ignore
+        else:
+            raise ValueError(
+                f"Can't convert with callable {to} - no default is defined for this type."
+            )
+
+    # This is safe because the None-case if handled above. This needs to be here because Mypy is
+    # unable to infer that 'default' is in fact not None based of the chained if-statements above.
+    assert default is not None
+
     if who is None:
         return default
     try:
@@ -302,7 +477,7 @@ def convert(to, who, default=""):
         return default
 
 
-def mac(raw):
+def mac(raw: str) -> str:
     """
     Converts a raw string to a standardised MAC Address EUI Format.
 
@@ -339,7 +514,7 @@ def mac(raw):
     return str(EUI(raw, dialect=_MACFormat))
 
 
-def ip(addr, version=None):
+def ip(addr: str, version: Optional[int] = None) -> str:
     """
     Converts a raw string to a valid IP address. Optional version argument will detect that \
     object matches specified version.
@@ -368,7 +543,7 @@ def ip(addr, version=None):
     return str(addr_obj)
 
 
-def as_number(as_number_val):
+def as_number(as_number_val: str) -> int:
     """Convert AS Number to standardized asplain notation as an integer."""
     as_number_str = str(as_number_val)
     if "." in as_number_str:
@@ -378,14 +553,16 @@ def as_number(as_number_val):
         return int(as_number_str)
 
 
-def split_interface(intf_name):
+def split_interface(intf_name: str) -> Tuple[str, str]:
     """Split an interface name based on first digit, slash, or space match."""
     head = intf_name.rstrip(r"/\0123456789. ")
     tail = intf_name[len(head) :].lstrip()
     return (head, tail)
 
 
-def canonical_interface_name(interface, addl_name_map=None):
+def canonical_interface_name(
+    interface: str, addl_name_map: Optional[Dict[str, str]] = None
+) -> str:
     """Function to return an interface's canonical name (fully expanded name).
 
     Use of explicit matches used to indicate a clear understanding on any potential
@@ -410,13 +587,18 @@ def canonical_interface_name(interface, addl_name_map=None):
     # check in dict for mapping
     if name_map.get(interface_type):
         long_int = name_map.get(interface_type)
+        assert isinstance(long_int, str)
         return long_int + str(interface_number)
     # if nothing matched, return the original name
     else:
         return interface
 
 
-def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=None):
+def abbreviated_interface_name(
+    interface: str,
+    addl_name_map: Optional[Dict[str, str]] = None,
+    addl_reverse_map: Optional[Dict[str, str]] = None,
+) -> str:
     """Function to return an abbreviated representation of the interface name.
 
     :param interface: The interface you are attempting to abbreviate.
@@ -449,6 +631,8 @@ def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=N
     else:
         canonical_type = interface_type
 
+    assert isinstance(canonical_type, str)
+
     try:
         abbreviated_name = rev_name_map[canonical_type] + str(interface_number)
         return abbreviated_name
@@ -459,7 +643,7 @@ def abbreviated_interface_name(interface, addl_name_map=None, addl_reverse_map=N
     return interface
 
 
-def transform_lldp_capab(capabilities):
+def transform_lldp_capab(capabilities: Union[str, Any]) -> List[str]:
     if capabilities and isinstance(capabilities, str):
         capabilities = capabilities.strip().lower().split(",")
         return sorted(
@@ -469,7 +653,7 @@ def transform_lldp_capab(capabilities):
         return []
 
 
-def generate_regex_or(filters):
+def generate_regex_or(filters: Iterable) -> str:
     """
     Build a regular expression logical-or from a list/tuple of regex patterns.
 
@@ -490,7 +674,7 @@ def generate_regex_or(filters):
     return return_pattern
 
 
-def sanitize_config(config, filters):
+def sanitize_config(config: str, filters: Dict) -> str:
     """
     Given a dictionary of filters, remove sensitive data from the provided config.
     """
@@ -499,12 +683,13 @@ def sanitize_config(config, filters):
     return config
 
 
-def sanitize_configs(configs, filters):
+def sanitize_configs(configs: ConfigDict, filters: Dict) -> ConfigDict:
     """
     Apply sanitize_config on the dictionary of configs typically returned by
     the get_config method.
     """
     for cfg_name, config in configs.items():
+        assert isinstance(config, str)
         if config.strip():
-            configs[cfg_name] = sanitize_config(config, filters)
+            configs[cfg_name] = sanitize_config(config, filters)  # type: ignore
     return configs

@@ -267,6 +267,7 @@ class JunOSDriver(NetworkDriver):
                 ignore_warning=self.ignore_warning,
             )
         except ConfigLoadError as e:
+            self.discard_config()
             if self.config_replace:
                 raise ReplaceConfigException(e.errs)
             else:
@@ -284,7 +285,7 @@ class JunOSDriver(NetworkDriver):
 
     def compare_config(self):
         """Compare candidate config with running."""
-        diff = self.device.cu.diff()
+        diff = self.device.cu.diff(ignore_warning=self.ignore_warning)
 
         if diff is None:
             return ""
@@ -359,7 +360,7 @@ class JunOSDriver(NetworkDriver):
             commit_comment = commit_comment_element.text
 
         sys_uptime_info = self.device.rpc.get_system_uptime_information()
-        current_time_element = sys_uptime_info.find("./current-time/date-time")
+        current_time_element = sys_uptime_info.find(".//current-time/date-time")
         current_time = int(current_time_element.attrib["seconds"])
 
         # Msg from Jnpr: 'commit confirmed, rollback in 5mins'
@@ -383,7 +384,7 @@ class JunOSDriver(NetworkDriver):
 
     def discard_config(self):
         """Discard changes (rollback 0)."""
-        self.device.cu.rollback(rb_id=0)
+        self.device.cu.rollback(rb_id=0, ignore_warning=self.ignore_warning)
         if not self.lock_disable and not self.session_config_lock:
             self._unlock()
         if self.config_private:
@@ -411,7 +412,7 @@ class JunOSDriver(NetworkDriver):
             "os_version": str(output["version"]),
             "hostname": str(output["hostname"]),
             "fqdn": str(output["fqdn"]),
-            "uptime": uptime,
+            "uptime": float(uptime),
             "interface_list": interface_list,
         }
 
@@ -448,7 +449,7 @@ class JunOSDriver(NetworkDriver):
                         iface_data["mac_address"],
                         str(iface_data["mac_address"]),
                     ),
-                    "speed": -1,
+                    "speed": -1.0,
                     "mtu": 0,
                 }
                 # result[iface]['last_flapped'] = float(result[iface]['last_flapped'])
@@ -463,12 +464,13 @@ class JunOSDriver(NetworkDriver):
                     )
                 if match is None:
                     continue
-                speed_value = napalm.base.helpers.convert(int, match.group(1), -1)
-                if speed_value == -1:
+                speed_value = napalm.base.helpers.convert(float, match.group(1), -1.0)
+
+                if speed_value == -1.0:
                     continue
                 speed_unit = match.group(2)
                 if speed_unit.lower() == "gbps":
-                    speed_value *= 1000
+                    speed_value *= 1000.0
                 result[iface]["speed"] = speed_value
 
             return result
@@ -763,7 +765,7 @@ class JunOSDriver(NetworkDriver):
             "remote_as": 0,
             "remote_id": "",
             "is_up": False,
-            "is_enabled": False,
+            "is_enabled": True,
             "description": "",
             "uptime": 0,
             "address_family": {},
@@ -826,6 +828,11 @@ class JunOSDriver(NetworkDriver):
                     for key, value in neighbor_details.items()
                     if key in keys
                 }
+                bgp_opts = (
+                    neighbor_details.pop("bgp_options_extended", "").lower().split()
+                )
+                if "shutdown" in bgp_opts:
+                    peer["is_enabled"] = False
                 peer["local_as"] = napalm.base.helpers.as_number(peer["local_as"])
                 peer["remote_as"] = napalm.base.helpers.as_number(peer["remote_as"])
                 peer["address_family"] = self._parse_route_stats(
@@ -908,7 +915,18 @@ class JunOSDriver(NetworkDriver):
         for neigh in result:
             if neigh[0] not in neighbors.keys():
                 neighbors[neigh[0]] = []
-            neighbors[neigh[0]].append({x[0]: str(x[1]) for x in neigh[1]})
+
+            neigh_dict = {}
+            for neigh_data in neigh[1]:
+                key = neigh_data[0]
+                value = (
+                    str(neigh_data[1][0])
+                    # When return value is a list of multiple objects, we pick the first one
+                    if neigh_data[1] and isinstance(neigh_data[1], list)
+                    else str(neigh_data[1])
+                )
+                neigh_dict[key] = value
+            neighbors[neigh[0]].append(neigh_dict)
 
         return neighbors
 
@@ -939,7 +957,7 @@ class JunOSDriver(NetworkDriver):
                 log.error("Unable to retrieve the LLDP neighbors information:")
                 log.error(str(rpcerr))
                 return {}
-            interfaces = lldp_table.get().keys()
+            interfaces = set(lldp_table.get().keys())
         else:
             interfaces = [interface]
 
@@ -994,8 +1012,10 @@ class JunOSDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
         """Execute raw CLI commands and returns their output."""
+        if encoding not in ("text", "json", "xml"):
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
         cli_output = {}
 
         def _count(txt, none):  # Second arg for consistency only. noqa
@@ -1114,7 +1134,7 @@ class JunOSDriver(NetworkDriver):
                     base=exploded_cmd[0], pipes=" | ".join(command_safe_parts)
                 )
             )
-            raw_txt = self.device.cli(safe_command, warning=False)
+            raw_txt = self.device.cli(safe_command, warning=False, format=encoding)
             if isinstance(raw_txt, etree._Element):
                 raw_txt = etree.tostring(raw_txt.get_parent()).decode()
                 cli_output[str(command)] = raw_txt

@@ -416,17 +416,13 @@ class IOSDriver(NetworkDriver):
         )
 
         if self.config_replace:
-            cmd = "show archive config differences {} {}".format(
-                base_file_full, new_file_full
-            )
-            diff = self.device.send_command_expect(cmd)
+            cmd = f"show archive config differences {base_file_full} {new_file_full}"
+            diff = self.device.send_command(cmd)
             diff = self._normalize_compare_config(diff)
         else:
             # merge
-            cmd = "show archive config incremental-diffs {} ignorecase".format(
-                new_file_full
-            )
-            diff = self.device.send_command_expect(cmd)
+            cmd = f"show archive config incremental-diffs {new_file_full} ignorecase"
+            diff = self.device.send_command(cmd)
             if "error code 5" in diff or "returned error 5" in diff:
                 diff = (
                     "You have encountered the obscure 'error 5' message. This generally "
@@ -435,8 +431,8 @@ class IOSDriver(NetworkDriver):
             elif "% Invalid" not in diff:
                 diff = self._normalize_merge_diff_incr(diff)
             else:
-                cmd = "more {}".format(new_file_full)
-                diff = self.device.send_command_expect(cmd)
+                cmd = f"more {new_file_full}"
+                diff = self.device.send_command(cmd)
                 diff = self._normalize_merge_diff(diff)
 
         return diff.strip()
@@ -455,8 +451,8 @@ class IOSDriver(NetworkDriver):
                 else:
                     # check if the command is already in the running-config
                     cmd = "file prompt quiet"
-                    show_cmd = "show running-config | inc {}".format(cmd)
-                    output = self.device.send_command_expect(show_cmd)
+                    show_cmd = f"show running-config | inc {cmd}"
+                    output = self.device.send_command(show_cmd)
                     if cmd in output:
                         self.prompt_quiet_configured = True
                     else:
@@ -483,8 +479,8 @@ class IOSDriver(NetworkDriver):
         pattern1 = r"[>#{}]\s*$".format(terminating_char)
         # Handle special username removal pattern
         pattern2 = r".*all username.*confirm"
-        patterns = r"(?:{}|{})".format(pattern1, pattern2)
-        output = self.device.send_command_expect(cmd, expect_string=patterns)
+        patterns = rf"(?:{pattern1}|{pattern2})"
+        output = self.device.send_command(cmd, expect_string=patterns)
         loop_count = 50
         new_output = output
         for i in range(loop_count):
@@ -567,12 +563,12 @@ class IOSDriver(NetworkDriver):
     @_file_prompt_quiet
     def _discard_config(self):
         """Set candidate_cfg to current running-config. Erase the merge_cfg file."""
-        discard_candidate = "copy running-config {}".format(
-            self._gen_full_path(self.candidate_cfg)
+        discard_candidate = (
+            f"copy running-config {self._gen_full_path(self.candidate_cfg)}"
         )
-        discard_merge = "copy null: {}".format(self._gen_full_path(self.merge_cfg))
-        self.device.send_command_expect(discard_candidate)
-        self.device.send_command_expect(discard_merge)
+        discard_merge = f"copy null: {self._gen_full_path(self.merge_cfg)}"
+        self.device.send_command(discard_candidate)
+        self.device.send_command(discard_merge)
 
     def rollback(self):
         """Rollback configuration to filename or to self.rollback_cfg file."""
@@ -685,8 +681,8 @@ class IOSDriver(NetworkDriver):
 
             if use_scp:
                 cmd = "ip scp server enable"
-                show_cmd = "show running-config | inc {}".format(cmd)
-                output = self.device.send_command_expect(show_cmd)
+                show_cmd = f"show running-config | inc {cmd}"
+                output = self.device.send_command(show_cmd)
                 if cmd not in output:
                     msg = (
                         "SCP file transfers are not enabled. "
@@ -721,8 +717,8 @@ class IOSDriver(NetworkDriver):
     def _gen_rollback_cfg(self):
         """Save a configuration that can be used for rollback."""
         cfg_file = self._gen_full_path(self.rollback_cfg)
-        cmd = "copy running-config {}".format(cfg_file)
-        self.device.send_command_expect(cmd)
+        cmd = f"copy running-config {cfg_file}"
+        self.device.send_command(cmd)
 
     def _check_file_exists(self, cfg_file):
         """
@@ -738,9 +734,9 @@ class IOSDriver(NetworkDriver):
 
         return boolean
         """
-        cmd = "dir {}".format(cfg_file)
-        success_pattern = "Directory of {}".format(cfg_file)
-        output = self.device.send_command_expect(cmd)
+        cmd = f"dir {cfg_file}"
+        success_pattern = f"Directory of {cfg_file}"
+        output = self.device.send_command(cmd)
         if "Error opening" in output:
             return False
         elif success_pattern in output:
@@ -876,11 +872,13 @@ class IOSDriver(NetworkDriver):
             lldp[intf_name] = []
             for lldp_entry in entries:
                 hostname = lldp_entry["remote_system_name"]
+                port = lldp_entry["remote_port"]
                 # Match IOS behaviour of taking remote chassis ID
                 # When lacking a system name (in show lldp neighbors)
                 if not hostname:
-                    hostname = lldp_entry["remote_chassis_id"]
-                lldp_dict = {"port": lldp_entry["remote_port"], "hostname": hostname}
+                    hostname = napalm.base.helpers.mac(lldp_entry["remote_chassis_id"])
+                    port = napalm.base.helpers.mac(port)
+                lldp_dict = {"port": port, "hostname": hostname}
                 lldp[intf_name].append(lldp_dict)
 
         return lldp
@@ -890,7 +888,7 @@ class IOSDriver(NetworkDriver):
         lldp_interfaces = []
 
         if interface:
-            command = "show lldp neighbors {} detail".format(interface)
+            command = f"show lldp neighbors {interface} detail"
         else:
             command = "show lldp neighbors detail"
         lldp_entries = self._send_command(command)
@@ -901,12 +899,20 @@ class IOSDriver(NetworkDriver):
         if len(lldp_entries) == 0:
             return {}
 
+        # format chassis_id for consistency
+        for entry in lldp_entries:
+            entry["remote_chassis_id"] = napalm.base.helpers.convert(
+                napalm.base.helpers.mac,
+                entry["remote_chassis_id"],
+                entry["remote_chassis_id"],
+            )
+
         # Older IOS versions don't have 'Local Intf' defined in LLDP detail.
         # We need to get them from the non-detailed command
         # which is in the same sequence as the detailed output
         if not lldp_entries[0]["local_interface"]:
             if interface:
-                command = "show lldp neighbors {}".format(interface)
+                command = f"show lldp neighbors {interface}"
             else:
                 command = "show lldp neighbors"
             lldp_brief = self._send_command(command)
@@ -1037,7 +1043,7 @@ class IOSDriver(NetworkDriver):
             interface_list.append(interface)
 
         return {
-            "uptime": uptime,
+            "uptime": float(uptime),
             "vendor": vendor,
             "os_version": str(os_version),
             "serial_number": str(serial_number),
@@ -1132,7 +1138,6 @@ class IOSDriver(NetworkDriver):
                     speed = speed / 1000.0
                 elif speedformat.startswith("Gb"):
                     speed = speed * 1000
-                speed = int(round(speed))
 
                 if interface == "":
                     raise ValueError(
@@ -1204,6 +1209,7 @@ class IOSDriver(NetworkDriver):
             m = re.match(INTERNET_ADDRESS, line)
             if m:
                 ip, prefix = m.groups()
+                ip = napalm.base.helpers.ip(ip)
                 ipv4.update({ip: {"prefix_length": int(prefix)}})
                 interfaces[interface_name] = {"ipv4": ipv4}
 
@@ -1221,10 +1227,12 @@ class IOSDriver(NetworkDriver):
                 m = re.match(LINK_LOCAL_ADDRESS, line)
                 if m:
                     ip = m.group(1)
+                    ip = napalm.base.helpers.ip(ip, 6)
                     ipv6.update({ip: {"prefix_length": 10}})
                 m = re.match(GLOBAL_ADDRESS, line)
                 if m:
                     ip, prefix = m.groups()
+                    ip = napalm.base.helpers.ip(ip, 6)
                     ipv6.update({ip: {"prefix_length": int(prefix)}})
 
         # Interface without ipv6 doesn't appears in show ipv6 interface
@@ -1303,7 +1311,7 @@ class IOSDriver(NetworkDriver):
             if "ipv6" in af_table.lower():
                 inet6 = True
                 preifx_type = "inet6"
-            if len(af_table.split()) == 2:
+            if not af_table or len(af_table.split()) == 2:
                 safi = "unicast"
             else:
                 safi = af_table.split()[-1]
@@ -1321,21 +1329,20 @@ class IOSDriver(NetworkDriver):
                 }
             return prefix_limit
 
-        # Get BGP config using ciscoconfparse because some old devices dont support "| sec bgp"
+        # Get BGP config using netutils because some old devices dont support "| sec bgp"
         cfg = self.get_config(retrieve="running")
-        cfg = cfg["running"].splitlines()
-        bgp_config_text = napalm.base.helpers.cisco_conf_parse_objects(
-            "router bgp", cfg
+        bgp_config_list = napalm.base.helpers.netutils_parse_objects(
+            "router bgp", cfg["running"]
         )
         bgp_asn = napalm.base.helpers.regex_find_txt(
-            r"router bgp (\d+)", bgp_config_text, default=0
+            r"router bgp (\d+)", bgp_config_list, default=0
         )
         # Get a list of all neighbors and groups in the config
         all_neighbors = set()
         all_groups = set()
         bgp_group_neighbors = {}
         all_groups.add("_")
-        for line in bgp_config_text:
+        for line in bgp_config_list:
             if " neighbor " in line:
                 if re.search(IP_ADDR_REGEX, line) is not None:
                     all_neighbors.add(re.search(IP_ADDR_REGEX, line).group())
@@ -1352,16 +1359,20 @@ class IOSDriver(NetworkDriver):
             if neighbor:
                 if bgp_neighbor != neighbor:
                     continue
-            afi_list = napalm.base.helpers.cisco_conf_parse_parents(
-                r"\s+address-family.*", bgp_neighbor, bgp_config_text
+            afi_list = napalm.base.helpers.netutils_parse_parents(
+                r"\s+address-family.*", bgp_neighbor, bgp_config_list
             )
-            afi = afi_list[0]
+            try:
+                afi = afi_list[0]
+            except IndexError:
+                afi = ""
+
             # Skipping neighbors in VRFs for now
             if "vrf" in str(afi_list):
                 continue
             else:
-                neighbor_config = napalm.base.helpers.cisco_conf_parse_objects(
-                    bgp_neighbor, bgp_config_text
+                neighbor_config = napalm.base.helpers.netutils_parse_objects(
+                    bgp_neighbor, bgp_config_list
                 )
             # For group_name- use peer-group name, else VRF name, else "_" for no group
             group_name = napalm.base.helpers.regex_find_txt(
@@ -1451,16 +1462,16 @@ class IOSDriver(NetworkDriver):
                     "neighbors": bgp_group_neighbors.get("_", {}),
                 }
                 continue
-            neighbor_config = napalm.base.helpers.cisco_conf_parse_objects(
-                group_name, bgp_config_text
+            neighbor_config = napalm.base.helpers.netutils_parse_objects(
+                group_name, bgp_config_list
             )
             multipath = False
-            afi_list = napalm.base.helpers.cisco_conf_parse_parents(
-                r"\s+address-family.*", group_name, neighbor_config
+            afi_list = napalm.base.helpers.netutils_parse_parents(
+                r"\s+address-family.*", group_name, bgp_config_list
             )
             for afi in afi_list:
-                afi_config = napalm.base.helpers.cisco_conf_parse_objects(
-                    afi, bgp_config_text
+                afi_config = napalm.base.helpers.netutils_parse_objects(
+                    afi, bgp_config_list
                 )
                 multipath = bool(
                     napalm.base.helpers.regex_find_txt(r" multipath", str(afi_config))
@@ -1562,12 +1573,12 @@ class IOSDriver(NetworkDriver):
                 "ipv6 unicast",
                 "ipv6 multicast",
             ]:
-                cmd_bgp_neighbor = "show bgp %s neighbors" % afi
+                cmd_bgp_neighbor = f"show bgp {afi} neighbors"
                 neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
                 neighbor_output += "\n"
             elif afi in ["vpnv4 unicast", "vpnv6 unicast", "ipv4 mdt"]:
-                cmd_bgp_neighbor = "show bgp %s all neighbors" % afi
+                cmd_bgp_neighbor = f"show bgp {afi} all neighbors"
                 neighbor_output += self._send_command(cmd_bgp_neighbor).strip()
                 # trailing newline required for parsing
                 neighbor_output += "\n"
@@ -2305,7 +2316,7 @@ class IOSDriver(NetworkDriver):
             ]
         """
         if vrf:
-            command = "show arp vrf {} | exclude Incomplete".format(vrf)
+            command = f"show arp vrf {vrf} | exclude Incomplete"
         else:
             command = "show arp | exclude Incomplete"
 
@@ -2351,7 +2362,7 @@ class IOSDriver(NetworkDriver):
             arp_table.append(entry)
         return arp_table
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
         """
         Execute a list of commands and return the output in a dictionary format using the command
         as the key.
@@ -2364,6 +2375,8 @@ class IOSDriver(NetworkDriver):
             'show clock': u'*22:01:51.165 UTC Thu Feb 18 2016'}
 
         """
+        if encoding not in ("text",):
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
         cli_output = dict()
         if type(commands) is not list:
             raise TypeError("Please enter a valid list of commands!")
@@ -2380,7 +2393,7 @@ class IOSDriver(NetworkDriver):
         ntp_stats = self.get_ntp_stats()
 
         return {
-            ntp_peer.get("remote"): {}
+            napalm.base.helpers.ip(ntp_peer.get("remote")): {}
             for ntp_peer in ntp_stats
             if ntp_peer.get("remote")
         }
@@ -3248,7 +3261,10 @@ class IOSDriver(NetworkDriver):
                     results_array = []
                     for i in range(probes_received):
                         results_array.append(
-                            {"ip_address": str(destination), "rtt": 0.0}
+                            {
+                                "ip_address": napalm.base.helpers.ip(str(destination)),
+                                "rtt": 0.0,
+                            }
                         )
                     ping_dict["success"].update({"results": results_array})
 
@@ -3300,19 +3316,18 @@ class IOSDriver(NetworkDriver):
         if timeout:
             # Timeout should be an integer between 1 and 3600
             if isinstance(timeout, int) and 1 <= timeout <= 3600:
-                command += " timeout {}".format(str(timeout))
+                command += f" timeout {str(timeout)}"
 
-        # Calculation to leave enough time for traceroute to complete assumes send_command
-        # delay of .2 seconds.
-        max_loops = (5 * ttl * timeout) + 150
-        if max_loops < 500:  # Make sure max_loops isn't set artificially low
-            max_loops = 500
-        output = self.device.send_command(command, max_loops=max_loops)
+        read_timeout = ttl * timeout
+        # Make sure read_timeout isn't artificially low
+        if read_timeout < 100:
+            read_timeout = 100
+        output = self.device.send_command(command, read_timeout=read_timeout)
 
         # Prepare return dict
         traceroute_dict = dict()
         if re.search("Unrecognized host or address", output):
-            traceroute_dict["error"] = "unknown host %s" % destination
+            traceroute_dict["error"] = f"unknown host {destination}"
             return traceroute_dict
         else:
             traceroute_dict["success"] = dict()
@@ -3371,7 +3386,7 @@ class IOSDriver(NetworkDriver):
                     current_probe += 1
                 # If current_element contains msec record the entry for probe
                 elif "msec" in current_element:
-                    ip_address = str(ip_address)
+                    ip_address = napalm.base.helpers.ip(str(ip_address))
                     host_name = str(host_name)
                     rtt = float(current_element.replace("msec", ""))
                     results[current_hop]["probes"][current_probe][
@@ -3423,6 +3438,10 @@ class IOSDriver(NetworkDriver):
                 raise ValueError("No vrf is setup on router")
             else:
                 return instances
+
+        if "Invalid input detected" in sh_vrf_detail:
+            # No VRF support
+            return instances
 
         for vrf in sh_vrf_detail.split("\n\n"):
 
@@ -3489,7 +3508,7 @@ class IOSDriver(NetworkDriver):
             configs["startup"] = output.strip()
 
         if retrieve in ("running", "all"):
-            command = "show running-config{}".format(run_full)
+            command = f"show running-config{run_full}"
             output = self._send_command(command)
             output = re.sub(filter_pattern, "", output, flags=re.M)
             configs["running"] = output.strip()
@@ -3568,22 +3587,42 @@ class IOSDriver(NetworkDriver):
             return self._get_vlan_all_ports(output)
 
     def _get_vlan_all_ports(self, output):
-        find_regexp = r"^(\d+)\s+(\S+)\s+\S+\s+([A-Z][a-z].*)$"
-        find = re.findall(find_regexp, output, re.MULTILINE)
+        find_regexp = re.compile(r"^(\d+)\s+(\S+)\s+\S+(\s+[A-Z][a-z].*)?$")
+        continuation_regexp = re.compile(r"^\s+([A-Z][a-z].*)$")
+        output = output.splitlines()
         vlans = {}
-        for vlan_id, vlan_name, interfaces in find:
-            vlans[vlan_id] = {
-                "name": vlan_name,
-                "interfaces": [
+
+        was_vlan_or_cont = False
+        vlan_id = None
+        vlan_name = None
+        interfaces = ""
+        for line in output:
+            vlan_m = find_regexp.match(line)
+            if vlan_m:
+                was_vlan_or_cont = True
+                vlan_id = vlan_m.group(1)
+                vlan_name = vlan_m.group(2)
+                interfaces = vlan_m.group(3) or ""
+                vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
+
+            cont_m = None
+            if was_vlan_or_cont:
+                cont_m = continuation_regexp.match(line)
+                if cont_m:
+                    interfaces = cont_m.group(1)
+
+            if not cont_m and not vlan_m:
+                was_vlan_or_cont = False
+                continue
+
+            vlans[vlan_id]["interfaces"].extend(
+                [
                     canonical_interface_name(intf.strip())
                     for intf in interfaces.split(",")
-                ],
-            }
+                    if intf.strip()
+                ]
+            )
 
-        find_regexp = r"^(\d+)\s+(\S+)\s+\S+$"
-        find = re.findall(find_regexp, output, re.MULTILINE)
-        for vlan_id, vlan_name in find:
-            vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
         return vlans
 
     def _get_vlan_from_id(self):
@@ -3594,22 +3633,12 @@ class IOSDriver(NetworkDriver):
         vlans = {}
         for vlan_id, vlan_name in find_vlan:
             output = self._send_command("show vlan id {}".format(vlan_id))
-            interface_regex = r"{}\s+{}\s+\S+\s+([A-Z][a-z].*)$".format(
-                vlan_id, vlan_name
-            )
-            interfaces = re.findall(interface_regex, output, re.MULTILINE)
-            if len(interfaces) == 1:
-                interfaces = interfaces[0]
-                vlans[vlan_id] = {
-                    "name": vlan_name,
-                    "interfaces": [
-                        canonical_interface_name(intf.strip())
-                        for intf in interfaces.split(",")
-                    ],
-                }
-            elif len(interfaces) == 0:
+            _vlans = self._get_vlan_all_ports(output)
+            if len(_vlans) == 0:
                 vlans[vlan_id] = {"name": vlan_name, "interfaces": []}
-            else:
+            elif len(_vlans) == 1:
+                vlans.update(_vlans)
+            elif len(_vlans.keys()) > 1:
                 raise ValueError(
                     "Error parsing vlan_id {}, "
                     "found more values than can be present.".format(vlan_id)

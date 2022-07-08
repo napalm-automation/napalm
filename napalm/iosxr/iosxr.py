@@ -158,7 +158,7 @@ class IOSXRDriver(NetworkDriver):
             "vendor": "Cisco",
             "os_version": "",
             "hostname": "",
-            "uptime": -1,
+            "uptime": -1.0,
             "serial_number": "",
             "fqdn": "",
             "model": "",
@@ -185,7 +185,7 @@ class IOSXRDriver(NetworkDriver):
             str, napalm.base.helpers.find_txt(system_time_tree, "Hostname")
         )
         uptime = napalm.base.helpers.convert(
-            int, napalm.base.helpers.find_txt(system_time_tree, "Uptime"), -1
+            float, napalm.base.helpers.find_txt(system_time_tree, "Uptime"), -1.0
         )
         serial = napalm.base.helpers.convert(
             str, napalm.base.helpers.find_txt(platform_attr_tree, "SerialNumber")
@@ -221,7 +221,7 @@ class IOSXRDriver(NetworkDriver):
             "is_up": False,
             "mac_address": "",
             "description": "",
-            "speed": -1,
+            "speed": -1.0,
             "last_flapped": -1.0,
         }
 
@@ -252,12 +252,13 @@ class IOSXRDriver(NetworkDriver):
                 napalm.base.helpers.mac, raw_mac, raw_mac
             )
             speed = napalm.base.helpers.convert(
-                int,
+                float,
                 napalm.base.helpers.convert(
-                    int, napalm.base.helpers.find_txt(interface_tree, "Bandwidth"), 0
+                    float, napalm.base.helpers.find_txt(interface_tree, "Bandwidth"), 0
                 )
                 * 1e-3,
             )
+
             mtu = int(napalm.base.helpers.find_txt(interface_tree, "MTU"))
             description = napalm.base.helpers.find_txt(interface_tree, "Description")
             interfaces[interface_name] = copy.deepcopy(INTERFACE_DEFAULTS)
@@ -884,7 +885,9 @@ class IOSXRDriver(NetworkDriver):
 
         return lldp_neighbors
 
-    def cli(self, commands):
+    def cli(self, commands, encoding="text"):
+        if encoding not in ("text",):
+            raise NotImplementedError("%s is not a supported encoding" % encoding)
 
         cli_output = {}
 

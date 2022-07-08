@@ -1,11 +1,12 @@
 """Some common jinja filters."""
+from typing import Dict, Any
 
 
 class CustomJinjaFilters(object):
     """Utility filters for jinja2."""
 
     @classmethod
-    def filters(cls):
+    def filters(cls) -> Dict:
         """Return jinja2 filters that this module provide."""
         return {
             "oc_attr_isdefault": oc_attr_isdefault,
@@ -14,7 +15,7 @@ class CustomJinjaFilters(object):
         }
 
 
-def oc_attr_isdefault(o):
+def oc_attr_isdefault(o: Any) -> bool:
     """Return wether an OC attribute has been defined or not."""
     if not o._changed() and not o.default():
         return True
@@ -23,7 +24,7 @@ def oc_attr_isdefault(o):
     return False
 
 
-def openconfig_to_cisco_af(value):
+def openconfig_to_cisco_af(value: str) -> str:
     """Translate openconfig AF name to Cisco AFI name."""
     if ":" in value:
         value = value.split(":")[1]
@@ -39,7 +40,7 @@ def openconfig_to_cisco_af(value):
     return mapd[value]
 
 
-def openconfig_to_eos_af(value):
+def openconfig_to_eos_af(value: str) -> str:
     """Translate openconfig AF name to EOS AFI name."""
     if ":" in value:
         value = value.split(":")[1]

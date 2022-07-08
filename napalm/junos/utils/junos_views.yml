@@ -80,7 +80,6 @@ junos_bgp_view:
     description: description
     peer_fwd_rti: peer-fwd-rti
     is_up: { peer-state: True=Established }
-    is_enabled: { peer-state: False=True }
     received_prefixes: { bgp-rib/received-prefix-count: int }
     accepted_prefixes: { bgp-rib/accepted-prefix-count: int }
     sent_prefixes: { bgp-rib/advertised-prefix-count: int }
@@ -90,6 +89,7 @@ junos_bgp_view:
     peer_as: { peer-as: int }
     local_id: local-id
     remote_id: { peer-id: unicode }
+    bgp_options_extended: { bgp-option-information/bgp-options-extended: str }
 
 ####
 #### LLDP table
@@ -104,7 +104,7 @@ junos_lldp_table:
 junos_lldp_view:
   fields:
     hostname: lldp-remote-system-name
-    port: lldp-remote-port-description | lldp-remote-port-id
+    port: lldp-remote-port-id | lldp-remote-port-description
 
 ####
 #### Interface counters

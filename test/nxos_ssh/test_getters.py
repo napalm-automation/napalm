@@ -2,7 +2,7 @@
 
 from napalm.base.test.getters import BaseTestGetters, wrap_test_cases
 from napalm.base.test import helpers
-from napalm.base.test import models
+from napalm.base import models
 
 import pytest
 from mock import patch
@@ -24,6 +24,6 @@ class TestGetter(BaseTestGetters):
         assert len(get_interfaces) > 0
 
         for interface, interface_data in get_interfaces.items():
-            assert helpers.test_model(models.interface, interface_data)
+            assert helpers.test_model(models.InterfaceDict, interface_data)
 
         return get_interfaces

@@ -14,11 +14,11 @@ class NXAPIError(Exception):
 
 
 class NXAPICommandError(NXAPIError):
-    def __init__(self, command, message):
+    def __init__(self, command: str, message: str) -> None:
         self.command = command
         self.message = message
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return 'The command "{}" gave the error "{}".'.format(
             self.command, self.message
         )
