@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response MajorVersion="1" MinorVersion="0">
+  <Get>
+    <Operational>
+      <SystemTime MajorVersion="2" MinorVersion="0">
+        <Clock>
+          <Year>2022</Year>
+          <Month>6</Month>
+          <Day>9</Day>
+          <Hour>20</Hour>
+          <Minute>26</Minute>
+          <Second>44</Second>
+          <Millisecond>114</Millisecond>
+          <Wday>4</Wday>
+          <TimeZone>UTC</TimeZone>
+          <TimeSource>NTP</TimeSource>
+        </Clock>
+        <Uptime>
+          <Hostname>iosxr3</Hostname>
+          <Uptime>29215136</Uptime>
+        </Uptime>
+      </SystemTime>
+      <Inventory MajorVersion="3" MinorVersion="0">
+        <Entities MajorVersion="3" MinorVersion="0">
+          <Entity>
+            <Naming>
+              <Name>Rack 0</Name>
+            </Naming>
+            <Attributes>
+              <InvBasicBag>
+                <Description>Cisco IOS-XRv 9000 Centralized Virtual Router</Description>
+                <VendorType>1.3.6.1.4.1.9.12.3.1.3.1304</VendorType>
+                <Name>Rack 0</Name>
+                <HardwareRevision>V01</HardwareRevision>
+                <SoftwareRevision>6.5.3</SoftwareRevision>
+                <SerialNumber>D841B64BBE1</SerialNumber>
+                <ManufacturerName>CISCO SYSTEMS, INC</ManufacturerName>
+                <ModelName>R-IOSXRV9000-CC</ModelName>
+                <assetIdStr>N/A</assetIdStr>
+                <IsFieldReplaceableUnit>true</IsFieldReplaceableUnit>
+                <CompositeClassCode>65536</CompositeClassCode>
+                <Alias>N/A</Alias>
+                <UnrecognizedFRU>false</UnrecognizedFRU>
+                <UniqueID>8384513</UniqueID>
+              </InvBasicBag>
+            </Attributes>
+          </Entity>
+        </Entities>
+      </Inventory>
+    </Operational>
+  </Get>
+  <ResultSummary ErrorCount="0"/>
+</Response>

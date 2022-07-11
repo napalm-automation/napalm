@@ -69,6 +69,7 @@ NETMIKO_MAP = {
 }
 LLDP_CAPAB_TRANFORM_TABLE = {
     "o": "other",
+    "n/a": "other",
     "p": "repeater",
     "b": "bridge",
     "w": "wlan-access-point",
