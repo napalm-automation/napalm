@@ -360,7 +360,7 @@ class JunOSDriver(NetworkDriver):
             commit_comment = commit_comment_element.text
 
         sys_uptime_info = self.device.rpc.get_system_uptime_information()
-        current_time_element = sys_uptime_info.find("./current-time/date-time")
+        current_time_element = sys_uptime_info.find(".//current-time/date-time")
         current_time = int(current_time_element.attrib["seconds"])
 
         # Msg from Jnpr: 'commit confirmed, rollback in 5mins'
