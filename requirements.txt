@@ -16,3 +16,4 @@ ncclient
 ttp
 ttp_templates
 netutils>=1.0.0
+typing-extensions>=4.3.0
