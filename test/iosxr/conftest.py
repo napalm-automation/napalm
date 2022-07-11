@@ -3,10 +3,9 @@ from builtins import super
 
 import pytest
 from napalm.base.test import conftest as parent_conftest
-
 from napalm.base.test.double import BaseTestDouble
-
 from napalm.iosxr import iosxr
+from napalm.pyIOSXR.exceptions import XMLCLIError
 
 
 @pytest.fixture(scope="class")
@@ -54,7 +53,15 @@ class FakeIOSXRDevice(BaseTestDouble):
 
     def make_rpc_call(self, rpc_call, encoded=True):
         filename = "{}.txt".format(self.sanitize_text(rpc_call))
-        full_path = self.find_file(filename)
+        try:
+            full_path = self.find_file(filename)
+        except OSError:
+            # Some versions of IOSXR require different form of get_facts call
+            # so replicate the failure here (to ultimately force the other form)
+            if "PlatformInventory" in rpc_call:
+                raise XMLCLIError
+            else:
+                raise
         result = self.read_txt_file(full_path)
         if encoded:
             return str.encode(result)
