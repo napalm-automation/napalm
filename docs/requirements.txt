@@ -2,3 +2,5 @@ sphinx
 sphinx-rtd-theme
 sphinxcontrib-napoleon
 invoke
+jinja2==2.11.3
+MarkupSafe==2.0.1
