@@ -562,6 +562,7 @@ class IOSDriver(NetworkDriver):
                 or ("error" in output.lower())
                 or ("not a valid config file" in output.lower())
                 or ("failed" in output.lower())
+                or ("rollback aborted" in output.lower())
             ):
                 msg = "Candidate config could not be applied\n{}".format(output)
                 raise ReplaceConfigException(msg)
