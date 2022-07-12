@@ -1,5 +1,6 @@
 #!/bin/bash
 CWD=`pwd`
+echo $CWD
 TEST_RESULTS_PATH="$CWD/support/tests"
 
 if [ ! -f "report.json" ]; then
