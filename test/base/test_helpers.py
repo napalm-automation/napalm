@@ -81,7 +81,7 @@ class TestBaseHelpers(unittest.TestCase):
               custom path
             * check if can load correct template from custom path
             * check if template passed as string can be loaded
-            * check that the search path setup by MRO is correct when loading an incorrecet template
+            * check that the search path setup by MRO is correct when loading an incorrect template
         """
 
         self.assertTrue(HAS_JINJA)  # firstly check if jinja2 is installed

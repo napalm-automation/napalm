@@ -3005,7 +3005,7 @@ class IOSDriver(NetworkDriver):
                     # next-hop is not known in this vrf, route leaked from
                     # other vrf or from vpnv4 table?
                     # get remote AS nr. from as-path if it is ebgp neighbor
-                    # localy sourced prefix is not in routing table as a bgp route (i hope...)
+                    # locally sourced prefix is not in routing table as a bgp route (i hope...)
                     if search_re_dict["bgpie"]["result"] == "external":
                         bgpras = (
                             search_re_dict["aspath"]["result"]
