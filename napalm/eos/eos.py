@@ -656,7 +656,7 @@ class EOSDriver(NetworkDriver):
 
     def get_bgp_neighbors(self):
         def get_re_group(res, key, default=None):
-            """Small helper to retrive data from re match groups"""
+            """Small helper to retrieve data from re match groups"""
             try:
                 return res.group(key)
             except KeyError:
