@@ -233,7 +233,7 @@ class NXOSDriverBase(NetworkDriver):
         interface loopback0
           ip address 10.1.4.5/32
         """
-        running_config = self.get_config(retrieve="running")["running"]
+        running_config = self.get_config(retrieve="running", full=True)["running"]
         return diff_network_config(self.merge_candidate, running_config, "cisco_nxos")
 
     def _get_diff(self) -> str:
