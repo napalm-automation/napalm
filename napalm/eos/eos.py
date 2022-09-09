@@ -36,7 +36,7 @@ from netaddr.core import AddrFormatError
 # third party libs
 import pyeapi
 from pyeapi.eapilib import ConnectionError, EapiConnection
-from netmiko import ConfigInvalidException
+from netmiko import BaseConnection, ConfigInvalidException
 
 # NAPALM base
 import napalm.base.helpers
@@ -231,7 +231,9 @@ class EOSDriver(NetworkDriver):
     def close(self):
         """Implementation of NAPALM method close."""
         self.discard_config()
-        if hasattr(self.device.connection, "close") and callable(
+        if isinstance(self.device, BaseConnection):
+            self._netmiko_close()
+        elif hasattr(self.device.connection, "close") and callable(
             self.device.connection.close
         ):
             self.device.connection.close()
