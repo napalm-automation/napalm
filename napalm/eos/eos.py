@@ -54,7 +54,9 @@ from napalm.eos.constants import LLDP_CAPAB_TRANFORM_TABLE
 from napalm.eos.pyeapi_syntax_wrapper import Node
 from napalm.eos.utils.versions import EOSVersion
 from napalm.eos.utils.cli_syntax import cli_convert
+from napalm.base.netmiko_helpers import netmiko_args
 import napalm.base.constants as c
+
 
 # local modules
 # here add local imports
@@ -128,6 +130,8 @@ class EOSDriver(NetworkDriver):
         self.profile = [self.platform]
 
         self._process_optional_args(optional_args or {})
+        self.netmiko_optional_args = netmiko_args(optional_args)
+
 
     def _process_optional_args(self, optional_args):
         # Define locking method
