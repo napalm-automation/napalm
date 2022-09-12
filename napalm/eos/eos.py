@@ -131,8 +131,8 @@ class EOSDriver(NetworkDriver):
         self.optional_args = optional_args or {}
 
         # eos_transport is there for backwards compatibility, transport is the preferred method
-        transport = optional_args.get(
-            "transport", optional_args.get("eos_transport", "https")
+        transport = self.optional_args.get(
+            "transport", self.optional_args.get("eos_transport", "https")
         )
         self.transport = transport
 
@@ -144,10 +144,6 @@ class EOSDriver(NetworkDriver):
     def _process_optional_args_ssh(self, optional_args):
         self.transport_class = None
         self.netmiko_optional_args = netmiko_args(optional_args)
-
-        # Set the default port if not set
-        default_port = {"ssh": 22, "telnet": 23}
-        self.netmiko_optional_args.setdefault("port", default_port[self.transport])
 
     def _process_optional_args_eapi(self, optional_args):
         # Define locking method
@@ -199,7 +195,8 @@ class EOSDriver(NetworkDriver):
         """Implementation of NAPALM method open."""
         if self.transport == "ssh":
             self.device = self._netmiko_open(
-                "arista_eos", netmiko_optional_args=self.netmiko_optional_args
+                device_type="arista_eos",
+                netmiko_optional_args=self.netmiko_optional_args,
             )
             # let's try to determine if we need to use new EOS cli syntax
             sh_ver = self._run_commands(["show version"])
