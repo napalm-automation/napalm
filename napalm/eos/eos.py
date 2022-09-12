@@ -36,7 +36,7 @@ from netaddr.core import AddrFormatError
 # third party libs
 import pyeapi
 from pyeapi.eapilib import ConnectionError, EapiConnection
-from netmiko import BaseConnection, ConfigInvalidException
+from netmiko import ConfigInvalidException
 
 # NAPALM base
 import napalm.base.helpers
