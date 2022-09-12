@@ -40,6 +40,7 @@ from netmiko import BaseConnection, ConfigInvalidException
 
 # NAPALM base
 import napalm.base.helpers
+from napalm.base.netmiko_helpers import netmiko_args
 from napalm.base.base import NetworkDriver
 from napalm.base.utils import string_parsers
 from napalm.base.exceptions import (
@@ -100,7 +101,8 @@ class EOSDriver(NetworkDriver):
                 management).
             * enable_password (True/False): Enable password for privilege elevation
             * eos_autoComplete (True/False): Allow for shortening of cli commands
-            * transport (string): pyeapi transport, defaults to eos_transport if set
+            * transport (string): transport, defaults to eos_transport if set
+                - ssh (uses Netmiko)
                 - socket
                 - http_local
                 - http
@@ -126,45 +128,47 @@ class EOSDriver(NetworkDriver):
 
         self.platform = "eos"
         self.profile = [self.platform]
+        self.optional_args = optional_args or {}
 
-        self._process_optional_args(optional_args or {})
+        # eos_transport is there for backwards compatibility, transport is the preferred method
+        transport = optional_args.get(
+            "transport", optional_args.get("eos_transport", "https")
+        )
+        self.transport = transport
 
-    def _process_optional_args(self, optional_args):
+        if transport == "ssh":
+            self._process_optional_args_ssh(self.optional_args)
+        else:
+            self._process_optional_args_eapi(self.optional_args)
+
+    def _process_optional_args_ssh(self, optional_args):
+        self.transport_class = None
+        self.netmiko_optional_args = netmiko_args(optional_args)
+
+        # Set the default port if not set
+        default_port = {"ssh": 22, "telnet": 23}
+        self.netmiko_optional_args.setdefault("port", default_port[self.transport])
+
+    def _process_optional_args_eapi(self, optional_args):
         # Define locking method
         self.lock_disable = optional_args.get("lock_disable", False)
 
         self.enablepwd = optional_args.pop("enable_password", "")
         self.eos_autoComplete = optional_args.pop("eos_autoComplete", None)
-        # eos_transport is there for backwards compatibility, transport is the preferred method
-        transport = optional_args.get(
-            "transport", optional_args.get("eos_transport", "https")
-        )
         self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
-        self.transport = transport
-        if transport == "ssh":
-            self.transport_class = "ssh"
-            init_args = ["port"]
-        else:
-            # Parse pyeapi transport class
-            self.transport_class = self._parse_transport(transport)
-            # ([1:]) to omit self
-            init_args = inspect.getfullargspec(self.transport_class.__init__)[0][1:]
 
+        # Parse pyeapi transport class
+        self.transport_class = self._parse_transport(self.transport)
+
+        # ([1:]) to omit self
+        init_args = inspect.getfullargspec(self.transport_class.__init__)[0][1:]
         filter_args = ["host", "username", "password", "timeout", "lock_disable"]
-
-        if transport == "ssh":
-            self.netmiko_optional_args = {
-                k: v
-                for k, v in optional_args.items()
-                if k in init_args and k not in filter_args
-            }
-        else:
-            init_args.append("enforce_verification")  # Not an arg for unknown reason
-            self.eapi_kwargs = {
-                k: v
-                for k, v in optional_args.items()
-                if k in init_args and k not in filter_args
-            }
+        init_args.append("enforce_verification")  # Not an arg for unknown reason
+        self.eapi_kwargs = {
+            k: v
+            for k, v in optional_args.items()
+            if k in init_args and k not in filter_args
+        }
 
     def _parse_transport(self, transport):
         if inspect.isclass(transport) and issubclass(transport, EapiConnection):
@@ -231,7 +235,7 @@ class EOSDriver(NetworkDriver):
     def close(self):
         """Implementation of NAPALM method close."""
         self.discard_config()
-        if isinstance(self.device, BaseConnection):
+        if self.transport == "ssh":
             self._netmiko_close()
         elif hasattr(self.device.connection, "close") and callable(
             self.device.connection.close
