@@ -130,6 +130,13 @@ class EOSDriver(NetworkDriver):
         self.profile = [self.platform]
         self.optional_args = optional_args or {}
 
+        self.enablepwd = optional_args.pop("enable_password", "")
+        self.eos_autoComplete = optional_args.pop("eos_autoComplete", None)
+        self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
+
+        # Define locking method
+        self.lock_disable = optional_args.pop("lock_disable", False)
+
         # eos_transport is there for backwards compatibility, transport is the preferred method
         transport = self.optional_args.get(
             "transport", self.optional_args.get("eos_transport", "https")
@@ -146,19 +153,13 @@ class EOSDriver(NetworkDriver):
         self.netmiko_optional_args = netmiko_args(optional_args)
 
     def _process_optional_args_eapi(self, optional_args):
-        # Define locking method
-        self.lock_disable = optional_args.get("lock_disable", False)
-
-        self.enablepwd = optional_args.pop("enable_password", "")
-        self.eos_autoComplete = optional_args.pop("eos_autoComplete", None)
-        self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
 
         # Parse pyeapi transport class
         self.transport_class = self._parse_transport(self.transport)
 
         # ([1:]) to omit self
         init_args = inspect.getfullargspec(self.transport_class.__init__)[0][1:]
-        filter_args = ["host", "username", "password", "timeout", "lock_disable"]
+        filter_args = ["host", "username", "password", "timeout"]
         init_args.append("enforce_verification")  # Not an arg for unknown reason
         self.eapi_kwargs = {
             k: v
