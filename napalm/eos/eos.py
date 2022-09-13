@@ -130,12 +130,12 @@ class EOSDriver(NetworkDriver):
         self.profile = [self.platform]
         self.optional_args = optional_args or {}
 
-        self.enablepwd = optional_args.pop("enable_password", "")
-        self.eos_autoComplete = optional_args.pop("eos_autoComplete", None)
-        self.fn0039_config = optional_args.pop("eos_fn0039_config", False)
+        self.enablepwd = self.optional_args.pop("enable_password", "")
+        self.eos_autoComplete = self.optional_args.pop("eos_autoComplete", None)
+        self.fn0039_config = self.optional_args.pop("eos_fn0039_config", False)
 
         # Define locking method
-        self.lock_disable = optional_args.pop("lock_disable", False)
+        self.lock_disable = self.optional_args.pop("lock_disable", False)
 
         # eos_transport is there for backwards compatibility, transport is the preferred method
         transport = self.optional_args.get(
@@ -277,14 +277,41 @@ class EOSDriver(NetworkDriver):
 
                 cmd_pipe = command + " | json"
                 cmd_txt = self._netmiko_device.send_command(cmd_pipe)
+                print(cmd_pipe)
+                print(cmd_txt)
                 try:
                     cmd_json = json.loads(cmd_txt)
                 except json.decoder.JSONDecodeError:
+                    print("JSON error...")
+                    import pdbr
+
+                    pdbr.set_trace()
                     cmd_json = {}
                 ret.append(cmd_json)
             return ret
         else:
             return self.device.run_commands(commands, **kwargs)
+
+    def _obtain_lock(self, wait_time=None):
+        """
+        EOS internally creates config sessions when using commit-confirm.
+
+        This can cause issues obtaining the configuration lock:
+
+        cfg-2034--574620864-0 completed
+        cfg-2034--574620864-1 pending
+        """
+        if wait_time:
+            start_time = time.time()
+            while time.time() - start_time < wait_time:
+                try:
+                    self._lock()
+                    return
+                except SessionLockedException:
+                    time.sleep(1)
+
+        # One last try
+        return self._lock()
 
     def _lock(self):
         sess = self._run_commands(["show configuration sessions"])[0]["sessions"]
@@ -389,7 +416,7 @@ class EOSDriver(NetworkDriver):
             self.config_session = "napalm_{}".format(datetime.now().microsecond)
 
         if not self.lock_disable:
-            self._lock()
+            self._obtain_lock(wait_time=10)
 
         commands = []
         commands.append("configure session {}".format(self.config_session))
