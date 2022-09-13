@@ -210,7 +210,7 @@ class EOSDriver(NetworkDriver):
                     username=self.username,
                     password=self.password,
                     timeout=self.timeout,
-                    **self.eapi_kwargs
+                    **self.eapi_kwargs,
                 )
 
                 if self.device is None:
@@ -525,13 +525,8 @@ class EOSDriver(NetworkDriver):
     def discard_config(self):
         """Implementation of NAPALM method discard_config."""
         if self.config_session is not None:
-            commands = ["configure session {}".format(self.config_session), "abort"]
-            if self.transport == "ssh":
-                # For some reason when testing with vEOS 4.26.1F this
-                # doesn't work with the normal wrapper.
-                self._run_commands(["", commands[0]])
-            else:
-                self.device.run_commands(commands)
+            commands = [f"configure session {self.config_session} abort"]
+            self._run_commands(commands, encoding="text")
             self.config_session = None
 
     def rollback(self):
