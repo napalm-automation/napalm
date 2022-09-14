@@ -1936,7 +1936,10 @@ class IOSDriver(NetworkDriver):
                     # Neighbor IPs in VRFs can overlap, so make sure
                     # we haven't covered this VRF + IP already
                     vrf = neighbor["vrf"] or "global"
-                    if current_neighbor not in bgp_neighbor_data[vrf]["peers"]:
+                    if (
+                        vrf == "global"
+                        or current_neighbor not in bgp_neighbor_data[vrf]["peers"]
+                    ):
                         neighbor_entry = neighbor
                         break
             # check for proper session data for the afi
