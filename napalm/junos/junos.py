@@ -1212,6 +1212,7 @@ class JunOSDriver(NetworkDriver):
             "remote_as": int,
             "import_policy": str,
             "export_policy": str,
+            "cluster": str,
             "inet_unicast_limit_prefix_limit": int,
             "inet_unicast_teardown_threshold_prefix_limit": int,
             "inet_unicast_teardown_timeout_prefix_limit": int,
