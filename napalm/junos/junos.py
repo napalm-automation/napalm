@@ -1212,7 +1212,6 @@ class JunOSDriver(NetworkDriver):
             "remote_as": int,
             "import_policy": str,
             "export_policy": str,
-            "cluster": str,
             "inet_unicast_limit_prefix_limit": int,
             "inet_unicast_teardown_threshold_prefix_limit": int,
             "inet_unicast_teardown_timeout_prefix_limit": int,
@@ -1285,7 +1284,11 @@ class JunOSDriver(NetworkDriver):
                 if "_prefix_limit" not in field
             }
             for elem in bgp_group_details:
-                if not ("_prefix_limit" not in elem[0] and elem[1] is not None):
+                if not (
+                    "_prefix_limit" not in elem[0]
+                    and elem[0] != "cluster"
+                    and elem[1] is not None
+                ):
                     continue
                 datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
                 default = _DATATYPE_DEFAULT_.get(datatype)
