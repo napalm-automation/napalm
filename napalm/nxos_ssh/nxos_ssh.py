@@ -455,7 +455,9 @@ class NXOSSSHDriver(NXOSDriverBase):
 
     def _send_command_list(self, commands, expect_string=None, **kwargs):
         """Send a list of commands using Netmiko"""
-        return self.device.send_multiline(commands, expect_string=expect_string, **kwargs)
+        return self.device.send_multiline(
+            commands, expect_string=expect_string, **kwargs
+        )
 
     def _send_config(self, commands):
         if isinstance(commands, str):
@@ -530,7 +532,9 @@ class NXOSSSHDriver(NXOSDriverBase):
         ]
 
         try:
-            rollback_result = self._send_command_list(commands, expect_string=r"[#>]", read_timeout=90)
+            rollback_result = self._send_command_list(
+                commands, expect_string=r"[#>]", read_timeout=90
+            )
         finally:
             self.changed = True
         msg = rollback_result
@@ -544,7 +548,9 @@ class NXOSSSHDriver(NXOSDriverBase):
                 "rollback running-config file {}".format(self.rollback_cfg),
                 "no terminal dont-ask",
             ]
-            result = self._send_command_list(commands, expect_string=r"[#>]", read_timeout=90)
+            result = self._send_command_list(
+                commands, expect_string=r"[#>]", read_timeout=90
+            )
             if "completed" not in result.lower():
                 raise ReplaceConfigException(result)
             # If hostname changes ensure Netmiko state is updated properly
