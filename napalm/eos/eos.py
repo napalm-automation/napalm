@@ -23,15 +23,12 @@ import re
 import time
 import importlib
 import inspect
+import ipaddress
 import json
 import socket
 
 from datetime import datetime
 from collections import defaultdict
-from netaddr import IPAddress
-from netaddr import IPNetwork
-
-from netaddr.core import AddrFormatError
 
 # third party libs
 import pyeapi
@@ -664,7 +661,7 @@ class EOSDriver(NetworkDriver):
             except KeyError:
                 return default
 
-        NEIGHBOR_FILTER = "bgp neighbors vrf all | include remote AS | remote router ID |IPv[46] (Unicast|6PE):.*[0-9]+|^Local AS|Desc|BGP state"  # noqa
+        NEIGHBOR_FILTER = "bgp neighbors vrf all | include IPv[46] (Unicast|6PE):.*[0-9]+ | grep -v ' IPv[46] Unicast:/.' | remote AS |^Local AS|Desc|BGP state |remote router ID"  # noqa
         output_summary_cmds = self._run_commands(
             ["show ipv6 bgp summary vrf all", "show ip bgp summary vrf all"],
             encoding="json",
@@ -1134,7 +1131,7 @@ class EOSDriver(NetworkDriver):
                 # will try to parse the neighbor name
                 # which sometimes is the IP Address of the neigbor
                 # or the name of the BGP group
-                IPAddress(group_or_neighbor)
+                ipaddress.ip_address(group_or_neighbor)
                 # if passes the test => it is an IP Address, thus a Neighbor!
                 peer_address = group_or_neighbor
                 if peer_address not in bgp_neighbors:
@@ -1162,7 +1159,7 @@ class EOSDriver(NetworkDriver):
                 bgp_neighbors[peer_address].update(
                     parse_options(options, default_value)
                 )
-            except AddrFormatError:
+            except ValueError:
                 # exception trying to parse group name
                 # group_or_neighbor represents the name of the group
                 group_name = group_or_neighbor
@@ -1425,7 +1422,7 @@ class EOSDriver(NetworkDriver):
             protocol = "connected"
 
         ipv = ""
-        if IPNetwork(destination).version == 6:
+        if ipaddress.ip_network(destination).version == 6:
             ipv = "v6"
 
         commands = []
@@ -1532,7 +1529,7 @@ class EOSDriver(NetworkDriver):
                                 .get("peerEntry", {})
                                 .get("peerAddr", "")
                             )
-                        except AddrFormatError:
+                        except ValueError:
                             remote_address = napalm.base.helpers.ip(
                                 bgp_route_details.get("peerEntry", {}).get(
                                     "peerAddr", ""
@@ -1911,7 +1908,7 @@ class EOSDriver(NetworkDriver):
             summary_commands.append("show ipv6 bgp summary vrf all")
         else:
             try:
-                peer_ver = IPAddress(neighbor_address).version
+                peer_ver = ipaddress.ip_address(neighbor_address).version
             except Exception as e:
                 raise e
 

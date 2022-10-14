@@ -14,6 +14,7 @@
 # the License.
 import copy
 import functools
+import ipaddress
 import os
 import re
 import socket
@@ -22,8 +23,6 @@ import tempfile
 import uuid
 from collections import defaultdict
 
-from netaddr import IPNetwork
-from netaddr.core import AddrFormatError
 from netmiko import FileTransfer, InLineTransfer
 
 import napalm.base.constants as C
@@ -3074,8 +3073,8 @@ class IOSDriver(NetworkDriver):
         vrf = ""
         ip_version = None
         try:
-            ip_version = IPNetwork(destination).version
-        except AddrFormatError:
+            ip_version = ipaddress.ip_network(destination).version
+        except ValueError:
             return "Please specify a valid destination!"
         if ip_version == 4:  # process IPv4 routing table
             if vrf == "":
@@ -3083,8 +3082,8 @@ class IOSDriver(NetworkDriver):
             else:
                 vrfs = [vrf]  # VRFs where IPv4 is enabled
             vrfs.append("default")  # global VRF
-            ipnet_dest = IPNetwork(destination)
-            prefix = str(ipnet_dest.network)
+            ipnet_dest = ipaddress.ip_network(destination)
+            prefix = str(ipnet_dest.network_address)
             netmask = ""
             routes = {}
             if "/" in destination:

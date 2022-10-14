@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import re
 import copy
 import difflib
+import ipaddress
 import logging
 
 # import third party lib
@@ -31,8 +32,6 @@ from ncclient.operations.rpc import RPCError
 from ncclient.operations.errors import TimeoutExpiredError
 from lxml import etree as ETREE
 from lxml.etree import XMLSyntaxError
-from netaddr import IPAddress  # needed for traceroute, to check IP version
-from netaddr.core import AddrFormatError
 
 # import NAPALM base
 from napalm.iosxr_netconf import constants as C
@@ -2481,8 +2480,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         ipv = 4
         try:
-            ipv = IPAddress(network).version
-        except AddrFormatError:
+            ipv = ipaddress.ip_address(network).version
+        except ValueError:
             logger.error("Wrong destination IP Address format supplied to get_route_to")
             raise TypeError("Wrong destination IP Address!")
 
@@ -2952,8 +2951,8 @@ class IOSXRNETCONFDriver(NetworkDriver):
 
         ipv = 4
         try:
-            ipv = IPAddress(destination).version
-        except AddrFormatError:
+            ipv = ipaddress.ip_address(destination).version
+        except ValueError:
             logger.error(
                 "Incorrect format of IP Address in traceroute \
              with value provided:%s"

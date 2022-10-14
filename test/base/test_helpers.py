@@ -375,10 +375,8 @@ class TestBaseHelpers(unittest.TestCase):
             * check if IPv6 address returned as expected
         """
 
-        self.assertTrue(HAS_NETADDR)
-
-        # test that raises AddrFormatError when wrong format
-        self.assertRaises(AddrFormatError, napalm.base.helpers.ip, "fake")
+        # test that raises ValueError when wrong format
+        self.assertRaises(ValueError, napalm.base.helpers.ip, "fake")
         self.assertRaises(
             ValueError,
             napalm.base.helpers.ip,
