@@ -688,7 +688,7 @@ class EOSDriver(NetworkDriver):
             except KeyError:
                 return default
 
-        NEIGHBOR_FILTER = "bgp neighbors vrf all | include remote AS | remote router ID |IPv[46] (Unicast|6PE):.*[0-9]+|^Local AS|Desc|BGP state"  # noqa
+        NEIGHBOR_FILTER = "bgp neighbors vrf all | include IPv[46] (Unicast|6PE):.*[0-9]+ | grep -v ' IPv[46] Unicast:/.' | remote AS |^Local AS|Desc|BGP state |remote router ID"  # noqa
         output_summary_cmds = self._run_commands(
             ["show ipv6 bgp summary vrf all", "show ip bgp summary vrf all"],
             encoding="json",
