@@ -15,12 +15,9 @@
 
 # import stdlib
 from builtins import super
+import ipaddress
 import re
 import socket
-
-# import third party lib
-from netaddr import IPAddress, IPNetwork
-from netaddr.core import AddrFormatError
 
 # import NAPALM Base
 from napalm.base import helpers
@@ -953,7 +950,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             # Skip first two lines and last line of command output
             if line == "" or "-----" in line or "Peer IP Address" in line:
                 continue
-            elif IPAddress(len(line.split()[0])).is_unicast:
+            elif not ipaddress.ip_address(len(line.split()[0])).is_multicast:
                 peer_addr = line.split()[0]
                 ntp_entities[peer_addr] = {}
             else:
@@ -1340,8 +1337,8 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         ip_version = None
         try:
-            ip_version = IPNetwork(destination).version
-        except AddrFormatError:
+            ip_version = ipaddress.ip_network(destination).version
+        except ValueError:
             return "Please specify a valid destination!"
         if ip_version == 4:  # process IPv4 routing table
             routes = {}
