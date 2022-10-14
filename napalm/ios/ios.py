@@ -480,10 +480,10 @@ class IOSDriver(NetworkDriver):
         # Handle special username removal pattern
         pattern2 = r".*all username.*confirm"
         patterns = rf"(?:{pattern1}|{pattern2})"
-        output = self.device.send_command(cmd, expect_string=patterns)
+        output = self.device.send_command(cmd, expect_string=patterns, read_timeout=90)
         loop_count = 50
         new_output = output
-        for i in range(loop_count):
+        for _ in range(loop_count):
             if re.search(pattern2, new_output):
                 # Send confirmation if username removal
                 new_output = self.device.send_command_timing(
