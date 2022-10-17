@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+import ipaddress
 import json
 import os
 import re
@@ -42,8 +43,6 @@ from typing_extensions import (
     DefaultDict,
 )
 
-from netaddr import IPAddress
-from netaddr.core import AddrFormatError
 from netmiko import file_transfer
 from requests.exceptions import ConnectionError
 from netutils.config.compliance import diff_network_config
@@ -233,7 +232,7 @@ class NXOSDriverBase(NetworkDriver):
         interface loopback0
           ip address 10.1.4.5/32
         """
-        running_config = self.get_config(retrieve="running")["running"]
+        running_config = self.get_config(retrieve="running", full=True)["running"]
         return diff_network_config(self.merge_candidate, running_config, "cisco_nxos")
 
     def _get_diff(self) -> str:
@@ -356,8 +355,8 @@ class NXOSDriverBase(NetworkDriver):
 
         version = ""
         try:
-            version = "6" if IPAddress(destination).version == 6 else ""
-        except AddrFormatError:
+            version = "6" if ipaddress.ip_address(destination).version == 6 else ""
+        except ValueError:
             # Allow use of DNS names
             pass
 
@@ -470,8 +469,8 @@ class NXOSDriverBase(NetworkDriver):
 
         version = ""
         try:
-            version = "6" if IPAddress(destination).version == 6 else ""
-        except AddrFormatError:
+            version = "6" if ipaddress.ip_address(destination).version == 6 else ""
+        except ValueError:
             # Allow use of DNS names
             pass
 

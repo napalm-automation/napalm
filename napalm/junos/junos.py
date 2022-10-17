@@ -176,10 +176,10 @@ class JunOSDriver(NetworkDriver):
 
     def _rpc(self, get, child=None, **kwargs):
         """
-        This allows you to construct an arbitrary RPC call to retreive common stuff. For example:
+        This allows you to construct an arbitrary RPC call to retrieve common stuff. For example:
         Configuration:  get: "<get-configuration/>"
         Interface information:  get: "<get-interface-information/>"
-        A particular interfacece information:
+        A particular interface information:
               get: "<get-interface-information/>"
               child: "<interface-name>ge-0/0/0</interface-name>"
         """
@@ -1169,7 +1169,7 @@ class JunOSDriver(NetworkDriver):
 
         def build_prefix_limit(**args):
             """
-            Transform the lements of a dictionary into nested dictionaries.
+            Transform the elements of a dictionary into nested dictionaries.
 
             Example:
                 {
@@ -1824,7 +1824,7 @@ class JunOSDriver(NetworkDriver):
         try:
             routes_table.get(**rt_kargs)
         except RpcTimeoutError:
-            # on devices with milions of routes
+            # on devices with millions of routes
             # in case the destination is too generic (e.g.: 10/8)
             # will take very very long to determine all routes and
             # moreover will return a huge list
