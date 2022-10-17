@@ -453,21 +453,15 @@ class NXOSSSHDriver(NXOSDriverBase):
         """
         return self.device.send_command(command, cmd_verify=cmd_verify)
 
-    def _send_command_list(self, commands, expect_string=None):
-        """Wrapper for Netmiko's send_command method (for list of commands."""
-        output = ""
-        for command in commands:
-            output += self.device.send_command(
-                command,
-                strip_prompt=False,
-                strip_command=False,
-                expect_string=expect_string,
-            )
-        return output
+    def _send_command_list(self, commands, expect_string=None, **kwargs):
+        """Send a list of commands using Netmiko"""
+        return self.device.send_multiline(
+            commands, expect_string=expect_string, **kwargs
+        )
 
     def _send_config(self, commands):
         if isinstance(commands, str):
-            commands = (command for command in commands.splitlines() if command)
+            commands = [command for command in commands.splitlines() if command]
         return self.device.send_config_set(commands)
 
     @staticmethod
@@ -538,7 +532,9 @@ class NXOSSSHDriver(NXOSDriverBase):
         ]
 
         try:
-            rollback_result = self._send_command_list(commands, expect_string=r"[#>]")
+            rollback_result = self._send_command_list(
+                commands, expect_string=r"[#>]", read_timeout=90
+            )
         finally:
             self.changed = True
         msg = rollback_result
@@ -552,7 +548,9 @@ class NXOSSSHDriver(NXOSDriverBase):
                 "rollback running-config file {}".format(self.rollback_cfg),
                 "no terminal dont-ask",
             ]
-            result = self._send_command_list(commands, expect_string=r"[#>]")
+            result = self._send_command_list(
+                commands, expect_string=r"[#>]", read_timeout=90
+            )
             if "completed" not in result.lower():
                 raise ReplaceConfigException(result)
             # If hostname changes ensure Netmiko state is updated properly
