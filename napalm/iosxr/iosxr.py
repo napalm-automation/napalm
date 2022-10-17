@@ -16,14 +16,12 @@
 # import stdlib
 import re
 import copy
+import ipaddress
 from collections import defaultdict
 import logging
 
 # import third party lib
 from lxml import etree as ETREE
-
-from netaddr import IPAddress  # needed for traceroute, to check IP version
-from netaddr.core import AddrFormatError
 
 from napalm.pyIOSXR import IOSXR
 from napalm.pyIOSXR.exceptions import ConnectError
@@ -1733,8 +1731,8 @@ class IOSXRDriver(NetworkDriver):
 
         ipv = 4
         try:
-            ipv = IPAddress(network).version
-        except AddrFormatError:
+            ipv = ipaddress.ip_address(network).version
+        except ValueError:
             logger.error("Wrong destination IP Address format supplied to get_route_to")
             raise TypeError("Wrong destination IP Address!")
 
@@ -2187,8 +2185,8 @@ class IOSXRDriver(NetworkDriver):
 
         ipv = 4
         try:
-            ipv = IPAddress(destination).version
-        except AddrFormatError:
+            ipv = ipaddress.ip_address(destination).version
+        except ValueError:
             logger.error(
                 "Incorrect format of IP Address in traceroute \
              with value provided:%s"
