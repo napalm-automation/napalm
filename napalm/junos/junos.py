@@ -1284,11 +1284,7 @@ class JunOSDriver(NetworkDriver):
                 if "_prefix_limit" not in field
             }
             for elem in bgp_group_details:
-                if not (
-                    "_prefix_limit" not in elem[0]
-                    and elem[0] != "cluster"
-                    and elem[1] is not None
-                ):
+                if not ("_prefix_limit" not in elem[0] and elem[1] is not None):
                     continue
                 datatype = _GROUP_FIELDS_DATATYPE_MAP_.get(elem[0])
                 default = _DATATYPE_DEFAULT_.get(datatype)
@@ -1304,9 +1300,10 @@ class JunOSDriver(NetworkDriver):
                 if key == "neighbors":
                     bgp_group_peers = value
                     continue
-                bgp_config[bgp_group_name].update(
-                    {key: napalm.base.helpers.convert(datatype, value, default)}
-                )
+                if datatype:
+                    bgp_config[bgp_group_name].update(
+                        {key: napalm.base.helpers.convert(datatype, value, default)}
+                    )
             prefix_limit_fields = {}
             for elem in bgp_group_details:
                 if "_prefix_limit" in elem[0] and elem[1] is not None:
