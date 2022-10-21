@@ -1,4 +1,5 @@
 """Helper functions for the NAPALM base."""
+import ipaddress
 import itertools
 import logging
 
@@ -14,7 +15,6 @@ import jinja2
 import textfsm
 from lxml import etree
 from netaddr import EUI
-from netaddr import IPAddress
 from netaddr import mac_unix
 from netutils.config.parser import IOSConfigParser
 
@@ -537,10 +537,19 @@ def ip(addr: str, version: Optional[int] = None) -> str:
         >>> ip('2001:0dB8:85a3:0000:0000:8A2e:0370:7334')
         u'2001:db8:85a3::8a2e:370:7334'
     """
-    addr_obj = IPAddress(addr)
+    scope = ""
+    if "%" in addr:
+        addr, scope = addr.split("%", 1)
+    addr_obj = ipaddress.ip_address(addr)
     if version and addr_obj.version != version:
         raise ValueError("{} is not an ipv{} address".format(addr, version))
-    return str(addr_obj)
+    if addr_obj.version == 6 and addr_obj.ipv4_mapped is not None:
+        return_addr = "%s:%s" % ("::ffff", addr_obj.ipv4_mapped)
+    else:
+        return_addr = str(addr_obj)
+    if scope:
+        return_addr = "%s%%%s" % (return_addr, scope)
+    return return_addr
 
 
 def as_number(as_number_val: str) -> int:

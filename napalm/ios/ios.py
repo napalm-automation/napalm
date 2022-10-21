@@ -14,6 +14,7 @@
 # the License.
 import copy
 import functools
+import ipaddress
 import os
 import re
 import socket
@@ -22,8 +23,6 @@ import tempfile
 import uuid
 from collections import defaultdict
 
-from netaddr import IPNetwork
-from netaddr.core import AddrFormatError
 from netmiko import FileTransfer, InLineTransfer
 
 import napalm.base.constants as C
@@ -481,10 +480,10 @@ class IOSDriver(NetworkDriver):
         # Handle special username removal pattern
         pattern2 = r".*all username.*confirm"
         patterns = rf"(?:{pattern1}|{pattern2})"
-        output = self.device.send_command(cmd, expect_string=patterns)
+        output = self.device.send_command(cmd, expect_string=patterns, read_timeout=90)
         loop_count = 50
         new_output = output
-        for i in range(loop_count):
+        for _ in range(loop_count):
             if re.search(pattern2, new_output):
                 # Send confirmation if username removal
                 new_output = self.device.send_command_timing(
@@ -3079,8 +3078,8 @@ class IOSDriver(NetworkDriver):
         vrf = ""
         ip_version = None
         try:
-            ip_version = IPNetwork(destination).version
-        except AddrFormatError:
+            ip_version = ipaddress.ip_network(destination).version
+        except ValueError:
             return "Please specify a valid destination!"
         if ip_version == 4:  # process IPv4 routing table
             if vrf == "":
@@ -3088,8 +3087,8 @@ class IOSDriver(NetworkDriver):
             else:
                 vrfs = [vrf]  # VRFs where IPv4 is enabled
             vrfs.append("default")  # global VRF
-            ipnet_dest = IPNetwork(destination)
-            prefix = str(ipnet_dest.network)
+            ipnet_dest = ipaddress.ip_network(destination)
+            prefix = str(ipnet_dest.network_address)
             netmask = ""
             routes = {}
             if "/" in destination:
