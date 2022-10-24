@@ -116,7 +116,7 @@ File Operation Prompts
 ______________________
 
 By default IOS will prompt for confirmation on file operations. These prompts need to be disabled before the NAPALM-ios driver performs any such operation on the device.
-This can be controlled using the `auto_file_prompt` optional arguement:
+This can be controlled using the `auto_file_prompt` optional argument:
 
 * `auto_file_prompt=True` (default): NAPALM will automatically add `file prompt quiet` to the device configuration before performing file operations,
   and un-configure it again afterwards. If the device already had the command in its configuration then it will be silently removed as a result, and

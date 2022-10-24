@@ -50,7 +50,7 @@ def colon_separated_string_to_dict(
             dictionary[line_data[0].strip()] = None
         else:
             raise Exception(
-                "Something went wrong parsing the colo separated string {}".format(line)
+                f"Something went wrong parsing the colon separated string:\n\n{line}"
             )
     return dictionary
 

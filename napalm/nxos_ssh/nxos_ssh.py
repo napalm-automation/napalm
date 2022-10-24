@@ -15,12 +15,9 @@
 
 # import stdlib
 from builtins import super
+import ipaddress
 import re
 import socket
-
-# import third party lib
-from netaddr import IPAddress, IPNetwork
-from netaddr.core import AddrFormatError
 
 # import NAPALM Base
 from napalm.base import helpers
@@ -456,21 +453,15 @@ class NXOSSSHDriver(NXOSDriverBase):
         """
         return self.device.send_command(command, cmd_verify=cmd_verify)
 
-    def _send_command_list(self, commands, expect_string=None):
-        """Wrapper for Netmiko's send_command method (for list of commands."""
-        output = ""
-        for command in commands:
-            output += self.device.send_command(
-                command,
-                strip_prompt=False,
-                strip_command=False,
-                expect_string=expect_string,
-            )
-        return output
+    def _send_command_list(self, commands, expect_string=None, **kwargs):
+        """Send a list of commands using Netmiko"""
+        return self.device.send_multiline(
+            commands, expect_string=expect_string, **kwargs
+        )
 
     def _send_config(self, commands):
         if isinstance(commands, str):
-            commands = (command for command in commands.splitlines() if command)
+            commands = [command for command in commands.splitlines() if command]
         return self.device.send_config_set(commands)
 
     @staticmethod
@@ -541,7 +532,9 @@ class NXOSSSHDriver(NXOSDriverBase):
         ]
 
         try:
-            rollback_result = self._send_command_list(commands, expect_string=r"[#>]")
+            rollback_result = self._send_command_list(
+                commands, expect_string=r"[#>]", read_timeout=90
+            )
         finally:
             self.changed = True
         msg = rollback_result
@@ -555,7 +548,9 @@ class NXOSSSHDriver(NXOSDriverBase):
                 "rollback running-config file {}".format(self.rollback_cfg),
                 "no terminal dont-ask",
             ]
-            result = self._send_command_list(commands, expect_string=r"[#>]")
+            result = self._send_command_list(
+                commands, expect_string=r"[#>]", read_timeout=90
+            )
             if "completed" not in result.lower():
                 raise ReplaceConfigException(result)
             # If hostname changes ensure Netmiko state is updated properly
@@ -953,7 +948,7 @@ class NXOSSSHDriver(NXOSDriverBase):
             # Skip first two lines and last line of command output
             if line == "" or "-----" in line or "Peer IP Address" in line:
                 continue
-            elif IPAddress(len(line.split()[0])).is_unicast:
+            elif not ipaddress.ip_address(len(line.split()[0])).is_multicast:
                 peer_addr = line.split()[0]
                 ntp_entities[peer_addr] = {}
             else:
@@ -1340,8 +1335,8 @@ class NXOSSSHDriver(NXOSDriverBase):
 
         ip_version = None
         try:
-            ip_version = IPNetwork(destination).version
-        except AddrFormatError:
+            ip_version = ipaddress.ip_network(destination).version
+        except ValueError:
             return "Please specify a valid destination!"
         if ip_version == 4:  # process IPv4 routing table
             routes = {}

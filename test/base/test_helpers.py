@@ -81,7 +81,7 @@ class TestBaseHelpers(unittest.TestCase):
               custom path
             * check if can load correct template from custom path
             * check if template passed as string can be loaded
-            * check that the search path setup by MRO is correct when loading an incorrecet template
+            * check that the search path setup by MRO is correct when loading an incorrect template
         """
 
         self.assertTrue(HAS_JINJA)  # firstly check if jinja2 is installed
@@ -375,10 +375,8 @@ class TestBaseHelpers(unittest.TestCase):
             * check if IPv6 address returned as expected
         """
 
-        self.assertTrue(HAS_NETADDR)
-
-        # test that raises AddrFormatError when wrong format
-        self.assertRaises(AddrFormatError, napalm.base.helpers.ip, "fake")
+        # test that raises ValueError when wrong format
+        self.assertRaises(ValueError, napalm.base.helpers.ip, "fake")
         self.assertRaises(
             ValueError,
             napalm.base.helpers.ip,
