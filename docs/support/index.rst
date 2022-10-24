@@ -13,7 +13,7 @@ General support matrix
   =====================   ==========  =============  ====================  ==================  ============  ============  ============
   **Driver Name**         eos         junos          iosxr_netconf         iosxr               nxos          nxos_ssh      ios
   **Structured data**     Yes         Yes            Yes                   No                  Yes           No            No
-  **Minimum version**     4.15.0F     12.1           7.0                   5.1.0               6.1 [#g1]_    12.4(20)T     6.3.2
+  **Minimum version**     4.15.0F     12.1           7.0                   5.1.0               6.1 [#g1]_    6.3.2         12.4(20)T
   **Backend library**     `pyeapi`_   `junos-eznc`_  `ncclient`_           `pyIOSXR`_          `pynxos`_     `netmiko`_    `netmiko`_
   **Caveats**             :doc:`eos`                 :doc:`iosxr_netconf`                      :doc:`nxos`   :doc:`nxos`   :doc:`ios`
   =====================   ==========  =============  ====================  ==================  ============  ============  ============
