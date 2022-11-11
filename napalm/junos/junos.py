@@ -1136,7 +1136,7 @@ class JunOSDriver(NetworkDriver):
             )
             raw_txt = self.device.cli(safe_command, warning=False, format=encoding)
             if isinstance(raw_txt, etree._Element):
-                raw_txt = etree.tostring(raw_txt.get_parent()).decode()
+                raw_txt = etree.tostring(raw_txt.getparent()).decode()
                 cli_output[str(command)] = raw_txt
             else:
                 cli_output[str(command)] = str(_process_pipe(command, raw_txt))
