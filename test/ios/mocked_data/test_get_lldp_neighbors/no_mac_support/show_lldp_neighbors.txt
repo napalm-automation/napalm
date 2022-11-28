@@ -1,0 +1,8 @@
+
+Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+
+Device ID           Local Intf     Hold-time  Capability      Port ID
+ACOMPUTER.company.exGi9/48         120        B               Gi0
+NICEHOSTNAME        Gi9/8          3601                       a18b.95b5.e46f
